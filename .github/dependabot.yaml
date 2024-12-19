@@ -1,0 +1,72 @@
+version: 2
+updates:
+  # Backend Services (Gradle)
+  - package-ecosystem: "gradle"
+    directory: "/beeja-services/beeja-accounts"
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"
+
+  - package-ecosystem: "gradle"
+    directory: "/beeja-services/beeja-cloud-gateway"
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"
+
+  - package-ecosystem: "gradle"
+    directory: "/beeja-services/beeja-employee-management"  
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"
+
+  - package-ecosystem: "gradle"
+    directory: "/beeja-services/beeja-expense"
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"
+
+  - package-ecosystem: "gradle"
+    directory: "/beeja-services/beeja-file-management"
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"
+
+  - package-ecosystem: "gradle"
+    directory: "/beeja-services/beeja-finance"  
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"
+
+  - package-ecosystem: "gradle"
+    directory: "/beeja-services/beeja-notifications"
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"
+
+  - package-ecosystem: "gradle"
+    directory: "/beeja-services/beeja-recruitement"  
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"
+
+  - package-ecosystem: "gradle"
+    directory: "/beeja-services/beeja-service-registry"  
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"
+
+  - package-ecosystem: "npmd"
+    directory: "/beeja-web"
+    schedule:
+      interval: "daily"
+      time: "12:30"
+      timezone: "Asia/Kolkata"

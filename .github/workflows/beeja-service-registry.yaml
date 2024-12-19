@@ -1,0 +1,89 @@
+name: Service Registry Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'beeja-services/beeja-service-registry/**'
+jobs:
+
+  #CODE LINTING
+  #linux
+  lint-linux:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Run Spotless Apply
+      working-directory: beeja-services/beeja-service-registry
+      run: gradle spotlessApply
+
+  #macos
+  lint-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Run Spotless Apply
+      working-directory: beeja-services/beeja-service-registry
+      run: gradle spotlessApply
+
+  #windows
+  lint-windows:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Run Spotless Apply
+      working-directory: beeja-services/beeja-service-registry
+      run: gradle spotlessApply
+
+  # JUNIT Testing
+  junit-tests:
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Run Tests
+      working-directory: beeja-services/beeja-service-registry
+      run: gradle test
+
+    - name: Upload Test Results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: junit-results
+        path: build/test-results/test/
