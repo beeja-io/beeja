@@ -1,0 +1,1010 @@
+openapi: 3.0.1
+info:
+    title: Beeja Finance Service
+    version: v1
+    description: |-
+        `Product of tech.at.core`
+          API documentation for the Beeja Open API application. It allows users to access
+          data via a APIs secured by cookie and permissions.
+        
+            ## Authentication & Authorization
+            Beeja has a username and password authentication system. 
+            [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
+
+
+externalDocs:
+    description: Explore Beeja
+    url: https://beeja.io/
+
+servers:
+    - url: http://localhost:8092/finance
+      description: Finance APIs
+paths:
+    /v1/loans/{loanId}:
+        put:
+            tags:
+                - loan-controller
+            operationId: changeLoanStatus
+            parameters:
+                - name: loanId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: status
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                - name: message
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+    /v1/inventory/{deviceId}:
+        put:
+            tags:
+                - inventory-controller
+            operationId: updateDeviceDetails
+            parameters:
+                - name: deviceId
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeviceDetails'
+                required: true
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+    /v1/health-insurance/{employeeID}:
+        get:
+            tags:
+                - health-insurance-controller
+            operationId: getHealthInsuranceByEmployeeId
+            parameters:
+                - name: employeeID
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+        put:
+            tags:
+                - health-insurance-controller
+            operationId: updateHealthInsurance
+            parameters:
+                - name: employeeID
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HealthInsuranceRequest'
+                required: true
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+        delete:
+            tags:
+                - health-insurance-controller
+            operationId: deleteHealthInsurance
+            parameters:
+                - name: employeeID
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+    /v1/payslips:
+        post:
+            tags:
+                - bulk-payslip-controller
+            operationId: uploadBulkPaySlips
+            parameters:
+                - name: Authorization
+                  in: header
+                  required: true
+                  schema:
+                      type: string
+                - name: bulkPayslipRequest
+                  in: query
+                  required: true
+                  schema:
+                      $ref: '#/components/schemas/BulkPayslipRequest'
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+    /v1/loans:
+        get:
+            tags:
+                - loan-controller
+            operationId: getAllLoans
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+        post:
+            tags:
+                - loan-controller
+            operationId: submitLoanRequest
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SubmitLoanRequest'
+                required: true
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+    /v1/inventory:
+        get:
+            tags:
+                - inventory-controller
+            operationId: getAllDevices
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+        post:
+            tags:
+                - inventory-controller
+            operationId: addDevice
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DeviceDetails'
+                required: true
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+    /v1/health-insurance:
+        post:
+            tags:
+                - health-insurance-controller
+            operationId: submitHealthInsurance
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/HealthInsuranceRequest'
+                required: true
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+    /v1/loans/{employeeID}:
+        get:
+            tags:
+                - loan-controller
+            operationId: getLoansByEmployeeId
+            parameters:
+                - name: employeeID
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: object
+    /v1/helloworld:
+        get:
+            tags:
+                - hello-world
+            operationId: helloWorld
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+    /v1/inventory/{id}:
+        delete:
+            tags:
+                - inventory-controller
+            operationId: deleteExistingDeviceDetails
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "500":
+                    description: Internal Server Error
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "400":
+                    description: Bad Request
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "403":
+                    description: Forbidden
+                    content:
+                        '*/*':
+                            schema:
+                                type: string
+                "200":
+                    description: OK
+                    content:
+                        '*/*':
+                            schema:
+                                $ref: '#/components/schemas/Inventory'
+    /v1/payroll-settings:
+        post:
+            summary: Create a new payroll setting
+            description: Creates a new payroll setting for the logged-in user's organization.
+            operationId: createPayrollSetting
+            tags:
+                - Payroll Settings
+            requestBody:
+                description: Payroll settings object to be created
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/PayRollSettings'
+            responses:
+                '200':
+                    description: Successfully created payroll setting
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PayRollSettings'
+                '400':
+                    description: Bad request, invalid input
+                '401':
+                    description: Unauthorized, missing or invalid credentials
+                '403':
+                    description: Forbidden, insufficient permissions
+                '500':
+                    description: Internal server error
+    /v1/salary-settings:
+        post:
+            summary: Add a new salary component
+            description: Adds a new salary component to the salary settings.
+            operationId: addSalaryComponent
+            tags:
+                - Salary Settings
+            requestBody:
+                description: Salary component details to be added
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SalaryComponent'
+            responses:
+                '200':
+                    description: Successfully added the salary component
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SalaryComponent'
+                '400':
+                    description: Bad request, invalid input
+                '500':
+                    description: Internal server error
+        get:
+            summary: Get all salary components
+            description: Retrieves a list of all salary components.
+            operationId: getAllSalaryComponents
+            tags:
+                - Salary Settings
+            responses:
+                '200':
+                    description: List of all salary components
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/SalaryComponent'
+                '500':
+                    description: Internal server error
+        /v1/salary-settings/{componentId}:
+            get:
+                summary: Get a salary component by ID
+                description: Retrieves details of a specific salary component by its ID.
+                operationId: getSalaryComponent
+                tags:
+                    - Salary Settings
+                parameters:
+                    - name: componentId
+                      in: path
+                      required: true
+                      description: The ID of the salary component to retrieve
+                      schema:
+                          type: string
+                responses:
+                    '200':
+                        description: Details of the salary component
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/SalaryComponent'
+                    '404':
+                        description: Salary component not found
+                    '500':
+                        description: Internal server error
+            put:
+                summary: Update a salary component
+                description: Updates an existing salary component by its ID.
+                operationId: updateSalaryComponent
+                tags:
+                    - Salary Settings
+                parameters:
+                    - name: componentId
+                      in: path
+                      required: true
+                      description: The ID of the salary component to update
+                      schema:
+                          type: string
+                requestBody:
+                    description: Updated salary component details
+                    required: true
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SalaryComponent'
+                responses:
+                    '200':
+                        description: Successfully updated the salary component
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/SalaryComponent'
+                    '404':
+                        description: Salary component not found
+                    '400':
+                        description: Bad request, invalid input
+                    '500':
+                        description: Internal server error
+    /v1/statutory-settings:
+        post:
+            summary: Add a new statutory component
+            description: Adds a new statutory component to the payroll settings.
+            operationId: addStatutoryComponent
+            tags:
+                - Statutory Settings
+            requestBody:
+                description: Statutory component details to be added
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            additionalProperties: true
+                            description: Dynamic fields for the statutory component
+                            example:
+                                name: "Provident Fund"
+                                percentage: 12
+                                applicableTo: "All Employees"
+            responses:
+                '200':
+                    description: Successfully added the statutory component
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StatutoryComponent'
+                '400':
+                    description: Bad request, invalid input
+                '500':
+                    description: Internal server error
+        get:
+            summary: Get all statutory components
+            description: Retrieves a list of all statutory components.
+            operationId: getAllStatutoryComponents
+            tags:
+                - Statutory Settings
+            responses:
+                '200':
+                    description: List of all statutory components
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/StatutoryComponent'
+                '500':
+                    description: Internal server error
+        /v1/statutory-settings/{id}:
+            put:
+                summary: Update a statutory component
+                description: Updates an existing statutory component by its ID.
+                operationId: updateStatutoryComponent
+                tags:
+                    - Statutory Settings
+                parameters:
+                    - name: id
+                      in: path
+                      required: true
+                      description: The ID of the statutory component to update
+                      schema:
+                          type: string
+                requestBody:
+                    description: Fields to update in the statutory component
+                    required: true
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                additionalProperties: true
+                                description: Fields to be updated dynamically
+                                example:
+                                    percentage: 15
+                                    applicableTo: "Contract Employees"
+                responses:
+                    '200':
+                        description: Successfully updated the statutory component
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/StatutoryComponent'
+                    '404':
+                        description: Statutory component not found
+                    '400':
+                        description: Bad request, invalid input
+                    '500':
+                        description: Internal server error
+components:
+    schemas:
+        DeviceDetails:
+            type: object
+            properties:
+                deviceNumber:
+                    type: string
+                device:
+                    type: string
+                    enum:
+                        - LAPTOP
+                        - MOBILE
+                        - DESKTOP
+                        - PRINTER
+                        - MUSIC_SYSTEM
+                        - TABLET
+                        - ACCESSORIES
+                provider:
+                    type: string
+                model:
+                    type: string
+                type:
+                    type: string
+                    enum:
+                        - NEW
+                        - OLD
+                os:
+                    type: string
+                specifications:
+                    type: string
+                availability:
+                    type: string
+                    enum:
+                        - "YES"
+                        - "NO"
+                productId:
+                    type: string
+                price:
+                    type: number
+                    format: double
+                dateOfPurchase:
+                    type: string
+                    format: date-time
+                comments:
+                    type: string
+                accessoryType:
+                    type: string
+                ram:
+                    type: string
+        HealthInsuranceRequest:
+            type: object
+            properties:
+                employeeId:
+                    type: string
+                grossPremium:
+                    type: string
+                instalmentType:
+                    type: string
+                    enum:
+                        - MONTHLY
+                        - QUARTERLY
+                instalmentAmount:
+                    type: number
+                    format: double
+        BulkPayslipRequest:
+            type: object
+            properties:
+                zipFile:
+                    type: string
+                    format: binary
+                month:
+                    type: string
+                year:
+                    type: string
+                entityType:
+                    type: string
+        SubmitLoanRequest:
+            required:
+                - loanType
+            type: object
+            properties:
+                loanType:
+                    type: string
+                    enum:
+                        - MONITOR_LOAN
+                        - PERSONAL_LOAN
+                        - ADVANCE_SALARY
+                amount:
+                    minimum: 1
+                    type: number
+                    format: double
+                monthlyEMI:
+                    minimum: 1
+                    type: number
+                    format: double
+                purpose:
+                    type: string
+                emiTenure:
+                    minimum: 1
+                    type: integer
+                    format: int32
+                emiStartDate:
+                    type: string
+                    format: date-time
+        Inventory:
+            required:
+                - availability
+                - dateOfPurchase
+                - device
+                - model
+                - organizationId
+                - price
+                - productId
+                - provider
+                - type
+            type: object
+            properties:
+                id:
+                    type: string
+                organizationId:
+                    type: string
+                deviceNumber:
+                    type: string
+                device:
+                    type: string
+                    enum:
+                        - LAPTOP
+                        - MOBILE
+                        - DESKTOP
+                        - PRINTER
+                        - MUSIC_SYSTEM
+                        - TABLET
+                        - ACCESSORIES
+                provider:
+                    type: string
+                model:
+                    type: string
+                type:
+                    type: string
+                    enum:
+                        - NEW
+                        - OLD
+                os:
+                    type: string
+                specifications:
+                    type: string
+                availability:
+                    type: string
+                    enum:
+                        - "YES"
+                        - "NO"
+                productId:
+                    type: string
+                price:
+                    minimum: 1
+                    type: number
+                    format: double
+                dateOfPurchase:
+                    type: string
+                    format: date-time
+                comments:
+                    type: string
+                accessoryType:
+                    type: string
+                createdAt:
+                    type: string
+                    format: date-time
+                createdBy:
+                    type: string
+                modifiedAt:
+                    type: string
+                    format: date-time
+                modifiedBy:
+                    type: string
+                ram:
+                    type: string
+
+        PayRollSettings:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Unique identifier for the payroll setting
+                    example: "12345"
+                organizationId:
+                    type: string
+                    description: Organization ID for which the payroll setting is created
+                    example: "org-001"
+                payrollFrequency:
+                    type: string
+                    description: Frequency of payroll (e.g., weekly, bi-weekly, monthly)
+                    example: "monthly"
+                payrollCycleStart:
+                    type: string
+                    format: date
+                    description: Start date of the payroll cycle
+                    example: "2024-01-01"
+                payrollCycleEnd:
+                    type: string
+                    format: date
+                    description: End date of the payroll cycle
+                    example: "2024-01-31"
+            required:
+                - organizationId
+                - payrollFrequency
+                - payrollCycleStart
+                - payrollCycleEnd
+        SalaryComponent:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Unique identifier for the salary component
+                    example: "12345"
+                name:
+                    type: string
+                    description: Name of the salary component
+                    example: "Basic Pay"
+                description:
+                    type: string
+                    description: Description of the salary component
+                    example: "Base salary for all employees"
+                amount:
+                    type: number
+                    format: double
+                    description: Amount assigned to the salary component
+                    example: 50000.0
+                type:
+                    type: string
+                    description: Type of the salary component (e.g., fixed, variable)
+                    example: "fixed"
+            required:
+                - name
+                - amount
+                - type
+        StatutoryComponent:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Unique identifier for the statutory component
+                    example: "12345"
+                name:
+                    type: string
+                    description: Name of the statutory component
+                    example: "Provident Fund"
+                percentage:
+                    type: number
+                    format: float
+                    description: Percentage applicable to the component
+                    example: 12.5
+                applicableTo:
+                    type: string
+                    description: The group to which the component applies (e.g., all employees, contract workers)
+                    example: "All Employees"
+                additionalProperties:
+                    type: object
+                    description: Any additional custom fields for the statutory component
+                    example:
+                        customField1: "Value1"
+                        customField2: "Value2"
+            required:
+                - name

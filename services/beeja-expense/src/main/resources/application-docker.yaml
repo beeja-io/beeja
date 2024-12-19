@@ -1,0 +1,52 @@
+server:
+  servlet:
+    context-path: /expenses
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  port: 8091
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  application:
+    name: expense-service
+  data:
+    mongodb:
+      uri: mongodb://root:password@beeja-db-1:27017/?replicaSet=rs0&directConnection=true
+      database: expenses_sbox
+
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://beeja-service-registry:8761/eureka
+
+# actuator
+management:
+  endpoints.web.exposure.include: health,info
+  info.env.enabled: true
+info:
+  application.name: ${spring.application.name}
+
+
+client-urls:
+  accountsService: http://beeja-accounts:8080/accounts
+  fileService: http://beeja-file-management:8090/files
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    url: /openApi.yaml
+
+file-format:
+  allowedTypes:
+    - application/pdf
+    - image/png
+    - image/jpeg
+
+jwt:
+  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw

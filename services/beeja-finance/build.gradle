@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'com.google.cloud.tools.jib'
+    id 'com.diffplug.spotless'
+}
+
+
+bootJar{
+    enabled(true)
+}
+
+dependencies {
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    implementation 'org.javers:javers-spring-boot-starter-mongo:7.3.3'
+    implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    implementation 'org.apache.pdfbox:pdfbox:2.0.25'
+    implementation 'junit:junit:4.13.1'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+
+    testImplementation 'org.mockito:mockito-core:3.11.2'
+}
+
+test {
+    useJUnitPlatform()
+}

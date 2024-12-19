@@ -1,0 +1,226 @@
+{
+	"info": {
+		"_postman_id": "174a2127-e699-42a9-9d20-5eaf6d039392",
+		"name": "ExpenseService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30821906"
+	},
+	"item": [
+		{
+			"name": "HelloWorld",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/expenses/v1/helloworld"
+			},
+			"response": []
+		},
+		{
+			"name": "CreateExpense",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "category",
+							"value": "Learning & development",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "Accessories",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "currencyCode",
+							"value": "INR",
+							"type": "text"
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": "/C:/Users/User/Pictures/Screenshots/Screenshot (841).png"
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": "/C:/Users/User/Pictures/Screenshots/Screenshot (832).png"
+						},
+						{
+							"key": "modeOfPayment",
+							"value": "Credit Card",
+							"type": "text"
+						},
+						{
+							"key": "merchant",
+							"value": "Zepto",
+							"type": "text"
+						},
+						{
+							"key": "isClaimed",
+							"value": "true",
+							"type": "text"
+						},
+						{
+							"key": "paymentMadeBy",
+							"value": "Accounts Manager",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "Payment done towards repair",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:8000/expenses/v1"
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteExpense",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:8000/expenses/v1/65d8897f31ddc0266415323a"
+			},
+			"response": []
+		},
+		{
+			"name": "GetExpenseByFilters",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/expenses/v1?startDate=23-02-2024&endDate=28-02-2024&modeOfPayment=UPI&expenseType=Food&expenseCategory=Admin",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"expenses",
+						"v1"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "23-02-2024"
+						},
+						{
+							"key": "endDate",
+							"value": "28-02-2024"
+						},
+						{
+							"key": "modeOfPayment",
+							"value": "UPI"
+						},
+						{
+							"key": "expenseType",
+							"value": "Food"
+						},
+						{
+							"key": "expenseCategory",
+							"value": "Admin"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateExpense",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "category",
+							"value": "admin",
+							"type": "text"
+						},
+						{
+							"key": "type",
+							"value": "abc",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "currencyCode",
+							"value": "INR",
+							"type": "text"
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "files",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "modeOfPayment",
+							"value": "gd",
+							"type": "text"
+						},
+						{
+							"key": "merchant",
+							"value": "whjd",
+							"type": "text"
+						},
+						{
+							"key": "isClaimed",
+							"value": "true",
+							"type": "text"
+						},
+						{
+							"key": "paymentMadeBy",
+							"value": "me",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "money",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:8000/expenses/v1/65d8897f31ddc0266415323a"
+			},
+			"response": []
+		},
+		{
+			"name": "getExpenseStatus",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/expenses/v1/expenses/673df2617779da548409a0d8/status"
+			},
+			"response": []
+		},
+		{
+			"name": "settleExpense",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": "http://localhost:8000/expenses/v1/673df2617779da548409a0d8/settle"
+			},
+			"response": []
+		}
+	]
+}

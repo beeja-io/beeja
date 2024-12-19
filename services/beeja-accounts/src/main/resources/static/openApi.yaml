@@ -1,0 +1,1216 @@
+openapi: 3.0.1
+
+info:
+  title: Beeja - Accounts Service
+  version: v1
+  description: |- 
+    `Product of tech.at.core`
+      API documentation for the Beeja Open API application. It allows users to access
+      data via a APIs secured by cookie and permissions.
+
+        ## Authentication & Authorization
+        Beeja has a username and password authentication system. 
+        [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
+    
+        ## Authorization Levels
+    
+        Most of the API's endpoints require certain functional specific scopes depending on which endpoint
+        is triggered. Supported scopes 
+
+
+externalDocs:
+  description: Explore Beeja
+  url: https://beeja.io/
+
+servers:
+  - url: http://localhost:8000/accounts
+    description: Beeja Accounts
+
+tags:
+  - name: Accounts-Management
+    description: To manage and create all the accounts.
+
+paths:
+  /v1/users/{employeeId}:
+    get:
+      tags:
+        - employee-controller
+      summary: to get the details of the employee using Employee ID
+      operationId: getUserByEmployeeId
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Unknown or inaccessible asset list
+          content:
+            application/json:
+              example:
+                failureReason: EMPLOYEE_NOT_FOUND
+    put:
+      tags:
+        - employee-controller
+      summary: to update the details of the employee using Employee ID
+      operationId: updateUser
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+  /v1/users/{employeeId}/status:
+    put:
+      tags:
+        - employee-controller
+      summary: to change the status of the employee using Employee ID
+      operationId: changeEmployeeStatus
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /v1/users/change-email-password:
+    put:
+      tags:
+        - employee-controller
+      summary: to get the email or password of the employee
+      operationId: changeEmailAndPassword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newEmail:
+                  type: string
+                  format: email
+                  example: "newemail@example.com"
+                currentPassword:
+                  type: string
+                  format: password
+                  example: "currentpassword123"
+                newPassword:
+                  type: string
+                  format: password
+                  example: "newpassword123"
+                confirmPassword:
+                  type: string
+                  format: password
+                  example: "newpassword123"
+              required:
+                - newEmail
+                - currentPassword
+                - newPassword
+                - confirmPassword
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+
+  /v1/roles/{roleId}:
+    put:
+      tags:
+        - role-controller
+      summary: to update the roles of the employee using Employee ID
+      operationId: updateRolesOfOrganization
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRoleRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Role'
+    delete:
+      tags:
+        - role-controller
+      summary: to delete the role in an organization using roleId
+      operationId: deleteRoleOfOrganizationById
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /v1/organizations/update-values:
+    put:
+      tags:
+        - organization-controller
+      summary: to get the values of the organization (Expense Types, Expense Categories, Job Titles etc)
+      operationId: updateOrganizationValues
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrgDefaults'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/OrgDefaults'
+  /v1/organization/patterns/update-status:
+    put:
+      tags:
+        - organization-pattern-controller
+      summary: to update the status of pattern using Pattern Id and Pattern Type
+      operationId: updatePatternStatus
+      parameters:
+        - name: patternId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: patternType
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/OrganizationPattern'
+  /v1/features/{organizationId}:
+    put:
+      tags:
+        - feature-toggle-controller
+      summary: to update feature toggle list of Organization using Organization Id
+      operationId: updateFeatureToggleByOrganizationId
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeatureToggle'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FeatureToggle'
+  /v2/organizations:
+    post:
+      tags:
+        - organization-controller-v-2
+      operationId: postNewUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUserForOrganizationCreationRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+  /v1/users:
+    get:
+      tags:
+        - employee-controller
+      summary: to get all employees in an organization
+      operationId: getAllEmployees
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - employee-controller
+      summary: to create an employee
+      operationId: createEmployee
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddEmployeeRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreatedUserResponse'
+  /v1/users/emp-ids:
+    post:
+      tags:
+        - employee-controller
+      summary: to get the list of the employees by given list of Employee List
+      operationId: getUsersByEmployeeIds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeOrgRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /v1/roles:
+    get:
+      tags:
+        - role-controller
+      summary: to get the list of the roles in an organization
+      operationId: getAllRolesOfOrganization
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Role'
+    post:
+      tags:
+        - role-controller
+      operationId: addRolesToOrganization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRoleRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Role'
+  /v1/organizations:
+    get:
+      tags:
+        - organization-controller
+      summary: get all organizations
+      operationId: getAllOrganizations
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Organization'
+    post:
+      tags:
+        - organization-controller
+      summary: Post an Organization
+      operationId: createOrganization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Organization'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Organization'
+  /v1/organization/patterns:
+    get:
+      tags:
+        - organization-pattern-controller
+      summary: to get the list of the patterns in an organization - EX- DEVICE_ID_PATTERN, EMPLOYEE_ID_PATTERN
+      operationId: getPatternsByType
+      parameters:
+        - name: patternType
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OrganizationPattern'
+    post:
+      tags:
+        - organization-pattern-controller
+      summary: to add pattern to logged in user organization
+      operationId: addPattern
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrganizationPatternRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/OrganizationPattern'
+    delete:
+      tags:
+        - organization-pattern-controller
+      summary: to delete pattern using pattern Id
+      operationId: deletePattern
+      parameters:
+        - name: patternId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: patternType
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+  /public/organizations:
+    post:
+      tags:
+        - public-controller
+      summary: to add organization
+      operationId: postOrganization
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUserForOrganizationCreationRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+  /v1/users/{employeeId}/roles:
+    patch:
+      tags:
+        - employee-controller
+      summary: to updates employee roles using Employee ID
+      operationId: updateUserRoles
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRoleRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /v1/organizations/{organizationId}:
+    get:
+      tags:
+        - organization-controller
+      summary: to get the details of the organization using organization ID
+      operationId: getOrganizationById
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/OrganizationResponse'
+    delete:
+      tags:
+        - organization-controller
+      summary: to delete the organization using organization ID
+      operationId: deleteOrganizatiobById
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Organization'
+    patch:
+      tags:
+        - organization-controller
+      summary: to update the details of the organization using organization ID
+      operationId: updateOrganization
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: organizationFields
+          in: query
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                logo:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /v1:
+    get:
+      tags:
+        - hello-world
+      summary: API to test service status
+      operationId: hello
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /v1/users/{employeeId}/exists/{permission}:
+    get:
+      tags:
+        - employee-controller
+      operationId: isEmployeeHasPermission
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: permission
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: boolean
+  /v1/users/permissions/{permission}:
+    get:
+      tags:
+        - employee-controller
+      operationId: getUsersByPermissionAndOrganization
+      parameters:
+        - name: permission
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /v1/users/me:
+    get:
+      tags:
+        - employee-controller
+      operationId: getLoggedInUser
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+  /v1/users/exists/{email}:
+    get:
+      tags:
+        - employee-controller
+      operationId: isUserPresentWithMail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: boolean
+  /v1/users/email/{email}:
+    get:
+      tags:
+        - employee-controller
+      operationId: getUserByEmail
+      parameters:
+        - name: email
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/User'
+  /v1/users/count:
+    get:
+      tags:
+        - employee-controller
+      operationId: getEmployeeCountByOrganizationId
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/EmployeeCount'
+  /v1/organizations/{organizationId}/employees:
+    get:
+      tags:
+        - organization-controller
+      operationId: getAllEmployeesByOrganizationId
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /v1/organizations/values/{key}:
+    get:
+      tags:
+        - organization-controller
+      operationId: getOrganizationValuesByKey
+      parameters:
+        - name: key
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/OrgDefaults'
+  /v1/organizations/logo:
+    get:
+      tags:
+        - organization-controller
+      operationId: downloadFile
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+  /v1/features:
+    get:
+      tags:
+        - feature-toggle-controller
+      operationId: getFeatureToggleByOrganizationId
+      parameters:
+        - name: organizationId
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/FeatureToggle'
+  /public/organizations/user/verify:
+    get:
+      tags:
+        - public-controller
+      operationId: verifyUserFromToken
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+
+components:
+  schemas:
+    UpdateUserRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        userPreferences:
+          $ref: '#/components/schemas/UserPreferences'
+        email:
+          type: string
+    UserPreferences:
+      type: object
+      properties:
+        theme:
+          type: string
+        language:
+          type: string
+        font:
+          type: string
+    Address:
+      type: object
+      properties:
+        addressOne:
+          type: string
+        addressTwo:
+          type: string
+        country:
+          type: string
+        state:
+          type: string
+        city:
+          type: string
+        pinCode:
+          type: string
+    LoanLimit:
+      type: object
+      properties:
+        monitorLoan:
+          type: integer
+          format: int32
+        personalLoan:
+          type: integer
+          format: int32
+        salaryMultiplier:
+          type: integer
+          format: int32
+        personalLoanEnabled:
+          type: boolean
+        salaryMultiplierEnabled:
+          type: boolean
+        monitorLoanEnabled:
+          type: boolean
+    Organization:
+      required:
+        - contactMail
+        - email
+        - name
+        - website
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        subscriptionId:
+          type: string
+        emailDomain:
+          type: string
+        contactMail:
+          type: string
+        website:
+          type: string
+        preferences:
+          $ref: '#/components/schemas/Preferences'
+        address:
+          $ref: '#/components/schemas/Address'
+        filingAddress:
+          type: string
+        logoFileId:
+          type: string
+        loanLimit:
+          $ref: '#/components/schemas/LoanLimit'
+    Preferences:
+      type: object
+      properties:
+        dateFormat:
+          type: string
+          enum:
+            - DD_MM_YYYY
+            - DD_SLASH_MM_SLASH_YYYY
+            - DD_SPACE_MMMM_SPACE_YYYY
+            - MMMM_DD_YYYY
+            - MM_SLASH_DD_SLASH_YYYY
+            - DD_DOT_MM_DOT_YYYY
+        timeZone:
+          type: string
+          enum:
+            - COORDINATED_UNIVERSAL_TIME
+            - INDIAN_STANDARD_TIME
+            - CENTRAL_EUROPEAN_TIME
+            - EASTERN_STANDARD_TIME
+        fontName:
+          type: string
+          enum:
+            - NUNITO
+            - MANROPE
+            - ARIAL
+            - INTER
+            - ROBOTO
+        fontSize:
+          type: integer
+          format: int32
+        theme:
+          type: string
+          enum:
+            - DARK
+            - LIGHT
+            - AUTO
+        currencyType:
+          type: string
+          enum:
+            - INDIAN_RUPEE
+            - EURO
+            - DOLLAR
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        permissions:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+        organizationId:
+          type: string
+    User:
+      required:
+        - email
+        - employeeId
+        - firstName
+        - lastName
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        roles:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+        employeeId:
+          type: string
+        employmentType:
+          type: string
+        organizations:
+          $ref: '#/components/schemas/Organization'
+        userPreferences:
+          $ref: '#/components/schemas/UserPreferences'
+        createdBy:
+          type: string
+        modifiedBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedAt:
+          type: string
+          format: date-time
+        active:
+          type: boolean
+    ChangeEmailAndPasswordRequest:
+      type: object
+      properties:
+        newEmail:
+          type: string
+        currentPassword:
+          type: string
+        newPassword:
+          type: string
+        confirmPassword:
+          type: string
+    AddRoleRequest:
+      required:
+        - name
+        - permissions
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        permissions:
+          maxItems: 2147483647
+          minItems: 1
+          uniqueItems: true
+          type: array
+          items:
+            maxLength: 2147483647
+            minLength: 1
+            type: string
+    OrgDefaults:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        key:
+          type: string
+        values:
+          uniqueItems: true
+          type: array
+          items:
+            $ref: '#/components/schemas/OrgValues'
+    OrgValues:
+      type: object
+      properties:
+        value:
+          type: string
+        description:
+          type: string
+    OrganizationPattern:
+      type: object
+      properties:
+        id:
+          type: string
+        patternType:
+          type: string
+          enum:
+            - EMPLOYEE_ID_PATTERN
+            - LOAN_ID_PATTERN
+            - DEVICE_ID_PATTERN
+        organizationId:
+          type: string
+        patternLength:
+          type: integer
+          format: int32
+        prefix:
+          type: string
+        initialSequence:
+          type: integer
+          format: int32
+        examplePattern:
+          type: string
+        active:
+          type: boolean
+    FeatureToggle:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        featureToggles:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+              - EMPLOYEE_MANAGEMENT
+              - DOCUMENT_MANAGEMENT
+              - LOAN_MANAGEMENT
+              - KYC_MANAGEMENT
+              - INVENTORY_MANAGEMENT
+              - BULK_PAY_SLIPS
+              - EXPENSE_MANAGEMENT
+              - ORGANIZATION_SETTINGS
+              - ORGANIZATION_SETTINGS_PROFILE
+              - ORGANIZATION_SETTINGS_DATE_CURRENCY
+              - ORGANIZATION_SETTINGS_THEMES
+              - ORGANIZATION_SETTINGS_TYPOGRAPHY
+              - ORGANIZATION_SETTINGS_ROLES_AND_PERMISSIONS
+              - ORGANIZATION_SETTINGS_FONT_SIZE
+              - ORGANIZATION_SETTINGS_FONT_NAME
+    NewUserForOrganizationCreationRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phoneNumber:
+          type: string
+        companyName:
+          type: string
+        termsAccepted:
+          type: boolean
+    AddEmployeeRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        employmentType:
+          type: string
+    CreatedUserResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        password:
+          type: string
+    EmployeeOrgRequest:
+      type: object
+      properties:
+        employeeIds:
+          type: array
+          items:
+            type: string
+    OrganizationPatternRequest:
+      required:
+        - active
+        - patternType
+        - prefix
+      type: object
+      properties:
+        patternType:
+          type: string
+          enum:
+            - EMPLOYEE_ID_PATTERN
+            - LOAN_ID_PATTERN
+            - DEVICE_ID_PATTERN
+        patternLength:
+          minimum: 1
+          type: integer
+          format: int32
+        prefix:
+          maxLength: 10
+          minLength: 0
+          type: string
+        initialSequence:
+          minimum: 0
+          type: integer
+          format: int32
+        active:
+          type: boolean
+    UpdateUserRoleRequest:
+      type: object
+      properties:
+        roles:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+    EmployeeCount:
+      type: object
+      properties:
+        totalCount:
+          type: integer
+          format: int64
+        activeCount:
+          type: integer
+          format: int64
+        inactiveCount:
+          type: integer
+          format: int64
+    Accounts:
+      type: object
+      properties:
+        pfNumber:
+          type: string
+        tanNumber:
+          type: string
+        panNumber:
+          pattern: "[A-Z]{5}[0-9]{4}[A-Z]{1}"
+          type: string
+        esiNumber:
+          type: string
+        linNumber:
+          type: string
+        gstNumber:
+          type: string
+    OrganizationResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        subscriptionId:
+          type: string
+        emailDomain:
+          type: string
+        contactMail:
+          type: string
+        website:
+          type: string
+        preferences:
+          $ref: '#/components/schemas/Preferences'
+        address:
+          $ref: '#/components/schemas/Address'
+        filingAddress:
+          type: string
+        accounts:
+          $ref: '#/components/schemas/Accounts'
+        logoFileId:
+          type: string
+        loanLimit:
+          $ref: '#/components/schemas/LoanLimit'
+    Error:
+
+  responses:
+    Unauthorized:
+      description: Missing authentication.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            failureReason: UNAUTHORIZED
+            details: "Please sign-in into Beeja"
+
+      Forbidden:
+        description: Valid credentials but not enough privileges
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            example:
+              failureReason: USER_NOT_WHITELISTED
+              details: "Access Denied- You have no required permissions to do this operation"
+
+      BadRequest:
+        description: Something wrong with request parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            example:
+              failureReason: BAD_REQUEST
+              details: "Internal Server Error"
+

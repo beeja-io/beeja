@@ -1,0 +1,109 @@
+server:
+  port: 8000
+  reactive:
+    session:
+      timeout: 10000m
+
+spring:
+  session:
+    timeout: 111111m
+  application:
+    name: api-gateway
+  data:
+    mongodb:
+      uri: mongodb://root:password@beeja-db-1:27017/?replicaSet=rs0&directConnection=true
+      database: accounts_sbox
+
+  cloud:
+    gateway:
+      globalcors:
+        default-filters:
+          - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+          - AddResponseHeader=Access-Control-Allow-Origin, *
+        cors-configurations:
+          '[/**]':
+            allowed-origins:
+              - "http://localhost:3000"
+            allowedMethods:
+              - "*"
+            allowed-headers: "*"
+            allow-credentials: true
+      routes:
+        - id: ACCOUNTS-SERVICE
+          uri: lb://ACCOUNTS-SERVICE
+          predicates:
+            - Path= /accounts/**
+          filters:
+            - CustomTokenRelay=true
+
+        - id: EMPLOYEE-SERVICE
+          uri: lb://EMPLOYEE-SERVICE
+          predicates:
+            - Path= /employees/**
+          filters:
+            - CustomTokenRelay=true
+        - id: FILES-SERVICE
+          uri: lb://FILE-SERVICE
+          predicates:
+            - Path= /files/**
+          filters:
+            - CustomTokenRelay=true
+        - id: EXPENSE-SERVICE
+          uri: lb://EXPENSE-SERVICE
+          predicates:
+            - Path= /expenses/**
+          filters:
+            - CustomTokenRelay=true
+        - id: FINANCE-SERVICE
+          uri: lb://FINANCE-SERVICE
+          predicates:
+            - Path= /finance/**
+          filters:
+            - CustomTokenRelay=true
+        - id: NOTIFICATION-SERVICE
+          uri: lb://NOTIFICATION-SERVICE
+          predicates:
+            - Path= /notifications/**
+          filters:
+            - CustomTokenRelay=true
+        - id: PROJECT-MANAGEMENT
+          uri: lb://PROJECT-MANAGEMENT
+          predicates:
+            - Path= /projects/**
+          filters:
+            - CustomTokenRelay=true
+
+        - id: RECRUITMENT-SERVICE
+          uri: lb://RECRUITMENT-SERVICE
+          predicates:
+            - Path= /recruitments/**
+          filters:
+            - CustomTokenRelay=true
+  mvc:
+    favicon:
+      location: classpath:/resources/static/favicon.ico
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://beeja-service-registry:8761/eureka
+
+auth.cors.allowed-origins:
+  frontEndUrl: http://localhost:3000
+  localFrontEndUrl: http://localhost:3000
+
+management:
+  endpoints.web.exposure.include: health,info
+  info.env.enabled: true
+info:
+  application.name: ${spring.application.name}
+
+resource-server-urls:
+  accounts-service: http://beeja-accounts:8080
+  employee-service: http://beeja-employee-management:8089
+  file-service: http://beeja-file-management:8090
+  expense-service: http://beeja-expense:8091
+  finance-service: http://beeja-finance:8092
+
+jwt:
+  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw

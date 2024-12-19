@@ -1,0 +1,181 @@
+{
+	"info": {
+		"_postman_id": "20c211a5-f2c4-4d4c-bf9f-0bf12ff79ccc",
+		"name": "FileService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30821906"
+	},
+	"item": [
+		{
+			"name": "HelloWorld",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "UploadFile",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/User/Pictures/Screenshots/Screenshot (838).png"
+						},
+						{
+							"key": "fileType",
+							"value": "personal",
+							"type": "text"
+						},
+						{
+							"key": "fileContent",
+							"value": "general",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "pan",
+							"type": "text"
+						},
+						{
+							"key": "entityId",
+							"value": "TAC002",
+							"type": "text"
+						},
+						{
+							"key": "entityType",
+							"value": "employee",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:8000/files/v1/files"
+			},
+			"response": []
+		},
+		{
+			"name": "GetFilesByEmpId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/files/v1/files/TAC0063"
+			},
+			"response": []
+		},
+		{
+			"name": "DownloadFileById",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/files/v1/files/download/65d574ca305b365944350464"
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteFileById",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:8000/files/v1/files/65d574ca305b365944350464"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateFileById",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/User/Pictures/Screenshots/Screenshot (832).png"
+						},
+						{
+							"key": "fileType",
+							"value": "personal",
+							"type": "text"
+						},
+						{
+							"key": "fileContent",
+							"value": "general",
+							"type": "text"
+						},
+						{
+							"key": "description",
+							"value": "pan",
+							"type": "text"
+						},
+						{
+							"key": "entityId",
+							"value": "TAC002",
+							"type": "text"
+						},
+						{
+							"key": "entityType",
+							"value": "employee",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:8000/files/v1/files/65d574ca305b365944350464"
+			},
+			"response": []
+		},
+		{
+			"name": "UploadBulkPaySlips",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "zipFile",
+							"type": "file",
+							"src": "/C:/Users/User/Downloads/app (1).zip"
+						},
+						{
+							"key": "month",
+							"value": "12",
+							"type": "text"
+						},
+						{
+							"key": "year",
+							"value": "2023",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8000/finance/v1/payslips",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"finance",
+						"v1",
+						"payslips"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

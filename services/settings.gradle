@@ -1,0 +1,10 @@
+rootProject.name = 'beeja'
+include 'beeja-service-registry'
+include 'beeja-cloud-gateway'
+include 'beeja-accounts'
+include 'beeja-employee-management'
+include 'beeja-finance'
+include 'beeja-expense'
+include 'beeja-file-management'
+include 'beeja-recruitment'
+

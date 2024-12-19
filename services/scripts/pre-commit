@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Run ./gradlew checkStyleMain
+./gradlew spotlessApply
+
+# Check if the task was successful
+if [ $? -ne 0 ]; then
+  echo "Error: ./gradlew checkStyleMain failed. Please fix the issues before committing."
+  exit 1
+fi
+
+# Run ./gradlew spotlessApply
+./gradlew checkStyleMain
+
+# Check if the task was successful
+if [ $? -ne 0 ]; then
+  echo "Error: ./gradlew spotlessApply failed. Please fix the issues before committing."
+  exit 1
+fi
+
+# Both tasks were successful, proceed with the commit
+git add .
+echo "Tasks passed. Committing changes."
+exit 0

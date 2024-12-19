@@ -1,0 +1,70 @@
+server:
+  servlet:
+    context-path: /finance
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  port: 8092
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
+  application:
+    name: finance-service
+  data:
+    mongodb:
+      uri: mongodb://root:password@localhost:27017/?replicaSet=rs0&directConnection=true
+      database: finance_sbox
+
+javers:
+  mappingStyle: FIELD
+  algorithm: SIMPLE
+  commitIdGenerator: synchronized_sequence
+  prettyPrint: true
+  typeSafeValues: false
+  initialChanges: true
+  terminalChanges: true
+  packagesToScan:
+  auditableAspectEnabled: true
+  springDataAuditableRepositoryAspectEnabled: true
+  usePrimitiveDefaults: true
+  prettyPrintDateFormats:
+    localDateTime: 'dd MMM yyyy, HH:mm:ss'
+    zonedDateTime: 'dd MMM yyyy, HH:mm:ssZ'
+    localDate: 'dd MMM yyyy'
+    localTime: 'HH:mm:ss'
+  documentDbCompatibilityEnabled: false
+  objectAccessHook: org.javers.spring.mongodb.DBRefUnproxyObjectAccessHook
+  snapshotsCacheSize: 5000
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+# actuator
+management:
+  endpoints.web.exposure.include: health,info
+  info.env.enabled: true
+info:
+  application.name: ${spring.application.name}
+
+client-urls:
+  accountsService: http://localhost:8080/accounts
+  fileService: http://localhost:8090/files
+  notificationService: http://localhost:8093/notifications
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    url: /openApi.yaml
+
+jwt:
+  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw

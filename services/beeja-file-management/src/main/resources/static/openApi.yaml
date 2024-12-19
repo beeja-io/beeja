@@ -1,0 +1,376 @@
+openapi: 3.0.1
+
+info:
+  title: Beeja - File Service
+  version: v1
+  description: |-
+    `Product of tech.at.core`
+      API documentation for the Beeja Open API application. It allows users to access
+      data via a APIs secured by cookie and permissions.
+
+        ## Authentication & Authorization
+        Beeja has a username and password authentication system. 
+        [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
+
+
+externalDocs:
+  description: Explore Beeja
+  url: https://beeja.io/
+
+servers:
+  - url: http://localhost:8000/files
+    description: Beeja Files
+
+tags:
+  - name: File-Management
+    description: Apply for new loans and to view the status of loans(related to finance).
+paths:
+  /v1/files:
+    post:
+      summary: upload a file
+      tags:
+        - file-controller
+      operationId: uploadFile
+      consumes:
+        - multipart/form-data
+      schema:
+        $ref: '#/components/schemas/requests/FileUploadRequest'
+      parameters:
+        - name: file
+          in: binary
+          required: true
+          type: string
+          format: binary
+        - name: name
+          in: formData
+          required: true
+          type: string
+        - name: fileType
+          in: formData
+          required: true
+          type: string
+        - name: entityId
+          in: formData
+          required: true
+          type: string
+        - name: entityType
+          in: formData
+          required: true
+          type: string
+          pattern: ^(employee|project|organization|client)$
+        - name: description
+          in: formData
+          required: true
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/requests/FileUploadRequest'
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+          400':
+            description: Invalid parameter
+            content:
+              application/json:
+                example:
+                  failureReason: BAD_REQUEST
+                schema:
+                  $ref: "#/components/schemas/Error"
+          403':
+            $ref: '#/components/responses/Forbidden'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+  /v1:
+    get:
+      tags:
+        - hello-world
+      operationId: hello
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /v1/files/{entityId}:
+    get:
+      tags:
+        - file-controller
+      operationId: getAllFilesByEntityId
+      parameters:
+        - name: entityId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/File'
+          400':
+            description: Invalid parameter
+            content:
+              application/json:
+                example:
+                  failureReason: BAD_REQUEST
+                schema:
+                  $ref: "#/components/schemas/Error"
+          403':
+            $ref: '#/components/responses/Forbidden'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+  /v1/files/download/{fileId}:
+    get:
+      summary: Download a file by ID
+      tags:
+        - file-controller
+      operationId: downloadFile
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File downloaded successfully
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          403':
+            $ref: '#/components/responses/Forbidden'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+  /v1/files/{fileId}:
+    delete:
+      summary: Delete a file by ID
+      tags:
+        - file-controller
+      operationId: deleteFile
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/File'
+        400':
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+                details:
+                  message: organization mismatch
+              schema:
+                $ref: "#/components/schemas/Error"
+          403':
+            $ref: '#/components/responses/Forbidden'
+          '500':
+            $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: Update a file by ID
+      tags:
+        - file-controller
+      operationId: updateFile
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: file
+          in: formData
+          required: true
+          schema:
+            type: string
+            format: binary
+        - name: name
+          in: formData
+          required: false
+          schema:
+            type: string
+        - name: fileType
+          in: formData
+          required: false
+          schema:
+            type: string
+        - name: entityId
+          in: formData
+          required: false
+          schema:
+            type: string
+        - name: entityType
+          in: formData
+          required: false
+          schema:
+            type: string
+            pattern: ^(employee|project|organization|client)$
+        - name: description
+          in: formData
+          required: false
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/requests/FileUploadRequest'
+      responses:
+        '200':
+          description: File updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/requests/FileUploadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+
+  schemas:
+    File:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "1"
+          description: the uniquely generated id
+        name:
+          type: string
+          example: "image.png"
+          description: name of the file
+        fileType:
+          type: string
+          example: "general"
+          description: type of the file
+        fileFormat:
+          type: string
+          example: "png"
+          description: format of the file
+        entityType:
+          type: string
+          example: "expense"
+          description: type of the entity
+        organizationId:
+          type: string
+          example: "123"
+          description: ID of the organization
+        createdBy:
+          type: string
+          example: "joe@beeja.io"
+          description: email id of the organization
+        modifiedBy:
+          type: string
+          example:  "joe@beeja.io"
+          description:  email id of the person  who modified
+        createdAt:
+          type: date
+          example: 2024-01-30T14:21:54.316+00:00
+          description: the date at which created
+        modifiedAt:
+          type: date
+          example: 2024-01-30T14:21:54.316+00:00
+          description: the date and time of modification
+        createdByName:
+          type: string
+          example: "joe"
+          description: name of the employee
+
+    requests:
+      FileUploadRequest:
+        type: object
+        properties:
+          file:
+            type: string
+            format: multipart
+          name:
+            type: string
+          fileType:
+            type: string
+          entityId:
+            type: string
+          entityType:
+            pattern: ^(employee|project|organization|client)$
+            type: string
+          description:
+            type: string
+
+    Error:
+      type: object
+      description: An error response.
+      required:
+        - code
+      properties:
+        type:
+          type: string
+          example: authentication_error
+          description: An error type identifying the category of error.
+        code:
+          type: string
+          example: USER_NOT_FOUND
+          description: An error code to indicate short version of error.
+        message:
+          type: string
+          example: The beeja user has not been configured to use APIs yet
+          description: An error description.
+        details:
+          type: object
+          example:
+            field: firstName
+            message: must not be empty
+          description: Further details about the error. The set of
+            properties in this object depends on the type of error.
+          additionalProperties: true
+
+  responses:
+    Unauthorized:
+      description: Missing authentication.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            failureReason: UNAUTHORIZED
+            details: "Please sign-in into Beeja"
+
+    Forbidden:
+      description: Valid credentials but not enough privileges
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            failureReason: USER_NOT_WHITELISTED
+            details: "Access Denied- You have no required permissions to do this operation"
+
+    BadRequest:
+      description: Something wrong with request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            failureReason: BAD_REQUEST
+            details: "Internal Server Error"
+

@@ -1,0 +1,72 @@
+{
+	"info": {
+		"_postman_id": "f218b62d-b717-4edd-a404-784a616e7257",
+		"name": "EmployeeService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30821906"
+	},
+	"item": [
+		{
+			"name": "HelloWorld",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/employees/v1"
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllEmployees",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/employees/v1/users"
+			},
+			"response": []
+		},
+		{
+			"name": "GetEmployeeByEmpId",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "CreateEmployee",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8000/employees/v1/users"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateEmployee",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": "http://localhost:8000/employees/v1/users/TAC0063"
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteAllEmployeesByOrgId",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:8000/employees/v1/users/organizations/654b0d9d355b9f0029b7733c"
+			},
+			"response": []
+		}
+	]
+}

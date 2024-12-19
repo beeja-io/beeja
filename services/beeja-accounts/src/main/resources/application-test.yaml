@@ -1,0 +1,55 @@
+server:
+  servlet:
+    session:
+      cookie:
+        path: /
+    context-path: /accounts
+  port: 8080
+spring:
+  application:
+    name: accounts-service
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: mongodb://root:password@localhost:27017/?replicaSet=rs0&directConnection=true
+      database: accounts_sbox
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+
+client-urls:
+  employeeService: http://localhost:8089/employees
+  notificationService: http://localhost:8093/notifications
+  fileService: http://localhost:8090/files
+
+# actuator
+management:
+  endpoints.web.exposure.include: health,info
+  info.env.enabled: true
+info:
+  application.name: ${spring.application.name}
+
+urls:
+  frontendUrl: http://localhost:3000
+
+
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    url: /openApi.yaml
+
+jwt:
+  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw
+
+logging:
+  level:
+    org:
+      springframework:
+        data:
+          mongodb:
+            core:
+              MongoTemplate: DEBUG

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org" lang="">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Beeja - Login</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+            rel="stylesheet">
+
+    <style>
+        body,
+        html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Nunito Sans', sans-serif;
+            /* Use Nunito Sans font */
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .form-container {
+            width: 460px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 0 30px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .form-container input[type="email"],
+        .form-container input[type="password"] {
+            width: 80%;
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #111827;
+            height: 42px;
+        }
+
+        .form-container input[type="submit"] {
+            width: 80%;
+            padding: 10px;
+            box-sizing: border-box;
+            background-color: #fff;
+            outline: none;
+            cursor: pointer;
+            border-radius: 10px;
+            border: 1px solid #111827;
+            height: 52px;
+        }
+
+        .brandTitle {
+            color: #000;
+            font-family: 'Rubik', sans-serif;
+            font-size: 60.734px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+
+            span {
+                color: #005792;
+                font-family: 'Rubik', sans-serif;
+            }
+        }
+
+        .googleBtn {
+            background-color: #fff;
+            outline: none;
+            cursor: pointer;
+            border-radius: 10px;
+            border: 1px solid #005792;
+            width: 80%;
+            height: 52px;
+            font-size: 16px;
+            font-weight: 400;
+            transition: 0.25s ease-in;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: auto;
+            margin-top: 10px;
+        }
+
+        .googleBtn:hover {
+            background: #005792;
+            color: white;
+            box-shadow: 0px 10px 30px 0px rgba(11, 161, 235, 0.4);
+            border: none;
+        }
+
+        .backgroundSVG {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100px;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body>
+<span class="backgroundSVG"><img src="https://storage.googleapis.com/thymeleaf-images/BackgroundSvg.svg" /> </span>
+<div class="container">
+    <div class="form-container">
+        <form th:action="@{/login}" method="post">
+            <div class="border border-secondary p-3 rounded">
+                <h1 class="brandTitle">BEE<span>JA</span></h1>
+                <p class="text-danger" style="display: none">Log in Unsuccessful, Please Contact HR for more details
+                </p>
+                <p>
+                    <input type="email" name="username" class="form-control" placeholder="E-mail" required
+                           autofocus />
+                </p>
+                <p>
+                    <input type="password" name="password" class="form-control" placeholder="Password" required />
+                </p>
+                <p>
+                    <input type="submit" value="Login" class="btn btn-primary" />
+                </p>
+                <span>Or</span>
+                <div class="googleBtn" onclick="redirectToGoogle()">
+                    <img src="https://storage.googleapis.com/thymeleaf-images/GoogleIcon.svg" alt="Google Icon" />
+                    <span>Sign with Google</span>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function getCurrentURLParameters() {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const parameters = {};
+            for (const [key, value] of urlParams.entries()) {
+                parameters[key] = value;
+            }
+            return parameters;
+        }
+        const currentParameters = getCurrentURLParameters();
+
+        if (currentParameters.hasOwnProperty("error")) {
+            const errorMessage = document.querySelector(".text-danger");
+            errorMessage.style.display = "block";
+            errorMessage.style.color = "red";
+        }
+    });
+
+    function redirectToGoogle() {
+        window.location.href = "/auth/login/google";
+    }
+
+
+
+</script>
+</body>
+
+</html>

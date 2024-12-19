@@ -1,0 +1,13 @@
+package com.beeja.api.employeemanagement.enums;
+
+public enum ErrorType {
+  API_ERROR,
+  AUTHENTICATION_ERROR,
+  AUTHORIZATION_ERROR,
+  CONFLICT_ERROR,
+  VALIDATION_ERROR,
+  RESOURCE_NOT_FOUND_ERROR,
+  RESOURCE_EXISTS_ERROR,
+  MEMORY_ERROR,
+  DB_ERROR,
+}

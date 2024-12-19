@@ -1,0 +1,206 @@
+{
+	"info": {
+		"_postman_id": "d30b2093-88b4-4f78-870a-7d6f16421040",
+		"name": "FinanceService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30821906"
+	},
+	"item": [
+		{
+			"name": "HelloWorld",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "BulkPaySlips",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "zipFile",
+							"type": "file",
+							"src": "/C:/Users/User/Downloads/app (1).zip"
+						},
+						{
+							"key": "month",
+							"value": "12",
+							"type": "text"
+						},
+						{
+							"key": "year",
+							"value": "2023",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8000/finance/v1/payslips",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"finance",
+						"v1",
+						"payslips"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetAllLoans",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/finance/v1/loans"
+			},
+			"response": []
+		},
+		{
+			"name": "GetLoanByEmployeeId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/finance/v1/loans/TAC0063"
+			},
+			"response": []
+		},
+		{
+			"name": "UpdateLoanStatus",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/finance/v1/loans/654b1445f694093d4da8df36?status=Approved&message=abcd",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"finance",
+						"v1",
+						"loans",
+						"654b1445f694093d4da8df36"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "Approved"
+						},
+						{
+							"key": "message",
+							"value": "abcd"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateLoan",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"loanType\":\"PERSONAL_LOAN\",\r\n    \"amount\":1000,\r\n    \"monthlyEMI\":100,\r\n    \"purpose\":\"Home Renovation\",\r\n    \"emiTenure\":12,\r\n    \"emiStartDate\":\"2024-02-01\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8000/finance/v1/loans"
+			},
+			"response": []
+		},
+		{
+			"name": "Add Device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"device\": \"LAPTOP\",\r\n    \"provider\": \"Tech\",\r\n    \"model\": \"intel core\",\r\n    \"type\": \"OLD\",\r\n    \"os\": \"windows\",\r\n    \"specifications\": \"8GB RAM, 128GB Storage\",\r\n    \"RAM\": \"8GB\",\r\n    \"availability\": \"YES\",\r\n    \"productId\": \"PROD09876\",\r\n    \"price\": 100000.99,\r\n    \"dateOfPurchase\": \"2024-12-03T10:00:00Z\",\r\n  \"comments\": \"This is a new device.\",\r\n  \"accessoryType\": \"Charger\",\r\n  \"createdAt\": \"2024-12-03T10:00:00Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8000/finance/v1/inventory"
+			},
+			"response": []
+		},
+		{
+			"name": "Filter Inventory",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8000/finance/v1/inventory"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Device",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": "http://localhost:8000/finance/v1/inventory/674eb0dd1ff0a0057a08b077"
+			},
+			"response": []
+		},
+		{
+			"name": "Update Device",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"device\": \"LAPTOP\",\r\n    \"provider\": \"Tech\",\r\n    \"model\": \"intel core\",\r\n    \"type\": \"OLD\",\r\n    \"os\": \"windows\",\r\n    \"specifications\": \"16GB RAM, 128GB Storage\",\r\n    \"RAM\": \"16GB\",\r\n    \"availability\": \"YES\",\r\n    \"productId\": \"PROD098\",\r\n    \"price\": 100000.99,\r\n    \"dateOfPurchase\": \"2024-12-03T10:00:00Z\",\r\n  \"comments\": \"This is a new device.\",\r\n  \"accessoryType\": \"Charger\",\r\n  \"createdAt\": \"2024-12-03T10:00:00Z\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8000/finance/v1/inventory/67508eb4bddf8e26628747f1"
+			},
+			"response": []
+		},
+		{
+			"name": "Submit Health Insurance",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": \"POLICY001\",\r\n    \"employeeId\": \"EMP12345\",\r\n    \"organizationId\": \"ORG67890\",\r\n    \"grossPremium\": \"5000\",\r\n    \"instalmentType\": \"MONTHLY\",\r\n    \"instalmentAmount\": 200.0,\r\n    \"instalmentFrequency\": 12\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost:8000/finance/v1/health-insurances"
+			},
+			"response": []
+		}
+	]
+}
