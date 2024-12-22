@@ -92,7 +92,7 @@ const CenterModal = (props: CenterModalProps) => {
           <div>
             {props.isImageSelected ? (
               <div>
-                {t(props.modalContent ? props.modalContent.toString() : '')}
+                {props.modalContent}
               </div>
             ) : (
               <>
@@ -100,7 +100,7 @@ const CenterModal = (props: CenterModalProps) => {
                   {t(props.modalHeading ? props.modalHeading : '')}
                 </div>
                 <div className="modalContent">
-                  {t(props.modalContent ? String(props.modalContent) : '')}
+                  {props.modalContent}
                 </div>
               </>
             )}
