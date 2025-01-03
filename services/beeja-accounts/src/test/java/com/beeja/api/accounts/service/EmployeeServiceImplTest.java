@@ -3,26 +3,37 @@ package com.beeja.api.accounts.service;
 import com.beeja.api.accounts.clients.EmployeeFeignClient;
 import com.beeja.api.accounts.constants.PermissionConstants;
 import com.beeja.api.accounts.constants.RoleConstants;
+import com.beeja.api.accounts.enums.PatternType;
+import com.beeja.api.accounts.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.accounts.exceptions.ResourceNotFoundException;
 import com.beeja.api.accounts.model.Organization.Address;
 import com.beeja.api.accounts.model.Organization.LoanLimit;
+import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.Organization;
+import com.beeja.api.accounts.model.Organization.OrganizationPattern;
 import com.beeja.api.accounts.model.Organization.Preferences;
 import com.beeja.api.accounts.model.Organization.Role;
+import com.beeja.api.accounts.model.Organization.employeeSettings.OrgValues;
 import com.beeja.api.accounts.model.User;
 import com.beeja.api.accounts.model.UserPreferences;
+import com.beeja.api.accounts.repository.OrgDefaultsRepository;
+import com.beeja.api.accounts.repository.OrganizationPatternsRepository;
 import com.beeja.api.accounts.repository.RolesRepository;
 import com.beeja.api.accounts.repository.UserRepository;
+import com.beeja.api.accounts.requests.AddEmployeeRequest;
 import com.beeja.api.accounts.requests.UpdateUserRequest;
 import com.beeja.api.accounts.requests.UpdateUserRoleRequest;
+import com.beeja.api.accounts.response.CreatedUserResponse;
 import com.beeja.api.accounts.serviceImpl.EmployeeServiceImpl;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,17 +53,22 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class EmployeeServiceImplTest {
 
   @InjectMocks EmployeeServiceImpl employeeServiceImpl;
 
   @Mock private UserRepository userRepository;
 
-  @Mock RolesRepository roleRepository;
+  @Mock private RolesRepository roleRepository;
+
+  @Mock private OrgDefaultsRepository orgDefaultsRepository;
+
+  @Mock private OrganizationPatternsRepository patternsRepository;
 
   @Mock private EmployeeFeignClient employeeFeignClient;
 
-  @Mock private NotificationClient notificationClient;
+
 
   @Mock private UserContext userContext;
 
@@ -104,6 +120,7 @@ public class EmployeeServiceImplTest {
           "dattu@example.com",
           Set.of(role1),
           "EMP001",
+          "INTERN",
           organization1,
           new UserPreferences(),
           null,
@@ -120,6 +137,7 @@ public class EmployeeServiceImplTest {
           "kiran@example.com",
           Set.of(role2),
           "EMP002",
+          "INTERN",
           organization2,
           new UserPreferences(),
           null,
@@ -239,9 +257,6 @@ public class EmployeeServiceImplTest {
     UserContext.setLoggedInUserOrganization(organization1);
     when(userRepository.findByEmployeeIdAndOrganizations("EMP001", organization1))
         .thenReturn(user1);
-    when(userRepository.findByEmployeeIdAndOrganizations(
-            UserContext.getLoggedInEmployeeId(), UserContext.getLoggedInUserOrganization()))
-        .thenReturn(user1);
 
     // Act
     employeeServiceImpl.changeEmployeeStatus(employeeId);
@@ -260,11 +275,11 @@ public class EmployeeServiceImplTest {
     UserContext.setLoggedInUser(
         "test@example.com", "Test User", organization1, "empId123", Set.of(), null, "token123");
 
-    when(userRepository.findByEmployeeIdAndOrganizations(employeeId, organization1))
+    when(userRepository.findByEmployeeIdAndOrganizations(any(), any()))
         .thenReturn(user1);
     when(roleRepository.findByNameAndOrganizationId("ROLE_HR", organization1.getId()))
         .thenReturn(role);
-    when(roleRepository.findByName("ROLE_HR")).thenReturn(role);
+
 
     user1.setRoles(Set.of(role));
     // Mock user save
@@ -308,19 +323,43 @@ public class EmployeeServiceImplTest {
     UserContext.setLoggedInUser(
         "test@example.com", "Test User", mockOrganization, "empId123", Set.of(), null, "token123");
 
-    when(userRepository.findByEmailAndOrganizations(anyString(), any(Organization.class)))
+    when(userRepository.findByEmailAndOrganizations(any(), any()))
         .thenReturn(null);
 
-    when(userRepository.findByEmployeeIdAndOrganizations(anyString(), eq(mockOrganization)))
-        .thenReturn(null);
+    OrgDefaults orgDefaults = new OrgDefaults();
+    orgDefaults.setKey("employeeTypes");
+    OrgValues orgValues = new OrgValues();
+    orgValues.setValue("Part-time");
+    orgValues.setDescription("Part-time");
+    orgDefaults.setValues(Set.of(orgValues));
+    orgDefaults.setOrganizationId(organization1.getName());
+
+    when(orgDefaultsRepository.findByOrganizationIdAndKey(
+                    any(), any())).thenReturn(orgDefaults);
+
+    OrganizationPattern organizationPattern = new OrganizationPattern();
+    organizationPattern.setActive(true);
+    organizationPattern.setPatternLength(10);
+    organizationPattern.setInitialSequence(3);
+    organizationPattern.setPrefix("test");
+
+    when(patternsRepository
+            .findByOrganizationIdAndPatternTypeAndActive(UserContext.getLoggedInUserOrganization().getId(),
+                    String.valueOf(PatternType.EMPLOYEE_ID_PATTERN),true)).thenReturn(organizationPattern);
+    when(userRepository.countByOrganizationId(UserContext.getLoggedInUserOrganization().getId())).thenReturn(1L);
+
 
     when(roleRepository.findByNameAndOrganizationId(anyString(), eq(mockOrganization.getId())))
         .thenReturn(mockRole);
 
     when(userRepository.save(any(User.class))).thenReturn(mockUser);
 
+    AddEmployeeRequest addEmployeeRequest = new AddEmployeeRequest();
+    addEmployeeRequest.setFirstName("Test");
+    addEmployeeRequest.setLastName("User");
+    addEmployeeRequest.setEmploymentType("Part-time");
     // Act
-    User createdUser = employeeServiceImpl.createEmployee(mockUser);
+    CreatedUserResponse createdUser = employeeServiceImpl.createEmployee(addEmployeeRequest);
 
     // Assert
     assertNotNull(createdUser);
@@ -331,23 +370,15 @@ public class EmployeeServiceImplTest {
     // Arrange
     User user = new User();
     user.setEmail("abcd@gmail.com");
-    when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
-
+    when(userRepository.findByEmailAndOrganizations(any(),any())).thenReturn(user);
+    AddEmployeeRequest addEmployeeRequest = new AddEmployeeRequest();
+    addEmployeeRequest.setFirstName("Test");
+    addEmployeeRequest.setLastName("User");
     // Act & Assert
-    assertThrows(Exception.class, () -> employeeServiceImpl.createEmployee(user));
+    assertThrows(ResourceAlreadyFoundException.class, () -> employeeServiceImpl.createEmployee(addEmployeeRequest));
   }
 
-  @Test
-  void testCreateEmployeeId_UserAlreadyExists() {
-    // Arrange
-    User user = new User();
-    user.setEmployeeId("ABCD");
-    when(userRepository.findByEmployeeIdAndOrganizations(user.getEmployeeId(), organization1))
-        .thenReturn(user);
 
-    // Act & Assert
-    assertThrows(Exception.class, () -> employeeServiceImpl.createEmployee(user));
-  }
 
   @Test
   public void testUpdateEmployeeByEmployeeId() {
@@ -388,7 +419,7 @@ public class EmployeeServiceImplTest {
     // Arrange
     User user = new User();
     UpdateUserRequest updatedUser = new UpdateUserRequest();
-    when(userRepository.findByEmployeeIdAndOrganizations("ABCD", organization1)).thenReturn(null);
+    when(userRepository.findByEmployeeIdAndOrganizations(any(), any())).thenReturn(null);
 
     // Act & Assert
     assertThrows(

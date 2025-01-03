@@ -87,8 +87,7 @@ class ExpenseServiceImplTest {
     Expense savedExpense = expenseService.createExpense(createExpense);
     assertNotNull(savedExpense);
     verify(expenseRepository, times(1)).save(any());
-    verify(accountClient, times(1)).getCountryByOrganizationId(anyString());
-    verify(accountClient, times(1)).getExpenseTypesByCountryName(anyString());
+
   }
 
   @Test

@@ -9,7 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(classes = {FileManagementApplication.class})
 @AutoConfigureMockMvc(addFilters = false)
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 class TbeejaApplicationTests {
 
   @Test

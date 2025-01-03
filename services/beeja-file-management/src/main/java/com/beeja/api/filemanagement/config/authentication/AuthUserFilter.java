@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -46,7 +45,6 @@ public class AuthUserFilter extends OncePerRequestFilter {
     }
 
     String accessToken = request.getHeader(Constants.ACCESS_TOKEN_HEADER);
-    String tokenInterspectionUrl = authUrlProperties.getTokenUri();
 
     if (accessToken == null) {
       response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -55,7 +53,7 @@ public class AuthUserFilter extends OncePerRequestFilter {
     }
 
     accessToken = accessToken.substring(7);
-    if (isValidAccessToken(accessToken, tokenInterspectionUrl)) {
+    if (isValidAccessToken(accessToken)) {
       filterChain.doFilter(request, response);
     } else {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -63,29 +61,10 @@ public class AuthUserFilter extends OncePerRequestFilter {
     }
   }
 
-  private boolean isValidAccessToken(String accessToken, String tokenInterceptionURI) {
-    String finalUrl = tokenInterceptionURI + "?access_token=" + accessToken;
-    RestTemplate restTemplate = new RestTemplate();
+  private boolean isValidAccessToken(String accessToken) {
 
     try {
-      if (accessToken.startsWith("eyJh")) {
         return validateJWT(accessToken);
-      } else {
-        ResponseEntity<String> response = restTemplate.getForEntity(finalUrl, String.class);
-        if (!response.getStatusCode().is2xxSuccessful()) {
-          return false;
-        }
-        String email = getEmailFromAccessToken(response.getBody());
-        String issuedClientId = getIssuedClientId(response.getBody());
-        String clientId = authUrlProperties.getClientId();
-        if (!clientId.equals(issuedClientId)) {
-          return false;
-        }
-        if (!checkUserPresenceAndSetActive(email)) {
-          return false;
-        }
-      }
-      return true;
     } catch (HttpClientErrorException e) {
       log.error("HTTP Error: {}", e.getStatusCode());
       return false;
@@ -107,7 +86,7 @@ public class AuthUserFilter extends OncePerRequestFilter {
     LinkedHashMap<String, Object> responseBody = userIsPresent.getBody();
     if (userIsPresent.getStatusCode().is2xxSuccessful() && responseBody != null) {
       Boolean userIsActive = (Boolean) responseBody.get("active");
-      if (userIsActive) {
+      if (Boolean.TRUE.equals(userIsActive)) {
         setLoggedInUser(responseBody);
       }
       return userIsActive;

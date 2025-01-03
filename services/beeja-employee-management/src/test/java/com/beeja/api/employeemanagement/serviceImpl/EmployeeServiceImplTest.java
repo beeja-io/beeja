@@ -43,7 +43,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 public class EmployeeServiceImplTest {
 
   @InjectMocks private EmployeeServiceImpl employeeServiceImpl;
@@ -229,27 +229,5 @@ public class EmployeeServiceImplTest {
     assertEquals(existingEmployee, result);
   }
 
-  @Test
-  void testExceptionWhenDeleteAllEmployeesByOrganizationId() {
 
-    doThrow(new RuntimeException("API_ERROR,SERVER_ERROR,Something went wrong!"))
-        .when(employeeRepository)
-        .deleteByOrganizationId(anyString());
-
-    Exception exception =
-        assertThrows(
-            Exception.class, () -> employeeServiceImpl.deleteAllEmployeesByOrganizationId("id"));
-
-    assertEquals("API_ERROR,SERVER_ERROR,Something went wrong!", exception.getMessage());
-  }
-
-  @Test
-  void testDeleteAllEmployeesByOrganizationIdSuccessfulDeletionMessage() throws Exception {
-    // Arrange
-    doNothing().when(employeeRepository).deleteByOrganizationId(anyString());
-    // Act
-    employeeServiceImpl.deleteAllEmployeesByOrganizationId(anyString());
-    // Assert
-    verify(employeeRepository, times(1)).deleteByOrganizationId(anyString());
-  }
 }

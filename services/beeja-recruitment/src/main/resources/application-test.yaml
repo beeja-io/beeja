@@ -9,26 +9,6 @@ spring:
     mongodb:
       uri: mongodb://root:password@localhost:27017/?replicaSet=rs0&directConnection=true
       database: accounts_sbox
-javers:
-  mappingStyle: FIELD
-  algorithm: SIMPLE
-  commitIdGenerator: synchronized_sequence
-  prettyPrint: true
-  typeSafeValues: false
-  initialChanges: true
-  terminalChanges: true
-  packagesToScan:
-  auditableAspectEnabled: true
-  springDataAuditableRepositoryAspectEnabled: true
-  usePrimitiveDefaults: true
-  prettyPrintDateFormats:
-    localDateTime: 'dd MMM yyyy, HH:mm:ss'
-    zonedDateTime: 'dd MMM yyyy, HH:mm:ssZ'
-    localDate: 'dd MMM yyyy'
-    localTime: 'HH:mm:ss'
-  documentDbCompatibilityEnabled: false
-  objectAccessHook: org.javers.spring.mongodb.DBRefUnproxyObjectAccessHook
-  snapshotsCacheSize: 5000
 
 eureka:
   instance:

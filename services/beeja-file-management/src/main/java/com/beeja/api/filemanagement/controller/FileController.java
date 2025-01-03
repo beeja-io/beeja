@@ -2,7 +2,7 @@ package com.beeja.api.filemanagement.controller;
 
 import com.beeja.api.filemanagement.exceptions.FileNotFoundException;
 import com.beeja.api.filemanagement.exceptions.FileTypeMismatchException;
-import com.beeja.api.filemanagement.exceptions.GCSFileAccessException;
+import com.beeja.api.filemanagement.exceptions.FileAccessException;
 import com.beeja.api.filemanagement.exceptions.MongoFileUploadException;
 import com.beeja.api.filemanagement.model.File;
 import com.beeja.api.filemanagement.requests.FileUploadRequest;
@@ -46,7 +46,7 @@ public class FileController {
       return ResponseEntity.ok(file);
     } catch (MongoFileUploadException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.MONGO_UPLOAD_FAILED);
-    } catch (GCSFileAccessException e) {
+    } catch (FileAccessException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.GCS_UPLOAD_FAILED);
     } catch (FileTypeMismatchException e) {
       throw new FileTypeMismatchException(e.getMessage());
@@ -85,7 +85,7 @@ public class FileController {
     try {
       File deletedFile = fileService.deleteFile(fileId);
       return ResponseEntity.ok(deletedFile);
-    } catch (FileNotFoundException | GCSFileAccessException e) {
+    } catch (FileNotFoundException | FileAccessException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -98,7 +98,7 @@ public class FileController {
     try {
       File updatedFile = fileService.updateFile(fileId, fileUploadRequest);
       return ResponseEntity.ok(updatedFile);
-    } catch (GCSFileAccessException e) {
+    } catch (FileAccessException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -125,7 +125,7 @@ public class FileController {
       return ResponseEntity.ok(file);
     } catch (MongoFileUploadException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.MONGO_UPLOAD_FAILED);
-    } catch (GCSFileAccessException e) {
+    } catch (FileAccessException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.GCS_UPLOAD_FAILED);
     } catch (FileTypeMismatchException e) {
       throw new FileTypeMismatchException(e.getMessage());

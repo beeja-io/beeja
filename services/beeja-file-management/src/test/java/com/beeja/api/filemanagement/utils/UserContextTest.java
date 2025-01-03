@@ -4,6 +4,7 @@ import static org.bouncycastle.asn1.x509.X509ObjectIdentifiers.organization;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -19,11 +20,11 @@ public class UserContextTest {
     Set<String> permissions = new HashSet<>();
     permissions.add("READ_EMPLOYEE");
 
-    // UserContext.setLoggedInUser(email, name, organization, employeeId, permissions);
+    UserContext.setLoggedInUser(email, name,  employeeId, new HashMap<>(),permissions);
 
     assertEquals(email, UserContext.getLoggedInUserEmail());
     assertEquals(name, UserContext.getLoggedInUserName());
-    assertEquals(organization, UserContext.getLoggedInUserOrganization());
+
     assertEquals(employeeId, UserContext.getLoggedInEmployeeId());
 
     assertEquals(permissions, UserContext.getLoggedInUserPermissions());

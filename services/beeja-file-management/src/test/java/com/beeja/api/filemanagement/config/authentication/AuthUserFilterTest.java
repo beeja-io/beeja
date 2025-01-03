@@ -1,12 +1,6 @@
 package com.beeja.api.filemanagement.config.authentication;
 
-// import com.beeja.api.accounts.config.filters.AuthUrlProperties;
-// import com.beeja.api.accounts.config.filters.AuthUserFilter;
-// import com.beeja.api.accounts.model.Organization;
-// import com.beeja.api.accounts.model.User;
-// import com.beeja.api.accounts.repository.UserRepository;
-// import com.beeja.api.accounts.utils.Constants;
-// import com.beeja.api.accounts.utils.UserContext;
+
 import static org.mockito.Mockito.*;
 
 import com.beeja.api.filemanagement.repository.FileRepository;
@@ -50,19 +44,12 @@ public class AuthUserFilterTest {
 
     when(request.getRequestURI()).thenReturn("/ggg");
 
-    // when(request.getHeader(Constants.COOKIE_ACCESS_TOKEN)).thenReturn("invalid token");
-
-    //        when(restTemplate.getForEntity(anyString(), eq(String.class))).thenReturn(
-    //                new ResponseEntity<>("gg", HttpStatus.OK)
-    //        );
     String mockResponse = "Mocked Response";
     ResponseEntity<String> mockResponseEntity = new ResponseEntity<>(mockResponse, HttpStatus.OK);
     when(restTemplate.getForEntity(any(String.class), any(Class.class)))
         .thenReturn(mockResponseEntity);
-    // when(fileRepository.findById(anyString())).thenReturn(new File());
 
-    ReflectionTestUtils.invokeMethod(
-        authUserFilter, "isValidAccessToken", "request", "response", "filterChain");
+
 
     when(response.getWriter()).thenReturn(mock(PrintWriter.class));
 

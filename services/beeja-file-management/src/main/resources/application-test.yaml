@@ -24,32 +24,14 @@ spring:
 beeja:
   fileUploadLocation: C:/beeja-file-storage
   #provide localpath
-javers:
-  mappingStyle: FIELD
-  algorithm: SIMPLE
-  commitIdGenerator: synchronized_sequence
-  prettyPrint: true
-  typeSafeValues: false
-  initialChanges: true
-  terminalChanges: true
-  packagesToScan:
-  auditableAspectEnabled: true
-  springDataAuditableRepositoryAspectEnabled: true
-  usePrimitiveDefaults: true
-  prettyPrintDateFormats:
-    localDateTime: 'dd MMM yyyy, HH:mm:ss'
-    zonedDateTime: 'dd MMM yyyy, HH:mm:ssZ'
-    localDate: 'dd MMM yyyy'
-    localTime: 'HH:mm:ss'
-  documentDbCompatibilityEnabled: false
-  objectAccessHook: org.javers.spring.mongodb.DBRefUnproxyObjectAccessHook
-  snapshotsCacheSize: 5000
+
 eureka:
   instance:
     preferIpAddress: true
   client:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
+
 client-urls:
   employeeService: http://localhost:8089/employees
   accountsService: http://localhost:8080/accounts

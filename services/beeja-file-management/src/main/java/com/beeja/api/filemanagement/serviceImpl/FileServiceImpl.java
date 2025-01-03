@@ -1,11 +1,10 @@
 package com.beeja.api.filemanagement.serviceImpl;
 
+import com.beeja.api.filemanagement.exceptions.FileAccessException;
 import com.mongodb.MongoWriteException;
 import com.beeja.api.filemanagement.config.properties.AllowedContentTypes;
-import com.beeja.api.filemanagement.config.properties.GCSProperties;
 import com.beeja.api.filemanagement.exceptions.FileNotFoundException;
 import com.beeja.api.filemanagement.exceptions.FileTypeMismatchException;
-import com.beeja.api.filemanagement.exceptions.GCSFileAccessException;
 import com.beeja.api.filemanagement.exceptions.MongoFileUploadException;
 import com.beeja.api.filemanagement.model.File;
 import com.beeja.api.filemanagement.repository.FileRepository;
@@ -92,10 +91,9 @@ public class FileServiceImpl implements FileService {
     } catch (MongoWriteException e) {
       throw new MongoFileUploadException(Constants.MONGO_UPLOAD_FAILED);
     } catch (IOException | IllegalStateException e) {
-      e.printStackTrace();
       assert savedFile != null;
       fileRepository.delete(savedFile);
-      throw new GCSFileAccessException(Constants.GCS_UPLOAD_FAILED);
+      throw new FileAccessException(Constants.GCS_UPLOAD_FAILED);
     } catch (FileTypeMismatchException e) {
       throw new FileTypeMismatchException(e.getMessage());
     } catch (Exception e) {
@@ -119,8 +117,8 @@ public class FileServiceImpl implements FileService {
       // Deleting existing file
       try {
        fileStorage.deleteFile(spareFile);
-      } catch (GCSFileAccessException e) {
-        throw new GCSFileAccessException(Constants.GCS_FILE_DELETE_ERROR);
+      } catch (FileAccessException e) {
+        throw new FileAccessException(Constants.GCS_FILE_DELETE_ERROR);
       }
 
     }
@@ -252,13 +250,7 @@ public class FileServiceImpl implements FileService {
               UserContext.getLoggedInUserOrganization().get("id").toString(), id);
       String path;
       if (fileToBeDeleted != null) {
-//        path = generateGCSPath(fileToBeDeleted);
-//        try {
-//          Blob blob = storage.get(gcsProperties.getBucket().getName(), path);
-//          blob.delete();
-//        } catch (GCSFileAccessException e) {
-//          throw new GCSFileAccessException(Constants.GCS_FILE_DELETE_ERROR);
-//        }
+
         try {
           fileRepository.delete(fileToBeDeleted);
           return fileToBeDeleted;
@@ -269,8 +261,8 @@ public class FileServiceImpl implements FileService {
         throw new FileNotFoundException(Constants.NO_FILE_FOUND_WITH_GIVEN_ID);
       }
 
-    } catch (GCSFileAccessException e) {
-      throw new GCSFileAccessException(e.getMessage());
+    } catch (FileAccessException e) {
+      throw new FileAccessException(e.getMessage());
     } catch (FileNotFoundException e) {
       throw new FileNotFoundException(e.getMessage());
     } catch (Exception e) {

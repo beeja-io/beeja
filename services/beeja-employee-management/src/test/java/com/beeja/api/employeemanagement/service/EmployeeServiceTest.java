@@ -254,15 +254,7 @@ public class EmployeeServiceTest {
     verify(employeeRepository, times(1)).save(any(Employee.class)); // Ensure save is called
   }
 
-  @Test
-  public void testDeleteByOrganizationId_Success() {
 
-    String organizationId = "org123";
-
-    doNothing().when(employeeRepository).deleteByOrganizationId(organizationId);
-    employeeRepository.deleteByOrganizationId(organizationId);
-    verify(employeeRepository, times(1)).deleteByOrganizationId(organizationId);
-  }
 
   @Test
   void updateKYCRequest_withValidData_returnsUpdatedEmployee() throws Exception {

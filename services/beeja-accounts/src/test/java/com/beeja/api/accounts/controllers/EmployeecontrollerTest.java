@@ -7,8 +7,10 @@ import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.User;
 import com.beeja.api.accounts.model.UserPreferences;
 import com.beeja.api.accounts.repository.UserRepository;
+import com.beeja.api.accounts.requests.AddEmployeeRequest;
 import com.beeja.api.accounts.requests.UpdateUserRequest;
 import com.beeja.api.accounts.requests.UpdateUserRoleRequest;
+import com.beeja.api.accounts.response.CreatedUserResponse;
 import com.beeja.api.accounts.service.EmployeeService;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
@@ -65,6 +67,7 @@ public class EmployeecontrollerTest {
           "dattu@example.com",
           new HashSet<>(),
           "EMP001",
+          "INTERN",
           new Organization(),
           new UserPreferences(),
           null,
@@ -81,6 +84,7 @@ public class EmployeecontrollerTest {
           "kiran@example.com",
           new HashSet<>(),
           "EMP002",
+          "INTERN",
           new Organization(),
           new UserPreferences(),
           null,
@@ -270,14 +274,16 @@ public class EmployeecontrollerTest {
   public void testCreateEmployee_Success() throws Exception {
     // Arrange
     User user = new User();
-    when(employeeService.createEmployee(user)).thenReturn(user);
+    AddEmployeeRequest addEmployeeRequest = new AddEmployeeRequest();
+    CreatedUserResponse createdUserResponse = new CreatedUserResponse();
+    when(employeeService.createEmployee(addEmployeeRequest)).thenReturn(createdUserResponse);
 
     // Act
-    ResponseEntity<?> responseEntity = employeeController.createEmployee(user, bindingResult);
+    ResponseEntity<?> responseEntity = employeeController.createEmployee(addEmployeeRequest, bindingResult);
 
     // Assert
     assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-    assertEquals(user, responseEntity.getBody());
+    assertEquals(createdUserResponse, responseEntity.getBody());
   }
 
   @Test
@@ -295,13 +301,13 @@ public class EmployeecontrollerTest {
     // Mock the behavior of BindingResult
     when(bindingResult.hasErrors()).thenReturn(true);
     when(bindingResult.getAllErrors()).thenReturn(errors);
-
+    AddEmployeeRequest addEmployeeRequest = new AddEmployeeRequest();
     // Act & Assert: Verify that BadRequestException is thrown
     BadRequestException exception =
         assertThrows(
             BadRequestException.class,
             () -> {
-              employeeController.createEmployee(user, bindingResult);
+              employeeController.createEmployee(addEmployeeRequest, bindingResult);
             });
 
     // Check the message of the thrown exception
@@ -314,7 +320,8 @@ public class EmployeecontrollerTest {
   public void testCreateEmployee_UserNotFoundException() throws Exception {
     // Arrange
     User user = new User();
-    when(employeeService.createEmployee(user))
+    AddEmployeeRequest addEmployeeRequest = new AddEmployeeRequest();
+    when(employeeService.createEmployee(addEmployeeRequest))
         .thenThrow(new UserNotFoundException("User not found"));
 
     // Act & Assert
@@ -322,7 +329,7 @@ public class EmployeecontrollerTest {
         assertThrows(
             UserNotFoundException.class,
             () -> {
-              employeeController.createEmployee(user, bindingResult);
+              employeeController.createEmployee(addEmployeeRequest, bindingResult);
             });
 
     // Assert the exception message
@@ -333,7 +340,8 @@ public class EmployeecontrollerTest {
   public void testCreateEmployee_InternalServerError() throws Exception {
     // Arrange
     User user = new User();
-    when(employeeService.createEmployee(user))
+    AddEmployeeRequest addEmployeeRequest = new AddEmployeeRequest();
+    when(employeeService.createEmployee(addEmployeeRequest))
         .thenThrow(new RuntimeException("Internal server error"));
 
     // Act & Assert
@@ -341,7 +349,7 @@ public class EmployeecontrollerTest {
         assertThrows(
             RuntimeException.class,
             () -> {
-              employeeController.createEmployee(user, bindingResult);
+              employeeController.createEmployee(addEmployeeRequest, bindingResult);
             });
 
     // Assert the exception message

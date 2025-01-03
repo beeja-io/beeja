@@ -50,7 +50,6 @@ public class FileControllerTest {
 
   @MockBean EmployeeService employeeService;
 
-  @MockBean AuthUrlProperties authUrlProperties;
 
   @Test
   void testGetAllFilesOfEntityId_Success() throws Exception {

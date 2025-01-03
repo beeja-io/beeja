@@ -25,11 +25,9 @@ test {
 
         implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
         testImplementation 'junit:junit:4.13.1'
-
-        implementation 'org.javers:javers-spring-boot-starter-mongo:7.3.3'
-
-
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+
 
 
     }

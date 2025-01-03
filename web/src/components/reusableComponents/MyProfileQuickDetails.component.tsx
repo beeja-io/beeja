@@ -788,7 +788,7 @@ const MyProfileQuickDetailsComponent = ({
             </Monogram>
           }
           handleModalSubmit={handleModalSave}
-          modalRightButtonText="Save"
+          modalRightButtonText="Cancel"
           modalLeftButtonText="Upload"
           handleModalLeftButtonClick={handleMonogramUpload}
           handleModalClose={handleModalClose}
@@ -814,7 +814,7 @@ const MyProfileQuickDetailsComponent = ({
           handleModalClose={handleModalClose}
           handleModalSubmit={handleModalClose}
           handleModalLeftButtonClick={handleFileUpload}
-          modalRightButtonText="canel"
+          modalRightButtonText="Cancel"
           modalLeftButtonText="Browse"
           isImageSelected={!!croppedImage}
           isDashedBox={!croppedImage}

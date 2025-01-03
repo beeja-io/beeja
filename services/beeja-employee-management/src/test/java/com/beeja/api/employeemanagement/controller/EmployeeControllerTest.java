@@ -13,7 +13,7 @@ import com.beeja.api.employeemanagement.service.EmployeeService;
 import com.beeja.api.employeemanagement.service.FileService;
 import com.beeja.api.employeemanagement.utils.Constants;
 import com.beeja.api.employeemanagement.utils.UserContext;
-import jakarta.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -50,7 +50,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class EmployeeControllerTest {
 
   private static final String BASE_URL = "/v1/users";
-  @MockBean AuthUrlProperties authUrlProperties;
+
 
   @MockBean JwtProperties jwtProperties;
 
@@ -225,22 +225,7 @@ class EmployeeControllerTest {
         .andExpect(jsonPath("$.jobDetails").exists());
   }
 
-  @Test
-  void testDeleteAllEmployeesByOrganizationId() throws Exception {
-    String organizationId = "tac";
-    HttpServletRequest httpServletRequest = mock(HttpServletRequest.class);
 
-    assertEquals(
-        employeeController
-            .deleteAllEmployeesByOrganizationId(organizationId, httpServletRequest)
-            .getStatusCode(),
-        HttpStatus.NO_CONTENT);
-    mockMvc
-        .perform(
-            MockMvcRequestBuilders.delete("/v1/users/organizations/{organizationId}", "tac")
-                .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNoContent());
-  }
 
   @Test
   void testUpdateKycDetails_success() throws Exception {

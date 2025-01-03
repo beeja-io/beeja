@@ -48,7 +48,6 @@ class LoanServiceImplTest {
 
   @Autowired MockMvc mockMvc;
 
-  @Mock private MongoTemplate mongoTemplate;
 
   private UserContext userContext;
 
@@ -68,7 +67,6 @@ class LoanServiceImplTest {
     Map<String, Object> organizationMap = Collections.singletonMap("id", "tac");
     UserContext.setLoggedInUserOrganization(organizationMap);
     UserContext.setLoggedInEmployeeId("employee456");
-    ReflectionTestUtils.setField(loanService, "mongoTemplate", mongoTemplate);
     ReflectionTestUtils.setField(loanService, "loanRepository", loanRepository);
     accountClient = mock(AccountClient.class);
     loanRequest = new SubmitLoanRequest();

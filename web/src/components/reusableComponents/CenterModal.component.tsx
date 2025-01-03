@@ -91,17 +91,13 @@ const CenterModal = (props: CenterModalProps) => {
         ) : (
           <div>
             {props.isImageSelected ? (
-              <div>
-                {props.modalContent}
-              </div>
+              <div>{props.modalContent}</div>
             ) : (
               <>
                 <div className="modalHeading">
                   {t(props.modalHeading ? props.modalHeading : '')}
                 </div>
-                <div className="modalContent">
-                  {props.modalContent}
-                </div>
+                <div className="modalContent">{props.modalContent}</div>
               </>
             )}
           </div>

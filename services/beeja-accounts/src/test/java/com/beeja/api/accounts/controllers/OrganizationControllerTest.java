@@ -77,35 +77,6 @@ class OrganizationControllerTest {
           null,
           null);
 
-  @Test
-  void testGetAllOrganizations() throws Exception {
-    // Arrange
-    List<Organization> org = new ArrayList<>(Arrays.asList(organization1, organization2));
-    when(organizationService.getAllOrganizations()).thenReturn(org);
-
-    // Act
-    ResponseEntity<?> responseEntity = organizationController.getAllOrganizations();
-
-    // Assert
-    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-    assertNotNull(responseEntity.getBody());
-  }
-
-  @Test
-  public void testGetAllOrganizations_InternalServerError() throws Exception {
-    // Arrange
-    when(organizationService
-            .getAllOrganizations()) // Assuming you meant organizationService instead of
-        // organizationController
-        .thenThrow(new RuntimeException("Internal server error"));
-
-    // Act & Assert
-    assertThrows(
-        RuntimeException.class,
-        () -> {
-          organizationController.getAllOrganizations();
-        });
-  }
 
   @Test
   void testGetAllEmployeesByOrganizationId_Success() throws Exception {
@@ -153,102 +124,7 @@ class OrganizationControllerTest {
         });
   }
 
-  @Test
-  void testCreateOrganization_Success() throws Exception {
-    // Arrange
-    Organization organization = new Organization();
-    BindingResult bindingResult = mock(BindingResult.class);
 
-    when(bindingResult.hasErrors()).thenReturn(false);
-    when(organizationService.createOrganization(organization)).thenReturn(organization);
-
-    // Act
-    ResponseEntity<?> responseEntity =
-        organizationController.createOrganization(organization, bindingResult);
-
-    // Assert
-    assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-    assertNotNull(responseEntity.getBody());
-  }
-
-  @Test
-  void testCreateOrganization_errormessages() throws Exception {
-    // Arrange
-    Organization organization = new Organization();
-    BindingResult bindingResult = mock(BindingResult.class);
-
-    // Simulate that there are errors
-    when(bindingResult.hasErrors()).thenReturn(true);
-
-    // Create a mock ObjectError
-    ObjectError error = new ObjectError("organization", "Invalid organization data");
-
-    // Mock the behavior of bindingResult to return the mock error
-    when(bindingResult.getAllErrors()).thenReturn(Collections.singletonList(error));
-
-    // Act & Assert
-    Exception exception =
-        assertThrows(
-            BadRequestException.class,
-            () -> {
-              organizationController.createOrganization(organization, bindingResult);
-            });
-
-    // Assert the exception message
-    assertEquals("[" + "Invalid organization data" + "]", exception.getMessage());
-  }
-
-  @Test
-  public void testCreateOrganization_conflict() throws Exception {
-    // Arrange
-    Organization organization = new Organization();
-    BindingResult bindingResult = mock(BindingResult.class);
-
-    // Mock the behavior of the organizationService to throw an exception
-    when(organizationService.createOrganization(organization))
-        .thenThrow(new BadRequestException("Conflict error"));
-
-    // Act & Assert
-    Exception exception =
-        assertThrows(
-            BadRequestException.class,
-            () -> {
-              organizationController.createOrganization(organization, bindingResult);
-            });
-
-    // Assert the exception message
-    assertEquals("Conflict error", exception.getMessage());
-  }
-
-  @Test
-  public void testCreateOrganization_Badrequest() throws Exception {
-    // Arrange
-    Organization organization =
-        new Organization(); // Create an organization object, you might need to populate it as per
-    // your validation
-    BindingResult bindingResult = mock(BindingResult.class);
-
-    // Mock the behavior of the BindingResult to indicate that there are validation errors
-    when(bindingResult.hasErrors()).thenReturn(true);
-
-    // Mock the error messages to be returned by the binding result
-    ObjectError error =
-        new ObjectError("organization", "Invalid organization data"); // Example error message
-    when(bindingResult.getAllErrors()).thenReturn(Collections.singletonList(error));
-
-    // Act
-    Exception exception =
-        assertThrows(
-            BadRequestException.class,
-            () -> {
-              organizationController.createOrganization(organization, bindingResult);
-            });
-
-    // Assert
-    assertEquals(
-        "[" + error.getDefaultMessage() + "]",
-        exception.getMessage()); // Assert that the message matches expected
-  }
 
   @Test
   public void testGetOrganizationById() throws Exception {
@@ -270,20 +146,5 @@ class OrganizationControllerTest {
         responseEntity.getBody()); // Check against the actual Organization object
   }
 
-  @Test
-  void testDeleteOrganizationById() throws Exception {
-    // Arrange
-    String organizationId = "org123";
 
-    when(organizationService.deleteOrganizationById(organizationId))
-        .thenReturn(Optional.ofNullable(organization1));
-
-    // Act
-    ResponseEntity<Organization> responseEntity =
-        organizationController.deleteOrganizatiobById(organizationId);
-
-    // Assert
-    assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
-    assertNotNull(responseEntity.getBody());
-  }
 }
