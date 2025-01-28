@@ -139,12 +139,9 @@ public class SecurityConfig {
                     .permitAll()
                     .pathMatchers(
                         "/login",
-                        "/auth/login/**",
                         "/actuator/**",
                         "/static/favicon.ico",
                         "/favicon.ico",
-                        "/auth/login/google",
-                        "/auth/login/error",
                         "/auth/logout")
                     .permitAll()
                     .anyExchange()
