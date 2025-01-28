@@ -7,10 +7,9 @@ import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.User;
 import com.beeja.api.accounts.model.UserPreferences;
 import com.beeja.api.accounts.repository.UserRepository;
-import com.beeja.api.accounts.requests.AddEmployeeRequest;
-import com.beeja.api.accounts.requests.UpdateUserRequest;
-import com.beeja.api.accounts.requests.UpdateUserRoleRequest;
+import com.beeja.api.accounts.requests.*;
 import com.beeja.api.accounts.response.CreatedUserResponse;
+import com.beeja.api.accounts.response.EmployeeCount;
 import com.beeja.api.accounts.service.EmployeeService;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
@@ -29,6 +28,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -482,4 +486,131 @@ public class EmployeecontrollerTest {
           employeeController.updateUserRoles(employeeId, newRoles);
         });
   }
+
+  @Test
+  public void testGetAllEmployees_success() throws Exception {
+    List<User> mockUsers = Arrays.asList(user1, user2);
+    when(employeeService.getAllEmployees()).thenReturn(mockUsers);
+    ResponseEntity<List<User>> response = employeeController.getAllEmployees();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody()).hasSize(2);
+    assertThat(response.getBody().get(0).getFirstName()).isEqualTo("dattu");
+    assertThat(response.getBody().get(1).getFirstName()).isEqualTo("ravi");
+    verify(employeeService, times(1)).getAllEmployees();
+  }
+
+  @Test
+  void testGetUsersByPermissionAndOrganization_Success() throws Exception {
+    String permission = "ROLE_ADMIN";
+    List<User> mockUsers = Arrays.asList(user1, user2);
+    when(employeeService.getUsersByPermissionAndOrganization(permission)).thenReturn(mockUsers);
+
+    ResponseEntity<List<User>> response = employeeController.getUsersByPermissionAndOrganization(permission);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(mockUsers.size(), response.getBody().size());
+    assertEquals(mockUsers.get(0).getFirstName(), response.getBody().get(0).getFirstName());
+    assertEquals(mockUsers.get(1).getEmail(), response.getBody().get(1).getEmail());
+  }
+
+  @Test
+  void testIsEmployeeHasPermission_EmployeeHasPermission() throws Exception {
+    String employeeId = "EMP001";
+    String permission = "CREATE_EMPLOYEE";
+    Boolean mockResult = true;
+
+    when(employeeService.isEmployeeHasPermission(employeeId, permission)).thenReturn(mockResult);
+
+    ResponseEntity<Boolean> response = employeeController.isEmployeeHasPermission(employeeId, permission);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertTrue(response.getBody());
+  }
+
+  @Test
+  void testGetEmployeeCountByOrganizationId_Success() throws Exception {
+    // Arrange
+    EmployeeCount mockEmployeeCount = new EmployeeCount();
+    mockEmployeeCount.setTotalCount(100L);
+    mockEmployeeCount.setActiveCount(80L);
+    mockEmployeeCount.setInactiveCount(20L);
+
+    // Mock the employeeService to return the mock EmployeeCount
+    when(employeeService.getEmployeeCountByOrganization()).thenReturn(mockEmployeeCount);
+
+    // Act
+    ResponseEntity<EmployeeCount> response = employeeController.getEmployeeCountByOrganizationId();
+
+    // Assert
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(100L, response.getBody().getTotalCount());
+    assertEquals(80L, response.getBody().getActiveCount());
+    assertEquals(20L, response.getBody().getInactiveCount());
+  }
+
+  @Test
+  void testGetEmployeeCountByOrganizationId_NoEmployees() throws Exception {
+    EmployeeCount mockEmployeeCount = new EmployeeCount();
+    mockEmployeeCount.setTotalCount(0L);
+    mockEmployeeCount.setActiveCount(0L);
+    mockEmployeeCount.setInactiveCount(0L);
+
+    when(employeeService.getEmployeeCountByOrganization()).thenReturn(mockEmployeeCount);
+
+    ResponseEntity<EmployeeCount> response = employeeController.getEmployeeCountByOrganizationId();
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(0L, response.getBody().getTotalCount());
+    assertEquals(0L, response.getBody().getActiveCount());
+    assertEquals(0L, response.getBody().getInactiveCount());
+  }
+
+
+  @Test
+  void testGetUsersByEmployeeIds_Success() throws Exception {
+    List<String> employeeIds = Arrays.asList("emp123", "emp456");
+    EmployeeOrgRequest request = new EmployeeOrgRequest(employeeIds);
+    List<User> mockUsers = Arrays.asList(user1, user2);
+
+    when(employeeService.getUsersByEmployeeIds(employeeIds)).thenReturn(mockUsers);
+
+    ResponseEntity<List<User>> response = employeeController.getUsersByEmployeeIds(request);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(mockUsers.size(), response.getBody().size());
+    assertEquals(mockUsers.get(0).getFirstName(), response.getBody().get(0).getFirstName());
+    assertEquals(mockUsers.get(1).getEmail(), response.getBody().get(1).getEmail());
+  }
+
+  @Test
+  void testChangeEmailAndPassword_Success() throws Exception {
+    // Arrange
+    ChangeEmailAndPasswordRequest request = new ChangeEmailAndPasswordRequest();
+    request.setNewEmail("newemail@example.com");
+    request.setCurrentPassword("currentPassword123");
+    request.setNewPassword("newPassword123");
+    request.setConfirmPassword("newPassword123");
+    String expectedResponse = "Email and password changed successfully.";
+
+    // Mock the employeeService to return a success message
+    when(employeeService.changeEmailAndPassword(request)).thenReturn(expectedResponse);
+
+    // Act
+    ResponseEntity<String> response = employeeController.changeEmailAndPassword(request);
+
+    // Assert
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(expectedResponse, response.getBody());  // The response should contain the success message
+  }
+
+
+
+
 }
