@@ -1,16 +1,19 @@
 package com.beeja.api.accounts.controllers;
 
-import static org.bouncycastle.asn1.x509.X509ObjectIdentifiers.organization;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import com.beeja.api.accounts.exceptions.BadRequestException;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.requests.AddRoleRequest;
 import com.beeja.api.accounts.service.RoleService;
 import com.beeja.api.accounts.utils.UserContext;
+
+import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,16 +24,15 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+
+import javax.management.relation.RoleNotFoundException;
 
 class RoleControllerTest {
 
     @InjectMocks private RoleController roleController;
 
     @Mock private RoleService roleService;
-
-    @Mock private BindingResult MockBindingResult;
-
-    private Organization organization;
 
     @BeforeEach
     void setUp() {
@@ -89,6 +91,54 @@ class RoleControllerTest {
     }
 
     @Test
+    void testAddRolesToOrganization_ValidationError() throws Exception {
+        AddRoleRequest newRoleRequest = new AddRoleRequest();
+        newRoleRequest.setName("");
+
+        BindingResult bindingResult = Mockito.mock(BindingResult.class);
+        ObjectError error = new ObjectError("name", "Role name must not be empty");
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(bindingResult.getAllErrors()).thenReturn(Collections.singletonList(error));
+
+        Exception exception = assertThrows(BadRequestException.class, () ->
+                roleController.addRolesToOrganization(newRoleRequest, bindingResult)
+        );
+        assertTrue(exception.getMessage().contains("Role name must not be empty"));
+    }
+
+    @Test
+    void testAddRolesToOrganization_InternalServerError() throws Exception {
+        AddRoleRequest newRoleRequest = new AddRoleRequest();
+        newRoleRequest.setName("New Role");
+        when(roleService.addRoleToOrganization(newRoleRequest)).thenThrow(new RuntimeException("Internal server error"));
+
+        BindingResult bindingResult = Mockito.mock(BindingResult.class);
+
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                roleController.addRolesToOrganization(newRoleRequest, bindingResult)
+        );
+        assertEquals("Internal server error", exception.getMessage());
+    }
+
+    @Test
+    void testAddRolesToOrganization_EmptyRequestBody() throws Exception {
+        AddRoleRequest newRoleRequest = new AddRoleRequest();
+        newRoleRequest.setName(null);
+
+        BindingResult bindingResult = Mockito.mock(BindingResult.class);
+        ObjectError error = new ObjectError("name", "Role name must not be empty");
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(bindingResult.getAllErrors()).thenReturn(Collections.singletonList(error));
+
+        Exception exception = assertThrows(BadRequestException.class, () ->
+                roleController.addRolesToOrganization(newRoleRequest, bindingResult)
+        );
+        assertTrue(exception.getMessage().contains("Role name must not be empty"));
+    }
+
+
+
+    @Test
     void testUpdateRolesOfOrganization_Success() throws Exception {
         String roleId = "role1";
         AddRoleRequest updatedRoleRequest = new AddRoleRequest();
@@ -126,6 +176,36 @@ class RoleControllerTest {
     }
 
     @Test
+    void testUpdateRolesOfOrganization_RoleNotFound() throws Exception {
+        String roleId = "invalidRoleId";
+        AddRoleRequest updatedRoleRequest = new AddRoleRequest();
+        updatedRoleRequest.setName("Updated Role");
+
+        doThrow(new RoleNotFoundException("Role not found")).when(roleService)
+                .updateRolesOfOrganization(roleId, updatedRoleRequest);
+
+        Exception exception = assertThrows(RoleNotFoundException.class, () ->
+                roleController.updateRolesOfOrganization(roleId, updatedRoleRequest)
+        );
+        assertEquals("Role not found", exception.getMessage());
+    }
+
+    @Test
+    void testUpdateRolesOfOrganization_InternalServerError() throws Exception {
+        String roleId = "role1";
+        AddRoleRequest updatedRoleRequest = new AddRoleRequest();
+        updatedRoleRequest.setName("Updated Role");
+
+        doThrow(new RuntimeException("Internal server error")).when(roleService)
+                .updateRolesOfOrganization(roleId, updatedRoleRequest);
+
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                roleController.updateRolesOfOrganization(roleId, updatedRoleRequest)
+        );
+        assertEquals("Internal server error", exception.getMessage());
+    }
+
+    @Test
     void testDeleteRoleOfOrganizationById_Success() throws Exception {
         String roleId = "role1";
         Role deletedRole = new Role();
@@ -138,4 +218,44 @@ class RoleControllerTest {
         assertEquals(deletedRole, response.getBody());
         verify(roleService, times(1)).deleteRolesOfOrganization(roleId);
     }
+
+    @Test
+    void testDeleteRoleOfOrganizationById_RoleNotFound() throws Exception {
+        String roleId = "invalidRoleId";
+        doThrow(new RoleNotFoundException("Role not found")).when(roleService)
+                .deleteRolesOfOrganization(roleId);
+
+        Exception exception = assertThrows(RoleNotFoundException.class, () ->
+                roleController.deleteRoleOfOrganizationById(roleId)
+        );
+
+        assertEquals("Role not found", exception.getMessage());
+    }
+
+
+    @Test
+    void testDeleteRoleOfOrganizationById_InternalServerError() throws Exception {
+        String roleId = "role1";
+        doThrow(new RuntimeException("Internal server error")).when(roleService)
+                .deleteRolesOfOrganization(roleId);
+
+        Exception exception = assertThrows(RuntimeException.class, () ->
+                roleController.deleteRoleOfOrganizationById(roleId)
+        );
+        assertEquals("Internal server error", exception.getMessage());
+    }
+
+    @Test
+    void testDeleteRoleOfOrganizationById_MissingPermission() throws Exception {
+        String roleId = "role1";
+        doThrow(new AccessDeniedException("Permission denied")).when(roleService)
+                .deleteRolesOfOrganization(roleId);
+
+        Exception exception = assertThrows(AccessDeniedException.class, () ->
+                roleController.deleteRoleOfOrganizationById(roleId)
+        );
+        assertEquals("Permission denied", exception.getMessage());
+    }
+
+
 }

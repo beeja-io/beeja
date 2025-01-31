@@ -34,8 +34,6 @@ public class OrganizationPatternServiceImplTest {
 
     private Organization mockOrganization;
 
-    @Mock
-    private UserContext userContext;
 
     @BeforeEach
     void setup() {

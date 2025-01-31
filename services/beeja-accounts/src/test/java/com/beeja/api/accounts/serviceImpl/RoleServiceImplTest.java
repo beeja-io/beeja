@@ -10,7 +10,6 @@ import com.beeja.api.accounts.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.accounts.exceptions.ResourceNotFoundException;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
-import com.beeja.api.accounts.repository.OrganizationRepository;
 import com.beeja.api.accounts.repository.RolesRepository;
 import com.beeja.api.accounts.repository.UserRepository;
 import com.beeja.api.accounts.requests.AddRoleRequest;

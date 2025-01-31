@@ -1,44 +1,49 @@
 package com.beeja.api.accounts.controllers;
 
-import com.beeja.api.accounts.clients.EmployeeFeignClient;
 import com.beeja.api.accounts.exceptions.OrganizationExceptions;
+import com.beeja.api.accounts.exceptions.ResourceNotFoundException;
 import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.employeeSettings.OrgValues;
 import com.beeja.api.accounts.model.User;
-import com.beeja.api.accounts.repository.OrganizationRepository;
 import com.beeja.api.accounts.response.OrganizationResponse;
 import com.beeja.api.accounts.service.OrganizationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
-
+import org.springframework.http.MediaType;
 import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 class OrganizationControllerTest {
 
   @Mock private OrganizationService organizationService;
-  @Mock private OrganizationRepository organizationRepository;
-  @Mock private EmployeeFeignClient employeeFeignClient;
+
 
   @InjectMocks private OrganizationController organizationController;
 
-  @Autowired private MockMvc mockMvc;
+
+  @Mock
+  private ByteArrayResource byteArrayResource;
 
   @BeforeEach
   void setUp() {
@@ -147,6 +152,33 @@ class OrganizationControllerTest {
   }
 
   @Test
+  public void testGetOrganizationById_NotFound() throws Exception {
+    String organizationId = "NON_EXISTENT_ID";
+    Mockito.when(organizationService.getOrganizationById(organizationId))
+            .thenThrow(new ResourceNotFoundException("Organization not found"));
+
+    assertThrows(ResourceNotFoundException.class, () -> {
+      organizationController.getOrganizationById(organizationId);
+    });
+  }
+
+  @Test
+  public void testGetOrganizationById_InternalServerError() throws Exception {
+    String organizationId = "ABCD";
+
+    Mockito.when(organizationService.getOrganizationById(organizationId))
+            .thenThrow(new RuntimeException("Internal Server Error"));
+
+    try {
+      organizationController.getOrganizationById(organizationId);
+      fail("Expected RuntimeException to be thrown");
+    } catch (RuntimeException ex) {
+      assertEquals("Internal Server Error", ex.getMessage());
+    }
+  }
+
+
+  @Test
   void testUpdateOrganization_Success() throws Exception {
     String organizationId = "123";
     String fields = "{\"name\":\"Updated Org Name\"}";
@@ -184,20 +216,6 @@ class OrganizationControllerTest {
             .updateOrganization(organizationId, fields, file);
   }
 
-//  @Test
-//  void testDownloadOrganizationFile_Success() throws Exception {
-//    ByteArrayResource resource = mock(ByteArrayResource.class);
-//    when(resource.getFilename()).thenReturn("logo.png");
-//    when(organizationService.downloadOrganizationFile()).thenReturn(resource);
-//    mockMvc
-//            .perform(get("/v1/organizations/logo"))
-//            .andExpect(status().isOk())
-//            .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_OCTET_STREAM))
-//            .andExpect(
-//                    header().string(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"logo.png\""));
-//  }
-
-
 
   @Test
   void testUpdateOrganizationValues_Success() throws Exception {
@@ -211,6 +229,33 @@ class OrganizationControllerTest {
             organizationController.updateOrganizationValues(orgDefaults);
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(orgDefaults, response.getBody());
+  }
+
+  @Test
+  void testUpdateOrganizationValues_BadRequest() throws Exception {
+    OrgDefaults orgDefaults = new OrgDefaults();
+    orgDefaults.setKey("settingKey");
+    when(organizationService.updateOrganizationValues(orgDefaults)).thenReturn(orgDefaults);
+
+    ResponseEntity<OrgDefaults> response = organizationController.updateOrganizationValues(orgDefaults);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+  }
+
+  @Test
+  void testUpdateOrganizationValues_InternalServerError() throws Exception {
+    OrgDefaults orgDefaults = new OrgDefaults();
+    orgDefaults.setOrganizationId("org1");
+    orgDefaults.setKey("settingKey");
+    orgDefaults.setValues(Set.of(new OrgValues("value1", "value2")));
+
+    when(organizationService.updateOrganizationValues(orgDefaults)).thenThrow(new RuntimeException("Internal Server Error"));
+
+    try {
+      organizationController.updateOrganizationValues(orgDefaults);
+      fail("Expected RuntimeException to be thrown");
+    } catch (RuntimeException ex) {
+      assertEquals("Internal Server Error", ex.getMessage());
+    }
   }
 
   @Test
@@ -236,5 +281,63 @@ class OrganizationControllerTest {
                     RuntimeException.class, () -> organizationController.getOrganizationValuesByKey(key));
     assertEquals("Key not found", exception.getMessage());
   }
+
+
+  @Test
+  public void testDownloadFileSuccess() throws Exception {
+    String filename = "logo.png";
+    byte[] fileContent = new byte[]{1, 2, 3};
+    ByteArrayResource byteArrayResource = new ByteArrayResource(fileContent) {
+      @Override
+      public String getFilename() {
+        return filename;
+      }
+    };
+    when(organizationService.downloadOrganizationFile()).thenReturn(byteArrayResource);
+    ResponseEntity<?> response = organizationController.downloadFile();
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(MediaType.APPLICATION_OCTET_STREAM, response.getHeaders().getContentType());
+    assertEquals("attachment; filename=\"" + filename + "\"", response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
+    assertArrayEquals(fileContent, ((ByteArrayResource) response.getBody()).getByteArray());
+  }
+
+  @Test
+  public void testDownloadFileWithEmptyContent() throws Exception {
+    String filename = "empty-logo.png";
+    byte[] fileContent = new byte[]{};
+    ByteArrayResource byteArrayResource = new ByteArrayResource(fileContent) {
+      @Override
+      public String getFilename() {
+        return filename;
+      }
+    };
+
+    when(organizationService.downloadOrganizationFile()).thenReturn(byteArrayResource);
+    ResponseEntity<?> response = organizationController.downloadFile();
+
+    assertNotNull(response);
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(MediaType.APPLICATION_OCTET_STREAM, response.getHeaders().getContentType());
+    assertEquals("attachment; filename=\"" + filename + "\"", response.getHeaders().getFirst(HttpHeaders.CONTENT_DISPOSITION));
+    assertArrayEquals(fileContent, ((ByteArrayResource) response.getBody()).getByteArray());
+  }
+
+  @Test
+  public void testDownloadFileFailure() throws Exception {
+    when(organizationService.downloadOrganizationFile()).thenThrow(new Exception("File not found"));
+
+    try {
+      organizationController.downloadFile();
+      fail("Expected Exception to be thrown");
+    } catch (Exception e) {
+      assertEquals("File not found", e.getMessage());
+    }
+  }
+
+
+
+
+
 
 }

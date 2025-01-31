@@ -5,11 +5,11 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.beeja.api.accounts.constants.PermissionConstants;
 import com.beeja.api.accounts.enums.PatternType;
 import com.beeja.api.accounts.model.Organization.OrganizationPattern;
 import com.beeja.api.accounts.requests.OrganizationPatternRequest;
 import com.beeja.api.accounts.service.OrganizationPatternService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 
 class OrganizationPatternControllerTest {
 
@@ -29,7 +30,7 @@ class OrganizationPatternControllerTest {
 
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     @Mock private BindingResult bindingResult;
 
@@ -41,10 +42,10 @@ class OrganizationPatternControllerTest {
     @Test
     void testUpdatePatternStatus_Success() {
         String patternId = "pattern123";
-        String patternType = "EMPLOYEE_ID_PATTERN"; // Use a valid enum value
+        String patternType = "EMPLOYEE_ID_PATTERN";
         OrganizationPattern mockPattern = new OrganizationPattern();
         mockPattern.setId(patternId);
-        mockPattern.setPatternType(PatternType.valueOf(patternType)); // Convert to enum
+        mockPattern.setPatternType(PatternType.valueOf(patternType));
         mockPattern.setActive(true);
 
         when(organizationPatternService.updatePatternStatusByPatternIdAndPatternType(
@@ -58,6 +59,37 @@ class OrganizationPatternControllerTest {
         verify(organizationPatternService, times(1))
                 .updatePatternStatusByPatternIdAndPatternType(patternId, patternType);
     }
+
+    @Test
+    void testUpdatePatternStatus_InvalidPatternType() {
+        String patternId = "pattern123";
+        String patternType = "INVALID_PATTERN_TYPE";
+
+        when(organizationPatternService.updatePatternStatusByPatternIdAndPatternType(patternId, patternType))
+                .thenThrow(new IllegalArgumentException("Invalid pattern type"));
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            organizationPatternController.updatePatternStatus(patternId, patternType);
+        });
+
+        assertEquals("Invalid pattern type", exception.getMessage());
+    }
+
+    @Test
+    void testUpdatePatternStatus_PatternNotFound() {
+        String patternId = "nonexistentPattern";
+        String patternType = "EMPLOYEE_ID_PATTERN";
+
+        when(organizationPatternService.updatePatternStatusByPatternIdAndPatternType(patternId, patternType))
+                .thenReturn(null);
+
+        ResponseEntity<OrganizationPattern> response =
+                organizationPatternController.updatePatternStatus(patternId, patternType);
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertNull(response.getBody());
+    }
+
 
     @Test
     void testAddPattern_Success() throws Exception {
@@ -87,6 +119,42 @@ class OrganizationPatternControllerTest {
     }
 
     @Test
+    void testAddPattern_ValidationError() throws Exception {
+        OrganizationPatternRequest request = new OrganizationPatternRequest();
+        request.setPatternLength(-1);
+
+        when(bindingResult.hasErrors()).thenReturn(true);
+        when(bindingResult.getAllErrors()).thenReturn(Collections.singletonList(new ObjectError("patternLength", "Pattern length must be positive")));
+
+        Exception exception = assertThrows(Exception.class, () -> {
+            organizationPatternController.addPattern(request, bindingResult);
+        });
+
+        assertFalse(exception.getMessage().contains("Pattern length must be positive"));
+    }
+
+    @Test
+    void testAddPattern_ServiceException() throws Exception {
+        OrganizationPatternRequest request = new OrganizationPatternRequest();
+        request.setPatternType(PatternType.EMPLOYEE_ID_PATTERN);
+        request.setPatternLength(5);
+        request.setPrefix("EMP");
+        request.setInitialSequence(0);
+        request.setActive(true);
+
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(organizationPatternService.addPatternByPatternIdAndPatternType(request))
+                .thenThrow(new RuntimeException("Unexpected error"));
+
+        Exception exception = assertThrows(RuntimeException.class, () -> {
+            organizationPatternController.addPattern(request, bindingResult);
+        });
+
+        assertEquals("Unexpected error", exception.getMessage());
+    }
+
+
+    @Test
     void testDeletePattern() throws Exception {
         String patternId = "123";
         String patternType = "TYPE_A";
@@ -105,6 +173,28 @@ class OrganizationPatternControllerTest {
         verify(organizationPatternService, times(1))
                 .deletePatternByPatternIdAndPatternType(patternId, patternType);
     }
+
+    @Test
+    void testDeletePattern_MissingPatternId() throws Exception {
+        String patternType = "TYPE_A";
+
+        mockMvc
+                .perform(delete("/v1/organization/patterns")
+                        .param("patternType", patternType))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testDeletePattern_MissingPatternType() throws Exception {
+        String patternId = "123";
+
+        mockMvc
+                .perform(delete("/v1/organization/patterns")
+                        .param("patternId", patternId))
+                .andExpect(status().isBadRequest());
+    }
+
+
 
     @Test
     void testGetPatternsByType_Success() throws Exception {
