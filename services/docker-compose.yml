@@ -77,6 +77,16 @@ services:
       - beeja-service-registry
       - beeja-cloud-gateway
       - beeja-db-1
+  beeja-projects:
+    build: ./beeja-projects
+    environment:
+      - "SPRING_PROFILES_ACTIVE=docker"
+    ports:
+      - "8097:8097"
+    depends_on:
+      - beeja-service-registry
+      - beeja-cloud-gateway
+      - beeja-db-1
   beeja-db-1:
     build:
       context: .
