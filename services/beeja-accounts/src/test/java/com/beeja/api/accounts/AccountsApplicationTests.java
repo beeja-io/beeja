@@ -7,7 +7,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 class AccountsApplicationTests {
 
   @Test
