@@ -1,0 +1,37 @@
+
+server:
+  port: ${SERVICE_REGISTRY_PORT}
+
+spring:
+  autoconfigure:
+    exclude: org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration
+  application:
+    name: service-registry
+
+management:
+  metrics:
+    enable:
+      system: false
+    binders:
+      jvm:
+        enabled: false
+      system:
+        enabled: false
+  endpoint:
+    health:
+      show-details: always
+    web:
+      exposure:
+        include: health
+  health:
+    defaults:
+      enabled: true
+
+
+eureka:
+  instance:
+    preferIpAddress: false
+    hostname: beeja-api-service-registry-service
+  client:
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/

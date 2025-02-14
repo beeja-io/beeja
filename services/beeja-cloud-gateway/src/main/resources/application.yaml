@@ -1,5 +1,5 @@
 server:
-  port: 8000
+  port: ${API_GATEWAY_PORT}
   reactive:
     session:
       timeout: 10000m
@@ -11,8 +11,10 @@ spring:
     name: api-gateway
   data:
     mongodb:
-      uri: mongodb://root:password@beeja-db-1:27017/?replicaSet=rs0&directConnection=true
-      database: accounts_sbox
+      uri: ${MONGODB_URI}
+      database: ${ACCOUNTS_MONGODB_DB_NAME}
+  autoconfigure:
+    exclude: org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration
 
   cloud:
     gateway:
@@ -24,6 +26,7 @@ spring:
           '[/**]':
             allowed-origins:
               - "http://localhost:3000"
+              - ${FRONT_END_URL}
             allowedMethods:
               - "*"
             allowed-headers: "*"
@@ -84,26 +87,38 @@ spring:
       location: classpath:/resources/static/favicon.ico
 
 eureka:
+  instance:
+    preferIpAddress: true
   client:
     serviceUrl:
-      defaultZone: http://beeja-service-registry:8761/eureka
+      defaultZone: http://beeja-api-service-registry-service:8761/eureka/
+
 
 auth.cors.allowed-origins:
-  frontEndUrl: http://localhost:3000
-  localFrontEndUrl: http://localhost:3000
+  frontEndUrl: ${FRONT_END_URL}
+  localFrontEndUrl: ${LOCAL_FRONT_END_URL}
 
 management:
-  endpoints.web.exposure.include: health,info
-  info.env.enabled: true
+  metrics:
+    enable:
+      system: false
+    binders:
+      jvm:
+        enabled: false
+      system:
+        enabled: false
+  endpoint:
+    health:
+      show-details: always
 info:
   application.name: ${spring.application.name}
 
 resource-server-urls:
-  accounts-service: http://beeja-accounts:8080
-  employee-service: http://beeja-employee-management:8089
-  file-service: http://beeja-file-management:8090
-  expense-service: http://beeja-expense:8091
-  finance-service: http://beeja-finance:8092
+  accounts-service: ${ACCOUNTS_SERVICE_BASE_URL}
+  employee-service: ${EMPLOYEE_SERVICE_BASE_URL}
+  file-service: ${FILE_SERVICE_BASE_URL}
+  expense-service: ${EXPENSE_SERVICE_BASE_URL}
+  finance-service: ${FINANCE_SERVICE_BASE_URL}
 
 jwt:
-  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw
+  secret: ${JWT_SECRET_KEY}
