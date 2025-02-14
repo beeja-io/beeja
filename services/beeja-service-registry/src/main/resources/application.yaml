@@ -3,8 +3,6 @@ server:
   port: ${SERVICE_REGISTRY_PORT}
 
 spring:
-  autoconfigure:
-    exclude: org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration
   application:
     name: service-registry
 
@@ -31,7 +29,9 @@ management:
 eureka:
   instance:
     preferIpAddress: false
-    hostname: beeja-api-service-registry-service
+    hostname: ${EUREKA_HOST_NAME}
   client:
+    register-with-eureka: false
+    fetch-registry: false
     serviceUrl:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/

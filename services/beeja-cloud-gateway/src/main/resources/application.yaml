@@ -13,8 +13,6 @@ spring:
     mongodb:
       uri: ${MONGODB_URI}
       database: ${ACCOUNTS_MONGODB_DB_NAME}
-  autoconfigure:
-    exclude: org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration
 
   cloud:
     gateway:
@@ -91,7 +89,7 @@ eureka:
     preferIpAddress: true
   client:
     serviceUrl:
-      defaultZone: http://beeja-api-service-registry-service:8761/eureka/
+      defaultZone: ${EUREKA_SERVER_URL}
 
 
 auth.cors.allowed-origins:

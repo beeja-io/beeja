@@ -11,7 +11,7 @@ spring:
     name: employee-service
   data:
     mongodb:
-      uri: ${MONOGDB_URI}
+      uri: ${MONGODB_URI}
       database: ${EMPLOYEES_MONGODB_DB_NAME}
 
 eureka:

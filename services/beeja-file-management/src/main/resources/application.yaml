@@ -4,7 +4,7 @@ server:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
-  port: ${FILES_SERVICE_PORT}
+  port: ${FILE_SERVICE_PORT}
 spring:
   output:
     ansi:
