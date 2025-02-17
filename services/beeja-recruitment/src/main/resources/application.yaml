@@ -7,7 +7,7 @@ spring:
     name: recruitment-service
   data:
     mongodb:
-      uri: ${MONGODB_URI}
+      uri: ${RECRUITMENT_MONGO_URI}
       database: ${RECRUITMENT_MONGODB_DB_NAME}
 
 eureka:
