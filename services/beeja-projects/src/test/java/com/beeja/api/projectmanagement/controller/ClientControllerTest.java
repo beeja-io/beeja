@@ -8,18 +8,21 @@ import com.beeja.api.projectmanagement.exceptions.MethodArgumentNotValidExceptio
 import com.beeja.api.projectmanagement.model.Address;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.TaxDetails;
+import com.beeja.api.projectmanagement.model.dto.ClientDTO;
 import com.beeja.api.projectmanagement.service.ClientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -28,12 +31,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.when;
 
+
+
 public class ClientControllerTest {
     @InjectMocks
     private ClientController clientController;
 
     @Mock
     private ClientService clientService;
+
+    @Autowired
+    private MockMvc mockMvc;
 
     private Map<String, Object> updateFields;
 
@@ -44,11 +52,13 @@ public class ClientControllerTest {
     private Client invalidClient;
     private String validClientId;
     private String invalidClientId;
-    private PageRequest pageRequest;
+    private ClientDTO validClientDTO;
+    private List<ClientDTO> clientList;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.openMocks(this);
+
 
         validClient = new Client();
         validClient.setClientName("John Doe");
@@ -107,6 +117,9 @@ public class ClientControllerTest {
                 "clientName", "John Updated",
                 "email", "updatedjohn@example.com"
         );
+
+        validClientDTO = new ClientDTO("C123", "John Doe", ClientType.INTERNAL, "Org123");
+        clientList = Collections.singletonList(validClientDTO);
 
     }
 
@@ -174,7 +187,27 @@ public class ClientControllerTest {
         verify(clientService, times(1)).getClientById(invalidClientId);
     }
 
+    @Test
+    public void testGetClients_ReturnsClientList() {
 
+        when(clientService.getClients()).thenReturn(clientList);
+
+        ResponseEntity<List<ClientDTO>> response = clientController.getClients();
+
+
+        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(1, response.getBody().size());
+        assertEquals("C123", response.getBody().get(0).getClientId());
+        assertEquals("John Doe", response.getBody().get(0).getClientName());
+        assertEquals("INTERNAL", response.getBody().get(0).getClientType().toString());
+        assertEquals("Org123", response.getBody().get(0).getOrganizationId());
+        verify(clientService, times(1)).getClients();
+    }
 }
+
+
+
+
+
 
 

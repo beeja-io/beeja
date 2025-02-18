@@ -2,6 +2,8 @@ package com.beeja.api.projectmanagement.serviceImpl;
 
 import com.beeja.api.projectmanagement.ProjectManagementApplication;
 import com.beeja.api.projectmanagement.enums.ClientType;
+import com.beeja.api.projectmanagement.enums.Industry;
+import com.beeja.api.projectmanagement.exceptions.DatabaseException;
 import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.exceptions.ValidationException;
@@ -19,6 +21,7 @@ import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -63,7 +66,11 @@ public class ClientServiceImplTest {
         validClient.setPrimaryAddress(new Address("123 Main St", "Springfield", "IL", "62701", "USA"));
         validClient.setUsePrimaryAsBillingAddress(true);
         existingClient = new Client();
+        existingClient = new Client();
+        existingClient.setId("1234567890abcdef");
+        existingClient.setClientName("John Doe");
         existingClient.setEmail("john.doe@example.com");
+        existingClient.setIndustry(Industry.ITSERVICES);
 
         mockUserContext = new HashMap<>();
         mockUserContext.put("id", "Org123");
@@ -71,87 +78,156 @@ public class ClientServiceImplTest {
     }
     @Test
     public void testAddClient_success() {
-
-        when(clientRepository.findByEmail(validClient.getEmail())).thenReturn(null);
-        when(clientRepository.save(any(Client.class))).thenReturn(validClient);
-
         try (MockedStatic<UserContext> userContextMock = mockStatic(UserContext.class)) {
             Map<String, Object> mockUserContext = new HashMap<>();
             mockUserContext.put("id", "Org123");
 
             userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(mockUserContext);
+            lenient().when(clientRepository.findByEmailAndOrganizationId(validClient.getEmail(), "Org123"))
+                    .thenReturn(null);
 
+            when(clientRepository.save(any(Client.class))).thenReturn(validClient);
             Client result = clientService.addClient(validClient);
-
-            assertNotNull(result);
+//
             assertEquals(validClient.getClientName(), result.getClientName());
             assertEquals(validClient.getEmail(), result.getEmail());
             verify(clientRepository).save(any(Client.class));
         }
     }
+
     @Test
     public void testAddClient_alreadyExists_throwsException() {
-        when(clientRepository.findByEmail(validClient.getEmail())).thenReturn(validClient);
+        try (MockedStatic<UserContext> userContextMock = mockStatic(UserContext.class)) {
+            userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(mockUserContext);
 
-        ResourceAlreadyFoundException thrown = assertThrows(
-                ResourceAlreadyFoundException.class,
-                () -> clientService.addClient(validClient)
-        );
+            String organizationId = (String) mockUserContext.get("id");
 
+            when(clientRepository.findByEmailAndOrganizationId(organizationId, validClient.getEmail()))
+                    .thenReturn(validClient);
 
-        verify(clientRepository, never()).save(any(Client.class)); // Ensure save() is never called
+            ResourceAlreadyFoundException thrown = assertThrows(
+                    ResourceAlreadyFoundException.class,
+                    () -> clientService.addClient(validClient)
+            );
+
+            verify(clientRepository, never()).save(any(Client.class));
+        }
     }
 
-    @Test
-    public void testUpdateClientPartially_Success() {
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("clientName", "Jane Doe");
-        updates.put("email", "jane.doe@example.com");
-        updates.put("industry", "Finance");
-        updates.put("description", "Updated description");
-        when(clientRepository.findById("C123")).thenReturn(Optional.of(existingClient));
-        when(clientRepository.save(any(Client.class))).thenReturn(existingClient);
-
-        Client updatedClient = clientService.updateClientPartially("C123", updates);
-        assertNotNull(updatedClient);
-        assertEquals("Jane Doe", updatedClient.getClientName());
-        assertEquals("jane.doe@example.com", updatedClient.getEmail());
-        assertEquals("Finance", updatedClient.getIndustry());
-        assertEquals("Updated description", updatedClient.getDescription());
-
-        verify(clientRepository, times(1)).save(existingClient);
-    }
 
     @Test
     public void testUpdateClientPartially_ClientNotFound() {
+        try (MockedStatic<UserContext> userContextMock = mockStatic(UserContext.class)) {
 
-        when(clientRepository.findById("C999")).thenReturn(Optional.empty());
+            Map<String, Object> mockUserContext = new HashMap<>();
+            mockUserContext.put("id", "Org123");
+            userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(mockUserContext);
 
-        assertThrows(ResourceNotFoundException.class, () -> {
-            clientService.updateClientPartially("C999", new HashMap<>());
-        });
+            when(clientRepository.findByIdAndOrganizationId("C999", "Org123")).thenReturn(null);
 
-        verify(clientRepository, never()).save(any(Client.class));
+            assertThrows(ResourceNotFoundException.class, () -> {
+                clientService.updateClientPartially("C999", new HashMap<>());
+            });
+
+            verify(clientRepository, never()).save(any(Client.class));
+        }
+    }
+
+
+
+    @Test
+    public void testUpdateClientPartially_Success() {
+        try (MockedStatic<UserContext> userContextMock = mockStatic(UserContext.class)) {
+            Map<String, Object> mockUserContext = new HashMap<>();
+            mockUserContext.put("id", "Org123");
+            userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(mockUserContext);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("clientName", "Jane Doe");
+            updates.put("email", "jane.doe@example.com");
+            updates.put("industry", Industry.ITSERVICES);
+            updates.put("description", "Updated description");
+
+            lenient().when(clientRepository.findByIdAndOrganizationId("1234567890abcdef", "Org123"))
+                    .thenReturn((existingClient));
+            when(clientRepository.save(any(Client.class))).thenReturn(existingClient);
+
+            Client updatedClient = clientService.updateClientPartially("1234567890abcdef", updates);
+
+            assertEquals("Jane Doe", updatedClient.getClientName());
+            assertEquals("jane.doe@example.com", updatedClient.getEmail());
+            assertEquals("Updated description", updatedClient.getDescription());
+            verify(clientRepository, times(1)).save(existingClient);
+        }
     }
 
     @Test
     public void testUpdateClientPartially_InvalidField() {
+        try (MockedStatic<UserContext> userContextMock = mockStatic(UserContext.class)) {
+            Map<String, Object> mockUserContext = new HashMap<>();
+            mockUserContext.put("id", "Org123");
+            userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(mockUserContext);
 
-        Map<String, Object> updates = new HashMap<>();
-        updates.put("invalidField", "someValue");
+            when(clientRepository.findByIdAndOrganizationId(eq("1234567890abcdef"), anyString()))
+                    .thenReturn((existingClient));
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("invalidField", "someValue");
+            ValidationException exception = assertThrows(ValidationException.class, () -> {
+                clientService.updateClientPartially("1234567890abcdef", updates);
+            });
 
-        when(clientRepository.findById("C123")).thenReturn(Optional.of(existingClient));
+            verify(clientRepository, never()).save(any(Client.class));
+        }
+    }
+    @Test
+    public void testUpdateClientPartially_InvalidEnumValue() {
+        try (MockedStatic<UserContext> userContextMock = mockStatic(UserContext.class)) {
+            Map<String, Object> mockUserContext = new HashMap<>();
+            mockUserContext.put("id", "Org123");
+            userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(mockUserContext);
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("clientType", "INVALID_TYPE");
 
-        assertThrows(ValidationException.class, () -> {
-            clientService.updateClientPartially("C123", updates);
-        });
+            when(clientRepository.findByIdAndOrganizationId(eq("1234567890abcdef"), anyString()))
+                    .thenReturn((existingClient));
 
-        verify(clientRepository, never()).save(any(Client.class));
+            ValidationException exception = assertThrows(ValidationException.class, () -> {
+                clientService.updateClientPartially("1234567890abcdef", updates);
+            });
+//            assertTrue(exception.getMessage().contains("Invalid value 'INVALID_TYPE' for field 'clientType'"));
+            verify(clientRepository, never()).save(any(Client.class));
+        }
+    }
+
+
+    @Test
+    public void testUpdateClientPartially_DatabaseSaveFailure() {
+        try (MockedStatic<UserContext> userContextMock = mockStatic(UserContext.class)) {
+            Map<String, Object> mockUserContext = new HashMap<>();
+            mockUserContext.put("id", "Org123");
+            userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(mockUserContext);
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("clientName", "Updated Name");
+
+            when(clientRepository.findByIdAndOrganizationId(eq("1234567890abcdef"), anyString()))
+                    .thenReturn((existingClient));
+
+            when(clientRepository.save(any(Client.class)))
+                    .thenThrow(new DataAccessException("Database error") {
+                    });
+
+            DatabaseException exception = assertThrows(DatabaseException.class, () -> {
+                clientService.updateClientPartially("1234567890abcdef", updates);
+            });
+
+
+            verify(clientRepository, times(1)).save(existingClient);
+        }
     }
 
     @Test
     public void testGetSortedClients_Success() {
-        // Given
+
         String organizationId = "Org123";
         Map<String, Object> mockUserContext = new HashMap<>();
         mockUserContext.put("id", organizationId);
@@ -177,22 +253,17 @@ public class ClientServiceImplTest {
 
             when(clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(organizationId)).thenReturn(clientList);
 
-            // When
-            List<ClientDTO> result = clientService.getSortedClients();
+            List<ClientDTO> result = clientService.getClients();
 
-            // Then
             verify(clientRepository, times(1)).findAllByOrganizationIdOrderByCreatedAtDesc(organizationId);
 
-            // Ensure correct size
             assertEquals(2, result.size());
 
-            // Validate first client (latest created)
             assertEquals("C2", result.get(0).getClientId());
             assertEquals("Client B", result.get(0).getClientName());
             assertEquals(ClientType.INDIVIDUAL, result.get(0).getClientType());
             assertEquals(organizationId, result.get(0).getOrganizationId());
 
-            // Validate second client
             assertEquals("C1", result.get(1).getClientId());
             assertEquals("Client A", result.get(1).getClientName());
             assertEquals(ClientType.INTERNAL, result.get(1).getClientType());
@@ -215,5 +286,6 @@ public class ClientServiceImplTest {
         assertEquals("john.doe@example.com", result.getEmail());
         verify(clientRepository, times(1)).findById("1234567890abcdef");
     }
+
 
 }

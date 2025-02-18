@@ -4,6 +4,7 @@ import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
 import com.beeja.api.projectmanagement.responses.ErrorResponse;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
+import com.beeja.api.projectmanagement.utils.Constants;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +36,13 @@ public class GlobalControllerAdvice {
 
   @ExceptionHandler(ResourceAlreadyFoundException.class)
   public ResponseEntity<ErrorResponse> handleResourceAlreadyFoundException(ResourceAlreadyFoundException e,HttpServletRequest request){
+    String path = request.getRequestURI();
     ErrorResponse errorResponse = BuildErrorMessage.buildErrorMessage(
             ErrorType.CONFLICT,
             ErrorCode.RESOURCE_ALREADY_EXISTS,
-            e.getMessage(),
-            request.getRequestURI()
+            e.getMessage()
     );
-
+    errorResponse.setPath(path);
     return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
 
   }
@@ -49,14 +50,14 @@ public class GlobalControllerAdvice {
   public ResponseEntity<ErrorResponse> handleNotFoundException(
           ResourceNotFoundException ex,
           HttpServletRequest request) {
-
+    String path = request.getRequestURI();
     ErrorResponse errorResponse = BuildErrorMessage.buildErrorMessage(
             ErrorType.NOT_FOUND,
             ErrorCode.RESOURCE_NOT_FOUND,
-            ex.getMessage(),
-            request.getRequestURI()
-    );
+            ex.getMessage()
 
+    );
+    errorResponse.setPath(path);
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
 
@@ -64,14 +65,27 @@ public class GlobalControllerAdvice {
   public ResponseEntity<ErrorResponse> handleValidationException(
           ValidationException ex,
           HttpServletRequest request) {
-
+    String path = request.getRequestURI();
     ErrorResponse errorResponse = BuildErrorMessage.buildErrorMessage(
             ErrorType.VALIDATION_ERROR,
             ErrorCode.INVALID_ARGUMENT,
-            ex.getMessage(),
-            request.getRequestURI()
+            ex.getMessage()
     );
-
+    errorResponse.setPath(path);
     return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
+  @ExceptionHandler(DatabaseException.class)
+  public ResponseEntity<ErrorResponse> handleDatabaseException(
+          DatabaseException ex,
+          HttpServletRequest request) {
+    String path = request.getRequestURI();
+    ErrorResponse errorResponse = BuildErrorMessage.buildErrorMessage(
+            ErrorType.DATABASE_ERROR,
+            ErrorCode.MONGO_SAVE_FAILED,
+            ex.getMessage()
+    );
+    errorResponse.setPath(path);
+    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
 }

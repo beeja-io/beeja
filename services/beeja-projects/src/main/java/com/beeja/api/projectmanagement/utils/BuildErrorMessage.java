@@ -8,13 +8,13 @@ public class BuildErrorMessage {
     public static ErrorResponse buildErrorMessage(
             ErrorType type,
             ErrorCode code,
-            String message,
-            String path){
+            String message
+           ){
         return new ErrorResponse(
                 type,
                 code,
                 message,
-                path
+                null
         );
 
     }

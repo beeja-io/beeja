@@ -1,6 +1,7 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
 import com.beeja.api.projectmanagement.enums.*;
+import com.beeja.api.projectmanagement.exceptions.DatabaseException;
 import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.exceptions.ValidationException;
@@ -14,17 +15,24 @@ import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.MongoException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.beeja.api.projectmanagement.utils.Constants.OBJECT_MAPPER;
+
 @Service
+@Slf4j
 public class ClientServiceImpl implements ClientService {
+
+
     @Autowired
     private ClientRepository clientRepository;
 
@@ -32,18 +40,16 @@ public class ClientServiceImpl implements ClientService {
     private MongoTemplate mongoTemplate;
 
 
-
-
     @Override
     public Client addClient(Client client){
-        Client existingClient = clientRepository.findByEmail(client.getEmail());
+        String organizationId = UserContext.getLoggedInUserOrganization().get("id").toString();
+        Client existingClient = clientRepository.findByEmailAndOrganizationId(organizationId,client.getEmail());
         if (existingClient != null) {
             throw new ResourceAlreadyFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.CLIENT_ALREADY_FOUND,
                             ErrorCode.RESOURCE_ALREADY_EXISTS,
-                            Constants.format(Constants.RESOURCE_ALREADY_FOUND, "Client", "email", client.getEmail()),
-                            "v1/clients"
+                            Constants.format(Constants.RESOURCE_ALREADY_FOUND, "Client", "email", client.getEmail())
                     )
             );
         }
@@ -53,27 +59,46 @@ public class ClientServiceImpl implements ClientService {
         if (client.getCreatedAt() == null) {
             client.setCreatedAt(Instant.now());
         }
-        client.setOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+        client.setOrganizationId(organizationId);
         client.setClientId(generateClientId(client.getClientName(),client.getOrganizationId()));
-        return clientRepository.save(client);
+        try {
+            return clientRepository.save(client);
+        } catch (MongoException | DataAccessException e) {
+            throw new DatabaseException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.DATABASE_ERROR,
+                            ErrorCode.MONGO_SAVE_FAILED,
+                            Constants.format("Failed to save client details: %s", e.getMessage())
+                    )
+            );
+        }
     }
 
 
     @Override
-    public Client updateClientPartially(String clientId, Map<String, Object> updates) {
+    public Client updateClientPartially(String id, Map<String, Object> updates)
+    {
+        System.out.println(id);
+        String organizationId = UserContext.getLoggedInUserOrganization().get("id").toString();
+        System.out.println(organizationId);
         ObjectMapper objectMapper = new ObjectMapper();
-        Client existingClient = clientRepository.findById(clientId)
-                .orElseThrow(() -> new ResourceNotFoundException(
+        Client existingClient = clientRepository.findByIdAndOrganizationId(id,organizationId);
+        System.out.println(id);
+        System.out.println(existingClient);
+        if(existingClient == null){
+              throw  new ResourceNotFoundException(
                         BuildErrorMessage.buildErrorMessage(
                                 ErrorType.NOT_FOUND,
                                 ErrorCode.CLIENT_NOT_FOUND,
-                                Constants.format(Constants.RESOURCE_NOT_FOUND, "Client", "Id", clientId),
-                                "v1/clients/update"
-                        )
-                ));
+                                Constants.format(Constants.RESOURCE_NOT_FOUND, "Client", "Id", id)
+
+                        ));
+
+        }
 
         updates.forEach((key, value) -> {
             if (value != null && !key.equals("_id") && !key.equals("clientId")) {
+                try {
                 switch (key) {
                     case "clientName":
                         existingClient.setClientName(value.toString());
@@ -100,53 +125,58 @@ public class ClientServiceImpl implements ClientService {
                         existingClient.setStatus(ClientStatus.valueOf(value.toString()));
                         break;
                     case "taxDetails":
-                        if (value instanceof Map) {
-                            TaxDetails taxDetails = objectMapper.convertValue(value, TaxDetails.class);
-                            existingClient.setTaxDetails(taxDetails);
-                        }
+                        existingClient.setTaxDetails(convertValueSafely(value, TaxDetails.class, key));
                         break;
                     case "primaryAddress":
-                        if (value instanceof Map) {
-                            Address primaryAddress = objectMapper.convertValue(value, Address.class);
-                            existingClient.setPrimaryAddress(primaryAddress);
-                        }
+                        existingClient.setPrimaryAddress(convertValueSafely(value, Address.class, key));
                         break;
                     case "billingAddress":
-                        if (value instanceof Map) {
-                            Address billingAddress = objectMapper.convertValue(value, Address.class);
-                            existingClient.setBillingAddress(billingAddress);
-                        }
+                        existingClient.setBillingAddress(convertValueSafely(value, Address.class, key));
                         break;
                     default:
                         throw new ValidationException(
                                 (BuildErrorMessage.buildErrorMessage(
                                         ErrorType.VALIDATION_ERROR,
                                         ErrorCode.FIELD_VALIDATION_MISSING,
-                                        Constants.format(Constants.FIELD_NOT_EXIST_IN_ENTITY, key, "Client"),
-                                        "v1/clients/update"
+                                        Constants.format(Constants.FIELD_NOT_EXIST_IN_ENTITY, "field not exist",key)
                                 ))
                         );
 
-                }
+        }
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.INVALID_ENUM_VALUE,
+                            Constants.format(Constants.INVALID_ENUM_VALUE, value, key, Arrays.toString(ClientType.values()))
+                    )
+            );
+        }
             }
         });
 
-        return clientRepository.save(existingClient);
+        try {
+            log.info("Saving updated client data for ID: {}", id);
+            return clientRepository.save(existingClient);
+        } catch (MongoException | DataAccessException e)
+        {
+            log.error("MongoDB error while saving client data: {}", e.getMessage(), e);
+            throw new DatabaseException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.DATABASE_ERROR,
+                            ErrorCode.MONGO_SAVE_FAILED,
+                            Constants.format(Constants.DB_ERROR_IN_SAVING_DETAILS,"Failed to update client details: ",existingClient)
+                    )
+            );
+        }
     }
 
     @Override
-    public List<ClientDTO> getSortedClients() {
+    public List<ClientDTO> getClients() {
         String organizationId =  UserContext.getLoggedInUserOrganization().get("id").toString();
         List<Client> clients = clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(organizationId);
         if (clients.isEmpty()) {
-            throw new ResourceNotFoundException(
-                    BuildErrorMessage.buildErrorMessage(
-                            ErrorType.NOT_FOUND,
-                            ErrorCode.NO_CLIENTS_FOUND,
-                            Constants.format(Constants.RESOURCE_NOT_FOUND, "Organization ID", organizationId),
-                            "/clients"
-                    )
-            );
+            return Collections.emptyList();
         }
 
         return clients.stream()
@@ -176,7 +206,7 @@ public class ClientServiceImpl implements ClientService {
         String formattedSequenceNumber = String.format("%03d", sequenceNumber);
 
         String generatedClientId = prefix + formattedSequenceNumber;
-        Client existingClient = clientRepository.findByClientId(generatedClientId);
+        Client existingClient = clientRepository.findByClientIdAndOrganizationId(generatedClientId,organizationId);
         if (existingClient != null) {
             sequenceNumber++;
             formattedSequenceNumber = String.format("%03d", sequenceNumber);
@@ -187,17 +217,42 @@ public class ClientServiceImpl implements ClientService {
 
 
     @Override
-    public Client getClientById(String id) {
-        return clientRepository.findById(id)
+    public Client getClientById(String  clientId) {
+        return clientRepository.findById(clientId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         BuildErrorMessage.buildErrorMessage(
                                 ErrorType.NOT_FOUND,
                                 ErrorCode.CLIENT_NOT_FOUND,
-                                Constants.format(Constants.RESOURCE_NOT_FOUND, "id", id),
-                                "/clients/" + id
+                                Constants.format(Constants.RESOURCE_NOT_FOUND, "id", clientId)
                         )
                 ));
     }
 
+    /**
+     * Safely converts a value to the specified class using ObjectMapper.
+     */
+    private <T> T convertValueSafely(Object value, Class<T> targetType, String fieldName) {
+        if (!(value instanceof Map)) {
+            throw new ValidationException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.INVALID_JSON_STRUCTURE,
+                            Constants.format("Invalid structure for field '%s', expected an object.", fieldName)
+                    )
+            );
+        }
+
+        try {
+            return OBJECT_MAPPER.convertValue(value, targetType);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.INVALID_JSON_STRUCTURE,
+                            Constants.format("Invalid structure for field '%s'", fieldName)
+                    )
+            );
+        }
+    }
 
 }

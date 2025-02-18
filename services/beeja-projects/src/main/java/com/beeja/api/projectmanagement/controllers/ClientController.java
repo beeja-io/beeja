@@ -7,6 +7,7 @@ import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.dto.ClientDTO;
 import com.beeja.api.projectmanagement.service.ClientService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -15,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-
-import static com.beeja.api.projectmanagement.constants.PermissionConstants.CREATE_CLIENT;
+import static com.beeja.api.projectmanagement.constants.PermissionConstants.*;
 
 @RestController
+@Slf4j
 @RequestMapping("v1/clients")
 public class ClientController {
 
@@ -26,7 +27,7 @@ public class ClientController {
 
     @PostMapping
    @HasPermission(CREATE_CLIENT)
-    public ResponseEntity<?> addClient(@Valid @RequestBody Client client, BindingResult bindingResult)
+    public ResponseEntity<Client> addClient(@Valid @RequestBody Client client, BindingResult bindingResult)
     {
         if (bindingResult.hasErrors()) {
             throw new MethodArgumentNotValidException(bindingResult);
@@ -34,22 +35,25 @@ public class ClientController {
         return ResponseEntity.ok(clientService.addClient(client));
     }
 
-    @PatchMapping("/update/{clientId}")
+    @PatchMapping("/{id}")
+    @HasPermission(UPDATE_CLIENT)
     public ResponseEntity<Client> updateClientPartially(
-            @PathVariable String clientId,
+            @PathVariable String id,
             @RequestBody Map<String, Object> updates) {
-        Client updatedClient = clientService.updateClientPartially(clientId, updates);
+        Client updatedClient = clientService.updateClientPartially(id, updates);
         return ResponseEntity.ok(updatedClient);
     }
 
     @GetMapping("/{id}")
+    @HasPermission(GET_CLIENT)
     public ResponseEntity<Client> getClient(@PathVariable String id) {
         return ResponseEntity.ok(clientService.getClientById(id));
     }
 
     @GetMapping
+    @HasPermission(GET_CLIENT)
     public ResponseEntity<List<ClientDTO>> getClients() {
-        List<ClientDTO> clients = clientService.getSortedClients();
+        List<ClientDTO> clients = clientService.getClients();
 
         if (clients.isEmpty()) {
             return ResponseEntity.noContent().build();

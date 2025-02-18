@@ -9,9 +9,12 @@ import java.util.List;
 
 @Repository
 public interface ClientRepository extends MongoRepository<Client,String> {
-    Client findByEmail(String email);
+    Client findByEmailAndOrganizationId(String email,String organizationId);
 
-    Client findByClientId(String clientId);
+    Client findByClientIdAndOrganizationId(String clientId, String organizationId);
+
+
+    Client findByIdAndOrganizationId(String id, String organizationId);
 
     long countByOrganizationId(String organizationId);
 
