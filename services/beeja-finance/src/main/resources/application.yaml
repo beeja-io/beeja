@@ -4,7 +4,7 @@ server:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
-  port: 8092
+  port: ${FINANCE_SERVICE_PORT}
 spring:
   output:
     ansi:
@@ -17,17 +17,15 @@ spring:
     name: finance-service
   data:
     mongodb:
-      uri: mongodb://root:password@localhost:27017/?replicaSet=rs0&directConnection=true
-      database: finance_sbox
-
-
+      uri: ${MONGODB_URI}
+      database: ${FINANCE_MONGODB_DB_NAME}
 
 eureka:
   instance:
     preferIpAddress: true
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_SERVER_URL}
 
 # actuator
 management:
@@ -36,10 +34,11 @@ management:
 info:
   application.name: ${spring.application.name}
 
+
+
 client-urls:
-  accountsService: http://localhost:8080/accounts
-  fileService: http://localhost:8090/files
-  notificationService: http://localhost:8093/notifications
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
+  fileService: ${FILE_SERVICE_BASE_URL}/files
 
 springdoc:
   api-docs:
@@ -48,4 +47,4 @@ springdoc:
     url: /openApi.yaml
 
 jwt:
-  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw
+  secret: ${JWT_SECRET_KEY}

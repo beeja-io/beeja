@@ -4,7 +4,7 @@ server:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  port: 8091
+  port: ${EXPENSE_SERVICE_PORT}
 spring:
   output:
     ansi:
@@ -13,16 +13,15 @@ spring:
     name: expense-service
   data:
     mongodb:
-      uri: mongodb://root:password@beeja-db-1:27017/?replicaSet=rs0&directConnection=true
-      database: expenses_sbox
-
+      uri: ${MONGODB_URI}
+      database: ${EXPENSES_MONGODB_DB_NAME}
 
 eureka:
   instance:
     preferIpAddress: true
   client:
     serviceUrl:
-      defaultZone: http://beeja-service-registry:8761/eureka
+      defaultZone: ${EUREKA_SERVER_URL}
 
 # actuator
 management:
@@ -31,10 +30,9 @@ management:
 info:
   application.name: ${spring.application.name}
 
-
 client-urls:
-  accountsService: http://beeja-accounts:8080/accounts
-  fileService: http://beeja-file-management:8090/files
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
+  fileService: ${FILE_SERVICE_BASE_URL}/files
 
 springdoc:
   api-docs:
@@ -49,4 +47,4 @@ file-format:
     - image/jpeg
 
 jwt:
-  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw
+  secret: ${JWT_SECRET_KEY}
