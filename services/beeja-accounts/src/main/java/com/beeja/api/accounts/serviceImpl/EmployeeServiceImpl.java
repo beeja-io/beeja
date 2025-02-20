@@ -93,6 +93,7 @@ public class EmployeeServiceImpl implements EmployeeService {
               Constants.USER_ALREADY_FOUND + userEmail));
     }
 
+
     //    Checking for Employment Type
     OrgDefaults orgDefaults =
         orgDefaultsRepository.findByOrganizationIdAndKey(

@@ -7,10 +7,9 @@ import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.User;
 import com.beeja.api.accounts.model.UserPreferences;
 import com.beeja.api.accounts.repository.UserRepository;
-import com.beeja.api.accounts.requests.AddEmployeeRequest;
-import com.beeja.api.accounts.requests.UpdateUserRequest;
-import com.beeja.api.accounts.requests.UpdateUserRoleRequest;
+import com.beeja.api.accounts.requests.*;
 import com.beeja.api.accounts.response.CreatedUserResponse;
+import com.beeja.api.accounts.response.EmployeeCount;
 import com.beeja.api.accounts.service.EmployeeService;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
@@ -29,6 +28,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,10 +48,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 public class EmployeecontrollerTest {
 
@@ -55,7 +60,7 @@ public class EmployeecontrollerTest {
 
   @Mock private EmployeeService employeeService;
   @Mock private BindingResult bindingResult;
-  @Mock UserRepository userRepository;
+
 
   private String basePath = "/v1/users";
 
@@ -482,4 +487,306 @@ public class EmployeecontrollerTest {
           employeeController.updateUserRoles(employeeId, newRoles);
         });
   }
+
+  @Test
+  public void testGetAllEmployees_success() throws Exception {
+    List<User> mockUsers = Arrays.asList(user1, user2);
+    when(employeeService.getAllEmployees()).thenReturn(mockUsers);
+    ResponseEntity<List<User>> response = employeeController.getAllEmployees();
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody()).hasSize(2);
+    assertThat(response.getBody().get(0).getFirstName()).isEqualTo("dattu");
+    assertThat(response.getBody().get(1).getFirstName()).isEqualTo("ravi");
+    verify(employeeService, times(1)).getAllEmployees();
+  }
+
+  @Test
+  public void testGetAllEmployees_emptyList() throws Exception {
+    when(employeeService.getAllEmployees()).thenReturn(Collections.emptyList());
+    ResponseEntity<List<User>> response = employeeController.getAllEmployees();
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(response.getBody()).isNotNull();
+    assertThat(response.getBody()).isEmpty();
+
+    verify(employeeService, times(1)).getAllEmployees();
+  }
+
+  @Test
+  public void testGetAllEmployees_serviceException() throws Exception {
+    when(employeeService.getAllEmployees()).thenThrow(new RuntimeException("Database error"));
+
+    Exception exception = assertThrows(RuntimeException.class, () -> {
+      employeeController.getAllEmployees();
+    });
+
+    assertThat(exception.getMessage()).isEqualTo("Database error");
+    verify(employeeService, times(1)).getAllEmployees();
+  }
+
+
+  @Test
+  void testGetUsersByPermissionAndOrganization_Success() throws Exception {
+    String permission = "ROLE_ADMIN";
+    List<User> mockUsers = Arrays.asList(user1, user2);
+    when(employeeService.getUsersByPermissionAndOrganization(permission)).thenReturn(mockUsers);
+
+    ResponseEntity<List<User>> response = employeeController.getUsersByPermissionAndOrganization(permission);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(mockUsers.size(), response.getBody().size());
+    assertEquals(mockUsers.get(0).getFirstName(), response.getBody().get(0).getFirstName());
+    assertEquals(mockUsers.get(1).getEmail(), response.getBody().get(1).getEmail());
+  }
+
+  @Test
+  void testIsEmployeeHasPermission_EmployeeHasPermission() throws Exception {
+    String employeeId = "EMP001";
+    String permission = "CREATE_EMPLOYEE";
+    Boolean mockResult = true;
+
+    when(employeeService.isEmployeeHasPermission(employeeId, permission)).thenReturn(mockResult);
+
+    ResponseEntity<Boolean> response = employeeController.isEmployeeHasPermission(employeeId, permission);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertTrue(response.getBody());
+  }
+
+  @Test
+  void testIsEmployeeHasPermission_EmployeeDoesNotHavePermission() throws Exception {
+    String employeeId = "EMP002";
+    String permission = "CREATE_EMPLOYEE";
+    Boolean mockResult = false;
+
+    when(employeeService.isEmployeeHasPermission(employeeId, permission)).thenReturn(mockResult);
+
+    ResponseEntity<Boolean> response = employeeController.isEmployeeHasPermission(employeeId, permission);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertFalse(response.getBody());
+  }
+
+  @Test
+  void testIsEmployeeHasPermission_InvalidPermission() throws Exception {
+    String employeeId = "EMP003";
+    String permission = "INVALID_PERMISSION";
+
+    when(employeeService.isEmployeeHasPermission(employeeId, permission))
+            .thenThrow(new IllegalArgumentException("Invalid permission"));
+
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      employeeController.isEmployeeHasPermission(employeeId, permission);
+    });
+
+    assertEquals("Invalid permission", exception.getMessage());
+  }
+
+  @Test
+  void testIsEmployeeHasPermission_ServiceException() throws Exception {
+    String employeeId = "EMP005";
+    String permission = "CREATE_EMPLOYEE";
+
+    when(employeeService.isEmployeeHasPermission(employeeId, permission))
+            .thenThrow(new RuntimeException("Internal Server Error"));
+
+    Exception exception = assertThrows(RuntimeException.class, () -> {
+      employeeController.isEmployeeHasPermission(employeeId, permission);
+    });
+
+    assertEquals("Internal Server Error", exception.getMessage());
+  }
+
+
+  @Test
+  void testGetUsersByPermissionAndOrganization_InvalidPermission() throws Exception {
+    String permission = "INVALID_ROLE";
+    when(employeeService.getUsersByPermissionAndOrganization(permission)).thenReturn(Collections.emptyList());
+
+    ResponseEntity<List<User>> response = employeeController.getUsersByPermissionAndOrganization(permission);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertTrue(response.getBody().isEmpty());
+  }
+
+  @Test
+  void testGetUsersByPermissionAndOrganization_ServiceException() throws Exception {
+    String permission = "ROLE_ADMIN";
+    when(employeeService.getUsersByPermissionAndOrganization(permission)).thenThrow(new RuntimeException("Database error"));
+
+    Exception exception = assertThrows(RuntimeException.class, () -> {
+      employeeController.getUsersByPermissionAndOrganization(permission);
+    });
+
+    assertEquals("Database error", exception.getMessage());
+  }
+
+
+  @Test
+  void testGetEmployeeCountByOrganizationId_Success() throws Exception {
+
+    EmployeeCount mockEmployeeCount = new EmployeeCount();
+    mockEmployeeCount.setTotalCount(100L);
+    mockEmployeeCount.setActiveCount(80L);
+    mockEmployeeCount.setInactiveCount(20L);
+
+    when(employeeService.getEmployeeCountByOrganization()).thenReturn(mockEmployeeCount);
+
+    ResponseEntity<EmployeeCount> response = employeeController.getEmployeeCountByOrganizationId();
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(100L, response.getBody().getTotalCount());
+    assertEquals(80L, response.getBody().getActiveCount());
+    assertEquals(20L, response.getBody().getInactiveCount());
+  }
+
+  @Test
+  void testGetEmployeeCountByOrganizationId_NoEmployees() throws Exception {
+    EmployeeCount mockEmployeeCount = new EmployeeCount();
+    mockEmployeeCount.setTotalCount(0L);
+    mockEmployeeCount.setActiveCount(0L);
+    mockEmployeeCount.setInactiveCount(0L);
+
+    when(employeeService.getEmployeeCountByOrganization()).thenReturn(mockEmployeeCount);
+
+    ResponseEntity<EmployeeCount> response = employeeController.getEmployeeCountByOrganizationId();
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(0L, response.getBody().getTotalCount());
+    assertEquals(0L, response.getBody().getActiveCount());
+    assertEquals(0L, response.getBody().getInactiveCount());
+  }
+
+
+  @Test
+  void testGetUsersByEmployeeIds_Success() throws Exception {
+    List<String> employeeIds = Arrays.asList("emp123", "emp456");
+    EmployeeOrgRequest request = new EmployeeOrgRequest(employeeIds);
+    List<User> mockUsers = Arrays.asList(user1, user2);
+
+    when(employeeService.getUsersByEmployeeIds(employeeIds)).thenReturn(mockUsers);
+
+    ResponseEntity<List<User>> response = employeeController.getUsersByEmployeeIds(request);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(mockUsers.size(), response.getBody().size());
+    assertEquals(mockUsers.get(0).getFirstName(), response.getBody().get(0).getFirstName());
+    assertEquals(mockUsers.get(1).getEmail(), response.getBody().get(1).getEmail());
+  }
+
+  @Test
+  void testGetUsersByEmployeeIds_NoEmployeesFound() throws Exception {
+    List<String> employeeIds = Arrays.asList("emp789", "emp999");
+    EmployeeOrgRequest request = new EmployeeOrgRequest(employeeIds);
+
+    when(employeeService.getUsersByEmployeeIds(employeeIds)).thenReturn(Collections.emptyList());
+
+    ResponseEntity<List<User>> response = employeeController.getUsersByEmployeeIds(request);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertTrue(response.getBody().isEmpty());
+  }
+
+  @Test
+  void testGetUsersByEmployeeIds_InvalidEmployeeIds() throws Exception {
+    EmployeeOrgRequest request = new EmployeeOrgRequest(Collections.singletonList("invalid_emp"));
+
+    when(employeeService.getUsersByEmployeeIds(request.getEmployeeIds()))
+            .thenThrow(new IllegalArgumentException("Invalid Employee ID"));
+
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      employeeController.getUsersByEmployeeIds(request);
+    });
+
+    assertEquals("Invalid Employee ID", exception.getMessage());
+  }
+
+
+
+  @Test
+  void testChangeEmailAndPassword_Success() throws Exception {
+
+    ChangeEmailAndPasswordRequest request = new ChangeEmailAndPasswordRequest();
+    request.setNewEmail("newemail@example.com");
+    request.setCurrentPassword("currentPassword123");
+    request.setNewPassword("newPassword123");
+    request.setConfirmPassword("newPassword123");
+    String expectedResponse = "Email and password changed successfully.";
+
+    when(employeeService.changeEmailAndPassword(request)).thenReturn(expectedResponse);
+
+    ResponseEntity<String> response = employeeController.changeEmailAndPassword(request);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(expectedResponse, response.getBody());
+  }
+
+  @Test
+  void testChangeEmailAndPassword_InvalidEmailFormat() throws Exception {
+    ChangeEmailAndPasswordRequest request = new ChangeEmailAndPasswordRequest();
+    request.setNewEmail("invalid-email");
+    request.setCurrentPassword("currentPassword123");
+    request.setNewPassword("newPassword123");
+    request.setConfirmPassword("newPassword123");
+
+    when(employeeService.changeEmailAndPassword(request))
+            .thenThrow(new IllegalArgumentException("Invalid email format"));
+
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      employeeController.changeEmailAndPassword(request);
+    });
+
+    assertEquals("Invalid email format", exception.getMessage());
+  }
+
+  @Test
+  void testChangeEmailAndPassword_IncorrectCurrentPassword() throws Exception {
+    ChangeEmailAndPasswordRequest request = new ChangeEmailAndPasswordRequest();
+    request.setNewEmail("newemail@example.com");
+    request.setCurrentPassword("wrongPassword");
+    request.setNewPassword("newPassword123");
+    request.setConfirmPassword("newPassword123");
+
+    when(employeeService.changeEmailAndPassword(request))
+            .thenThrow(new SecurityException("Current password is incorrect"));
+
+    Exception exception = assertThrows(SecurityException.class, () -> {
+      employeeController.changeEmailAndPassword(request);
+    });
+
+    assertEquals("Current password is incorrect", exception.getMessage());
+  }
+
+  @Test
+  void testChangeEmailAndPassword_WeakPassword() throws Exception {
+    ChangeEmailAndPasswordRequest request = new ChangeEmailAndPasswordRequest();
+    request.setNewEmail("newemail@example.com");
+    request.setCurrentPassword("currentPassword123");
+    request.setNewPassword("123");
+    request.setConfirmPassword("123");
+
+    when(employeeService.changeEmailAndPassword(request))
+            .thenThrow(new IllegalArgumentException("Password is too weak"));
+
+    Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+      employeeController.changeEmailAndPassword(request);
+    });
+
+    assertEquals("Password is too weak", exception.getMessage());
+  }
+
+
+
+
+
 }
