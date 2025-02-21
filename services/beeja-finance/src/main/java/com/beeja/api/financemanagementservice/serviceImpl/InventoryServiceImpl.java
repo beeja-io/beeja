@@ -7,7 +7,7 @@ import com.beeja.api.financemanagementservice.enums.Availability;
 import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
-import com.beeja.api.financemanagementservice.exceptions.DuplicateProductIdException;
+import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
 import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.repository.InventoryRepository;
@@ -50,7 +50,7 @@ public class InventoryServiceImpl implements InventoryService {
    *
    * @param deviceDetails Details of the device to be added.
    * @return The newly added Inventory object.
-   * @throws DuplicateProductIdException If a product with the same ID already exists.
+   * @throws DuplicateDataException If a product with the same ID already exists.
    * @throws Exception If there is an error saving the device details.
    */
   @Override
@@ -58,7 +58,7 @@ public class InventoryServiceImpl implements InventoryService {
     Optional<Inventory> existingDevice =
         inventoryRepository.findByProductId(deviceDetails.getProductId());
     if (existingDevice.isPresent()) {
-      throw new DuplicateProductIdException(
+      throw new DuplicateDataException(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.RESOURCE_EXISTS_ERROR,
               ErrorCode.RESOURCE_IN_USE,
@@ -84,7 +84,7 @@ public class InventoryServiceImpl implements InventoryService {
     try {
       return inventoryRepository.save(device);
     } catch (DuplicateKeyException e) {
-      throw new DuplicateProductIdException(
+      throw new DuplicateDataException(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.RESOURCE_EXISTS_ERROR, ErrorCode.RESOURCE_IN_USE, e.getMessage()));
     } catch (Exception e) {
@@ -243,7 +243,7 @@ public class InventoryServiceImpl implements InventoryService {
    * @param updatedDeviceDetails Updated details of the device.
    * @param deviceId ID of the device to be updated.
    * @return The updated Inventory object.
-   * @throws DuplicateProductIdException If a product with the updated ID already exists.
+   * @throws DuplicateDataException If a product with the updated ID already exists.
    * @throws Exception If there is an error updating the device details.
    */
   @Override
@@ -254,7 +254,7 @@ public class InventoryServiceImpl implements InventoryService {
         Optional<Inventory> productIdCheck =
             inventoryRepository.findByProductId(updatedDeviceDetails.getProductId());
         if (productIdCheck.isPresent()) {
-          throw new DuplicateProductIdException(
+          throw new DuplicateDataException(
               BuildErrorMessage.buildErrorMessage(
                   ErrorType.CONFLICT_ERROR,
                   ErrorCode.RESOURCE_EXISTS_ERROR,
@@ -293,8 +293,8 @@ public class InventoryServiceImpl implements InventoryService {
                 ErrorCode.RESOURCE_NOT_FOUND,
                 Constants.DEVICE_NOT_FOUND + " with ID " + deviceId));
       }
-    } catch (DuplicateProductIdException e) {
-      throw new DuplicateProductIdException(e.getMessage());
+    } catch (DuplicateDataException e) {
+      throw new DuplicateDataException(e.getMessage());
     } catch (Exception e) {
       throw new Exception(
           BuildErrorMessage.buildErrorMessage(

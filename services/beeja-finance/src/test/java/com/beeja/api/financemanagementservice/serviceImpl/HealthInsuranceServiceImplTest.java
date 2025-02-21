@@ -2,8 +2,6 @@ package com.beeja.api.financemanagementservice.serviceImpl;
 
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.InstalmentType;
-import com.beeja.api.financemanagementservice.exceptions.HealthInsuranceCreationException;
-import com.beeja.api.financemanagementservice.exceptions.HealthInsuranceNotFoundException;
 import com.beeja.api.financemanagementservice.modals.HealthInsurance;
 import com.beeja.api.financemanagementservice.repository.HealthInsuranceRepository;
 import com.beeja.api.financemanagementservice.requests.HealthInsuranceRequest;
