@@ -87,7 +87,7 @@ public class HealthInsuranceController {
     return new ResponseEntity<>(healthInsurance, HttpStatus.OK);
   }
 
-  @GetMapping("/employee/{employeeID}")
+  @GetMapping("/{employeeID}")
   @HasPermission(READ_HEALTH_INSURANCE)
   public ResponseEntity<HealthInsurance> getHealthInsuranceByEmployeeId(
       @PathVariable String employeeID) throws Exception {
