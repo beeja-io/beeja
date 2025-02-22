@@ -166,5 +166,9 @@
   "FEATURES": "Funktionen",
   "LIGHT": "Hell",
   "DARK": "Dunkel",
-  "BETA": "BETA"
+  "BETA": "BETA",
+  "ENTER_YOUR_COMMENTS_HERE": "Enter your comment here...",
+  "LEAVE_A_COMMENT": "Leave a Comment",
+  "COMMENTS": "Comments",
+  "COMMENT": "Comment"
 }

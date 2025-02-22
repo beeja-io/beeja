@@ -64,7 +64,9 @@ const CenterModal = (props: CenterModalProps) => {
           props.isImageSelected ||
           props.isDashedBox) && (
           <>
-            <EditProfileText>{props.editText}</EditProfileText>
+             <EditProfileText>
+              {props.editText ? t(props.editText) : ''}
+            </EditProfileText>
 
             <CloseButton onClick={props.handleModalClose}>
               <CloseButtonSVG />

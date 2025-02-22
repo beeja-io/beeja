@@ -23,6 +23,10 @@ import { useFeatureToggles } from '../context/FeatureToggleContext';
 import { hasFeature } from '../utils/featureCheck';
 import { EFeatureToggles } from '../entities/FeatureToggle';
 import FeatureToggleScreen from '../screens/FeatureToggleScreen.screen';
+import RecruitmentManagementScreen from '../screens/RecruitmentManagementScreen.screen';
+import AddNewApplicant from '../components/directComponents/AddNewApplicant.component';
+import EditApplicant from '../components/directComponents/EditApplicant.component';
+import ReferEmployeeScreen from '../screens/ReferEmployeeScreen.screen';
 
 const AllRoutes = () => {
   return (
@@ -99,7 +103,20 @@ const AllRoutes = () => {
           </CustomRoute>
         }
       />
-
+       <Route
+        path="/recruitment"
+        element={<RecruitmentManagementScreen isReferral={false} />}
+      />
+      <Route
+        path="/recruitment/new"
+        element={<AddNewApplicant isReferScreen={false} />}
+      />
+      <Route path="/recruitment/:id" element={<EditApplicant />} />
+      <Route path="/recruuitment/refer" element={<ReferEmployeeScreen />} />
+      <Route
+        path="/recruitment/my-referrals"
+        element={<RecruitmentManagementScreen isReferral={true} />}
+      />
       <Route path="/notfound" element={<Error404Screen />} />
       <Route path="/service-unavailable" element={<ServiceUnavailable />} />
       <Route path="*" element={<Navigate to="/notfound" />} />

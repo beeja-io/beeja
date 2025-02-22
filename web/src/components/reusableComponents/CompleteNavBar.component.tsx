@@ -37,6 +37,7 @@ import {
   INVENTORY_MODULE,
   LOAN_MODULE,
   ORGANIZATION_MODULE,
+  RECRUITMENT_MODULE,
 } from '../../constants/PermissionConstants';
 import ServiceUnavailable from '../../screens/ServiceUnavailable.screen';
 import { usePreferences } from '../../context/PreferencesContext';
@@ -44,6 +45,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { hasFeature } from '../../utils/featureCheck';
 import { useFeatureToggles } from '../../context/FeatureToggleContext';
 import { EFeatureToggles } from '../../entities/FeatureToggle';
+import { UserBoxWithLinkSVG } from '../../svgs/CommonSvgs.svs';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import { t } from 'i18next';
 
@@ -301,7 +303,48 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )}
-
+                     {hasPermission(user, RECRUITMENT_MODULE.GET_APPLICATIONS) && (
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="/recruitment"
+                      tooltipName="Recruitment"
+                      linkName="Recruitment"
+                      svgIcon={
+                        <UserBoxWithLinkSVG
+                          props={{
+                            isActive:
+                              openDropdown === 'recruitment' ||
+                              currentPath === '/recruitment',
+                          }}
+                        />
+                      }
+                    />
+                  )}
+                  <ListItem
+                    isSideBarOpen={sidebarOpen}
+                    linkTo="#"
+                    tooltipName="Services"
+                    linkName="Services"
+                    svgIcon={
+                      <TrendingUpSVG
+                        props={{ isActive: openDropdown === 'services' }}
+                      />
+                    }
+                    additionalSvgIcon={<ChevronDownSVG />}
+                    dropdownItems={[
+                      {
+                        name: 'Referrals',
+                        link: '/recruitment/my-referrals',
+                      },
+                    ]}
+                    isDropdownOpen={openDropdown === 'services'}
+                    setDropdownOpen={() => {
+                      setOpenDropdown((prev) =>
+                        prev === 'services' ? null : 'services'
+                      );
+                    }}
+                    hasAdditionalSvg
+                  />
                   <ListItem
                     isSideBarOpen={sidebarOpen}
                     linkTo="#"
