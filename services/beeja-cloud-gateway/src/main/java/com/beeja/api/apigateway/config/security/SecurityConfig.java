@@ -4,6 +4,7 @@ import static org.springframework.security.web.server.util.matcher.ServerWebExch
 
 import com.beeja.api.apigateway.config.security.properties.AuthProperties;
 import java.time.Duration;
+import java.util.List;
 import java.util.ServiceLoader;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import reactor.core.publisher.Mono;
 
@@ -146,6 +150,22 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
+
+  @Bean
+  public CorsWebFilter corsWebFilter() {
+    CorsConfiguration corsConfig = new CorsConfiguration();
+    corsConfig.setAllowedOriginPatterns(List.of(authProperties.getFrontEndUrl(), authProperties.getLocalFrontEndUrl()));
+    corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    corsConfig.setAllowedHeaders(List.of("*"));
+    corsConfig.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", corsConfig);
+
+    return new CorsWebFilter(source);
+  }
+
 
   @Bean
   public CookieWebSessionIdResolver cookieSessionIdResolverWithoutSameSite() {
