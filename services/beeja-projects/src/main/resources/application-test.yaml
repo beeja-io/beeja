@@ -37,6 +37,7 @@ springdoc:
 client-urls:
   accountsService: http://beeja-accounts:8080/accounts
   fileService: http://beeja-file-management:8090/files
+  employeeService: http://beeja-employee-management:8089/employees
 
 
 jwt:

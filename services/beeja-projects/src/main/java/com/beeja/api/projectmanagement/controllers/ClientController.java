@@ -15,17 +15,17 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-
-import static com.beeja.api.projectmanagement.constants.PermissionConstants.CREATE_CLIENT;
+import static com.beeja.api.projectmanagement.constants.PermissionConstants.*;
 
 @RestController
 @RequestMapping("v1/clients")
 public class ClientController {
 
+
     @Autowired private ClientService clientService;
 
     @PostMapping
-   @HasPermission(CREATE_CLIENT)
+    @HasPermission(CREATE_CLIENT)
     public ResponseEntity<?> addClient(@Valid @RequestBody Client client, BindingResult bindingResult)
     {
         if (bindingResult.hasErrors()) {
@@ -35,6 +35,7 @@ public class ClientController {
     }
 
     @PatchMapping("/update/{clientId}")
+  @HasPermission(UPDATE_CLIENT)
     public ResponseEntity<Client> updateClientPartially(
             @PathVariable String clientId,
             @RequestBody Map<String, Object> updates) {
@@ -43,6 +44,7 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
+    @HasPermission(GET_CLIENT)
     public ResponseEntity<Client> getClient(@PathVariable String id) {
         return ResponseEntity.ok(clientService.getClientById(id));
     }
