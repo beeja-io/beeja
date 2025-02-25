@@ -5,13 +5,21 @@ import com.beeja.api.projectmanagement.annotations.HasPermission;
 import com.beeja.api.projectmanagement.exceptions.MethodArgumentNotValidException;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.dto.ClientDTO;
+import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 
 import java.util.List;
 import java.util.Map;
@@ -27,12 +35,12 @@ public class ClientController {
 
     @PostMapping
    @HasPermission(CREATE_CLIENT)
-    public ResponseEntity<Client> addClient(@Valid @RequestBody Client client, BindingResult bindingResult)
+    public ResponseEntity<Client> addClient(@Valid @RequestBody ClientRequest clientRequest, BindingResult bindingResult)
     {
         if (bindingResult.hasErrors()) {
             throw new MethodArgumentNotValidException(bindingResult);
         }
-        return ResponseEntity.ok(clientService.addClient(client));
+        return ResponseEntity.ok(clientService.addClient(clientRequest));
     }
 
     @PatchMapping("/{id}")

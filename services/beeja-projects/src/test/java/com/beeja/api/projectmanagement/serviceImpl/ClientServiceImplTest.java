@@ -11,6 +11,7 @@ import com.beeja.api.projectmanagement.model.Address;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.dto.ClientDTO;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
+import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +50,7 @@ public class ClientServiceImplTest {
     @Mock
     private MongoTemplate mongoTemplate;
 
-    private Client validClient;
+    private ClientRequest validClient;
     private Client existingClient;
     private Map<String, Object> mockUserContext;
 
@@ -58,11 +59,11 @@ public class ClientServiceImplTest {
     public void setup() {
         MockitoAnnotations.openMocks(this);
 
-        validClient = new Client();
-        validClient.setId("1234567890abcdef");
+        validClient = new ClientRequest();
+//        validClient.setId("1234567890abcdef");
         validClient.setClientName("John Doe");
         validClient.setEmail("john.doe@example.com");
-        validClient.setClientId("C123");
+//        validClient.setClientId("C123");
         validClient.setPrimaryAddress(new Address("123 Main St", "Springfield", "IL", "62701", "USA"));
         validClient.setUsePrimaryAsBillingAddress(true);
         existingClient = new Client();

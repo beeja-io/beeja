@@ -1,5 +1,6 @@
 package com.beeja.api.projectmanagement.repository;
 
+import com.beeja.api.projectmanagement.model.dto.ClientDTO;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import com.beeja.api.projectmanagement.model.Client;
 
@@ -18,7 +19,7 @@ public interface ClientRepository extends MongoRepository<Client,String> {
 
     long countByOrganizationId(String organizationId);
 
-    List<Client> findAllByOrganizationIdOrderByCreatedAtDesc(String organizationId);
+    List<ClientDTO> findAllByOrganizationIdOrderByCreatedAtDesc(String organizationId);
 }
 
 

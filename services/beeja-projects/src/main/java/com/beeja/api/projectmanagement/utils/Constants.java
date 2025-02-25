@@ -22,7 +22,9 @@ public class Constants {
 
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String INVALID_JSON_STRUCTURE ="Invalid structure for field '%s', expected an object.";
 
+  ;
 
 
   public static String format(String message, Object... args) {
