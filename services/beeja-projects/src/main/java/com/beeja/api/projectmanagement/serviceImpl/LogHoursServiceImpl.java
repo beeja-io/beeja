@@ -1,5 +1,8 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
+import com.beeja.api.projectmanagement.client.AccountClient;
+import com.beeja.api.projectmanagement.constants.LogHoursConstants;
+import com.beeja.api.projectmanagement.enums.LogHourEnum;
 import com.beeja.api.projectmanagement.model.LogHours.LogHours;
 import com.beeja.api.projectmanagement.model.LogHours.Timesheet;
 import com.beeja.api.projectmanagement.repository.LogHoursRepository;
@@ -8,6 +11,7 @@ import com.beeja.api.projectmanagement.service.LogHoursService;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,28 +27,101 @@ public class LogHoursServiceImpl implements LogHoursService {
     @Autowired
     private LogHoursRepository logHoursRepository;
 
+    @Autowired
+    private AccountClient accountClient;
+
     @Override
     public void saveLogHours(LogHoursRequest logHoursRequest) {
 
-        for (LogHours logHours : logHoursRequest.getLogHours()) {
-            logHours.validateLogHour();
+        if (logHoursRequest.getEmployeeId() == null || logHoursRequest.getEmployeeId().isBlank()) {
+            throw new IllegalArgumentException("Employee ID cannot be blank.");
+        }
+        if (logHoursRequest.getLogHours() == null || logHoursRequest.getLogHours().isEmpty()) {
+            throw new IllegalArgumentException("Log hours list cannot be empty.");
         }
 
+        ResponseEntity<?> response = accountClient.getEmployeeById(logHoursRequest.getEmployeeId());
+        if (response.getStatusCode().is4xxClientError() || response.getBody() == null) {
+            throw new IllegalArgumentException("Employee ID is not registered in the accounts system.");
+        }
+
+        for (LogHours logHours : logHoursRequest.getLogHours()) {
+            validateLogHourEntry(logHours);
+        }
         String employeeId = logHoursRequest.getEmployeeId();
-        Timesheet timesheet = logHoursRepository.findByEmployeeIdAndOrganizationId(employeeId, UserContext.getLoggedInUserOrganization().get("id").toString());
+        String organizationId = UserContext.getLoggedInUserOrganization().get("id").toString();
+        Timesheet timesheet = logHoursRepository.findByEmployeeIdAndOrganizationId(employeeId, organizationId);
 
         if (timesheet == null) {
             timesheet = new Timesheet();
             timesheet.setEmployeeId(employeeId);
+            timesheet.setOrganizationId(organizationId);
+            timesheet.setLogHours(new ArrayList<>());
         }
+        List<LogHours> allLogHours = new ArrayList<>(timesheet.getLogHours());
+        allLogHours.addAll(logHoursRequest.getLogHours());
+
+        validateTotalHoursPerDay(allLogHours);
 
         timesheet.getLogHours().addAll(logHoursRequest.getLogHours());
         logHoursRepository.save(timesheet);
     }
 
+    private void validateLogHourEntry(LogHours logHours) {
+        if (logHours.getProjectId() == null || logHours.getProjectId().isBlank()) {
+            throw new IllegalArgumentException("Project ID cannot be blank.");
+        }
+        if (logHours.getContractId() == null || logHours.getContractId().isBlank()) {
+            throw new IllegalArgumentException("Contract ID cannot be blank.");
+        }
+        if (logHours.getLoghour() == null || logHours.getLoghour().isBlank()) {
+            throw new IllegalArgumentException("Log hour cannot be blank.");
+        }
+        if (!LogHourEnum.isValid(logHours.getLoghour())) {
+            throw new IllegalArgumentException("Invalid log hour format. Allowed values: " + LogHourEnum.getAllowedValues());
+        }
+        if (logHours.getDate() == null) {
+            throw new IllegalArgumentException("Date cannot be null.");
+        }
+    }
+
+    private void validateTotalHoursPerDay(List<LogHours> allLogHours) {
+        Map<Date, Integer> totalMinutesPerDay = new HashMap<>();
+        for (LogHours logHours : allLogHours) {
+            int minutes = convertToMinutes(logHours.getLoghour());
+            totalMinutesPerDay.put(logHours.getDate(),
+                    totalMinutesPerDay.getOrDefault(logHours.getDate(), 0) + minutes);
+        }
+        for (Map.Entry<Date, Integer> entry : totalMinutesPerDay.entrySet()) {
+            if (entry.getValue() > 1440) {
+                throw new IllegalArgumentException(
+                        "Total logged hours for " + entry.getKey() + " exceed 24 hours."
+                );
+            }
+        }
+    }
+
+    private int convertToMinutes(String logHour) {
+        String[] parts = logHour.split(":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        return (hours * 60) + minutes;
+    }
 
     @Override
     public void updateLogHours(LogHoursRequest logHoursRequest) {
+        if (logHoursRequest.getEmployeeId() == null || logHoursRequest.getEmployeeId().isBlank()) {
+            throw new IllegalArgumentException("Employee ID cannot be blank.");
+        }
+        if (logHoursRequest.getLogHours() == null || logHoursRequest.getLogHours().isEmpty()) {
+            throw new IllegalArgumentException("Log hours list cannot be empty.");
+        }
+
+        ResponseEntity<?> response = accountClient.getEmployeeById(logHoursRequest.getEmployeeId());
+        if (response.getStatusCode().is4xxClientError() || response.getBody() == null) {
+            throw new IllegalArgumentException("Employee ID is not registered in the accounts system.");
+        }
+
         for (LogHours logHours : logHoursRequest.getLogHours()) {
             logHours.validateLogHour();
         }
@@ -53,7 +130,7 @@ public class LogHoursServiceImpl implements LogHoursService {
         Timesheet timesheet = logHoursRepository.findByEmployeeIdAndOrganizationId(employeeId, organizationId);
 
         if (timesheet == null) {
-            throw new IllegalArgumentException("Timesheet not found for employee ID: " + employeeId + " in organization ID: " + organizationId);
+            throw new IllegalArgumentException(String.format(LogHoursConstants.TIMESHEET_NOT_FOUND_FOR_EMPLOYEE, employeeId, organizationId));
         }
 
         List<LogHours> existingLogHours = timesheet.getLogHours();
@@ -80,6 +157,10 @@ public class LogHoursServiceImpl implements LogHoursService {
                 existingLogHours.add(logHour);
             }
         }
+        List<LogHours> allLogHours = new ArrayList<>(timesheet.getLogHours());
+        allLogHours.addAll(logHoursRequest.getLogHours());
+
+        validateTotalHoursPerDay(allLogHours);
         logHoursRepository.save(timesheet);
     }
 
@@ -97,7 +178,7 @@ public class LogHoursServiceImpl implements LogHoursService {
             return getMonthlyLogHours(employeeId, givenDate);
         }
 
-        summary.put("error", "Invalid type parameter. Use 'day', 'week', or 'month'.");
+        summary.put("error", LogHoursConstants.INVALID_TYPE_PARAMETER );
         return summary;
     }
 
@@ -157,7 +238,7 @@ public class LogHoursServiceImpl implements LogHoursService {
                 return hours + (minutes / 60.0); // Convert to hours
             }
         } catch (NumberFormatException e) {
-            System.out.println("Invalid log hour format: " + loghour);
+            System.out.println(String.format(LogHoursConstants.INVALID_LOG_HOUR_FORMAT, loghour));
         }
 
         return 0.0;
@@ -199,7 +280,6 @@ public class LogHoursServiceImpl implements LogHoursService {
             }
         }
 
-        // Prepare the response
         Map<String, Object> response = new HashMap<>();
         response.put("weekNumber", weekNumber);
         response.put("startOfWeek", startOfWeek);
