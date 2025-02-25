@@ -768,26 +768,14 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
 
-  @Override
   public List<EmployeeDetailsResponse> getEmployeeDetails() {
     List<Employee> employees = employeeRepository.findAll();
 
     return employees.stream()
-            .map(emp -> new EmployeeDetailsResponse(
-                    emp.getId(),
-                    emp.getEmployeeId(),
-                    emp.getPersonalInformation() != null ? getEmployeeName(emp.getPersonalInformation()) : null,
-                    emp.getContact() != null ? getEmail(emp.getContact()) : null,
-                    emp.getProfilePictureId()
-            ))
+            .map(emp -> new EmployeeDetailsResponse(emp.getId()))
             .collect(Collectors.toList());
   }
 
-  private String getEmployeeName(PersonalInformation personalInfo) {
-    return personalInfo.getNationality();
-  }
 
-  private String getEmail(Contact contact) {
-    return contact.getAlternativeEmail();
-  }
+
 }

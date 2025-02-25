@@ -89,7 +89,7 @@ public class EmployeeController {
         .body(employeeService.updateKYCRequest(employeeId, updateKYCRequest));
   }
 
-  @GetMapping("/info")
+  @GetMapping("/response")
   public ResponseEntity<List<EmployeeDetailsResponse>> getEmployeeDetails() {
     List<EmployeeDetailsResponse> employees = employeeService.getEmployeeDetails();
     return ResponseEntity.ok(employees);
