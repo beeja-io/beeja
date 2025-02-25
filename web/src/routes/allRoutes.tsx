@@ -7,6 +7,7 @@ import Error404Screen from '../screens/Error404Screen.screen';
 import ExpenseManagement from '../screens/ExpenseManagement.screen';
 import { useUser } from '../context/UserContext';
 import LoanManagementScreen from '../screens/LoanManagementScreen.screen';
+import TimeSheet from '../screens/TimeSheet';
 import {
   BULK_PAYSLIP_MODULE,
   EXPENSE_MODULE,
@@ -73,6 +74,17 @@ const AllRoutes = () => {
             featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
           >
             {<InventoryManagement />}
+          </CustomRoute>
+        }
+      />
+      <Route
+        path="/timeoff/timesheet"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <TimeSheet />
           </CustomRoute>
         }
       />

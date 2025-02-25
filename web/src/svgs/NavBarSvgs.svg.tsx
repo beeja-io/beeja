@@ -188,6 +188,26 @@ export const CalenderSVG = ({ isActive }: { isActive: boolean }) => {
   );
 };
 
+export const TimeOffSVG = ({ isActive }: { isActive: boolean }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={isActive ? '#005792' : '#A0AEC0'}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="13" r="8" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="5" x2="12" y2="7" />
+    </svg>
+  );
+};
+
 export const TimeSVG = ({ props: { isActive } }: { props: SvgFillProp }) => {
   return (
     <>
