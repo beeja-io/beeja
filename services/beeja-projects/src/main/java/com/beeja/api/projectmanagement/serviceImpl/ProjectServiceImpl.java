@@ -45,27 +45,35 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private EmployeeClient employeeClient;
 
-    @Override
     @Transactional
     public Project addProject(Project project) {
         if (project.getClient() == null || project.getClient().getId() == null) {
             throw new ClientNotFoundException("Client information is required for the project.");
         }
+
         Client client = clientRepository.findById(project.getClient().getId())
                 .orElseThrow(() -> new ClientNotFoundException("Client not found with ID: " + project.getClient().getId()));
         project.setClient(client);
         project.setProjectId(generateNextProjectId());
-        ResponseEntity<List<EmployeeDetailsResponse>> response = employeeClient.getEmployeeDetails();
-        List<EmployeeDetailsResponse> employeeDetails = response.getBody();
-        if (employeeDetails == null) {
-            throw new IllegalArgumentException("Error fetching employee details. Please try again later.");
+
+        List<EmployeeDetailsResponse> employeeDetails;
+        try {
+            employeeDetails = employeeClient.getEmployeeDetails();
+            if (employeeDetails == null || employeeDetails.isEmpty()) {
+                throw new IllegalArgumentException("Error fetching employee details. No employees found.");
+            }
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error fetching employee details. Please try again later.", e);
         }
+
         if (project.getResources() != null && !project.getResources().isEmpty()) {
             project.setResources(getOrCreateResources(project.getResources()));
         }
+
         if (project.getProjectManagers() != null && !project.getProjectManagers().isEmpty()) {
             project.setProjectManagers(getOrCreateResources(project.getProjectManagers()));
         }
+
         return projectRepository.save(project);
     }
 
