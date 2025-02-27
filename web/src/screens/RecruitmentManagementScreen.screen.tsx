@@ -27,6 +27,10 @@ const RecruitmentManagementScreen = (
   };
   const [allApplicants, setAllApplicants] = useState<IApplicant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleIsLoading = () => {
+    setIsLoading(!isLoading)
+  }
   const fetchApplicants = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -74,6 +78,7 @@ const RecruitmentManagementScreen = (
         <ApplicantsList
           allApplicants={allApplicants}
           isLoading={isLoading}
+          handleIsLoading={handleIsLoading}
           isReferral={props.isReferral}
         />
       </ExpenseManagementMainContainer>

@@ -318,6 +318,23 @@ export const getAllApplicantList = (): Promise<AxiosResponse> => {
 export const postApplicant = (data: FormData): Promise<AxiosResponse> => {
   return axiosInstance.post('/recruitments/v1/applicants', data);
 };
+
+export const downloadApplicantResume = (
+  fileId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/recruitments/v1/applicants/resume/${fileId}`, {
+    responseType: 'blob',
+  });
+};
+
+export const changeApplicationStatus = (
+  applicantId: string,
+  status: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(
+    `/recruitments/v1/applicants/${applicantId}/status/${status}`
+  );
+}
 export const referApplicant = (data: FormData): Promise<AxiosResponse> => {
   return axiosInstance.post('/recruitments/v1/referrals', data);
 };

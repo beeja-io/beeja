@@ -7,7 +7,7 @@ import {
   TableList,
 } from '../../styles/DocumentTabStyles.style';
 import ZeroEntriesFound from '../reusableComponents/ZeroEntriesFound.compoment';
-import { CalenderIcon, DeleteIcon } from '../../svgs/DocumentTabSvgs.svg';
+import { CalenderIcon } from '../../svgs/DocumentTabSvgs.svg';
 import { formatDate } from '../../utils/dateFormatter';
 import { ExpenseListSection } from '../../styles/ExpenseListStyles.style';
 import { StatusIndicator } from '../../styles/LoanApplicationStyles.style';
@@ -16,12 +16,13 @@ import { BulkPayslipContainer } from '../../styles/BulkPayslipStyles.style';
 import ApplicantListActions from '../actionsOfLists/ApplicantListActions';
 import { EditIcon } from '../../svgs/ExpenseListSvgs.svg';
 import { DownloadSVG } from '../../svgs/CommonSvgs.svs';
-import { downloadReferralResume } from '../../service/axiosInstance';
-import axios, { AxiosError } from 'axios';
+import { downloadApplicantResume } from '../../service/axiosInstance';
+import { toast } from 'sonner';
 
 type ApplicantsListProps = {
   allApplicants: IApplicant[];
   isLoading: boolean;
+  handleIsLoading: () => void;
   isReferral: boolean;
 };
 const ApplicantsList = (props: ApplicantsListProps) => {
@@ -35,40 +36,48 @@ const ApplicantsList = (props: ApplicantsListProps) => {
     )
       ? [{ title: 'Edit', svg: <EditIcon /> }]
       : []),
-    ...(user?.roles.some((role) =>
-      role.permissions.some(
-        (permission) =>
-          permission === RECRUITMENT_MODULE.UPDATE_ENTIRE_APPLICANT
-      )
-    )
-      ? [{ title: 'Delete', svg: <DeleteIcon /> }]
-      : []),
+      // TODO: Update after implementing proper BE
+    // ...(user?.roles.some((role) =>
+    //   role.permissions.some(
+    //     (permission) =>
+    //       permission === RECRUITMENT_MODULE.UPDATE_ENTIRE_APPLICANT
+    //   )
+    // )
+    //   ? [{ title: 'Delete', svg: <DeleteIcon /> }]
+    //   : []),
   ];
 
   const handleDownloadResume = async (resumeId: string) => {
     try {
-      const response = await downloadReferralResume(resumeId);
+      props.handleIsLoading();
+      const response = await downloadApplicantResume(resumeId);
 
+      const contentDisposition = response.headers["content-disposition"];
+      let fileName = "resume_beeja.pdf";
+
+      if (contentDisposition) {
+        const match = contentDisposition.match(/filename\*?=['"]?(?:UTF-8'')?([^;'\"]+)/);
+        if (match && match[1]) {
+          fileName = decodeURIComponent(match[1]);
+        }
+      }
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `${'aas'}.${'pdf'}`);
+      link.download = fileName;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+      props.handleIsLoading();
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        if (axiosError.response?.status === 403) {
-          // FIXME remove hardcoded strings
-          alert('No permissions');
-        } else {
-          alert("Server Down! We'll come back soon");
-        }
-      }
+      console.error("Download failed:", error);
+      toast.error("Failed to download file.");
     }
   };
+
+
   return (
     <ExpenseListSection>
       {props.isLoading ? (
@@ -163,12 +172,12 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                         </span>
                       </td>
                       {!props.isReferral &&
-                      user?.roles.some((role) =>
-                        role.permissions.some(
-                          (permission) =>
-                            permission === RECRUITMENT_MODULE.UPDATE_APPLICANT
-                        )
-                      ) ? (
+                        user?.roles.some((role) =>
+                          role.permissions.some(
+                            (permission) =>
+                              permission === RECRUITMENT_MODULE.UPDATE_APPLICANT
+                          )
+                        ) ? (
                         <td>
                           <ApplicantListActions
                             options={Actions}

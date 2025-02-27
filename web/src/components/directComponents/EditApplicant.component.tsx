@@ -12,16 +12,15 @@ import {
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  getAllEmployeesByPermission,
+  changeApplicationStatus,
   getApplicantById,
   postComment,
 } from '../../service/axiosInstance';
 import { IApplicant } from '../../entities/ApplicantEntity';
 import { AxiosError } from 'axios';
-import { RECRUITMENT_MODULE } from '../../constants/PermissionConstants';
-import { LoggedInUserEntity } from '../../entities/LoggedInUserEntity';
-import { InterviewerArea } from '../../styles/RecruitmentStyles.style';
 import CommentsSection from '../reusableComponents/CommentsSection.component';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import { toast } from 'sonner';
 
 const EditApplicant = () => {
   const navigate = useNavigate();
@@ -29,8 +28,8 @@ const EditApplicant = () => {
   const goToPreviousPage = () => {
     navigate(-1);
   };
+  const [isLoading, setIsLoading] = useState(false);
   const [applicant, setApplicant] = useState<IApplicant>({} as IApplicant);
-  const [interviewers, setInterviewers] = useState<LoggedInUserEntity[]>([]);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setApplicant((prevState) => ({
@@ -38,22 +37,7 @@ const EditApplicant = () => {
       [name]: value,
     }));
   };
-  const getAllInterviewersWithRequiredPermission = () => {
-    getAllEmployeesByPermission(RECRUITMENT_MODULE.TAKE_INTERVIEW)
-      .then((res) => {
-        setInterviewers(res.data);
-      })
-      .catch((error) => {
-        if (error instanceof AxiosError) {
-          if (error.response?.status === 404) {
-            navigate('/recruitment');
-            return;
-          }
-        }
-        navigate('/recruitment');
-        return;
-      });
-  };
+
   const fetchApplicantById = () => {
     id &&
       getApplicantById(id)
@@ -72,8 +56,9 @@ const EditApplicant = () => {
         });
   };
   useEffect(() => {
+    setIsLoading(true);
     fetchApplicantById();
-    getAllInterviewersWithRequiredPermission();
+    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -85,171 +70,181 @@ const EditApplicant = () => {
 
     try {
       const response = await postComment(payload);
-      alert(response.data);
       setApplicant(response.data);
+      setIsLoading(false);
+      toast.success('Comment added successfully');
     } catch (error) {
-      alert('An error occurred while submitting the comment.');
+      setIsLoading(false);
+      toast.error('Failed to post comment');
     }
   };
 
+  const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newStatus = e.target.value;
+    e.preventDefault()
+    try {
+      setIsLoading(true);
+      const response = await changeApplicationStatus(applicant.id, newStatus);
+      setApplicant(response.data);
+      toast.success("Applicant status updated successfully");
+      navigate(-1);
+    } catch (error) {
+      console.error("Error updating applicant status:", error);
+      toast.error("Failed to update applicant status");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+
   return (
-    <ExpenseManagementMainContainer>
-      <ExpenseHeadingSection>
-        <span className="heading">
-          <span onClick={goToPreviousPage}>
-            <ArrowDownSVG />
+    <>
+      {isLoading ? <SpinAnimation /> : <ExpenseManagementMainContainer>
+        <ExpenseHeadingSection>
+          <span className="heading">
+            <span onClick={goToPreviousPage}>
+              <ArrowDownSVG />
+            </span>
+            Updating{' '}
+            <strong>
+              {applicant?.firstName} {applicant?.lastName}
+            </strong>
           </span>
-          Updating{' '}
-          <strong>
-            {applicant?.firstName} {applicant?.lastName}
-          </strong>
-        </span>
-      </ExpenseHeadingSection>
-      <BulkPayslipContainer className="addNewApplicant">
-        {applicant && (
-          <form>
-            <div>
-              <InputLabelContainer>
-                <label>
-                  First Name <ValidationText className="star">*</ValidationText>
-                </label>
-                <TextInput
-                  type="text"
-                  name="firstName"
-                  id="firstName"
-                  onChange={handleInputChange}
-                  value={applicant.firstName}
-                  required
-                  onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                    } else {
-                      const isAlphabet = /^[a-zA-Z\s]+$/.test(e.key);
-                      if (!isAlphabet) {
+        </ExpenseHeadingSection>
+        <BulkPayslipContainer className="addNewApplicant">
+          {applicant && (
+            <form>
+              <div>
+                <InputLabelContainer>
+                  <label>
+                    First Name <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <TextInput
+                    type="text"
+                    name="firstName"
+                    id="firstName"
+                    onChange={handleInputChange}
+                    value={applicant.firstName}
+                    disabled
+                    required
+                    onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                      if (e.key === 'Enter') {
                         e.preventDefault();
+                      } else {
+                        const isAlphabet = /^[a-zA-Z\s]+$/.test(e.key);
+                        if (!isAlphabet) {
+                          e.preventDefault();
+                        }
                       }
-                    }
-                  }}
-                  placeholder={'Ex: John'}
-                  autoComplete="off"
-                />
-              </InputLabelContainer>
-              <InputLabelContainer>
-                <label>
-                  Last Name <ValidationText className="star">*</ValidationText>
-                </label>
-                <TextInput
-                  type="text"
-                  name="lastName"
-                  id="lastName"
-                  value={applicant.lastName}
-                  required
-                  autoComplete="off"
-                  onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                    } else {
-                      const isAlphabet = /^[a-zA-Z]+$/.test(e.key);
-                      if (!isAlphabet) {
+                    }}
+                    placeholder={'Ex: John'}
+                    autoComplete="off"
+                  />
+                </InputLabelContainer>
+                <InputLabelContainer>
+                  <label>
+                    Last Name <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <TextInput
+                    type="text"
+                    name="lastName"
+                    id="lastName"
+                    value={applicant.lastName}
+                    required
+                    disabled
+                    autoComplete="off"
+                    onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                      if (e.key === 'Enter') {
                         e.preventDefault();
+                      } else {
+                        const isAlphabet = /^[a-zA-Z]+$/.test(e.key);
+                        if (!isAlphabet) {
+                          e.preventDefault();
+                        }
                       }
-                    }
-                  }}
-                  placeholder={'Ex: Doe'}
-                />
-              </InputLabelContainer>
-            </div>
+                    }}
+                    placeholder={'Ex: Doe'}
+                  />
+                </InputLabelContainer>
+              </div>
 
-            <div>
-              <InputLabelContainer>
-                <label>
-                  Phone Number{' '}
-                  <ValidationText className="star">*</ValidationText>
-                </label>
-                <TextInput
-                  type="text"
-                  name="phoneNumber"
-                  id="phoneNumber"
-                  value={applicant.phoneNumber}
-                  required
-                  autoComplete="off"
-                  onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault();
-                    } else {
-                      const isNumeric = /^\d+$/.test(e.key);
-                      if (!isNumeric) {
+              <div>
+                <InputLabelContainer>
+                  <label>
+                    Phone Number{' '}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <TextInput
+                    type="text"
+                    name="phoneNumber"
+                    id="phoneNumber"
+                    value={applicant.phoneNumber}
+                    required
+                    disabled
+                    autoComplete="off"
+                    onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                      if (e.key === 'Enter') {
                         e.preventDefault();
+                      } else {
+                        const isNumeric = /^\d+$/.test(e.key);
+                        if (!isNumeric) {
+                          e.preventDefault();
+                        }
                       }
-                    }
-                  }}
-                  placeholder={'Enter Phone Number'}
-                />
-              </InputLabelContainer>
-              <InputLabelContainer>
-                <label>
-                  Email <ValidationText className="star">*</ValidationText>
-                </label>
-                <TextInput
-                  type="email"
-                  name="email"
-                  id="email"
-                  value={applicant.email}
-                  autoComplete="off"
-                  required
-                  placeholder={'Enter Email'}
-                />
-              </InputLabelContainer>
-            </div>
-          </form>
-        )}
-        <CommentsSection
-          comments={
-            applicant.applicantComments ? applicant.applicantComments : []
-          }
-          handleSubmitComment={handleSubmitComment}
-        />
-      </BulkPayslipContainer>
-      <BulkPayslipContainer className="addNewApplicant secondItem">
-        <InterviewerArea>
-          <section className="assignedInterviewers">
-            <table>
-              <thead>
-                <tr>
-                  <th>Employee ID</th>
-                  <th>Full Name</th>
-                  <th>Email</th>
-                  <th>Order of Interview</th>
-                </tr>
-              </thead>
-              {applicant &&
-                applicant.assignedInterviewers &&
-                applicant.assignedInterviewers.map((interviewer) => (
-                  <tr>
-                    <td>{interviewer.employeeId}</td>
-                    <td>{interviewer.fullName}</td>
-                    <td>{interviewer.email}</td>
-                    <td>{interviewer.orderOfInterview}</td>
-                  </tr>
-                ))}
-            </table>
+                    }}
+                    placeholder={'Enter Phone Number'}
+                  />
+                </InputLabelContainer>
+                <InputLabelContainer>
+                  <label>
+                    Email <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <TextInput
+                    type="email"
+                    name="email"
+                    id="email"
+                    value={applicant.email}
+                    autoComplete="off"
+                    required
+                    disabled
+                    placeholder={'Enter Email'}
+                  />
+                </InputLabelContainer>
+              </div>
+            </form>
+          )}
+          <section className="status-section">
+            Status:
+            <select
+              name="status"
+              id="status"
+              value={applicant.status}
+              onChange={handleStatusChange}
+            >
+              {[
+                "APPLIED",
+                "SHORTLISTED",
+                "INTERVIEW_SCHEDULED",
+                "HIRED",
+                "REJECTED",
+              ].map((status) => (
+                <option key={status} value={status}>
+                  {status.replace("_", " ")}
+                </option>
+              ))}
+            </select>
           </section>
 
-          <section>
-            <span>Assign Interviewer</span>
-            {interviewers && (
-              <select>
-                {interviewers.map((interviewer) => (
-                  <option value={interviewer.employeeId}>
-                    {interviewer.firstName} {interviewer.employeeId}
-                  </option>
-                ))}
-              </select>
-            )}
-          </section>
-        </InterviewerArea>
-      </BulkPayslipContainer>
-    </ExpenseManagementMainContainer>
+          <CommentsSection
+            comments={
+              applicant.applicantComments ? applicant.applicantComments : []
+            }
+            handleSubmitComment={handleSubmitComment}
+          />
+        </BulkPayslipContainer>
+
+      </ExpenseManagementMainContainer>}
+    </>
   );
 };
 
