@@ -9,6 +9,7 @@ import com.beeja.api.projectmanagement.model.Address;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.TaxDetails;
 import com.beeja.api.projectmanagement.model.dto.ClientDTO;
+import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -49,11 +51,11 @@ public class ClientControllerTest {
     private BindingResult bindingResult;
 
     private Client validClient;
-    private Client invalidClient;
     private String validClientId;
     private String invalidClientId;
-    private ClientDTO validClientDTO;
     private List<ClientDTO> clientList;
+
+    private ClientRequest validClientRequest;
 
     @BeforeEach
     public void setup() {
@@ -87,50 +89,44 @@ public class ClientControllerTest {
 
         validClient.setPrimaryAddress(validAddress);
         validClient.setBillingAddress(validAddress);
-        invalidClient = new Client();
-        invalidClient.setClientName("");
-        invalidClient.setClientType(ClientType.COMPANY);
-        invalidClient.setClientId("C124");
-        invalidClient.setEmail("invalid-email");
-        invalidClient.setContact("12345");
 
+        validClientRequest = new ClientRequest();
+        validClientRequest.setClientName("John Doe");
+        validClientRequest.setClientType(ClientType.INTERNAL);
+        validClientRequest.setEmail("john@example.com");
+        validClientRequest.setContact("+1234567890");
+        validClientRequest.setIndustry(Industry.ECOMMERCE);
+        validClientRequest.setDescription("A premium IT client");
+        validClientRequest.setLogo("logo.png");
+        validClientRequest.setTaxDetails(validTaxDetails);
+        validClientRequest.setPrimaryAddress(validAddress);
 
-        TaxDetails invalidTaxDetails = new TaxDetails();
-        try {
-            invalidTaxDetails.setTaxCategory(TaxCategory.valueOf("AVD"));
-        } catch (IllegalArgumentException e) {
-            invalidTaxDetails.setTaxCategory(null);
-        }
-        invalidTaxDetails.setTaxNumber("");
-        invalidClient.setTaxDetails(invalidTaxDetails);
+        // Initialize list with a ClientDTO
+        ClientDTO clientDTO = new ClientDTO();
+        clientDTO.setClientId("C123");
+        clientDTO.setClientName("John Doe");
+        clientDTO.setClientType(ClientType.INTERNAL);
+        clientDTO.setOrganizationId("Org123");
 
-        Address invalidAddress = new Address();
-        invalidAddress.setStreet("456 Elm St");
-        invalidAddress.setCity("Springfield");
-        invalidAddress.setState("IL");
-        invalidAddress.setPostalCode("62702");
-        invalidAddress.setCountry("USA");
+        clientList = new ArrayList<>();
+        clientList.add(clientDTO);
 
-        invalidClient.setPrimaryAddress(invalidAddress);
-        invalidClient.setBillingAddress(invalidAddress);
-        updateFields = Map.of(
-                "clientName", "John Updated",
-                "email", "updatedjohn@example.com"
-        );
-
-        validClientDTO = new ClientDTO("C123", "John Doe", ClientType.INTERNAL, "Org123");
-        clientList = Collections.singletonList(validClientDTO);
+        when(clientService.getClients()).thenReturn(clientList);
 
     }
 
 
+
     @Test
     public void testAddClient_validClient() {
-        when(clientService.addClient(validClient)).thenReturn(validClient);
-        ResponseEntity<?> response = clientController.addClient(validClient, bindingResult);
+        when(bindingResult.hasErrors()).thenReturn(false);
+        when(clientService.addClient(validClientRequest)).thenReturn(validClient);
+
+        ResponseEntity<Client> response = clientController.addClient(validClientRequest, bindingResult);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(validClient, response.getBody());
-        verify(clientService, times(1)).addClient(validClient);
+        verify(clientService, times(1)).addClient(validClientRequest);
     }
 
     @Test
@@ -139,7 +135,7 @@ public class ClientControllerTest {
         when(bindingResult.hasErrors()).thenReturn(true);
         when(bindingResult.getFieldErrors()).thenReturn(List.of(new FieldError("client", "name", "Name is required")));
         assertThrows(MethodArgumentNotValidException.class, () -> {
-            clientController.addClient(invalidClient, bindingResult);
+            clientController.addClient(validClientRequest, bindingResult);
         });
     }
 
@@ -189,20 +185,21 @@ public class ClientControllerTest {
 
     @Test
     public void testGetClients_ReturnsClientList() {
-
         when(clientService.getClients()).thenReturn(clientList);
-
         ResponseEntity<List<ClientDTO>> response = clientController.getClients();
-
-
         assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertFalse(response.getBody().isEmpty());
         assertEquals(1, response.getBody().size());
         assertEquals("C123", response.getBody().get(0).getClientId());
         assertEquals("John Doe", response.getBody().get(0).getClientName());
         assertEquals("INTERNAL", response.getBody().get(0).getClientType().toString());
         assertEquals("Org123", response.getBody().get(0).getOrganizationId());
+
         verify(clientService, times(1)).getClients();
     }
+
+
 }
 
 
