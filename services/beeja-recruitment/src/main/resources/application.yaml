@@ -37,4 +37,4 @@ client-urls:
 
 
 jwt:
-  secret: ${JWT_SECRET_KEY}
+  secret: ${JWT_SECRET}
