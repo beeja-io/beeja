@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/v1/organizations")
 @Slf4j
@@ -86,4 +88,10 @@ public class OrganizationController {
       throws Exception {
     return ResponseEntity.ok(organizationService.getOrganizationValuesByKey(key));
   }
+
+  @GetMapping("/values")
+    @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public ResponseEntity<List<OrgDefaults>> getOrganizationValues(@RequestParam List<String> keys) throws Exception {
+    return ResponseEntity.ok(organizationService.getOrganizationValues(keys));
+    }
 }
