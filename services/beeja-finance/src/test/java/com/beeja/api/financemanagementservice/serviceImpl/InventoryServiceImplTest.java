@@ -3,7 +3,7 @@ package com.beeja.api.financemanagementservice.serviceImpl;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.Availability;
 import com.beeja.api.financemanagementservice.enums.Device;
-import com.beeja.api.financemanagementservice.exceptions.DuplicateProductIdException;
+import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.repository.InventoryRepository;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
@@ -93,7 +93,7 @@ public class InventoryServiceImplTest {
     deviceDetails.setProductId("P001");
     when(inventoryRepository.findByProductId("P001")).thenReturn(Optional.of(new Inventory()));
     assertThrows(
-        DuplicateProductIdException.class, () -> inventoryService.addDevice(deviceDetails));
+            DuplicateDataException.class, () -> inventoryService.addDevice(deviceDetails));
   }
 
   @Test
@@ -150,7 +150,7 @@ public class InventoryServiceImplTest {
     updatedDeviceDetails.setProductId("P001");
     when(inventoryRepository.findByProductId("P001")).thenReturn(Optional.of(new Inventory()));
     assertThrows(
-        DuplicateProductIdException.class,
+            DuplicateDataException.class,
         () -> inventoryService.updateDeviceDetails(updatedDeviceDetails, "1"));
   }
 

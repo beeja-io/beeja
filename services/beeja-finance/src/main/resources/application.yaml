@@ -1,0 +1,50 @@
+server:
+  servlet:
+    context-path: /finance
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  port: ${FINANCE_SERVICE_PORT}
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  servlet:
+    multipart:
+      max-file-size: 15MB
+      max-request-size: 15MB
+  application:
+    name: finance-service
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: ${FINANCE_MONGODB_DB_NAME}
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}
+
+# actuator
+management:
+  endpoints.web.exposure.include: health,info
+  info.env.enabled: true
+info:
+  application.name: ${spring.application.name}
+
+
+
+client-urls:
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
+  fileService: ${FILE_SERVICE_BASE_URL}/files
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    url: /openApi.yaml
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
