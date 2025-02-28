@@ -109,7 +109,7 @@ const CenterModal = (props: CenterModalProps) => {
         <div className={`controlButtonArea ${buttonContainerClass}`}>
           <button
             className={props.modalLeftButtonClass || 'closeButton'}
-            onClick={props.handleModalLeftButtonClick}
+            onClick={props.handleModalClose}
           >
             {t(props.modalLeftButtonText || t('NO'))}
           </button>
