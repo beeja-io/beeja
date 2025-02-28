@@ -56,3 +56,8 @@ file-format:
     - image/jpeg
 jwt:
   secret: ${JWT_SECRET_KEY}
+
+storage:
+  provider: ${STORAGE_PROVIDER}
+  local:
+    path: ${FILE_UPLOAD_LOCATION}
