@@ -7,4 +7,5 @@ include 'beeja-finance'
 include 'beeja-expense'
 include 'beeja-file-management'
 include 'beeja-recruitment'
+include 'beeja-projects'
 
