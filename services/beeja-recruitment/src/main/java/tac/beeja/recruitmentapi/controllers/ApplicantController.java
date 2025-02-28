@@ -7,14 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tac.beeja.recruitmentapi.annotations.HasPermission;
 import tac.beeja.recruitmentapi.model.Applicant;
 import tac.beeja.recruitmentapi.model.AssignedInterviewer;
@@ -62,6 +55,7 @@ public class ApplicantController {
     HttpHeaders headers = new HttpHeaders();
     headers.add(
         HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
+    headers.add("Access-Control-Expose-Headers", "Content-Disposition");
     return ResponseEntity.ok()
         .contentType(MediaType.APPLICATION_OCTET_STREAM)
         .headers(headers)
@@ -114,6 +108,7 @@ public class ApplicantController {
   }
 
   @PostMapping("/comments")
+  @HasPermission(Constants.UPDATE_ENTIRE_APPLICANT)
   public ResponseEntity<?> addCommentToApplicant(
       @Valid @RequestBody AddCommentRequest addCommentRequest, BindingResult bindingResult)
       throws Exception {
@@ -125,4 +120,12 @@ public class ApplicantController {
 
     return ResponseEntity.ok(applicantService.addCommentToApplicant(addCommentRequest));
   }
+
+  @PutMapping("/{applicantID}/status/{status}")
+    @HasPermission(Constants.UPDATE_ENTIRE_APPLICANT)
+    public ResponseEntity<Applicant> changeStatusOfApplicant(
+        @PathVariable String applicantID, @PathVariable String status) throws Exception {
+      applicantService.changeStatusOfApplicant(applicantID, status);
+      return ResponseEntity.ok().build();
+    }
 }
