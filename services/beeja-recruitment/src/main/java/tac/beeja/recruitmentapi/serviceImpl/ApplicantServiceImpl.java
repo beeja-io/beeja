@@ -334,6 +334,23 @@ public class ApplicantServiceImpl implements ApplicantService {
     return applicantRepository.save(applicant);
   }
 
+  @Override
+  public Applicant changeStatusOfApplicant(String applicantId, String status) throws Exception {
+    Applicant applicant =
+        applicantRepository.findByIdAndOrganizationId(
+            applicantId, UserContext.getLoggedInUserOrganization().get("id").toString());
+    if (applicant == null) {
+      throw new ResourceNotFoundException("No applicant found with the given ID");
+    }
+    try {
+      ApplicantStatus applicantStatus = ApplicantStatus.valueOf(status);
+      applicant.setStatus(applicantStatus);
+      return applicantRepository.save(applicant);
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestException("Invalid status provided");
+    }
+  }
+
   private static FileDownloadResultMetaData getMetaData(ResponseEntity<byte[]> fileResponse) {
     HttpHeaders headers = fileResponse.getHeaders();
     String contentDisposition = headers.getFirst(HttpHeaders.CONTENT_DISPOSITION);

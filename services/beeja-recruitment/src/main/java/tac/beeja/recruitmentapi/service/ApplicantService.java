@@ -29,4 +29,6 @@ public interface ApplicantService {
   Applicant deleteInterviewerByInterviewID(String applicantId, String interviewId) throws Exception;
 
   Applicant addCommentToApplicant(AddCommentRequest addCommentRequest) throws Exception;
+
+  Applicant changeStatusOfApplicant(String applicantId, String status) throws Exception;
 }
