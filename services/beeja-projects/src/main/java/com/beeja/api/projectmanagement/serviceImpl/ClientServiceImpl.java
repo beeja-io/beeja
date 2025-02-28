@@ -73,14 +73,22 @@ public class ClientServiceImpl implements ClientService {
         client.setPrimaryAddress(clientRequest.getPrimaryAddress());
         client.setUsePrimaryAsBillingAddress(clientRequest.isUsePrimaryAsBillingAddress());
 
-        client.setIndustry(clientRequest.getIndustry());
-        client.setDescription(clientRequest.getDescription());
-        client.setLogo(clientRequest.getLogo());
+        if(clientRequest.getIndustry() != null) {
+            client.setIndustry(clientRequest.getIndustry());
+        }
+
+        if(clientRequest.getDescription() != null) {
+            client.setDescription(clientRequest.getDescription());
+        }
+
+        if(clientRequest.getLogo() != null) {
+            client.setLogo(clientRequest.getLogo());
+        }
 
         client.setOrganizationId(organizationId);
         client.setClientId(generateClientId(client.getClientName(), client.getOrganizationId()));
 
-        if (client.isUsePrimaryAsBillingAddress() && client.getBillingAddress() == null) {
+        if (client.isUsePrimaryAsBillingAddress() && client.getBillingAddress() == null && client.getPrimaryAddress() != null) {
             client.setBillingAddress(client.getPrimaryAddress());
         }
         if (client.getCreatedAt() == null) {
@@ -278,14 +286,7 @@ public class ClientServiceImpl implements ClientService {
 
         String formattedSequenceNumber = String.format("%03d", sequenceNumber);
 
-        String generatedClientId = prefix + formattedSequenceNumber;
-        Client existingClient = clientRepository.findByClientIdAndOrganizationId(generatedClientId,organizationId);
-        if (existingClient != null) {
-            sequenceNumber++;
-            formattedSequenceNumber = String.format("%03d", sequenceNumber);
-            generatedClientId = prefix + formattedSequenceNumber;
-        }
-        return generatedClientId;
+        return prefix + formattedSequenceNumber;
     }
 
 

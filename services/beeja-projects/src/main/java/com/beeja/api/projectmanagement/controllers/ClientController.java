@@ -2,7 +2,6 @@ package com.beeja.api.projectmanagement.controllers;
 
 
 import com.beeja.api.projectmanagement.annotations.HasPermission;
-import com.beeja.api.projectmanagement.exceptions.MethodArgumentNotValidException;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.dto.ClientDTO;
 import com.beeja.api.projectmanagement.request.ClientRequest;
@@ -35,11 +34,7 @@ public class ClientController {
 
     @PostMapping
    @HasPermission(CREATE_CLIENT)
-    public ResponseEntity<Client> addClient(@Valid @RequestBody ClientRequest clientRequest, BindingResult bindingResult)
-    {
-        if (bindingResult.hasErrors()) {
-            throw new MethodArgumentNotValidException(bindingResult);
-        }
+    public ResponseEntity<Client> addClient(@Valid @RequestBody ClientRequest clientRequest) {
         return ResponseEntity.ok(clientService.addClient(clientRequest));
     }
 

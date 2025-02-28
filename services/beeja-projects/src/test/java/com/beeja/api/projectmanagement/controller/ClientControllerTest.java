@@ -4,7 +4,6 @@ import com.beeja.api.projectmanagement.controllers.ClientController;
 import com.beeja.api.projectmanagement.enums.ClientType;
 import com.beeja.api.projectmanagement.enums.Industry;
 import com.beeja.api.projectmanagement.enums.TaxCategory;
-import com.beeja.api.projectmanagement.exceptions.MethodArgumentNotValidException;
 import com.beeja.api.projectmanagement.model.Address;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.TaxDetails;
@@ -22,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -122,7 +122,7 @@ public class ClientControllerTest {
         when(bindingResult.hasErrors()).thenReturn(false);
         when(clientService.addClient(validClientRequest)).thenReturn(validClient);
 
-        ResponseEntity<Client> response = clientController.addClient(validClientRequest, bindingResult);
+        ResponseEntity<Client> response = clientController.addClient(validClientRequest);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(validClient, response.getBody());
@@ -134,8 +134,8 @@ public class ClientControllerTest {
 
         when(bindingResult.hasErrors()).thenReturn(true);
         when(bindingResult.getFieldErrors()).thenReturn(List.of(new FieldError("client", "name", "Name is required")));
-        assertThrows(MethodArgumentNotValidException.class, () -> {
-            clientController.addClient(validClientRequest, bindingResult);
+        assertThrows(org.springframework.web.bind.MethodArgumentNotValidException.class, () -> {
+            clientController.addClient(validClientRequest);
         });
     }
 

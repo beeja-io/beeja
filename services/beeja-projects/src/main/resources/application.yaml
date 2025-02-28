@@ -1,7 +1,7 @@
 server:
   servlet:
     context-path: /projects
-  port: 8096
+  port: ${PROJECTS_SERVICE_PORT}
   multipart:
     max-file-size: 10MB
     max-request-size: 10MB
@@ -10,8 +10,8 @@ spring:
     name: project-management
   data:
     mongodb:
-      uri: mongodb://root:password@beeja-db-1:27017/?replicaSet=rs0&directConnection=true
-      database: projects_sbox
+      uri: ${MONGODB_URI}
+      database: ${PROJECT_MONGODB_DATABASE}
 
 
 eureka:
@@ -19,7 +19,7 @@ eureka:
     preferIpAddress: true
   client:
     serviceUrl:
-      defaultZone: http://beeja-service-registry:8761/eureka
+      defaultZone: ${EUREKA_SERVER_URL}
 
 # actuator
 management:
@@ -35,9 +35,9 @@ springdoc:
     url: /openApi.yaml
 
 client-urls:
-  accountsService: http://beeja-accounts:8080/accounts
-  fileService: http://beeja-file-management:8090/files
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}
+  fileService: ${FILE_SERVICE_BASE_URL}
 
 
 jwt:
-  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw
+  secret: ${JWT_SECRET}

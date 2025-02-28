@@ -6,32 +6,30 @@ import com.beeja.api.projectmanagement.responses.ErrorResponse;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @ControllerAdvice
+@Slf4j
 public class GlobalControllerAdvice {
 
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+  public ResponseEntity<Map<String, String>> handleValidationException(MethodArgumentNotValidException ex) {
+    Map<String, String> errors = new HashMap<>();
+    for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+      errors.put(error.getField(), error.getDefaultMessage());
+    }
 
-    String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-            .map(fieldError -> fieldError.getField() + " " + fieldError.getDefaultMessage())
-            .findFirst()
-            .orElse("Validation error occurred");
-
-    ErrorResponse errorResponse = new ErrorResponse(
-            ErrorType.INVALID_REQUEST,
-            ErrorCode.VALIDATION_ERROR,
-            errorMessage,
-            request.getRequestURI()
-
-    );
-
-    return ResponseEntity.badRequest().body(errorResponse);
+    return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(ResourceAlreadyFoundException.class)
@@ -86,6 +84,13 @@ public class GlobalControllerAdvice {
     );
     errorResponse.setPath(path);
     return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<String> handleException(
+          Exception ex) {
+    log.error("Exception: ", ex);
+    return new ResponseEntity<>(Constants.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
 }
