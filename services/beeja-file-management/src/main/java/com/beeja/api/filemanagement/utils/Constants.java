@@ -15,8 +15,6 @@ public class Constants {
 
   //    ERRORS
   public static final String MONGO_UPLOAD_FAILED = "Failed to upload file to Beeja DB";
-  public static final String GCS_UPLOAD_FAILED = "Failed to upload file to Beeja Cloud";
-  public static final String GCS_FILE_DELETE_ERROR = "Failed to delete file from Beeja Cloud";
   public static final String MONGO_FILE_DELETE_ERROR = "Failed to delete file from Beeja DB";
   public static final String SERVICE_DOWN_ERROR = "Something went wrong in our system ";
   public static final String UNAUTHORISED_ACCESS_ERROR = "You have no permission to access";
@@ -28,4 +26,9 @@ public class Constants {
   public static final String SUPPORTED_FILE_TYPES = "Supported types are PDF, DOCX, DOC, PNG, JPEG";
   public static final String NOT_PERMITTED_TO_UPLOAD_OF_TYPE = "Not Permitted To Upload ";
   public static final String FAILED_TO_UPLOAD = "Failed to upload the File  ";
+  public static final String EMPTY_FILE_NOT_ALLOWED = "Empty file not allowed";
+  public static final String ERROR_SAVING_FILE = "Error saving file: ";
+  public static final String FILE_NOT_FOUND_AT_PATH = "File not found at path: ";
+  public static final String ERROR_READING_FILE = "Error reading file: ";
+  public static final String ERROR_DELETING_FILE = "Error deleting file: ";
 }

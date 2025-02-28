@@ -98,7 +98,7 @@ public class OrganizationPatternServiceImpl implements OrganizationPatternServic
     organizationPattern.setPatternType(organizationPatternRequest.getPatternType());
     organizationPattern.setPatternLength(organizationPatternRequest.getPatternLength());
     organizationPattern.setActive(organizationPatternRequest.isActive());
-    organizationPattern.setPrefix(organizationPatternRequest.getPrefix());
+    organizationPattern.setPrefix(organizationPatternRequest.getPrefix().toUpperCase());
     organizationPattern.setInitialSequence(organizationPatternRequest.getInitialSequence());
     String prefix = organizationPatternRequest.getPrefix();
     String zeros =

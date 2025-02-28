@@ -22,6 +22,6 @@ public interface AccountClient {
   @ResponseBody
   ResponseEntity<Object> getAllUsers();
 
-  @GetMapping("v1/users/{email}")
+  @GetMapping("v1/users/email/{email}")
   ResponseEntity<?> getEmployeeByEmail(@PathVariable String email);
 }

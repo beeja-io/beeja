@@ -42,6 +42,8 @@ export const Theme = {
         gray9: '#A0AEC0',
         gray10: '#f1f2f4c0',
         gray11: '#818181',
+        gray12: '#f8f9fa',
+        gray13: '#ddd',
         grayscale300: '#e9eaec',
       },
       backgroundColors: {
@@ -90,6 +92,8 @@ export const Theme = {
         gray9: '#A0AEC0',
         gray10: '#323b49c4',
         gray11: '#818181',
+        gray12: '#f8f9fa',
+        gray13: '#ddd',
         grayscale300: '#323B49',
       },
       backgroundColors: {

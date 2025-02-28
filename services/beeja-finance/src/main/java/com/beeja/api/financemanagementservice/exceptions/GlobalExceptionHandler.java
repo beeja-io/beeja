@@ -69,9 +69,9 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
   }
 
-  @ExceptionHandler(DuplicateProductIdException.class)
+  @ExceptionHandler(DuplicateDataException.class)
   public ResponseEntity<ErrorResponse> handleDuplicateProductIdException(
-      DuplicateProductIdException e, WebRequest request) {
+          DuplicateDataException e, WebRequest request) {
     String[] errorMessage = convertStringToArray(e.getMessage());
     ErrorResponse errorResponse =
         new ErrorResponse(
@@ -86,19 +86,9 @@ public class GlobalExceptionHandler {
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<ErrorResponse> handleException(Exception e, WebRequest request) {
+  public ResponseEntity<String> handleException(Exception e) {
     log.error(e.getMessage());
-    String[] errorMessage = convertStringToArray(e.getMessage());
-    ErrorResponse errorResponse =
-        new ErrorResponse(
-            ErrorType.valueOf(errorMessage[0]),
-            ErrorCode.valueOf(errorMessage[1]),
-            errorMessage[2],
-            DOC_URL_RESOURCE_NOT_FOUND,
-            request.getDescription(false),
-            BEEJA + "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
-            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Occurred, please contact IT Support");
   }
 
   private String[] convertStringToArray(String commaSeparatedString) {
