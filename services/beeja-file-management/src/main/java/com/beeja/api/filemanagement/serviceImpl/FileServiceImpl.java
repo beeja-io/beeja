@@ -15,6 +15,7 @@ import com.beeja.api.filemanagement.utils.Constants;
 import com.beeja.api.filemanagement.utils.UserContext;
 import com.beeja.api.filemanagement.utils.helpers.FileExtensionHelpers;
 import com.mongodb.MongoWriteException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -32,6 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class FileServiceImpl implements FileService {
 
@@ -78,6 +80,7 @@ public class FileServiceImpl implements FileService {
         } catch (FileTypeMismatchException e) {
             throw new FileTypeMismatchException(e.getMessage());
         } catch (Exception e) {
+            log.error("Error while uploading file: ", e.getMessage());
             throw new Exception(Constants.SERVICE_DOWN_ERROR);
         }
     }
