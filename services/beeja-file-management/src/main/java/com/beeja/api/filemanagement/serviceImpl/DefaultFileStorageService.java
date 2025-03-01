@@ -29,7 +29,7 @@ public class DefaultFileStorageService implements FileStorageService {
     private DefaultStorageProperties storageDirectory;
     
     public DefaultFileStorageService(){
-        log.info("Default Storage Provider activated");
+        log.info("Default Storage Provider activated.");
     }
 
     @Override
