@@ -73,7 +73,7 @@ public class FileServiceImpl implements FileService {
 
             return savedFile;
         } catch (Exception e) {
-            log.error("Error while uploading file: ", e);
+            e.printStackTrace();
             throw new Exception(Constants.SERVICE_DOWN_ERROR);
         }
     }
