@@ -4,6 +4,7 @@ import com.beeja.api.filemanagement.config.properties.DefaultStorageProperties;
 import com.beeja.api.filemanagement.model.File;
 import com.beeja.api.filemanagement.service.FileStorageService;
 import com.beeja.api.filemanagement.utils.Constants;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,15 @@ import java.io.FileNotFoundException;
 
 @Service
 @ConditionalOnProperty(name = "storage.provider", havingValue = "local")
+@Slf4j
 public class DefaultFileStorageService implements FileStorageService {
 
     @Autowired
     private DefaultStorageProperties storageDirectory;
+    
+    public DefaultFileStorageService(){
+        log.info("Default Storage Provider activated");
+    }
 
     @Override
     public void uploadFile(MultipartFile file, File savedFile) throws IOException {
