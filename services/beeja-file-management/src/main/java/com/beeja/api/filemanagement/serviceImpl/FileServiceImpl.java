@@ -72,15 +72,8 @@ public class FileServiceImpl implements FileService {
             fileStorage.uploadFile(file.getFile(), savedFile);
 
             return savedFile;
-        } catch (MongoWriteException e) {
-            throw new MongoFileUploadException(Constants.MONGO_UPLOAD_FAILED);
-        } catch (IOException | IllegalStateException e) {
-            if (savedFile != null) fileRepository.delete(savedFile);
-            throw new FileAccessException("Constants.FILE_UPLOAD_FAILED");
-        } catch (FileTypeMismatchException e) {
-            throw new FileTypeMismatchException(e.getMessage());
         } catch (Exception e) {
-            log.error("Error while uploading file: ", e.getMessage());
+            log.error("Error while uploading file: ", e);
             throw new Exception(Constants.SERVICE_DOWN_ERROR);
         }
     }
