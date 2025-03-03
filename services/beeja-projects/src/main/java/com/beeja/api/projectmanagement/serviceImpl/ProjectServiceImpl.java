@@ -40,7 +40,7 @@ public class ProjectServiceImpl implements ProjectService {
     private ClientRepository clientRepository;
 
     @Autowired
-    private ResourceRepository resourceRepository;
+    private ResourceServiceImpl resourceService;
 
     @Autowired
     private EmployeeClient employeeClient;
@@ -67,42 +67,16 @@ public class ProjectServiceImpl implements ProjectService {
         }
 
         if (project.getResources() != null && !project.getResources().isEmpty()) {
-            project.setResources(getOrCreateResources(project.getResources()));
+            project.setResources(resourceService.getOrCreateResources(project.getResources()));
         }
 
         if (project.getProjectManagers() != null && !project.getProjectManagers().isEmpty()) {
-            project.setProjectManagers(getOrCreateResources(project.getProjectManagers()));
+            project.setProjectManagers(resourceService.getOrCreateResources(project.getProjectManagers()));
         }
 
         return projectRepository.save(project);
     }
 
-    private List<Resource> getOrCreateResources(List<Resource> employees) {
-        if (employees == null || employees.isEmpty()) return List.of();
-
-        List<String> employeeIds = employees.stream().map(Resource::getEmployeeId).toList();
-        List<Resource> existingResources = resourceRepository.findByEmployeeIdIn(employeeIds);
-
-        Map<String, Resource> existingResourceMap = existingResources.stream()
-                .collect(Collectors.toMap(Resource::getEmployeeId, resource -> resource));
-        List<Resource> finalResources = new ArrayList<>();
-        for (String empId : employeeIds) {
-            if (existingResourceMap.containsKey(empId)) {
-                finalResources.add(existingResourceMap.get(empId));
-            } else {
-                finalResources.add(new Resource(null, empId));
-            }
-        }
-        List<Resource> newResources = finalResources.stream()
-                .filter(resource -> resource.getId() == null)
-                .toList();
-
-        if (!newResources.isEmpty()) {
-            resourceRepository.saveAll(newResources);
-        }
-
-        return finalResources;
-    }
 
     String generateNextProjectId() {
         String prefix = "P-";
@@ -181,7 +155,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         if (updatedProject.getResources() != null) {
             try {
-                List<Resource> resources = getOrCreateResources(updatedProject.getResources());
+                List<Resource> resources = resourceService.getOrCreateResources(updatedProject.getResources());
                 existingProject.setResources(resources);
             } catch (Exception e) {
                 throw new ValidationException(new ErrorResponse(
@@ -194,7 +168,7 @@ public class ProjectServiceImpl implements ProjectService {
         }
         if (updatedProject.getProjectManagers() != null) {
             try {
-                List<Resource> projectManagers = getOrCreateResources(updatedProject.getProjectManagers());
+                List<Resource> projectManagers = resourceService.getOrCreateResources(updatedProject.getProjectManagers());
                 existingProject.setProjectManagers(projectManagers);
             } catch (Exception e) {
                 throw new ValidationException(new ErrorResponse(
