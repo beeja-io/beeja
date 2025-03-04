@@ -51,7 +51,7 @@ public class FileServiceImpl implements FileService {
         try {
             if (!FileExtensionHelpers.isValidContentType(
                     file.getFile().getContentType(), allowedContentTypes.getAllowedTypes())) {
-                throw new FileTypeMismatchException("Constants.INVALID_FILE_FORMATS");
+                throw new FileTypeMismatchException("Constants.INVALID_FILE_FORMATS.");
             }
 
             String fileName = (file.getName() != null) ? file.getName() : file.getFile().getOriginalFilename();
