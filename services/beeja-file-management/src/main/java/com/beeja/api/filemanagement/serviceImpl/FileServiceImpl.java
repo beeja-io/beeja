@@ -42,6 +42,8 @@ public class FileServiceImpl implements FileService {
     @Autowired private AllowedContentTypes allowedContentTypes;
     @Autowired private FileStorageService fileStorage;
     @Autowired private FileRepository fileRepository;
+    @Autowired
+    private FileStorageService fileStorageService;
 
     @Override
     public File uploadFile(FileUploadRequest file) throws Exception {
