@@ -26,7 +26,7 @@
   "DEPARTMENT": "Department",
   "STATUS": "Status",
   "ACTIVE": "Active",
-  "INACTIVE": "In active",
+  "INACTIVE": "Inactive",
   "PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED": "Profile has been successfully added.",
   "PROFILE_ADDED": "Profile Added",
   "FIRST_NAME_CANNOT_CONTAIN_NuMBERS": "First Name cannot contain numbers",
