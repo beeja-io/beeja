@@ -95,6 +95,15 @@ const AddNewApplicant = (props: AddNewApplicant) => {
       toast.error('Please fill mandatory (*) fields');
       return;
     }
+
+    if(newApplicant.phoneNumber !== '' && !newApplicant.phoneNumber.match(/^[0-9]{10}$/)){
+      toast.error('Please enter a valid phone number');
+      return;
+    }
+    if(newApplicant.email !== '' && !newApplicant.email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$/)){
+      toast.error('Please enter a valid email address');
+      return;
+    }
     try {
       setIsLoading(true);
       const newApplicantData = new FormData();
@@ -203,6 +212,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
                 onChange={handleChange}
                 required
                 autoComplete="off"
+                maxLength={10}
                 onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -225,6 +235,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
                 name="email"
                 id="email"
                 onChange={handleChange}
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$"
                 autoComplete="off"
                 required
                 placeholder={'Enter Email'}
