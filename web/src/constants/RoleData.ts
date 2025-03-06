@@ -193,7 +193,7 @@ const roleData = [
   },
   {
     heading: 'Recruitment Management',
-    labels: ['Full Access', 'Create Applicant', 'Read Applicants', 'Read All Applicants', 'Download Resume', 'Update Entire Applicant', 'Update Applicant', 'Take Interview', 'Delete Interview'],
+    labels: ['Full Access', 'Create Applicant', 'Read Applicants', 'Read All Applicants', 'Download Resume', 'Update Entire Applicant', 'Update Applicant', 'Take Interview', 'Delete Interview', 'Access Referrals'],
     subsections: [
       {
         moduleName: 'Recruitment Management',
@@ -206,6 +206,7 @@ const roleData = [
           { value: 'UAPL', label: 'Update Applicant' },
           { value: 'TINT', label: 'Take Interview' },
           { value: 'DINT', label: 'Delete Interview' },
+          { value: 'ACREF', label: 'Access Referrals' },
         ],
       },
     ],

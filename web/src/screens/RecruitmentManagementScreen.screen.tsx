@@ -66,7 +66,7 @@ const RecruitmentManagementScreen = (
               width="216px"
               onClick={() =>
                 navigate(
-                  !props.isReferral ? '/recruitment/new' : '/recruuitment/refer'
+                  !props.isReferral ? '/recruitment/hiring-management/new' : '/recruitment/my-referrals/refer'
                 )
               }
             >
