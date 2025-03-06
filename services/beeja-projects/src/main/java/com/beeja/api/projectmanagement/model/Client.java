@@ -47,7 +47,7 @@ public class Client {
     @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid contact number")
     private String contact;
     private String description;
-    private String logo;
+    private String logoId;
 
     @Valid
     @NotNull(message = "Tax Details cannot be null")

@@ -23,8 +23,9 @@ public class Constants {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String INVALID_JSON_STRUCTURE ="Invalid structure for field '%s', expected an object.";
+    public static final String ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE = "Error in uploading file to file service";
 
-  ;
+    ;
 
 
   public static String format(String message, Object... args) {

@@ -34,7 +34,7 @@ public class ClientController {
 
     @PostMapping
    @HasPermission(CREATE_CLIENT)
-    public ResponseEntity<Client> addClient(@Valid @RequestBody ClientRequest clientRequest) {
+    public ResponseEntity<Client> addClient(@Valid ClientRequest clientRequest) {
         return ResponseEntity.ok(clientService.addClient(clientRequest));
     }
 
