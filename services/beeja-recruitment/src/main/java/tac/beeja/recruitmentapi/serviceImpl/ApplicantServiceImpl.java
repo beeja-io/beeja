@@ -64,6 +64,12 @@ public class ApplicantServiceImpl implements ApplicantService {
 
   @Override
   public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
+    //    accept only pdf, doc and docx for applicant.getResume()
+    if (!applicant.getResume().getContentType().equals("application/pdf")
+            && !applicant.getResume().getContentType().equals("application/msword")
+            && !applicant.getResume().getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+      throw new BadRequestException("Only PDF, DOC and DOCX files are allowed");
+    }
     Applicant newApplicant = new Applicant();
     newApplicant.setEmail(applicant.getEmail());
     newApplicant.setFirstName(applicant.getFirstName());

@@ -96,11 +96,11 @@ const AddNewApplicant = (props: AddNewApplicant) => {
       return;
     }
 
-    if(newApplicant.phoneNumber !== '' && !newApplicant.phoneNumber.match(/^[0-9]{10}$/)){
+    if (newApplicant.phoneNumber !== '' && !newApplicant.phoneNumber.match(/^[0-9]{10}$/)) {
       toast.error('Please enter a valid phone number');
       return;
     }
-    if(newApplicant.email !== '' && !newApplicant.email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$/)){
+    if (newApplicant.email !== '' && !newApplicant.email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$/)) {
       toast.error('Please enter a valid email address');
       return;
     }
@@ -283,8 +283,8 @@ const AddNewApplicant = (props: AddNewApplicant) => {
                 }}
               >
                 <option value="">Select Experience</option>
-                {noOfYearsExperience.map((number, index) => (
-                  <option key={index} value={number}>
+                {noOfYearsExperience.map((number) => (
+                  <option key={number} value={number}>
                     {number}
                   </option>
                 ))}
@@ -315,7 +315,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
               </label>
               <input
                 type="file"
-                accept="application/pdf,image/png,image/jpeg"
+                accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
                 id="fileInput"
                 style={{ display: 'none' }}
                 required
