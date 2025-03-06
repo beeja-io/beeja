@@ -30,10 +30,10 @@ import { useUser } from '../../context/UserContext';
 import { ApplicationContext } from '../../context/ApplicationContext';
 import {
   updateEmployeeStatusByEmployeeId,
-  updateEmployeeRolesByEmployeeId,
   getAllRolesInOrganization,
   downloadEmployeeFile,
   uploadProfilePicture,
+  updateEmployeeRole,
 } from '../../service/axiosInstance';
 import CenterModal from './CenterModal.component';
 import {
@@ -58,9 +58,13 @@ const MyProfileQuickDetailsComponent = ({
   fetchEmployeeAgain,
   isLoadingResponse,
 }: QuickProfileProps) => {
-  const [roles, setRoles] = useState<string[]>(
-    employee?.account.roles.map((role) => role.name) ?? []
-  );
+  const [roles, setRoles] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (employee?.account.roles) {
+      setRoles(employee.account.roles.map((role) => role.name));
+    }
+  }, [employee]);
 
   const [allRolesInOrg, setAllRolesInOrg] = useState<IRole[]>();
   const [isLoadingResponseINTERNAL, setIsLoadingResponse] = useState(false);
@@ -109,7 +113,7 @@ const MyProfileQuickDetailsComponent = ({
     setIsLoadingResponse(true);
     try {
       employee &&
-        (await updateEmployeeRolesByEmployeeId(
+        (await updateEmployeeRole(
           employee.account.employeeId,
           roles
         ));
@@ -136,7 +140,12 @@ const MyProfileQuickDetailsComponent = ({
   const addRole = (newRole: string) => {
     handleIsUpdateButtonShow();
     setRoleChangeType('add');
-    setRoles((prevRoles) => [...prevRoles, newRole]);
+    setRoles((prevRoles) => {
+      if (!prevRoles.includes(newRole)) {
+        return [...prevRoles, newRole];
+      }
+      return prevRoles;
+    });
   };
 
   const deleteRole = (roleToDelete: string) => {
