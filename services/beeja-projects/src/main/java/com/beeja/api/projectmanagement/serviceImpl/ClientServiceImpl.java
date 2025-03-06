@@ -2,21 +2,20 @@ package com.beeja.api.projectmanagement.serviceImpl;
 
 
 
+import com.beeja.api.projectmanagement.client.FileClient;
 import com.beeja.api.projectmanagement.enums.ErrorType;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ClientStatus;
 import com.beeja.api.projectmanagement.enums.ClientType;
 import com.beeja.api.projectmanagement.enums.Industry;
-import com.beeja.api.projectmanagement.exceptions.DatabaseException;
-import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
-import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
-import com.beeja.api.projectmanagement.exceptions.ValidationException;
+import com.beeja.api.projectmanagement.exceptions.*;
 import com.beeja.api.projectmanagement.model.Address;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.TaxDetails;
 import com.beeja.api.projectmanagement.model.dto.ClientDTO;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.request.ClientRequest;
+import com.beeja.api.projectmanagement.request.FileUploadRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
@@ -26,14 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Collections;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.Arrays;
 
 import static com.beeja.api.projectmanagement.utils.Constants.OBJECT_MAPPER;
 
@@ -47,6 +44,9 @@ public class ClientServiceImpl implements ClientService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private FileClient fileClient;
 
 
     @Override
@@ -82,7 +82,21 @@ public class ClientServiceImpl implements ClientService {
         }
 
         if(clientRequest.getLogo() != null) {
-            client.setLogo(clientRequest.getLogo());
+            FileUploadRequest fileUpload = new FileUploadRequest();
+            fileUpload.setFile(clientRequest.getLogo());
+            ResponseEntity<?> fileResponse;
+            try {
+                fileResponse = fileClient.uploadFile(fileUpload);
+            } catch (Exception e) {
+                log.error(
+                        Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE + ", error: {}", e.getMessage());
+                throw new FeignClientException(Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE);
+            }
+            LinkedHashMap<String, Object> responseBody =
+                    (LinkedHashMap<String, Object>) fileResponse.getBody();
+            if (responseBody != null) {
+                client.setLogoId(responseBody.get("id").toString());
+            }
         }
 
         client.setOrganizationId(organizationId);
@@ -147,7 +161,7 @@ public class ClientServiceImpl implements ClientService {
                             existingClient.setIndustry(Industry.valueOf(value.toString()));
                             break;
                         case "logo":
-                            existingClient.setLogo(value.toString());
+//                            existingClient.setLogo(value.toString());
                             break;
                         case "status":
                             existingClient.setStatus(ClientStatus.valueOf(value.toString()));
