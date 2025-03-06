@@ -1,62 +1,62 @@
-import { useContext, useEffect, useState, useCallback } from 'react';
+import { useContext, useEffect, useState, useCallback } from "react";
 import {
   Button,
   DynamicSpaceMainContainer,
   HighlightedBoxes,
-} from '../styles/CommonStyles.style';
+} from "../styles/CommonStyles.style";
 
-import { departmentOptions } from '../utils/departmentOptions';
-import { FilterSection } from '../styles/ExpenseListStyles.style';
+import { departmentOptions } from "../utils/departmentOptions";
+import { FilterSection } from "../styles/ExpenseListStyles.style";
 import {
   EmployeeListContainer,
   EmployeeListHeadSection,
   Monogram,
   TableBodyRow,
-} from '../styles/EmployeeListStyles.style';
-import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
-import { useTranslation } from 'react-i18next';
-import SideModal from '../components/reusableComponents/SideModal.component';
+} from "../styles/EmployeeListStyles.style";
+import { AddNewPlusSVG } from "../svgs/EmployeeListSvgs.svg";
+import { useTranslation } from "react-i18next";
+import SideModal from "../components/reusableComponents/SideModal.component";
 import {
   InputLabelContainer,
   SideModalResponseError,
   StyledForm,
   TextInput,
   ValidationText,
-} from '../styles/InputStyles.style';
-import { AlertISVG, ErrorRedMark } from '../svgs/CommonSvgs.svs';
-import axios, { AxiosError } from 'axios';
-import { Table, TableContainer, TableHead } from '../styles/TableStyles.style';
+} from "../styles/InputStyles.style";
+import { AlertISVG, ErrorRedMark } from "../svgs/CommonSvgs.svs";
+import axios, { AxiosError } from "axios";
+import { Table, TableContainer, TableHead } from "../styles/TableStyles.style";
 import {
   EmailRequired,
   EMPLOYMENT_TYPRE_REQUIRED,
   FirstNameRequired,
   LastNameRequired,
   ProfileCreationError,
-} from '../constants/Constants';
-import { useNavigate } from 'react-router-dom';
-import React from 'react';
-import { useUser } from '../context/UserContext';
+} from "../constants/Constants";
+import { useNavigate } from "react-router-dom";
+import React from "react";
+import { useUser } from "../context/UserContext";
 import {
   createEmployee,
   getAllEmployees,
   getEmployeesCount,
   downloadEmployeeFile,
   getOrganizationValuesByKey,
-} from '../service/axiosInstance';
-import { ApplicationContext } from '../context/ApplicationContext';
-import { EMPLOYEE_MODULE } from '../constants/PermissionConstants';
-import { IEmployeeCount } from '../entities/respponses/EmployeeCount';
-import { DynamicSpace } from '../styles/NavBarStyles.style';
-import useKeyPress from '../service/keyboardShortcuts/onKeyPress';
-import { hasPermission } from '../utils/permissionCheck';
-import useKeyCtrl from '../service/keyboardShortcuts/onKeySave';
-import Pagination from '../components/directComponents/Pagination.component';
-import { OrganizationValues } from '../entities/OrgValueEntity';
-import { InputLabelContainer as SelectOption } from '../styles/DocumentTabStyles.style';
-import SpinAnimation from '../components/loaders/SprinAnimation.loader';
-import { toast } from 'sonner';
-import CopyPasswordPopup from '../components/directComponents/CopyPasswordPopup.component';
-import { CreatedUserEntity } from '../entities/CreatedUserEntity';
+} from "../service/axiosInstance";
+import { ApplicationContext } from "../context/ApplicationContext";
+import { EMPLOYEE_MODULE } from "../constants/PermissionConstants";
+import { IEmployeeCount } from "../entities/respponses/EmployeeCount";
+import { DynamicSpace } from "../styles/NavBarStyles.style";
+import useKeyPress from "../service/keyboardShortcuts/onKeyPress";
+import { hasPermission } from "../utils/permissionCheck";
+import useKeyCtrl from "../service/keyboardShortcuts/onKeySave";
+import Pagination from "../components/directComponents/Pagination.component";
+import { OrganizationValues } from "../entities/OrgValueEntity";
+import { InputLabelContainer as SelectOption } from "../styles/DocumentTabStyles.style";
+import SpinAnimation from "../components/loaders/SprinAnimation.loader";
+import { toast } from "sonner";
+import CopyPasswordPopup from "../components/directComponents/CopyPasswordPopup.component";
+import { CreatedUserEntity } from "../entities/CreatedUserEntity";
 
 const EmployeeList = () => {
   const { t } = useTranslation();
@@ -72,10 +72,10 @@ const EmployeeList = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  const [departmentFilter, setDepartmentFilter] = useState<string>(''); //m
-  const [EmployeementTypeFilter, setEmployeementTypeFilter] = useState('');
-  const [JobTitleFilter, setJobTitleFilter] = useState<string>('');
-  const [EmployeeStatusFilter, setEmployeeStatusFilter] = useState<string>('');
+  const [departmentFilter, setDepartmentFilter] = useState<string>(""); //m
+  const [EmployeementTypeFilter, setEmployeementTypeFilter] = useState("");
+  const [JobTitleFilter, setJobTitleFilter] = useState<string>("");
+  const [EmployeeStatusFilter, setEmployeeStatusFilter] = useState<string>("");
 
   const handleDepartmentChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -123,7 +123,7 @@ const EmployeeList = () => {
             const response = await downloadEmployeeFile(profilePictureId);
 
             if (!response.data || response.data.size === 0) {
-              throw new Error('Received empty or invalid blob data');
+              throw new Error("Received empty or invalid blob data");
             }
 
             return new Promise<void>((resolve, reject) => {
@@ -134,12 +134,12 @@ const EmployeeList = () => {
                 resolve();
               };
               reader.onerror = () => {
-                reject(new Error('Error converting blob to base64'));
+                reject(new Error("Error converting blob to base64"));
               };
               reader.readAsDataURL(response.data);
             });
           } catch (error) {
-            throw new Error('Error fetching profile image:');
+            throw new Error("Error fetching profile image:");
           }
         }
       });
@@ -163,33 +163,33 @@ const EmployeeList = () => {
     setLoadingData(true);
     try {
       const queryParams = [];
-      if (departmentFilter != null && departmentFilter != '-')
+      if (departmentFilter != null && departmentFilter != "-")
         queryParams.push(`department=${encodeURIComponent(departmentFilter)}`);
-      if (EmployeementTypeFilter != null && EmployeementTypeFilter != '-')
+      if (EmployeementTypeFilter != null && EmployeementTypeFilter != "-")
         queryParams.push(
           `employmentType=${encodeURIComponent(EmployeementTypeFilter)}`
         );
-      if (JobTitleFilter != null && JobTitleFilter != '-')
+      if (JobTitleFilter != null && JobTitleFilter != "-")
         queryParams.push(`designation=${encodeURIComponent(JobTitleFilter)}`);
-      if (EmployeeStatusFilter != null && EmployeeStatusFilter != '-')
+      if (EmployeeStatusFilter != null && EmployeeStatusFilter != "-")
         queryParams.push(`status=${encodeURIComponent(EmployeeStatusFilter)}`);
 
       queryParams.push(`pageNumber=${currentPage}`);
       queryParams.push(`pageSize=${itemsPerPage}`);
       const queryString =
-        queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+        queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
       const response = await getAllEmployees(queryString);
       const allEmployees = response.data.employeeList;
       setTotalItems(response.data.totalSize);
       updateEmployeeList(allEmployees);
       if (!allEmployees || allEmployees.length === 0) {
-        setError('No employees found.');
+        setError("No employees found.");
       } else {
         setError(null);
       }
     } catch (error) {
-      setError('ERROR_WHILE_FETCHING_EMPLOYEES');
+      setError("ERROR_WHILE_FETCHING_EMPLOYEES");
     } finally {
       setLoadingData(false);
     }
@@ -208,7 +208,7 @@ const EmployeeList = () => {
       const response = await getEmployeesCount();
       setEmployeeCount(response.data);
     } catch (error) {
-      setError('ERROR_WHILE_FETCHING_EMPLOYEE_COUNT');
+      setError("ERROR_WHILE_FETCHING_EMPLOYEE_COUNT");
     }
   };
 
@@ -221,7 +221,7 @@ const EmployeeList = () => {
   }, [fetchEmployees]);
 
   const handleNavigateToDetailedView = (employeeId: string) => {
-    navigate('/profile', { state: { employeeId } });
+    navigate("/profile", { state: { employeeId } });
   };
 
   /*Below state used to set response loading when we click on Creat Profile Button
@@ -252,8 +252,8 @@ const EmployeeList = () => {
         <DynamicSpaceMainContainer>
           <EmployeeListHeadSection>
             <div>
-              <h3>{t('EMPLOYEES')}</h3>
-              <span>{t('MANAGE_YOUR_EMPLOYEES')}</span>
+              <h3>{t("EMPLOYEES")}</h3>
+              <span>{t("MANAGE_YOUR_EMPLOYEES")}</span>
             </div>
             {user && hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) && (
               <div>
@@ -262,7 +262,7 @@ const EmployeeList = () => {
                   onClick={handleIsCreateEmployeeModal}
                 >
                   <AddNewPlusSVG />
-                  {t('ADD_NEW')}
+                  {t("ADD_NEW")}
                 </Button>
               </div>
             )}
@@ -277,7 +277,7 @@ const EmployeeList = () => {
                   </>
                 ) : (
                   <>
-                    <h4>{t('TOTAL_EMPLOYEES')}</h4>
+                    <h4>{t("TOTAL_EMPLOYEES")}</h4>
                     <span>{employeeCount?.totalCount}</span>
                   </>
                 )}
@@ -291,7 +291,7 @@ const EmployeeList = () => {
                 </>
               ) : (
                 <>
-                  <h4>{t('ACTIVE_EMPLOYEES')}</h4>
+                  <h4>{t("ACTIVE_EMPLOYEES")}</h4>
                   <span>{employeeCount?.activeCount}</span>
                 </>
               )}
@@ -305,7 +305,7 @@ const EmployeeList = () => {
                   </>
                 ) : (
                   <>
-                    <h4>{t('INACTIVE_EMPLOYEES')}</h4>
+                    <h4>{t("INACTIVE_EMPLOYEES")}</h4>
                     <span>{employeeCount?.inactiveCount}</span>
                   </>
                 )}
@@ -331,7 +331,7 @@ const EmployeeList = () => {
                 setCurrentPage(1);
               }}
             >
-              <option value="">Department</option>{' '}
+              <option value="">Department</option>{" "}
               {departmentOptions.employeeDepartments.map((department) => (
                 <option key={department} value={department}>
                   {department}
@@ -347,7 +347,7 @@ const EmployeeList = () => {
                 setCurrentPage(1);
               }}
             >
-              <option value="">JobTitle</option>{' '}
+              <option value="">JobTitle</option>{" "}
               {departmentOptions.jobTitles.map((jobTitle) => (
                 <option key={jobTitle} value={jobTitle}>
                   {jobTitle}
@@ -372,36 +372,43 @@ const EmployeeList = () => {
               ))}
             </select>
 
-            <select
-              className="selectoption"
-              name="employeeStatus"
-              value={EmployeeStatusFilter}
-              onChange={(e) => {
-                handleEmployeeStatusChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Status</option>{' '}
-              {departmentOptions.status.map((employeStatus) => (
-                <option key={employeStatus} value={employeStatus}>
-                  {employeStatus}
-                </option>
-              ))}
-            </select>
+            {user &&
+              (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
+                hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) ||
+                hasPermission(user,EMPLOYEE_MODULE.UPDATE_ROLES_AND_PERMISSIONS) ||
+                hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES) ||
+                hasPermission(user, EMPLOYEE_MODULE.UPDATE_EMPLOYEE)) && (
+                <select
+                  className="selectoption"
+                  name="employeeStatus"
+                  value={EmployeeStatusFilter}
+                  onChange={(e) => {
+                    handleEmployeeStatusChange(e);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="">Status</option>{" "}
+                  {departmentOptions.status.map((employeStatus) => (
+                    <option key={employeStatus} value={employeStatus}>
+                      {employeStatus}
+                    </option>
+                  ))}
+                </select>
+              )}
           </FilterSection>
           <br />
           <TableContainer>
             <Table>
               <TableHead>
-                <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                  <th style={{ width: '250px' }}>{t('NAME')}</th>
-                  <th style={{ width: '120px' }}>{t('JOB_TITLE')}</th>
-                  <th style={{ width: '140px' }}>{t('TYPE')}</th>
-                  <th style={{ width: '140px' }}>{t('DEPARTMENT')}</th>
-                  <th style={{ width: '120px' }}>{t('STATUS')}</th>
+                <tr style={{ textAlign: "left", borderRadius: "10px" }}>
+                  <th style={{ width: "250px" }}>{t("NAME")}</th>
+                  <th style={{ width: "120px" }}>{t("JOB_TITLE")}</th>
+                  <th style={{ width: "140px" }}>{t("TYPE")}</th>
+                  <th style={{ width: "140px" }}>{t("DEPARTMENT")}</th>
+                  <th style={{ width: "120px" }}>{t("STATUS")}</th>
                 </tr>
               </TableHead>
-              <tbody style={{ fontSize: '14px' }}>
+              <tbody style={{ fontSize: "14px" }}>
                 {isLoadingData ? (
                   <>
                     {[...Array(8).keys()].map((index) => (
@@ -439,8 +446,8 @@ const EmployeeList = () => {
                               className="initials"
                               style={{
                                 backgroundImage: `url(${employeeImages.get(emp.employee.employeeId)})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
                               }}
                             >
                               {/* Empty because the background image handles the visual */}
@@ -460,9 +467,9 @@ const EmployeeList = () => {
                               {emp.account.firstName === null &&
                               emp.account.lastName === null
                                 ? // FIXME
-                                  't.a.cer'
+                                  "t.a.cer"
                                 : emp.account.firstName +
-                                  ' ' +
+                                  " " +
                                   emp.account.lastName}
                             </span>
                             <span className="employeeMail">
@@ -473,21 +480,21 @@ const EmployeeList = () => {
                         <td>
                           {emp.employee.jobDetails
                             ? emp.employee.jobDetails.designation
-                            : '-'}
+                            : "-"}
                         </td>
                         <td>
                           {emp.employee.jobDetails &&
                           emp.employee.jobDetails.employementType
                             ? emp.employee.jobDetails.employementType
-                            : '-'}
+                            : "-"}
                         </td>
                         <td>
                           {emp.employee.jobDetails
                             ? emp.employee.jobDetails.department
-                            : '-'}
+                            : "-"}
                         </td>
                         <td>
-                          {emp.account.active ? t('ACTIVE') : t('INACTIVE')}
+                          {emp.account.active ? t("ACTIVE") : t("INACTIVE")}
                         </td>
                       </TableBodyRow>
                     </React.Fragment>
@@ -540,12 +547,12 @@ type CreateAccountProps = {
 };
 
 const CreateAccount: React.FC<CreateAccountProps> = (props) => {
-  const [responseMessage, setResponseMessage] = useState('');
+  const [responseMessage, setResponseMessage] = useState("");
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    employmentType: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    employmentType: "",
   });
   const [organizationValues, setOrganizationValues] =
     useState<OrganizationValues | null>(null);
@@ -557,22 +564,22 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
   };
 
   const [errors, setErrors] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    employmentType: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    employmentType: "",
   });
-  const [emailMessage, setEmailMessage] = useState('');
+  const [emailMessage, setEmailMessage] = useState("");
 
   useEffect(() => {
     const fetchOrganizationValues = async () => {
       try {
         setLoading(true);
-        const key = 'employeeTypes';
+        const key = "employeeTypes";
         const response = await getOrganizationValuesByKey(key);
         setOrganizationValues(response.data);
       } catch (err) {
-        toast.error(t('ERROR_OCCURRED_PLEASE_RELOAD'));
+        toast.error(t("ERROR_OCCURRED_PLEASE_RELOAD"));
       } finally {
         setLoading(false);
       }
@@ -587,7 +594,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
   ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: "" }));
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -595,30 +602,30 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     e.preventDefault();
     const newErrors = {
       firstName:
-        formData.firstName === ''
+        formData.firstName === ""
           ? FirstNameRequired
           : /\d/.test(formData.firstName)
-            ? 'FIRST_NAME_CANNOT_CONTAIN_NuMBERS'
-            : '',
+            ? "FIRST_NAME_CANNOT_CONTAIN_NuMBERS"
+            : "",
       lastName:
-        formData.lastName === ''
+        formData.lastName === ""
           ? LastNameRequired
           : /\d/.test(formData.lastName)
-            ? 'LAST_NAME_CANNOT_CONTAIN_NuMBERS'
-            : '',
+            ? "LAST_NAME_CANNOT_CONTAIN_NuMBERS"
+            : "",
       email:
-        formData.email === ''
+        formData.email === ""
           ? EmailRequired
           : !/^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/.test(formData.email)
-            ? 'INVALID_EMAIL_FORMAT'
-            : '',
+            ? "INVALID_EMAIL_FORMAT"
+            : "",
       employmentType:
-        formData.employmentType === '' ? EMPLOYMENT_TYPRE_REQUIRED : '',
+        formData.employmentType === "" ? EMPLOYMENT_TYPRE_REQUIRED : "",
     };
 
     setErrors(newErrors);
 
-    if (Object.values(newErrors).every((error) => error === '')) {
+    if (Object.values(newErrors).every((error) => error === "")) {
       try {
         props.setIsResponseLoading(true);
         const resp = await createEmployee(formData);
@@ -626,7 +633,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         handleShowPassword();
         props.reloadEmployeeList();
         props.refetchEmployeeCount();
-        toast.success(t('PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED'));
+        toast.success(t("PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED"));
       } catch (e) {
         if (axios.isAxiosError(e)) {
           const axiosError: AxiosError = e;
@@ -635,15 +642,15 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           )?.message;
           if (
             responseData &&
-            responseData.startsWith('Employee With Given Id Is Already Found')
+            responseData.startsWith("Employee With Given Id Is Already Found")
           ) {
-            setResponseMessage('EMPLOYEE_ID_ALREADY_FOUND');
+            setResponseMessage("EMPLOYEE_ID_ALREADY_FOUND");
           } else if (
             responseData &&
-            responseData.startsWith('User Already Found')
+            responseData.startsWith("User Already Found")
           ) {
-            setResponseMessage('A profile with this email ID already exists');
-            setEmailMessage('A profile with this email ID already exists');
+            setResponseMessage("A profile with this email ID already exists");
+            setEmailMessage("A profile with this email ID already exists");
           } else {
             setResponseMessage(ProfileCreationError);
           }
@@ -651,13 +658,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
       } finally {
         props.setIsResponseLoading(false);
         setTimeout(() => {
-          setResponseMessage('');
-          setEmailMessage('');
+          setResponseMessage("");
+          setEmailMessage("");
         }, 5000);
       }
     }
   };
-  useKeyCtrl('s', () =>
+  useKeyCtrl("s", () =>
     handleCreateEmployee(event as unknown as React.FormEvent<HTMLFormElement>)
   );
 
@@ -668,12 +675,12 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
   const { t } = useTranslation();
 
   return (
-    <StyledForm style={{ cursor: props.isResponseLoading ? 'progress' : '' }}>
+    <StyledForm style={{ cursor: props.isResponseLoading ? "progress" : "" }}>
       <div>
-        <h3>{t('ADD_NEW_PROFILE')}</h3>
+        <h3>{t("ADD_NEW_PROFILE")}</h3>
         <InputLabelContainer>
           <label>
-            {t('FIRST_NAME')}{' '}
+            {t("FIRST_NAME")}{" "}
             <ValidationText className="star">*</ValidationText>
           </label>
           <TextInput
@@ -683,11 +690,11 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             value={formData.firstName}
             onChange={handleChange}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 e.preventDefault();
               }
             }}
-            className={`${errors.firstName}` ? 'errorEnabledInput' : ''}
+            className={`${errors.firstName}` ? "errorEnabledInput" : ""}
           />
           {errors.firstName && (
             <ValidationText>
@@ -698,7 +705,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
 
         <InputLabelContainer>
           <label>
-            {t('LAST_NAME')} <ValidationText className="star">*</ValidationText>
+            {t("LAST_NAME")} <ValidationText className="star">*</ValidationText>
           </label>
           <TextInput
             type="text"
@@ -706,9 +713,9 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             placeholder="Ex: Mark"
             value={formData.lastName}
             onChange={handleChange}
-            className={`${errors.lastName}` ? 'errorEnabledInput' : ''}
+            className={`${errors.lastName}` ? "errorEnabledInput" : ""}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 e.preventDefault();
               }
             }}
@@ -722,7 +729,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
 
         <InputLabelContainer>
           <label>
-            {t('EMAIL_ADDRESS')}{' '}
+            {t("EMAIL_ADDRESS")}{" "}
             <ValidationText className="star">*</ValidationText>
           </label>
           <TextInput
@@ -731,9 +738,9 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             placeholder="Ex: john@techatcore.com"
             value={formData.email}
             onChange={handleChange}
-            className={`${errors.email}` ? 'errorEnabledInput' : ''}
+            className={`${errors.email}` ? "errorEnabledInput" : ""}
             onKeyDown={(e) => {
-              if (e.key === 'Enter') {
+              if (e.key === "Enter") {
                 e.preventDefault();
               }
             }}
@@ -752,7 +759,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
 
         <SelectOption>
           <label>
-            {t('EMPLOYMENT_TYPE')}{' '}
+            {t("EMPLOYMENT_TYPE")}{" "}
             <ValidationText className="star">*</ValidationText>
           </label>
           <select
@@ -760,13 +767,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             name="employmentType"
             id="employmentType"
             onKeyPress={(event) => {
-              if (event.key === 'Enter') {
+              if (event.key === "Enter") {
                 event.preventDefault();
               }
             }}
             onChange={handleChange}
           >
-            <option value="">{t('SELECT_EMPLOYMENT_TYPE')}</option>
+            <option value="">{t("SELECT_EMPLOYMENT_TYPE")}</option>
             {organizationValues &&
               organizationValues.values &&
               organizationValues.values.map((type, index) => (
@@ -783,7 +790,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         </SelectOption>
         <span>
           <ValidationText className="info">
-            {t('EMPLOYEE_ID_WILL_BE_GENERATED_BASED_ON_PATTERN')}
+            {t("EMPLOYEE_ID_WILL_BE_GENERATED_BASED_ON_PATTERN")}
           </ValidationText>
         </span>
       </div>
@@ -801,7 +808,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           <Button
             style={
               props.isResponseLoading
-                ? { opacity: 0.3, cursor: 'not-allowed' }
+                ? { opacity: 0.3, cursor: "not-allowed" }
                 : {}
             }
             onClick={(e) => {
@@ -813,30 +820,30 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
           >
-            {t('CANCEL')}
+            {t("CANCEL")}
           </Button>
           <Button
             className="submit"
             onClick={handleCreateEmployee}
-            style={{ cursor: props.isResponseLoading ? 'progress' : '' }}
+            style={{ cursor: props.isResponseLoading ? "progress" : "" }}
             disabled={props.isResponseLoading}
           >
-            {t('CREATE')}
+            {t("CREATE")}
           </Button>
         </div>
       </div>
       {loading && <SpinAnimation />}
       {showPassword && (
         <CopyPasswordPopup
-          password={user?.password || ''}
+          password={user?.password || ""}
           handleClose={() => {
             props.handleClose();
             handleShowPassword();
           }}
-          employeeId={user?.user?.employeeId || ''}
-          firstName={user?.user?.firstName || ''}
-          email={user?.user?.email || ''}
-          companyName={user?.user?.organizations?.name?.toUpperCase() || ''}
+          employeeId={user?.user?.employeeId || ""}
+          firstName={user?.user?.firstName || ""}
+          email={user?.user?.email || ""}
+          companyName={user?.user?.organizations?.name?.toUpperCase() || ""}
         />
       )}
     </StyledForm>
