@@ -375,7 +375,7 @@ const EmployeeList = () => {
             {user &&
               (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
                 hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) ||
-                hasPermission(user,EMPLOYEE_MODULE.UPDATE_ROLES_AND_PERMISSIONS) ||
+                hasPermission(user, EMPLOYEE_MODULE.UPDATE_ROLES_AND_PERMISSIONS) ||
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES) ||
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_EMPLOYEE)) && (
                 <select
