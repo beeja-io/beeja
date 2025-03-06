@@ -32,6 +32,8 @@ export interface IAssignedInterviewer {
     organizationId: string;
     assignedInterviewers: IAssignedInterviewer[];
     notes: string[];
+    referredByEmployeeName: string;
+    experience: string;
     applicantComments: IApplicantComment[];
     createdAt: string;
     modifiedAt: string;

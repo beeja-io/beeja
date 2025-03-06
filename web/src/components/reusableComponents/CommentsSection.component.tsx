@@ -28,12 +28,14 @@ const CommentsSection = (props: CommentSectionProps) => {
         <h5>{t('LEAVE_A_COMMENT')}</h5>
         <CommentTextArea
           name="comment"
+          value={message}
           onChange={(e) => handleSetMessage(e.target.value)}
           placeholder={t('ENTER_YOUR_COMMENTS_HERE')}
         />
         <Button
           className="normal"
-          onClick={() => props.handleSubmitComment(message)}
+          type='submit'
+          onClick={(e) => { e.preventDefault(); props.handleSubmitComment(message); setMessage(''); }}
         >
           {t('COMMENT')}
         </Button>

@@ -97,7 +97,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                 <th>Name of Applicant</th>
                 <th>Position</th>
                 <th>Phone Number</th>
-                <th>Email</th>
+                <th>Referred By</th>
                 <th>Status</th>
                 <th>Requested Date</th>
                 <th>Action</th>
@@ -129,7 +129,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                 <th>Name of Applicant</th>
                 <th>Position</th>
                 <th>Phone Number</th>
-                <th>Email</th>
+                {!props.isReferral && <th>Referred By</th>}
                 <th style={{ textAlign: 'center' }}>Status</th>
                 <th>Requested Date</th>
                 <th>Resume/CV</th>
@@ -146,7 +146,9 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                       </td>
                       <td>{applicant.positionAppliedFor}</td>
                       <td>{applicant.phoneNumber}</td>
-                      <td>{applicant.email}</td>
+                      {!props.isReferral && (
+                        <td>{applicant.referredByEmployeeName ? applicant.referredByEmployeeName : '-'}</td>
+                      )}
                       <td>
                         <StatusIndicator
                           status={applicant.status}

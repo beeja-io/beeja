@@ -7,7 +7,7 @@ export const CommentContainer = styled.div`
   width: 100%;
 `;
 
-export const CommentForm = styled.div`
+export const CommentForm = styled.form`
   padding: 20px;
   margin-bottom: 20px;
   border: 1px solid ${(props) => props.theme.colors.grayColors.gray13};
