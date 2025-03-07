@@ -146,8 +146,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
         value:
           fromDate && toDate
             ? `${formatDate(fromDate.toString())} - ${formatDate(
-                toDate.toString()
-              )}`
+              toDate.toString()
+            )}`
             : fromDate
               ? `From ${formatDate(fromDate.toString())}`
               : toDate
@@ -392,7 +392,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     setCurrentPage(1);
                   }}
                   selectedDate={toDate ? toDate : new Date()}
-                  handleCalenderChange={() => {}}
+                  handleCalenderChange={() => { }}
                 />
               </div>
             )}
@@ -491,10 +491,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
               ₹{' '}
               {expenses?.metadata.totalAmount !== undefined
                 ? formatToINR(
-                    expenses.metadata.totalAmount.toFixed(
-                      2
-                    ) as unknown as number
-                  )
+                  expenses.metadata.totalAmount.toFixed(
+                    2
+                  ) as unknown as number
+                )
                 : '0.00'}
             </span>
           </span>
@@ -542,15 +542,14 @@ export const ExpenseList = (props: ExpenseListProps) => {
         {fromDate == null && toDate == null && (
           <span className="noFilters noMargin">
             <InfoCircleSVG />
-            {`Showing current month expenses (sorted based on ${
-              sortBy === 'expenseDate'
+            {`Showing current month expenses (sorted based on ${sortBy === 'expenseDate'
                 ? t('EXPENSE_DATE')
                 : sortBy === 'requestedDate'
                   ? t('REQUESTED_DATE')
                   : sortBy === 'paymentDate'
                     ? t('PAYMENT_DATE')
                     : t('CREATED_DATE')
-            })`}
+              })`}
           </span>
         )}
         <TableListContainer style={{ marginTop: 0 }}>
@@ -649,18 +648,18 @@ export const ExpenseList = (props: ExpenseListProps) => {
                               permission === EXPENSE_MODULE.DELETE_EXPENSE
                           )
                         ) && (
-                          <td>
-                            <ExpenseAction
-                              options={Actions}
-                              fetchExpenses={fetchExpenses}
-                              currentExpense={exp}
-                              expenseCategories={props.expenseCategories}
-                              expenseTypes={props.expenseTypes}
-                              expenseDepartments={props.expenseDepartments}
-                              expensePaymentModes={props.expensePaymentModes}
-                            />
-                          </td>
-                        )}
+                            <td>
+                              <ExpenseAction
+                                options={Actions}
+                                fetchExpenses={fetchExpenses}
+                                currentExpense={exp}
+                                expenseCategories={props.expenseCategories}
+                                expenseTypes={props.expenseTypes}
+                                expenseDepartments={props.expenseDepartments}
+                                expensePaymentModes={props.expensePaymentModes}
+                              />
+                            </td>
+                          )}
                       </TableBodyRow>
                     ))
                   ) : (
