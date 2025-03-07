@@ -234,7 +234,6 @@ const EditApplicant = () => {
                   <select
                     className="selectoption largeSelectOption"
                     name="department"
-                    value={applicant.status}
                     onChange={handleStatusChange}
                     onKeyPress={(event) => {
                       if (event.key === 'Enter') {
@@ -251,7 +250,7 @@ const EditApplicant = () => {
                       "HIRED",
                       "REJECTED",
                     ].map((status) => (
-                      <option key={status} value={status}>
+                      <option key={status} value={status} selected={applicant.status === status}>
                         {status.replace("_", " ")}
                       </option>
                     ))}

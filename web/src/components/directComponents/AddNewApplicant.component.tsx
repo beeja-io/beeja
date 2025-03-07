@@ -342,17 +342,18 @@ const AddNewApplicant = (props: AddNewApplicant) => {
               </div>
             )}
           </div>
-          {user && hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT) && (
-            <Button
-              className={`submit ${isLoading ? 'loading' : ''}`}
-              width="216px"
-              onClick={handleSaveApplicant}
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? '' : 'Submit'}
-            </Button>
-          )}
+          {user && (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
+            || hasPermission(user, RECRUITMENT_MODULE.ACCESS_REFFERRAlS)) && (
+              <Button
+                className={`submit ${isLoading ? 'loading' : ''}`}
+                width="216px"
+                onClick={handleSaveApplicant}
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? '' : 'Submit'}
+              </Button>
+            )}
         </form>
       </BulkPayslipContainer>
     </ExpenseManagementMainContainer>
