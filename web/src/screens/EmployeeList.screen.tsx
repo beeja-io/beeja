@@ -408,19 +408,29 @@ const EmployeeList = () => {
               ))}
             </select>
 
-            <select
-              className="selectoption"
-              name="employeeStatus"
-              value={EmployeeStatusFilter}
-              onChange={(e) => {
-                handleEmployeeStatusChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Status</option>{' '}
-              <option value="Active">{t('ACTIVE')}</option>
-              <option value="Inactive">{t('INACTIVE')}</option>
-            </select>
+            {user &&
+              (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
+                hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) ||  
+                hasPermission(
+                  user,
+                  EMPLOYEE_MODULE.UPDATE_ROLES_AND_PERMISSIONS
+                ) ||
+                hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES) ||
+                hasPermission(user, EMPLOYEE_MODULE.UPDATE_EMPLOYEE)) && (
+                <select
+                  className="selectoption"
+                  name="employeeStatus"
+                  value={EmployeeStatusFilter}
+                  onChange={(e) => {
+                    handleEmployeeStatusChange(e);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="">Status</option>{" "}
+                  <option value="Active">{t("ACTIVE")}</option>
+                  <option value="Inactive">{t("INACTIVE")}</option>
+                </select>
+              )}
           </FilterSection>
           <br />
           <TableContainer>
