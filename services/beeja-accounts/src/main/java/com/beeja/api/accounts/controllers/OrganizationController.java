@@ -86,6 +86,10 @@ public class OrganizationController {
   @HasPermission(PermissionConstants.UPDATE_ORGANIZATIONS)
   public ResponseEntity<OrgDefaults> getOrganizationValuesByKey(@PathVariable String key)
       throws Exception {
+    OrgDefaults orgDefaults = organizationService.getOrganizationValuesByKey(key);
+    if(orgDefaults == null) {
+        return ResponseEntity.noContent().build();
+    }
     return ResponseEntity.ok(organizationService.getOrganizationValuesByKey(key));
   }
 
