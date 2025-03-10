@@ -153,9 +153,13 @@ public class SecurityConfig {
 
 
   @Bean
-  public CorsWebFilter corsWebFilter() {
+  public CorsWebFilter corsWebFilter() throws Exception {
+    if(authProperties.getFrontEndUrl() == null || authProperties.getLocalFrontEndUrl() == null){
+      throw new Exception("Missing Frontend Urls for CORS");
+    }
     CorsConfiguration corsConfig = new CorsConfiguration();
-    corsConfig.setAllowedOriginPatterns(List.of(authProperties.getFrontEndUrl(), authProperties.getLocalFrontEndUrl()));
+    corsConfig.setAllowedOriginPatterns(List.of(authProperties.getFrontEndUrl(),
+            authProperties.getLocalFrontEndUrl()));
     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     corsConfig.setAllowedHeaders(List.of("*"));
     corsConfig.setAllowCredentials(true);

@@ -391,22 +391,24 @@ const EmployeeList = () => {
                 ))}
               </select>}
 
+            {employeeTypes &&
             <select
-              className="selectoption"
-              name="EmployementType"
-              value={EmployeementTypeFilter}
-              onChange={(e) => {
-                handleEmploymentTypeChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Employement Type</option>
-              {employeeTypes?.values.map((employementType) => (
-                <option key={employementType.value} value={employementType.value}>
-                  {t(employementType.value)}
-                </option>
-              ))}
-            </select>
+            className="selectoption"
+            name="EmployementType"
+            value={EmployeementTypeFilter}
+            onChange={(e) => {
+              handleEmploymentTypeChange(e);
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">Employement Type</option>
+            {employeeTypes?.values.map((employementType) => (
+              <option key={employementType.value} value={employementType.value}>
+                {t(employementType.value)}
+              </option>
+            ))}
+          </select>
+            }
 
             {user &&
               (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
