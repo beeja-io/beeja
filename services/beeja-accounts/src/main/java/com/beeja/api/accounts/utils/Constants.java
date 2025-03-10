@@ -178,4 +178,8 @@ public class Constants {
   public static final String NEW_PASSWORD_MUST_MATCH_CONFIRMATION_PASSWORD =
       "New Password Must Match Confirmation Password";
   public static final String UPDATED = "Updated";
+
+  public static final String GENERATING_DEFAULT_VALUES = "Generating Values for organization :  {} ";
+  public static final String ERROR_GENERATING_DEFAULT_VALUES = "Error in generating {} values for organization : {} ,";
+  public static final String SUCCESSFULLY_GENERATED_DEFAULTS = "Successfully generated values for organization : {} ,";
 }
