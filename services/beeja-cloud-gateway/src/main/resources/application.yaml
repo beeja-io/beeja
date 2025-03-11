@@ -117,6 +117,9 @@ resource-server-urls:
   file-service: ${FILE_SERVICE_BASE_URL}
   expense-service: ${EXPENSE_SERVICE_BASE_URL}
   finance-service: ${FINANCE_SERVICE_BASE_URL}
+  project-management: ${PROJECT_SERVICE_BASE_URL}
+
+
 
 jwt:
   secret: ${JWT_SECRET_KEY}

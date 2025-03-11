@@ -5,6 +5,7 @@ import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.model.Employee;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
+import com.beeja.api.employeemanagement.response.EmployeeDetailsResponse;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
 import com.beeja.api.employeemanagement.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -86,5 +87,11 @@ public class EmployeeController {
     }
     return ResponseEntity.status(HttpStatus.OK)
         .body(employeeService.updateKYCRequest(employeeId, updateKYCRequest));
+  }
+
+  @GetMapping("/response")
+  public ResponseEntity<List<EmployeeDetailsResponse>> getEmployeeDetails() {
+    List<EmployeeDetailsResponse> employees = employeeService.getEmployeeDetails();
+    return ResponseEntity.ok(employees);
   }
 }

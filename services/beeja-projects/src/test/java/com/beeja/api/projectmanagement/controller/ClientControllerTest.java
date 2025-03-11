@@ -97,7 +97,7 @@ public class ClientControllerTest {
         validClientRequest.setContact("+1234567890");
         validClientRequest.setIndustry(Industry.ECOMMERCE);
         validClientRequest.setDescription("A premium IT client");
-        validClientRequest.setLogo("logo.png");
+//        validClientRequest.setLogo("logo.png");
         validClientRequest.setTaxDetails(validTaxDetails);
         validClientRequest.setPrimaryAddress(validAddress);
 
