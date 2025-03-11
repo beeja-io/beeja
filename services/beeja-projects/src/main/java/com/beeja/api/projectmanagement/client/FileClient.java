@@ -6,6 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @FeignClient(value = "file-service", url = "${client-urls.fileService}")
 public interface FileClient {
@@ -32,4 +33,6 @@ public interface FileClient {
 
   @PostMapping(value = "/v1/files/dynamic", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<Object> uploadOrUpdateFile(FileUploadRequest fileInput);
+
+
 }

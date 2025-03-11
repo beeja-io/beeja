@@ -11,7 +11,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI}
-      database: ${PROJECT_MONGODB_DATABASE}
+      database: finance_sbox
 
 
 eureka:
@@ -35,9 +35,10 @@ springdoc:
     url: /openApi.yaml
 
 client-urls:
-  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
-  fileService: ${FILE_SERVICE_BASE_URL}/files
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}
+  fileService: ${FILE_SERVICE_BASE_URL}
+  employeeService: ${EMPLOYEE_SERVICE_BASE_URL}
 
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET_KEY}

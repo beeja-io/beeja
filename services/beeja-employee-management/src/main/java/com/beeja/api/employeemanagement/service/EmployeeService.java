@@ -3,6 +3,7 @@ package com.beeja.api.employeemanagement.service;
 import com.beeja.api.employeemanagement.model.Employee;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
+import com.beeja.api.employeemanagement.response.EmployeeDetailsResponse;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
 import com.beeja.api.employeemanagement.response.GetLimitedEmployee;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,4 +38,6 @@ public interface EmployeeService {
   Employee updateKYCRequest(String id, UpdateKYCRequest updateKYCRequest) throws Exception;
 
   Employee uploadOrUpdateProfilePic(MultipartFile file, String employeeId) throws Exception;
+
+  List<EmployeeDetailsResponse> getEmployeeDetails();
 }

@@ -1,5 +1,6 @@
 package com.beeja.api.employeemanagement.serviceImpl;
 
+import com.beeja.api.employeemanagement.response.EmployeeDetailsResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.beeja.api.employeemanagement.client.AccountClient;
@@ -765,4 +766,16 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     return "Duplicate entry found.";
   }
+
+
+  public List<EmployeeDetailsResponse> getEmployeeDetails() {
+    List<Employee> employees = employeeRepository.findAll();
+
+    return employees.stream()
+            .map(emp -> new EmployeeDetailsResponse(emp.getId()))
+            .collect(Collectors.toList());
+  }
+
+
+
 }
