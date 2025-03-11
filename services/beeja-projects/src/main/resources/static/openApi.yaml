@@ -1,0 +1,548 @@
+openapi: 3.0.0
+info:
+  title: Beeja Project service- OpenAPI 3.0
+  description: |-
+    `Product of tech.at.core`
+           API documentation for the Beeja Open API application. It allows users to access
+           data via a APIs secured by cookie and permissions.
+
+             ## Authentication & Authorization
+             Beeja has a username and password authentication system.
+             [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
+  version: 1.0.11
+externalDocs:
+  description: Explore Beeja
+  url: https://beeja.io/
+servers:
+  - url: http://localhost:8096/projects
+    description: projects APIs
+paths:
+  /v1/contracts:
+    post:
+      tags:
+        - contract-controller
+      summary: Add a new contract
+      description: Adds a new contract by uploading contract details via a form.
+      operationId: addContract
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                contractFile:
+                  type: string
+                  format: binary
+                contractName:
+                  type: string
+                contractDescription:
+                  type: string
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+              required:
+                - contractFile
+                - contractName
+                - startDate
+                - endDate
+      responses:
+        "200":
+          description: Contract successfully added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        "400":
+          description: Bad Request. Validation failed.
+        "500":
+          description: Internal Server Error.
+
+    get:
+      tags:
+        - contract-controller
+      summary: Get all contracts
+      description: Retrieves a list of all contracts.
+      operationId: getAllContracts
+      responses:
+        "200":
+          description: List of contracts.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contract'
+        "500":
+          description: Internal Server Error.
+
+  /v1/contracts/{id}:
+    patch:
+      tags:
+        - contract-controller
+      summary: Update an existing contract
+      description: Updates a contract's details by ID.
+      operationId: updateContract
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRequest'
+      responses:
+        "200":
+          description: Contract successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        "400":
+          description: Bad Request. Validation failed.
+        "404":
+          description: Contract not found.
+        "500":
+          description: Internal Server Error.
+
+    get:
+      tags:
+        - contract-controller
+      summary: Get contract by ID
+      description: Retrieves a contract by its unique ID.
+      operationId: getContractById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Contract found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        "404":
+          description: Contract not found.
+        "500":
+          description: Internal Server Error.
+
+        paths:
+  /v1/clients:
+    post:
+      tags:
+        - client-controller
+      summary: Add a new client
+      description: Adds a new client to the system.
+      operationId: addClient
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+      responses:
+        "200":
+          description: Client successfully added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        "400":
+          description: Bad Request. Validation failed.
+        "500":
+          description: Internal Server Error.
+
+    get:
+      tags:
+        - client-controller
+      summary: Get all clients
+      description: Retrieves a list of all clients.
+      operationId: getClients
+      security:
+        - ApiKeyAuth: []
+      responses:
+        "200":
+          description: List of clients retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClientDTO'
+        "204":
+          description: No content. No clients found.
+        "500":
+          description: Internal Server Error.
+
+  /v1/clients/{id}:
+    patch:
+      tags:
+        - client-controller
+      summary: Update a client partially
+      description: Updates specific fields of a client identified by ID.
+      operationId: updateClientPartially
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Key-value pairs of fields to be updated.
+      responses:
+        "200":
+          description: Client successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        "400":
+          description: Bad Request. Validation failed.
+        "404":
+          description: Client not found.
+        "500":
+          description: Internal Server Error.
+
+    get:
+      tags:
+        - client-controller
+      summary: Get client by ID
+      description: Retrieves a client by its unique ID.
+      operationId: getClient
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Client retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        "404":
+          description: Client not found.
+        "500":
+          description: Internal Server Error.
+      paths:
+  /v1/projects:
+    post:
+      tags:
+        - project-controller
+      summary: Add a new project
+      description: Adds a new project to the system.
+      operationId: addProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        "200":
+          description: Project successfully added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        "400":
+          description: Bad Request. Validation failed.
+        "500":
+          description: Internal Server Error.
+
+    get:
+      tags:
+        - project-controller
+      summary: Get all projects
+      description: Retrieves a list of all projects.
+      operationId: getAllProjects
+      responses:
+        "200":
+          description: List of projects retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        "500":
+          description: Internal Server Error.
+
+  /v1/projects/{id}:
+    put:
+      tags:
+        - project-controller
+      summary: Update a project
+      description: Updates an existing project identified by ID.
+      operationId: updateProject
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Project'
+      responses:
+        "200":
+          description: Project successfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        "400":
+          description: Bad Request. Validation failed.
+        "404":
+          description: Project not found.
+        "500":
+          description: Internal Server Error.
+
+    get:
+      tags:
+        - project-controller
+      summary: Get project by ID
+      description: Retrieves a project by its unique ID.
+      operationId: getProjectById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Project retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        "404":
+          description: Project not found.
+        "500":
+          description: Internal Server Error.
+      paths:
+  /v1/resources:
+    post:
+      tags:
+        - resource-controller
+      summary: Add or Get Resources
+      description: Adds new resources or retrieves existing resources based on the request body.
+      operationId: addOrGetResources
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Resource'
+      responses:
+        "200":
+          description: Resources retrieved or created successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Resource'
+        "400":
+          description: Bad Request. Validation failed.
+        "500":
+          description: Internal Server Error.
+
+  /v1/resources/allocate:
+    post:
+      tags:
+        - resource-controller
+      summary: Allocate Resource
+      description: Allocates a specified amount of resources to a given employee.
+      operationId: allocateResource
+      parameters:
+        - name: employeeId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The ID of the employee to whom resources are allocated.
+        - name: allocation
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+          description: The amount of resources to allocate.
+      responses:
+        "200":
+          description: Resource allocation successful.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Resource'
+        "400":
+          description: Bad Request. Validation failed.
+        "500":
+          description: Internal Server Error.
+      paths:
+  /v1:
+    get:
+      tags:
+        - hello-world-controller
+      summary: Get Hello World Message
+      description: Returns a greeting message with the logged-in user's name.
+      operationId: getHelloWorld
+      responses:
+        "200":
+          description: Greeting message successfully returned.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Hello, JohnDoe"
+        "500":
+          description: Internal Server Error.
+
+components:
+  schemas:
+    Resource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the resource.
+        name:
+          type: string
+          description: The name of the resource.
+        employeeId:
+          type: string
+          description: The employee ID associated with the resource.
+        allocation:
+          type: number
+          format: double
+          description: The allocated amount of the resource.
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the project.
+        name:
+          type: string
+          description: Name of the project.
+        description:
+          type: string
+          description: Description of the project.
+        startDate:
+          type: string
+          format: date
+          description: The start date of the project.
+        endDate:
+          type: string
+          format: date
+          description: The end date of the project.
+        status:
+          type: string
+          description: The current status of the project.
+
+    ClientRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+      required:
+        - name
+        - email
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+
+    ClientDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+
+    Contract:
+      type: object
+      properties:
+        id:
+          type: string
+        contractName:
+          type: string
+        contractDescription:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        status:
+          type: string
+          description: Contract status (e.g., active, expired, etc.)
+
+    ContractRequest:
+      type: object
+      properties:
+        contractName:
+          type: string
+        contractDescription:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+
+
+
+
