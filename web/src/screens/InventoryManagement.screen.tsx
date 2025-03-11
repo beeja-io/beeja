@@ -58,7 +58,6 @@ const InventoryManagement = () => {
   const [deviceFilter, setDeviceFilter] = useState<string>();
   const [availabilityFilter, setAvailabilityFilter] = useState<string>();
   const [providerFilter, setProviderFilter] = useState<string>('');
-  const [osFilter, setOsFilter] = useState<string>('');
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // const value = event.target.value;
     setDeviceFilter(event.target.value);
@@ -75,10 +74,6 @@ const InventoryManagement = () => {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setProviderFilter(event.target.value);
-  };
-
-  const handleOsChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setOsFilter(event.target.value);
   };
 
   const [inventoryList, setInventoryList] = useState<DeviceDetails[]>([]);
@@ -118,8 +113,6 @@ const InventoryManagement = () => {
         );
       if (providerFilter != null && providerFilter != '-')
         queryParams.push(`provider=${encodeURIComponent(providerFilter)}`);
-      if (osFilter != null && osFilter != '-')
-        queryParams.push(`os=${encodeURIComponent(osFilter)}`);
       if (currentPage) {
         queryParams.push(`pageNumber=${currentPage}`);
       }
@@ -152,8 +145,7 @@ const InventoryManagement = () => {
     itemsPerPage,
     deviceFilter,
     availabilityFilter,
-    providerFilter,
-    osFilter,
+    providerFilter
   ]);
 
   useEffect(() => {
@@ -166,13 +158,23 @@ const InventoryManagement = () => {
   const [deviceTypes, setDeviceTypes] = useState<OrganizationValues>(
     {} as OrganizationValues
   );
+  const [inventoryProviders, setInventoryProviders] = useState<OrganizationValues>(
+    {} as OrganizationValues
+  )
 
   const fetchOrganizationValues = async () => {
     const deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
+    const inventoryProvidersFetched = await getOrganizationValuesByKey('inventoryProviders');
     if (!deviceTypesFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS'));
     } else {
       setDeviceTypes(deviceTypesFetched.data);
+    }
+    if (!inventoryProvidersFetched?.data?.values?.length) {
+      toast.error(t('PLEASE_ADD_INVENTORY_PROVIDERS_IN_ORG_SETTINGS'));
+    }
+    else {
+      setInventoryProviders(inventoryProvidersFetched.data);
     }
     setDeviceTypes(deviceTypesFetched.data);
   };
@@ -186,8 +188,7 @@ const InventoryManagement = () => {
     const filters = [
       { key: 'device', value: deviceFilter },
       { key: 'availability', value: availabilityFilter },
-      { key: 'provider', value: providerFilter },
-      { key: 'os', value: osFilter },
+      { key: 'provider', value: providerFilter }
     ];
 
     return (
@@ -214,7 +215,6 @@ const InventoryManagement = () => {
     if (filterName === 'clearAll') {
       setDeviceFilter('');
       setAvailabilityFilter('');
-      setOsFilter('');
       setProviderFilter('');
     }
     if (filterName === 'device') {
@@ -225,9 +225,6 @@ const InventoryManagement = () => {
     }
     if (filterName === 'provider') {
       setProviderFilter('');
-    }
-    if (filterName === 'os') {
-      setOsFilter('');
     }
   };
   useKeyPress(78, () => {
@@ -271,15 +268,14 @@ const InventoryManagement = () => {
             onDeviceChange={handleDeviceChange}
             onAvailabilityChange={handleAvailabilityChange}
             onProviderChange={handleProviderChange}
-            onOsChange={handleOsChange}
             deviceFilter={deviceFilter}
             availabilityFilter={availabilityFilter}
             providerFilter={providerFilter}
-            osFilter={osFilter}
             clearFilters={clearFilters}
             isShowFilters={isShowFilters}
             selectedFiltersText={selectedFiltersText}
             deviceTypes={deviceTypes}
+            inventoryProviders={inventoryProviders}
           />
         )}
       </ExpenseManagementMainContainer>
@@ -292,6 +288,7 @@ const InventoryManagement = () => {
               handleClose={handleIsCreateModalOpen}
               handleSuccessMessage={handleSuccessMessage}
               deviceTypes={deviceTypes}
+              inventoryProviders={inventoryProviders}
             />
           }
         />

@@ -7,6 +7,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.ServiceLoader;
 
+import com.beeja.api.apigateway.utils.Constants;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Configuration
 public class SecurityConfig {
 
@@ -141,6 +144,7 @@ public class SecurityConfig {
 
     for (AuthenticationProvider provider : loader) {
       provider.configure(serverHttpSecurity);
+      log.info("Loaded Authentication Provider: {}", provider.getClass().getName());
     }
 
     return serverHttpSecurity.build();
@@ -153,9 +157,13 @@ public class SecurityConfig {
 
 
   @Bean
-  public CorsWebFilter corsWebFilter() {
+  public CorsWebFilter corsWebFilter() throws Exception {
+    if(authProperties.getFrontEndUrl() == null || authProperties.getLocalFrontEndUrl() == null){
+      throw new Exception(Constants.ERROR_MISSING_FE_URLS);
+    }
     CorsConfiguration corsConfig = new CorsConfiguration();
-    corsConfig.setAllowedOriginPatterns(List.of(authProperties.getFrontEndUrl(), authProperties.getLocalFrontEndUrl()));
+    corsConfig.setAllowedOriginPatterns(List.of(authProperties.getFrontEndUrl(),
+            authProperties.getLocalFrontEndUrl()));
     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     corsConfig.setAllowedHeaders(List.of("*"));
     corsConfig.setAllowCredentials(true);

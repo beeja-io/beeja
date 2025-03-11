@@ -16,7 +16,6 @@ import {
 } from '../../entities/InventoryEntity';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import axios from 'axios';
-import { Device } from '../reusableComponents/InventoryEnums.component';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
 import { useTranslation } from 'react-i18next';
 
@@ -189,7 +188,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
               </select>
             </InputLabelContainer>
 
-            {formData.device === Device.ACCESSORIES && (
+            {formData.device === "Accessories" && (
               <InputLabelContainer>
                 <label>
                   {t('ACCESSORY_TYPE')}
@@ -382,8 +381,14 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 onChange={handleChange}
                 disabled={
-                  formData.device === Device.MUSIC_SYSTEM ||
-                  formData.device === Device.ACCESSORIES
+                  formData.device !== 'Desktops' ||
+                  formData.device !== 'Laptops' ||
+                  formData.device !== 'Mobiles' ||
+                  formData.device !== 'Tablets' ||
+                  formData.device !== 'Desktop' ||
+                  formData.device !== 'Laptop' ||
+                  formData.device !== 'Mobile' ||
+                  formData.device !== 'Tablet'
                 }
                 required={
                   ![
@@ -411,7 +416,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 value={formData.ram ? formData.ram : ''}
                 className="largeInput"
                 onChange={handleChange}
-                disabled={formData.device === Device.ACCESSORIES}
+                disabled={formData.device === 'Accessories'}
                 required={
                   ![
                     'PRINTER',
