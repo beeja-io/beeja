@@ -267,6 +267,22 @@ export const deleteInventory = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/finance/v1/inventory/${id}`);
 };
 
+export const postClient = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/clients`, data);
+};
+
+export const getClient = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/clients/api/${id}`);
+};
+
+export const getAllClient = (): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/clients`);
+};
+
+export const putClient = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/clients/api/${id}`);
+};
+
 export const getAllRolesInOrganization = (): Promise<AxiosResponse> => {
   return axiosInstance.get('/accounts/v1/roles');
 };
