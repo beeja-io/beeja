@@ -1,14 +1,12 @@
 package com.beeja.api.accounts.serviceImpl;
 
-import com.beeja.api.accounts.exceptions.DuplicateResourceException;
 import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.employeeSettings.OrgValues;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
-import com.beeja.api.accounts.utils.MongoIndexes;
 import com.beeja.api.accounts.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -21,7 +19,10 @@ public class OrgDefaultsGenerationImpl {
     private OrgDefaultsRepository orgDefaultsRepository;
 
     public void generateOrganizationDepartments() {
-      OrgDefaults orgDepartments = new OrgDefaults();
+      OrgDefaults orgDepartments = orgDefaultsRepository.findByOrganizationIdAndKey(UserContext.getLoggedInUserOrganization().getId(), "departments");
+      if(orgDepartments == null){
+          orgDepartments = new OrgDefaults();
+      }
       orgDepartments.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
         orgDepartments.setKey("departments");
 
@@ -49,11 +50,19 @@ public class OrgDefaultsGenerationImpl {
         orgDepartments.getValues().add(finance);
         orgDepartments.getValues().add(DevOps);
 
-        orgDefaultsRepository.save(orgDepartments);
+        orgDepartments.setValues(new HashSet<>(orgDepartments.getValues()));
+        try{
+            orgDefaultsRepository.save(orgDepartments);
+        }catch(DuplicateKeyException e){
+            log.error(String.valueOf(e.getMessage()));
+        }
   }
 
   public void generateJobTitles() {
-      OrgDefaults orgJobTitles = new OrgDefaults();
+      OrgDefaults orgJobTitles = orgDefaultsRepository.findByOrganizationIdAndKey(UserContext.getLoggedInUserOrganization().getId(), "jobTitles");
+        if(orgJobTitles == null){
+            orgJobTitles = new OrgDefaults();
+        }
       orgJobTitles.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
         orgJobTitles.setKey("jobTitles");
 
@@ -81,11 +90,20 @@ public class OrgDefaultsGenerationImpl {
         orgJobTitles.getValues().add(finance);
         orgJobTitles.getValues().add(DevOps);
 
-        orgDefaultsRepository.save(orgJobTitles);
+        orgJobTitles.setValues(new HashSet<>(orgJobTitles.getValues()));
+
+      try{
+          orgDefaultsRepository.save(orgJobTitles);
+      }catch(DuplicateKeyException e){
+          log.error(String.valueOf(e.getMessage()));
+      }
   }
 
   public void generateEmploymentTypes () {
-      OrgDefaults orgEmploymentTypes = new OrgDefaults();
+      OrgDefaults orgEmploymentTypes = orgDefaultsRepository.findByOrganizationIdAndKey(UserContext.getLoggedInUserOrganization().getId(), "employmentTypes");
+        if(orgEmploymentTypes == null){
+            orgEmploymentTypes = new OrgDefaults();
+        }
       orgEmploymentTypes.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
         orgEmploymentTypes.setKey("employmentTypes");
 
@@ -118,11 +136,19 @@ public class OrgDefaultsGenerationImpl {
         orgEmploymentTypes.getValues().add(intern);
         orgEmploymentTypes.getValues().add(unpaidIntern);
 
-        orgDefaultsRepository.save(orgEmploymentTypes);
+        orgEmploymentTypes.setValues(new HashSet<>(orgEmploymentTypes.getValues()));
+      try{
+          orgDefaultsRepository.save(orgEmploymentTypes);
+      }catch(DuplicateKeyException e){
+          log.error(String.valueOf(e.getMessage()));
+      }
   }
 
    public void generateExpenseCategories () {
-        OrgDefaults orgExpenseCategories = new OrgDefaults();
+        OrgDefaults orgExpenseCategories = orgDefaultsRepository.findByOrganizationIdAndKey(UserContext.getLoggedInUserOrganization().getId(), "expenseCategories");
+        if(orgExpenseCategories == null){
+            orgExpenseCategories = new OrgDefaults();
+        }
         orgExpenseCategories.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
             orgExpenseCategories.setKey("expenseCategories");
 
@@ -160,11 +186,20 @@ public class OrgDefaultsGenerationImpl {
             orgExpenseCategories.getValues().add(insurance);
             orgExpenseCategories.getValues().add(others);
 
-            orgDefaultsRepository.save(orgExpenseCategories);
+            orgExpenseCategories.setValues(new HashSet<>(orgExpenseCategories.getValues()));
+
+       try{
+           orgDefaultsRepository.save(orgExpenseCategories);
+       }catch(DuplicateKeyException e){
+           log.error(String.valueOf(e.getMessage()));
+       }
    }
 
    public void generateExpenseTypes () {
-        OrgDefaults orgExpenseTypes = new OrgDefaults();
+        OrgDefaults orgExpenseTypes = orgDefaultsRepository.findByOrganizationIdAndKey(UserContext.getLoggedInUserOrganization().getId(), "expenseTypes");
+        if(orgExpenseTypes == null){
+            orgExpenseTypes = new OrgDefaults();
+        }
         orgExpenseTypes.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
             orgExpenseTypes.setKey("expenseTypes");
 
@@ -201,22 +236,19 @@ public class OrgDefaultsGenerationImpl {
             orgExpenseTypes.getValues().add(electricity);
             orgExpenseTypes.getValues().add(water);
             orgExpenseTypes.getValues().add(others);
-
-            orgDefaultsRepository.save(orgExpenseTypes);
-
-       try {
+        orgExpenseTypes.setValues(new HashSet<>(orgExpenseTypes.getValues()));
+       try{
            orgDefaultsRepository.save(orgExpenseTypes);
-       } catch (DataIntegrityViolationException e) {
+       }catch(DuplicateKeyException e){
            log.error(String.valueOf(e.getMessage()));
-           if (e.getMessage().contains(MongoIndexes.UNIQUE_DEFAULT_TYPE_IS_REQUIRED)) {
-               throw new DuplicateResourceException("Expense Type Buplication Occurred");
-           }
-           throw e;
        }
    }
 
    public void generatePaymentModes () {
-        OrgDefaults orgPaymentModes = new OrgDefaults();
+        OrgDefaults orgPaymentModes = orgDefaultsRepository.findByOrganizationIdAndKey(UserContext.getLoggedInUserOrganization().getId(), "paymentModes");
+        if(orgPaymentModes == null){
+            orgPaymentModes = new OrgDefaults();
+        }
         orgPaymentModes.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
             orgPaymentModes.setKey("paymentModes");
 
@@ -249,15 +281,12 @@ public class OrgDefaultsGenerationImpl {
             orgPaymentModes.getValues().add(netBanking);
             orgPaymentModes.getValues().add(others);
 
-            orgDefaultsRepository.save(orgPaymentModes);
-       try {
+            orgPaymentModes.setValues(new HashSet<>(orgPaymentModes.getValues()));
+
+       try{
            orgDefaultsRepository.save(orgPaymentModes);
-       } catch (DataIntegrityViolationException e) {
+       }catch(DuplicateKeyException e){
            log.error(String.valueOf(e.getMessage()));
-           if (e.getMessage().contains(MongoIndexes.UNIQUE_DEFAULT_TYPE_IS_REQUIRED)) {
-               throw new DuplicateResourceException("Payment Type Already Exists");
-           }
-           throw e;
        }
    }
 }
