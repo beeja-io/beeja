@@ -72,6 +72,8 @@ public class OrganizationServiceImpl implements OrganizationService {
 
   @Autowired OrgDefaultsGenerationImpl orgDefaultsGenerationImpl;
 
+  @Autowired OrgDefaultsGenerationExistingImpl orgDefaultsGenerationExistingImpl;
+
   @Override
   public List<User> getAllUsersByOrganizationId(String organizationId) throws Exception {
     Optional<Organization> organization;
@@ -440,6 +442,7 @@ public class OrganizationServiceImpl implements OrganizationService {
   @Override
   @Async
   public void generateOrganizationDefaults() throws Exception {
+    orgDefaultsGenerationExistingImpl.generateExistingValuesOfExpenseType();
     CompletableFuture<Void> jobTitlesFuture = CompletableFuture.runAsync(() -> {
       log.info(Constants.GENERATING_DEFAULT_VALUES,  UserContext.getLoggedInUserOrganization().getId());
       orgDefaultsGenerationImpl.generateJobTitles();

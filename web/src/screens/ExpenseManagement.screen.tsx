@@ -61,7 +61,7 @@ const ExpenseManagement = () => {
     const expenseTypes = await getOrganizationValuesByKey('expenseTypes');
     const expenseDepartments = await getOrganizationValuesByKey('departments');
     const expensePaymentModes = await getOrganizationValuesByKey(
-      'expensePaymentTypes'
+      'paymentModes'
     );
     setExpenseCategories(expenseCategories.data);
     setExpenseTypes(expenseTypes.data);
