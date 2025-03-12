@@ -5,6 +5,7 @@ import EmployeeList from '../screens/EmployeeList.screen';
 import BulkPayslip from '../screens/BulkPayslipScreen.screen';
 import Error404Screen from '../screens/Error404Screen.screen';
 import ExpenseManagement from '../screens/ExpenseManagement.screen';
+import ClientManagement from '../screens/ClientManagement.screen';
 import { useUser } from '../context/UserContext';
 import LoanManagementScreen from '../screens/LoanManagementScreen.screen';
 import {
@@ -77,6 +78,17 @@ const AllRoutes = () => {
             featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
           >
             {<InventoryManagement />}
+          </CustomRoute>
+        }
+      />
+      <Route
+        path="/clients/client-management"
+        element={
+          <CustomRoute
+            permission={INVENTORY_MODULE.READ_DEVICE}
+            featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+          >
+            {<ClientManagement />}
           </CustomRoute>
         }
       />
