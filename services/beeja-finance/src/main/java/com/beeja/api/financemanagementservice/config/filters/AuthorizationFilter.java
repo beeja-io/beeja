@@ -49,7 +49,6 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     accessToken = accessToken.substring(7);
     if (isValidAccessToken(accessToken)) {
-      log.info(Constants.USER_SUCCESSFULLY_AUTHENTICATED);
       filterChain.doFilter(request, response);
     } else {
       log.error(Constants.USER_FAILED_AUTHENTICATE);

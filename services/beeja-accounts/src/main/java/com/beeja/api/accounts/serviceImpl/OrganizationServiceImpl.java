@@ -419,4 +419,17 @@ public class OrganizationServiceImpl implements OrganizationService {
               Constants.ERROR_IN_UPDATING_ORGANIZATION));
     }
   }
+
+  @Override
+  public List<OrgDefaults> getOrganizationValues(List<String> keys) throws Exception {
+    try {
+      return orgDefaultsRepository.findByOrganizationIdAndKeyIn(UserContext.getLoggedInUserOrganization().getId(), keys);
+    } catch (Exception e) {
+      throw new Exception(
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.DB_ERROR,
+              ErrorCode.CANNOT_SAVE_CHANGES,
+              Constants.ERROR_IN_UPDATING_ORGANIZATION));
+    }
+  }
 }

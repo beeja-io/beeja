@@ -6,8 +6,8 @@ import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.enums.InstalmentType;
-import com.beeja.api.financemanagementservice.exceptions.HealthInsuranceCreationException;
-import com.beeja.api.financemanagementservice.exceptions.HealthInsuranceNotFoundException;
+import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
+import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
 import com.beeja.api.financemanagementservice.modals.HealthInsurance;
 import com.beeja.api.financemanagementservice.repository.HealthInsuranceRepository;
 import com.beeja.api.financemanagementservice.requests.HealthInsuranceRequest;
@@ -42,7 +42,7 @@ public class HealthInsuranceServiceImpl implements HealthInsuranceService {
     Optional<HealthInsurance> existingHealthInsurance =
         healthInsuranceRepository.findByEmployeeId(healthInsuranceRequest.getEmployeeId());
     if (existingHealthInsurance.isPresent()) {
-      throw new HealthInsuranceCreationException(
+      throw new DuplicateDataException(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.CONFLICT_ERROR,
               ErrorCode.RESOURCE_EXISTS_ERROR,
@@ -89,7 +89,7 @@ public class HealthInsuranceServiceImpl implements HealthInsuranceService {
             employeeID, UserContext.getLoggedInUserOrganization().get("id").toString());
 
     if (healthInsuranceOptional.isEmpty()) {
-      throw new HealthInsuranceNotFoundException(
+      throw new ResourceNotFoundException(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.RESOURCE_NOT_FOUND_ERROR,
               ErrorCode.RESOURCE_NOT_FOUND,
@@ -135,15 +135,15 @@ public class HealthInsuranceServiceImpl implements HealthInsuranceService {
           healthInsuranceRepository.deleteByEmployeeIdAndOrganizationId(
               employeeId, loggedInOrganizationId);
       if (deletedHEalthInsurance == null) {
-        throw new HealthInsuranceNotFoundException(
+        throw new ResourceNotFoundException(
             BuildErrorMessage.buildErrorMessage(
                 ErrorType.RESOURCE_NOT_FOUND_ERROR,
                 ErrorCode.RESOURCE_NOT_FOUND,
                 Constants.HEALTH_INSURANCE_NOT_FOUND + " for employeeId " + employeeId));
       }
       return deletedHEalthInsurance;
-    } catch (HealthInsuranceNotFoundException e) {
-      throw new HealthInsuranceNotFoundException(e.getMessage());
+    } catch (ResourceNotFoundException e) {
+      throw new ResourceNotFoundException(e.getMessage());
     } catch (Exception e) {
       throw new RuntimeException(
           BuildErrorMessage.buildErrorMessage(
@@ -169,13 +169,13 @@ public class HealthInsuranceServiceImpl implements HealthInsuranceService {
               employeeId, UserContext.getLoggedInUserOrganization().get("id").toString());
       return healthInsurance.orElseThrow(
           () ->
-              new HealthInsuranceNotFoundException(
+              new ResourceNotFoundException(
                   BuildErrorMessage.buildErrorMessage(
                       ErrorType.RESOURCE_NOT_FOUND_ERROR,
                       ErrorCode.RESOURCE_NOT_FOUND,
                       Constants.HEALTH_INSURANCE_NOT_FOUND + " for employeeId " + employeeId)));
-    } catch (HealthInsuranceNotFoundException e) {
-      throw new HealthInsuranceNotFoundException(e.getMessage());
+    } catch (ResourceNotFoundException e) {
+      throw new ResourceNotFoundException(e.getMessage());
     } catch (Exception e) {
       throw new RuntimeException(
           BuildErrorMessage.buildErrorMessage(

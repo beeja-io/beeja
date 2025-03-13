@@ -95,6 +95,10 @@ export const TableListContainer = styled.section`
   &.overFlowScroll {
     overflow: scroll;
   }
+  
+  &.bgTable {
+    background-color: white;
+  }
 `;
 export const TableList = styled.table`
   border: 0;

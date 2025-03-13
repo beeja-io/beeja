@@ -64,7 +64,9 @@ const CenterModal = (props: CenterModalProps) => {
           props.isImageSelected ||
           props.isDashedBox) && (
           <>
-            <EditProfileText>{props.editText}</EditProfileText>
+             <EditProfileText>
+              {props.editText ? t(props.editText) : ''}
+            </EditProfileText>
 
             <CloseButton onClick={props.handleModalClose}>
               <CloseButtonSVG />
@@ -107,7 +109,7 @@ const CenterModal = (props: CenterModalProps) => {
         <div className={`controlButtonArea ${buttonContainerClass}`}>
           <button
             className={props.modalLeftButtonClass || 'closeButton'}
-            onClick={props.handleModalLeftButtonClick}
+            onClick={props.handleModalClose}
           >
             {t(props.modalLeftButtonText || t('NO'))}
           </button>

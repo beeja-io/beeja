@@ -7,7 +7,6 @@ import com.beeja.api.financemanagementservice.Utils.helpers.FileExtensionHelpers
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.enums.LoanStatus;
-import com.beeja.api.financemanagementservice.exceptions.LoanNotFound;
 import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
 import com.beeja.api.financemanagementservice.modals.File;
 import com.beeja.api.financemanagementservice.modals.Loan;
