@@ -442,7 +442,60 @@ public class OrganizationServiceImpl implements OrganizationService {
   @Override
   @Async
   public void generateOrganizationDefaults() throws Exception {
-    orgDefaultsGenerationExistingImpl.generateExistingValuesOfExpenseType();
+    CompletableFuture<Void> generateExistingValuesOfExpenseType = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingValuesOfExpenseType();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "expenseTypes", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingValuesOfExpenseCategories = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingValuesOfExpenseCategories();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "expenseCategories", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingDesignations = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingDesignations();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "designations", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingPaymentModes = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingPaymentModes();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "paymentModes", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingEmployeeTypes = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingEmployeeTypes();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "employeeTypes", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingEmployeeDepartments = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingEmployeeDepartments();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "employeeDepartments", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
     CompletableFuture<Void> jobTitlesFuture = CompletableFuture.runAsync(() -> {
       log.info(Constants.GENERATING_DEFAULT_VALUES,  UserContext.getLoggedInUserOrganization().getId());
       orgDefaultsGenerationImpl.generateJobTitles();
@@ -502,7 +555,13 @@ public class OrganizationServiceImpl implements OrganizationService {
             employmentTypesFuture,
             expenseCategoriesFuture,
             expenseTypesFuture,
-            paymentModesFuture);
+            paymentModesFuture,
+            generateExistingValuesOfExpenseType,
+            generateExistingValuesOfExpenseCategories,
+            generateExistingPaymentModes,
+            generateExistingDesignations,
+            generateExistingEmployeeTypes,
+            generateExistingEmployeeDepartments);
     allFutures.join();
     log.info("All defaults generated");
   }

@@ -1,9 +1,11 @@
 package com.beeja.api.accounts.serviceImpl;
 
+import com.beeja.api.accounts.clients.EmployeeFeignClient;
 import com.beeja.api.accounts.clients.ExpenseClient;
 import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.employeeSettings.OrgValues;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
+import com.beeja.api.accounts.response.EmployeeValuesDTO;
 import com.beeja.api.accounts.response.ExpenseValuesDTO;
 import com.beeja.api.accounts.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,9 @@ public class OrgDefaultsGenerationExistingImpl {
 
     @Autowired
     ExpenseClient expenseClient;
+
+    @Autowired
+    EmployeeFeignClient employeeFeignClient;
 
     @Autowired
     OrgDefaultsRepository orgDefaultsRepository;
@@ -115,6 +120,102 @@ public class OrgDefaultsGenerationExistingImpl {
 
         }catch (Exception e){
             log.error("Error while generating existing payment modes : {}", e.getMessage());
+        }
+    }
+
+    public void generateExistingEmployeeTypes () {
+        try{
+            EmployeeValuesDTO employeeValuesDTO = employeeFeignClient.getEmployeeValues("Bearer "+UserContext.getAccessToken());
+            OrgDefaults existingEmployeeTypes = orgDefaultsRepository.findByOrganizationIdAndKey(
+                    UserContext.getLoggedInUserOrganization().getId(), "employeeTypes"
+            );
+            if(existingEmployeeTypes == null){
+                existingEmployeeTypes = new OrgDefaults();
+                existingEmployeeTypes.setKey("employeeTypes");
+            }
+            if(existingEmployeeTypes.getValues() == null){
+                existingEmployeeTypes.setValues(new HashSet<>());
+            }
+            if(employeeValuesDTO != null){
+                for (String employeeType : employeeValuesDTO.getEmploymentTypes()) {
+                    OrgValues employeeTypeValues = new OrgValues();
+                    employeeTypeValues.setValue(employeeType);
+                    employeeTypeValues.setDescription("Auto Generated");
+                    existingEmployeeTypes.getValues().add(employeeTypeValues);
+                }
+            }
+            existingEmployeeTypes.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
+            existingEmployeeTypes.setValues(new HashSet<>(existingEmployeeTypes.getValues()));
+            orgDefaultsRepository.save(existingEmployeeTypes);
+
+            log.info("Existing Employee Types are generated successfully");
+
+        }catch (Exception e){
+            log.error("Error while generating existing employee types : {}", e.getMessage());
+        }
+    }
+
+    public void generateExistingEmployeeDepartments () {
+        try{
+            EmployeeValuesDTO employeeValuesDTO = employeeFeignClient.getEmployeeValues("Bearer "+UserContext.getAccessToken());
+            OrgDefaults existingEmployeeDepartments = orgDefaultsRepository.findByOrganizationIdAndKey(
+                    UserContext.getLoggedInUserOrganization().getId(), "employeeDepartments"
+            );
+            if(existingEmployeeDepartments == null){
+                existingEmployeeDepartments = new OrgDefaults();
+                existingEmployeeDepartments.setKey("employeeDepartments");
+            }
+            if(existingEmployeeDepartments.getValues() == null){
+                existingEmployeeDepartments.setValues(new HashSet<>());
+            }
+            if(employeeValuesDTO != null){
+                for (String employeeDepartment : employeeValuesDTO.getDepartments()) {
+                    OrgValues employeeDepartmentValues = new OrgValues();
+                    employeeDepartmentValues.setValue(employeeDepartment);
+                    employeeDepartmentValues.setDescription("Auto Generated");
+                    existingEmployeeDepartments.getValues().add(employeeDepartmentValues);
+                }
+            }
+            existingEmployeeDepartments.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
+            existingEmployeeDepartments.setValues(new HashSet<>(existingEmployeeDepartments.getValues()));
+            orgDefaultsRepository.save(existingEmployeeDepartments);
+
+            log.info("Existing Employee Departments are generated successfully");
+
+        }catch (Exception e){
+            log.error("Error while generating existing employee departments : {}", e.getMessage());
+        }
+    }
+
+    public void generateExistingDesignations () {
+        try{
+            EmployeeValuesDTO employeeValuesDTO = employeeFeignClient.getEmployeeValues("Bearer "+UserContext.getAccessToken());
+            OrgDefaults existingDesignations = orgDefaultsRepository.findByOrganizationIdAndKey(
+                    UserContext.getLoggedInUserOrganization().getId(), "jobTitles"
+            );
+            if(existingDesignations == null){
+                existingDesignations = new OrgDefaults();
+                existingDesignations.setKey("jobTitles");
+            }
+            if(existingDesignations.getValues() == null){
+                existingDesignations.setValues(new HashSet<>());
+            }
+            if(employeeValuesDTO != null){
+                for (String designation : employeeValuesDTO.getDesignations()) {
+                    OrgValues designationValues = new OrgValues();
+                    designationValues.setValue(designation);
+                    designationValues.setDescription("Auto Generated");
+                    existingDesignations.getValues().add(designationValues);
+                }
+            }
+            existingDesignations.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
+            existingDesignations.setValues(new HashSet<>(existingDesignations.getValues()));
+            orgDefaultsRepository.save(existingDesignations);
+
+            log.info("Existing Designations are generated successfully");
+
+        }catch (Exception e){
+            log.error("Error while generating existing designations : {}", e.getMessage());
         }
     }
 }

@@ -1,12 +1,10 @@
 package com.beeja.api.accounts.clients;
 
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.response.EmployeeValuesDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name = "employee-service", url = "${client-urls.employeeService}")
 public interface EmployeeFeignClient {
@@ -16,4 +14,7 @@ public interface EmployeeFeignClient {
 
   @DeleteMapping("/v1/users/organizations/{organizationId}")
   ResponseEntity<String> deleteAllEmployeesByOrganizationId(@PathVariable String organizationId);
+
+  @GetMapping("/v1/users/employee-values")
+  EmployeeValuesDTO getEmployeeValues(@RequestHeader String Authorization);
 }
