@@ -92,7 +92,7 @@ docker compose up --build
 
 #### **Verify Services**
 Once the services are running, verify:
-- **Service Registry (Eureka)**: `http://localhost:8761` – View all registered microservices.
+- **Service Registry (Eureka)**: `http://localhost:8761` – View all registered microservices.fs
 - **Open API Documentation**: `http://localhost:<ms-specific-port>/swagger-ui` – Explore Beeja's API endpoints.
 
 
@@ -170,3 +170,8 @@ Thank you for choosing Beeja! We can’t wait to see how you use and contribute 
 
 
 
+          # #!/usr/bin/env bash
+          # set -xe
+          # cp /root/copy.sh /source/copy.sh
+          # chmod +x /source/copy.sh
+          # cd /source/{{workflow.parameters.build-context}}
