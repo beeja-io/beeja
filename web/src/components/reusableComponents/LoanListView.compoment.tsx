@@ -39,11 +39,21 @@ const LoanListView = (props: LoanListViewProps) => {
       */
       if (user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS)) {
         const res = await getAllLoans();
-        updateLoanList(res.data.reverse());
+        
+        if (res?.data) {
+          const sortedLoans = res.data.sort(
+            (firstLoan: Loan, secondLoan: Loan) => new Date(secondLoan.createdAt).getTime() - new Date(firstLoan.createdAt).getTime()
+          );
+          updateLoanList(sortedLoans);
+        }
       } else {
         if (user && user.employeeId) {
           const res = await getAllLoans(user.employeeId);
-          updateLoanList(res.data.reverse());
+          const sortedLoans = res.data.sort(
+            (a: Loan, b: Loan) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+
+          updateLoanList(sortedLoans);
         }
       }
     } catch (error) {

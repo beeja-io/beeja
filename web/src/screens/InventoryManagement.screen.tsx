@@ -135,7 +135,8 @@ const InventoryManagement = () => {
       const totalPages = Math.ceil(res.data.metadata.totalSize / itemsPerPage);
       setTotalSize(metadata.totalSize);
       handleTotalPages(totalPages ?? 1);
-      setInventoryList(finalResponse.inventory);
+      const sortedInventory = finalResponse.inventory.slice().reverse();
+      setInventoryList([...sortedInventory]);
       setLoading(false);
     } catch (error) {
       throw new Error('Error fetching data:' + error);
