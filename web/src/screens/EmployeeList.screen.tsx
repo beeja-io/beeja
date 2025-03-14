@@ -168,7 +168,7 @@ const EmployeeList = () => {
 
   const fetchEmployeeTypes = async () => {
     try {
-      const response = await getOrganizationValuesByKey('employeeTypes');
+      const response = await getOrganizationValuesByKey('employmentTypes');
       setEmployeeTypes(response.data);
     } catch (error) {
       setError('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES');
