@@ -305,83 +305,75 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
   public EmployeeResponse getCombinedLimitedDataOfEmployees(
-      String department,
-      String designation,
-      String employementType,
-      int pageNumber,
-      int pageSize,
-      String status)
-      throws Exception {
+          String department,
+          String designation,
+          String employmentType,
+          int pageNumber,
+          int pageSize,
+          String status) throws Exception {
+
+
+    String loggedInUserRole = UserContext.getLoggedInUserDTO().getRoles().toString();
+    boolean validUser = loggedInUserRole.equalsIgnoreCase("Super Admin") ||
+            loggedInUserRole.equalsIgnoreCase("Hr");
+
+    if (!validUser) {
+      status = "active";
+    }
+
     List<GetLimitedEmployee> employeesWithLimitedData =
-        getLimitedDataOfEmployees(
-            department, designation, employementType, pageNumber, pageSize, status);
+            getLimitedDataOfEmployees(department, designation, employmentType, pageNumber, pageSize, status);
+
     if (employeesWithLimitedData == null || employeesWithLimitedData.isEmpty()) {
       EmployeeResponse emptyResponse = new EmployeeResponse();
       emptyResponse.setEmployeeList(Collections.emptyList());
       emptyResponse.setTotalSize(0L);
       return emptyResponse;
     }
-    if (employeesWithLimitedData != null && !employeesWithLimitedData.isEmpty()) {
-      ResponseEntity<?> accountResponse = null;
-      List<String> employeeIds =
-          employeesWithLimitedData.stream()
-              .map(GetLimitedEmployee::getEmployeeId)
-              .collect(Collectors.toList());
 
-      try {
-        accountResponse = accountClient.getUsersByEmployeeIds(new EmployeeOrgRequest(employeeIds));
-      } catch (Exception e) {
-        log.error(
-            ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE + " Organization Id: {} {} ",
-            UserContext.getLoggedInUserOrganization().getId(),
-            e.getMessage());
-        throw new Exception(
-            BuildErrorMessage.buildErrorMessage(
-                ErrorType.API_ERROR,
-                ErrorCode.SERVER_ERROR,
-                Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE));
-      }
+    List<String> employeeIds = employeesWithLimitedData.stream()
+            .map(GetLimitedEmployee::getEmployeeId)
+            .collect(Collectors.toList());
 
-      assert accountResponse != null;
-      if (accountResponse.getStatusCode().is2xxSuccessful()) {
-        List<Map<String, Object>> combinedDataList = new ArrayList<>();
-        List<Map<String, Object>> accountDataList =
-            (List<Map<String, Object>>) accountResponse.getBody();
-        boolean isActive = "active".equalsIgnoreCase(status);
-        for (GetLimitedEmployee employee : employeesWithLimitedData) {
-          Optional<Map<String, Object>> accountDataOptional =
-              accountDataList.stream()
-                  .filter(
-                      accountData ->
-                          employee.getEmployeeId().equals(accountData.get("employeeId"))
-                              && accountData.get("active").equals(isActive))
-                  .findFirst();
+    ResponseEntity<?> accountResponse;
+    try {
+      accountResponse = accountClient.getUsersByEmployeeIds(new EmployeeOrgRequest(employeeIds));
+    } catch (Exception e) {
+      log.error("Error fetching data from Account Service: {} ", e.getMessage());
+      throw new Exception(BuildErrorMessage.buildErrorMessage(ErrorType.API_ERROR,
+              ErrorCode.SERVER_ERROR, Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE));
+    }
 
-          if (accountDataOptional.isPresent()) {
+    if (accountResponse.getStatusCode().is2xxSuccessful()) {
+      List<Map<String, Object>> combinedDataList = new ArrayList<>();
+      List<Map<String, Object>> accountDataList = (List<Map<String, Object>>) accountResponse.getBody();
+      boolean isActiveStatus = "active".equalsIgnoreCase(status);
+
+      for (GetLimitedEmployee employee : employeesWithLimitedData) {
+        Optional<Map<String, Object>> accountDataOptional =
+                accountDataList.stream()
+                        .filter(accountData -> employee.getEmployeeId().equals(accountData.get("employeeId")))
+                        .findFirst();
+
+        if (accountDataOptional.isPresent()) {
+          boolean accountIsActive = Boolean.TRUE.equals(accountDataOptional.get().get("active"));
+          if (validUser || accountIsActive) {
             Map<String, Object> combinedData = new HashMap<>();
             combinedData.put("employee", employee);
             combinedData.put("account", accountDataOptional.get());
             combinedDataList.add(combinedData);
           }
         }
-        Long totalCount =
-            getFilteredEmployeeCount(department, designation, employementType, status);
-        EmployeeResponse response = new EmployeeResponse();
-        response.setEmployeeList(combinedDataList);
-        response.setTotalSize(totalCount);
-        return response;
-
-      } else {
-        throw new Exception(
-            BuildErrorMessage.buildErrorMessage(
-                ErrorType.API_ERROR,
-                ErrorCode.SERVER_ERROR,
-                Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE));
       }
+
+      Long totalCount = getFilteredEmployeeCount(department, designation, employmentType, status);
+      EmployeeResponse response = new EmployeeResponse();
+      response.setEmployeeList(combinedDataList);
+      response.setTotalSize(totalCount);
+      return response;
     } else {
-      throw new ResourceNotFound(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.RESOURCE_NOT_FOUND_ERROR, ErrorCode.USER_NOT_FOUND, EMPLOYEE_NOT_FOUND));
+      throw new Exception(BuildErrorMessage.buildErrorMessage(ErrorType.API_ERROR,
+              ErrorCode.SERVER_ERROR, Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE));
     }
   }
 
