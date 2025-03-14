@@ -239,8 +239,9 @@ export const QuickInfoContactContainer = styled.div`
       width: 15%;
     }
     span:last-child {
-      width: 250px;
-      white-space: nowrap;
+      width: 200px;
+      word-wrap: break-word;
+      white-space:  normal;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -471,6 +472,10 @@ export const TabContentTableTd = styled.td`
   .validation-error {
     color: #ff0000;
     margin-left: 10px;
+    /* word-wrap: break-word; */
+    overflow-wrap: break-word;
+    white-space: normal; 
+    /* max-width: 100%;  */
   }
 `;
 

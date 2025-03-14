@@ -171,7 +171,7 @@ const EmployeeList = () => {
       const response = await getOrganizationValuesByKey('employeeTypes');
       setEmployeeTypes(response.data);
     } catch (error) {
-      setError('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES');
+      setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES'));
     }
   };
 
@@ -180,7 +180,7 @@ const EmployeeList = () => {
       const response = await getOrganizationValuesByKey('departments');
       setDepartmentOptions(response.data);
     } catch (error) {
-      setError('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS');
+      setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
     }
   };
 
@@ -189,7 +189,7 @@ const EmployeeList = () => {
       const response = await getOrganizationValuesByKey('jobTitles');
       setJobTitles(response.data);
     } catch (error) {
-      setError('ERROR_WHILE_FETCHING_JOB_TITLES');
+      setError(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
     }
   };
 
@@ -223,7 +223,7 @@ const EmployeeList = () => {
         setError(null);
       }
     } catch (error) {
-      setError('ERROR_WHILE_FETCHING_EMPLOYEES');
+      setError(t('ERROR_WHILE_FETCHING_EMPLOYEES'));
     } finally {
       setLoadingData(false);
     }
@@ -242,7 +242,7 @@ const EmployeeList = () => {
       const response = await getEmployeesCount();
       setEmployeeCount(response.data);
     } catch (error) {
-      setError('ERROR_WHILE_FETCHING_EMPLOYEE_COUNT');
+      setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_COUNT'));
     }
   };
 
