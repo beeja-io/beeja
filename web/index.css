@@ -13,8 +13,8 @@
   /* font-family: 'Nunito'; */
   box-sizing: border-box;
   font-family: var(--font-family-primary);
-  /* font-size: var(--font-size-primary); */
-  --font-size-primary: 14px;
+  font-size: var(--font-size-primary);
+  /* --font-size-primary: 14px; */
 }
 
 body {

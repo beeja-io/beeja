@@ -267,5 +267,9 @@
   "RECEIPT_DOWNLOADED_SUCCESFULLY": "The Receipt has been downloded successfully",
   "SUCCESSFULLY_DOWNLOADED": "Successfully Downloded",
   "PAGE": "Page",
-  "OF": "of"
+  "OF": "of",
+  "ERROR_WHILE_FETCHING_JOB_TITLES": "Error while fetching Job Titles. Please try again later.",
+  "ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS": "Error while fetching Departments. Please try again later.",
+  "ERROR_WHILE_FETCHING_EMPLOYMENT_TYPES": "Error while fetching Employment Types. Please try again later.",
+  "ERROR_WHILE_FETCHING_EMPLOYEE_TYPES": "Error while fetching Employee Types. Please try again later."
 }

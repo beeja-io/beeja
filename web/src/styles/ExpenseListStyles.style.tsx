@@ -152,7 +152,7 @@ export const ActionMenuContent = styled.div`
   padding: 16px;
   top: 0;
   right: 100%;
-  // transform: translateY(-50%);
+  transform: translateY(-70%);
   background-color: ${(props) => props.theme.colors.blackColors.white};
   box-shadow: 0 8px 16px rgba(12, 175, 96, 0.2);
 `;
