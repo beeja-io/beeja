@@ -95,6 +95,15 @@ const AddNewApplicant = (props: AddNewApplicant) => {
       toast.error('Please fill mandatory (*) fields');
       return;
     }
+
+    if (newApplicant.phoneNumber !== '' && !newApplicant.phoneNumber.match(/^[0-9]{10}$/)) {
+      toast.error('Please enter a valid phone number');
+      return;
+    }
+    if (newApplicant.email !== '' && !newApplicant.email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$/)) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
     try {
       setIsLoading(true);
       const newApplicantData = new FormData();
@@ -203,6 +212,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
                 onChange={handleChange}
                 required
                 autoComplete="off"
+                maxLength={10}
                 onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                   if (e.key === 'Enter') {
                     e.preventDefault();
@@ -225,6 +235,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
                 name="email"
                 id="email"
                 onChange={handleChange}
+                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$"
                 autoComplete="off"
                 required
                 placeholder={'Enter Email'}
@@ -272,8 +283,8 @@ const AddNewApplicant = (props: AddNewApplicant) => {
                 }}
               >
                 <option value="">Select Experience</option>
-                {noOfYearsExperience.map((number, index) => (
-                  <option key={index} value={number}>
+                {noOfYearsExperience.map((number) => (
+                  <option key={number} value={number}>
                     {number}
                   </option>
                 ))}
@@ -304,7 +315,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
               </label>
               <input
                 type="file"
-                accept="application/pdf,image/png,image/jpeg"
+                accept="application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword"
                 id="fileInput"
                 style={{ display: 'none' }}
                 required
@@ -331,17 +342,18 @@ const AddNewApplicant = (props: AddNewApplicant) => {
               </div>
             )}
           </div>
-          {user && hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT) && (
-            <Button
-              className={`submit ${isLoading ? 'loading' : ''}`}
-              width="216px"
-              onClick={handleSaveApplicant}
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? '' : 'Submit'}
-            </Button>
-          )}
+          {user && (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
+            || hasPermission(user, RECRUITMENT_MODULE.ACCESS_REFFERRAlS)) && (
+              <Button
+                className={`submit ${isLoading ? 'loading' : ''}`}
+                width="216px"
+                onClick={handleSaveApplicant}
+                type="submit"
+                disabled={isLoading}
+              >
+                {isLoading ? '' : 'Submit'}
+              </Button>
+            )}
         </form>
       </BulkPayslipContainer>
     </ExpenseManagementMainContainer>

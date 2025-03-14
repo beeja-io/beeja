@@ -103,16 +103,16 @@ const AllRoutes = () => {
           </CustomRoute>
         }
       />
-       <Route
-        path="/recruitment"
+      <Route
+        path="/recruitment/hiring-management"
         element={<RecruitmentManagementScreen isReferral={false} />}
       />
       <Route
-        path="/recruitment/new"
+        path="/recruitment/hiring-management/new"
         element={<AddNewApplicant isReferScreen={false} />}
       />
-      <Route path="/recruitment/:id" element={<EditApplicant />} />
-      <Route path="/recruuitment/refer" element={<ReferEmployeeScreen />} />
+      <Route path="/recruitment/hiring-management/:id" element={<EditApplicant />} />
+      <Route path="/recruitment/my-referrals/refer" element={<ReferEmployeeScreen />} />
       <Route
         path="/recruitment/my-referrals"
         element={<RecruitmentManagementScreen isReferral={true} />}

@@ -1,5 +1,7 @@
 package com.beeja.api.employeemanagement.serviceImpl;
 
+import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
+import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.beeja.api.employeemanagement.client.AccountClient;
@@ -751,6 +753,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         employeeId,
         UserContext.getLoggedInUserOrganization().getId());
     return employee;
+  }
+
+  @Override
+  public EmployeeValues getEmployeeValues() throws Exception {
+    EmployeeValues employeeValues = new EmployeeValues();
+    List<EmployeeDefaultValues> employeeDefaultValues = employeeRepository.findDistinctTypeByOrganizationId(UserContext.getLoggedInUserOrganization().getId());
+    Set<String> departments = employeeDefaultValues.stream().map(EmployeeDefaultValues::getDepartment).collect(Collectors.toSet());
+    Set<String> designations = employeeDefaultValues.stream().map(EmployeeDefaultValues::getDesignation).collect(Collectors.toSet());
+    Set<String> employmentTypes = employeeDefaultValues.stream().map(EmployeeDefaultValues::getEmploymentType).collect(Collectors.toSet());
+
+    employeeValues.setDepartments(departments);
+    employeeValues.setDesignations(designations);
+    employeeValues.setEmploymentTypes(employmentTypes);
+    return employeeValues;
   }
 
   private String extractDuplicateKeyError(DuplicateKeyException e) {

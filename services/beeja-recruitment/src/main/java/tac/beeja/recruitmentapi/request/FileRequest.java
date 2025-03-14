@@ -10,5 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class FileRequest {
   private MultipartFile file;
+  private String name;
   private String entityType;
 }

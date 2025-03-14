@@ -13,14 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -86,6 +79,10 @@ public class OrganizationController {
   @HasPermission(PermissionConstants.UPDATE_ORGANIZATIONS)
   public ResponseEntity<OrgDefaults> getOrganizationValuesByKey(@PathVariable String key)
       throws Exception {
+    OrgDefaults orgDefaults = organizationService.getOrganizationValuesByKey(key);
+    if(orgDefaults == null) {
+        return ResponseEntity.noContent().build();
+    }
     return ResponseEntity.ok(organizationService.getOrganizationValuesByKey(key));
   }
 
@@ -94,4 +91,11 @@ public class OrganizationController {
   public ResponseEntity<List<OrgDefaults>> getOrganizationValues(@RequestParam List<String> keys) throws Exception {
     return ResponseEntity.ok(organizationService.getOrganizationValues(keys));
     }
+
+  @PostMapping("/generate-defaults")
+  @HasPermission(PermissionConstants.UPDATE_ORGANIZATIONS)
+  public ResponseEntity<?> generateOrganizationDefaults() throws Exception {
+    organizationService.generateOrganizationDefaults();
+    return ResponseEntity.status(HttpStatus.CREATED).build();
+  }
 }

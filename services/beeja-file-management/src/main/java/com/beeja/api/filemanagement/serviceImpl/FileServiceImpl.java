@@ -14,6 +14,7 @@ import com.beeja.api.filemanagement.service.FileStorageService;
 import com.beeja.api.filemanagement.utils.Constants;
 import com.beeja.api.filemanagement.utils.UserContext;
 import com.beeja.api.filemanagement.utils.helpers.FileExtensionHelpers;
+import com.beeja.api.filemanagement.utils.helpers.SizeConverter;
 import com.mongodb.MongoWriteException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -58,7 +59,7 @@ public class FileServiceImpl implements FileService {
             }
 
             File fileEntity = new File();
-            fileEntity.setFileSize("SizeConverter.formatFileSize(file.getFile().getSize())");
+            fileEntity.setFileSize(SizeConverter.formatFileSize(file.getFile().getSize()));
             fileEntity.setName(fileName);
             fileEntity.setEntityId(file.getEntityId());
             fileEntity.setDescription(file.getDescription());
@@ -152,7 +153,8 @@ public class FileServiceImpl implements FileService {
         return new FileDownloadResult(new ByteArrayResource(fileStorage.downloadFile(file)),
                 file.getCreatedBy(),
                 file.getEntityId(),
-                file.getOrganizationId());
+                file.getOrganizationId(),
+                file.getName());
     }
 
     @Override

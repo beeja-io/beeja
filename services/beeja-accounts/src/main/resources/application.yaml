@@ -25,6 +25,7 @@ eureka:
 client-urls:
   employeeService: ${EMPLOYEE_SERVICE_BASE_URL}/employees
   fileService: ${FILE_SERVICE_BASE_URL}/files
+  expenseService: ${EXPENSE_SERVICE_BASE_URL}/expenses
 
 # actuator
 management:

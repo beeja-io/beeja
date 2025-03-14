@@ -69,6 +69,7 @@ const EditApplicant = () => {
     };
 
     try {
+      setIsLoading(true);
       const response = await postComment(payload);
       setApplicant(response.data);
       setIsLoading(false);
@@ -82,18 +83,12 @@ const EditApplicant = () => {
   const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newStatus = e.target.value;
     e.preventDefault()
-    try {
-      setIsLoading(true);
-      const response = await changeApplicationStatus(applicant.id, newStatus);
-      setApplicant(response.data);
-      toast.success("Applicant status updated successfully");
-      navigate(-1);
-    } catch (error) {
-      console.error("Error updating applicant status:", error);
-      toast.error("Failed to update applicant status");
-    } finally {
-      setIsLoading(false);
+    toast.promise(async () => await changeApplicationStatus(applicant.id, newStatus), {
+      loading: 'Updating applicant status',
+      success: 'Applicant status updated successfully',
+      error: 'Failed to update applicant status',
     }
+    )
   };
 
 
@@ -139,6 +134,7 @@ const EditApplicant = () => {
                     }}
                     placeholder={'Ex: John'}
                     autoComplete="off"
+                    style={{cursor: 'not-allowed'}}
                   />
                 </InputLabelContainer>
                 <InputLabelContainer>
@@ -164,6 +160,7 @@ const EditApplicant = () => {
                       }
                     }}
                     placeholder={'Ex: Doe'}
+                    style={{cursor: 'not-allowed'}}
                   />
                 </InputLabelContainer>
               </div>
@@ -193,6 +190,7 @@ const EditApplicant = () => {
                       }
                     }}
                     placeholder={'Enter Phone Number'}
+                    style={{cursor: 'not-allowed'}}
                   />
                 </InputLabelContainer>
                 <InputLabelContainer>
@@ -208,32 +206,59 @@ const EditApplicant = () => {
                     required
                     disabled
                     placeholder={'Enter Email'}
+                    style={{ cursor: 'not-allowed' }} 
                   />
+                </InputLabelContainer>
+
+              </div>
+              <div>
+                <InputLabelContainer>
+                  <label>Experience</label>
+                  <select
+                    className="selectoption"
+                    name="experience"
+                    id="experience"
+                    disabled
+                    onKeyPress={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                      }
+                    }}
+                    style={{ cursor: 'not-allowed' }} 
+                  >
+                    <option value="">{applicant.experience ? applicant.experience : '-'}</option>
+                  </select>
+                </InputLabelContainer>
+                <InputLabelContainer>
+                  <label>Status</label>
+                  <select
+                    className="selectoption largeSelectOption"
+                    name="department"
+                    onChange={handleStatusChange}
+                    onKeyPress={(event) => {
+                      if (event.key === 'Enter') {
+                        event.preventDefault();
+                      }
+                    }}
+
+                    style={{ cursor: 'pointer' }} 
+                  >
+                    {[
+                      "APPLIED",
+                      "SHORTLISTED",
+                      "INTERVIEW_SCHEDULED",
+                      "HIRED",
+                      "REJECTED",
+                    ].map((status) => (
+                      <option key={status} value={status} selected={applicant.status === status}>
+                        {status.replace("_", " ")}
+                      </option>
+                    ))}
+                  </select>
                 </InputLabelContainer>
               </div>
             </form>
           )}
-          <section className="status-section">
-            Status:
-            <select
-              name="status"
-              id="status"
-              value={applicant.status}
-              onChange={handleStatusChange}
-            >
-              {[
-                "APPLIED",
-                "SHORTLISTED",
-                "INTERVIEW_SCHEDULED",
-                "HIRED",
-                "REJECTED",
-              ].map((status) => (
-                <option key={status} value={status}>
-                  {status.replace("_", " ")}
-                </option>
-              ))}
-            </select>
-          </section>
 
           <CommentsSection
             comments={

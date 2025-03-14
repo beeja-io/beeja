@@ -36,7 +36,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
     )
       ? [{ title: 'Edit', svg: <EditIcon /> }]
       : []),
-      // TODO: Update after implementing proper BE
+    // TODO: Update after implementing proper BE
     // ...(user?.roles.some((role) =>
     //   role.permissions.some(
     //     (permission) =>
@@ -49,28 +49,34 @@ const ApplicantsList = (props: ApplicantsListProps) => {
 
   const handleDownloadResume = async (resumeId: string) => {
     try {
-      props.handleIsLoading();
-      const response = await downloadApplicantResume(resumeId);
+      toast.promise(
+        async () => {
+          const response = await downloadApplicantResume(resumeId);
+          const contentDisposition = response.headers["content-disposition"];
+          let fileName = "resume_beeja.pdf";
 
-      const contentDisposition = response.headers["content-disposition"];
-      let fileName = "resume_beeja.pdf";
+          if (contentDisposition) {
+            const match = contentDisposition.match(/filename\*?=['"]?(?:UTF-8'')?([^;'\"]+)/);
+            if (match && match[1]) {
+              fileName = decodeURIComponent(match[1]);
+            }
+          }
+          const url = window.URL.createObjectURL(new Blob([response.data]));
 
-      if (contentDisposition) {
-        const match = contentDisposition.match(/filename\*?=['"]?(?:UTF-8'')?([^;'\"]+)/);
-        if (match && match[1]) {
-          fileName = decodeURIComponent(match[1]);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileName;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+        },
+        {
+          loading: "Downloading...",
+          success: "Downloaded successfully",
+          error: "Failed to download file",
         }
-      }
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = fileName;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-      props.handleIsLoading();
+      )
     } catch (error) {
       console.error("Download failed:", error);
       toast.error("Failed to download file.");
@@ -91,7 +97,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                 <th>Name of Applicant</th>
                 <th>Position</th>
                 <th>Phone Number</th>
-                <th>Email</th>
+                <th>Referred By</th>
                 <th>Status</th>
                 <th>Requested Date</th>
                 <th>Action</th>
@@ -123,7 +129,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                 <th>Name of Applicant</th>
                 <th>Position</th>
                 <th>Phone Number</th>
-                <th>Email</th>
+                {!props.isReferral && <th>Referred By</th>}
                 <th style={{ textAlign: 'center' }}>Status</th>
                 <th>Requested Date</th>
                 <th>Resume/CV</th>
@@ -140,7 +146,9 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                       </td>
                       <td>{applicant.positionAppliedFor}</td>
                       <td>{applicant.phoneNumber}</td>
-                      <td>{applicant.email}</td>
+                      {!props.isReferral && (
+                        <td>{applicant.referredByEmployeeName ? applicant.referredByEmployeeName : '-'}</td>
+                      )}
                       <td>
                         <StatusIndicator
                           status={applicant.status}

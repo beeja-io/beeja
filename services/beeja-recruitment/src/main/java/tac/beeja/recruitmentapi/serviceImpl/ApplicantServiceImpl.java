@@ -64,6 +64,12 @@ public class ApplicantServiceImpl implements ApplicantService {
 
   @Override
   public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
+    //    accept only pdf, doc and docx for applicant.getResume()
+    if (!applicant.getResume().getContentType().equals("application/pdf")
+            && !applicant.getResume().getContentType().equals("application/msword")
+            && !applicant.getResume().getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+      throw new BadRequestException("Only PDF, DOC and DOCX files are allowed");
+    }
     Applicant newApplicant = new Applicant();
     newApplicant.setEmail(applicant.getEmail());
     newApplicant.setFirstName(applicant.getFirstName());
@@ -78,7 +84,8 @@ public class ApplicantServiceImpl implements ApplicantService {
       newApplicant.setReferredByEmployeeId(UserContext.getLoggedInEmployeeId());
       newApplicant.setReferredByEmployeeName(UserContext.getLoggedInUserName());
     }
-    FileRequest fileRequest = new FileRequest(applicant.getResume(), RESUME_FILE_ENTITY);
+    String fileName = newApplicant.getFirstName() +"."+ Objects.requireNonNull(applicant.getResume().getOriginalFilename()).substring(applicant.getResume().getOriginalFilename().lastIndexOf('.') + 1);
+    FileRequest fileRequest = new FileRequest(applicant.getResume(), fileName , RESUME_FILE_ENTITY);
     try {
       ResponseEntity<?> fileResponse = fileClient.uploadFile(fileRequest);
       Map<String, Object> responseBody = (Map<String, Object>) fileResponse.getBody();
@@ -353,20 +360,10 @@ public class ApplicantServiceImpl implements ApplicantService {
 
   private static FileDownloadResultMetaData getMetaData(ResponseEntity<byte[]> fileResponse) {
     HttpHeaders headers = fileResponse.getHeaders();
-    String contentDisposition = headers.getFirst(HttpHeaders.CONTENT_DISPOSITION);
     String createdBy = headers.getFirst("createdby");
     String organizationId = headers.getFirst("organizationid");
     String entityId = headers.getFirst("entityId");
-    String filename = null;
-
-    if (contentDisposition != null && !contentDisposition.isEmpty()) {
-      int startIndex = contentDisposition.indexOf("filename=\"") + 10;
-      int endIndex = contentDisposition.lastIndexOf("\"");
-      if (endIndex != -1) {
-        filename = contentDisposition.substring(startIndex, endIndex);
-      }
-    }
-
+    String filename = headers.getFirst("fileName");
     return new FileDownloadResultMetaData(filename, createdBy, entityId, organizationId);
   }
 }

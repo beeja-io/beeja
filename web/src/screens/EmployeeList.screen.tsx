@@ -5,7 +5,6 @@ import {
   HighlightedBoxes,
 } from '../styles/CommonStyles.style';
 
-import { departmentOptions } from '../utils/departmentOptions';
 import { FilterSection } from '../styles/ExpenseListStyles.style';
 import {
   EmployeeListContainer,
@@ -57,6 +56,7 @@ import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { toast } from 'sonner';
 import CopyPasswordPopup from '../components/directComponents/CopyPasswordPopup.component';
 import { CreatedUserEntity } from '../entities/CreatedUserEntity';
+import { OrgDefaults } from '../entities/OrgDefaultsEntity';
 
 const EmployeeList = () => {
   const { t } = useTranslation();
@@ -76,6 +76,10 @@ const EmployeeList = () => {
   const [EmployeementTypeFilter, setEmployeementTypeFilter] = useState('');
   const [JobTitleFilter, setJobTitleFilter] = useState<string>('');
   const [EmployeeStatusFilter, setEmployeeStatusFilter] = useState<string>('');
+
+  const [employeeTypes, setEmployeeTypes] = useState<OrgDefaults>();
+  const [departmentOptions, setDepartmentOptions] = useState<OrgDefaults>();
+  const [jobTitles, setJobTitles] = useState<OrgDefaults>();
 
   const handleDepartmentChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -153,11 +157,41 @@ const EmployeeList = () => {
   useEffect(() => {
     if (finalEmpList) {
       setLoadingData(true);
+      fetchEmployeeTypes();
+      fetchDepartmentOptions();
+      fetchJobTitles();
       fetchEmployeeImages();
       setLoadingData(false);
     }
   }, [finalEmpList]);
   /* eslint-enable react-hooks/exhaustive-deps */
+
+  const fetchEmployeeTypes = async () => {
+    try {
+      const response = await getOrganizationValuesByKey('employeeTypes');
+      setEmployeeTypes(response.data);
+    } catch (error) {
+      setError('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES');
+    }
+  };
+
+  const fetchDepartmentOptions = async () => {
+    try {
+      const response = await getOrganizationValuesByKey('departments');
+      setDepartmentOptions(response.data);
+    } catch (error) {
+      setError('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS');
+    }
+  };
+
+  const fetchJobTitles = async () => {
+    try {
+      const response = await getOrganizationValuesByKey('jobTitles');
+      setJobTitles(response.data);
+    } catch (error) {
+      setError('ERROR_WHILE_FETCHING_JOB_TITLES');
+    }
+  };
 
   const fetchEmployees = useCallback(async () => {
     setLoadingData(true);
@@ -322,72 +356,83 @@ const EmployeeList = () => {
           </EmployeeListFilterSection> */}
 
           <FilterSection>
-            <select
-              className="selectoption"
-              name="EmployeeDepartment"
-              value={departmentFilter}
-              onChange={(e) => {
-                handleDepartmentChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Department</option>{' '}
-              {departmentOptions.employeeDepartments.map((department) => (
-                <option key={department} value={department}>
-                  {department}
-                </option>
-              ))}
-            </select>
-            <select
-              className="selectoption"
-              name="JobTitle"
-              value={JobTitleFilter}
-              onChange={(e) => {
-                handleJobTitleChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">JobTitle</option>{' '}
-              {departmentOptions.jobTitles.map((jobTitle) => (
-                <option key={jobTitle} value={jobTitle}>
-                  {jobTitle}
-                </option>
-              ))}
-            </select>
+            {departmentOptions &&
+              <select
+                className="selectoption"
+                name="EmployeeDepartment"
+                value={departmentFilter}
+                onChange={(e) => {
+                  handleDepartmentChange(e);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Department</option>{' '}
+                {departmentOptions?.values.map((department) => (
+                  <option key={department.value} value={department.value}>
+                    {t(department.value)}
+                  </option>
+                ))}
+              </select>}
+            {jobTitles &&
+              <select
+                className="selectoption"
+                name="JobTitle"
+                value={JobTitleFilter}
+                onChange={(e) => {
+                  handleJobTitleChange(e);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Job Title</option>{' '}
+                {jobTitles?.values.map((jobTitle) => (
+                  <option key={jobTitle.value} value={jobTitle.value}>
+                    {t(jobTitle.value)}
+                  </option>
+                ))}
+              </select>}
 
+            {employeeTypes &&
             <select
-              className="selectoption"
-              name="EmployementType"
-              value={EmployeementTypeFilter}
-              onChange={(e) => {
-                handleEmploymentTypeChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">EmployementType</option>
-              {departmentOptions.employmentTypes.map((employementType) => (
-                <option key={employementType} value={employementType}>
-                  {employementType}
-                </option>
-              ))}
-            </select>
+            className="selectoption"
+            name="EmployementType"
+            value={EmployeementTypeFilter}
+            onChange={(e) => {
+              handleEmploymentTypeChange(e);
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">Employement Type</option>
+            {employeeTypes?.values.map((employementType) => (
+              <option key={employementType.value} value={employementType.value}>
+                {t(employementType.value)}
+              </option>
+            ))}
+          </select>
+            }
 
-            <select
-              className="selectoption"
-              name="employeeStatus"
-              value={EmployeeStatusFilter}
-              onChange={(e) => {
-                handleEmployeeStatusChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Status</option>{' '}
-              {departmentOptions.status.map((employeStatus) => (
-                <option key={employeStatus} value={employeStatus}>
-                  {employeStatus}
-                </option>
-              ))}
-            </select>
+            {user &&
+              (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
+                hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) ||  
+                hasPermission(
+                  user,
+                  EMPLOYEE_MODULE.UPDATE_ROLES_AND_PERMISSIONS
+                ) ||
+                hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES) ||
+                hasPermission(user, EMPLOYEE_MODULE.UPDATE_EMPLOYEE)) && (
+                <select
+                  className="selectoption"
+                  name="employeeStatus"
+                  value={EmployeeStatusFilter}
+                  onChange={(e) => {
+                    handleEmployeeStatusChange(e);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="">Status</option>{" "}
+                  <option value="Active">{t("ACTIVE")}</option>
+                  <option value="Inactive">{t("INACTIVE")}</option>
+                </select>
+              )}
           </FilterSection>
           <br />
           <TableContainer>
@@ -458,12 +503,12 @@ const EmployeeList = () => {
                           <span className="nameAndMail">
                             <span>
                               {emp.account.firstName === null &&
-                              emp.account.lastName === null
+                                emp.account.lastName === null
                                 ? // FIXME
-                                  't.a.cer'
+                                't.a.cer'
                                 : emp.account.firstName +
-                                  ' ' +
-                                  emp.account.lastName}
+                                ' ' +
+                                emp.account.lastName}
                             </span>
                             <span className="employeeMail">
                               {emp.account.email}
@@ -477,7 +522,7 @@ const EmployeeList = () => {
                         </td>
                         <td>
                           {emp.employee.jobDetails &&
-                          emp.employee.jobDetails.employementType
+                            emp.employee.jobDetails.employementType
                             ? emp.employee.jobDetails.employementType
                             : '-'}
                         </td>
@@ -510,7 +555,7 @@ const EmployeeList = () => {
         {isCreateEmployeeModelOpen && (
           <SideModal
             handleClose={
-              isResponseLoading ? () => {} : handleIsCreateEmployeeModal
+              isResponseLoading ? () => { } : handleIsCreateEmployeeModal
             }
             isModalOpen={isCreateEmployeeModelOpen}
             innerContainerContent={

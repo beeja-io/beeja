@@ -190,6 +190,9 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   label {
     font-size: 14px;
   }
+  input {
+    cursor: text;
+  }
   .selectoption {
     outline: none;
     border-radius: 10px;

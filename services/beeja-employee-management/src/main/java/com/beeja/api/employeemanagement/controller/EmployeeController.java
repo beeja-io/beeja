@@ -6,6 +6,7 @@ import com.beeja.api.employeemanagement.model.Employee;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
+import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.beeja.api.employeemanagement.service.EmployeeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,5 +87,10 @@ public class EmployeeController {
     }
     return ResponseEntity.status(HttpStatus.OK)
         .body(employeeService.updateKYCRequest(employeeId, updateKYCRequest));
+  }
+
+  @GetMapping("/employee-values")
+  ResponseEntity<EmployeeValues> getEmployeeValues() throws Exception {
+    return ResponseEntity.ok(employeeService.getEmployeeValues());
   }
 }
