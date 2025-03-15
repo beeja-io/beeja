@@ -12,7 +12,7 @@ import java.util.List;
 @FeignClient(name = "employee-service", url = "${client-urls.employeeService}")
 public interface EmployeeClient {
 
-    @GetMapping("/v1/users/response")
-    List<EmployeeDetailsResponse>getEmployeeDetails();
+    @GetMapping("/v1/users/list")
+    List<EmployeeDetailsResponse> getEmployeeDetails();
 }
 

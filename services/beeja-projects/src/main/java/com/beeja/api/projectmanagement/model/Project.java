@@ -2,6 +2,7 @@ package com.beeja.api.projectmanagement.model;
 
 
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
+import com.beeja.api.projectmanagement.responses.EmployeeDetailsResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
@@ -32,6 +33,7 @@ public class Project {
     private String projectName;
 
     private String projectId;
+    private String organizationId;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
     private Date startDate;
@@ -47,5 +49,6 @@ public class Project {
 
     @DBRef
     private List<Resource> projectManagers;
+
 
 }

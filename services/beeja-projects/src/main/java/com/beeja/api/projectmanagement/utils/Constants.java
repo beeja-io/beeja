@@ -14,6 +14,8 @@ public class Constants {
   public static final String RESOURCE_NOT_FOUND ="%s with %s '%s' doesn't exists.";
   public static final String ERROR_FETCHING_CLIENTS ="%s with %s '%s' DB ERROR" ;
   public static final String FIELD_NOT_EXIST_IN_ENTITY = "Field '%s' does not exist in entity";
+  public static final String DB_ERROR_IN_SAVING_DETAILS = "Failed to save project details: ";
+
 
   public static String format(String message, Object... args) {
     return String.format(message, args);
