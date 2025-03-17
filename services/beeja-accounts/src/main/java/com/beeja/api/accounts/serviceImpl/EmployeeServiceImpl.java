@@ -48,6 +48,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 
 import static com.beeja.api.accounts.utils.SecretsGenerator.hashWithBcrypt;
 
@@ -169,7 +171,12 @@ public class EmployeeServiceImpl implements EmployeeService {
               ErrorType.API_ERROR, ErrorCode.RESOURCE_CREATING_ERROR, Constants.USER_CREATE_ERROR));
     }
     try {
-      employeeFeignClient.createEmployee(createdUser);
+      Map<String, Object> newEmployee = new HashMap<>();
+      newEmployee.put("employeeId", createdUser.getEmployeeId());
+        newEmployee.put("email", createdUser.getEmail());
+        newEmployee.put("organizations", createdUser.getOrganizations());
+        newEmployee.put("department", addEmployeeRequest.getDepartment());
+      employeeFeignClient.createEmployee(newEmployee);
     } catch (FeignException.FeignClientException e) {
       userRepository.delete(createdUser);
       throw new Exception(
