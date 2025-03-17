@@ -314,8 +314,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     String loggedInUserRole = UserContext.getLoggedInUserDTO().getRoles().toString();
-    boolean validUser = loggedInUserRole.equalsIgnoreCase("Super Admin") ||
-            loggedInUserRole.equalsIgnoreCase("Hr");
+    boolean validUser = UserContext.getLoggedInUserPermissions().contains(CREATE_EMPLOYEE);
 
     if (!validUser) {
       status = "active";

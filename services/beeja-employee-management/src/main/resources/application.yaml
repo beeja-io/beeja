@@ -29,8 +29,8 @@ info:
   application.name: ${spring.application.name}
 
 client-urls:
-  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}
-  fileService: ${FILE_SERVICE_BASE_URL}
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
+  fileService: ${FILE_SERVICE_BASE_URL}/files
 
 
 jwt:
