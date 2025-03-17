@@ -392,27 +392,27 @@ const EmployeeList = () => {
               </select>}
 
             {employeeTypes &&
-            <select
-            className="selectoption"
-            name="EmployementType"
-            value={EmployeementTypeFilter}
-            onChange={(e) => {
-              handleEmploymentTypeChange(e);
-              setCurrentPage(1);
-            }}
-          >
-            <option value="">Employement Type</option>
-            {employeeTypes?.values.map((employementType) => (
-              <option key={employementType.value} value={employementType.value}>
-                {t(employementType.value)}
-              </option>
-            ))}
-          </select>
+              <select
+                className="selectoption"
+                name="EmployementType"
+                value={EmployeementTypeFilter}
+                onChange={(e) => {
+                  handleEmploymentTypeChange(e);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Employement Type</option>
+                {employeeTypes?.values.map((employementType) => (
+                  <option key={employementType.value} value={employementType.value}>
+                    {t(employementType.value)}
+                  </option>
+                ))}
+              </select>
             }
 
             {user &&
               (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
-                hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) ||  
+                hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) ||
                 hasPermission(
                   user,
                   EMPLOYEE_MODULE.UPDATE_ROLES_AND_PERMISSIONS
@@ -552,7 +552,7 @@ const EmployeeList = () => {
           {error && <div className="error-message">{error}</div>}
         </DynamicSpaceMainContainer>
 
-        {isCreateEmployeeModelOpen && (
+        {isCreateEmployeeModelOpen && departmentOptions && (
           <SideModal
             handleClose={
               isResponseLoading ? () => { } : handleIsCreateEmployeeModal
@@ -565,6 +565,7 @@ const EmployeeList = () => {
                 handleClose={handleIsCreateEmployeeModal}
                 reloadEmployeeList={fetchEmployees}
                 refetchEmployeeCount={fetchEmployeeCount}
+                departmentOptions={departmentOptions}
               />
             }
           />
@@ -582,6 +583,7 @@ type CreateAccountProps = {
   refetchEmployeeCount: () => void;
   setIsResponseLoading: (param: boolean) => void;
   isResponseLoading: boolean;
+  departmentOptions: OrgDefaults;
 };
 
 const CreateAccount: React.FC<CreateAccountProps> = (props) => {
@@ -591,6 +593,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     lastName: '',
     email: '',
     employmentType: '',
+    department: '',
   });
   const [organizationValues, setOrganizationValues] =
     useState<OrganizationValues | null>(null);
@@ -659,6 +662,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             : '',
       employmentType:
         formData.employmentType === '' ? EMPLOYMENT_TYPRE_REQUIRED : '',
+      department: formData.department === '' ? 'DEPARTMENT_REQUIRED' : '',
     };
 
     setErrors(newErrors);
@@ -826,6 +830,39 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             </ValidationText>
           )}
         </SelectOption>
+
+        <SelectOption>
+          <label>
+            {t('SELECT_DEPARTMENT')}{' '}
+            <ValidationText className="star">*</ValidationText>
+          </label>
+          <select
+            className="selectoption"
+            name="department"
+            id="department"
+            onKeyPress={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+              }
+            }}
+            onChange={handleChange}
+          >
+            <option value="">{t('SELECT_DEPARTMENT')}</option>
+            {props.departmentOptions &&
+              props.departmentOptions.values &&
+              props.departmentOptions.values.map((department, index) => (
+                <option key={index} value={department.value}>
+                  {t(department.value)}
+                </option>
+              ))}
+          </select>
+          {errors.employmentType && (
+            <ValidationText>
+              <AlertISVG /> {errors.employmentType}
+            </ValidationText>
+          )}
+        </SelectOption>
+
         <span>
           <ValidationText className="info">
             {t('EMPLOYEE_ID_WILL_BE_GENERATED_BASED_ON_PATTERN')}

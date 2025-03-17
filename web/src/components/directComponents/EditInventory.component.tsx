@@ -297,7 +297,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                       }}
                       selectedDate={dateOfPurchase}
                       maxDate={new Date()}
-                      handleCalenderChange={() => {}}
+                      handleCalenderChange={() => { }}
                     />
                   )}
                 </div>
@@ -381,15 +381,18 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 onChange={handleChange}
                 disabled={
-                  formData.device !== 'Desktops' ||
-                  formData.device !== 'Laptops' ||
-                  formData.device !== 'Mobiles' ||
-                  formData.device !== 'Tablets' ||
-                  formData.device !== 'Desktop' ||
-                  formData.device !== 'Laptop' ||
-                  formData.device !== 'Mobile' ||
-                  formData.device !== 'Tablet'
+                  !(
+                    formData.device === 'Desktops' ||
+                    formData.device === 'Laptops' ||
+                    formData.device === 'Mobiles' ||
+                    formData.device === 'Tablets' ||
+                    formData.device === 'Desktop' ||
+                    formData.device === 'Laptop' ||
+                    formData.device === 'Mobile' ||
+                    formData.device === 'Tablet'
+                  )
                 }
+
                 required={
                   ![
                     'PRINTER',
