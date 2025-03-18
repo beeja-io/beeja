@@ -111,6 +111,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [paymentModeFilter, setPaymentModeFilter] = useState<string>('');
+  const [settlementStatusFilter, setSettlementStatusFilter] = useState<boolean>();
   const [sortBy, setSortBy] = useState<string>('expenseDate');
   const [filterBasedOn, setFilterBasedOn] = useState<string>('expenseDate');
   const [sortOrder, setSortOrder] = useState<string>('false');
@@ -126,6 +127,15 @@ export const ExpenseList = (props: ExpenseListProps) => {
     const selectedCategory = e.target.value;
     setCategoryFilter(selectedCategory !== '' ? selectedCategory : '');
     setTypeFilter('');
+  };
+
+  const handleSettlementStatusChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedSettlementStatus = e.target.value;
+    setSettlementStatusFilter(
+      selectedSettlementStatus !== '' ? selectedSettlementStatus === 'true' : undefined
+    );
   };
 
   function dateFormat(date: Date) {
@@ -158,6 +168,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
       { key: 'category', value: categoryFilter },
       { key: 'type', value: typeFilter },
       { key: 'paymentMode', value: paymentModeFilter },
+      { key: 'settlementStatus', value: settlementStatusFilter !== undefined ? settlementStatusFilter ? 'Settled' : 'Pending' : '' },
     ];
     return (
       <ExpenseFilterArea>
@@ -211,6 +222,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
       queryParams.push(`filterBasedOn=${filterBasedOn}`);
       queryParams.length > 4 ? setIsShowFilters(true) : setIsShowFilters(false);
 
+      if(settlementStatusFilter !== undefined) {
+        queryParams.push(`settlementStatus=${settlementStatusFilter}`);
+      }
+
       queryParams.push(`ascending=${sortOrder}`);
       const filteredParams = queryParams.filter((param) => param.length > 0);
 
@@ -248,6 +263,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
     filterBasedOn,
     sortOrder,
     departmentFilter,
+    settlementStatusFilter
   ]);
 
   useEffect(() => {
@@ -282,6 +298,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
       setPaymentModeFilter('');
       setFromDate(null);
       setToDate(null);
+      setSettlementStatusFilter(undefined);
     }
     if (filterName === 'department') {
       setDepartmentFilter('');
@@ -298,6 +315,9 @@ export const ExpenseList = (props: ExpenseListProps) => {
     if (filterName === 'date') {
       setFromDate(null);
       setToDate(null);
+    }
+    if(filterName === 'settlementStatus') {
+      setSettlementStatusFilter(undefined);
     }
   };
 
@@ -465,6 +485,19 @@ export const ExpenseList = (props: ExpenseListProps) => {
               </option>
             ))}
           </select>
+          <select
+            className="selectoption largeSelectOption"
+            name="settlementStatus"
+            value={settlementStatusFilter !== undefined ? settlementStatusFilter.toString() : ''}
+            onChange={(e) => {
+              handleSettlementStatusChange(e);
+              setCurrentPage(1);
+            }}
+          >
+            <option value="">{t('SETTLEMENT_STATUS')}</option>
+            <option value="true">{t('SETTLED')}</option>
+            <option value="false">{t('PENDING')}</option>
+          </select>
         </FilterSection>
         <div className="right">
           <DisplayFilters>
@@ -543,12 +576,12 @@ export const ExpenseList = (props: ExpenseListProps) => {
           <span className="noFilters noMargin">
             <InfoCircleSVG />
             {`Showing current month expenses (sorted based on ${sortBy === 'expenseDate'
-                ? t('EXPENSE_DATE')
-                : sortBy === 'requestedDate'
-                  ? t('REQUESTED_DATE')
-                  : sortBy === 'paymentDate'
-                    ? t('PAYMENT_DATE')
-                    : t('CREATED_DATE')
+              ? t('EXPENSE_DATE')
+              : sortBy === 'requestedDate'
+                ? t('REQUESTED_DATE')
+                : sortBy === 'paymentDate'
+                  ? t('PAYMENT_DATE')
+                  : t('CREATED_DATE')
               })`}
           </span>
         )}
@@ -637,9 +670,11 @@ export const ExpenseList = (props: ExpenseListProps) => {
                           >
                             <CalenderIcon />
                           </span>
-                          {exp.paymentDate
-                            ? formatDate(exp.paymentDate as unknown as string)
-                            : '-'}
+                          {exp.paymentSettled
+                              ? formatDate(
+                                exp.paymentSettled as unknown as string
+                              )
+                              : '-'}
                         </td>
                         {user?.roles.some((role) =>
                           role.permissions.some(
