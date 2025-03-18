@@ -439,7 +439,7 @@ const OrganizationSettings = () => {
               <SettingsTypes keyvalue="employeeTypes" type="EmploymentType" />
             )}
             {activeTab === 'jobtitles' && (
-              <SettingsTypes keyvalue="jobTypes" type="Job Title" />
+              <SettingsTypes keyvalue="jobTitles" type="Job Title" />
             )}
             {activeTab === 'departments' && (
               <SettingsTypes keyvalue="departments" type="Department" />
