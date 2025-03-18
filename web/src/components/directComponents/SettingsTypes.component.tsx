@@ -25,6 +25,7 @@ import { ExpenseTypeAction } from '../reusableComponents/ExpenseTyeAction';
 import CenterModalExpense from '../reusableComponents/CenterModalExpense.component';
 import { OrgValues } from '../../entities/OrgDefaultsEntity';
 import { useUser } from '../../context/UserContext';
+import { useTranslation } from 'react-i18next';
 import { AlertISVG } from '../../svgs/CommonSvgs.svs';
 
 export const SettingsTypes = ({
@@ -34,6 +35,7 @@ export const SettingsTypes = ({
   keyvalue: string;
   type: string;
 }) => {
+  const { t } = useTranslation();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [actionType, setActionType] = useState<string | null>(null);
   const [indexvalue, setIndexvalue] = useState<number>();
@@ -194,7 +196,7 @@ export const SettingsTypes = ({
         <h4>{type}</h4>
         <Button className="submit shadow buttonstyle" onClick={handleOpenModal}>
           <AddNewPlusSVG />
-          Add {type}
+           {t("ADD")}{type}
         </Button>
       </TabContentMainContainerHeading>
       <Hr />
@@ -263,14 +265,14 @@ export const SettingsTypes = ({
               <div style={{ paddingLeft: '150px' }}>
                 <ValidationText>
                   <AlertISVG />
-                  This field is mandatory.{' '}
+                  {t("THE_FIELD_IS_MANDATORY")}{' '}
                 </ValidationText>
               </div>
             )}
           </div>
           <div>
             <InputContainer>
-              <label>Description:</label>
+              <label>{t("DESCRIPTION:")}</label>
               <input
                 type="text"
                 value={newSettingType.description}

@@ -108,8 +108,8 @@ const CompleteNavBar = () => {
                   <BeejaIconSvg />
                   <div className="logo_name" style={{ fontFamily: 'Rubik' }}>
                     {' '}
-                    &nbsp; BEE
-                    <span className="logo_name logo_name_blue">JA</span>
+                    &nbsp; {t("BEE")}
+                    <span className="logo_name logo_name_blue">{t("JA")}</span>
                   </div>
                   <span className="btn" onClick={toggleSidebar}>
                     <NavCloseArrow isOpen={sidebarOpen ? false : true} />

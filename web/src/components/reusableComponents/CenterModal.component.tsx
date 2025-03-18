@@ -18,7 +18,7 @@ type CenterModalProps = {
   handleModalSubmit: () => void;
   handleModalLeftButtonClick?: () => void;
   modalHeading?: string;
-  modalContent?: React.ReactNode;
+  modalContent?: string | React.ReactNode;
   modalSVG?: React.ReactNode;
   modalLeftButtonText?: string;
   modalRightButtonText?: string;
@@ -99,7 +99,9 @@ const CenterModal = (props: CenterModalProps) => {
                 <div className="modalHeading">
                   {t(props.modalHeading ? props.modalHeading : '')}
                 </div>
-                <div className="modalContent">{props.modalContent}</div>
+                <div className="modalContent">
+                  {typeof props.modalContent === 'string' ? t(props.modalContent) : props.modalContent}
+                </div>
               </>
             )}
           </div>
