@@ -93,6 +93,7 @@ public class ExpenseController {
       @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
       @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
       @RequestParam(name = "sortBy", required = false) String sortBy,
+      @RequestParam(name = "settlementStatus", required = false) Boolean settlementStatus,
       @RequestParam(name = "ascending", defaultValue = "true") boolean ascending) {
     try {
       Calendar calendar = Calendar.getInstance();
@@ -133,6 +134,7 @@ public class ExpenseController {
               modeOfPayment,
               expenseType,
               expenseCategory,
+              settlementStatus,
               UserContext.getLoggedInUserOrganization().get("id").toString()));
       metadata.put(
           "totalSize",
@@ -144,6 +146,7 @@ public class ExpenseController {
               modeOfPayment,
               expenseType,
               expenseCategory,
+              settlementStatus,
               UserContext.getLoggedInUserOrganization().get("id").toString()));
       List<Expense> filteredExpenses =
           expenseService.getFilteredExpenses(
@@ -158,6 +161,7 @@ public class ExpenseController {
               pageNumber,
               pageSize,
               sortBy,
+              settlementStatus,
               ascending);
       expenses.put("metadata", metadata);
       expenses.put("expenses", filteredExpenses);

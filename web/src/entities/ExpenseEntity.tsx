@@ -20,6 +20,7 @@ export interface Expense {
   files: File[];
   expenseDate: Date;
   paymentDate: Date;
+  paymentSettled: Date;
   requestedDate: Date;
   createdAt: Date;
   modifiedAt: Date;

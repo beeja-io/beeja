@@ -33,6 +33,7 @@ public interface ExpenseService {
       int pageNumber,
       int pageSize,
       String sortBy,
+      Boolean settlementStatus,
       boolean ascending)
       throws Exception;
 
@@ -44,6 +45,7 @@ public interface ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId);
 
   Long getTotalExpensesSize(
@@ -54,6 +56,7 @@ public interface ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId);
 
   ExpenseValues getExpenseDefaultValues(String organizationId);
