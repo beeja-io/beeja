@@ -21,10 +21,12 @@ import { AxiosError } from 'axios';
 import CommentsSection from '../reusableComponents/CommentsSection.component';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const EditApplicant = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { t } = useTranslation();
   const goToPreviousPage = () => {
     navigate(-1);
   };
@@ -100,7 +102,7 @@ const EditApplicant = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            Updating{' '}
+            {t("UPDATING")}{' '}
             <strong>
               {applicant?.firstName} {applicant?.lastName}
             </strong>
@@ -112,7 +114,7 @@ const EditApplicant = () => {
               <div>
                 <InputLabelContainer>
                   <label>
-                    First Name <ValidationText className="star">*</ValidationText>
+                    {t("First_Name")} <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
                     type="text"
@@ -139,7 +141,7 @@ const EditApplicant = () => {
                 </InputLabelContainer>
                 <InputLabelContainer>
                   <label>
-                    Last Name <ValidationText className="star">*</ValidationText>
+                    {t("Last_Name")} <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
                     type="text"
@@ -168,7 +170,7 @@ const EditApplicant = () => {
               <div>
                 <InputLabelContainer>
                   <label>
-                    Phone Number{' '}
+                    {t("Phone_Number")}{' '}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
@@ -195,7 +197,7 @@ const EditApplicant = () => {
                 </InputLabelContainer>
                 <InputLabelContainer>
                   <label>
-                    Email <ValidationText className="star">*</ValidationText>
+                    {t("EMAIL")} <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
                     type="email"
@@ -213,7 +215,7 @@ const EditApplicant = () => {
               </div>
               <div>
                 <InputLabelContainer>
-                  <label>Experience</label>
+                  <label>{t("EXPERIENCE")}</label>
                   <select
                     className="selectoption"
                     name="experience"

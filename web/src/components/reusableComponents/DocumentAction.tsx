@@ -28,6 +28,7 @@ import { pdfjs } from 'react-pdf';
 import { DOCUMENT_MODULE } from '../../constants/PermissionConstants';
 import { FileEntity } from '../../entities/FileEntity';
 import { hasPermission } from '../../utils/permissionCheck';
+import { t } from 'i18next';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.js',
@@ -297,7 +298,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
                   >
                     <DownloadIcon stroke="#28303F" />
                   </span>
-                  Download
+                  {t("DOWNLOAD")}
                 </span>
               </button>
             }
@@ -322,7 +323,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
                         }}
                       >
                         <p className="pages">
-                          Page {pageNumber} of {numPages}
+                          {t("PAGE")} {pageNumber} {t("OF")} {numPages}
                         </p>
                         <div
                           style={{

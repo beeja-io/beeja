@@ -42,7 +42,7 @@ const MobileNavbar = (props: MobileNavBarProps) => {
               <BeejaIconSvg />
               <div className="logo_name">
                 {' '}
-                &nbsp; BEE
+                &nbsp; {t("BEE")}
                 <span
                   style={{
                     color: '#005792',
@@ -50,7 +50,7 @@ const MobileNavbar = (props: MobileNavBarProps) => {
                     fontWeight: 400,
                   }}
                 >
-                  JA
+                  {t("JA")}
                 </span>
               </div>
 

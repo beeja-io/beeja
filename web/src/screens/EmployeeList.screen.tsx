@@ -218,7 +218,7 @@ const EmployeeList = () => {
       setTotalItems(response.data.totalSize);
       updateEmployeeList(allEmployees);
       if (!allEmployees || allEmployees.length === 0) {
-        setError('No employees found.');
+        setError(t("NO_EMPLYEES_FOUND"));
       } else {
         setError(null);
       }
