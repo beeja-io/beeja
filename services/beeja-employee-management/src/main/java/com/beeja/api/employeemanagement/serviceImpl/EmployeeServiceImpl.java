@@ -97,6 +97,12 @@ public class EmployeeServiceImpl implements EmployeeService {
       Map<String, Object> organizationsMap = (Map<String, Object>) organizationsObject;
       emp.setOrganizationId((String) organizationsMap.get("id"));
     }
+
+    if(employee.get("department") != null) {
+      JobDetails jobDetails = new JobDetails();
+      jobDetails.setDepartment(employee.get("department").toString());
+      emp.setJobDetails(jobDetails);
+    }
     try {
       return employeeRepository.save(emp);
     } catch (Exception e) {

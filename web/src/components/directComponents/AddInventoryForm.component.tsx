@@ -158,12 +158,12 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select Accessory Type</option>
-                  <option value="Keyboard">Keyboard</option>
-                  <option value="Cable">Cable</option>
-                  <option value="Headset">Headset</option>
-                  <option value="Mouse">Mouse</option>
-                  <option value="USB_sticks">USB sticks</option>
+                  <option value="">{t("SELECT_ACCESSORY_TYPE")}</option>
+                  <option value="Keyboard">{t("KEYBOARD")}</option>
+                  <option value="Cable">{t("CABLE")}</option>
+                  <option value="Headset">{t("HEADSET")}</option>
+                  <option value="Mouse">{t("MOUSE")}</option>
+                  <option value="USB_sticks">{t("USB_STICKS")}</option>
                 </select>
               </InputLabelContainer>
             )}
@@ -253,7 +253,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                       }}
                       selectedDate={dateOfPurchase}
                       maxDate={new Date()}
-                      handleCalenderChange={() => {}}
+                      handleCalenderChange={() => { }}
                     />
                   )}
                 </div>
@@ -291,7 +291,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
           </div>
           <div>
             <InputLabelContainer>
-            <label>
+              <label>
                 {t('PROVIDER')}
                 <ValidationText className="star">*</ValidationText>
               </label>
@@ -342,15 +342,18 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 className="largeInput"
                 onChange={handleChange}
                 disabled={
-                  formData.device !== 'Desktops' ||
-                  formData.device !== 'Laptops' ||
-                  formData.device !== 'Mobiles' ||
-                  formData.device !== 'Tablets' ||
-                  formData.device !== 'Desktop' ||
-                  formData.device !== 'Laptop' ||
-                  formData.device !== 'Mobile' ||
-                  formData.device !== 'Tablet'
+                  !(
+                    formData.device === 'Desktops' ||
+                    formData.device === 'Laptops' ||
+                    formData.device === 'Mobiles' ||
+                    formData.device === 'Tablets' ||
+                    formData.device === 'Desktop' ||
+                    formData.device === 'Laptop' ||
+                    formData.device === 'Mobile' ||
+                    formData.device === 'Tablet'
+                  )
                 }
+
                 required={
                   ![
                     'Printer',
