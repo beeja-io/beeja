@@ -13,6 +13,7 @@ import {
   SettingsSVG,
   SunSVG,
   TrendingUpSVG,
+  ProjectsAndContractsSVG
 } from '../../svgs/NavBarSvgs.svg';
 import {
   DarkTheme,
@@ -385,6 +386,38 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )}
+
+                    {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                    hasFeature(
+                      featureToggles.featureToggles,
+                      EFeatureToggles.LOAN_MANAGEMENT
+                    ) &&
+                    <ListItem
+                    isSideBarOpen={sidebarOpen}
+                    linkTo="#"
+                    tooltipName="Projects & Contracts"
+                    linkName="Projects & Contracts"
+                    svgIcon={
+                      <ProjectsAndContractsSVG isActive={openDropdown === 'Projects & Contracts' || currentPath.startsWith('/projects')} />
+                    }
+                    additionalSvgIcon={<ChevronDownSVG />}
+                    dropdownItems={[
+                      {
+                        name: 'Contracts',
+                        link: '/projects/contracts',
+                      }
+                    ]}
+                    isDropdownOpen={openDropdown === 'Projects & Contracts'}
+                    setDropdownOpen={() => {
+                      setOpenDropdown((prev) =>
+                        prev === 'Projects & Contracts' ? null : 'Projects & Contracts'
+                      );
+                    }}
+                    hasAdditionalSvg
+                  />
+                  }
+
+
                   <ListItem
                     isSideBarOpen={sidebarOpen}
                     linkTo="#"

@@ -24,6 +24,7 @@ import { useFeatureToggles } from '../context/FeatureToggleContext';
 import { hasFeature } from '../utils/featureCheck';
 import { EFeatureToggles } from '../entities/FeatureToggle';
 import FeatureToggleScreen from '../screens/FeatureToggleScreen.screen';
+import { InvoiceScreen } from '../screens/InvoiceScreen.screen';
 
 const AllRoutes = () => {
   return (
@@ -96,6 +97,18 @@ const AllRoutes = () => {
             featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
           >
             <LoanManagementScreen />
+          </CustomRoute>
+        }
+      />
+
+      <Route
+        path="/projects/contracts"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <InvoiceScreen />
           </CustomRoute>
         }
       />
