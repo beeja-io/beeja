@@ -1,22 +1,21 @@
 server:
   servlet:
     context-path: /recruitments
-  port: 8095
+  port: ${RECRUITMENT_SERVICE_PORT}
 spring:
   application:
     name: recruitment-service
   data:
     mongodb:
-      uri: mongodb://root:password@beeja-db-1:27017/?replicaSet=rs0&directConnection=true
-      database: accounts_sbox
-
+      uri: ${RECRUITMENT_MONGO_URI}
+      database: ${RECRUITMENT_MONGODB_DB_NAME}
 
 eureka:
   instance:
     preferIpAddress: true
   client:
     serviceUrl:
-      defaultZone: http://beeja-service-registry:8761/eureka
+      defaultZone: ${EUREKA_SERVER_URL}
 
 # actuator
 management:
@@ -31,10 +30,11 @@ springdoc:
   swagger-ui:
     url: /openApi.yaml
 
+
 client-urls:
-  accountsService: http://beeja-accounts:8080/accounts
-  fileService: http://beeja-file-management:8090/files
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
+  fileService: ${FILE_SERVICE_BASE_URL}/files
 
 
 jwt:
-  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw
+  secret: ${JWT_SECRET_KEY}

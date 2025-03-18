@@ -4,6 +4,8 @@ import static org.springframework.security.web.server.util.matcher.ServerWebExch
 
 import com.beeja.api.apigateway.config.security.properties.AuthProperties;
 import java.time.Duration;
+import java.util.ServiceLoader;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -125,34 +127,18 @@ public class SecurityConfig {
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
     serverHttpSecurity.exceptionHandling(
-        exceptionHandlingSpec ->
-            exceptionHandlingSpec.authenticationEntryPoint(
-                ((exchange, ex) -> {
-                  exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                  return Mono.empty();
-                })));
-    serverHttpSecurity
-        .authorizeExchange(
-            authorizeExchangeSpec ->
-                authorizeExchangeSpec
-                    .pathMatchers(HttpMethod.OPTIONS)
-                    .permitAll()
-                    .pathMatchers(
-                        "/login",
-                        "/auth/login/**",
-                        "/actuator/**",
-                        "/static/favicon.ico",
-                        "/favicon.ico",
-                        "/auth/login/google",
-                        "/auth/login/error",
-                        "/auth/logout")
-                    .permitAll()
-                    .anyExchange()
-                    .authenticated())
-        .csrf(ServerHttpSecurity.CsrfSpec::disable)
-        .formLogin(
-            formLoginSpec ->
-                formLoginSpec.authenticationFailureHandler(authenticationFailureHandler));
+            exceptionHandlingSpec ->
+                    exceptionHandlingSpec.authenticationEntryPoint(
+                            ((exchange, ex) -> {
+                              exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                              return Mono.empty();
+                            })));
+    ServiceLoader<AuthenticationProvider> loader = ServiceLoader.load(AuthenticationProvider.class);
+
+    for (AuthenticationProvider provider : loader) {
+      provider.configure(serverHttpSecurity);
+    }
+
     return serverHttpSecurity.build();
   }
 

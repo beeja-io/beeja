@@ -4,7 +4,7 @@ server:
     multipart:
       max-file-size: 50MB
       max-request-size: 50MB
-  port: 8090
+  port: ${FILE_SERVICE_PORT}
 spring:
   output:
     ansi:
@@ -15,25 +15,27 @@ spring:
       max-request-size: 15MB
   application:
     name: file-service
+
   data:
     mongodb:
-      auto-index-creation: true
-      uri: mongodb://root:password@beeja-db-1:27017/?replicaSet=rs0&directConnection=true
-      database: files_sbox
+      uri: ${MONGODB_URI}
+      database: ${FILES_MONGODB_DB_NAME}
 
 beeja:
-  fileUploadLocation: /beeja-file-storage
+  fileUploadLocation: ${FILE_UPLOAD_LOCATION}
+  #provide localpath
 
 eureka:
   instance:
     preferIpAddress: true
   client:
     serviceUrl:
-      defaultZone: http://beeja-service-registry:8761/eureka
-client-urls:
-  employeeService: http://beeja-employee-management:8089/employees
-  accountsService: http://beeja-accounts:8080/accounts
+      defaultZone: ${EUREKA_SERVER_URL}
 
+client-urls:
+  employeeService: ${EMPLOYEE_SERVICE_BASE_URL}/employees
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
+# actuator
 management:
   endpoints.web.exposure.include: health,info
   info.env.enabled: true
@@ -53,4 +55,4 @@ file-format:
     - image/png
     - image/jpeg
 jwt:
-  secret: zj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXwzj1pbrDrd305tzhIhUbCC6TpMaayzG6JlSLsYqOzXw
+  secret: ${JWT_SECRET_KEY}
