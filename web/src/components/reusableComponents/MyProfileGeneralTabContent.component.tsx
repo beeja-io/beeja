@@ -22,7 +22,7 @@ import {
 } from '../../svgs/CommonSvgs.svs';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import ToastMessage from './ToastMessage.component';
-import { updateEmployeeDetailsByEmployeeId } from '../../service/axiosInstance';
+import { getOrganizationValuesByKey, updateEmployeeDetailsByEmployeeId } from '../../service/axiosInstance';
 import {
   formatDate,
   formatDateYYYYMMDD,
@@ -30,15 +30,11 @@ import {
 } from '../../utils/dateFormatter';
 import { Select } from '../../styles/CommonStyles.style';
 import { EMPLOYEE_MODULE } from '../../constants/PermissionConstants';
-import {
-  listOfDepartments,
-  listOfDesignations,
-  listOfEmploymentTypes,
-} from '../../utils/listConstants';
 import Calendar from './Calendar.component';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import { isValidEmail, isValidPINCode } from '../../utils/formInputValidators';
 import { hasPermission } from '../../utils/permissionCheck';
+import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
 
 type GeneralDetailsTabProps = {
   heading: string;
@@ -217,12 +213,11 @@ export const GeneralDetailsTab = ({
       if (emailLabel in modifiedFields && !isValidEmail(emailValue)) {
         setFormErrorToastHead('Invalid Email');
         setFormErrorToastMessage(
-          `${
-            emailLabel === 'Email'
-              ? 'Emergency email'
-              : emailLabel === 'Email Address'
-                ? 'Email Address'
-                : 'Alt. Email Address'
+          `${emailLabel === 'Email'
+            ? 'Emergency email'
+            : emailLabel === 'Email Address'
+              ? 'Email Address'
+              : 'Alt. Email Address'
           } must be in format of example@exam.com`
         );
         handleIsFormEmailValid();
@@ -395,13 +390,42 @@ export const GeneralDetailsTab = ({
   ];
   const allowFullEditingAccess =
     user && hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES);
+
+  const [departmentList, setDepartmentList] = useState<OrgDefaults>({} as OrgDefaults);
+  const [jobTitles, setJobTitles] = useState<OrgDefaults>({} as OrgDefaults);
+  const [employmentTypes, setEmploymentTypes] = useState<OrgDefaults>({} as OrgDefaults);
+  const [isDefaultResponseLoading, setIsDefaultResponseLoading] = useState(false);
+
+  useEffect(() => {
+    if (heading === 'Employment Info') {
+      const fetchData = async () => {
+        try {
+          setIsDefaultResponseLoading(true);
+          const response = await getOrganizationValuesByKey('departments');
+          const jobDetailsResponse = await getOrganizationValuesByKey('jobTitles');
+          const employmentTypesResponse = await getOrganizationValuesByKey('employmentTypes');
+          console.log('response', jobDetailsResponse.data.values);
+          setEmploymentTypes(employmentTypesResponse.data);
+          setJobTitles(jobDetailsResponse.data);
+          setDepartmentList(response.data);
+          setIsDefaultResponseLoading(false);
+        } catch (error) {
+          setIsDefaultResponseLoading(false);
+          console.error('error in fetching values', error);
+        }
+      };
+
+      fetchData();
+    }
+  }, []);
+
   return (
     <>
-      <TabContentMainContainer>
+      {isDefaultResponseLoading ? <SpinAnimation /> : <TabContentMainContainer>
         <TabContentMainContainerHeading>
           <h4>{heading}</h4>
           {allowFullEditingAccess &&
-          user.employeeId != employee.account.employeeId ? (
+            user.employeeId != employee.account.employeeId ? (
             <TabContentEditArea>
               {user &&
                 (allowFullEditingAccess ||
@@ -478,16 +502,16 @@ export const GeneralDetailsTab = ({
                 <tr key={label}>
                   <TabContentTableTd>{t(label)}</TabContentTableTd>
                   {isEditModeOn &&
-                  ((user?.employeeId === employee.account.employeeId &&
-                    editableFieldsForLoggedInEmployee.includes(label)) ||
-                    (allowFullEditingAccess &&
-                      user.employeeId !== employee.account.employeeId)) ? (
+                    ((user?.employeeId === employee.account.employeeId &&
+                      editableFieldsForLoggedInEmployee.includes(label)) ||
+                      (allowFullEditingAccess &&
+                        user.employeeId !== employee.account.employeeId)) ? (
                     <TabContentTableTd>
                       {label === 'Country' ||
-                      label === 'Nationality' ||
-                      label === 'Department' ||
-                      label === 'Employment Type' ||
-                      label === 'Designation' ? (
+                        label === 'Nationality' ||
+                        label === 'Department' ||
+                        label === 'Employment Type' ||
+                        label === 'Designation' ? (
                         <SelectInput
                           label={label}
                           value={
@@ -499,11 +523,17 @@ export const GeneralDetailsTab = ({
                               : label === 'Nationality'
                                 ? ['Indian', 'German', 'American']
                                 : label === 'Department'
-                                  ? listOfDepartments
+                                  ? departmentList?.values.map(
+                                    (department) => department.value
+                                  )
                                   : label === 'Employment Type'
-                                    ? listOfEmploymentTypes
+                                    ? employmentTypes?.values.map(
+                                      (employmentType) => employmentType.value
+                                    )
                                     : label === 'Designation'
-                                      ? listOfDesignations
+                                      ? jobTitles?.values.map(
+                                        (jobTitle) => jobTitle.value
+                                      )
                                       : []
                           }
                           onChange={(label, selectedValue) =>
@@ -519,10 +549,10 @@ export const GeneralDetailsTab = ({
                                 joiningDate
                                   ? formatDateDDMMYYYY(joiningDate)
                                   : employee.employee.jobDetails &&
-                                      employee.employee.jobDetails.joiningDate
+                                    employee.employee.jobDetails.joiningDate
                                     ? formatDateDDMMYYYY(
-                                        employee.employee.jobDetails.joiningDate
-                                      )
+                                      employee.employee.jobDetails.joiningDate
+                                    )
                                     : ''
                               }
                               onChange={(e) => setJoiningDate(e.target.value)}
@@ -539,7 +569,7 @@ export const GeneralDetailsTab = ({
                         <InlineInput
                           type={
                             label === 'Date of Birth' ||
-                            label === 'Joining Date'
+                              label === 'Joining Date'
                               ? 'date'
                               : 'text'
                           }
@@ -605,8 +635,8 @@ export const GeneralDetailsTab = ({
                   ) : (
                     <>
                       {value != '-' &&
-                      (label === 'Joining Date' ||
-                        label === 'Date of Birth') ? (
+                        (label === 'Joining Date' ||
+                          label === 'Date of Birth') ? (
                         <TabContentTableTd>
                           {formatDate(value)}
                         </TabContentTableTd>
@@ -626,10 +656,10 @@ export const GeneralDetailsTab = ({
                   <tr key={label}>
                     <TabContentTableTd>{t(label)}</TabContentTableTd>
                     {isEditModeOn &&
-                    ((user?.employeeId === employee.account.employeeId &&
-                      editableFieldsForLoggedInEmployee.includes(label)) ||
-                      (allowFullEditingAccess &&
-                        user.employeeId !== employee.account.employeeId)) ? (
+                      ((user?.employeeId === employee.account.employeeId &&
+                        editableFieldsForLoggedInEmployee.includes(label)) ||
+                        (allowFullEditingAccess &&
+                          user.employeeId !== employee.account.employeeId)) ? (
                       <TabContentTableTd>
                         {label === 'Gender' || label === 'Marital Status' ? (
                           <SelectInput
@@ -684,14 +714,14 @@ export const GeneralDetailsTab = ({
             </div>
           )}
         </TabContentInnerContainer>
-      </TabContentMainContainer>
+      </TabContentMainContainer>}
 
       {isEditModeOn && showCalendar ? (
         <CalendarContainer>
           <Calendar
             title="Select a Date"
             handleCalenderChange={handleCalendarChange}
-            handleDateInput={() => {}}
+            handleDateInput={() => { }}
             selectedDate={null}
           />
         </CalendarContainer>

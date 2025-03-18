@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import {
   PayrollMainContainer,
   StatusIndicator,
@@ -27,6 +28,7 @@ type LoanListViewProps = {
 };
 const LoanListView = (props: LoanListViewProps) => {
   const { user } = useUser();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   const { loanList, updateLoanList } = useContext(ApplicationContext);
@@ -39,11 +41,21 @@ const LoanListView = (props: LoanListViewProps) => {
       */
       if (user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS)) {
         const res = await getAllLoans();
-        updateLoanList(res.data.reverse());
+        
+        if (res?.data) {
+          const sortedLoans = res.data.sort(
+            (firstLoan: Loan, secondLoan: Loan) => new Date(secondLoan.createdAt).getTime() - new Date(firstLoan.createdAt).getTime()
+          );
+          updateLoanList(sortedLoans);
+        }
       } else {
         if (user && user.employeeId) {
           const res = await getAllLoans(user.employeeId);
-          updateLoanList(res.data.reverse());
+          const sortedLoans = res.data.sort(
+            (a: Loan, b: Loan) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+
+          updateLoanList(sortedLoans);
         }
       }
     } catch (error) {
@@ -90,11 +102,11 @@ const LoanListView = (props: LoanListViewProps) => {
         <section>
           {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
             <span>
-              <h4>List of Loans</h4>
+              <h4>{t("LIST_OF_LOANS")}</h4>
             </span>
           ) : (
             <span>
-              <h4>My Loans</h4>
+              <h4>{t("MY_LOANS")}</h4>
             </span>
           )}
           {user && hasPermission(user, LOAN_MODULE.CREATE_LOAN) && (
@@ -104,7 +116,7 @@ const LoanListView = (props: LoanListViewProps) => {
               height="40px"
               onClick={props.handleIsApplyLoanScreen}
             >
-              Request Loan
+              {t("REQUESTED_LOAN")}
             </Button>
           )}
         </section>
@@ -118,19 +130,19 @@ const LoanListView = (props: LoanListViewProps) => {
             <TableList>
               <TableHead>
                 <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                  <th>Loan Number</th>
-                  <th>Loan Type</th>
+                  <th>{t("LOAN_NUMBER")}</th>
+                  <th>{t("LOAN_TYPE")}</th>
                   {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
                     <th>Employee ID</th>
                   ) : (
                     ''
                   )}
 
-                  <th>Requested Date</th>
-                  <th>Loan Amount</th>
-                  <th className="statusHeader">Status</th>
+                  <th>{t("REQUESTED_DATE")}</th>
+                  <th>{t("LOAN_AMOUNT")}</th>
+                  <th className="statusHeader">{t("STATUS")}</th>
                   {user && hasPermission(user, LOAN_MODULE.STATUS_CHANGE) ? (
-                    <th>Action</th>
+                    <th>{t("ACTION")}</th>
                   ) : (
                     ''
                   )}
