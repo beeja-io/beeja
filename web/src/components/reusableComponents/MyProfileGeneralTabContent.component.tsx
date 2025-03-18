@@ -546,8 +546,13 @@ export const GeneralDetailsTab = ({
                           max={new Date().toISOString().split('T')[0]}
                           value={
                             formData[label] !== undefined
-                              ? formData[label]
-                              : value
+                              ? formatDateYYYYMMDD(formData[label])
+                              : employee.employee.personalInformation &&
+                                      employee.employee.personalInformation.dateOfBirth
+                                    ? formatDateYYYYMMDD(
+                                        employee.employee.personalInformation.dateOfBirth
+                                      )
+                                    : ''
                           }
                           placeholder={`Enter ${t(label)}`}
                           onChange={(e) => {
