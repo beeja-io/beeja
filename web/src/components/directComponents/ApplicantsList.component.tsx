@@ -96,6 +96,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
           <TableList>
             <TableHead>
               <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
+                <th>{t("ID")}</th>
                 <th>{t("NAME_OF_THE_APPLICANT")}</th>
                 <th>{t("POSITION")}</th>
                 <th>{t("Phone_Number")}</th>
@@ -107,7 +108,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
             </TableHead>
             <tbody>
               <>
-                {[...Array(6).keys()].map((rowIndex) => (
+                {[...Array(7).keys()].map((rowIndex) => (
                   <TableBodyRow key={rowIndex}>
                     {[...Array(7).keys()].map((cellIndex) => (
                       <td key={cellIndex}>
@@ -128,6 +129,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
           <TableList>
             <TableHead>
               <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
+                <th>{t("ID")}</th>
                 <th>{t("NAME_OF_THE_APPLICANT")}</th>
                 <th>{t("POSITION")}</th>
                 <th>{t("Phone_Number")}</th>
@@ -143,6 +145,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                 {props.allApplicants &&
                   props.allApplicants.map((applicant, index) => (
                     <TableBodyRow key={index}>
+                      <td>{applicant.applicantId}</td>
                       <td>
                         {applicant.firstName} {applicant.lastName}
                       </td>
