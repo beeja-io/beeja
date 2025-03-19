@@ -69,4 +69,13 @@ public class OrganizationPatternController {
         organizationPatternService.getPatternsByPatternType(patternType);
     return ResponseEntity.ok(patterns);
   }
+
+  @GetMapping("/active")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public ResponseEntity<OrganizationPattern> getActivePatternByType(
+      @RequestParam String patternType) throws Exception {
+    OrganizationPattern pattern =
+        organizationPatternService.getActivePatternByPatternType(patternType);
+    return ResponseEntity.ok(pattern);
+  }
 }
