@@ -136,17 +136,17 @@ export const SettingsTypes = ({
         ? settingTypes?.filter((category) => category.index !== indexvalue)
         : actionType === 'Edit'
           ? settingTypes?.map((category) =>
-              category.index === indexvalue
-                ? { orgValues: newSettingType, index: category.index }
-                : category
-            )
+            category.index === indexvalue
+              ? { orgValues: newSettingType, index: category.index }
+              : category
+          )
           : [
-              ...(settingTypes || []),
-              {
-                orgValues: newSettingType,
-                index: settingTypes?.length || 0,
-              },
-            ];
+            ...(settingTypes || []),
+            {
+              orgValues: newSettingType,
+              index: settingTypes?.length || 0,
+            },
+          ];
 
     if (actionType === 'Delete') {
       handleDeleteModal();
@@ -196,7 +196,7 @@ export const SettingsTypes = ({
         <h4>{type}</h4>
         <Button className="submit shadow buttonstyle" onClick={handleOpenModal}>
           <AddNewPlusSVG />
-           {t("ADD")}{type}
+          {t("ADD")}{type}
         </Button>
       </TabContentMainContainerHeading>
       <Hr />
@@ -211,7 +211,7 @@ export const SettingsTypes = ({
             </tr>
           </TableHead>
           <tbody>
-            {settingTypes?.map((settingTypes) => (
+            {settingTypes?.filter((settingTypes) => settingTypes.orgValues.value).map((settingTypes) => (
               <TableBodyRow key={settingTypes.index}>
                 <td>{settingTypes.orgValues.value}</td>
                 <td>{settingTypes.orgValues.description}</td>
