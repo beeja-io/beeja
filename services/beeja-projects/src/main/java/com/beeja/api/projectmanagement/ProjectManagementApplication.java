@@ -8,9 +8,10 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
-@EnableFeignClients
+@EnableFeignClients(basePackages = "com.beeja.api.projectmanagement.client")
 @EnableDiscoveryClient
 @EnableMongoRepositories
+@EnableMongoAuditing
 public class ProjectManagementApplication {
 
   public static void main(String[] args) {
