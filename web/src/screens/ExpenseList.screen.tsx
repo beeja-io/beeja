@@ -552,7 +552,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
               {t('EXPENSE_DATE')}
             </option>
             <option value="requestedDate">{t('REQUESTED_DATE')}</option>
-            <option value="paymentDate">{t('PAYMENT_DATE')}</option>
+            <option value="paymentSettled">{t('PAYMENT_DATE')}</option>
             <option value="created_at">{t('CREATED_DATE')}</option>
           </select>
 
