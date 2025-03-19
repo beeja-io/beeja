@@ -57,13 +57,11 @@ public class Loan {
   private Boolean termsAccepted;
   private String rejectionReason;
 
-  @Field("created_at")
   @CreatedDate
   private Date createdAt;
 
   private String createdBy;
 
-  @Field("modified_at")
   @LastModifiedDate
   private Date modifiedAt;
 
