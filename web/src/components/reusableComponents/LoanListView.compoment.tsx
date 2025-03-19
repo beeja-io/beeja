@@ -197,7 +197,7 @@ const LoanListView = (props: LoanListViewProps) => {
                           <CalenderIcon />
                         </span>
 
-                        {formatDate(loan.createdAt)}
+                        {loan.createdAt != null ? formatDate(loan.createdAt) : '-'}
                       </td>
                       <td
                         onClick={() => {

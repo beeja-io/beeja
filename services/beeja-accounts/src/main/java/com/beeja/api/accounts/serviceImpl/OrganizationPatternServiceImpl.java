@@ -129,4 +129,15 @@ public class OrganizationPatternServiceImpl implements OrganizationPatternServic
               Constants.UNABLE_TO_FETCH_DETAILS_FROM_DATABASE));
     }
   }
+
+  @Override
+  public OrganizationPattern getActivePatternByPatternType(String patternType) throws Exception {
+    try{
+      return organizationPatternsRepository.findByOrganizationIdAndPatternTypeAndActive(
+              UserContext.getLoggedInUserOrganization().getId(), patternType, true);
+    }catch (Exception e){
+      log.error("Error: " + e.getMessage());
+      throw new Exception(Constants.UNABLE_TO_FETCH_DETAILS_FROM_DATABASE);
+    }
+  }
 }
