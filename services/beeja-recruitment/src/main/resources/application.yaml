@@ -2,6 +2,9 @@ server:
   servlet:
     context-path: /recruitments
   port: ${RECRUITMENT_SERVICE_PORT}
+  multipart:
+    max-file-size: 5MB
+    max-request-size: 5MB
 spring:
   application:
     name: recruitment-service

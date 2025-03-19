@@ -13,7 +13,6 @@ import java.util.Map;
 public interface ApplicantService {
   Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception;
 
-
   List<Applicant> getAllApplicantsInOrganization() throws Exception;
 
   Applicant updateApplicant(String applicantId, Map<String, Object> fields) throws Exception;

@@ -37,7 +37,6 @@ public class Applicant {
   private String referredByEmployeeId;
   private String referredByEmployeeName;
 
-  @Pattern(regexp = "ORGprefix\\d{6}\\d{3}", message = "ID must follow the pattern ORGprefixMMDDYYXXX")
   private String applicantId;
 
   @Field("created_at")

@@ -14,6 +14,6 @@ public interface ApplicantRepository extends MongoRepository<Applicant, String> 
   List<Applicant> findByReferredByEmployeeIdAndOrganizationId(
       String referredByEmployeeId, String organizationId);
 
-  Optional<Applicant> findTopByOrderByCreatedAtDesc();
+  long countByOrganizationId(String organizationId);
 
 }

@@ -109,28 +109,14 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     String organizationName = UserContext.getLoggedInUserOrganization().get("name").toString();
 
-    String ORG_Prefix = organizationName.length()>=3 ? organizationName.substring(0,3).toUpperCase() : organizationName.toUpperCase();
+    String ORG_Prefix = organizationName.length()>=3 ? organizationName.toUpperCase().substring(0,3).toUpperCase() : organizationName.toUpperCase();
 
     String datePart = new SimpleDateFormat("MMddyy").format(new Date());
 
-    Optional<Applicant> lastApplicant = applicantRepository.findTopByOrderByCreatedAtDesc();
+    long existingCount = applicantRepository.countByOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+    int newCount = (int) (existingCount + 1);
 
-    String sequencePart = "0001";
-
-    if (lastApplicant.isPresent()) {
-
-      String lastApplicantId = lastApplicant.get().getApplicantId();
-
-      if (lastApplicantId != null && !lastApplicantId.isEmpty()) {
-
-        String lastSequencePart = lastApplicantId.substring(lastApplicantId.length() - 4);
-
-        int number = Integer.parseInt(lastSequencePart) + 1;
-
-        sequencePart = String.format("%04d", number);
-
-      }
-    }
+    String sequencePart = String.format("%04d", newCount);
 
     return ORG_Prefix + datePart + sequencePart;
 

@@ -431,7 +431,7 @@ export const FileUploadForm = styled.div`
 
 export const FileUploadField = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 16px 20px;
   border: 2px dashed ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 10px;
@@ -448,6 +448,10 @@ export const FileUploadField = styled.div`
 
   .textInInput {
     color: #a0aec0;
+  }
+
+  .file-info-text{
+    font-size: 12px;
   }
 
   &.expenseReceiptUpload {

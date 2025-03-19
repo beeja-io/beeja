@@ -47,7 +47,6 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { toast } from 'sonner';
 import { useProfileImage } from '../../context/ProfileImageContext';
 import { LargeSVG, SmallSVG } from '../../svgs/profilePictureSvgs.svg';
-import { useTranslation } from 'react-i18next';
 
 type QuickProfileProps = {
   employee: EmployeeEntity | undefined;
@@ -97,7 +96,6 @@ const MyProfileQuickDetailsComponent = ({
   }, []);
 
   const { user } = useUser();
-  const { t } = useTranslation();
   const handleStatusChange = async () => {
     setIsLoadingResponse(true);
     try {
@@ -477,7 +475,7 @@ const MyProfileQuickDetailsComponent = ({
               <BorderDivLine />
               <QuickInfoDepartmentContainer>
                 <div>
-                  <span>{t("DEPARTMENT")}</span>
+                  <span>Department</span>
                   <span className="skeleton skeleton-text">&nbsp;</span>{' '}
                 </div>
               </QuickInfoDepartmentContainer>

@@ -352,5 +352,6 @@
   "RESET": "Reset",
   "ENABLING_THIS_PATTERN_WILL_DISABLE_OTHERS": "Enabling this pattern will disable others.",
   "AUTO_SEQUENCE_ID_WILL_START_FROM_THE_SPECIFIED_INTIAL_SEQUENCE_NUMBER": "Auto Sequence Id will start from the specified initial sequence number",
-  "PATTERN": "Pattern"
+  "PATTERN": "Pattern",
+  "FILE_FORMATS_REMUME": "File formats : .pdf, .doc, .docx (Max 5MB)"
 }
