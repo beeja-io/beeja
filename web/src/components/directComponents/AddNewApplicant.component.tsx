@@ -25,6 +25,7 @@ import { FormFileCloseIcon } from '../../svgs/DocumentTabSvgs.svg';
 import { postApplicant, referApplicant } from '../../service/axiosInstance';
 import { toast } from 'sonner';
 import { Button } from '../../styles/CommonStyles.style';
+import { t } from 'i18next';
 
 type AddNewApplicant = {
   isReferScreen: boolean;
@@ -151,7 +152,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
           <div>
             <InputLabelContainer>
               <label>
-                First Name <ValidationText className="star">*</ValidationText>
+                {t("First_Name")} <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
@@ -176,7 +177,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                Last Name <ValidationText className="star">*</ValidationText>
+                {t("Last_Name")} <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
@@ -203,7 +204,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
           <div>
             <InputLabelContainer>
               <label>
-                Phone Number <ValidationText className="star">*</ValidationText>
+                {t("Phone_Number")} <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
@@ -228,7 +229,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                Email <ValidationText className="star">*</ValidationText>
+                {t( "EMAIL")}<ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="email"
@@ -246,7 +247,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
           <div>
             <InputLabelContainer className="selectOption">
               <label>
-                Position Applied For{' '}
+                {t("POSITION_APPLIED_FOR")}{' '}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <select
@@ -270,7 +271,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
               </select>
             </InputLabelContainer>
             <InputLabelContainer>
-              <label>Experience</label>
+              <label>{t("EXPERIENCE")}</label>
               <select
                 className="selectoption"
                 name="experience"
@@ -295,7 +296,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
           <div>
             <InputLabelContainer style={{ marginBottom: 0 }}>
               <label>
-                Upload Resume{' '}
+                {t("UPLOAD_RESUME")}{' '}
                 <ValidationText className="star">*</ValidationText>
               </label>{' '}
             </InputLabelContainer>
@@ -308,8 +309,8 @@ const AddNewApplicant = (props: AddNewApplicant) => {
                 <div>
                   <UploadReceiptIcon />
                   <div>
-                    Drag and drop or
-                    <span> browse </span>
+                    {t(  "DRAG_AND_DROP_OR")}
+                    <span> {t("BROWSE")}</span>
                   </div>
                 </div>
               </label>

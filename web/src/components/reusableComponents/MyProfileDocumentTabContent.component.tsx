@@ -437,11 +437,11 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
               <form onSubmit={handleFormSubmit}>
                 <div>
                   <p style={{ fontSize: '24px', fontWeight: 700 }}>
-                    Add New Document
+                    {t("ADD_NEW_DOCUMENT")}
                   </p>
                   <InputLabelContainer>
                     <label>
-                      Document Type{' '}
+                      {t("DOCUMENT_TYPE")}{' '}
                       <ValidationText className="star">*</ValidationText>
                     </label>
                     <select
@@ -466,7 +466,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                   </InputLabelContainer>
 
                   <InputLabelContainer>
-                    <label>Document Name</label>
+                    <label>{t("DOCUMENT_NAME")}</label>
                     <TextInput
                       type="text"
                       value={documentName}
@@ -476,7 +476,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                   </InputLabelContainer>
 
                   <InputLabelContainer>
-                    <label>Description</label>
+                    <label>{t("DESCRIPTION")}</label>
                     <TextInput
                       type="text"
                       value={description}
@@ -487,7 +487,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
 
                   <InputLabelContainer>
                     <label>
-                      Choose/Drag File{' '}
+                      {t("CHOOSE/DARG_FILE")}{' '}
                       <ValidationText className="star">*</ValidationText>
                     </label>
 
@@ -498,7 +498,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     >
                       <label htmlFor="fileInput">
                         <FormFileUploadIcon />
-                        Choose/Drag File
+                        {t("CHOOSE/DARG_FILE")}
                       </label>
                       <input
                         type="file"

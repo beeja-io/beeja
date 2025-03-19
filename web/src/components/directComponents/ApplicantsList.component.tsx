@@ -18,6 +18,7 @@ import { EditIcon } from '../../svgs/ExpenseListSvgs.svg';
 import { DownloadSVG } from '../../svgs/CommonSvgs.svs';
 import { downloadApplicantResume } from '../../service/axiosInstance';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 type ApplicantsListProps = {
   allApplicants: IApplicant[];
@@ -27,6 +28,7 @@ type ApplicantsListProps = {
 };
 const ApplicantsList = (props: ApplicantsListProps) => {
   const { user } = useUser();
+   const { t } = useTranslation();
   const Actions = [
     ...(user?.roles.some((role) =>
       role.permissions.some(
@@ -89,18 +91,18 @@ const ApplicantsList = (props: ApplicantsListProps) => {
       {props.isLoading ? (
         <div className="mainDiv">
           <div className="Expense_Heading">
-            <p className="expenseListTitle">List of Applicants</p>
+            <p className="expenseListTitle">{t("LIST_OF_APPLICANTS")}</p>
           </div>
           <TableList>
             <TableHead>
               <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                <th>Name of Applicant</th>
-                <th>Position</th>
-                <th>Phone Number</th>
-                <th>Referred By</th>
-                <th>Status</th>
-                <th>Requested Date</th>
-                <th>Action</th>
+                <th>{t("NAME_OF_THE_APPLICANT")}</th>
+                <th>{t("POSITION")}</th>
+                <th>{t("Phone_Number")}</th>
+                <th>{t("REFERRED_BY")}</th>
+                <th>{t("STATUS")}</th>
+                <th>{t("REQUESTED_DATE")}</th>
+                <th>{t("ACTION")}</th>
               </tr>
             </TableHead>
             <tbody>
@@ -121,19 +123,19 @@ const ApplicantsList = (props: ApplicantsListProps) => {
       ) : props.allApplicants.length > 0 ? (
         <div className="mainDiv">
           <div className="Expense_Heading">
-            <p className="expenseListTitle">List of Applicants</p>
+            <p className="expenseListTitle">{t("LIST_OF_APPLICANTS")}</p>
           </div>
           <TableList>
             <TableHead>
               <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                <th>Name of Applicant</th>
-                <th>Position</th>
-                <th>Phone Number</th>
-                {!props.isReferral && <th>Referred By</th>}
-                <th style={{ textAlign: 'center' }}>Status</th>
-                <th>Requested Date</th>
-                <th>Resume/CV</th>
-                {!props.isReferral && <th>Action</th>}
+                <th>{t("NAME_OF_THE_APPLICANT")}</th>
+                <th>{t("POSITION")}</th>
+                <th>{t("Phone_Number")}</th>
+                {!props.isReferral && <th>{t("REFERRED_BY")}</th>}
+                <th style={{ textAlign: 'center' }}>{t("STATUS")}</th>
+                <th>{t("REQUESTED_DATE")}</th>
+                <th>{t("RESUME/CV")}</th>
+                {!props.isReferral && <th>{t("ACTION")}</th>}
               </tr>
             </TableHead>
             <tbody>

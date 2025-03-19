@@ -305,6 +305,7 @@ public class ExpenseServiceImpl implements ExpenseService {
       int pageNumber,
       int pageSize,
       String sortBy,
+      Boolean settlementStatus,
       boolean ascending)
       throws Exception {
     Query query = new Query();
@@ -337,6 +338,12 @@ public class ExpenseServiceImpl implements ExpenseService {
       query.addCriteria(Criteria.where("department").is(department));
     }
 
+    if(settlementStatus != null && settlementStatus.equals(true)) {
+      query.addCriteria(Criteria.where("paymentSettled").ne(null));
+    } else if (settlementStatus != null && settlementStatus.equals(false)){
+      query.addCriteria(Criteria.where("paymentSettled").is(null));
+    }
+
     int skip = (pageNumber - 1) * pageSize;
     query.skip(skip).limit(pageSize);
 
@@ -356,6 +363,7 @@ public class ExpenseServiceImpl implements ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId) {
 
     AggregationOperation matchOperation =
@@ -368,6 +376,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 modeOfPayment,
                 expenseType,
                 expenseCategory,
+                settlementStatus,
                 organizationId));
     GroupOperation groupOperation = Aggregation.group().sum("amount").as("totalAmount");
 
@@ -388,6 +397,7 @@ public class ExpenseServiceImpl implements ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId) {
     Query query = new Query();
     if (startDate != null && endDate != null) {
@@ -417,6 +427,12 @@ public class ExpenseServiceImpl implements ExpenseService {
     if (department != null) {
       query.addCriteria(Criteria.where("department").is(department));
     }
+    if (settlementStatus != null && settlementStatus.equals(true)) {
+      query.addCriteria(Criteria.where("paymentSettled").ne(null));
+    } else if (settlementStatus != null && settlementStatus.equals(false)) {
+        query.addCriteria(Criteria.where("paymentSettled").is(null));
+    }
+
     return mongoTemplate.count(query, Expense.class);
   }
 
@@ -446,6 +462,7 @@ public class ExpenseServiceImpl implements ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId) {
     Criteria criteria = new Criteria();
 
@@ -475,6 +492,12 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     if (department != null) {
       criteria.and("department").is(department);
+    }
+
+    if (settlementStatus != null && settlementStatus.equals(true)) {
+      criteria.and("paymentSettled").ne(null);
+    }else if (settlementStatus != null && settlementStatus.equals(false)){
+        criteria.and("paymentSettled").is(null);
     }
     return criteria;
   }

@@ -25,6 +25,7 @@ import { ExpenseTypeAction } from '../reusableComponents/ExpenseTyeAction';
 import CenterModalExpense from '../reusableComponents/CenterModalExpense.component';
 import { OrgValues } from '../../entities/OrgDefaultsEntity';
 import { useUser } from '../../context/UserContext';
+import { useTranslation } from 'react-i18next';
 import { AlertISVG } from '../../svgs/CommonSvgs.svs';
 
 export const SettingsTypes = ({
@@ -34,6 +35,7 @@ export const SettingsTypes = ({
   keyvalue: string;
   type: string;
 }) => {
+  const { t } = useTranslation();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [actionType, setActionType] = useState<string | null>(null);
   const [indexvalue, setIndexvalue] = useState<number>();
@@ -134,17 +136,17 @@ export const SettingsTypes = ({
         ? settingTypes?.filter((category) => category.index !== indexvalue)
         : actionType === 'Edit'
           ? settingTypes?.map((category) =>
-              category.index === indexvalue
-                ? { orgValues: newSettingType, index: category.index }
-                : category
-            )
+            category.index === indexvalue
+              ? { orgValues: newSettingType, index: category.index }
+              : category
+          )
           : [
-              ...(settingTypes || []),
-              {
-                orgValues: newSettingType,
-                index: settingTypes?.length || 0,
-              },
-            ];
+            ...(settingTypes || []),
+            {
+              orgValues: newSettingType,
+              index: settingTypes?.length || 0,
+            },
+          ];
 
     if (actionType === 'Delete') {
       handleDeleteModal();
@@ -194,7 +196,7 @@ export const SettingsTypes = ({
         <h4>{type}</h4>
         <Button className="submit shadow buttonstyle" onClick={handleOpenModal}>
           <AddNewPlusSVG />
-          Add {type}
+          {t("ADD")}{type}
         </Button>
       </TabContentMainContainerHeading>
       <Hr />
@@ -209,7 +211,7 @@ export const SettingsTypes = ({
             </tr>
           </TableHead>
           <tbody>
-            {settingTypes?.map((settingTypes) => (
+            {settingTypes?.filter((settingTypes) => settingTypes.orgValues.value).map((settingTypes) => (
               <TableBodyRow key={settingTypes.index}>
                 <td>{settingTypes.orgValues.value}</td>
                 <td>{settingTypes.orgValues.description}</td>
@@ -263,14 +265,14 @@ export const SettingsTypes = ({
               <div style={{ paddingLeft: '150px' }}>
                 <ValidationText>
                   <AlertISVG />
-                  This field is mandatory.{' '}
+                  {t("THE_FIELD_IS_MANDATORY")}{' '}
                 </ValidationText>
               </div>
             )}
           </div>
           <div>
             <InputContainer>
-              <label>Description:</label>
+              <label>{t("DESCRIPTION:")}</label>
               <input
                 type="text"
                 value={newSettingType.description}
