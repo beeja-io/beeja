@@ -28,11 +28,8 @@ public class ContractController {
     @Autowired
     private ContractService contractService;
 
-    @Autowired
-    private ContractRepository contractRepository;
-
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Contract> addContract(@Valid @ModelAttribute ContractRequest contractRequest) {
+    public ResponseEntity<Contract> addContract(@Valid ContractRequest contractRequest) {
         return ResponseEntity.ok(contractService.addContract(contractRequest));
     }
 
@@ -56,22 +53,8 @@ public class ContractController {
 
     @GetMapping("/{id}/attachments")
     public ResponseEntity<List<String>> getAttachments(@PathVariable String id) {
-        Contract contract = contractRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        BuildErrorMessage.buildErrorMessage(
-                                ErrorType.NOT_FOUND,
-                                ErrorCode.RESOURCE_NOT_FOUND,
-                                Constants.format(Constants.RESOURCE_NOT_FOUND, "Contract", "ID", id)
-                        )
-                ));
-
-        String attachmentId = contract.getAttachmentId();
-
-        if (attachmentId == null) {
-            return ResponseEntity.ok(Collections.emptyList());
-        }
-
-        return ResponseEntity.ok(Collections.singletonList(attachmentId));
+        List<String> attachments = contractService.getAttachments(id);
+        return ResponseEntity.ok(attachments);
     }
 
 

@@ -34,6 +34,7 @@ public class Contract {
     private String contractType;
 
     private String contractId;
+    private String organizationId;
 
     @NotNull(message = "Start date is required")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "UTC")

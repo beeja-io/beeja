@@ -13,8 +13,8 @@ public class Resource {
 
     private String id;
     private String employeeId;
+    private String firstName;
     private double allocation;
-
 
 }
 

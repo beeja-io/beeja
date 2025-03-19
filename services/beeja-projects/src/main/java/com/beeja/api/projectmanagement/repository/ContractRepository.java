@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.Optional;
 
 public interface ContractRepository extends MongoRepository<Contract, String> {
-    Optional<Contract> findById(String contractId);
+    Contract findByIdAndOrganizationId(String projectId, String organizationId);
 
     Contract findTopByOrderByContractIdDesc();
 }

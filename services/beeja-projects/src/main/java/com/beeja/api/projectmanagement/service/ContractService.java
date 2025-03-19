@@ -19,4 +19,6 @@ public interface ContractService {
 
     Contract updateContract(String id, ContractRequest updatedContract);
 
+    List<String> getAttachments(String id);
+
 }

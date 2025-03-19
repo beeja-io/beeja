@@ -1,12 +1,17 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
+import com.beeja.api.projectmanagement.client.EmployeeClient;
 import com.beeja.api.projectmanagement.model.Resource;
 import com.beeja.api.projectmanagement.repository.ResourceRepository;
+import com.beeja.api.projectmanagement.responses.EmployeeDetailsResponse;
 import com.beeja.api.projectmanagement.service.ResourcesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -16,74 +21,97 @@ public class ResourceServiceImpl implements ResourcesService {
     @Autowired
     private ResourceRepository resourceRepository;
 
+    @Autowired
+    private EmployeeClient employeeClient;
+
     @Override
     public List<Resource> getOrCreateResources(List<Resource> employees) {
         if (employees == null || employees.isEmpty()) {
-            return Collections.emptyList();
+            return List.of();
         }
-
-        // Ensure no null values in the employees list
-        employees = employees.stream()
-                .filter(Objects::nonNull)  // Prevents NullPointerException
-                .toList();
-
         List<String> employeeIds = employees.stream()
                 .map(Resource::getEmployeeId)
-                .filter(Objects::nonNull)  // Ensures only non-null employee IDs
                 .distinct()
                 .toList();
-
-        if (employeeIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Resource> existingResources = resourceRepository.findByEmployeeIdIn(employeeIds);
-        if (existingResources == null) {
-            existingResources = new ArrayList<>();  // Prevent NullPointerException
-        }
-
-        Map<String, Resource> existingResourceMap = existingResources.stream()
-                .collect(Collectors.toMap(Resource::getEmployeeId, resource -> resource, (r1, r2) -> r1));
+        Map<String, Resource> existingResourceMap = resourceRepository.findByEmployeeIdIn(employeeIds)
+                .stream()
+                .collect(Collectors.toMap(Resource::getEmployeeId, resource -> resource));
+        Map<String, String> employeeNameMap = getEmployeeNamesByIds(employeeIds);
 
         List<Resource> finalResources = new ArrayList<>();
-        for (Resource emp : employees) {
-            if (existingResourceMap.containsKey(emp.getEmployeeId())) {
-                finalResources.add(existingResourceMap.get(emp.getEmployeeId()));
+
+        for (String empId : employeeIds) {
+            if (existingResourceMap.containsKey(empId)) {
+                finalResources.add(existingResourceMap.get(empId));
             } else {
-                Resource newResource = new Resource();
-                newResource.setEmployeeId(emp.getEmployeeId());
-                newResource.setAllocation(emp.getAllocation());
+                String employeeName = employeeNameMap.get(empId);
+                Resource newResource = new Resource(null, empId, employeeName, 0.0);
                 finalResources.add(newResource);
+                resourceRepository.save(newResource);
             }
-        }
-
-        // Save only new resources (if not already saved)
-        List<Resource> newResources = finalResources.stream()
-                .filter(resource -> resource.getId() == null)  // Ensure only unsaved resources are added
-                .toList();
-
-        if (!newResources.isEmpty()) {
-            resourceRepository.saveAll(newResources);
         }
 
         return finalResources;
     }
 
+    @Override
+    public Map<String, String> getEmployeeNamesByIds(List<String> employeeIds) {
+        List<EmployeeDetailsResponse> employeeDetails = employeeClient.getEmployeeDetails();
+        Map<String, String> employeeNamesMap = employeeDetails.stream()
+                .filter(emp -> employeeIds.contains(emp.getEmployeeId()))
+                .collect(Collectors.toMap(
+                        EmployeeDetailsResponse::getEmployeeId,
+                        EmployeeDetailsResponse::getFirstName
+                ));
+        return employeeNamesMap;
+    }
 
     @Override
-    public Resource allocateResource(String employeeId, double allocation) {
-        List<Resource> existingAllocations = resourceRepository.findByEmployeeIdIn(List.of(employeeId));
-
-        double totalAllocation = existingAllocations.stream()
-                .mapToDouble(Resource::getAllocation)
-                .sum();
-
-        // Validate allocation percentage
-        if (totalAllocation + allocation > 100) {
-            throw new IllegalArgumentException("Total allocation for this employee exceeds 100%");
+    public List<Resource> updateResourceAllocations(List<Resource> resources, Map<String, String> employeeNamesMap) {
+        if (resources.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        Resource newResource = new Resource(null, employeeId, allocation);
-        return resourceRepository.save(newResource);
+        List<String> employeeIds = resources.stream()
+                .map(Resource::getEmployeeId)
+                .distinct()
+                .collect(Collectors.toList());
+
+        List<Resource> existingResources = resourceRepository.findByEmployeeIdIn(employeeIds);
+
+        Map<String, Resource> existingResourcesMap = existingResources.stream()
+                .collect(Collectors.toMap(Resource::getEmployeeId, resource -> resource));
+
+        List<Resource> resourcesToSave = new ArrayList<>();
+
+        for (Resource requestResource : resources) {
+            String employeeId = requestResource.getEmployeeId();
+            Resource existingResource = existingResourcesMap.get(employeeId);
+            double requestedAllocation = requestResource.getAllocation();
+
+            if (existingResource != null) {  // Resource exists, update the allocation
+                double newTotalAllocation = existingResource.getAllocation() + requestedAllocation;
+
+                if (newTotalAllocation > 100.0) {
+                    throw new IllegalArgumentException("Total allocation for employee ID " + employeeId + " exceeds 100%");
+                }
+
+                existingResource.setAllocation(newTotalAllocation);  // Update the allocation to new total
+                existingResource.setFirstName(employeeNamesMap.get(employeeId));
+                resourcesToSave.add(existingResource);
+            } else {  // Resource doesn't exist, create a new one
+                if (requestedAllocation > 100.0) {
+                    throw new IllegalArgumentException("Allocation for new employee ID " + employeeId + " exceeds 100%");
+                }
+
+                requestResource.setFirstName(employeeNamesMap.get(employeeId));
+                resourcesToSave.add(requestResource);
+            }
+        }
+
+        return resourceRepository.saveAll(resourcesToSave);
     }
+
+
+
 }

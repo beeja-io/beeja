@@ -37,10 +37,10 @@ public class ContractRequest {
     private String client;
 
     @JsonProperty("projectManagers")
-    private List<Resource> projectManagers = new ArrayList<>();
+    private String projectManagers;
 
     @JsonProperty("resources")
-    private List<Resource> resources = new ArrayList<>();
+    private String resources ;
     private MultipartFile attachment ;
 
 

@@ -37,11 +37,9 @@ public class ProjectController {
 
     @GetMapping
     public ResponseEntity<List<Project>> getAllProjects() {
-        System.out.println("hi");
         List<Project> projects = projectService.getAllProjects();
         return ResponseEntity.ok(projects);
     }
-
 
 
 }
