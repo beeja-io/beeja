@@ -327,7 +327,7 @@ const CompleteNavBar = () => {
                           || hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT))
                           ? [
                             {
-                              name: 'Hiring Management',
+                              name: 'Hiring',
                               link: '/recruitment/hiring-management',
                             },
                           ]

@@ -58,7 +58,7 @@ const RecruitmentManagementScreen = (
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {props.isReferral ? 'Referrals' : 'Recruitment Management'}
+            {props.isReferral ? 'Referrals' : 'Hiring'}
           </span>
           {user && (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
             || hasPermission(user, RECRUITMENT_MODULE.ACCESS_REFFERRAlS)) && (
@@ -71,8 +71,8 @@ const RecruitmentManagementScreen = (
                   )
                 }
               >
-                <AddNewPlusSVG />
-                {props.isReferral ? 'Add New Referral' : 'Add New Profile'}
+                <AddNewPlusSVG /> &nbsp;
+                {props.isReferral ? 'Add New Referral' : 'Add Applicant'}
               </Button>
             )}
         </ExpenseHeadingSection>

@@ -108,9 +108,9 @@ const ApplicantsList = (props: ApplicantsListProps) => {
             </TableHead>
             <tbody>
               <>
-                {[...Array(7).keys()].map((rowIndex) => (
+                {[...Array(9).keys()].map((rowIndex) => (
                   <TableBodyRow key={rowIndex}>
-                    {[...Array(7).keys()].map((cellIndex) => (
+                    {[...Array(8).keys()].map((cellIndex) => (
                       <td key={cellIndex}>
                         <div className="skeleton skeleton-text">&nbsp;</div>
                       </td>
@@ -124,7 +124,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
       ) : props.allApplicants.length > 0 ? (
         <div className="mainDiv">
           <div className="Expense_Heading">
-            <p className="expenseListTitle">{t("LIST_OF_APPLICANTS")}</p>
+            <p className="expenseListTitle">{props.isReferral ?  t("LIST_OF_REFERRALS"): t("LIST_OF_APPLICANTS")}</p>
           </div>
           <TableList>
             <TableHead>
