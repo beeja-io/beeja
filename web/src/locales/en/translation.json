@@ -356,5 +356,6 @@
   "FILE_FORMATS_REMUME": "File formats : .pdf, .doc, .docx (Max 5MB)",
   "SETTLEMENT_STATUS": "Settlement Status",
   "SETTLED": "Settled",
-  "PENDING": "Pending"
+  "PENDING": "Pending",
+  "LIST_OF_REFERRALS": "List of Referrals"
 }
