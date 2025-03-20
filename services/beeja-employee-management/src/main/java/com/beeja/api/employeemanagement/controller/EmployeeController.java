@@ -37,16 +37,16 @@ public class EmployeeController {
   @GetMapping
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
   public ResponseEntity<EmployeeResponse> getAllEmployees(
-      @RequestParam(name = "department", required = false) String department,
-      @RequestParam(name = "designation", required = false) String designation,
-      @RequestParam(name = "employmentType", required = false) String employmentType,
-      @RequestParam(name = "status", defaultValue = "active") String status,
-      @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
-      @RequestParam(name = "pageSize", defaultValue = "10") int pageSize)
-      throws Exception {
+          @RequestParam(name = "department", required = false) String department,
+          @RequestParam(name = "designation", required = false) String designation,
+          @RequestParam(name = "employmentType", required = false) String employmentType,
+          @RequestParam(name = "status", required = false) String status, // Now allows both active & inactive
+          @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
+          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize)
+          throws Exception {
     EmployeeResponse combinedDataList =
-        employeeService.getCombinedLimitedDataOfEmployees(
-            department, designation, employmentType, pageNumber, pageSize, status);
+            employeeService.getCombinedLimitedDataOfEmployees(
+                    department, designation, employmentType, pageNumber, pageSize, status);
     return ResponseEntity.ok(combinedDataList);
   }
 
