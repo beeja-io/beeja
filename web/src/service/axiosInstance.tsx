@@ -325,3 +325,26 @@ export const updateOrganizationValues = (
     orgDefaults
   );
 };
+
+export const getWeekDate = (employeeId: string, weekNumber: number): Promise<AxiosResponse> => {
+  return axiosInstance.get(`projects/v1/timesheet/summary?employeeId=${employeeId}&type=week&weekNumber=${weekNumber}`);
+};
+
+export const getMonthLogs = (employeeId: string, date: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`projects/v1/timesheet/summary?employeeId=${employeeId}&type=month&date=${date}`);
+};
+export const getAllDay = (employeeId: string, date: any): Promise<AxiosResponse> => {
+  return axiosInstance.get(`projects/v1/timesheet/summary?employeeId=${employeeId}&type=day&date=${date}`);
+};
+
+export const PostLogHours = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post("projects/v1/timesheet", data, {
+    headers: { "Content-Type": "application/json" },
+  });
+};
+
+export const putLogHours = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.put("projects/v1/timesheet", data, {
+    // headers: { "Content-Type": "application/json" },
+  });
+};

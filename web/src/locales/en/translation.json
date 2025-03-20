@@ -262,5 +262,14 @@
   "RECEIPT_DOWNLOADED_SUCCESFULLY": "The Receipt has been downloded successfully",
   "SUCCESSFULLY_DOWNLOADED": "Successfully Downloded",
   "PAGE": "Page",
-  "OF": "of"
+  "OF": "of",
+  "Time Sheet": "Time Sheet",
+  "List of Time Sheets": "List of Time Sheets",
+  "Total Hours": "Total Hours",
+  "Week": "Week",
+  "Weekly Logs": "Weekly Logs",
+  "Logged hours": "Logged hours",
+  "Previous": "Previous",
+  "Next": "Next",
+  "Month": "Month"
 }

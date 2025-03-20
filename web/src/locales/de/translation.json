@@ -166,5 +166,14 @@
   "FEATURES": "Funktionen",
   "LIGHT": "Hell",
   "DARK": "Dunkel",
-  "BETA": "BETA"
+  "BETA": "BETA",
+  "Time Sheet": "Stundenzettel",
+  "List of Time Sheets": "Liste der Stundennachweise",
+  "Total Hours": "Gesamtstunden",
+  "Week": "Woche",
+  "Weekly Logs": "Wöchentliche Protokolle",
+  "Logged hours": "Protokollierte Stunden",
+  "Previous": "Vorherige",
+  "Next": "Nächste",
+  "Month": "Monat"
 }
