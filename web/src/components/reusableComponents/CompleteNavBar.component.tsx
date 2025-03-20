@@ -364,7 +364,7 @@ const CompleteNavBar = () => {
                     dropdownItems={[
                       {
                         name: 'HOLIDAY_LIST',
-                        link: 'https://docs.google.com/spreadsheets/d/1eqcs0PtE7R4sN69BLBur8JoKXSbmYnTpNQygnolQ37o/edit#gid=387637465',
+                        link: 'https://docs.google.com/spreadsheets/d/1bdXKR23gAemnA7vKfg_2OUmGm-alFE3v6Devo6b5nxM/edit?gid=387637465#gid=387637465',
                       },
                     ]}
                     isDropdownOpen={openDropdown === 'general'}
