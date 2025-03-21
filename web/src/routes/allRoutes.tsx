@@ -7,6 +7,7 @@ import Error404Screen from '../screens/Error404Screen.screen';
 import ExpenseManagement from '../screens/ExpenseManagement.screen';
 import { useUser } from '../context/UserContext';
 import LoanManagementScreen from '../screens/LoanManagementScreen.screen';
+import TimeSheet from '../screens/TimeSheet';
 import {
   BULK_PAYSLIP_MODULE,
   EXPENSE_MODULE,
@@ -23,6 +24,7 @@ import { useFeatureToggles } from '../context/FeatureToggleContext';
 import { hasFeature } from '../utils/featureCheck';
 import { EFeatureToggles } from '../entities/FeatureToggle';
 import FeatureToggleScreen from '../screens/FeatureToggleScreen.screen';
+import { InvoiceScreen } from '../screens/InvoiceScreen.screen';
 import RecruitmentManagementScreen from '../screens/RecruitmentManagementScreen.screen';
 import AddNewApplicant from '../components/directComponents/AddNewApplicant.component';
 import EditApplicant from '../components/directComponents/EditApplicant.component';
@@ -81,6 +83,17 @@ const AllRoutes = () => {
         }
       />
       <Route
+        path="/timeoff/timesheet"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <TimeSheet />
+          </CustomRoute>
+        }
+      />
+      <Route
         path="/payroll/deductions-loans"
         element={
           <CustomRoute
@@ -88,6 +101,18 @@ const AllRoutes = () => {
             featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
           >
             <LoanManagementScreen />
+          </CustomRoute>
+        }
+      />
+
+      <Route
+        path="/projects/contracts"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <InvoiceScreen />
           </CustomRoute>
         }
       />

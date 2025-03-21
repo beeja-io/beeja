@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   BeejaIconSvg,
   CardSendSVG,
+  TimeOffSVG,
   ChevronDownSVG,
   DashBoardSVG,
   EmployeesSVG,
@@ -12,6 +13,7 @@ import {
   SettingsSVG,
   SunSVG,
   TrendingUpSVG,
+  ProjectsAndContractsSVG
 } from '../../svgs/NavBarSvgs.svg';
 import {
   DarkTheme,
@@ -260,6 +262,89 @@ const CompleteNavBar = () => {
                       />
                     )}
 
+                  {/* {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                    // hasFeature(
+                    //   featureToggles.featureToggles,
+                    //   EFeatureToggles.LOAN_MANAGEMENT
+                    // ) &&
+                     (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="#"
+                        tooltipName="Payroll"
+                        linkName="Time Off"  // check 
+                        svgIcon={
+                          <CardSendSVG
+                            props={{
+                              isActive:
+                                openDropdown === 'payroll' ||
+                                currentPath.startsWith('/Time sheet'),
+                            }}
+                          />
+                        }
+                        additionalSvgIcon={<ChevronDownSVG />}
+                        dropdownItems={[
+                          ...(hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.LOAN_MANAGEMENT
+                          )
+                            ? [
+                                {
+                                  name: 'Time sheet',
+                                  link: '/payroll/deductions-loans',
+                                },
+                              ]
+                            : []),
+                        ]}
+                        isDropdownOpen={openDropdown === 'payroll'}
+                        setDropdownOpen={() => {
+                          setOpenDropdown((prev) =>
+                            prev === 'payroll' ? null : 'payroll'
+                          );
+                        }}
+                        hasAdditionalSvg
+                      />
+                    )} */}
+                  {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                    hasFeature(
+                      featureToggles.featureToggles,
+                      EFeatureToggles.LOAN_MANAGEMENT
+                    ) &&
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="#"
+                      tooltipName="Timeoff"
+                      linkName="Time Off"
+                      svgIcon={
+                        <TimeOffSVG isActive={openDropdown === 'timeoff' || currentPath.startsWith('/timeoff')} />
+                        // props={{
+                        //   isActive:
+                        //     openDropdown === 'timeoff' ||
+                        //     currentPath.startsWith('/timeoff'),
+                        // }}
+                        // />
+                      }
+                      additionalSvgIcon={<ChevronDownSVG />}
+                      dropdownItems={[
+                        {
+                          name: 'Time Sheet',
+                          link: '/timeoff/timesheet',
+                        },
+                        {
+                          name: 'Performance & Feedback',
+                          link: '/timeoff/performance',
+                        },
+                      ]}
+                      isDropdownOpen={openDropdown === 'timeoff'}
+                      setDropdownOpen={() => {
+                        setOpenDropdown((prev) =>
+                          prev === 'timeoff' ? null : 'timeoff'
+                        );
+                      }}
+                      hasAdditionalSvg
+                    />
+                  }
                   {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     hasFeature(
                       featureToggles.featureToggles,
@@ -303,6 +388,36 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )}
+
+                  {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                    hasFeature(
+                      featureToggles.featureToggles,
+                      EFeatureToggles.LOAN_MANAGEMENT
+                    ) &&
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="#"
+                      tooltipName="Projects & Contracts"
+                      linkName="Projects & Contracts"
+                      svgIcon={
+                        <ProjectsAndContractsSVG isActive={openDropdown === 'Projects & Contracts' || currentPath.startsWith('/projects')} />
+                      }
+                      additionalSvgIcon={<ChevronDownSVG />}
+                      dropdownItems={[
+                        {
+                          name: 'Contracts',
+                          link: '/projects/contracts',
+                        }
+                      ]}
+                      isDropdownOpen={openDropdown === 'Projects & Contracts'}
+                      setDropdownOpen={() => {
+                        setOpenDropdown((prev) =>
+                          prev === 'Projects & Contracts' ? null : 'Projects & Contracts'
+                        );
+                      }}
+                      hasAdditionalSvg
+                    />
+                  }
 
                   {
                     hasFeature(featureToggles.featureToggles, EFeatureToggles.RECRUITMENT_MANAGEMENT) &&
@@ -350,6 +465,7 @@ const CompleteNavBar = () => {
                       hasAdditionalSvg
                     />
                   }
+
                   <ListItem
                     isSideBarOpen={sidebarOpen}
                     linkTo="#"
