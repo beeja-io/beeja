@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import {
   PaginationContainer,
   PaginationList,
@@ -103,20 +104,20 @@ const Pagination = ({
       </PaginationList>
       <PaginationActionArea>
         <span>
-          Showing {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}{' '}
-          to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{' '}
-          entries
+          {t("SHOWING")} {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}{' '}
+          {t("TO")} {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{' '}
+         {t("ENTRIES")}
         </span>
 
         <select
           onChange={(e) => handleItemsPerPage(parseInt(e.target.value))}
           defaultValue="10"
         >
-          <option value="10">Show 10</option>
-          <option value="25">Show 25</option>
-          <option value="50">Show 50</option>
-          <option value="75">Show 75</option>
-          <option value="100">Show 100</option>
+          <option value="10">{t("SHOW 10")}</option>
+          <option value="25">{t("SHOW 25")}</option>
+          <option value="50">{t("SHOW 50")}</option>
+          <option value="75">{t("SHOW 75")}</option>
+          <option value="100">{t("SHOW 100")}</option>
         </select>
       </PaginationActionArea>
     </PaginationContainer>

@@ -4,13 +4,14 @@ import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.Utils.helpers.FileExtensionHelpers;
+import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.enums.LoanStatus;
-import com.beeja.api.financemanagementservice.exceptions.LoanNotFound;
 import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
 import com.beeja.api.financemanagementservice.modals.File;
 import com.beeja.api.financemanagementservice.modals.Loan;
+import com.beeja.api.financemanagementservice.modals.clients.finance.OrganizationPattern;
 import com.beeja.api.financemanagementservice.repository.LoanRepository;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
 import com.beeja.api.financemanagementservice.requests.PdfMultipartFile;
@@ -20,13 +21,12 @@ import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.time.Instant;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -49,6 +49,9 @@ public class LoanServiceImpl implements LoanService {
   }
 
   @Autowired LoanRepository loanRepository;
+
+  @Autowired
+  AccountClient accountClient;
 
   /**
    * Changes the status of a loan based on the provided loan ID.
@@ -105,13 +108,32 @@ public class LoanServiceImpl implements LoanService {
     loan.setEmiTenure(loanRequest.getEmiTenure());
     loan.setEmiStartDate(loanRequest.getEmiStartDate());
     try {
-      String loanNumber = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-      loan.setLoanNumber(loanNumber);
+      OrganizationPattern organizationPattern = null;
+      try {
+        organizationPattern = accountClient.getActivePatternByType("LOAN_ID_PATTERN").getBody();
+      } catch (Exception e) {
+        log.warn("Failed to retrieve organization pattern, proceeding without prefix.");
+      }
+
+      long existingLoanCount = loanRepository.countByOrganizationId(
+              UserContext.getLoggedInUserOrganization().get("id").toString()
+      );
+
+      long newLoanNumber = existingLoanCount + 1;
+      String finalLoanNumber = (organizationPattern != null && organizationPattern.getPrefix() != null)
+              ? organizationPattern.getPrefix() + newLoanNumber
+              : String.valueOf(newLoanNumber);
+
+      loan.setLoanNumber(finalLoanNumber);
     } catch (FeignException e) {
       log.error("Failed to generate loan number: {}", e.getMessage());
       throw new RuntimeException("Failed to generate loan number", e);
+    } catch (Exception e) {
+      log.error("Error occurred: {}", e.getMessage());
+      throw new RuntimeException(e.getMessage(), e);
     }
 
+    loan.setCreatedAt(Date.from(Instant.now()));
     try {
       loan.setStatus(LoanStatus.WAITING);
       return loanRepository.save(loan);

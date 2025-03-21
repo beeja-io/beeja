@@ -471,6 +471,8 @@ export const TabContentTableTd = styled.td`
   .validation-error {
     color: #ff0000;
     margin-left: 10px;
+    overflow-wrap: break-word;
+    white-space: normal; 
   }
 `;
 

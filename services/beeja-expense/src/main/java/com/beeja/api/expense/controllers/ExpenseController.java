@@ -6,6 +6,8 @@ import com.beeja.api.expense.exceptions.OrganizationMismatchException;
 import com.beeja.api.expense.modal.Expense;
 import com.beeja.api.expense.requests.CreateExpense;
 import com.beeja.api.expense.requests.ExpenseUpdateRequest;
+import com.beeja.api.expense.response.ExpenseDefaultValues;
+import com.beeja.api.expense.response.ExpenseValues;
 import com.beeja.api.expense.service.ExpenseService;
 import com.beeja.api.expense.utils.Constants;
 import com.beeja.api.expense.utils.UserContext;
@@ -91,6 +93,7 @@ public class ExpenseController {
       @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
       @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
       @RequestParam(name = "sortBy", required = false) String sortBy,
+      @RequestParam(name = "settlementStatus", required = false) Boolean settlementStatus,
       @RequestParam(name = "ascending", defaultValue = "true") boolean ascending) {
     try {
       Calendar calendar = Calendar.getInstance();
@@ -131,6 +134,7 @@ public class ExpenseController {
               modeOfPayment,
               expenseType,
               expenseCategory,
+              settlementStatus,
               UserContext.getLoggedInUserOrganization().get("id").toString()));
       metadata.put(
           "totalSize",
@@ -142,6 +146,7 @@ public class ExpenseController {
               modeOfPayment,
               expenseType,
               expenseCategory,
+              settlementStatus,
               UserContext.getLoggedInUserOrganization().get("id").toString()));
       List<Expense> filteredExpenses =
           expenseService.getFilteredExpenses(
@@ -156,6 +161,7 @@ public class ExpenseController {
               pageNumber,
               pageSize,
               sortBy,
+              settlementStatus,
               ascending);
       expenses.put("metadata", metadata);
       expenses.put("expenses", filteredExpenses);
@@ -163,5 +169,13 @@ public class ExpenseController {
     } catch (Exception e) {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  @GetMapping("/expense-values")
+  public ResponseEntity<ExpenseValues> getExpenseDefaultValues() {
+    ExpenseValues expenseDefaultValues =
+        expenseService.getExpenseDefaultValues(
+            UserContext.getLoggedInUserOrganization().get("id").toString());
+    return ResponseEntity.ok(expenseDefaultValues);
   }
 }

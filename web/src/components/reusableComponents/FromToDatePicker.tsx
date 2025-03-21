@@ -1,5 +1,6 @@
 import { SetStateAction, useState } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { ChevronleftSVG, ChevronRightSVG } from '../../svgs/CommonSvgs.svs';
 import {
   Weekday,
@@ -307,7 +308,7 @@ export const InlineCalendar = ({
   ) => {
     return () => handleMonthChange(setMonth, setYear, month, isIncrement);
   };
-
+  const { t } = useTranslation();
   const handlePrevFirstMonth = createMonthHandlers(
     setFirstMonth,
     setFirstMonthYear,
@@ -335,7 +336,7 @@ export const InlineCalendar = ({
   return (
     <CalendarContainer>
       <CalendarHeader>
-        Set Date
+        {t("SET_DATE")}
         <HeaderLine />
       </CalendarHeader>
 

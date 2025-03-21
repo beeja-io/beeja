@@ -3,6 +3,7 @@ package com.beeja.api.accounts.enums;
 public enum FeatureToggles {
   EMPLOYEE_MANAGEMENT,
   DOCUMENT_MANAGEMENT,
+  RECRUITMENT_MANAGEMENT,
   LOAN_MANAGEMENT,
   KYC_MANAGEMENT,
   INVENTORY_MANAGEMENT,

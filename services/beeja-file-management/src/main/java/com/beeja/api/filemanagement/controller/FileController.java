@@ -47,7 +47,7 @@ public class FileController {
     } catch (MongoFileUploadException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.MONGO_UPLOAD_FAILED);
     } catch (FileAccessException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.GCS_UPLOAD_FAILED);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.ERROR_SAVING_FILE);
     } catch (FileTypeMismatchException e) {
       throw new FileTypeMismatchException(e.getMessage());
     } catch (Exception e) {
@@ -69,6 +69,7 @@ public class FileController {
       headers.add("createdBy", result.getCreatedBy());
       headers.add("organizationId", result.getOrganizationId());
       headers.add("entityId", result.getEntityId());
+      headers.add("fileName", result.getFileName());
 
       return ResponseEntity.ok()
           .contentType(MediaType.APPLICATION_OCTET_STREAM)
@@ -106,7 +107,7 @@ public class FileController {
   }
 
   @GetMapping("/find/{fileId}")
-  public ResponseEntity<?> getFileById(@PathVariable String fileId) {
+  public ResponseEntity<?> getFileById(@PathVariable String fileId) throws java.io.FileNotFoundException {
     return ResponseEntity.ok(fileService.getFileById(fileId));
   }
 
@@ -126,7 +127,7 @@ public class FileController {
     } catch (MongoFileUploadException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.MONGO_UPLOAD_FAILED);
     } catch (FileAccessException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.GCS_UPLOAD_FAILED);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Constants.ERROR_SAVING_FILE);
     } catch (FileTypeMismatchException e) {
       throw new FileTypeMismatchException(e.getMessage());
     } catch (Exception e) {

@@ -4,8 +4,11 @@ import static org.springframework.security.web.server.util.matcher.ServerWebExch
 
 import com.beeja.api.apigateway.config.security.properties.AuthProperties;
 import java.time.Duration;
+import java.util.List;
 import java.util.ServiceLoader;
 
+import com.beeja.api.apigateway.utils.Constants;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,9 +21,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Configuration
 public class SecurityConfig {
 
@@ -137,6 +144,7 @@ public class SecurityConfig {
 
     for (AuthenticationProvider provider : loader) {
       provider.configure(serverHttpSecurity);
+      log.info("Loaded Authentication Provider: {}", provider.getClass().getName());
     }
 
     return serverHttpSecurity.build();
@@ -146,6 +154,26 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
+
+  @Bean
+  public CorsWebFilter corsWebFilter() throws Exception {
+    if(authProperties.getFrontEndUrl() == null || authProperties.getLocalFrontEndUrl() == null){
+      throw new Exception(Constants.ERROR_MISSING_FE_URLS);
+    }
+    CorsConfiguration corsConfig = new CorsConfiguration();
+    corsConfig.setAllowedOriginPatterns(List.of(authProperties.getFrontEndUrl(),
+            authProperties.getLocalFrontEndUrl()));
+    corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+    corsConfig.setAllowedHeaders(List.of("*"));
+    corsConfig.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", corsConfig);
+
+    return new CorsWebFilter(source);
+  }
+
 
   @Bean
   public CookieWebSessionIdResolver cookieSessionIdResolverWithoutSameSite() {

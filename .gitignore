@@ -1,2 +1,7 @@
 web/node_modules
 .idea/
+node_modules/
+.DS_Store
+
+web/node_modules/
+

@@ -4,7 +4,6 @@ import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.client.FileClient;
-import com.beeja.api.financemanagementservice.client.NotificationClient;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
 import com.beeja.api.financemanagementservice.requests.FileUploadRequest;
 import com.beeja.api.financemanagementservice.requests.PayslipEmailRequest;
@@ -25,7 +24,6 @@ public class PaySlipProcessor {
       BulkPayslipRequest bulkPayslipRequest,
       FileClient fileClient,
       AccountClient accountClient,
-      NotificationClient notificationClient,
       String asyncAccessToken) {
 
     List<Map<String, Object>> successList = new ArrayList<>();
@@ -42,8 +40,6 @@ public class PaySlipProcessor {
           successList.add(response);
         }
       }
-
-      notifyEmployees(successList, notificationClient, bulkPayslipRequest);
     } catch (Exception e) {
       log.error(Constants.ERROR_OCCORRED_DURING_BULK_PAY_SLIPS_UPLOAD, e);
     }
@@ -88,35 +84,4 @@ public class PaySlipProcessor {
     return null;
   }
 
-  private static void notifyEmployees(
-      List<Map<String, Object>> successList,
-      NotificationClient notificationClient,
-      BulkPayslipRequest bulkPayslipRequest) {
-
-    for (Map<String, Object> pdfResponse : successList) {
-      sendSuccessEmail(pdfResponse, notificationClient, bulkPayslipRequest);
-    }
-  }
-
-  private static void sendSuccessEmail(
-      Map<String, Object> pdfResponse,
-      NotificationClient notificationClient,
-      BulkPayslipRequest bulkPayslipRequest) {
-    try {
-      Map<String, Object> organizations = (Map<String, Object>) pdfResponse.get("organizations");
-      String organizationName = (String) organizations.get("name");
-      PayslipEmailRequest payslipEmailRequest = new PayslipEmailRequest();
-      payslipEmailRequest.setEmployeeName((String) pdfResponse.get("firstName"));
-      payslipEmailRequest.setEmployeeId((String) pdfResponse.get("employeeId"));
-      payslipEmailRequest.setOrganizationName(organizationName);
-      payslipEmailRequest.setToMail("email");
-      payslipEmailRequest.setYear(bulkPayslipRequest.getYear());
-      payslipEmailRequest.setMonth(bulkPayslipRequest.getMonth());
-
-      notificationClient.sendEmail(payslipEmailRequest, "Bearer " + UserContext.getAccessToken());
-
-    } catch (Exception e) {
-      log.error("Failed to send success email to " + pdfResponse.get("email"), e);
-    }
-  }
 }

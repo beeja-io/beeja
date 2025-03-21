@@ -11,4 +11,5 @@ public class FileDownloadResult {
   private final String createdBy;
   private final String entityId;
   private final String organizationId;
+  private final String fileName;
 }

@@ -11,6 +11,8 @@ import com.beeja.api.expense.repository.ExpenseRepository;
 import com.beeja.api.expense.requests.CreateExpense;
 import com.beeja.api.expense.requests.ExpenseUpdateRequest;
 import com.beeja.api.expense.requests.FileRequest;
+import com.beeja.api.expense.response.ExpenseDefaultValues;
+import com.beeja.api.expense.response.ExpenseValues;
 import com.beeja.api.expense.service.ExpenseService;
 import com.beeja.api.expense.utils.Constants;
 import com.beeja.api.expense.utils.UserContext;
@@ -32,12 +34,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_EXPENSE;
 import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_FILE_IN_FILE_SERVICE;
@@ -307,6 +305,7 @@ public class ExpenseServiceImpl implements ExpenseService {
       int pageNumber,
       int pageSize,
       String sortBy,
+      Boolean settlementStatus,
       boolean ascending)
       throws Exception {
     Query query = new Query();
@@ -339,6 +338,12 @@ public class ExpenseServiceImpl implements ExpenseService {
       query.addCriteria(Criteria.where("department").is(department));
     }
 
+    if(settlementStatus != null && settlementStatus.equals(true)) {
+      query.addCriteria(Criteria.where("paymentSettled").ne(null));
+    } else if (settlementStatus != null && settlementStatus.equals(false)){
+      query.addCriteria(Criteria.where("paymentSettled").is(null));
+    }
+
     int skip = (pageNumber - 1) * pageSize;
     query.skip(skip).limit(pageSize);
 
@@ -358,6 +363,7 @@ public class ExpenseServiceImpl implements ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId) {
 
     AggregationOperation matchOperation =
@@ -370,6 +376,7 @@ public class ExpenseServiceImpl implements ExpenseService {
                 modeOfPayment,
                 expenseType,
                 expenseCategory,
+                settlementStatus,
                 organizationId));
     GroupOperation groupOperation = Aggregation.group().sum("amount").as("totalAmount");
 
@@ -390,6 +397,7 @@ public class ExpenseServiceImpl implements ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId) {
     Query query = new Query();
     if (startDate != null && endDate != null) {
@@ -419,7 +427,31 @@ public class ExpenseServiceImpl implements ExpenseService {
     if (department != null) {
       query.addCriteria(Criteria.where("department").is(department));
     }
+    if (settlementStatus != null && settlementStatus.equals(true)) {
+      query.addCriteria(Criteria.where("paymentSettled").ne(null));
+    } else if (settlementStatus != null && settlementStatus.equals(false)) {
+        query.addCriteria(Criteria.where("paymentSettled").is(null));
+    }
+
     return mongoTemplate.count(query, Expense.class);
+  }
+
+  @Override
+  public ExpenseValues getExpenseDefaultValues(String organizationId) {
+
+    List<ExpenseDefaultValues> expenseDefaultValues = expenseRepository.findDistinctTypeByOrganizationId(organizationId);
+//    take all the categories from the expenses and assign to categories
+    ExpenseValues expenseValues = new ExpenseValues();
+    Set<String> categories = expenseDefaultValues.stream().map(ExpenseDefaultValues::getCategory).collect(Collectors.toSet());
+    Set<String> types = expenseDefaultValues.stream().map(ExpenseDefaultValues::getType).collect(Collectors.toSet());
+    Set<String> modeOfPayments = expenseDefaultValues.stream().map(ExpenseDefaultValues::getModeOfPayment).collect(Collectors.toSet());
+
+    expenseValues.setExpenseCategories(categories);
+    expenseValues.setExpenseTypes(types);
+    expenseValues.setExpenseModesOfPayment(modeOfPayments);
+
+
+    return expenseValues;
   }
 
   private Criteria getCriteria(
@@ -430,6 +462,7 @@ public class ExpenseServiceImpl implements ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId) {
     Criteria criteria = new Criteria();
 
@@ -459,6 +492,12 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     if (department != null) {
       criteria.and("department").is(department);
+    }
+
+    if (settlementStatus != null && settlementStatus.equals(true)) {
+      criteria.and("paymentSettled").ne(null);
+    }else if (settlementStatus != null && settlementStatus.equals(false)){
+        criteria.and("paymentSettled").is(null);
     }
     return criteria;
   }
