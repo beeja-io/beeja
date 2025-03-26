@@ -414,6 +414,12 @@ const OrganizationSettings = () => {
                       >
                         Providers
                       </li>
+                      <li
+                        className={`dropdown-item-thread ${activeTab === 'Operating Systems' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('Operating Systems')}
+                      >
+                        Operating Systems
+                      </li>
                     </ul>
                   )}
                 </>
@@ -488,6 +494,13 @@ const OrganizationSettings = () => {
                keyvalue="inventoryProviders"
                type="Providers" 
                />)}
+               {activeTab === 'Operating Systems' && (
+                  <SettingsTypes
+               keyvalue="operatingSystems"
+               type="Operating Systems"
+                />
+                 )}
+
           </SelectedTabSection>
         </SectionsContainer>
       </SettingsMainContainer>
