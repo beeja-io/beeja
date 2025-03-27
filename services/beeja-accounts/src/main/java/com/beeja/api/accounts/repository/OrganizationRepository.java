@@ -13,4 +13,5 @@ public interface OrganizationRepository extends MongoRepository<Organization, St
 
   @Query(value = "{ 'id' : ?0 }")
   OrganizationResponse findByOrganizationId(String id);
+
 }
