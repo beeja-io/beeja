@@ -186,4 +186,6 @@ public class Constants {
   public static final String GENERATING_DEFAULT_VALUES = "Generating Values for organization :  {} ";
   public static final String ERROR_GENERATING_DEFAULT_VALUES = "Error in generating {} values for organization : {} ,";
   public static final String SUCCESSFULLY_GENERATED_DEFAULTS = "Successfully generated values for organization : {} ,";
+
+  public static final String DUPLICATE_VALUE_EXIST = "Duplicate values found within the same document.";
 }

@@ -42,4 +42,4 @@ secrets.yml
 .git-hooks/
 application-local.yaml
 .idea
-DotEnv.env
+Dot.env
