@@ -4,10 +4,13 @@ import com.beeja.api.accounts.enums.ErrorCode;
 import com.beeja.api.accounts.enums.ErrorType;
 import com.beeja.api.accounts.response.ErrorResponse;
 import com.beeja.api.accounts.utils.Constants;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.LocalDateTime;
@@ -119,6 +122,16 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  @ExceptionHandler(DuplicateValueException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public ErrorResponse handleDuplicateValueException(DuplicateValueException ex) {
+    return  new ErrorResponse(
+          ErrorType.VALIDATION_ERROR,
+          ErrorCode.DUPLICATE_VALUE,
+          ex.getMessage()
+    );
+  }
   public String[] convertStringToArray(String commaSeparatedString) {
     return commaSeparatedString.split(",");
   }
