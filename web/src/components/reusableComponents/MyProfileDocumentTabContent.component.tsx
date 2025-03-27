@@ -282,6 +282,17 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
   useKeyPress(27, () => {
     handleClose();
   });
+    useEffect(() => {
+      if (isCreateDocumentModelOpen) {
+        document.body.style.overflow = 'hidden'; 
+      } else {
+        document.body.style.overflow = '';
+      }
+  
+      return () => {
+        document.body.style.overflow = ''; 
+      };
+    }, [isCreateDocumentModelOpen]);
   return (
     <>
       <DocumentContainer>
