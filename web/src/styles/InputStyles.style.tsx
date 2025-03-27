@@ -32,6 +32,10 @@ export const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  min-height: 80vh;
+  max-height: 50svh; 
+  overflow-y: scroll; 
+  padding-right: 10px;
 
   .buttonArea {
     display: flex;
