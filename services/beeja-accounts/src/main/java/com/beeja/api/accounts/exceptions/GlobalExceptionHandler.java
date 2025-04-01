@@ -125,11 +125,15 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(DuplicateValueException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody
-  public ErrorResponse handleDuplicateValueException(DuplicateValueException ex) {
+  public ErrorResponse handleDuplicateValueException(DuplicateValueException ex,WebRequest request) {
     return  new ErrorResponse(
-          ErrorType.VALIDATION_ERROR,
-          ErrorCode.DUPLICATE_VALUE,
-          ex.getMessage()
+            ErrorType.VALIDATION_ERROR,
+            ErrorCode.DUPLICATE_VALUE,
+            ex.getMessage(),
+            Constants.DOC_URL_RESOURCE_NOT_FOUND,
+            request.getDescription(false),
+            BEEJA + "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
     );
   }
   public String[] convertStringToArray(String commaSeparatedString) {

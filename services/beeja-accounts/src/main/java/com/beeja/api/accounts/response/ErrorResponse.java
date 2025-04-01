@@ -17,11 +17,4 @@ public class ErrorResponse {
   private String path;
   private String referenceId;
   private String timestamp;
-
-  public ErrorResponse(ErrorType errorType, ErrorCode errorCode, String message) {
-    this.type = errorType;
-    this.code =errorCode;
-    this.message=message;
-
-  }
 }
