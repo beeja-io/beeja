@@ -1,10 +1,12 @@
 package tac.beeja.recruitmentapi.serviceImpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.validation.constraints.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -30,8 +32,10 @@ import tac.beeja.recruitmentapi.request.AddCommentRequest;
 import tac.beeja.recruitmentapi.request.ApplicantFeedbackRequest;
 import tac.beeja.recruitmentapi.request.ApplicantRequest;
 import tac.beeja.recruitmentapi.request.FileRequest;
+import tac.beeja.recruitmentapi.response.ApplicantDTO;
 import tac.beeja.recruitmentapi.response.FileDownloadResultMetaData;
 import tac.beeja.recruitmentapi.response.FileResponse;
+import tac.beeja.recruitmentapi.response.PaginatedApplicantResponse;
 import tac.beeja.recruitmentapi.service.ApplicantService;
 import tac.beeja.recruitmentapi.utils.Constants;
 import tac.beeja.recruitmentapi.utils.UserContext;
@@ -39,15 +43,9 @@ import tac.beeja.recruitmentapi.utils.UserContext;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
-import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_CREATING_APPLICANT;
-import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_GETTING_LIST_OF_APPLICANTS;
-import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_RESUME_UPLOAD;
-import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_UPDATING_APPLICANTS;
-import static tac.beeja.recruitmentapi.utils.Constants.NO_APPLICANT_FOUND_WITH_GIVEN_ID;
-import static tac.beeja.recruitmentapi.utils.Constants.RESUME_FILE_ENTITY;
+import static tac.beeja.recruitmentapi.utils.Constants.*;
 
 @Service
 @Slf4j
@@ -104,6 +102,77 @@ public class ApplicantServiceImpl implements ApplicantService {
     }
   }
 
+  @Override
+  public PaginatedApplicantResponse getPaginatedApplicants(
+          Integer page, Integer limit, String applicantId, String firstName,
+          String positionAppliedFor, ApplicantStatus status, String experience,
+          Date fromDate,Date toDate, String sortBy, String sortDirection) {
+
+    int pageNumber = (page != null && page >= 1) ? page - 1 : 0;
+    int pageSize = (limit != null && limit > 0 && limit <= 100) ? limit : 10;
+
+    Pageable pageable = (sortBy != null && "asc".equalsIgnoreCase(sortDirection))
+            ? PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC, sortBy))
+            : PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, sortBy != null ? sortBy : "createdAt"));
+
+    Query query = new Query().with(pageable);
+
+    if (applicantId != null && !applicantId.isEmpty()) {
+      query.addCriteria(Criteria.where("applicantId").is(applicantId));
+    }
+    if (firstName != null && !firstName.isEmpty()) {
+      query.addCriteria(Criteria.where("firstName").regex("^" + firstName + "$", "i"));
+    }
+    if (positionAppliedFor != null && !positionAppliedFor.isEmpty()) {
+      query.addCriteria(Criteria.where("positionAppliedFor").regex("^" + positionAppliedFor + "$", "i"));
+    }
+    if (status != null) {
+      query.addCriteria(Criteria.where("status").is(status));
+    }
+    if (experience != null && !experience.isEmpty()) {
+      query.addCriteria(Criteria.where("experience").regex("^" + experience + "$", "i"));
+    }
+    if (fromDate != null && toDate != null) {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(toDate);
+      cal.set(Calendar.HOUR_OF_DAY, 23);
+      cal.set(Calendar.MINUTE, 59);
+      cal.set(Calendar.SECOND, 59);
+      cal.set(Calendar.MILLISECOND, 999);
+      toDate = cal.getTime();
+      query.addCriteria(Criteria.where("createdAt").gte(fromDate).lte(toDate));
+    } else if (fromDate != null) {
+      query.addCriteria(Criteria.where("createdAt").gte(fromDate));
+    } else if (toDate != null) {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(toDate);
+      cal.set(Calendar.HOUR_OF_DAY, 23);
+      cal.set(Calendar.MINUTE, 59);
+      cal.set(Calendar.SECOND, 59);
+      cal.set(Calendar.MILLISECOND, 999);
+      toDate = cal.getTime();
+      query.addCriteria(Criteria.where("createdAt").lte(toDate));
+    }
+
+    List<Applicant> applicants = mongoTemplate.find(query, Applicant.class);
+    long totalRecords = mongoTemplate.count(query, Applicant.class);
+
+    if (applicants.isEmpty()) {
+      return new PaginatedApplicantResponse(Collections.emptyList(), pageNumber + 1, pageSize, 0, 0);
+    }
+
+    List<ApplicantDTO> applicantDTOs = applicants.stream().map(applicant -> new ApplicantDTO(
+            applicant.getId(),applicant.getApplicantId(), applicant.getFirstName(), applicant.getLastName(),
+            applicant.getEmail(), applicant.getPhoneNumber(), applicant.getPositionAppliedFor(),
+            applicant.getStatus(), applicant.getExperience(), applicant.getReferredByEmployeeName(),
+            applicant.getCreatedAt()
+    )).collect(Collectors.toList());
+
+    int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+    return new PaginatedApplicantResponse(applicantDTOs, pageNumber + 1, pageSize, totalRecords, totalPages);
+
+  }
 
   private String generateApplicantId() {
 
