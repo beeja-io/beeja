@@ -69,6 +69,7 @@ public class FileController {
       headers.add("createdBy", result.getCreatedBy());
       headers.add("organizationId", result.getOrganizationId());
       headers.add("entityId", result.getEntityId());
+      headers.add("fileName", result.getFileName());
 
       return ResponseEntity.ok()
           .contentType(MediaType.APPLICATION_OCTET_STREAM)

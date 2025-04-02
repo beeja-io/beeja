@@ -128,12 +128,12 @@ public class EmployeeController {
     employeeService.changeEmployeeStatus(employeeId);
     return new ResponseEntity<>(Constants.USER_STATUS_UPDATED, HttpStatus.OK);
   }
-
-  @PatchMapping("/{employeeId}/roles")
+  
+  @PutMapping("/roles/{employeeId}")
   @HasPermission(PermissionConstants.UPDATE_ROLES_AND_PERMISSIONS)
-  public ResponseEntity<?> updateUserRoles(
-      @PathVariable String employeeId, @RequestBody UpdateUserRoleRequest newRoles)
-      throws Exception {
+  public ResponseEntity<?> updateUserRolesByEmployeeId(
+          @PathVariable String employeeId, @RequestBody UpdateUserRoleRequest newRoles)
+          throws Exception {
     User updatedUser = employeeService.updateEmployeeRolesDyEmployeeId(employeeId, newRoles);
     return new ResponseEntity<>(updatedUser, HttpStatus.OK);
   }

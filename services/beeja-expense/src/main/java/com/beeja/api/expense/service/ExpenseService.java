@@ -3,6 +3,8 @@ package com.beeja.api.expense.service;
 import com.beeja.api.expense.modal.Expense;
 import com.beeja.api.expense.requests.CreateExpense;
 import com.beeja.api.expense.requests.ExpenseUpdateRequest;
+import com.beeja.api.expense.response.ExpenseDefaultValues;
+import com.beeja.api.expense.response.ExpenseValues;
 
 import java.util.Date;
 import java.util.List;
@@ -31,6 +33,7 @@ public interface ExpenseService {
       int pageNumber,
       int pageSize,
       String sortBy,
+      Boolean settlementStatus,
       boolean ascending)
       throws Exception;
 
@@ -42,6 +45,7 @@ public interface ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId);
 
   Long getTotalExpensesSize(
@@ -52,5 +56,8 @@ public interface ExpenseService {
       String modeOfPayment,
       String expenseType,
       String expenseCategory,
+      Boolean settlementStatus,
       String organizationId);
+
+  ExpenseValues getExpenseDefaultValues(String organizationId);
 }

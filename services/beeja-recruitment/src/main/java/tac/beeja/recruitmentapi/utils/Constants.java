@@ -14,6 +14,8 @@ public class Constants {
   public static final String TAKE_INTERVIEW = "TINT";
   public static final String DELETE_INTERVIEW = "DINT";
 
+  public static final String ACCESS_REFFERRAL = "ACREF";
+
   //    EXCEPTIONS:
   public static final String ERROR_IN_RESUME_UPLOAD = "Error in uploading Resume";
   public static final String ERROR_IN_CREATING_APPLICANT = "Error in creating applicant, ";

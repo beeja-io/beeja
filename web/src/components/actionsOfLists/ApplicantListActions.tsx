@@ -44,7 +44,7 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
       handleDeleteModal();
     }
     if (option == 'Edit') {
-      navigate(`/recruitment/${props.applicant.id}`);
+      navigate(`/recruitment/hiring-management/${props.applicant.id}`);
     }
     setIsOpen(false);
     // onOptionSelect(option);

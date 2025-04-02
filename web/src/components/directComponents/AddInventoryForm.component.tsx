@@ -16,8 +16,7 @@ import axios from 'axios';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import {
-  Availability,
-  Device,
+  Availability
 } from '../reusableComponents/InventoryEnums.component';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
 import { useTranslation } from 'react-i18next';
@@ -26,6 +25,7 @@ type AddInventoryFormProps = {
   handleClose: () => void;
   handleSuccessMessage: () => void;
   deviceTypes: OrganizationValues;
+  inventoryProviders: OrganizationValues;
 };
 
 const AddInventoryForm = (props: AddInventoryFormProps) => {
@@ -75,7 +75,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
     try {
       const data: DeviceDetails = {
         ...formData,
-        device: formData.device.toUpperCase() as Device,
+        device: formData.device.toUpperCase(),
         type: formData.type.toUpperCase(),
         availability: formData.availability.toUpperCase() as Availability,
         accessoryType: formData.accessoryType?.toUpperCase(),
@@ -158,12 +158,12 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select Accessory Type</option>
-                  <option value="Keyboard">Keyboard</option>
-                  <option value="Cable">Cable</option>
-                  <option value="Headset">Headset</option>
-                  <option value="Mouse">Mouse</option>
-                  <option value="USB_sticks">USB sticks</option>
+                  <option value="">{t("SELECT_ACCESSORY_TYPE")}</option>
+                  <option value="Keyboard">{t("KEYBOARD")}</option>
+                  <option value="Cable">{t("CABLE")}</option>
+                  <option value="Headset">{t("HEADSET")}</option>
+                  <option value="Mouse">{t("MOUSE")}</option>
+                  <option value="USB_sticks">{t("USB_STICKS")}</option>
                 </select>
               </InputLabelContainer>
             )}
@@ -253,7 +253,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                       }}
                       selectedDate={dateOfPurchase}
                       maxDate={new Date()}
-                      handleCalenderChange={() => {}}
+                      handleCalenderChange={() => { }}
                     />
                   )}
                 </div>
@@ -295,15 +295,20 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 {t('PROVIDER')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <TextInput
-                type="text"
+              <select
+                className="selectoption largeSelectOption"
                 name="provider"
-                placeholder={t('EXAMPLE_APPLE')}
-                className="largeInput"
                 value={formData.provider}
                 onChange={handleChange}
                 required
-              />
+              >
+                <option value="">{t('SELECT_INVENTORY_PROVIDER')}</option>
+                {props.inventoryProviders.values?.map((inventoryProvider) => (
+                  <option key={inventoryProvider.value} value={inventoryProvider.value}>
+                    {inventoryProvider.value}
+                  </option>
+                ))}
+              </select>
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
@@ -337,9 +342,18 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 className="largeInput"
                 onChange={handleChange}
                 disabled={
-                  formData.device === Device.MUSIC_SYSTEM ||
-                  formData.device === Device.ACCESSORIES
+                  !(
+                    formData.device === 'Desktops' ||
+                    formData.device === 'Laptops' ||
+                    formData.device === 'Mobiles' ||
+                    formData.device === 'Tablets' ||
+                    formData.device === 'Desktop' ||
+                    formData.device === 'Laptop' ||
+                    formData.device === 'Mobile' ||
+                    formData.device === 'Tablet'
+                  )
                 }
+
                 required={
                   ![
                     'Printer',

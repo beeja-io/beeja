@@ -65,14 +65,14 @@ export const getAllEmployeesByPermission = (
   return axiosInstance.get(`/accounts/v1/users/permissions/${permission}`);
 };
 
-export const updateEmployeeRolesByEmployeeId = (
+export const updateEmployeeRole = (
   employeeId: string,
   roles: string[]
 ): Promise<AxiosResponse> => {
-  return axiosInstance.patch(`/accounts/v1/users/${employeeId}/roles`, {
+  return axiosInstance.put(`/accounts/v1/users/roles/${employeeId}`, {
     roles,
   });
-};
+}
 
 export const createEmployee = (data: any): Promise<AxiosResponse> => {
   return axiosInstance.post('/accounts/v1/users', data);

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   TabContentMainContainer,
   TabContentMainContainerHeading,
@@ -29,6 +30,7 @@ export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
   patternType,
 }) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { t } = useTranslation();
   const [patterns, setPatterns] = useState<any[]>([]);
   const [isCreateScreenOpen, setIsCreateScreenOpen] = useState(false);
   const closeCreateScreen = () => {
@@ -78,7 +80,7 @@ export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
               }}
             >
               <AddNewPlusSVG />
-              Create Id Pattern
+              {t("CREATE_ID_PATTERN")}
             </Button>
           </TabContentMainContainerHeading>
           <Hr />
@@ -86,10 +88,10 @@ export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
             <Table>
               <TableHead>
                 <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                  <th style={{ width: '250px' }}>Id Length</th>
-                  <th style={{ width: '250px' }}>Id Prefix</th>
-                  <th style={{ width: '250px' }}>Intial Sequence</th>
-                  <th style={{ width: '105px' }}>Active Pattern</th>
+                  <th style={{ width: '250px' }}>{t("ID_LENGTH")}</th>
+                  <th style={{ width: '250px' }}>{t("ID_PREFIX")}</th>
+                  <th style={{ width: '250px' }}>{t("INTIAL_SEQUENCE")}</th>
+                  <th style={{ width: '105px' }}>{t("ACTIVE_PATTERN")}</th>
                 </tr>
               </TableHead>
               <tbody>

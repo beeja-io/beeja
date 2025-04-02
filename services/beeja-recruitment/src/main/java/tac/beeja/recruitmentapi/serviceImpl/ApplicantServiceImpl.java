@@ -1,6 +1,8 @@
 package tac.beeja.recruitmentapi.serviceImpl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.constraints.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -36,13 +38,9 @@ import tac.beeja.recruitmentapi.utils.UserContext;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Matcher;
 
 import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_CREATING_APPLICANT;
 import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_GETTING_LIST_OF_APPLICANTS;
@@ -52,6 +50,7 @@ import static tac.beeja.recruitmentapi.utils.Constants.NO_APPLICANT_FOUND_WITH_G
 import static tac.beeja.recruitmentapi.utils.Constants.RESUME_FILE_ENTITY;
 
 @Service
+@Slf4j
 public class ApplicantServiceImpl implements ApplicantService {
 
   @Autowired FileClient fileClient;
@@ -64,6 +63,14 @@ public class ApplicantServiceImpl implements ApplicantService {
 
   @Override
   public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
+
+
+    //    accept only pdf, doc and docx for applicant.getResume()
+    if (!applicant.getResume().getContentType().equals("application/pdf")
+            && !applicant.getResume().getContentType().equals("application/msword")
+            && !applicant.getResume().getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+      throw new BadRequestException("Only PDF, DOC and DOCX files are allowed");
+    }
     Applicant newApplicant = new Applicant();
     newApplicant.setEmail(applicant.getEmail());
     newApplicant.setFirstName(applicant.getFirstName());
@@ -71,6 +78,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     newApplicant.setPhoneNumber(applicant.getPhoneNumber());
     newApplicant.setPositionAppliedFor(applicant.getPositionAppliedFor());
     newApplicant.setOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+    newApplicant.setApplicantId(generateApplicantId());
     newApplicant.setStatus(ApplicantStatus.APPLIED);
     newApplicant.setExperience(applicant.getExperience());
     String fileId;
@@ -78,7 +86,8 @@ public class ApplicantServiceImpl implements ApplicantService {
       newApplicant.setReferredByEmployeeId(UserContext.getLoggedInEmployeeId());
       newApplicant.setReferredByEmployeeName(UserContext.getLoggedInUserName());
     }
-    FileRequest fileRequest = new FileRequest(applicant.getResume(), RESUME_FILE_ENTITY);
+    String fileName = newApplicant.getFirstName() +"."+ Objects.requireNonNull(applicant.getResume().getOriginalFilename()).substring(applicant.getResume().getOriginalFilename().lastIndexOf('.') + 1);
+    FileRequest fileRequest = new FileRequest(applicant.getResume(), fileName , RESUME_FILE_ENTITY);
     try {
       ResponseEntity<?> fileResponse = fileClient.uploadFile(fileRequest);
       Map<String, Object> responseBody = (Map<String, Object>) fileResponse.getBody();
@@ -93,6 +102,24 @@ public class ApplicantServiceImpl implements ApplicantService {
     } catch (Exception e) {
       throw new Exception(ERROR_IN_CREATING_APPLICANT + e.getMessage());
     }
+  }
+
+
+  private String generateApplicantId() {
+
+    String organizationName = UserContext.getLoggedInUserOrganization().get("name").toString();
+
+    String ORG_Prefix = organizationName.length()>=3 ? organizationName.toUpperCase().substring(0,3).toUpperCase() : organizationName.toUpperCase();
+
+    String datePart = new SimpleDateFormat("MMddyy").format(new Date());
+
+    long existingCount = applicantRepository.countByOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+    int newCount = (int) (existingCount + 1);
+
+    String sequencePart = String.format("%04d", newCount);
+
+    return ORG_Prefix + datePart + sequencePart;
+
   }
 
   @Override
@@ -353,20 +380,10 @@ public class ApplicantServiceImpl implements ApplicantService {
 
   private static FileDownloadResultMetaData getMetaData(ResponseEntity<byte[]> fileResponse) {
     HttpHeaders headers = fileResponse.getHeaders();
-    String contentDisposition = headers.getFirst(HttpHeaders.CONTENT_DISPOSITION);
     String createdBy = headers.getFirst("createdby");
     String organizationId = headers.getFirst("organizationid");
     String entityId = headers.getFirst("entityId");
-    String filename = null;
-
-    if (contentDisposition != null && !contentDisposition.isEmpty()) {
-      int startIndex = contentDisposition.indexOf("filename=\"") + 10;
-      int endIndex = contentDisposition.lastIndexOf("\"");
-      if (endIndex != -1) {
-        filename = contentDisposition.substring(startIndex, endIndex);
-      }
-    }
-
+    String filename = headers.getFirst("fileName");
     return new FileDownloadResultMetaData(filename, createdBy, entityId, organizationId);
   }
 }

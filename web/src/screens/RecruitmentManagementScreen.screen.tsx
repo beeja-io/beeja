@@ -58,22 +58,23 @@ const RecruitmentManagementScreen = (
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {props.isReferral ? 'Referrals' : 'Recruitment Management'}
+            {props.isReferral ? 'Referrals' : 'Hiring'}
           </span>
-          {user && hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT) && (
-            <Button
-              className="submit shadow"
-              width="216px"
-              onClick={() =>
-                navigate(
-                  !props.isReferral ? '/recruitment/new' : '/recruuitment/refer'
-                )
-              }
-            >
-              <AddNewPlusSVG />
-              {props.isReferral ? 'Add New Referral' : 'Add New Profile'}
-            </Button>
-          )}
+          {user && (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
+            || hasPermission(user, RECRUITMENT_MODULE.ACCESS_REFFERRAlS)) && (
+              <Button
+                className="submit shadow"
+                width="216px"
+                onClick={() =>
+                  navigate(
+                    !props.isReferral ? '/recruitment/hiring-management/new' : '/recruitment/my-referrals/refer'
+                  )
+                }
+              >
+                <AddNewPlusSVG /> &nbsp;
+                {props.isReferral ? 'Add New Referral' : 'Add Applicant'}
+              </Button>
+            )}
         </ExpenseHeadingSection>
         <ApplicantsList
           allApplicants={allApplicants}

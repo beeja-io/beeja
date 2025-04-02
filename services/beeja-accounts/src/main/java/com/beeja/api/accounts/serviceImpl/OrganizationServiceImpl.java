@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
@@ -67,6 +69,10 @@ public class OrganizationServiceImpl implements OrganizationService {
   @Autowired FeatureToggleRepository featureToggleRepository;
 
   @Autowired OrgDefaultsRepository orgDefaultsRepository;
+
+  @Autowired OrgDefaultsGenerationImpl orgDefaultsGenerationImpl;
+
+  @Autowired OrgDefaultsGenerationExistingImpl orgDefaultsGenerationExistingImpl;
 
   @Override
   public List<User> getAllUsersByOrganizationId(String organizationId) throws Exception {
@@ -418,5 +424,145 @@ public class OrganizationServiceImpl implements OrganizationService {
               ErrorCode.CANNOT_SAVE_CHANGES,
               Constants.ERROR_IN_UPDATING_ORGANIZATION));
     }
+  }
+
+  @Override
+  public List<OrgDefaults> getOrganizationValues(List<String> keys) throws Exception {
+    try {
+      return orgDefaultsRepository.findByOrganizationIdAndKeyIn(UserContext.getLoggedInUserOrganization().getId(), keys);
+    } catch (Exception e) {
+      throw new Exception(
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.DB_ERROR,
+              ErrorCode.CANNOT_SAVE_CHANGES,
+              Constants.ERROR_IN_UPDATING_ORGANIZATION));
+    }
+  }
+
+  @Override
+  @Async
+  public void generateOrganizationDefaults() throws Exception {
+    CompletableFuture<Void> generateExistingValuesOfExpenseType = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingValuesOfExpenseType();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "expenseTypes", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingValuesOfExpenseCategories = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingValuesOfExpenseCategories();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "expenseCategories", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingDesignations = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingDesignations();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "designations", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingPaymentModes = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingPaymentModes();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "paymentModes", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingEmployeeTypes = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingEmployeeTypes();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "employeeTypes", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> generateExistingEmployeeDepartments = CompletableFuture.runAsync(()-> {
+        orgDefaultsGenerationExistingImpl.generateExistingEmployeeDepartments();
+        }).handle((result, ex) -> {
+        if (ex != null) {
+            log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "employeeDepartments", UserContext.getLoggedInUserOrganization().getId(), ex);
+        }
+        return result;
+    });
+
+    CompletableFuture<Void> jobTitlesFuture = CompletableFuture.runAsync(() -> {
+      log.info(Constants.GENERATING_DEFAULT_VALUES,  UserContext.getLoggedInUserOrganization().getId());
+      orgDefaultsGenerationImpl.generateJobTitles();
+    }).handle((result, ex) -> {
+      if (ex != null) {
+        log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "jobTitles", UserContext.getLoggedInUserOrganization().getId(), ex);
+      }
+      return result;
+    });
+
+    CompletableFuture<Void> departmentsFuture = CompletableFuture.runAsync(() -> {
+      orgDefaultsGenerationImpl.generateOrganizationDepartments();
+    }).handle((result, ex) -> {
+      if (ex != null) {
+        log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "departments", UserContext.getLoggedInUserOrganization().getId(), ex);
+      }
+      return result;
+    });
+
+    CompletableFuture<Void> employmentTypesFuture = CompletableFuture.runAsync(() -> {
+      orgDefaultsGenerationImpl.generateEmploymentTypes();
+    }).handle((result, ex) -> {
+      if (ex != null) {
+        log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "employmentTypes", UserContext.getLoggedInUserOrganization().getId(), ex);
+      }
+      return result;
+    });
+
+    CompletableFuture<Void> expenseCategoriesFuture = CompletableFuture.runAsync(() -> {
+      orgDefaultsGenerationImpl.generateExpenseCategories();
+    }).handle((result, ex) -> {
+      if (ex != null) {
+        log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "expenseCategories", UserContext.getLoggedInUserOrganization().getId(), ex);
+      }
+      return result;
+    });
+
+    CompletableFuture<Void> expenseTypesFuture = CompletableFuture.runAsync(() -> {
+      orgDefaultsGenerationImpl.generateExpenseTypes();
+    }).handle((result, ex) -> {
+      if (ex != null) {
+        log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "expenseTypes", UserContext.getLoggedInUserOrganization().getId(), ex);
+      }
+        return result;
+    });
+
+    CompletableFuture<Void> paymentModesFuture = CompletableFuture.runAsync(() -> {
+      orgDefaultsGenerationImpl.generatePaymentModes();
+    }).handle((result, ex) -> {
+      if (ex != null) {
+        log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES, "paymentModes", UserContext.getLoggedInUserOrganization().getId(), ex);
+      }
+      return result;
+    });
+    CompletableFuture<Void> allFutures = CompletableFuture.allOf(jobTitlesFuture,
+            departmentsFuture,
+            employmentTypesFuture,
+            expenseCategoriesFuture,
+            expenseTypesFuture,
+            paymentModesFuture,
+            generateExistingValuesOfExpenseType,
+            generateExistingValuesOfExpenseCategories,
+            generateExistingPaymentModes,
+            generateExistingDesignations,
+            generateExistingEmployeeTypes,
+            generateExistingEmployeeDepartments);
+    allFutures.join();
+    log.info("All defaults generated");
   }
 }

@@ -22,4 +22,8 @@ public interface OrganizationService {
   OrgDefaults updateOrganizationValues(OrgDefaults orgDefaults) throws Exception;
 
   OrgDefaults getOrganizationValuesByKey(String key) throws Exception;
+
+  List<OrgDefaults> getOrganizationValues(List<String> keys) throws Exception;
+
+  void generateOrganizationDefaults() throws Exception;
 }

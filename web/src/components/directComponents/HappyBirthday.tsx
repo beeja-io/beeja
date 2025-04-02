@@ -1,7 +1,9 @@
 import React, { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const HappyBirthday: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+    const { t } = useTranslation();
   const birthday = useRef<Birthday | null>(null);
   const then = useRef<number>(new Date().getTime());
 
@@ -215,7 +217,7 @@ const HappyBirthday: React.FC = () => {
 
   return (
     <>
-      <h1 className="eventText glitch">Happy Birthday &#127881;</h1>
+      <h1 className="eventText glitch">{t("HAPPY_BIRTHDAY")} &#127881;</h1>
       <canvas ref={canvasRef} id="birthday"></canvas>
     </>
   );

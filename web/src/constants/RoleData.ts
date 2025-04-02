@@ -192,6 +192,26 @@ const roleData = [
     ],
   },
   {
+    heading: 'Recruitment Management',
+    labels: ['Full Access', 'Create Applicant', 'Read Applicants', 'Read All Applicants', 'Download Resume', 'Update Entire Applicant', 'Update Applicant', 'Take Interview', 'Delete Interview', 'Access Referrals'],
+    subsections: [
+      {
+        moduleName: 'Recruitment Management',
+        permissions: [
+          { value: 'CAPT', label: 'Create Applicant' },
+          { value: 'GAAPT', label: 'Read Applicants' },
+          { value: 'GENAPT', label: 'Read All Applicants' },
+          { value: 'RRSM', label: 'Download Resume' },
+          { value: 'UENTAP', label: 'Update Entire Applicant' },
+          { value: 'UAPL', label: 'Update Applicant' },
+          { value: 'TINT', label: 'Take Interview' },
+          { value: 'DINT', label: 'Delete Interview' },
+          { value: 'ACREF', label: 'Access Referrals' },
+        ],
+      },
+    ],
+  },
+  {
     heading: 'Profile Picture',
     labels: ['Full Access', 'Edit Own', 'Edit Others'],
     subsections: [
