@@ -19,7 +19,6 @@ import { DownloadSVG } from '../../svgs/CommonSvgs.svs';
 import { downloadApplicantResume } from '../../service/axiosInstance';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import { PaginationContainer, PaginationButton } from '../../styles/StyledPagination.style';
 
 type ApplicantsListProps = {
   allApplicants: IApplicant[];
@@ -211,30 +210,6 @@ const ApplicantsList = (props: ApplicantsListProps) => {
               </>
             </tbody>
           </TableList>
-          <PaginationContainer>
-            <div className="paginationContainer">
-              <PaginationButton onClick={() => props.setCurrentPage(props.currentPage - 1)} disabled={props.currentPage === 1}    className ='arrowIcon' style={{ marginRight: "10px" }} >
-                Previous 
-              </PaginationButton>
-              <span>
-                Page {props.currentPage} of {Math.ceil(props.totalApplicants / props.pageSize)}
-              </span>
-              <PaginationButton onClick={() => props.setCurrentPage(props.currentPage + 1)} disabled={props.currentPage >= Math.ceil(props.totalApplicants / props.pageSize)} className ='arrowIcon' style={{ marginLeft: "10px" }} >
-                Next
-              </PaginationButton>
-              <select value={props.pageSize} onChange={(e) => {
-                props.setCurrentPage(1);
-                props.setPageSize(Number(e.target.value));
-              }}
-              style={{  
-                marginLeft: "10px" 
-              }}>
-               <option value="10">{t("10")}</option>
-                <option value="25">{t("25")}</option>
-                <option value="50">{t("50")}</option>
-              </select>
-            </div>
-          </PaginationContainer>
        </div>
       ) : (
         <BulkPayslipContainer>
