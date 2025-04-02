@@ -106,7 +106,7 @@ public class ApplicantServiceImpl implements ApplicantService {
   public PaginatedApplicantResponse getPaginatedApplicants(
           Integer page, Integer limit, String applicantId, String firstName,
           String positionAppliedFor, ApplicantStatus status, String experience,
-          Date createdDate, String sortBy, String sortDirection) {
+          Date fromDate,Date toDate, String sortBy, String sortDirection) {
 
     int pageNumber = (page != null && page >= 1) ? page - 1 : 0;
     int pageSize = (limit != null && limit > 0 && limit <= 100) ? limit : 10;
@@ -132,8 +132,26 @@ public class ApplicantServiceImpl implements ApplicantService {
     if (experience != null && !experience.isEmpty()) {
       query.addCriteria(Criteria.where("experience").regex("^" + experience + "$", "i"));
     }
-    if (createdDate != null) {
-      query.addCriteria(Criteria.where("createdAt").gte(createdDate));
+    if (fromDate != null && toDate != null) {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(toDate);
+      cal.set(Calendar.HOUR_OF_DAY, 23);
+      cal.set(Calendar.MINUTE, 59);
+      cal.set(Calendar.SECOND, 59);
+      cal.set(Calendar.MILLISECOND, 999);
+      toDate = cal.getTime();
+      query.addCriteria(Criteria.where("createdAt").gte(fromDate).lte(toDate));
+    } else if (fromDate != null) {
+      query.addCriteria(Criteria.where("createdAt").gte(fromDate));
+    } else if (toDate != null) {
+      Calendar cal = Calendar.getInstance();
+      cal.setTime(toDate);
+      cal.set(Calendar.HOUR_OF_DAY, 23);
+      cal.set(Calendar.MINUTE, 59);
+      cal.set(Calendar.SECOND, 59);
+      cal.set(Calendar.MILLISECOND, 999);
+      toDate = cal.getTime();
+      query.addCriteria(Criteria.where("createdAt").lte(toDate));
     }
 
     List<Applicant> applicants = mongoTemplate.find(query, Applicant.class);

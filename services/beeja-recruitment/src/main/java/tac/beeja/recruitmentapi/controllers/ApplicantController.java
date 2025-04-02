@@ -49,12 +49,13 @@ public class ApplicantController {
           @RequestParam(required = false) String positionAppliedFor,
           @RequestParam(required = false) ApplicantStatus status,
           @RequestParam(required = false) String experience,
-          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date createdDate,
+          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fromDate,
+          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate,
           @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
           @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
 
     PaginatedApplicantResponse response = applicantService.getPaginatedApplicants(
-            page, limit, applicantId, firstName, positionAppliedFor, status, experience, createdDate, sortBy, sortDirection);
+            page, limit, applicantId, firstName, positionAppliedFor, status, experience, fromDate, toDate, sortBy, sortDirection);
     return ResponseEntity.ok(response);
   }
 

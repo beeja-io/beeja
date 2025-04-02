@@ -35,6 +35,6 @@ public interface ApplicantService {
 
   Applicant changeStatusOfApplicant(String applicantId, String status) throws Exception;
 
-  PaginatedApplicantResponse getPaginatedApplicants(Integer page, Integer limit, String applicantId, String firstName, String positionAppliedFor, ApplicantStatus status, String experience, Date createdDate, String sortBy, String sortDirection);
+  PaginatedApplicantResponse getPaginatedApplicants(Integer page, Integer limit, String applicantId, String firstName, String positionAppliedFor, ApplicantStatus status, String experience, Date fromDate,Date toDate, String sortBy, String sortDirection);
 
 }
