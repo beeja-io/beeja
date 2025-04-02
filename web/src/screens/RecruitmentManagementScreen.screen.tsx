@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { IApplicant } from '../entities/ApplicantEntity';
 import { getAllApplicantList, getMyReferrals } from '../service/axiosInstance';
 import ApplicantsList from '../components/directComponents/ApplicantsList.component';
+import Pagination from '../components/directComponents/Pagination.component';
 
 type RecruitmentManagementScreenProps = {
   isReferral: boolean;
@@ -27,6 +28,10 @@ const RecruitmentManagementScreen = (
   };
   const [allApplicants, setAllApplicants] = useState<IApplicant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalApplicants, setTotalApplicants] = useState(0);
+
 
   const handleIsLoading = () => {
     setIsLoading(!isLoading)
@@ -37,14 +42,16 @@ const RecruitmentManagementScreen = (
       const response = props.isReferral
         ? await getMyReferrals()
         : await getAllApplicantList();
-      setAllApplicants(response.data.reverse());
+        setTotalApplicants(response.data.length);
+      const startIndex = (currentPage - 1) * pageSize;
+      setAllApplicants(response.data.slice(startIndex, startIndex + pageSize)); 
     } catch (error) {
       // FIXME
       alert(error);
     } finally {
       setIsLoading(false);
     }
-  }, [props.isReferral]);
+  }, [currentPage, pageSize, props.isReferral]);
 
   useEffect(() => {
     fetchApplicants();
@@ -81,7 +88,21 @@ const RecruitmentManagementScreen = (
           isLoading={isLoading}
           handleIsLoading={handleIsLoading}
           isReferral={props.isReferral}
+          currentPage={currentPage}
+          totalApplicants={totalApplicants}
+          pageSize={pageSize}
+          setCurrentPage={setCurrentPage}
+          setPageSize={setPageSize}
         />
+        <Pagination
+            currentPage={currentPage}
+            totalPages={Math.ceil(totalApplicants / pageSize)} 
+            handlePageChange={setCurrentPage}
+            totalItems={totalApplicants}
+            handleItemsPerPage={setPageSize} 
+            itemsPerPage={pageSize} 
+         />
+
       </ExpenseManagementMainContainer>
     </>
   );
