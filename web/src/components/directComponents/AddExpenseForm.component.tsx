@@ -759,6 +759,22 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   useKeyPress(27, () => {
     props.handleClose();
   });
+  const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
+   
+  const handleIsExpenseFormOpen = () => {
+    setIsExpenseFormOpen(!isExpenseFormOpen);
+  };
+  useEffect(() => {
+    if (isExpenseFormOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  
+    return () => {
+      document.body.style.overflow = ''; 
+    };
+  }, [isExpenseFormOpen])
   return (
     <ExpenseAddFormMainContainer
       onSubmit={
@@ -769,6 +785,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
     >
       <div className="formInputs">
         <div>
+         <button onClick={handleIsExpenseFormOpen}></button>
           <InputLabelContainer>
             <label>
               {t('DEPARTMENT')}{' '}
