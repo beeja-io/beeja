@@ -2,7 +2,7 @@ package com.beeja.api.accounts.utils;
 
 public class Constants {
   public static final String BEEJA = "BEEJA";
-  public static final String USE_BUSINESS_EMAIL = "Please use a business email";
+  public static final String USE_BUSINESS_EMAIL = "Please use a business or domain email";
   public static final String ORGANIZATION_ALREADY_EXIST =
       "Organization already registered at Beeja";
   public static final String REGISTER_BEFORE_LOGIN = "Please Register with Beeja to authenticate";

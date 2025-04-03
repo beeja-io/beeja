@@ -13,7 +13,7 @@ const Error404Screen = () => {
     <MainErrorScreenContainer>
       <ErrorScreenContentArea>
         <span className="errorCode">
-          4<span>0</span>4
+          {t("4")}<span> {t("0")}</span> {t("4")}
         </span>
         <span className="errorHeading">{t('SORRY_PAGE_NOT_FOUND')}</span>
         <span className="errorDescription">

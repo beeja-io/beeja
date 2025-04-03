@@ -18,11 +18,11 @@ public class UserContext {
   @Getter @Setter private static Set<String> loggedInUserPermissions;
 
   public static void setLoggedInUser(
-      String email,
-      String name,
-      String employeeId,
-      Map<String, Object> organization,
-      Set<String> permissions) {
+          String email,
+          String name,
+          String employeeId,
+          Map<String, Object> organization,
+          Set<String> permissions) {
     loggedInUserEmail = email;
     loggedInUserName = name;
     loggedInEmployeeId = employeeId;

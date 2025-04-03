@@ -1,15 +1,3 @@
-export const positions = [
-    'Software Engineer',
-    'DevOps Engineer',
-    'Data Scientist',
-    'Product Manager',
-    'UI/UX Designer',
-    'HR Manager',
-    'Finance Manager',
-    'Software Intern',
-    'UI/UX Intern',
-  ];
-  
   export const noOfYearsExperience = [
     '0-1',
     '1-2',

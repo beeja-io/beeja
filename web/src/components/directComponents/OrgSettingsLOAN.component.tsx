@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   BorderDivLine,
   TabContentEditArea,
@@ -30,6 +31,7 @@ type OrgSettingsLOANType = {
   setCompanyProfile: (org: IOrganization) => void;
 };
 const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
+  const { t } = useTranslation(); 
   const [isEditMonitorLoan, setIsEditMonitorLoan] = useState(false);
   const handleIsEditMonitorLoan = () => {
     setIsEditMonitorLoan(!isEditMonitorLoan);
@@ -114,11 +116,11 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
   };
   return (
     <>
-      <ProfileHeading>Loans</ProfileHeading>
+      <ProfileHeading>{t("LOANS")}</ProfileHeading>
       <BorderDivLine width="100%" />
       <TabContentMainContainer>
         <TabContentMainContainerHeading>
-          <h4>Monitor Loan</h4>
+          <h4>{t("MONITOR_LOAN")}</h4>
           <TabContentEditArea>
             {!isEditMonitorLoan ? (
               <span
@@ -158,10 +160,10 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
         <BorderDivLine width="100%" />
         <LoanFields>
           <div className="label">
-            <span>Set Monitor loan limit</span>
+            <span>{t("SET_MONITOR_LOAN_LIMIT")}</span>
             <span className="label-info">
               <InfoCircleSVG height={14} width={14} />
-              Set the custom limit for Monitor loan
+              {t("SET_THE_CUSTOM_LIMIT_FOR_MONITOR_LOAN")}
             </span>
           </div>
           <TextInput
@@ -179,7 +181,7 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
 
       <TabContentMainContainer>
         <TabContentMainContainerHeading>
-          <h4>Personal Loan</h4>
+          <h4>{t("PERSONAL_LOAN")}</h4>
           <TabContentEditArea>
             {!isEditPersonalLoan ? (
               <span
@@ -219,10 +221,10 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
         <BorderDivLine width="100%" />
         <LoanFields>
           <div className="label">
-            <span>Set Personal loan limit</span>
+            <span>{t("SET_MONITOR_LOAN_LIMIT")}</span>
             <span className="label-info">
               <InfoCircleSVG height={14} width={14} /> Set the custom limit for
-              Personal loan
+              {t("PERSONAL_LOAN")}
             </span>
           </div>
           <TextInput
@@ -248,7 +250,7 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
             checked={props.organization.loanLimit.isSalaryMultiplierEnabled}
             disabled
           />
-          Enable Base salary multiplier option
+          {t("ENABLE_BASE_SALARY_MULTIPLIER_OPTION")}
         </div>
 
         <LoanFields style={{ color: 'gray' }}>
@@ -256,8 +258,7 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
             <span className="textMedium">Base salary multiplier</span>
             <span className="label-info">
               <InfoCircleSVG height={37} width={37} /> This base salary
-              multiplier will applies to all employee’s salaries to determine
-              the loan limit.
+              {t(  "MULTIPLIER_WILL_APPLIES_TO_ALL_EMPLOYEE’S_SALARIES_TO_DETERMINE_THE_LOAN_LIMIT")}
             </span>
           </div>
           <Select
@@ -277,7 +278,7 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
             <span className="label-info">
               {' '}
               <InfoCircleSVG height={14} width={14} /> Salary Multiplier will be
-              available soon!!
+              {t("AVAILABLE_SOON!!")}
             </span>
           </div>
         </LoanFields>

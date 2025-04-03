@@ -158,12 +158,12 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select Accessory Type</option>
-                  <option value="Keyboard">Keyboard</option>
-                  <option value="Cable">Cable</option>
-                  <option value="Headset">Headset</option>
-                  <option value="Mouse">Mouse</option>
-                  <option value="USB_sticks">USB sticks</option>
+                  <option value="">{t("SELECT_ACCESSORY_TYPE")}</option>
+                  <option value="Keyboard">{t("KEYBOARD")}</option>
+                  <option value="Cable">{t("CABLE")}</option>
+                  <option value="Headset">{t("HEADSET")}</option>
+                  <option value="Mouse">{t("MOUSE")}</option>
+                  <option value="USB_sticks">{t("USB_STICKS")}</option>
                 </select>
               </InputLabelContainer>
             )}
