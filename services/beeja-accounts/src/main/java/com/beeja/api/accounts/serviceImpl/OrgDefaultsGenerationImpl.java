@@ -1,5 +1,6 @@
 package com.beeja.api.accounts.serviceImpl;
 
+import com.beeja.api.accounts.enums.OrganizationDefaults;
 import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.employeeSettings.OrgValues;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
@@ -24,14 +25,14 @@ public class OrgDefaultsGenerationImpl {
           orgDepartments = new OrgDefaults();
       }
       orgDepartments.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
-        orgDepartments.setKey("departments");
+        orgDepartments.setKey(OrganizationDefaults.DEPARTMENTS.getValue());
 
-      OrgValues engineering = new OrgValues();
-      engineering.setValue("Engineering");
-      engineering.setDescription("Engineering Department");
+        OrgValues engineering = new OrgValues();
+        engineering.setValue("Engineering");
+        engineering.setDescription("Engineering Department");
 
-      OrgValues hr = new OrgValues();
-      hr.setValue("HR");
+        OrgValues hr = new OrgValues();
+        hr.setValue("HR");
         hr.setDescription("Human Resources Department");
 
         OrgValues finance = new OrgValues();
@@ -64,7 +65,7 @@ public class OrgDefaultsGenerationImpl {
             orgJobTitles = new OrgDefaults();
         }
       orgJobTitles.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
-        orgJobTitles.setKey("jobTitles");
+        orgJobTitles.setKey(OrganizationDefaults.JOB_TITLES.getValue());
 
       OrgValues softwareEngineer = new OrgValues();
       softwareEngineer.setValue("Software Engineer");
@@ -72,15 +73,15 @@ public class OrgDefaultsGenerationImpl {
 
       OrgValues hr = new OrgValues();
       hr.setValue("HR Manager");
-        hr.setDescription("Human Resources");
+      hr.setDescription("Human Resources");
 
-        OrgValues finance = new OrgValues();
-        finance.setValue("Finance Manager");
-        finance.setDescription("Finance");
+      OrgValues finance = new OrgValues();
+      finance.setValue("Finance Manager");
+      finance.setDescription("Finance");
 
-        OrgValues DevOps = new OrgValues();
-        DevOps.setValue("DevOps Engineer");
-        DevOps.setDescription("DevOps");
+      OrgValues DevOps = new OrgValues();
+      DevOps.setValue("DevOps Engineer");
+      DevOps.setDescription("DevOps");
 
         if(orgJobTitles.getValues() == null){
             orgJobTitles.setValues(new HashSet<>());
@@ -105,7 +106,7 @@ public class OrgDefaultsGenerationImpl {
             orgEmploymentTypes = new OrgDefaults();
         }
       orgEmploymentTypes.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
-        orgEmploymentTypes.setKey("employmentTypes");
+        orgEmploymentTypes.setKey(OrganizationDefaults.EMPLOYMENT_TYPE.getValue());
 
       OrgValues fullTime = new OrgValues();
       fullTime.setValue("Full Time");
@@ -113,19 +114,19 @@ public class OrgDefaultsGenerationImpl {
 
       OrgValues partTime = new OrgValues();
       partTime.setValue("Part Time");
-        partTime.setDescription("Part Time Employment");
+      partTime.setDescription("Part Time Employment");
 
-        OrgValues contract = new OrgValues();
-        contract.setValue("Contract");
-        contract.setDescription("Contract Employment");
+      OrgValues contract = new OrgValues();
+      contract.setValue("Contract");
+      contract.setDescription("Contract Employment");
 
-        OrgValues intern = new OrgValues();
-        intern.setValue("Intern");
-        intern.setDescription("Internship");
+      OrgValues intern = new OrgValues();
+      intern.setValue("Intern");
+      intern.setDescription("Internship");
 
-        OrgValues unpaidIntern = new OrgValues();
-        unpaidIntern.setValue("Unpaid Intern");
-        unpaidIntern.setDescription("Unpaid Internship");
+      OrgValues unpaidIntern = new OrgValues();
+      unpaidIntern.setValue("Unpaid Intern");
+      unpaidIntern.setDescription("Unpaid Internship");
 
         if(orgEmploymentTypes.getValues() == null){
             orgEmploymentTypes.setValues(new HashSet<>());
@@ -150,31 +151,31 @@ public class OrgDefaultsGenerationImpl {
             orgExpenseCategories = new OrgDefaults();
         }
         orgExpenseCategories.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
-            orgExpenseCategories.setKey("expenseCategories");
+            orgExpenseCategories.setKey(OrganizationDefaults.EXPENSE_CATEGORY.getValue());
 
-        OrgValues travel = new OrgValues();
-        travel.setValue("Travel");
-        travel.setDescription("Travel Expenses");
+       OrgValues travel = new OrgValues();
+       travel.setValue("Travel");
+       travel.setDescription("Travel Expenses");
 
-        OrgValues officeSupplies = new OrgValues();
-        officeSupplies.setValue("Office Supplies");
-            officeSupplies.setDescription("Office Supplies Expenses");
+       OrgValues officeSupplies = new OrgValues();
+       officeSupplies.setValue("Office Supplies");
+       officeSupplies.setDescription("Office Supplies Expenses");
 
-            OrgValues utilities = new OrgValues();
-            utilities.setValue("Utilities");
-            utilities.setDescription("Utilities Expenses");
+       OrgValues utilities = new OrgValues();
+       utilities.setValue("Utilities");
+       utilities.setDescription("Utilities Expenses");
 
-            OrgValues rent = new OrgValues();
-            rent.setValue("Rent");
-            rent.setDescription("Rent Expenses");
+       OrgValues rent = new OrgValues();
+       rent.setValue("Rent");
+       rent.setDescription("Rent Expenses");
 
-            OrgValues insurance = new OrgValues();
-            insurance.setValue("Insurance");
-            insurance.setDescription("Insurance Expenses");
+       OrgValues insurance = new OrgValues();
+       insurance.setValue("Insurance");
+       insurance.setDescription("Insurance Expenses");
 
-            OrgValues others = new OrgValues();
-            others.setValue("Others");
-            others.setDescription("Other Expenses");
+       OrgValues others = new OrgValues();
+       others.setValue("Others");
+       others.setDescription("Other Expenses");
 
             if(orgExpenseCategories.getValues() == null){
                 orgExpenseCategories.setValues(new HashSet<>());
@@ -201,31 +202,31 @@ public class OrgDefaultsGenerationImpl {
             orgExpenseTypes = new OrgDefaults();
         }
         orgExpenseTypes.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
-            orgExpenseTypes.setKey("expenseTypes");
+            orgExpenseTypes.setKey(OrganizationDefaults.EXPENSE_TYPE.getValue());
 
-        OrgValues airfare = new OrgValues();
-        airfare.setValue("Airfare");
-        airfare.setDescription("Airfare Expenses");
+       OrgValues airfare = new OrgValues();
+       airfare.setValue("Airfare");
+       airfare.setDescription("Airfare Expenses");
 
-        OrgValues hotel = new OrgValues();
-        hotel.setValue("Hotel");
-            hotel.setDescription("Hotel Expenses");
+       OrgValues hotel = new OrgValues();
+       hotel.setValue("Hotel");
+       hotel.setDescription("Hotel Expenses");
 
-            OrgValues gas = new OrgValues();
-            gas.setValue("Gas");
-            gas.setDescription("Gas Expenses");
+       OrgValues gas = new OrgValues();
+       gas.setValue("Gas");
+       gas.setDescription("Gas Expenses");
 
-            OrgValues electricity = new OrgValues();
-            electricity.setValue("Electricity");
-            electricity.setDescription("Electricity Expenses");
+       OrgValues electricity = new OrgValues();
+       electricity.setValue("Electricity");
+       electricity.setDescription("Electricity Expenses");
 
-            OrgValues water = new OrgValues();
-            water.setValue("Water");
-            water.setDescription("Water Expenses");
+       OrgValues water = new OrgValues();
+       water.setValue("Water");
+       water.setDescription("Water Expenses");
 
-            OrgValues others = new OrgValues();
-            others.setValue("Others");
-            others.setDescription("Other Expenses");
+       OrgValues others = new OrgValues();
+       others.setValue("Others");
+       others.setDescription("Other Expenses");
 
             if(orgExpenseTypes.getValues() == null){
                 orgExpenseTypes.setValues(new HashSet<>());
@@ -250,27 +251,27 @@ public class OrgDefaultsGenerationImpl {
             orgPaymentModes = new OrgDefaults();
         }
         orgPaymentModes.setOrganizationId(UserContext.getLoggedInUserOrganization().getId());
-            orgPaymentModes.setKey("paymentModes");
+            orgPaymentModes.setKey(OrganizationDefaults.PAYMENT_MODE.getValue());
 
-        OrgValues cash = new OrgValues();
-        cash.setValue("Cash");
-        cash.setDescription("Cash Payment");
+       OrgValues cash = new OrgValues();
+       cash.setValue("Cash");
+       cash.setDescription("Cash Payment");
 
-        OrgValues creditCard = new OrgValues();
-        creditCard.setValue("Credit Card");
-            creditCard.setDescription("Credit Card Payment");
+       OrgValues creditCard = new OrgValues();
+       creditCard.setValue("Credit Card");
+       creditCard.setDescription("Credit Card Payment");
 
-            OrgValues debitCard = new OrgValues();
-            debitCard.setValue("Debit Card");
-            debitCard.setDescription("Debit Card Payment");
+       OrgValues debitCard = new OrgValues();
+       debitCard.setValue("Debit Card");
+       debitCard.setDescription("Debit Card Payment");
 
-            OrgValues netBanking = new OrgValues();
-            netBanking.setValue("Net Banking");
-            netBanking.setDescription("Net Banking Payment");
+       OrgValues netBanking = new OrgValues();
+       netBanking.setValue("Net Banking");
+       netBanking.setDescription("Net Banking Payment");
 
-            OrgValues others = new OrgValues();
-            others.setValue("Others");
-            others.setDescription("Other Payment Modes");
+       OrgValues others = new OrgValues();
+       others.setValue("Others");
+       others.setDescription("Other Payment Modes");
 
             if(orgPaymentModes.getValues() == null){
                 orgPaymentModes.setValues(new HashSet<>());
