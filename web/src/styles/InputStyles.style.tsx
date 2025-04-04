@@ -33,7 +33,7 @@ export const StyledForm = styled.form`
   flex-direction: column;
   justify-content: space-between;
   min-height: 80vh;
-  max-height: 50svh; 
+  max-height: 100svh; 
   overflow-y: scroll; 
   padding-right: 10px;
 
