@@ -425,7 +425,7 @@ export const FileUploadForm = styled.div`
 
    form {
     min-height: 80vh;
-    max-height: 50svh; 
+    max-height: 100svh; 
     overflow-y: scroll; 
    padding-right: 10px; 
   }
