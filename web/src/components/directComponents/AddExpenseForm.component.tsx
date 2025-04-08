@@ -784,8 +784,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
     >
       <div className="formInputs">
-        <div>
-         <button onClick={handleIsExpenseFormOpen}></button>
+        <div onClick={handleIsExpenseFormOpen}>
           <InputLabelContainer>
             <label>
               {t('DEPARTMENT')}{' '}
