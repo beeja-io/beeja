@@ -517,7 +517,8 @@ export const CenterModalTypeTwoInnerContainer = styled.section`
 export const CenterModalTypeExpenseInnerContainer = styled.div`
   width: 40%; /* Adjust modal width */
   max-width: 700px; /* Set a maximum width for responsiveness */
-  background: #ffffff;
+  //background: #ffffff;
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -531,7 +532,7 @@ export const CenterModalTypeExpenseInnerContainer = styled.div`
   .heading {
     font-size: 1.8rem; /* Larger font size for the heading */
     font-weight: 700; /* Bold heading */
-    color: #333; /* Darker text color */
+    //color: #333; /* Darker text color */
     margin: 0;
   }
 

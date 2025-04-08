@@ -248,6 +248,7 @@ export const ExpenseListSection = styled.section`
   }
   .noFilters {
     font-size: 12px;
+    //color:${(props) => props.theme.colors.grayColors.gray7};
     color: #687588;
     font-weight: 600;
     line-height: 12px;

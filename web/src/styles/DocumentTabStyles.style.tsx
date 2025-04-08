@@ -337,7 +337,8 @@ export const DropdownOption = styled.div`
   position: relative;
   width: 200px;
   text-decoration: none;
-  color: #111827; //not in theme but in figma
+  //color: #111827; //not in theme but in figma
+  color: ${(props) => props.theme.colors.blackColors.black4};
   cursor: pointer;
   font-size: 14px;
   font-style: normal;
@@ -549,7 +550,8 @@ export const NoDocsContainer = styled.div`
   margin: 68px 0px 130px 0px;
 
   .heading {
-    color: 68px 0px 130px 0px;
+    //color: 68px 0px 130px 0px;
+    color: ${(props) => props.theme.colors.blackColors.black4};
     text-align: center;
     font-family: Nunito;
     font-size: 32px;

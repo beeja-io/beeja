@@ -225,7 +225,8 @@ export const InputContainer = styled.div<{ isValueInvalid?: boolean }>`
     font-weight: bold;
     margin-right: 10px;
     font-size: 14px;
-    color: #333;
+    //color: #333;
+    color:${(props) => props.theme.colors.blackColors.black7};
   }
 
   input,
