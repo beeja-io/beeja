@@ -5,9 +5,11 @@ import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.annotations.HasPermission;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
+import com.beeja.api.financemanagementservice.enums.LoanStatus;
 import com.beeja.api.financemanagementservice.exceptions.BadRequestException;
 import com.beeja.api.financemanagementservice.modals.Loan;
 import com.beeja.api.financemanagementservice.requests.SubmitLoanRequest;
+import com.beeja.api.financemanagementservice.response.LoanResponse;
 import com.beeja.api.financemanagementservice.service.LoanService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,15 @@ public class LoanController {
     return ResponseEntity.ok(loans);
   }
 
+  @GetMapping("/limitedApplications")
+  public LoanResponse getAllLoansBasedOnCount(
+          @RequestParam(defaultValue="0") int pageNumber,
+          @RequestParam(defaultValue="10") int pageSize,
+          @RequestParam(defaultValue = "requestedDate") String sortBy,
+          @RequestParam(defaultValue="desc") String sortDirection,
+          @RequestParam(required = false) LoanStatus status){
+    return loanService.getLoansWithCount(pageNumber, pageSize,sortBy,sortDirection,status);
+  }
   @GetMapping("/{employeeID}")
   @HasPermission(Constants.READ_LOAN)
   public ResponseEntity<List<Loan>> getLoansByEmployeeId(@PathVariable String employeeID)
