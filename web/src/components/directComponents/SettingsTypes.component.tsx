@@ -196,7 +196,7 @@ export const SettingsTypes = ({
         <h4>{type}</h4>
         <Button className="submit shadow buttonstyle" onClick={handleOpenModal}>
           <AddNewPlusSVG />
-          {t("ADD")}{type}
+          {t("ADD")} {type}
         </Button>
       </TabContentMainContainerHeading>
       <Hr />
