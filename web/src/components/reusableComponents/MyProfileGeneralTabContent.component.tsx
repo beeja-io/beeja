@@ -22,7 +22,10 @@ import {
 } from '../../svgs/CommonSvgs.svs';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import ToastMessage from './ToastMessage.component';
-import { getOrganizationValuesByKey, updateEmployeeDetailsByEmployeeId } from '../../service/axiosInstance';
+import {
+  getOrganizationValuesByKey,
+  updateEmployeeDetailsByEmployeeId,
+} from '../../service/axiosInstance';
 import {
   formatDate,
   formatDateYYYYMMDD,
@@ -213,11 +216,12 @@ export const GeneralDetailsTab = ({
       if (emailLabel in modifiedFields && !isValidEmail(emailValue)) {
         setFormErrorToastHead('Invalid Email');
         setFormErrorToastMessage(
-          `${emailLabel === 'Email'
-            ? 'Emergency email'
-            : emailLabel === 'Email Address'
-              ? 'Email Address'
-              : 'Alt. Email Address'
+          `${
+            emailLabel === 'Email'
+              ? 'Emergency email'
+              : emailLabel === 'Email Address'
+                ? 'Email Address'
+                : 'Alt. Email Address'
           } must be in format of example@exam.com`
         );
         handleIsFormEmailValid();
@@ -391,10 +395,15 @@ export const GeneralDetailsTab = ({
   const allowFullEditingAccess =
     user && hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES);
 
-  const [departmentList, setDepartmentList] = useState<OrgDefaults>({} as OrgDefaults);
+  const [departmentList, setDepartmentList] = useState<OrgDefaults>(
+    {} as OrgDefaults
+  );
   const [jobTitles, setJobTitles] = useState<OrgDefaults>({} as OrgDefaults);
-  const [employmentTypes, setEmploymentTypes] = useState<OrgDefaults>({} as OrgDefaults);
-  const [isDefaultResponseLoading, setIsDefaultResponseLoading] = useState(false);
+  const [employmentTypes, setEmploymentTypes] = useState<OrgDefaults>(
+    {} as OrgDefaults
+  );
+  const [isDefaultResponseLoading, setIsDefaultResponseLoading] =
+    useState(false);
 
   useEffect(() => {
     if (heading === 'Employment Info') {
@@ -402,8 +411,10 @@ export const GeneralDetailsTab = ({
         try {
           setIsDefaultResponseLoading(true);
           const response = await getOrganizationValuesByKey('departments');
-          const jobDetailsResponse = await getOrganizationValuesByKey('jobTitles');
-          const employmentTypesResponse = await getOrganizationValuesByKey('employmentTypes');
+          const jobDetailsResponse =
+            await getOrganizationValuesByKey('jobTitles');
+          const employmentTypesResponse =
+            await getOrganizationValuesByKey('employmentTypes');
           console.log('response', jobDetailsResponse.data.values);
           setEmploymentTypes(employmentTypesResponse.data);
           setJobTitles(jobDetailsResponse.data);
@@ -421,249 +432,100 @@ export const GeneralDetailsTab = ({
 
   return (
     <>
-      {isDefaultResponseLoading ? <SpinAnimation /> : <TabContentMainContainer>
-        <TabContentMainContainerHeading>
-          <h4>{heading}</h4>
-          {allowFullEditingAccess &&
+      {isDefaultResponseLoading ? (
+        <SpinAnimation />
+      ) : (
+        <TabContentMainContainer>
+          <TabContentMainContainerHeading>
+            <h4>{heading}</h4>
+            {allowFullEditingAccess &&
             user.employeeId != employee.account.employeeId ? (
-            <TabContentEditArea>
-              {user &&
-                (allowFullEditingAccess ||
-                  user.employeeId === employee.account.employeeId) &&
-                (!isEditModeOn ? (
-                  <span
-                    title={`Edit ${employee.account.firstName}'s Profile`}
-                    onClick={() => {
-                      handleIsEditModeOn();
-                      resetFormData();
-                    }}
-                  >
-                    <EditWhitePenSVG />
-                  </span>
-                ) : (
-                  <span>
-                    <span title="Save Changes" onClick={handleSubmit}>
-                      <CheckBoxOnSVG />
-                    </span>
+              <TabContentEditArea>
+                {user &&
+                  (allowFullEditingAccess ||
+                    user.employeeId === employee.account.employeeId) &&
+                  (!isEditModeOn ? (
                     <span
-                      title="Discard Changes"
+                      title={`Edit ${employee.account.firstName}'s Profile`}
                       onClick={() => {
-                        cancelEdit();
+                        handleIsEditModeOn();
                         resetFormData();
                       }}
                     >
-                      <CrossMarkSVG />
+                      <EditWhitePenSVG />
                     </span>
-                  </span>
-                ))}
-            </TabContentEditArea>
-          ) : heading === 'Personal Info' &&
-            user?.employeeId === employee.account.employeeId ? (
-            <TabContentEditArea>
-              {user &&
-                (allowFullEditingAccess ||
-                  user.employeeId === employee.account.employeeId) &&
-                (!isEditModeOn ? (
-                  <span
-                    title={`Edit ${employee.account.firstName}'s Profile`}
-                    onClick={() => {
-                      handleIsEditModeOn();
-                      resetFormData();
-                    }}
-                  >
-                    <EditWhitePenSVG />
-                  </span>
-                ) : (
-                  <span>
-                    <span title="Save Changes" onClick={handleSubmit}>
-                      <CheckBoxOnSVG />
+                  ) : (
+                    <span>
+                      <span title="Save Changes" onClick={handleSubmit}>
+                        <CheckBoxOnSVG />
+                      </span>
+                      <span
+                        title="Discard Changes"
+                        onClick={() => {
+                          cancelEdit();
+                          resetFormData();
+                        }}
+                      >
+                        <CrossMarkSVG />
+                      </span>
                     </span>
+                  ))}
+              </TabContentEditArea>
+            ) : heading === 'Personal Info' &&
+              user?.employeeId === employee.account.employeeId ? (
+              <TabContentEditArea>
+                {user &&
+                  (allowFullEditingAccess ||
+                    user.employeeId === employee.account.employeeId) &&
+                  (!isEditModeOn ? (
                     <span
-                      title="Discard Changes"
+                      title={`Edit ${employee.account.firstName}'s Profile`}
                       onClick={() => {
-                        cancelEdit();
+                        handleIsEditModeOn();
                         resetFormData();
                       }}
                     >
-                      <CrossMarkSVG />
+                      <EditWhitePenSVG />
                     </span>
-                  </span>
-                ))}
-            </TabContentEditArea>
-          ) : (
-            ''
-          )}
-        </TabContentMainContainerHeading>
-        <BorderDivLine width="100%" />
-        <TabContentInnerContainer>
-          <div>
-            <TabContentTable>
-              {firstColumn.map(({ label, value }) => (
-                <tr key={label}>
-                  <TabContentTableTd>{t(label)}</TabContentTableTd>
-                  {isEditModeOn &&
+                  ) : (
+                    <span>
+                      <span title="Save Changes" onClick={handleSubmit}>
+                        <CheckBoxOnSVG />
+                      </span>
+                      <span
+                        title="Discard Changes"
+                        onClick={() => {
+                          cancelEdit();
+                          resetFormData();
+                        }}
+                      >
+                        <CrossMarkSVG />
+                      </span>
+                    </span>
+                  ))}
+              </TabContentEditArea>
+            ) : (
+              ''
+            )}
+          </TabContentMainContainerHeading>
+          <BorderDivLine width="100%" />
+          <TabContentInnerContainer>
+            <div>
+              <TabContentTable>
+                {firstColumn.map(({ label, value }) => (
+                  <tr key={label}>
+                    <TabContentTableTd>{t(label)}</TabContentTableTd>
+                    {isEditModeOn &&
                     ((user?.employeeId === employee.account.employeeId &&
                       editableFieldsForLoggedInEmployee.includes(label)) ||
                       (allowFullEditingAccess &&
                         user.employeeId !== employee.account.employeeId)) ? (
-                    <TabContentTableTd>
-                      {label === 'Country' ||
+                      <TabContentTableTd>
+                        {label === 'Country' ||
                         label === 'Nationality' ||
                         label === 'Department' ||
                         label === 'Employment Type' ||
                         label === 'Designation' ? (
-                        <SelectInput
-                          label={label}
-                          value={
-                            formData[label] !== undefined ? formData[label] : ''
-                          }
-                          options={
-                            label === 'Country'
-                              ? ['India', 'Germany', 'United States']
-                              : label === 'Nationality'
-                                ? ['Indian', 'German', 'American']
-                                : label === 'Department'
-                                  ? departmentList?.values.map(
-                                    (department) => department.value
-                                  )
-                                  : label === 'Employment Type'
-                                    ? employmentTypes?.values.map(
-                                      (employmentType) => employmentType.value
-                                    )
-                                    : label === 'Designation'
-                                      ? jobTitles?.values.map(
-                                        (jobTitle) => jobTitle.value
-                                      )
-                                      : []
-                          }
-                          onChange={(label, selectedValue) =>
-                            handleChange(label, selectedValue)
-                          }
-                        />
-                      ) : label === 'Joining Date' ? (
-                        <>
-                          <CalendarInputContainer>
-                            <InlineInput
-                              placeholder={t('Enter Joining Date')}
-                              value={
-                                joiningDate
-                                  ? formatDateDDMMYYYY(joiningDate)
-                                  : employee.employee.jobDetails &&
-                                    employee.employee.jobDetails.joiningDate
-                                    ? formatDateDDMMYYYY(
-                                      employee.employee.jobDetails.joiningDate
-                                    )
-                                    : ''
-                              }
-                              onChange={(e) => setJoiningDate(e.target.value)}
-                              disabled
-                            />
-                            <StyledCalendarIconDark>
-                              <span onClick={toggleCalendar}>
-                                <CalenderIconDark />
-                              </span>
-                            </StyledCalendarIconDark>
-                          </CalendarInputContainer>
-                        </>
-                      ) : (
-                        <InlineInput
-                          type={
-                            label === 'Date of Birth' ||
-                              label === 'Joining Date'
-                              ? 'date'
-                              : 'text'
-                          }
-                          max={new Date().toISOString().split('T')[0]}
-                          value={
-                            formData[label] !== undefined
-                              ? (label === 'Date of Birth' || label === 'Joining Date')
-                                ? formatDateYYYYMMDD(formData[label])
-                                : formData[label]
-                              : ''
-                          }
-                          placeholder={`Enter ${t(label)}`}
-                          onChange={(e) => {
-                            const inputValue = e.target.value;
-                            const labelsToExcludeFromStrictAlphabets = [
-                              'Email Address',
-                              'Alt Email Address',
-                              'Primary Address',
-                              'Email',
-                              'Phone',
-                              'Date of Birth',
-                              'Joining Date',
-                            ];
-                            if (label === 'Postal Code') {
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ''
-                              );
-                              const validValue = numericValue.slice(0, 6);
-                              handleChange(label, validValue);
-                            } else if (label === 'Aadhar Number') {
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ''
-                              );
-                              const validValue = numericValue.slice(0, 12);
-                              handleChange(label, validValue);
-                            } else if (label === 'Phone') {
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ''
-                              );
-                              const validValue = numericValue.slice(0, 10);
-                              handleChange(label, validValue);
-                            } else if (
-                              !labelsToExcludeFromStrictAlphabets.includes(
-                                label
-                              ) &&
-                              (/^[a-zA-Z\s]*$/.test(inputValue) ||
-                                inputValue === '')
-                            ) {
-                              handleChange(label, inputValue);
-                            }
-
-                            // For other cases in the exclusion list, allow any input
-                            else if (
-                              labelsToExcludeFromStrictAlphabets.includes(label)
-                            ) {
-                              handleChange(label, inputValue);
-                            }
-                          }}
-                        />
-                      )}
-                    </TabContentTableTd>
-                  ) : (
-                    <>
-                      {value != '-' &&
-                        (label === 'Joining Date' ||
-                          label === 'Date of Birth') ? (
-                        <TabContentTableTd>
-                          {formatDate(value)}
-                        </TabContentTableTd>
-                      ) : (
-                        <TabContentTableTd>{t(value)}</TabContentTableTd>
-                      )}
-                    </>
-                  )}
-                </tr>
-              ))}
-            </TabContentTable>
-          </div>
-          {secondColumn.length > 0 && (
-            <div>
-              <TabContentTable>
-                {secondColumn.map(({ label, value }) => (
-                  <tr key={label}>
-                    <TabContentTableTd>{t(label)}</TabContentTableTd>
-                    {isEditModeOn &&
-                      ((user?.employeeId === employee.account.employeeId &&
-                        editableFieldsForLoggedInEmployee.includes(label)) ||
-                        (allowFullEditingAccess &&
-                          user.employeeId !== employee.account.employeeId)) ? (
-                      <TabContentTableTd>
-                        {label === 'Gender' || label === 'Marital Status' ? (
                           <SelectInput
                             label={label}
                             value={
@@ -672,35 +534,121 @@ export const GeneralDetailsTab = ({
                                 : ''
                             }
                             options={
-                              label === 'Gender'
-                                ? ['Male', 'Female']
-                                : ['Married', 'Single']
+                              label === 'Country'
+                                ? ['India', 'Germany', 'United States']
+                                : label === 'Nationality'
+                                  ? ['Indian', 'German', 'American']
+                                  : label === 'Department'
+                                    ? departmentList?.values.map(
+                                        (department) => department.value
+                                      )
+                                    : label === 'Employment Type'
+                                      ? employmentTypes?.values.map(
+                                          (employmentType) =>
+                                            employmentType.value
+                                        )
+                                      : label === 'Designation'
+                                        ? jobTitles?.values.map(
+                                            (jobTitle) => jobTitle.value
+                                          )
+                                        : []
                             }
                             onChange={(label, selectedValue) =>
                               handleChange(label, selectedValue)
                             }
                           />
+                        ) : label === 'Joining Date' ? (
+                          <>
+                            <CalendarInputContainer>
+                              <InlineInput
+                                placeholder={t('Enter Joining Date')}
+                                value={
+                                  joiningDate
+                                    ? formatDateDDMMYYYY(joiningDate)
+                                    : employee.employee.jobDetails &&
+                                        employee.employee.jobDetails.joiningDate
+                                      ? formatDateDDMMYYYY(
+                                          employee.employee.jobDetails
+                                            .joiningDate
+                                        )
+                                      : ''
+                                }
+                                onChange={(e) => setJoiningDate(e.target.value)}
+                                disabled
+                              />
+                              <StyledCalendarIconDark>
+                                <span onClick={toggleCalendar}>
+                                  <CalenderIconDark />
+                                </span>
+                              </StyledCalendarIconDark>
+                            </CalendarInputContainer>
+                          </>
                         ) : (
                           <InlineInput
-                            type={label === 'Date of Birth' ? 'date' : 'text'}
-                            placeholder={`Enter ${label}`}
+                            type={
+                              label === 'Date of Birth' ||
+                              label === 'Joining Date'
+                                ? 'date'
+                                : 'text'
+                            }
+                            max={new Date().toISOString().split('T')[0]}
                             value={
                               formData[label] !== undefined
-                                ? formData[label]
-                                : value
+                                ? label === 'Date of Birth' ||
+                                  label === 'Joining Date'
+                                  ? formatDateYYYYMMDD(formData[label])
+                                  : formData[label]
+                                : ''
                             }
+                            placeholder={`Enter ${t(label)}`}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const labelsWhichAllowOnlyNumbers = [
-                                'Phone Number',
-                                'Alt Phone Number',
+                              const labelsToExcludeFromStrictAlphabets = [
+                                'Email Address',
+                                'Alt Email Address',
+                                'Primary Address',
+                                'Email',
+                                'Phone',
+                                'Date of Birth',
+                                'Joining Date',
                               ];
-                              if (labelsWhichAllowOnlyNumbers.includes(label)) {
-                                const numericInputValue = inputValue
-                                  .replace(/[^0-9]/g, '')
-                                  .slice(0, 10);
-                                handleChange(label, numericInputValue);
-                              } else {
+                              if (label === 'Postal Code') {
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ''
+                                );
+                                const validValue = numericValue.slice(0, 6);
+                                handleChange(label, validValue);
+                              } else if (label === 'Aadhar Number') {
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ''
+                                );
+                                const validValue = numericValue.slice(0, 12);
+                                handleChange(label, validValue);
+                              } else if (label === 'Phone') {
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  ''
+                                );
+                                const validValue = numericValue.slice(0, 10);
+                                handleChange(label, validValue);
+                              } else if (
+                                !labelsToExcludeFromStrictAlphabets.includes(
+                                  label
+                                ) &&
+                                (/^[a-zA-Z\s]*$/.test(inputValue) ||
+                                  inputValue === '')
+                              ) {
+                                handleChange(label, inputValue);
+                              }
+
+                              // For other cases in the exclusion list, allow any input
+                              else if (
+                                labelsToExcludeFromStrictAlphabets.includes(
+                                  label
+                                )
+                              ) {
                                 handleChange(label, inputValue);
                               }
                             }}
@@ -708,22 +656,98 @@ export const GeneralDetailsTab = ({
                         )}
                       </TabContentTableTd>
                     ) : (
-                      <TabContentTableTd>{t(value)}</TabContentTableTd>
+                      <>
+                        {value != '-' &&
+                        (label === 'Joining Date' ||
+                          label === 'Date of Birth') ? (
+                          <TabContentTableTd>
+                            {formatDate(value)}
+                          </TabContentTableTd>
+                        ) : (
+                          <TabContentTableTd>{t(value)}</TabContentTableTd>
+                        )}
+                      </>
                     )}
                   </tr>
                 ))}
               </TabContentTable>
             </div>
-          )}
-        </TabContentInnerContainer>
-      </TabContentMainContainer>}
+            {secondColumn.length > 0 && (
+              <div>
+                <TabContentTable>
+                  {secondColumn.map(({ label, value }) => (
+                    <tr key={label}>
+                      <TabContentTableTd>{t(label)}</TabContentTableTd>
+                      {isEditModeOn &&
+                      ((user?.employeeId === employee.account.employeeId &&
+                        editableFieldsForLoggedInEmployee.includes(label)) ||
+                        (allowFullEditingAccess &&
+                          user.employeeId !== employee.account.employeeId)) ? (
+                        <TabContentTableTd>
+                          {label === 'Gender' || label === 'Marital Status' ? (
+                            <SelectInput
+                              label={label}
+                              value={
+                                formData[label] !== undefined
+                                  ? formData[label]
+                                  : ''
+                              }
+                              options={
+                                label === 'Gender'
+                                  ? ['Male', 'Female']
+                                  : ['Married', 'Single']
+                              }
+                              onChange={(label, selectedValue) =>
+                                handleChange(label, selectedValue)
+                              }
+                            />
+                          ) : (
+                            <InlineInput
+                              type={label === 'Date of Birth' ? 'date' : 'text'}
+                              placeholder={`Enter ${label}`}
+                              value={
+                                formData[label] !== undefined
+                                  ? formData[label]
+                                  : value
+                              }
+                              onChange={(e) => {
+                                const inputValue = e.target.value;
+                                const labelsWhichAllowOnlyNumbers = [
+                                  'Phone Number',
+                                  'Alt Phone Number',
+                                ];
+                                if (
+                                  labelsWhichAllowOnlyNumbers.includes(label)
+                                ) {
+                                  const numericInputValue = inputValue
+                                    .replace(/[^0-9]/g, '')
+                                    .slice(0, 10);
+                                  handleChange(label, numericInputValue);
+                                } else {
+                                  handleChange(label, inputValue);
+                                }
+                              }}
+                            />
+                          )}
+                        </TabContentTableTd>
+                      ) : (
+                        <TabContentTableTd>{t(value)}</TabContentTableTd>
+                      )}
+                    </tr>
+                  ))}
+                </TabContentTable>
+              </div>
+            )}
+          </TabContentInnerContainer>
+        </TabContentMainContainer>
+      )}
 
       {isEditModeOn && showCalendar ? (
         <CalendarContainer>
           <Calendar
             title="Select a Date"
             handleCalenderChange={handleCalendarChange}
-            handleDateInput={() => { }}
+            handleDateInput={() => {}}
             selectedDate={null}
           />
         </CalendarContainer>

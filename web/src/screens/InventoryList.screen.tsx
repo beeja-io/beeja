@@ -79,7 +79,7 @@ const InventoryList = ({
   isShowFilters,
   selectedFiltersText,
   deviceTypes,
-  inventoryProviders
+  inventoryProviders,
 }: Props) => {
   const { user } = useUser();
   const Actions = [
@@ -167,7 +167,7 @@ const InventoryList = ({
               </option>
             ))}
           </select>
-          {inventoryProviders && inventoryProviders.values &&
+          {inventoryProviders && inventoryProviders.values && (
             <select
               className="selectoption"
               name="provider"
@@ -184,7 +184,7 @@ const InventoryList = ({
                 </option>
               ))}
             </select>
-          }
+          )}
         </FilterSection>
         <div className="right">
           <DisplayFilters>

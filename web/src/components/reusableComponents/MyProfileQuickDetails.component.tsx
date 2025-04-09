@@ -113,10 +113,7 @@ const MyProfileQuickDetailsComponent = ({
     setIsLoadingResponse(true);
     try {
       employee &&
-        (await updateEmployeeRole(
-          employee.account.employeeId,
-          roles
-        ));
+        (await updateEmployeeRole(employee.account.employeeId, roles));
 
       setAddRoleButtonText('Add Role');
       setDeleteRoleButtonText('Delete Role');

@@ -136,17 +136,17 @@ export const SettingsTypes = ({
         ? settingTypes?.filter((category) => category.index !== indexvalue)
         : actionType === 'Edit'
           ? settingTypes?.map((category) =>
-            category.index === indexvalue
-              ? { orgValues: newSettingType, index: category.index }
-              : category
-          )
+              category.index === indexvalue
+                ? { orgValues: newSettingType, index: category.index }
+                : category
+            )
           : [
-            ...(settingTypes || []),
-            {
-              orgValues: newSettingType,
-              index: settingTypes?.length || 0,
-            },
-          ];
+              ...(settingTypes || []),
+              {
+                orgValues: newSettingType,
+                index: settingTypes?.length || 0,
+              },
+            ];
 
     if (actionType === 'Delete') {
       handleDeleteModal();
@@ -196,7 +196,7 @@ export const SettingsTypes = ({
         <h4>{type}</h4>
         <Button className="submit shadow buttonstyle" onClick={handleOpenModal}>
           <AddNewPlusSVG />
-          {t("ADD")} {type}
+          {t('ADD')} {type}
         </Button>
       </TabContentMainContainerHeading>
       <Hr />
@@ -211,20 +211,22 @@ export const SettingsTypes = ({
             </tr>
           </TableHead>
           <tbody>
-            {settingTypes?.filter((settingTypes) => settingTypes.orgValues.value).map((settingTypes) => (
-              <TableBodyRow key={settingTypes.index}>
-                <td>{settingTypes.orgValues.value}</td>
-                <td>{settingTypes.orgValues.description}</td>
-                <td>
-                  <ExpenseTypeAction
-                    options={Actions}
-                    fetchExpenses={fetchSettingsTypes}
-                    currentExpense={settingTypes}
-                    onActionClick={handleAction}
-                  />
-                </td>
-              </TableBodyRow>
-            ))}
+            {settingTypes
+              ?.filter((settingTypes) => settingTypes.orgValues.value)
+              .map((settingTypes) => (
+                <TableBodyRow key={settingTypes.index}>
+                  <td>{settingTypes.orgValues.value}</td>
+                  <td>{settingTypes.orgValues.description}</td>
+                  <td>
+                    <ExpenseTypeAction
+                      options={Actions}
+                      fetchExpenses={fetchSettingsTypes}
+                      currentExpense={settingTypes}
+                      onActionClick={handleAction}
+                    />
+                  </td>
+                </TableBodyRow>
+              ))}
           </tbody>
         </Table>
       </TableContainer>
@@ -265,14 +267,14 @@ export const SettingsTypes = ({
               <div style={{ paddingLeft: '150px' }}>
                 <ValidationText>
                   <AlertISVG />
-                  {t("THE_FIELD_IS_MANDATORY")}{' '}
+                  {t('THE_FIELD_IS_MANDATORY')}{' '}
                 </ValidationText>
               </div>
             )}
           </div>
           <div>
             <InputContainer>
-              <label>{t("DESCRIPTION:")}</label>
+              <label>{t('DESCRIPTION:')}</label>
               <input
                 type="text"
                 value={newSettingType.description}

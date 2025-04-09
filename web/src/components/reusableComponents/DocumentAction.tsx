@@ -298,7 +298,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
                   >
                     <DownloadIcon stroke="#28303F" />
                   </span>
-                  {t("DOWNLOAD")}
+                  {t('DOWNLOAD')}
                 </span>
               </button>
             }
@@ -323,7 +323,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
                         }}
                       >
                         <p className="pages">
-                          {t("PAGE")} {pageNumber} {t("OF")} {numPages}
+                          {t('PAGE')} {pageNumber} {t('OF')} {numPages}
                         </p>
                         <div
                           style={{

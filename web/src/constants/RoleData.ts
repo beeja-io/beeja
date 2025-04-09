@@ -193,7 +193,18 @@ const roleData = [
   },
   {
     heading: 'Recruitment Management',
-    labels: ['Full Access', 'Create Applicant', 'Read Applicants', 'Read All Applicants', 'Download Resume', 'Update Entire Applicant', 'Update Applicant', 'Take Interview', 'Delete Interview', 'Access Referrals'],
+    labels: [
+      'Full Access',
+      'Create Applicant',
+      'Read Applicants',
+      'Read All Applicants',
+      'Download Resume',
+      'Update Entire Applicant',
+      'Update Applicant',
+      'Take Interview',
+      'Delete Interview',
+      'Access Referrals',
+    ],
     subsections: [
       {
         moduleName: 'Recruitment Management',

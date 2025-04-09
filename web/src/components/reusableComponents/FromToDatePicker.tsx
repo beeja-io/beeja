@@ -336,7 +336,7 @@ export const InlineCalendar = ({
   return (
     <CalendarContainer>
       <CalendarHeader>
-        {t("SET_DATE")}
+        {t('SET_DATE')}
         <HeaderLine />
       </CalendarHeader>
 

@@ -53,7 +53,7 @@ export const BulkPayslipContainer = styled.section`
       }
     }
   }
-  
+
   @media screen and (max-width: 1387px) {
     .topFields {
       gap: 20px;

@@ -80,18 +80,18 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
     <MyProfileInnerContainer className="settings-tab" style={{ width: '100%' }}>
       <MyProfileTabsDiv className="under-line emp">
         <UnderLineEmp>
-          {t("CREATE")}{' '}
+          {t('CREATE')}{' '}
           {patternType === 'LOAN_ID_PATTERN'
             ? 'Loan ID'
             : patternType === 'EMPLOYEE_ID_PATTERN'
               ? 'Employee ID'
               : 'Device ID'}{' '}
-          {t("PATTERN")}
+          {t('PATTERN')}
         </UnderLineEmp>
       </MyProfileTabsDiv>
       <FormContainer onSubmit={handleSubmit}>
         <FormGroup>
-          <label>{t("ID_LENGTH")}</label>
+          <label>{t('ID_LENGTH')}</label>
           <input
             type="text"
             name="idLength"
@@ -100,7 +100,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
           />
         </FormGroup>
         <FormGroup>
-          <label>{t("ID_PREFIX")}</label>
+          <label>{t('ID_PREFIX')}</label>
           <input
             type="text"
             name="prefix"
@@ -109,7 +109,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
           />
         </FormGroup>
         <FormGroup>
-          <label>{t("INTIAL_SEQUENCE")}</label>
+          <label>{t('INTIAL_SEQUENCE')}</label>
 
           <div
             style={{
@@ -128,14 +128,16 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <AlertIDPatternSVG></AlertIDPatternSVG>
               <span className="custom-text-style">
-                {t("AUTO_SEQUENCE_ID_WILL_START_FROM_THE_SPECIFIED_INTIAL_SEQUENCE_NUMBER")}
+                {t(
+                  'AUTO_SEQUENCE_ID_WILL_START_FROM_THE_SPECIFIED_INTIAL_SEQUENCE_NUMBER'
+                )}
               </span>
             </div>
           </div>
         </FormGroup>
 
         <ToggleSwitchContainer isChecked={isChecked}>
-          <label>{t("STATUS")}</label>
+          <label>{t('STATUS')}</label>
           <div className="toggle-switch-container">
             <div className="toggle-switch" onClick={handleToggleChange}>
               <input
@@ -152,15 +154,15 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
         <ToggleInfoContainer>
           <AlertIDPatternSVG></AlertIDPatternSVG>
           <ToggleInfoText>
-            {t("ENABLING_THIS_PATTERN_WILL_DISABLE_OTHERS")}
+            {t('ENABLING_THIS_PATTERN_WILL_DISABLE_OTHERS')}
           </ToggleInfoText>
         </ToggleInfoContainer>
         <ButtonGroup>
           <Button className="reset-btn" type="button" onClick={handleReset}>
-            {t("RESET")}
+            {t('RESET')}
           </Button>
           <Button className="submit-btn" type="submit">
-           {t("CREATE_PATTERN")}
+            {t('CREATE_PATTERN')}
           </Button>
         </ButtonGroup>
       </FormContainer>

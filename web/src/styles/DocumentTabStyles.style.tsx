@@ -95,7 +95,7 @@ export const TableListContainer = styled.section`
   &.overFlowScroll {
     overflow: scroll;
   }
-  
+
   &.bgTable {
     background-color: white;
   }
@@ -450,7 +450,7 @@ export const FileUploadField = styled.div`
     color: #a0aec0;
   }
 
-  .file-info-text{
+  .file-info-text {
     font-size: 12px;
   }
 

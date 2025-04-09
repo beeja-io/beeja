@@ -409,7 +409,7 @@ export const CompanyProfile = () => {
 
   return (
     <>
-      <ProfileHeading>{t("PROFILE")}</ProfileHeading>
+      <ProfileHeading>{t('PROFILE')}</ProfileHeading>
       <BorderDivLine width="100%" />
       <TabContentMainContainer>
         <TabContentMainContainerHeading>
@@ -507,13 +507,15 @@ export const CompanyProfile = () => {
               </span>
               <LogoText>
                 {' '}
-                {t( "THIS_LOGO_WILL_BE_DISPLAYED_ON_DOCUMENTS_SUCH_AS_PAYSLIPS_AND_TDS_WORKSHEETS")}
+                {t(
+                  'THIS_LOGO_WILL_BE_DISPLAYED_ON_DOCUMENTS_SUCH_AS_PAYSLIPS_AND_TDS_WORKSHEETS'
+                )}
               </LogoText>
             </Logo>
           </Row>
 
           <Row>
-            <Label>{t("COMPANY_NAME")}</Label>
+            <Label>{t('COMPANY_NAME')}</Label>
             <div>
               <Input
                 name="name"
@@ -532,7 +534,7 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
-            <Label>{t("COMPANY_ADDRESS")}</Label>
+            <Label>{t('COMPANY_ADDRESS')}</Label>
             <Input
               name="address.addressOne"
               placeholder={isEditModeOn ? 'Primary Address' : '-'}
@@ -613,10 +615,10 @@ export const CompanyProfile = () => {
                   onChange={handleInputChange}
                   disabled={!isEditModeOn}
                 >
-                  <option value={''}>{t("SELECT_STATE")}</option>
-                  <option value={'Telangana'}>{t("TELANGANA")}</option>
-                  <option value={'AP'}>{t("ANDHRA_PRADESH")}</option>
-                  <option value={'Delhi'}>{t("DELHI")}</option>
+                  <option value={''}>{t('SELECT_STATE')}</option>
+                  <option value={'Telangana'}>{t('TELANGANA')}</option>
+                  <option value={'AP'}>{t('ANDHRA_PRADESH')}</option>
+                  <option value={'Delhi'}>{t('DELHI')}</option>
                 </Select>
               </div>
               <div>
@@ -659,7 +661,7 @@ export const CompanyProfile = () => {
           </Row>
 
           <Row>
-            <Label>{t("COUNTRY")}</Label>
+            <Label>{t('COUNTRY')}</Label>
             <Select
               name="address.country"
               value={
@@ -670,14 +672,14 @@ export const CompanyProfile = () => {
               onChange={handleInputChange}
               disabled={!isEditModeOn}
             >
-              <option value={''}>{t("SELECT_COUNTRY")}</option>
-              <option value={'India'}>{t("INDIA")}</option>
-              <option value={'Germany'}>{t("GERMANY")}</option>
-              <option value={'US'}>{t("US")}</option>
+              <option value={''}>{t('SELECT_COUNTRY')}</option>
+              <option value={'India'}>{t('INDIA')}</option>
+              <option value={'Germany'}>{t('GERMANY')}</option>
+              <option value={'US'}>{t('US')}</option>
             </Select>
           </Row>
           <Row>
-            <Label>{t("FILLING_ADDRESS")}</Label>
+            <Label>{t('FILLING_ADDRESS')}</Label>
             <textarea
               name="filingAddress"
               placeholder={
@@ -700,7 +702,7 @@ export const CompanyProfile = () => {
             />
           </Row>
           <Row>
-            <Label>{t("EMAIL")}</Label>
+            <Label>{t('EMAIL')}</Label>
             <div>
               <Input
                 name="email"
@@ -728,7 +730,7 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
-            <Label>{t("WEBSITE_URL")}</Label>
+            <Label>{t('WEBSITE_URL')}</Label>
             <div>
               <Input
                 name="website"
@@ -743,7 +745,7 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
-            <Label>{t("PF_NO.")}</Label>
+            <Label>{t('PF_NO.')}</Label>
             <div>
               <Input
                 name="accounts.pfNumber"
@@ -779,7 +781,7 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
-            <Label>{t("TAN_NO.")}</Label>
+            <Label>{t('TAN_NO.')}</Label>
             <div>
               <Input
                 name="accounts.tanNumber"
@@ -816,7 +818,7 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
-            <Label>{t("PAN_NO.")}</Label>
+            <Label>{t('PAN_NO.')}</Label>
             <div>
               <Input
                 name="accounts.panNumber"
@@ -854,7 +856,7 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
-            <Label>{t("ESI_NO.")}</Label>
+            <Label>{t('ESI_NO.')}</Label>
             <div>
               <Input
                 name="accounts.esiNumber"
@@ -885,7 +887,7 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
-            <Label>{t("LIN_NO.")}</Label>
+            <Label>{t('LIN_NO.')}</Label>
             <div>
               <Input
                 name="accounts.linNumber"
@@ -929,7 +931,7 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
-            <Label>{t("GST_NO")}</Label>
+            <Label>{t('GST_NO')}</Label>
             <div>
               <Input
                 name="accounts.gstNumber"

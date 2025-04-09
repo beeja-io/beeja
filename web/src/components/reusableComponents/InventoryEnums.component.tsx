@@ -8,5 +8,5 @@ export enum Availability {
 }
 
 export const inventoryOptions: InventoryOptions = {
-  availability: [Availability.YES, Availability.NO]
+  availability: [Availability.YES, Availability.NO],
 };

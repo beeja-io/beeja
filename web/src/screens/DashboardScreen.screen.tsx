@@ -26,12 +26,17 @@ const DashboardScreen = () => {
 
   return (
     <div>
-      <h2>{t("DASHBOARD")}</h2>
-      {t("LOREM")}
+      <h2>{t('DASHBOARD')}</h2>
+      {t('LOREM')}
       <br />
       <br />
-      <h3>{t("SAMPLE_FROM_USERCONTEXT:")} {isLoading ? 'Loading' : user?.firstName}</h3>
-      <b>{t("EMPLOYEE_ID.")} {user?.employeeId}</b>
+      <h3>
+        {t('SAMPLE_FROM_USERCONTEXT:')}{' '}
+        {isLoading ? 'Loading' : user?.firstName}
+      </h3>
+      <b>
+        {t('EMPLOYEE_ID.')} {user?.employeeId}
+      </b>
       <br />
       <small>{employeeData?.account.organizations.email}</small>
     </div>

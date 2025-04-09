@@ -472,7 +472,7 @@ export const TabContentTableTd = styled.td`
     color: #ff0000;
     margin-left: 10px;
     overflow-wrap: break-word;
-    white-space: normal; 
+    white-space: normal;
   }
 `;
 
