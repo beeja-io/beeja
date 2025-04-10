@@ -218,7 +218,7 @@ const EmployeeList = () => {
       setTotalItems(response.data.totalSize);
       updateEmployeeList(allEmployees);
       if (!allEmployees || allEmployees.length === 0) {
-        setError(t("NO_EMPLYEES_FOUND"));
+        setError(t('NO_EMPLYEES_FOUND'));
       } else {
         setError(null);
       }
@@ -356,7 +356,7 @@ const EmployeeList = () => {
           </EmployeeListFilterSection> */}
 
           <FilterSection>
-            {departmentOptions &&
+            {departmentOptions && (
               <select
                 className="selectoption"
                 name="EmployeeDepartment"
@@ -372,8 +372,9 @@ const EmployeeList = () => {
                     {t(department.value)}
                   </option>
                 ))}
-              </select>}
-            {jobTitles &&
+              </select>
+            )}
+            {jobTitles && (
               <select
                 className="selectoption"
                 name="JobTitle"
@@ -389,9 +390,10 @@ const EmployeeList = () => {
                     {t(jobTitle.value)}
                   </option>
                 ))}
-              </select>}
+              </select>
+            )}
 
-            {employeeTypes &&
+            {employeeTypes && (
               <select
                 className="selectoption"
                 name="EmployementType"
@@ -403,12 +405,15 @@ const EmployeeList = () => {
               >
                 <option value="">Employement Type</option>
                 {employeeTypes?.values.map((employementType) => (
-                  <option key={employementType.value} value={employementType.value}>
+                  <option
+                    key={employementType.value}
+                    value={employementType.value}
+                  >
                     {t(employementType.value)}
                   </option>
                 ))}
               </select>
-            }
+            )}
 
             {user &&
               (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
@@ -428,9 +433,9 @@ const EmployeeList = () => {
                     setCurrentPage(1);
                   }}
                 >
-                  <option value="">Status</option>{" "}
-                  <option value="Active">{t("ACTIVE")}</option>
-                  <option value="Inactive">{t("INACTIVE")}</option>
+                  <option value="">Status</option>{' '}
+                  <option value="Active">{t('ACTIVE')}</option>
+                  <option value="Inactive">{t('INACTIVE')}</option>
                 </select>
               )}
           </FilterSection>
@@ -503,12 +508,12 @@ const EmployeeList = () => {
                           <span className="nameAndMail">
                             <span>
                               {emp.account.firstName === null &&
-                                emp.account.lastName === null
+                              emp.account.lastName === null
                                 ? // FIXME
-                                't.a.cer'
+                                  't.a.cer'
                                 : emp.account.firstName +
-                                ' ' +
-                                emp.account.lastName}
+                                  ' ' +
+                                  emp.account.lastName}
                             </span>
                             <span className="employeeMail">
                               {emp.account.email}
@@ -522,7 +527,7 @@ const EmployeeList = () => {
                         </td>
                         <td>
                           {emp.employee.jobDetails &&
-                            emp.employee.jobDetails.employementType
+                          emp.employee.jobDetails.employementType
                             ? emp.employee.jobDetails.employementType
                             : '-'}
                         </td>
@@ -555,7 +560,7 @@ const EmployeeList = () => {
         {isCreateEmployeeModelOpen && departmentOptions && (
           <SideModal
             handleClose={
-              isResponseLoading ? () => { } : handleIsCreateEmployeeModal
+              isResponseLoading ? () => {} : handleIsCreateEmployeeModal
             }
             isModalOpen={isCreateEmployeeModelOpen}
             innerContainerContent={

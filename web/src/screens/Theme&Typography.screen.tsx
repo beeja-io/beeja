@@ -220,12 +220,16 @@ function ThemesAndTypography() {
   };
   const handleFontSizeChange = (fontSize: string) => {
     setActiveFontStyle(fontSize);
-    const selectedFontSize = fontSizeOptions.find((option) => option.label === fontSize)?.size;
-  
+    const selectedFontSize = fontSizeOptions.find(
+      (option) => option.label === fontSize
+    )?.size;
+
     if (selectedFontSize) {
-      document.documentElement.style.setProperty('--font-size-primary', selectedFontSize);
-    
-  }
+      document.documentElement.style.setProperty(
+        '--font-size-primary',
+        selectedFontSize
+      );
+    }
   };
   return (
     <>

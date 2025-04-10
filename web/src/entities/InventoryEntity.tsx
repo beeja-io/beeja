@@ -1,6 +1,4 @@
-import {
-  Availability,
-} from '../components/reusableComponents/InventoryEnums.component';
+import { Availability } from '../components/reusableComponents/InventoryEnums.component';
 
 export interface DeviceDetails {
   id: string;
