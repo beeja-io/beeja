@@ -1,8 +1,7 @@
 package com.beeja.api.accounts.requests;
 
-import lombok.Data;
-
 import java.util.Set;
+import lombok.Data;
 
 @Data
 public class UpdateUserRoleRequest {

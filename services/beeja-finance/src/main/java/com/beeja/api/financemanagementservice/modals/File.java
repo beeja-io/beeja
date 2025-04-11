@@ -3,6 +3,7 @@ package com.beeja.api.financemanagementservice.modals;
 import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import jakarta.validation.constraints.Pattern;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,8 +12,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.util.Date;
 
 @Data
 @AllArgsConstructor

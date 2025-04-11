@@ -1,13 +1,12 @@
 package com.beeja.api.accounts.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
-import org.junit.jupiter.api.Test;
-
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class UserContextTest {
 

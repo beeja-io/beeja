@@ -8,6 +8,7 @@ import com.beeja.api.financemanagementservice.enums.Type;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,8 +18,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -45,7 +44,7 @@ public class Inventory {
 
   private String specifications;
 
-  private String RAM;
+  private String ram;
 
   @NotNull private Availability availability;
 

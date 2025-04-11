@@ -1,5 +1,6 @@
 package tac.beeja.recruitmentapi.controllers;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,8 +13,6 @@ import tac.beeja.recruitmentapi.model.Applicant;
 import tac.beeja.recruitmentapi.request.ApplicantRequest;
 import tac.beeja.recruitmentapi.service.ReferralService;
 import tac.beeja.recruitmentapi.utils.Constants;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/referrals")

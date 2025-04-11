@@ -1,5 +1,9 @@
 package com.beeja.api.financemanagementservice.serviceImpl;
 
+import static com.beeja.api.financemanagementservice.Utils.Constants.GET_ALL_LOANS;
+import static com.beeja.api.financemanagementservice.Utils.Constants.PDF;
+import static com.beeja.api.financemanagementservice.Utils.Constants.ZIPFILE;
+
 import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
@@ -18,21 +22,18 @@ import com.beeja.api.financemanagementservice.requests.PdfMultipartFile;
 import com.beeja.api.financemanagementservice.requests.SubmitLoanRequest;
 import com.beeja.api.financemanagementservice.service.LoanService;
 import feign.FeignException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import static com.beeja.api.financemanagementservice.Utils.Constants.GET_ALL_LOANS;
-import static com.beeja.api.financemanagementservice.Utils.Constants.PDF;
-import static com.beeja.api.financemanagementservice.Utils.Constants.zipFile;
 
 /**
  * Implementation of the LoanService interface providing operations for managing loan requests and
@@ -50,8 +51,7 @@ public class LoanServiceImpl implements LoanService {
 
   @Autowired LoanRepository loanRepository;
 
-  @Autowired
-  AccountClient accountClient;
+  @Autowired AccountClient accountClient;
 
   /**
    * Changes the status of a loan based on the provided loan ID.
@@ -115,12 +115,13 @@ public class LoanServiceImpl implements LoanService {
         log.warn("Failed to retrieve organization pattern, proceeding without prefix.");
       }
 
-      long existingLoanCount = loanRepository.countByOrganizationId(
-              UserContext.getLoggedInUserOrganization().get("id").toString()
-      );
+      long existingLoanCount =
+          loanRepository.countByOrganizationId(
+              UserContext.getLoggedInUserOrganization().get("id").toString());
 
       long newLoanNumber = existingLoanCount + 1;
-      String finalLoanNumber = (organizationPattern != null && organizationPattern.getPrefix() != null)
+      String finalLoanNumber =
+          (organizationPattern != null && organizationPattern.getPrefix() != null)
               ? organizationPattern.getPrefix() + newLoanNumber
               : String.valueOf(newLoanNumber);
 
@@ -204,7 +205,7 @@ public class LoanServiceImpl implements LoanService {
     fileEntity.setName(file.getName());
     fileEntity.setFileFormat(
         FileExtensionHelpers.getExtension(Objects.requireNonNull(file.getOriginalFilename())));
-    fileEntity.setEntityType(zipFile);
+    fileEntity.setEntityType(ZIPFILE);
     // Unzipping file
     try (ZipInputStream zipInputStream = new ZipInputStream(file.getInputStream())) {
       for (ZipEntry entry = zipInputStream.getNextEntry();

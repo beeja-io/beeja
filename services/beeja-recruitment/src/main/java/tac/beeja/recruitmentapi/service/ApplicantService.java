@@ -1,14 +1,13 @@
 package tac.beeja.recruitmentapi.service;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.core.io.ByteArrayResource;
 import tac.beeja.recruitmentapi.model.Applicant;
 import tac.beeja.recruitmentapi.model.AssignedInterviewer;
 import tac.beeja.recruitmentapi.request.AddCommentRequest;
 import tac.beeja.recruitmentapi.request.ApplicantFeedbackRequest;
 import tac.beeja.recruitmentapi.request.ApplicantRequest;
-
-import java.util.List;
-import java.util.Map;
 
 public interface ApplicantService {
   Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception;

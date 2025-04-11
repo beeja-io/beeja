@@ -4,10 +4,9 @@ import com.beeja.api.financemanagementservice.enums.Availability;
 import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public interface InventoryService {

@@ -14,6 +14,11 @@ import com.beeja.api.financemanagementservice.repository.InventoryRepository;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import com.beeja.api.financemanagementservice.service.InventoryService;
 import com.mongodb.DuplicateKeyException;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -22,12 +27,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 public class InventoryServiceImpl implements InventoryService {
@@ -72,7 +71,7 @@ public class InventoryServiceImpl implements InventoryService {
     device.setType(deviceDetails.getType());
     device.setOs(deviceDetails.getOs());
     device.setSpecifications(deviceDetails.getSpecifications());
-    device.setRAM(deviceDetails.getRAM());
+    device.setRam(deviceDetails.getRam());
     device.setAvailability(deviceDetails.getAvailability());
     device.setProductId(deviceDetails.getProductId());
     device.setPrice(deviceDetails.getPrice());

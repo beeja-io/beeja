@@ -1,19 +1,18 @@
 package com.beeja.api.expense.config;
 
+import static com.beeja.api.expense.utils.Constants.NO_REQUIRED_PERMISSIONS;
+
 import com.beeja.api.expense.annotations.HasPermission;
 import com.beeja.api.expense.annotations.RequireAllPermissions;
 import com.beeja.api.expense.exceptions.CustomAccessDeniedException;
 import com.beeja.api.expense.utils.UserContext;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
-import static com.beeja.api.expense.utils.Constants.NO_REQUIRED_PERMISSIONS;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
 
 @Aspect
 @Component

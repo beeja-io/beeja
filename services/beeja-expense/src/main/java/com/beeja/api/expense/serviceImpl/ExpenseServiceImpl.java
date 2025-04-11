@@ -1,5 +1,11 @@
 package com.beeja.api.expense.serviceImpl;
 
+import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_EXPENSE;
+import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_FILE_IN_FILE_SERVICE;
+import static com.beeja.api.expense.utils.Constants.FILE_COUNT_ERROR;
+import static com.beeja.api.expense.utils.Constants.INVALID_FILE_FORMATS;
+import static com.beeja.api.expense.utils.Constants.SERVICE_DOWN_ERROR;
+
 import com.beeja.api.expense.client.FileClient;
 import com.beeja.api.expense.config.properties.AllowedContentTypes;
 import com.beeja.api.expense.exceptions.ExpenseAlreadySettledException;
@@ -18,6 +24,16 @@ import com.beeja.api.expense.utils.Constants;
 import com.beeja.api.expense.utils.UserContext;
 import com.beeja.api.expense.utils.helpers.FileExtensionHelpers;
 import com.beeja.api.expense.utils.methods.ServiceMethods;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +47,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_EXPENSE;
-import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_FILE_IN_FILE_SERVICE;
-import static com.beeja.api.expense.utils.Constants.FILE_COUNT_ERROR;
-import static com.beeja.api.expense.utils.Constants.INVALID_FILE_FORMATS;
-import static com.beeja.api.expense.utils.Constants.SERVICE_DOWN_ERROR;
 
 @Service
 @Slf4j
@@ -338,9 +343,9 @@ public class ExpenseServiceImpl implements ExpenseService {
       query.addCriteria(Criteria.where("department").is(department));
     }
 
-    if(settlementStatus != null && settlementStatus.equals(true)) {
+    if (settlementStatus != null && settlementStatus.equals(true)) {
       query.addCriteria(Criteria.where("paymentSettled").ne(null));
-    } else if (settlementStatus != null && settlementStatus.equals(false)){
+    } else if (settlementStatus != null && settlementStatus.equals(false)) {
       query.addCriteria(Criteria.where("paymentSettled").is(null));
     }
 
@@ -430,7 +435,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     if (settlementStatus != null && settlementStatus.equals(true)) {
       query.addCriteria(Criteria.where("paymentSettled").ne(null));
     } else if (settlementStatus != null && settlementStatus.equals(false)) {
-        query.addCriteria(Criteria.where("paymentSettled").is(null));
+      query.addCriteria(Criteria.where("paymentSettled").is(null));
     }
 
     return mongoTemplate.count(query, Expense.class);
@@ -439,17 +444,26 @@ public class ExpenseServiceImpl implements ExpenseService {
   @Override
   public ExpenseValues getExpenseDefaultValues(String organizationId) {
 
-    List<ExpenseDefaultValues> expenseDefaultValues = expenseRepository.findDistinctTypeByOrganizationId(organizationId);
-//    take all the categories from the expenses and assign to categories
+    List<ExpenseDefaultValues> expenseDefaultValues =
+        expenseRepository.findDistinctTypeByOrganizationId(organizationId);
+    //    take all the categories from the expenses and assign to categories
     ExpenseValues expenseValues = new ExpenseValues();
-    Set<String> categories = expenseDefaultValues.stream().map(ExpenseDefaultValues::getCategory).collect(Collectors.toSet());
-    Set<String> types = expenseDefaultValues.stream().map(ExpenseDefaultValues::getType).collect(Collectors.toSet());
-    Set<String> modeOfPayments = expenseDefaultValues.stream().map(ExpenseDefaultValues::getModeOfPayment).collect(Collectors.toSet());
+    Set<String> categories =
+        expenseDefaultValues.stream()
+            .map(ExpenseDefaultValues::getCategory)
+            .collect(Collectors.toSet());
+    Set<String> types =
+        expenseDefaultValues.stream()
+            .map(ExpenseDefaultValues::getType)
+            .collect(Collectors.toSet());
+    Set<String> modeOfPayments =
+        expenseDefaultValues.stream()
+            .map(ExpenseDefaultValues::getModeOfPayment)
+            .collect(Collectors.toSet());
 
     expenseValues.setExpenseCategories(categories);
     expenseValues.setExpenseTypes(types);
     expenseValues.setExpenseModesOfPayment(modeOfPayments);
-
 
     return expenseValues;
   }
@@ -496,8 +510,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     if (settlementStatus != null && settlementStatus.equals(true)) {
       criteria.and("paymentSettled").ne(null);
-    }else if (settlementStatus != null && settlementStatus.equals(false)){
-        criteria.and("paymentSettled").is(null);
+    } else if (settlementStatus != null && settlementStatus.equals(false)) {
+      criteria.and("paymentSettled").is(null);
     }
     return criteria;
   }

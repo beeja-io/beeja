@@ -12,8 +12,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 public class LoginController {
 
-  /**22`````
-   * Handles GET requests to "/login" endpoint and returns the login page.
+  /**
+   * 22````` Handles GET requests to "/login" endpoint and returns the login page.
    *
    * @return The name of the Thymeleaf template to render, in this case, "login".
    */

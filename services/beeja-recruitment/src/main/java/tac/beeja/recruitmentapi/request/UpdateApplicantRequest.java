@@ -1,10 +1,9 @@
 package tac.beeja.recruitmentapi.request;
 
+import java.util.List;
 import lombok.Data;
 import tac.beeja.recruitmentapi.enums.ApplicantStatus;
 import tac.beeja.recruitmentapi.model.AssignedInterviewer;
-
-import java.util.List;
 
 @Data
 public class UpdateApplicantRequest {
