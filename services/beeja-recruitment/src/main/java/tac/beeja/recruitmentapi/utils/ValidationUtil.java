@@ -1,10 +1,9 @@
 package tac.beeja.recruitmentapi.utils;
 
-import org.springframework.validation.BindingResult;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.validation.BindingResult;
 
 public class ValidationUtil {
 

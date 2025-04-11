@@ -1,5 +1,10 @@
 package com.beeja.api.financemanagementservice.controllers;
 
+import static com.beeja.api.financemanagementservice.Utils.Constants.CREATE_HEALTH_INSURANCE;
+import static com.beeja.api.financemanagementservice.Utils.Constants.DELETE_HEALTH_INSURANCE;
+import static com.beeja.api.financemanagementservice.Utils.Constants.READ_HEALTH_INSURANCE;
+import static com.beeja.api.financemanagementservice.Utils.Constants.UPDATE_HEALTH_INSURANCE;
+
 import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.annotations.HasPermission;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
@@ -9,6 +14,8 @@ import com.beeja.api.financemanagementservice.modals.HealthInsurance;
 import com.beeja.api.financemanagementservice.requests.HealthInsuranceRequest;
 import com.beeja.api.financemanagementservice.service.HealthInsuranceService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +29,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.beeja.api.financemanagementservice.Utils.Constants.CREATE_HEALTH_INSURANCE;
-import static com.beeja.api.financemanagementservice.Utils.Constants.DELETE_HEALTH_INSURANCE;
-import static com.beeja.api.financemanagementservice.Utils.Constants.READ_HEALTH_INSURANCE;
-import static com.beeja.api.financemanagementservice.Utils.Constants.UPDATE_HEALTH_INSURANCE;
 
 @RestController
 @RequestMapping("v1/health-insurances")

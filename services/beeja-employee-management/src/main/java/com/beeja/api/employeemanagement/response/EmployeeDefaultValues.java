@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeDefaultValues {
-    private String employmentType;
-    private String designation;
-    private String department;
+  private String employmentType;
+  private String designation;
+  private String department;
 }

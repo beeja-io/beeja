@@ -1,5 +1,17 @@
 package com.beeja.api.financemanagementservice.controllers;
 
+import static com.mongodb.assertions.Assertions.assertNotNull;
+import static com.mongodb.internal.connection.tlschannel.util.Util.assertTrue;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.Availability;
 import com.beeja.api.financemanagementservice.enums.Device;
@@ -9,6 +21,9 @@ import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import com.beeja.api.financemanagementservice.response.InventoryResponseDTO;
 import com.beeja.api.financemanagementservice.service.InventoryService;
 import com.beeja.api.financemanagementservice.serviceImpl.LoanServiceImpl;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,22 +36,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import static com.mongodb.assertions.Assertions.assertNotNull;
-import static com.mongodb.internal.connection.tlschannel.util.Util.assertTrue;
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class InventoryControllerTest {
 
@@ -169,7 +168,8 @@ public class InventoryControllerTest {
             any(), anyString(), any(), anyString(), anyString(), anyString()))
         .thenReturn(1L);
     ResponseEntity<InventoryResponseDTO> responseEntity =
-        inventoryController.filterInventory(1, 10, Device.MOBILE, "Google", Availability.NO, "NA", "Mobile");
+        inventoryController.filterInventory(
+            1, 10, Device.MOBILE, "Google", Availability.NO, "NA", "Mobile");
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 

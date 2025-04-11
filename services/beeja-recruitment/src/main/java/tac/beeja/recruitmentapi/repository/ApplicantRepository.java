@@ -1,10 +1,8 @@
 package tac.beeja.recruitmentapi.repository;
 
+import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import tac.beeja.recruitmentapi.model.Applicant;
-
-import java.util.List;
-import java.util.Optional;
 
 public interface ApplicantRepository extends MongoRepository<Applicant, String> {
   List<Applicant> findAllByOrganizationId(String organizationId);
@@ -15,5 +13,4 @@ public interface ApplicantRepository extends MongoRepository<Applicant, String> 
       String referredByEmployeeId, String organizationId);
 
   long countByOrganizationId(String organizationId);
-
 }

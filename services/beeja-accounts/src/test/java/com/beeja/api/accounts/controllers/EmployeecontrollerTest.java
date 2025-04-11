@@ -1,5 +1,15 @@
 package com.beeja.api.accounts.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.beeja.api.accounts.constants.PermissionConstants;
 import com.beeja.api.accounts.exceptions.BadRequestException;
 import com.beeja.api.accounts.exceptions.UserNotFoundException;
@@ -14,6 +24,12 @@ import com.beeja.api.accounts.response.CreatedUserResponse;
 import com.beeja.api.accounts.service.EmployeeService;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -29,23 +45,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class EmployeecontrollerTest {
 
@@ -279,7 +278,8 @@ public class EmployeecontrollerTest {
     when(employeeService.createEmployee(addEmployeeRequest)).thenReturn(createdUserResponse);
 
     // Act
-    ResponseEntity<?> responseEntity = employeeController.createEmployee(addEmployeeRequest, bindingResult);
+    ResponseEntity<?> responseEntity =
+        employeeController.createEmployee(addEmployeeRequest, bindingResult);
 
     // Assert
     assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());

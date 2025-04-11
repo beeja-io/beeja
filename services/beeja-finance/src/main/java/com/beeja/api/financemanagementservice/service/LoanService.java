@@ -3,9 +3,8 @@ package com.beeja.api.financemanagementservice.service;
 import com.beeja.api.financemanagementservice.modals.Loan;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
 import com.beeja.api.financemanagementservice.requests.SubmitLoanRequest;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface LoanService {

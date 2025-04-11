@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ExpenseDefaultValues {
-    private String type;
-    private String category;
-    private String modeOfPayment;
+  private String type;
+  private String category;
+  private String modeOfPayment;
 }

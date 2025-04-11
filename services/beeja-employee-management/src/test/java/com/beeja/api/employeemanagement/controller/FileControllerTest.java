@@ -1,5 +1,13 @@
 package com.beeja.api.employeemanagement.controller;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.beeja.api.employeemanagement.client.AccountClient;
 import com.beeja.api.employeemanagement.config.filters.JwtProperties;
 import com.beeja.api.employeemanagement.model.Employee;
@@ -8,6 +16,8 @@ import com.beeja.api.employeemanagement.requests.FileUploadRequest;
 import com.beeja.api.employeemanagement.response.FileResponse;
 import com.beeja.api.employeemanagement.service.EmployeeService;
 import com.beeja.api.employeemanagement.service.FileService;
+import java.util.Arrays;
+import java.util.Date;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,17 +34,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.Arrays;
-import java.util.Date;
-
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 @ExtendWith(MockitoExtension.class)
 @WebMvcTest(FileController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -49,7 +48,6 @@ public class FileControllerTest {
   @MockBean FileService fileService;
 
   @MockBean EmployeeService employeeService;
-
 
   @Test
   void testGetAllFilesOfEntityId_Success() throws Exception {

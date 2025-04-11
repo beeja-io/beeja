@@ -32,7 +32,8 @@ public class Constants {
   public static final String DEPARTMENT_ALREADY_EXISTS = "Department Already Exists";
   public static final String JOB_TITLE_ALREADY_EXISTS = "Job Title Already Exists";
   public static final String EMPLOYEE_TYPE_ALREADY_EXISTS = "Employee Type Already Exists";
-  public static final String EXPENSE_CATEGORY_ALREADY_EXISTS = "Expense Category Type Already Exists";
+  public static final String EXPENSE_CATEGORY_ALREADY_EXISTS =
+      "Expense Category Type Already Exists";
   public static final String USER_ALREADY_FOUND = "User Already Found ";
   public static final String CANNOT_CREATE_ORGANIZATION_USER =
       "Cannot Create Organization User or Admin as it is already registered - please use different email";
@@ -183,7 +184,10 @@ public class Constants {
       "New Password Must Match Confirmation Password";
   public static final String UPDATED = "Updated";
 
-  public static final String GENERATING_DEFAULT_VALUES = "Generating Values for organization :  {} ";
-  public static final String ERROR_GENERATING_DEFAULT_VALUES = "Error in generating {} values for organization : {} ,";
-  public static final String SUCCESSFULLY_GENERATED_DEFAULTS = "Successfully generated values for organization : {} ,";
+  public static final String GENERATING_DEFAULT_VALUES =
+      "Generating Values for organization :  {} ";
+  public static final String ERROR_GENERATING_DEFAULT_VALUES =
+      "Error in generating {} values for organization : {} ,";
+  public static final String SUCCESSFULLY_GENERATED_DEFAULTS =
+      "Successfully generated values for organization : {} ,";
 }

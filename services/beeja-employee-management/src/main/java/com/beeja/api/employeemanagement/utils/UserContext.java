@@ -2,10 +2,9 @@ package com.beeja.api.employeemanagement.utils;
 
 import com.beeja.api.employeemanagement.model.clients.accounts.OrganizationDTO;
 import com.beeja.api.employeemanagement.model.clients.accounts.UserDTO;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Set;
 
 public class UserContext {
   @Getter @Setter private static String loggedInUserEmail;
