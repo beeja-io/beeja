@@ -164,7 +164,17 @@ const InventoryManagement = () => {
   )
 
   const fetchOrganizationValues = async () => {
-    const deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
+
+    let deviceTypesFetched : any ;
+    const storedDeviceTypes = localStorage.getItem("deviceTypes");
+    if(storedDeviceTypes){
+      deviceTypesFetched = JSON.parse(storedDeviceTypes);
+    }
+    else{
+      deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
+      localStorage.setItem("deviceTypes",JSON.stringify(deviceTypesFetched));
+    }
+
     const inventoryProvidersFetched = await getOrganizationValuesByKey('inventoryProviders');
     if (!deviceTypesFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS'));
