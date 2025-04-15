@@ -1,7 +1,7 @@
 {
-  "account_permissions": ["CEMP", "UEMP", "IEM", "REMP", "URAP", "GALEMP", "CORG","RORG","DORG","UORG","UALORG","RALORG","URORG","DRORG","CRORG", "RALFTG","UALFTG"],
-  "employee_permissions" : ["CEMP", "REMP", "RCEMP", "UALEMP", "CDM", "RDM", "DDM", "UDM", "CALDOC", "RALDOC", "UALDOC", "DALDOC", "UF", "UPPS", "UPPA"],
+  "account_permissions": ["CEMP", "UEMP", "IEM", "REMP", "URAP", "GALEMP", "CORG","RORG","DORG","UORG","UALORG","RALORG","URORG","DRORG","CRORG", "RALFTG","UALFTG","RKYC","CLON","UPPS","UPPA","RDEV","UDEV","CDEV","DDEV","CHIN","RHIN","UHIN","DHIN","RLON"],
+  "employee_permissions" : ["CEMP", "REMP", "DELETE_ORGANIZATIONS","RCEMP", "UALEMP", "CDM", "RDM", "DDM", "UDM", "CALDOC", "RALDOC", "UALDOC", "DALDOC", "UF", "UPPS", "UPPA"],
   "expense_permissions" : ["CEX", "REX", "UEX", "DEX"],
-  "finance_permissions" : ["CLON", "RLON", "ULON", "DLON", "SCLON", "CBPS", "REMP", "GALON"],
+  "finance_permissions" : ["CLON", "RLON", "ULON", "DLON", "SCLON", "CBPS", "REMP", "GALON", "CPAY","UPAY","RPAY","RDEV","UDEV","CDEV","DDEV","CHIN","RHIN","UHIN","DHIN"],
   "recruitment_permission" : ["CAPT", "GAAPT", "GENAPT", "RRSM", "UENTAP", "UAPL", "TINT", "DINT", "ACREF"]
 }
