@@ -37,7 +37,14 @@ public class SuperAdminPermissionUpdater {
     public void updatePermissions() {
         log.info(Constants.UPDATING_PERMISSIONS_FOR_ALL_SUPER_ADMINS);
         Permissions dbPermissions = permissionRepository.findByName(SubscriptionName.ALL_PERMISSIONS);
-
+        if (dbPermissions == null) {
+            log.warn(Constants.CREATING_NEW_PERMISSIONS_ENTRY, SubscriptionName.ALL_PERMISSIONS);
+            dbPermissions = new Permissions();
+            dbPermissions.setName(SubscriptionName.ALL_PERMISSIONS);
+            dbPermissions.setPermissions(new HashSet<>());
+            permissionRepository.save(dbPermissions);
+            log.info(Constants.SUCCESSFULLY_CREATED_NEW_PERMISSION_ENTRY, SubscriptionName.ALL_PERMISSIONS);
+        }
         Set<String> jsonPermissions = getAllPermissions();
 
         List<Role> superAdminPermissions = rolesRepository.findAllByName("Super Admin");
@@ -50,10 +57,11 @@ public class SuperAdminPermissionUpdater {
                 permissionRepository.save(dbPermissions);
             }
             log.info(Constants.ADDING_NEW_PERMISSIONS_TO_SUPER_ADMINS);
-            superAdminPermissions.forEach(role -> {
+        Permissions finalDbPermissions = dbPermissions;
+        superAdminPermissions.forEach(role -> {
                 Set<String> saPermissions = role.getPermissions();
-                if(!saPermissions.containsAll(dbPermissions.getPermissions())){
-                    saPermissions.addAll(dbPermissions.getPermissions());
+                if(!saPermissions.containsAll(finalDbPermissions.getPermissions())){
+                    saPermissions.addAll(finalDbPermissions.getPermissions());
                     rolesRepository.save(role);
                 }
             });

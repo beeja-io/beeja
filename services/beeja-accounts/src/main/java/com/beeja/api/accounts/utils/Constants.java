@@ -193,4 +193,6 @@ public class Constants {
     public static final String ADDING_NEW_PERMISSIONS_TO_SUPER_ADMINS = "Adding NEW Permissions To Super Admins of All Organizations";
     public static final String PERMISSIONS_UPDATED_SUCCESSFULLY = "Permissions Updated Successfully for All Super Admins";
     public static final String ERROR_READING_PERMISSIONS_JSON = "Error Reading Permissions JSON";
+    public static final String CREATING_NEW_PERMISSIONS_ENTRY = "No permissions found for '{}'. Creating a new Permissions entry.";
+    public static final String SUCCESSFULLY_CREATED_NEW_PERMISSION_ENTRY = "New Permissions entry created and saved for '{}'.";
 }
