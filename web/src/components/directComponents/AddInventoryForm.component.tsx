@@ -26,6 +26,7 @@ type AddInventoryFormProps = {
   handleSuccessMessage: () => void;
   deviceTypes: OrganizationValues;
   inventoryProviders: OrganizationValues;
+  operatingSystems: OrganizationValues;
 };
 
 const AddInventoryForm = (props: AddInventoryFormProps) => {
@@ -326,43 +327,34 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
               />
             </InputLabelContainer>
             <InputLabelContainer>
-              <label>
-                OS
-                {['Desktop', 'MUSIC_SYSTEM', 'Printer', 'Accessories'].includes(
+            <label>
+               OS
+                 {['Desktop', 'MUSIC_SYSTEM', 'Printer', 'Accessories'].includes(formData.device) ? null : (
+               <ValidationText className="star">*</ValidationText>
+                 )}
+           </label>
+          <select
+            name="os"
+            value={formData.os ?? ''} 
+            className="selectoption largeSelectOption"
+            onChange={handleChange}
+            disabled={
+               !['Desktops', 'Laptops', 'Mobiles', 'Tablets', 'Desktop', 'Laptop', 'Mobile', 'Tablet'].includes(
                   formData.device
-                ) ? null : (
-                  <ValidationText className="star">*</ValidationText>
-                )}
-              </label>
-              <TextInput
-                type="text"
-                name="os"
-                placeholder={t('EXAMPLE_MAC_OS')}
-                value={formData.os ? formData.os : ''}
-                className="largeInput"
-                onChange={handleChange}
-                disabled={
-                  !(
-                    formData.device === 'Desktops' ||
-                    formData.device === 'Laptops' ||
-                    formData.device === 'Mobiles' ||
-                    formData.device === 'Tablets' ||
-                    formData.device === 'Desktop' ||
-                    formData.device === 'Laptop' ||
-                    formData.device === 'Mobile' ||
-                    formData.device === 'Tablet'
-                  )
-                }
+               ) 
+            }
+            required={
+              !['Printer', 'MUSIC_SYSTEM', 'Desktop', 'Accessories'].includes(formData.device)
+            }
+         >
+         <option value="">{t('Select OS')}</option>
+               {props.operatingSystems?.values?.map((inventoryOS) => (
+             <option key={inventoryOS.value} value={inventoryOS.value}>
+              {inventoryOS.value}
+         </option>
+         ))}
+       </select>
 
-                required={
-                  ![
-                    'Printer',
-                    'MUSIC_SYSTEM',
-                    'Desktop',
-                    'Accessories',
-                  ].includes(formData.device)
-                }
-              />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
