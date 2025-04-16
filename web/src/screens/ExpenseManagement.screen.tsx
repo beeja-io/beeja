@@ -56,13 +56,47 @@ const ExpenseManagement = () => {
     useState<OrganizationValues>({} as OrganizationValues);
   const fetchOrganizationValues = async () => {
     setIsLoading(true);
-    const expenseCategories =
-      await getOrganizationValuesByKey('expenseCategories');
-    const expenseTypes = await getOrganizationValuesByKey('expenseTypes');
-    const expenseDepartments = await getOrganizationValuesByKey('departments');
-    const expensePaymentModes = await getOrganizationValuesByKey(
-      'paymentModes'
-    );
+
+    let expenseCategories : any ;
+    const storedCategories = localStorage.getItem("expenseCategories");
+    if(storedCategories){
+      expenseCategories = JSON.parse(storedCategories);
+    }
+    else{
+      expenseCategories = await getOrganizationValuesByKey('expenseCategories');
+      localStorage.setItem("expenseCategories",JSON.stringify(expenseCategories));
+    }
+
+    let expenseTypes : any ;
+    const storedTypes = localStorage.getItem("expenseTypes");
+    if(storedTypes){
+      expenseTypes = JSON.parse(storedTypes);
+    }
+    else{
+      expenseTypes = await getOrganizationValuesByKey('expenseTypes');
+      localStorage.setItem("expenseTypes",JSON.stringify(expenseTypes));
+    }
+
+    let expenseDepartments : any ;
+    const storedDepartments = localStorage.getItem("expenseDepartments");
+    if(storedDepartments){
+      expenseDepartments = JSON.parse(storedDepartments);
+    }
+    else{
+      expenseDepartments = await getOrganizationValuesByKey('departments');
+      localStorage.setItem("expenseDepartments",JSON.stringify(expenseDepartments));
+    }
+
+    let expensePaymentModes : any ;
+    const storedPaymentModes = localStorage.getItem("expensePaymentModes");
+    if(storedPaymentModes){
+      expensePaymentModes = JSON.parse(storedPaymentModes);
+    }
+    else{
+      expensePaymentModes = await getOrganizationValuesByKey('paymentModes');
+      localStorage.setItem("expensePaymentModes",JSON.stringify(expensePaymentModes));
+    }
+
     setExpenseCategories(expenseCategories.data);
     setExpenseTypes(expenseTypes.data);
     setExpenseDepartments(expenseDepartments.data);
