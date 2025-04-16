@@ -43,3 +43,4 @@ secrets.yml
 application-local.yaml
 .idea
 dot.env
+DotEnv.env

@@ -74,7 +74,7 @@ const CenterModal = (props: CenterModalProps) => {
           </>
         )}
         {!props.isMonogramView &&
-          !props.modalContent &&
+          //!props.modalContent &&
           !props.isImageSelected && (
             <div className="iconArea">
               {props.modalSVG ? props.modalSVG : <LogoutModalSVG />}

@@ -279,7 +279,17 @@ const EmployeeList = () => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
   };
-
+  useEffect(() => {
+    if (isCreateEmployeeModelOpen) {
+      document.body.style.overflow = 'hidden'; 
+    } else {
+      document.body.style.overflow = ''; 
+    }
+  
+    return () => {
+      document.body.style.overflow = ''; 
+    };
+  }, [isCreateEmployeeModelOpen]);
   return (
     <DynamicSpace>
       <EmployeeListContainer>

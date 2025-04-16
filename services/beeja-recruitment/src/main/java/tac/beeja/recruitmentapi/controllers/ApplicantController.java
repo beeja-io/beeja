@@ -3,21 +3,25 @@ package tac.beeja.recruitmentapi.controllers;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import tac.beeja.recruitmentapi.annotations.HasPermission;
+import tac.beeja.recruitmentapi.enums.ApplicantStatus;
 import tac.beeja.recruitmentapi.model.Applicant;
 import tac.beeja.recruitmentapi.model.AssignedInterviewer;
 import tac.beeja.recruitmentapi.request.AddCommentRequest;
 import tac.beeja.recruitmentapi.request.ApplicantFeedbackRequest;
 import tac.beeja.recruitmentapi.request.ApplicantRequest;
+import tac.beeja.recruitmentapi.response.PaginatedApplicantResponse;
 import tac.beeja.recruitmentapi.service.ApplicantService;
 import tac.beeja.recruitmentapi.utils.Constants;
 import tac.beeja.recruitmentapi.utils.ValidationUtil;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,6 +37,26 @@ public class ApplicantController {
   public ResponseEntity<Applicant> postApplicant(ApplicantRequest applicantRequest)
       throws Exception {
     return ResponseEntity.ok(applicantService.postApplicant(applicantRequest, false));
+  }
+
+  @GetMapping("/combinedApplicants")
+  @HasPermission(Constants.GET_APPLICANTS)
+  public ResponseEntity<PaginatedApplicantResponse> getApplicants(
+          @RequestParam(required = false) Integer page,
+          @RequestParam(required = false) Integer limit,
+          @RequestParam(required = false) String applicantId,
+          @RequestParam(required = false) String firstName,
+          @RequestParam(required = false) String positionAppliedFor,
+          @RequestParam(required = false) ApplicantStatus status,
+          @RequestParam(required = false) String experience,
+          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date fromDate,
+          @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date toDate,
+          @RequestParam(required = false, defaultValue = "createdAt") String sortBy,
+          @RequestParam(required = false, defaultValue = "desc") String sortDirection) {
+
+    PaginatedApplicantResponse response = applicantService.getPaginatedApplicants(
+            page, limit, applicantId, firstName, positionAppliedFor, status, experience, fromDate, toDate, sortBy, sortDirection);
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping

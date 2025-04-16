@@ -272,7 +272,7 @@ export const SettingsTypes = ({
           </div>
           <div>
             <InputContainer>
-              <label>{t("DESCRIPTION:")}</label>
+              <label>{t("DESCRIPTION")}:</label>
               <input
                 type="text"
                 value={newSettingType.description}
