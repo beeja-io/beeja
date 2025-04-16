@@ -146,17 +146,6 @@ public class LoanServiceImpl implements LoanService {
    * @return List of Loan entities.
    * @throws Exception If an error occurs while retrieving loans.
    */
-  @Override
-  public List<Loan> getAllLoans() throws Exception {
-    try {
-      return loanRepository.findAllByOrganizationId(
-          UserContext.getLoggedInUserOrganization().get("id").toString());
-    } catch (Exception e) {
-      throw new RuntimeException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.SERVICE_ERROR, ErrorCode.SERVER_ERROR, Constants.SERVICE_DOWN_ERROR));
-    }
-  }
 @Override
 public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortBy, String sortDirection, LoanStatus status) {
   int validPage = pageNumber > 0 ? pageNumber - 1 : 0;

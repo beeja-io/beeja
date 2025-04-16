@@ -19,8 +19,6 @@ public interface LoanService {
 
   Loan submitLoanRequest(SubmitLoanRequest loanRequest) throws Exception;
 
-  List<Loan> getAllLoans() throws Exception;
-
   LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortBy, String sortDirection, LoanStatus status);
 
   List<Loan> getAllLoansByEmployeeId(String employeeId) throws Exception;

@@ -42,7 +42,7 @@ class GetLoansWithCountMethodTest {
     void testGetLoansWithStatus() {
         int pageNumber = 1;
         int pageSize = 5;
-        String sortBy = "requestedDate";
+        String sortBy = "loanNumber";
         String sortDirection = "DESC";
         LoanStatus status = LoanStatus.APPROVED;
         String orgId = "org123";

@@ -37,16 +37,10 @@ public class LoanController {
 
   @GetMapping
   @HasPermission(Constants.GET_ALL_LOANS)
-  public ResponseEntity<List<Loan>> getAllLoans() throws Exception {
-    List<Loan> loans = loanService.getAllLoans();
-    return ResponseEntity.ok(loans);
-  }
-
-  @GetMapping("/limitedApplications")
   public LoanResponse getAllLoansBasedOnCount(
           @RequestParam(defaultValue="0") int pageNumber,
           @RequestParam(defaultValue="10") int pageSize,
-          @RequestParam(defaultValue = "requestedDate") String sortBy,
+          @RequestParam(defaultValue = "loanNumber") String sortBy,
           @RequestParam(defaultValue="desc") String sortDirection,
           @RequestParam(required = false) LoanStatus status){
     return loanService.getLoansWithCount(pageNumber, pageSize,sortBy,sortDirection,status);
