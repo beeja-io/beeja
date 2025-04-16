@@ -206,7 +206,7 @@ class FileControllerTest {
       }
     };
 
-    FileDownloadResult mockResult = new FileDownloadResult(resource, "user1",  "entity1","org1");
+    FileDownloadResult mockResult = new FileDownloadResult(resource, "user1",  "entity1","org1","filename.pdf");
 
     when(fileService.downloadFile(fileId)).thenReturn(mockResult);
 
