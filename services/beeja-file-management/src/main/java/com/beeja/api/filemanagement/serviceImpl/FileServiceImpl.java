@@ -11,11 +11,15 @@ import com.beeja.api.filemanagement.response.FileDownloadResult;
 import com.beeja.api.filemanagement.response.FileResponse;
 import com.beeja.api.filemanagement.service.FileService;
 import com.beeja.api.filemanagement.service.FileStorageService;
+import com.beeja.api.filemanagement.utils.BuildErrorMessage;
 import com.beeja.api.filemanagement.utils.Constants;
 import com.beeja.api.filemanagement.utils.UserContext;
+import com.beeja.api.filemanagement.enums.ErrorType;
+import com.beeja.api.filemanagement.enums.ErrorCode;
 import com.beeja.api.filemanagement.utils.helpers.FileExtensionHelpers;
 import com.beeja.api.filemanagement.utils.helpers.SizeConverter;
 import com.mongodb.MongoWriteException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -33,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class FileServiceImpl implements FileService {
 
@@ -49,7 +54,12 @@ public class FileServiceImpl implements FileService {
         try {
             if (!FileExtensionHelpers.isValidContentType(
                     file.getFile().getContentType(), allowedContentTypes.getAllowedTypes())) {
-                throw new FileTypeMismatchException("Constants.INVALID_FILE_FORMATS");
+                log.error(Constants.INVALID_FILE_FORMATS + file.getFile().getContentType());
+                throw new FileTypeMismatchException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.INVALID_REQUEST,
+                                ErrorCode.INVALID_FILE_FORMATS,
+                                Constants.INVALID_FILE_FORMATS));
             }
 
             String fileName = (file.getName() != null) ? file.getName() : file.getFile().getOriginalFilename();
@@ -73,45 +83,112 @@ public class FileServiceImpl implements FileService {
 
             return savedFile;
         } catch (MongoWriteException e) {
-            throw new MongoFileUploadException(Constants.MONGO_UPLOAD_FAILED);
+            log.error(Constants.MONGO_UPLOAD_FAILED);
+            throw new MongoFileUploadException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.DB_ERROR,
+                            ErrorCode.MONGO_UPLOAD_FAILED,
+                            Constants.MONGO_UPLOAD_FAILED));
         } catch (IOException | IllegalStateException e) {
             if (savedFile != null) fileRepository.delete(savedFile);
-            throw new FileAccessException("Constants.FILE_UPLOAD_FAILED");
+            log.error(Constants.FILE_UPLOAD_FAILED);
+            throw new FileAccessException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.IO_ERROR,
+                            ErrorCode.FILE_UPLOAD_FAILED,
+                            Constants.FILE_UPLOAD_FAILED));
         } catch (FileTypeMismatchException e) {
-            throw new FileTypeMismatchException(e.getMessage());
+            log.error(Constants.INVALID_FILE_FORMATS + file.getFile().getContentType());
+            throw new FileTypeMismatchException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.INVALID_REQUEST,
+                            ErrorCode.INVALID_FILE_FORMATS,
+                            Constants.INVALID_FILE_FORMATS + file.getFile().getContentType()));
         } catch (Exception e) {
-            throw new Exception(Constants.SERVICE_DOWN_ERROR);
+            log.error(Constants.SERVICE_DOWN_ERROR, e.getMessage());
+            throw new RuntimeException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.SERVICE_ERROR,
+                            ErrorCode.SERVICE_DOWN,
+                            Constants.SERVICE_DOWN_ERROR));
         }
     }
 
     @Override
     public File updateFile(String fileId, FileUploadRequest fileUploadRequest) throws Exception {
-        File file = fileRepository.findByOrganizationIdAndId(UserContext.getLoggedInUserOrganization().get("id").toString(), fileId);
-        fileStorage.updateFile(file, fileUploadRequest.getFile());
-        return file;
+        try {
+            String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+            File file = fileRepository.findByOrganizationIdAndId(orgId, fileId);
+
+            if (file == null) {
+                log.error(Constants.NO_FILE_FOUND_WITH_GIVEN_ID + fileId);
+                throw new FileNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.INVALID_REQUEST,
+                                ErrorCode.FILE_NOT_FOUND,
+                                Constants.NO_FILE_FOUND_WITH_GIVEN_ID+fileId));
+            }
+            fileStorage.updateFile(file, fileUploadRequest.getFile());
+            return file;
+
+        } catch (IOException | IllegalStateException e) {
+            log.error(Constants.FILE_UPDATE_FAILED + fileId, e.getMessage());
+            throw new FileAccessException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.IO_ERROR,
+                            ErrorCode.FILE_UPDATE_FAILED,
+                            Constants.FILE_UPDATE_FAILED + fileId));
+        } catch (Exception e) {
+            log.error(Constants.SERVICE_DOWN_ERROR, e.getMessage());
+            throw new RuntimeException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.SERVICE_ERROR,
+                            ErrorCode.SERVICE_DOWN,
+                            Constants.SERVICE_DOWN_ERROR));
+        }
     }
 
     @Override
     public File getFileById(String fileId) throws FileNotFoundException {
         Optional<File> file = fileRepository.findById(fileId);
-        return file.orElseThrow(() -> new FileNotFoundException(Constants.NO_FILE_FOUND_WITH_GIVEN_ID));
+        return file.orElseThrow(() -> {
+            log.error(Constants.NO_FILE_FOUND_WITH_GIVEN_ID + fileId);
+            return new FileNotFoundException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.INVALID_REQUEST,
+                            ErrorCode.FILE_NOT_FOUND,
+                            Constants.NO_FILE_FOUND_WITH_GIVEN_ID + fileId));
+        });
     }
 
 
     @Override
     public File uploadOrUpdateFile(FileUploadRequest fileUploadRequest) throws Exception {
-        File file =
+       try{
+            File file =
                 fileRepository.findByEntityIdAndFileTypeAndOrganizationId(
                         fileUploadRequest.getEntityId(),
                         fileUploadRequest.getFileType(),
                         (String) UserContext.getLoggedInUserOrganization().get("id"));
-        File newFile;
-        if (file != null) {
-            newFile = updateFile(file.getId(), fileUploadRequest);
-        } else {
-            newFile = uploadFile(fileUploadRequest);
-        }
-        return newFile;
+            File newFile;
+            if (file != null) {
+                newFile = updateFile(file.getId(), fileUploadRequest);
+            } else {
+                newFile = uploadFile(fileUploadRequest);
+            }
+            return newFile;
+
+       } catch (FileTypeMismatchException | MongoFileUploadException | FileAccessException | FileNotFoundException e) {
+           log.error(Constants.ERROR_UPLOAD_UPDATE, e.getMessage());
+           throw e;
+       } catch (Exception e) {
+           log.error(Constants.SERVICE_DOWN_ERROR, e.getMessage());
+           throw new RuntimeException(
+                   BuildErrorMessage.buildErrorMessage(
+                           ErrorType.SERVICE_ERROR,
+                           ErrorCode.SERVICE_DOWN,
+                           Constants.SERVICE_DOWN_ERROR));
+       }
     }
 
     @Override
@@ -142,14 +219,26 @@ public class FileServiceImpl implements FileService {
             response.setFiles(documents);
             return response;
         } catch (Exception e) {
-            throw new Exception(Constants.SERVICE_DOWN_ERROR + e.getMessage());
+            log.error(Constants.SERVICE_DOWN_ERROR, e.getMessage());
+            throw new Exception(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.SERVICE_ERROR,
+                            ErrorCode.SERVICE_DOWN,
+                            Constants.SERVICE_DOWN_ERROR));
         }
     }
 
     @Override
     public FileDownloadResult downloadFile(String fileId) throws Exception {
         File file = fileRepository.findById(fileId)
-                .orElseThrow(() -> new FileNotFoundException(Constants.NO_FILE_FOUND_WITH_GIVEN_ID));
+                .orElseThrow(() -> {
+                    log.error(Constants.NO_FILE_FOUND_WITH_GIVEN_ID + fileId);
+                    return new FileNotFoundException(
+                            BuildErrorMessage.buildErrorMessage(
+                                    ErrorType.INVALID_REQUEST,
+                                    ErrorCode.FILE_NOT_FOUND,
+                                    Constants.NO_FILE_FOUND_WITH_GIVEN_ID + fileId));
+                });
         return new FileDownloadResult(new ByteArrayResource(fileStorage.downloadFile(file)),
                 file.getCreatedBy(),
                 file.getEntityId(),
@@ -160,8 +249,14 @@ public class FileServiceImpl implements FileService {
     @Override
     public File deleteFile(String id) throws Exception {
         File fileToBeDeleted = fileRepository.findById(id)
-                .orElseThrow(() -> new FileNotFoundException(Constants.NO_FILE_FOUND_WITH_GIVEN_ID));
-
+                .orElseThrow(() -> {
+                    log.error(Constants.NO_FILE_FOUND_WITH_GIVEN_ID + id);
+                    return new FileNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.INVALID_REQUEST,
+                                ErrorCode.FILE_NOT_FOUND,
+                                Constants.NO_FILE_FOUND_WITH_GIVEN_ID + id));
+                });
         fileStorage.deleteFile(fileToBeDeleted);
         fileRepository.delete(fileToBeDeleted);
         return fileToBeDeleted;
