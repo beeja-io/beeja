@@ -109,6 +109,7 @@ public class InventoryServiceImpl implements InventoryService {
       String provider,
       Availability availability,
       String os,
+      String RAM,
       String searchTerm) {
     try {
 
@@ -126,6 +127,9 @@ public class InventoryServiceImpl implements InventoryService {
       }
       if (os != null && StringUtils.hasText(os)) {
         query.addCriteria(Criteria.where("os").is(os));
+      }
+      if (RAM != null && StringUtils.hasText(RAM)) {
+        query.addCriteria(Criteria.where("RAM").is(RAM));
       }
       if (searchTerm != null && !searchTerm.isEmpty()) {
         query.addCriteria(
@@ -152,6 +156,7 @@ public class InventoryServiceImpl implements InventoryService {
       String provider,
       Availability availability,
       String os,
+      String RAM,
       String organizationId,
       String searchTerm) {
     Query query = new Query();
@@ -166,6 +171,10 @@ public class InventoryServiceImpl implements InventoryService {
 
     if (os != null && !os.isEmpty()) {
       query.addCriteria(Criteria.where("os").is(os));
+    }
+
+    if (RAM != null && !RAM.isEmpty()) {
+      query.addCriteria(Criteria.where("RAM").is(RAM));
     }
 
     if (organizationId != null) {

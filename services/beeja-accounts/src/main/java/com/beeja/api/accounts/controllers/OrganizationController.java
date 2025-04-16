@@ -76,7 +76,7 @@ public class OrganizationController {
   }
 
   @GetMapping("/values/{key}")
-  @HasPermission(PermissionConstants.UPDATE_ORGANIZATIONS)
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
   public ResponseEntity<OrgDefaults> getOrganizationValuesByKey(@PathVariable String key)
       throws Exception {
     OrgDefaults orgDefaults = organizationService.getOrganizationValuesByKey(key);
