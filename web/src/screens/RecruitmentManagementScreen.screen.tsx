@@ -39,19 +39,25 @@ const RecruitmentManagementScreen = (
   const fetchApplicants = useCallback(async () => {
     try {
       setIsLoading(true);
+  
+      const url = props.isReferral
+        ? '/recruitments/v1/referrals'
+        : '/recruitments/v1/applicants';
+  
       const response = props.isReferral
-        ? await getMyReferrals()
-        : await getAllApplicantList();
-        setTotalApplicants(response.data.length);
+        ? await getMyReferrals(url)
+        : await getAllApplicantList(url);
+  
+      setTotalApplicants(response.data.length);
       const startIndex = (currentPage - 1) * pageSize;
-      setAllApplicants(response.data.slice(startIndex, startIndex + pageSize)); 
+      setAllApplicants(response.data.slice(startIndex, startIndex + pageSize));
     } catch (error) {
-      // FIXME
-      alert(error);
+      alert('Failed to fetch applicants');
     } finally {
       setIsLoading(false);
     }
   }, [currentPage, pageSize, props.isReferral]);
+  
 
   useEffect(() => {
     fetchApplicants();
