@@ -58,6 +58,8 @@ const InventoryManagement = () => {
   const [deviceFilter, setDeviceFilter] = useState<string>();
   const [availabilityFilter, setAvailabilityFilter] = useState<string>();
   const [providerFilter, setProviderFilter] = useState<string>('');
+  const [osFilter, setOsFilter] = useState<string>('');
+  const [ramFilter,setRamFilter] = useState<string>('');
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // const value = event.target.value;
     setDeviceFilter(event.target.value);
@@ -74,6 +76,18 @@ const InventoryManagement = () => {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setProviderFilter(event.target.value);
+  };
+
+  const handleOsChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setOsFilter(event.target.value);
+  };
+
+  const handleRamChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setRamFilter(event.target.value);
   };
 
   const [inventoryList, setInventoryList] = useState<DeviceDetails[]>([]);
@@ -113,6 +127,10 @@ const InventoryManagement = () => {
         );
       if (providerFilter != null && providerFilter != '-')
         queryParams.push(`provider=${encodeURIComponent(providerFilter)}`);
+      if (osFilter != null && osFilter != '-')
+        queryParams.push(`os=${encodeURIComponent(osFilter)}`);
+      if (ramFilter != null && ramFilter != '-')
+        queryParams.push(`RAM=${encodeURIComponent(ramFilter)}`);
       if (currentPage) {
         queryParams.push(`pageNumber=${currentPage}`);
       }
@@ -132,6 +150,8 @@ const InventoryManagement = () => {
         inventory: res.data.inventory,
         metadata: metadata,
       };
+
+      console.log(url);
       const totalPages = Math.ceil(res.data.metadata.totalSize / itemsPerPage);
       setTotalSize(metadata.totalSize);
       handleTotalPages(totalPages ?? 1);
@@ -146,7 +166,9 @@ const InventoryManagement = () => {
     itemsPerPage,
     deviceFilter,
     availabilityFilter,
-    providerFilter
+    providerFilter,
+    osFilter,
+    ramFilter
   ]);
 
   useEffect(() => {
@@ -162,10 +184,17 @@ const InventoryManagement = () => {
   const [inventoryProviders, setInventoryProviders] = useState<OrganizationValues>(
     {} as OrganizationValues
   )
+  const [osTypes, setOsTypes] = useState<OrganizationValues>(
+    {} as OrganizationValues
+  )
+
+  const ramSizes = ["4","8","16","32","64"]
 
   const fetchOrganizationValues = async () => {
     const deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
     const inventoryProvidersFetched = await getOrganizationValuesByKey('inventoryProviders');
+    const osTypesFetched = await getOrganizationValuesByKey('operatingSystems');
+
     if (!deviceTypesFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS'));
     } else {
@@ -177,7 +206,12 @@ const InventoryManagement = () => {
     else {
       setInventoryProviders(inventoryProvidersFetched.data);
     }
-    setDeviceTypes(deviceTypesFetched.data);
+    if (!osTypesFetched?.data?.values?.length){
+      toast.error(t('PLEASE_ADD_OS_TYPES_IN_ORG_SETTINGS'));
+    }
+    else{
+      setOsTypes(osTypesFetched.data);
+    }
   };
   useEffect(() => {
     fetchOrganizationValues();
@@ -189,7 +223,9 @@ const InventoryManagement = () => {
     const filters = [
       { key: 'device', value: deviceFilter },
       { key: 'availability', value: availabilityFilter },
-      { key: 'provider', value: providerFilter }
+      { key: 'provider', value: providerFilter },
+      { key: 'os' , value: osFilter},
+      { key: 'ram' , value: ramFilter}
     ];
 
     return (
@@ -217,6 +253,8 @@ const InventoryManagement = () => {
       setDeviceFilter('');
       setAvailabilityFilter('');
       setProviderFilter('');
+      setOsFilter('');
+      setRamFilter('');
     }
     if (filterName === 'device') {
       setDeviceFilter('');
@@ -226,6 +264,12 @@ const InventoryManagement = () => {
     }
     if (filterName === 'provider') {
       setProviderFilter('');
+    }
+    if(filterName === 'os'){
+      setOsFilter('');
+    }
+    if(filterName === 'ram'){
+      setRamFilter('');
     }
   };
   useKeyPress(78, () => {
@@ -269,14 +313,20 @@ const InventoryManagement = () => {
             onDeviceChange={handleDeviceChange}
             onAvailabilityChange={handleAvailabilityChange}
             onProviderChange={handleProviderChange}
+            onOsChange={handleOsChange}
+            onRamChange={handleRamChange}
             deviceFilter={deviceFilter}
             availabilityFilter={availabilityFilter}
+            osFilter={osFilter}
+            ramFilter={ramFilter}
             providerFilter={providerFilter}
             clearFilters={clearFilters}
             isShowFilters={isShowFilters}
             selectedFiltersText={selectedFiltersText}
             deviceTypes={deviceTypes}
             inventoryProviders={inventoryProviders}
+            osTypes={osTypes}
+            ramSizes={ramSizes}
           />
         )}
       </ExpenseManagementMainContainer>
