@@ -517,7 +517,6 @@ export const CenterModalTypeTwoInnerContainer = styled.section`
 export const CenterModalTypeExpenseInnerContainer = styled.div`
   width: 40%; /* Adjust modal width */
   max-width: 700px; /* Set a maximum width for responsiveness */
-  //background: #ffffff;
   background: ${(props) => props.theme.colors.backgroundColors.primary};
   padding: 30px;
   border-radius: 12px;

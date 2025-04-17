@@ -470,6 +470,8 @@ export const TopNavRightIcons = styled.span`
   .language select {
     border: none;
     outline: none;
+    color: ${(props) => props.theme.colors.blackColors.black1};
+    background-color: ${(props) => props.theme.colors.blackColors.white6};
   }
 `;
 export const ThemeContainer = styled.div`

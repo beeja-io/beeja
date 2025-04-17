@@ -550,7 +550,6 @@ export const NoDocsContainer = styled.div`
   margin: 68px 0px 130px 0px;
 
   .heading {
-    //color: 68px 0px 130px 0px;
     color: ${(props) => props.theme.colors.blackColors.black4};
     text-align: center;
     font-family: Nunito;
