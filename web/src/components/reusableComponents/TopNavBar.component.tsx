@@ -1,14 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import {
-  SearchBox,
-  SearchInput,
   TopNavBar,
   TopNavRightIcons,
 } from '../../styles/NavBarStyles.style';
 import {
   NotificationSVG,
   LogoutSVG,
-  SearchSVG,
   LanguageIcon,
 } from '../../svgs/NavBarSvgs.svg';
 import {
