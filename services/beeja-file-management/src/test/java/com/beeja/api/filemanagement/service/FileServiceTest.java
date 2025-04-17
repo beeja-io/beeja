@@ -12,6 +12,7 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class FileServiceTest {
         verify(fileService, times(1)).listofFileByEntityId(entityId, page, size);
     }
 
-    @Test
+   @Test
     void testDownloadFile_Success() throws Exception {
         String fileId = "file123";
         FileDownloadResult mockResult = new FileDownloadResult(
@@ -153,10 +154,12 @@ public class FileServiceTest {
             assertNotNull(result);
             assertEquals(mockFile, result);
             verify(fileService, times(1)).getFileById(fileId);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
     @Test
-    void testGetFileById_FileNotFound() {
+    void testGetFileById_FileNotFound() throws FileNotFoundException {
         String fileId = "file123";
         when(fileService.getFileById(fileId)).thenReturn(null);
 
@@ -185,7 +188,6 @@ public class FileServiceTest {
             verify(fileService, times(1)).uploadOrUpdateFile(request);
         }
     }
-
 
     @Test
     void testUploadOrUpdateFile_Exception() throws Exception {

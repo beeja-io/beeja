@@ -480,6 +480,7 @@ public class EmployeeServiceImpl implements EmployeeService {
   @Override
   public String changeEmailAndPassword(
       ChangeEmailAndPasswordRequest changeEmailAndPasswordRequest) {
+
     User user =
         userRepository.findByEmailAndOrganizations(
             UserContext.getLoggedInUserEmail(), UserContext.getLoggedInUserOrganization());
@@ -514,4 +515,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     userRepository.save(user);
     return Constants.UPDATED;
   }
+
+  public void changeEmailAndPassword(User user, ChangeEmailAndPasswordRequest request) {
+    if (request.getNewPassword() != null) {
+      user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+    }
+    if (request.getNewEmail() != null) {
+      user.setEmail(request.getNewEmail());
+    }
+  }
+
 }

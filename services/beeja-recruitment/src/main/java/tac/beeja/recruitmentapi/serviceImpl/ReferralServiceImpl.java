@@ -32,6 +32,10 @@ public class ReferralServiceImpl implements ReferralService {
 
   @Autowired FileClient fileClient;
 
+  @Autowired
+  ObjectMapper objectMapper;
+
+
   @Override
   public Applicant newReferral(ApplicantRequest applicantRequest) throws Exception {
     ApplicantRequest newApplicant = new ApplicantRequest();
@@ -100,7 +104,7 @@ public class ReferralServiceImpl implements ReferralService {
     }
   }
 
-  private static FileDownloadResultMetaData getMetaData(ResponseEntity<byte[]> fileResponse) {
+  public static FileDownloadResultMetaData getMetaData(ResponseEntity<byte[]> fileResponse) {
     HttpHeaders headers = fileResponse.getHeaders();
     String contentDisposition = headers.getFirst(HttpHeaders.CONTENT_DISPOSITION);
     String createdBy = headers.getFirst("createdby");

@@ -7,9 +7,16 @@ import org.springframework.core.io.ByteArrayResource;
 @AllArgsConstructor
 @Getter
 public class FileDownloadResult {
-  private final ByteArrayResource resource;
-  private final String createdBy;
-  private final String entityId;
-  private final String organizationId;
-  private final String fileName;
+  private  ByteArrayResource resource;
+  private  String createdBy;
+  private  String entityId;
+  private  String organizationId;
+  private  String fileName;
+
+
+  public FileDownloadResult(ByteArrayResource resource, String user1, String entity1, String org1) {
+  }
+
+
+
 }

@@ -32,27 +32,20 @@ import java.util.regex.Pattern;
 @Service
 public class InventoryServiceImpl implements InventoryService {
 
+  private final InventoryRepository inventoryRepository;
+  private final MongoTemplate mongoTemplate;
   private final MongoOperations mongoOperations;
-  @Autowired private MongoTemplate mongoTemplate;
 
-  /**
-   * Implementation of InventoryService providing CRUD operations for managing inventory devices.
-   */
   @Autowired
-  public InventoryServiceImpl(MongoOperations mongoOperations) {
+  public InventoryServiceImpl(
+          InventoryRepository inventoryRepository,
+          MongoTemplate mongoTemplate,
+          MongoOperations mongoOperations) {
+    this.inventoryRepository = inventoryRepository;
+    this.mongoTemplate = mongoTemplate;
     this.mongoOperations = mongoOperations;
   }
 
-  @Autowired InventoryRepository inventoryRepository;
-
-  /**
-   * Adds a new device to the inventory.
-   *
-   * @param deviceDetails Details of the device to be added.
-   * @return The newly added Inventory object.
-   * @throws DuplicateDataException If a product with the same ID already exists.
-   * @throws Exception If there is an error saving the device details.
-   */
   @Override
   public Inventory addDevice(DeviceDetails deviceDetails) throws Exception {
     Optional<Inventory> existingDevice =
@@ -303,4 +296,7 @@ public class InventoryServiceImpl implements InventoryService {
               Constants.ERROR_UPDATING_DEVICE_DETAILS));
     }
   }
+
+
+
 }

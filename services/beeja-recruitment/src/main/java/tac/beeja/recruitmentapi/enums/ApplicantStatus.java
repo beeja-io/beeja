@@ -5,5 +5,5 @@ public enum ApplicantStatus {
   SHORTLISTED,
   INTERVIEW_SCHEDULED,
   HIRED,
-  REJECTED
+  REVIEWED, REJECTED
 }

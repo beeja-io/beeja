@@ -5,6 +5,8 @@ import com.beeja.api.financemanagementservice.enums.InstalmentType;
 import com.beeja.api.financemanagementservice.modals.HealthInsurance;
 import com.beeja.api.financemanagementservice.repository.HealthInsuranceRepository;
 import com.beeja.api.financemanagementservice.requests.HealthInsuranceRequest;
+import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
+import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,18 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,14 +30,11 @@ public class HealthInsuranceServiceImplTest {
 
   @Mock private HealthInsuranceRepository healthInsuranceRepository;
 
-  @Autowired MockMvc mockMvc;
-
   @InjectMocks private HealthInsuranceServiceImpl healthInsuranceService;
 
   @BeforeEach
   public void setUp() {
     MockitoAnnotations.openMocks(this);
-    mockMvc = MockMvcBuilders.standaloneSetup(healthInsuranceService).build();
     Map<String, Object> organizationMap = Collections.singletonMap("id", "tac");
     UserContext.setLoggedInUserOrganization(organizationMap);
   }
@@ -56,9 +49,10 @@ public class HealthInsuranceServiceImplTest {
     request.setInstalmentAmount(100.0);
     UserContext.setLoggedInUserOrganization(Map.of("id", "tac"));
     UserContext.setLoggedInUserEmail("test@example.com");
+
     when(healthInsuranceRepository.findByEmployeeId("E123")).thenReturn(Optional.empty());
     when(healthInsuranceRepository.save(any(HealthInsurance.class)))
-        .thenReturn(new HealthInsurance());
+            .thenReturn(new HealthInsurance());
 
     // Act
     HealthInsurance result = healthInsuranceService.saveHealthInsurance(request);
@@ -74,15 +68,17 @@ public class HealthInsuranceServiceImplTest {
     HealthInsuranceRequest request = new HealthInsuranceRequest();
     request.setEmployeeId("E123");
     UserContext.setLoggedInUserOrganization(Map.of("id", "tac"));
+
+    // Simulate that the health insurance already exists
     when(healthInsuranceRepository.findByEmployeeId("E123"))
-        .thenReturn(Optional.of(new HealthInsurance()));
+            .thenReturn(Optional.of(new HealthInsurance()));
 
     // Act & Assert
     assertThrows(
-        HealthInsuranceCreationException.class,
-        () -> {
-          healthInsuranceService.saveHealthInsurance(request);
-        });
+            DuplicateDataException.class,
+            () -> {
+              healthInsuranceService.saveHealthInsurance(request);
+            });
   }
 
   @Test
@@ -91,16 +87,17 @@ public class HealthInsuranceServiceImplTest {
     HealthInsuranceRequest request = new HealthInsuranceRequest();
     request.setEmployeeId("E123");
     UserContext.setLoggedInUserOrganization(Map.of("id", "tac"));
+
     when(healthInsuranceRepository.findByEmployeeId("E123")).thenReturn(Optional.empty());
     when(healthInsuranceRepository.save(any(HealthInsurance.class)))
-        .thenThrow(new DuplicateKeyException("Duplicate key"));
+            .thenThrow(new RuntimeException("Database error"));
 
     // Act & Assert
     assertThrows(
-        Exception.class,
-        () -> {
-          healthInsuranceService.saveHealthInsurance(request);
-        });
+            RuntimeException.class,
+            () -> {
+              healthInsuranceService.saveHealthInsurance(request);
+            });
   }
 
   @Test
@@ -114,7 +111,7 @@ public class HealthInsuranceServiceImplTest {
     UserContext.setLoggedInUserOrganization(Map.of("id", "org1"));
     HealthInsurance existingInsurance = new HealthInsurance();
     when(healthInsuranceRepository.findByEmployeeIdAndOrganizationId(employeeId, "org1"))
-        .thenReturn(Optional.of(existingInsurance));
+            .thenReturn(Optional.of(existingInsurance));
     UserContext.setLoggedInUserEmail("test@example.com");
     when(healthInsuranceRepository.save(any(HealthInsurance.class))).thenReturn(existingInsurance);
 
@@ -133,15 +130,17 @@ public class HealthInsuranceServiceImplTest {
     HealthInsuranceRequest request = new HealthInsuranceRequest();
     String employeeId = "E123";
     UserContext.setLoggedInUserOrganization(Map.of("id", "org1"));
+
+    // Simulate that the health insurance does not exist
     when(healthInsuranceRepository.findByEmployeeIdAndOrganizationId(employeeId, "org1"))
-        .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
     // Act & Assert
     assertThrows(
-        HealthInsuranceNotFoundException.class,
-        () -> {
-          healthInsuranceService.updateHealthInsurance(request, employeeId);
-        });
+            ResourceNotFoundException.class,
+            () -> {
+              healthInsuranceService.updateHealthInsurance(request, employeeId);
+            });
   }
 
   @Test
@@ -152,7 +151,7 @@ public class HealthInsuranceServiceImplTest {
     UserContext.setLoggedInUserOrganization(Map.of("id", organizationId));
     HealthInsurance existingInsurance = new HealthInsurance();
     when(healthInsuranceRepository.deleteByEmployeeIdAndOrganizationId(employeeId, organizationId))
-        .thenReturn(existingInsurance);
+            .thenReturn(existingInsurance);
 
     // Act
     HealthInsurance result = healthInsuranceService.deleteByEmployeeIdAndOrganizationId(employeeId);
@@ -160,7 +159,7 @@ public class HealthInsuranceServiceImplTest {
     // Assert
     assertNotNull(result);
     verify(healthInsuranceRepository, times(1))
-        .deleteByEmployeeIdAndOrganizationId(employeeId, organizationId);
+            .deleteByEmployeeIdAndOrganizationId(employeeId, organizationId);
   }
 
   @Test
@@ -169,15 +168,17 @@ public class HealthInsuranceServiceImplTest {
     String employeeId = "E123";
     String organizationId = "org1";
     UserContext.setLoggedInUserOrganization(Map.of("id", organizationId));
+
+    // Simulate that no health insurance exists for the given employee
     when(healthInsuranceRepository.deleteByEmployeeIdAndOrganizationId(employeeId, organizationId))
-        .thenReturn(null);
+            .thenReturn(null);
 
     // Act & Assert
     assertThrows(
-        HealthInsuranceNotFoundException.class,
-        () -> {
-          healthInsuranceService.deleteByEmployeeIdAndOrganizationId(employeeId);
-        });
+            ResourceNotFoundException.class,
+            () -> {
+              healthInsuranceService.deleteByEmployeeIdAndOrganizationId(employeeId);
+            });
   }
 
   @Test
@@ -188,7 +189,7 @@ public class HealthInsuranceServiceImplTest {
     UserContext.setLoggedInUserOrganization(Map.of("id", organizationId));
     HealthInsurance existingInsurance = new HealthInsurance();
     when(healthInsuranceRepository.findByEmployeeIdAndOrganizationId(employeeId, organizationId))
-        .thenReturn(Optional.of(existingInsurance));
+            .thenReturn(Optional.of(existingInsurance));
 
     // Act
     HealthInsurance result = healthInsuranceService.findHealthInsuranceByEmployeeId(employeeId);
@@ -196,7 +197,7 @@ public class HealthInsuranceServiceImplTest {
     // Assert
     assertNotNull(result);
     verify(healthInsuranceRepository, times(1))
-        .findByEmployeeIdAndOrganizationId(employeeId, organizationId);
+            .findByEmployeeIdAndOrganizationId(employeeId, organizationId);
   }
 
   @Test
@@ -205,14 +206,35 @@ public class HealthInsuranceServiceImplTest {
     String employeeId = "E123";
     String organizationId = "org1";
     UserContext.setLoggedInUserOrganization(Map.of("id", organizationId));
+
+    // Simulate that no health insurance exists for the given employee
     when(healthInsuranceRepository.findByEmployeeIdAndOrganizationId(employeeId, organizationId))
-        .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
 
     // Act & Assert
     assertThrows(
-        HealthInsuranceNotFoundException.class,
-        () -> {
-          healthInsuranceService.findHealthInsuranceByEmployeeId(employeeId);
-        });
+            ResourceNotFoundException.class,
+            () -> {
+              healthInsuranceService.findHealthInsuranceByEmployeeId(employeeId);
+            });
   }
+
+  @Test
+  public void testSaveHealthInsurance_InvalidInstalmentType_ShouldSetDefaultFrequencyOrThrow() {
+    // Arrange
+    HealthInsuranceRequest request = new HealthInsuranceRequest();
+    request.setEmployeeId("E123");
+    request.setGrossPremium("1000.0");
+    request.setInstalmentType(null); // or a custom enum if applicable
+    request.setInstalmentAmount(100.0);
+    UserContext.setLoggedInUserOrganization(Map.of("id", "tac"));
+    UserContext.setLoggedInUserEmail("test@example.com");
+
+    when(healthInsuranceRepository.findByEmployeeId("E123")).thenReturn(Optional.empty());
+    when(healthInsuranceRepository.save(any(HealthInsurance.class))).thenReturn(new HealthInsurance());
+
+    // Act & Assert
+    assertDoesNotThrow(() -> healthInsuranceService.saveHealthInsurance(request));
+  }
+
 }

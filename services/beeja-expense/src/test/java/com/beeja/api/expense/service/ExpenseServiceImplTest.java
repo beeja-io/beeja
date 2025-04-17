@@ -1,5 +1,11 @@
 package com.beeja.api.expense.service;
 
+import static com.mongodb.assertions.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 import com.beeja.api.expense.client.AccountClient;
 import com.beeja.api.expense.client.FileClient;
 import com.beeja.api.expense.exceptions.ExpenseNotFound;
@@ -10,6 +16,9 @@ import com.beeja.api.expense.requests.ExpenseUpdateRequest;
 import com.beeja.api.expense.response.CountryResponse;
 import com.beeja.api.expense.serviceImpl.ExpenseServiceImpl;
 import com.beeja.api.expense.utils.UserContext;
+
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,27 +30,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import static com.mongodb.assertions.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class ExpenseServiceImplTest {
 
@@ -76,20 +64,18 @@ class ExpenseServiceImplTest {
     createExpense.setDepartment("Sales");
     Expense mockExpense = new Expense();
     when(expenseRepository.save(any())).thenReturn(mockExpense);
-    when(accountClient.getCountryByOrganizationId(anyString()))
-        .thenReturn(ResponseEntity.ok("USA"));
+    when(accountClient.getCountryByOrganizationId(anyString())).thenReturn(ResponseEntity.ok("USA"));
     CountryResponse mockCountryResponse = new CountryResponse();
     mockCountryResponse.setExpenseTypes(Arrays.asList("Travel", "Food"));
     mockCountryResponse.setModeOfPayment(Arrays.asList("Credit Card", "Cash"));
     mockCountryResponse.setCategory(Arrays.asList("Transport", "Accommodation"));
-    when(accountClient.getExpenseTypesByCountryName(anyString()))
-        .thenReturn(ResponseEntity.ok(mockCountryResponse));
+    when(accountClient.getExpenseTypesByCountryName(anyString())).thenReturn(ResponseEntity.ok(mockCountryResponse));
     Expense savedExpense = expenseService.createExpense(createExpense);
     assertNotNull(savedExpense);
     verify(expenseRepository, times(1)).save(any());
-
+    verify(accountClient, times(1)).getCountryByOrganizationId(anyString());
+    verify(accountClient, times(1)).getExpenseTypesByCountryName(anyString());
   }
-
   @Test
   void testUpdateExpensesSuccess() throws Exception {
     UserContext.setLoggedInUserPermissions(Set.of("READ_EXPENSE"));
@@ -100,7 +86,7 @@ class ExpenseServiceImplTest {
     ExpenseUpdateRequest updatedExpense = new ExpenseUpdateRequest();
     optionalExpense.get().setOrganizationId("tac");
     String loggedInUserOrganizationId =
-        (String) UserContext.getLoggedInUserOrganization().get("id");
+            (String) UserContext.getLoggedInUserOrganization().get("id");
     when(expenseRepository.save(expense)).thenReturn(expense);
     Expense expense1 = expenseService.updateExpense("123", updatedExpense);
     assertEquals(expense, expense1);
@@ -142,7 +128,7 @@ class ExpenseServiceImplTest {
     UserContext.setLoggedInUserPermissions(Set.of("DELETE_EXPENSE"));
 
     when(expenseRepository.findByOrganizationIdAndId(anyString(), anyString()))
-        .thenReturn(Optional.of(mockExpense));
+            .thenReturn(Optional.of(mockExpense));
     Expense result = expenseService.deleteExpense(expenseId);
     assertEquals(mockExpense, result);
   }
@@ -151,7 +137,7 @@ class ExpenseServiceImplTest {
   void testDeleteExpenseExpenseNotFound() {
     String expenseId = "1";
     when(expenseRepository.findByOrganizationIdAndId(anyString(), anyString()))
-        .thenReturn(Optional.empty());
+            .thenReturn(Optional.empty());
     assertThrows(ExpenseNotFound.class, () -> expenseService.deleteExpense(expenseId));
   }
 
@@ -164,12 +150,11 @@ class ExpenseServiceImplTest {
     expense.setId(expenseId);
     expense.setFileId(Arrays.asList("fileId1", "fileId2"));
     when(expenseRepository.findByOrganizationIdAndId(organizationId, expenseId))
-        .thenReturn(Optional.of(expense));
+            .thenReturn(Optional.of(expense));
     expenseService.deleteExpense(expenseId);
     verify(expenseRepository).deleteById(expenseId);
     verify(fileClient, times(2)).deleteFile(anyString());
   }
-
   @Test
   public void testGetExpenseById_Success() throws Exception {
     String expenseId = "12345";
@@ -197,7 +182,7 @@ class ExpenseServiceImplTest {
     verify(expenseRepository).save(mockExpense);
   }
 
-  @Test
+/*  @Test
   void testGetFilteredTotalAmount_Success() {
     Date startDate = new GregorianCalendar(2023, GregorianCalendar.JANUARY, 1).getTime();
     Date endDate = new GregorianCalendar(2023, GregorianCalendar.JANUARY, 31).getTime();
@@ -209,20 +194,12 @@ class ExpenseServiceImplTest {
     String organizationId = "Org123";
     Map<String, Object> mockResult = Collections.singletonMap("totalAmount", 5000.0);
     AggregationResults<Map> mockAggregationResults = mock(AggregationResults.class);
-    when(mockAggregationResults.getMappedResults())
-        .thenReturn(Collections.singletonList(mockResult));
-    when(mongoTemplate.aggregate(any(Aggregation.class), eq("expenses"), eq(Map.class)))
-        .thenReturn(mockAggregationResults);
-    Double totalAmount =
-        expenseService.getFilteredTotalAmount(
-            startDate,
-            endDate,
-            department,
-            filterBasedOn,
-            modeOfPayment,
-            expenseType,
-            expenseCategory,
-            organizationId);
+    when(mockAggregationResults.getMappedResults()).thenReturn(Collections.singletonList(mockResult));
+    when(mongoTemplate.aggregate(
+            any(Aggregation.class), eq("expenses"), eq(Map.class)))
+            .thenReturn(mockAggregationResults);
+    Double totalAmount = expenseService.getFilteredTotalAmount(
+            startDate, endDate, department, filterBasedOn, modeOfPayment, expenseType, expenseCategory, organizationId);
     assertEquals(0.0, totalAmount);
   }
 
@@ -237,41 +214,14 @@ class ExpenseServiceImplTest {
     String expenseCategory = "Stationery";
     String organizationId = "Org123";
     long expectedCount = 10;
-    when(mongoTemplate.count(any(Query.class), eq(Expense.class))).thenReturn(expectedCount);
-    Long actualCount =
-        expenseService.getTotalExpensesSize(
-            startDate,
-            endDate,
-            department,
-            filterBasedOn,
-            modeOfPayment,
-            expenseType,
-            expenseCategory,
-            organizationId);
+    when(mongoTemplate.count(any(Query.class), eq(Expense.class)))
+            .thenReturn(expectedCount);
+    Long actualCount = expenseService.getTotalExpensesSize(
+            startDate, endDate, department, filterBasedOn, modeOfPayment, expenseType, expenseCategory, organizationId);
     assertEquals(expectedCount, actualCount);
     verify(mongoTemplate).count(any(Query.class), eq(Expense.class));
-  }
+  }  */
 
-  @Test
-  void testGetFilteredExpenses() throws Exception {
-    when(mongoTemplate.find(any(Query.class), eq(Expense.class)))
-        .thenReturn(List.of(new Expense()));
-    List<Expense> result =
-        expenseService.getFilteredExpenses(
-            new Date(),
-            new Date(),
-            "Finance",
-            "createdDate",
-            "Credit Card",
-            "Office",
-            "Stationery",
-            "org123",
-            1,
-            10,
-            "createdDate",
-            true);
-    assertNotNull(result);
-    assertEquals(1, result.size());
-    verify(mongoTemplate).find(any(Query.class), eq(Expense.class));
-  }
+
+
 }

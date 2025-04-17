@@ -20,7 +20,8 @@ import java.util.List;
 @Slf4j
 @Service
 public class OrganizationPatternServiceImpl implements OrganizationPatternService {
-  @Autowired OrganizationPatternsRepository organizationPatternsRepository;
+  @Autowired
+  public OrganizationPatternsRepository organizationPatternsRepository;
 
   @Override
   public OrganizationPattern updatePatternStatusByPatternIdAndPatternType(

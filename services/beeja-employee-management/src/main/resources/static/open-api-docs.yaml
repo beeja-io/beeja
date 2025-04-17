@@ -1,108 +1,95 @@
-openapi: "3.0.1"
-
-info :
-  title: "File Management API"
-  version: "2.0"
-  description: |
-    `Product of tech.at.core`
+openapi: 3.0.1
+info:
+  title: Beeja Employee Service
+  version: 1.0.0
+  description: |-
+    Product of tech.at.core
       API documentation for the Beeja Open API application. It allows users to access
       data via a APIs secured by cookie and permissions.
-
+    
         ## Authentication & Authorization
         Beeja has a username and password authentication system. 
         [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
-    
-        ## Authorization Levels
-    
-        Most of the API's endpoints require certain functional specific scopes depending on which endpoint
-        is triggered. Supported scopes 
 
 externalDocs:
   description: Explore Beeja
   url: https://beeja.io/
-
 servers:
-   -url: "http://localhost:8000/employees/",
-    description: "Beeja Employee management"
-
-tags:
-  - name: Employee-Management
-    description: manages the details of the employees.
+  - url: http://localhost:8000/employee-management
+    description: Beeja Employee Service
 
 paths:
-  /employees:
-    get:
-      operationId: findAll
-      responses:
-      '200':
-        description: OK
-        content:
-          '*/*':
-            schema:
-              type: object
   /v1/users:
     get:
       summary: Get all employees
       operationId: getAllEmployees
       tags:
-        - Employees
+        - Employee Controller
+      parameters:
+        - name: department
+          in: query
+          description: Filter by department
+          required: false
+          schema:
+            type: string
+        - name: designation
+          in: query
+          description: Filter by designation
+          required: false
+          schema:
+            type: string
+        - name: employmentType
+          in: query
+          description: Filter by employment type
+          required: false
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: Filter by status (default is active)
+          required: false
+          schema:
+            type: string
+            default: active
+        - name: pageNumber
+          in: query
+          description: Page number for pagination (default is 1)
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          description: Page size for pagination (default is 10)
+          required: false
+          schema:
+            type: integer
+            default: 10
       responses:
         '200':
-          description: A list of all employees
+          description: List of employees
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      description: The ID of the employee.
-                    name:
-                      type: string
-                      description: The name of the employee.
-                    department:
-                      type: string
-                      description: The department of the employee.
-        '405':
-          description: method not allowed
-          content:
-            application/json:
-              example:
-                failureReason:  You are unauthorized to access account data.
-              schema:
-                $ref: "#/components/schemas/Error"
+                $ref: '#/components/schemas/EmployeeResponse'
+        '400':
+          description: Bad request
         '500':
           description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/InternalServerError'
+
     post:
-      summary: Create an employee
+      summary: Create a new employee
       operationId: createEmployee
       tags:
-        - Employees
+        - Employee Controller
       requestBody:
+        description: The employee data to create
         required: true
         content:
           application/json:
             schema:
               type: object
-              properties:
-                id:
-                  type: string
-                  description: The ID of the user.
-                employeeId:
-                  type: string
-                  description: The employee ID.
-                organizations:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      description: The ID of the organization.
+              additionalProperties: true
       responses:
         '201':
           description: Employee created successfully
@@ -110,72 +97,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Employee'
+        '400':
+          description: Bad request
         '500':
           description: Internal server error
-          content:
-            application/json:
-              schema:
-                 $ref: '#/components/responses/InternalServerError'
-  /v1/users/{employeeID}:
+
+  /v1/users/{employeeId}:
     get:
-      summary: Get employee details by ID
+      summary: Get an employee by ID
       operationId: getEmployeeByEmployeeId
       tags:
-        - Employees
-      parameters:
-        - name: employeeID
-          in: path
-          required: true
-          description: ID of the employee
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Employee details along with account details
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  employee:
-                    type: object
-                  account:
-                    type: object
-        '404':
-          description: Unknown or inaccessible asset list
-          content:
-            application/json:
-              example:
-                failureReason: EMPLOYEE_NOT_FOUND
-              schema:
-                $ref: "#/components/schemas/Error"
-        '405':
-          description: method not allowed
-          content:
-            application/json:
-              example:
-                failureReason: You are unauthorized to access account data.
-              schema:
-                $ref: "#/components/schemas/Error"
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                 $ref: '#/components/responses/InternalServerError'
-    put:
-      summary: Update an employee
-      operationId: updateEmployee
-      tags:
-        - Employees
+        - Employee Controller
       parameters:
         - name: employeeId
           in: path
           required: true
-          description: ID of the employee to update
+          description: The ID of the employee to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Employee details
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Bad request
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+    put:
+      summary: Update an employee by ID
+      operationId: updateEmployee
+      tags:
+        - Employee Controller
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          description: The ID of the employee to update
           schema:
             type: string
       requestBody:
+        description: Employee update data
         required: true
         content:
           application/json:
@@ -188,216 +156,188 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Employee'
-        400':
-          description: Invalid parameter
+        '400':
+          description: Bad request
+        '404':
+          description: Employee not found
+        '500':
+          description: Internal server error
+
+  /v1/users/employee-values:
+    get:
+      summary: Get employee values
+      operationId: getEmployeeValues
+      tags:
+        - Employee Controller
+      responses:
+        '200':
+          description: Employee values
           content:
             application/json:
-              example:
-                failureReason: BAD_REQUEST
               schema:
-                $ref: "#/components/schemas/Error"
-        '403':
-           description: unauthorized error
-           content:
+                $ref: '#/components/schemas/EmployeeValues'
+        '500':
+          description: Internal server error
+
+  /v1/files:
+    post:
+      summary: Upload a new file
+      operationId: uploadFile
+      tags:
+        - File Controller
+      requestBody:
+        description: File upload request
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - entityId
+              properties:
+                file:
+                  type: string
+                  format: binary
+                entityId:
+                  type: string
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
             application/json:
               schema:
-                $ref: '#/components/responses/Forbidden'
+                $ref: '#/components/schemas/File'
+        '400':
+          description: Bad request
         '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                 $ref: '#/components/responses/InternalServerError'
-  /v1/users/organizations/{organizationId}:
+          description: Internal server error
+
+  /v1/files/{fileId}:
     delete:
-      summary: Delete all employees by organization ID
-      operationId: deleteAllEmployeesByOrganizationId
+      summary: Delete a file by ID
+      operationId: deleteFileById
       tags:
-        - Employees
+        - File Controller
       parameters:
-        - name: organizationId
+        - name: fileId
           in: path
           required: true
-          description: ID of the organization
+          description: The ID of the file to delete
           schema:
             type: string
       responses:
         '200':
-          description: Employees deleted successfully
+          description: File deleted successfully
           content:
-            text/plain:
+            application/json:
               schema:
-                type: string
-                example:
-                  Employees Deleted in Org: { organizationId }
+                $ref: '#/components/schemas/File'
+        '400':
+          description: Bad request
+        '404':
+          description: File not found
         '500':
           description: Internal server error
-          content:
-            application/json:
-              schema:
-               $ref: '#/components/responses/InternalServerError'
-        '403':
-          description: unauthorized error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/Forbidden'
-  /v1/files/{entityId}:
+
+  /v1/files/download/{fileId}:
     get:
-      summery: Get all files of entityId
-      description: getting all files of entityId
-      tags: files
+      summary: Download a file by ID
+      operationId: downloadFileById
+      tags:
+        - File Controller
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          description: The ID of the file to download
+          schema:
+            type: string
       responses:
         '200':
-          description: Employees deleted successfully
+          description: File downloaded successfully
           content:
-            text/plain:
+            application/octet-stream:
               schema:
                 type: string
-                example:
-                  Employees Deleted in Org: { organizationId }
+                format: binary
+        '400':
+          description: Bad request
+        '404':
+          description: File not found
         '500':
           description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/InternalServerError'
-        '403':
-          description: unauthorized error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/responses/Forbidden'
+
 components:
   schemas:
-    loan:
-      title: information to store loan results
+    Employee:
       type: object
-      required:
       properties:
         id:
           type: string
-          example: "1"
-          description: the generated id
-        beejaAccountId:
+        name:
           type: string
-          example: "654cf5c082d05e5d71de675c"
-          description: the ID of the employee provided by  the organization
-        employeeId:
+        department:
           type: string
-          example: "tac001"
-          description: the ID of the employee provided by  the organization
-        organizationId:
+        designation:
           type: string
-          example: "654b0d9d355b9f0029b7733c"
-          description: ID to recognise the organization
-        Address:
-          type: Address
-          example:
-           -landMark: "PRIMARY"
-           -city: "SDP"
-           -state: "TS"
-           -country: "IN"
-           -pinCode: "980"
-        PersonalInformation:
-          type: PersonalInformation
-          example:
-            -nationality: "Indian"
-            -dateOfBirth: 2024-01-30T00:00:00.000+00:00
-            -gender: "Male"
-            -maritalStatus: "Single"
-        jobDetails:
-          type: JobDetails
-          example:
-            -designation: "Software Developer"
-            -employementType: "Full time"
-            -department: "IT"
+        status:
+          type: string
 
-      requests:
-        EmployeeUpdateRequest:
-          type: object
-          properties:
-            id:
-              type: string
-            beejaAccountId:
-              type: number
-            firstName:
-              type: string
-            lastName:
-              type: string
-            email:
-              type:string
-            employeeId:
-              type: string
-            address:
-              type: Addresshouse{ Number,landMark,village,city,state,country,pinCode }
-            personalInformantion:
-              type: PersonalInformation
-            jobDetails:
-              type: JobDetails{ designation,employementType,department,joiningDate,resignationDate }
-            contact:
-              type: Contact{ alternativeEmail,phone,alternativePhone }
-            pfDetails:
-              type: PFDetails{ PFNumber,UAN,joiningData,accountNumber,state,location }
-            department:
-              type:string
-            position:
-              type: string
-
-    Error:
+    EmployeeResponse:
       type: object
-      description: An error response.
-      required:
-        - code
       properties:
+        employees:
+          type: array
+          items:
+            $ref: '#/components/schemas/Employee'
+        total:
+          type: integer
+
+    EmployeeUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        department:
+          type: string
+        designation:
+          type: string
+        status:
+          type: string
+
+    UpdateKYCRequest:
+      type: object
+      properties:
+        kycStatus:
+          type: string
+
+    EmployeeValues:
+      type: object
+      properties:
+        values:
+          type: array
+          items:
+            type: string
+
+    File:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
         type:
           type: string
-          example: authentication_error
-          description: An error type identifying the category of error.
-        code:
-          type: string
-          example: USER_NOT_FOUND
-          description: An error code to indicate short version of error.
-        message:
-          type: string
-          example: The beeja user has not been configured to use APIs yet
-          description: An error description.
-        details:
-          type: object
-          example:
-            field: firstName
-            message: must not be empty
-          description: Further details about the error. The set of
-            properties in this object depends on the type of error.
-          additionalProperties: true
+        size:
+          type: integer
 
-  responses:
-    Unauthorized:
-      description: Missing authentication.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-          example:
-            failureReason: UNAUTHORIZED
-            details: "Please sign-in into Beeja"
-
-      Forbidden:
-        description: Valid credentials but not enough privileges
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Error'
-            example:
-              failureReason: USER_NOT_WHITELISTED
-              details: "Access Denied- You have no required permissions to do this operation"
-
-      BadRequest:
-        description: Something wrong with request parameters
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Error'
-            example:
-              failureReason: BAD_REQUEST
-              details: "Internal Server Error"
+    FileResponse:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/File'
+        total:
+          type: integer

@@ -42,4 +42,6 @@ public class DeviceDetails {
   private String comments;
 
   private String accessoryType;
+
+
 }

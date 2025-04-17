@@ -59,7 +59,7 @@ public class LoanServiceImpl implements LoanService {
    * @param loanId The ID of the loan to update.
    * @param status The new status of the loan ("APPROVE", "REJECT", or others).
    * @param message Optional message or reason for status change.
-   * @throws LoanNotFound If the loan with the specified ID is not found.
+ // * @throws LoanNotFound If the loan with the specified ID is not found.
    */
   @Override
   public void changeLoanStatus(String loanId, String status, String message) {

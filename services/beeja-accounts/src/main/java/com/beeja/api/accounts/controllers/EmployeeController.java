@@ -22,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -177,5 +176,9 @@ public class EmployeeController {
   public ResponseEntity<String> changeEmailAndPassword(
       @Valid @RequestBody ChangeEmailAndPasswordRequest changeEmailAndPasswordRequest) {
     return ResponseEntity.ok(employeeService.changeEmailAndPassword(changeEmailAndPasswordRequest));
+  }
+
+  public ResponseEntity<?> updateUserRoles(String employeeId, UpdateUserRoleRequest newRoles) {
+    return null;
   }
 }

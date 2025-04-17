@@ -22,4 +22,6 @@ public interface FileClient {
 
   @GetMapping("v1/files/find/{fileId}")
   ResponseEntity<?> getFileById(@PathVariable String fileId);
+
+  
 }

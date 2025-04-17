@@ -16,4 +16,7 @@ public class ApplicantComment {
   private String commentedByEmail;
   private Date createdAt;
   private Date modifiedAt;
+
+
+
 }
