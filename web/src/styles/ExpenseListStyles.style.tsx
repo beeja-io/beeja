@@ -75,6 +75,12 @@ export const DisplayFilters = styled.div`
     font-weight: 600;
     text-decoration-line: underline;
   }
+    .noFilters {
+    font-size: 12px;
+    color: #687588;
+    font-weight: 600;
+    margin-left: 10px;
+  }
 `;
 export const FilterStyle = styled.div`
   border-radius: 4px;
