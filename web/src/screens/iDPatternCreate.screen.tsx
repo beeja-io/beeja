@@ -157,7 +157,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
         </ToggleInfoContainer>
         <ButtonGroup>
           <Button className="reset-btn" type="button" onClick={handleReset}>
-            {t("RESET")}
+            {t("CANCEL")}
           </Button>
           <Button className="submit-btn" type="submit">
            {t("CREATE_PATTERN")}

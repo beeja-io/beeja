@@ -79,7 +79,11 @@ public class FileServiceImpl implements FileService {
 
             savedFile = fileRepository.save(fileEntity);
 
-            fileStorage.uploadFile(file.getFile(), savedFile);
+            try{
+                fileStorage.uploadFile(file.getFile(), savedFile);
+            }catch (Exception e){
+                log.error("Error occurred while uploading file: {}", e.getMessage());
+            }
 
             return savedFile;
         } catch (MongoWriteException e) {
@@ -89,7 +93,7 @@ public class FileServiceImpl implements FileService {
                             ErrorType.DB_ERROR,
                             ErrorCode.MONGO_UPLOAD_FAILED,
                             Constants.MONGO_UPLOAD_FAILED));
-        } catch (IOException | IllegalStateException e) {
+        } catch (IllegalStateException e) {
             if (savedFile != null) fileRepository.delete(savedFile);
             log.error(Constants.FILE_UPLOAD_FAILED);
             throw new FileAccessException(
@@ -164,12 +168,12 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public File uploadOrUpdateFile(FileUploadRequest fileUploadRequest) throws Exception {
-       try{
+        try{
             File file =
-                fileRepository.findByEntityIdAndFileTypeAndOrganizationId(
-                        fileUploadRequest.getEntityId(),
-                        fileUploadRequest.getFileType(),
-                        (String) UserContext.getLoggedInUserOrganization().get("id"));
+                    fileRepository.findByEntityIdAndFileTypeAndOrganizationId(
+                            fileUploadRequest.getEntityId(),
+                            fileUploadRequest.getFileType(),
+                            (String) UserContext.getLoggedInUserOrganization().get("id"));
             File newFile;
             if (file != null) {
                 newFile = updateFile(file.getId(), fileUploadRequest);
@@ -178,17 +182,17 @@ public class FileServiceImpl implements FileService {
             }
             return newFile;
 
-       } catch (FileTypeMismatchException | MongoFileUploadException | FileAccessException | FileNotFoundException e) {
-           log.error(Constants.ERROR_UPLOAD_UPDATE, e.getMessage());
-           throw e;
-       } catch (Exception e) {
-           log.error(Constants.SERVICE_DOWN_ERROR, e.getMessage());
-           throw new RuntimeException(
-                   BuildErrorMessage.buildErrorMessage(
-                           ErrorType.SERVICE_ERROR,
-                           ErrorCode.SERVICE_DOWN,
-                           Constants.SERVICE_DOWN_ERROR));
-       }
+        } catch (FileTypeMismatchException | MongoFileUploadException | FileAccessException | FileNotFoundException e) {
+            log.error(Constants.ERROR_UPLOAD_UPDATE, e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error(Constants.SERVICE_DOWN_ERROR, e.getMessage());
+            throw new RuntimeException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.SERVICE_ERROR,
+                            ErrorCode.SERVICE_DOWN,
+                            Constants.SERVICE_DOWN_ERROR));
+        }
     }
 
     @Override
@@ -252,10 +256,10 @@ public class FileServiceImpl implements FileService {
                 .orElseThrow(() -> {
                     log.error(Constants.NO_FILE_FOUND_WITH_GIVEN_ID + id);
                     return new FileNotFoundException(
-                        BuildErrorMessage.buildErrorMessage(
-                                ErrorType.INVALID_REQUEST,
-                                ErrorCode.FILE_NOT_FOUND,
-                                Constants.NO_FILE_FOUND_WITH_GIVEN_ID + id));
+                            BuildErrorMessage.buildErrorMessage(
+                                    ErrorType.INVALID_REQUEST,
+                                    ErrorCode.FILE_NOT_FOUND,
+                                    Constants.NO_FILE_FOUND_WITH_GIVEN_ID + id));
                 });
         fileStorage.deleteFile(fileToBeDeleted);
         fileRepository.delete(fileToBeDeleted);

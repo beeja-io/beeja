@@ -682,13 +682,13 @@ const MyProfileQuickDetailsComponent = ({
                     : '-'}
                 </span>
               </div>
-              <div title="Feature Not Available">
+              {/*<div title="Feature Not Available">
                 {user &&
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES)
                   ? '>'
                   : null}
-              </div>
-            </QuickInfoDepartmentContainer>
+              </div> */}
+            </QuickInfoDepartmentContainer> 
 
             {employee &&
               employee.account.active &&

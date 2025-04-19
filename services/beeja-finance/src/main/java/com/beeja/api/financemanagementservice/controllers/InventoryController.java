@@ -72,6 +72,7 @@ public class InventoryController {
       @RequestParam(required = false) String provider,
       @RequestParam(required = false) Availability availability,
       @RequestParam(required = false) String os,
+      @RequestParam(required = false) String RAM,
       @RequestParam(required = false) String searchTerm)
       throws Exception {
     HashMap<String, Object> metadata = new HashMap<>();
@@ -82,12 +83,13 @@ public class InventoryController {
             provider,
             availability,
             os,
+            RAM,
             UserContext.getLoggedInUserOrganization().get("id").toString(),
             searchTerm));
 
     List<Inventory> devices =
         inventoryService.filterInventory(
-            pageNumber, pageSize, device, provider, availability, os, searchTerm);
+            pageNumber, pageSize, device, provider, availability, os, RAM, searchTerm);
     InventoryResponseDTO response = new InventoryResponseDTO();
     response.setMetadata(metadata);
     response.setInventory(devices);

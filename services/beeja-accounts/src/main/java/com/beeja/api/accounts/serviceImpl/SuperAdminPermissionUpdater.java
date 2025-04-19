@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
-
 @Service
 @Slf4j
 public class SuperAdminPermissionUpdater {
@@ -26,7 +25,7 @@ public class SuperAdminPermissionUpdater {
     private PermissionRepository permissionRepository;
 
     @Autowired
-    RolesRepository rolesRepository;
+    private RolesRepository rolesRepository;
 
     @PostConstruct
     public void initPermissionsUpdate() {
@@ -36,46 +35,71 @@ public class SuperAdminPermissionUpdater {
     @Async
     public void updatePermissions() {
         log.info(Constants.UPDATING_PERMISSIONS_FOR_ALL_SUPER_ADMINS);
+
         Permissions dbPermissions = permissionRepository.findByName(SubscriptionName.ALL_PERMISSIONS);
+        if (dbPermissions == null) {
+            log.warn(Constants.CREATING_NEW_PERMISSIONS_ENTRY, SubscriptionName.ALL_PERMISSIONS);
+            dbPermissions = new Permissions();
+            dbPermissions.setName(SubscriptionName.ALL_PERMISSIONS);
+            dbPermissions.setPermissions(new HashSet<>());
+        }
 
         Set<String> jsonPermissions = getAllPermissions();
 
-        List<Role> superAdminPermissions = rolesRepository.findAllByName("Super Admin");
+        if (jsonPermissions.isEmpty()) {
+            log.warn("No permissions loaded from JSON. Skipping update.");
+            return;
+        }
 
-//        TODO: Update logic to consider Subscription Plans
-            if(!dbPermissions.getPermissions().containsAll(jsonPermissions))
-            {
-                log.info(Constants.ADDING_NEW_PERMISSIONS_TO_DB);
-                dbPermissions.getPermissions().addAll(jsonPermissions);
-                permissionRepository.save(dbPermissions);
+        boolean isDbUpdated = dbPermissions.getPermissions().addAll(jsonPermissions);
+        if (isDbUpdated) {
+            permissionRepository.save(dbPermissions);
+            log.info(Constants.SUCCESSFULLY_UPDATED_PERMISSIONS_ENTRY, SubscriptionName.ALL_PERMISSIONS);
+        }
+
+        List<Role> superAdminRoles = rolesRepository.findAllByName("Super Admin");
+        Permissions finalDbPermissions = dbPermissions;
+        for (Role role : superAdminRoles) {
+            if (role.getPermissions() == null) {
+                role.setPermissions(new HashSet<>());
             }
-            log.info(Constants.ADDING_NEW_PERMISSIONS_TO_SUPER_ADMINS);
-            superAdminPermissions.forEach(role -> {
-                Set<String> saPermissions = role.getPermissions();
-                if(!saPermissions.containsAll(dbPermissions.getPermissions())){
-                    saPermissions.addAll(dbPermissions.getPermissions());
-                    rolesRepository.save(role);
-                }
-            });
-            log.info(Constants.PERMISSIONS_UPDATED_SUCCESSFULLY);
+
+            boolean isRoleUpdated = role.getPermissions().addAll(finalDbPermissions.getPermissions());
+            if (isRoleUpdated) {
+                rolesRepository.save(role);
+                log.info("Updated Super Admin role with new permissions: {}", role.getName());
+            }
+        }
+
+        log.info(Constants.PERMISSIONS_UPDATED_SUCCESSFULLY);
     }
+
     public Set<String> getAllPermissions() {
         log.info(Constants.GETTING_ALL_PERMISSIONS_FROM_JSON);
-            Set<String> permissionsSet = new HashSet<>();
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                ClassPathResource resource = new ClassPathResource("permissions/AllPermissions.json");
-                JsonNode rootNode = objectMapper.readTree(resource.getInputStream());
-                for (JsonNode arrayNode : rootNode) {
-                    if (arrayNode.isArray()) {
-                        arrayNode.forEach(permission -> permissionsSet.add(permission.asText()));
+        Set<String> permissionsSet = new HashSet<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            ClassPathResource resource = new ClassPathResource("permissions/AllPermissions.json");
+            JsonNode rootNode = objectMapper.readTree(resource.getInputStream());
+
+            rootNode.fields().forEachRemaining(entry -> {
+                JsonNode arrayNode = entry.getValue();
+                if (arrayNode.isArray()) {
+                    for (JsonNode permission : arrayNode) {
+                        permissionsSet.add(permission.asText());
                     }
                 }
-            } catch (IOException e) {
-                log.error(Constants.ERROR_READING_PERMISSIONS_JSON, e);
-                return Collections.emptySet();
-            }
-            return permissionsSet;
-    }
-}
+            });
 
+            log.info("Total unique permissions loaded: {}", permissionsSet.size());
+
+        } catch (IOException e) {
+            log.error(Constants.ERROR_READING_PERMISSIONS_JSON, e);
+            return Collections.emptySet();
+        }
+
+        return permissionsSet;
+    }
+
+}

@@ -56,6 +56,7 @@ const ExpenseManagement = () => {
     useState<OrganizationValues>({} as OrganizationValues);
   const fetchOrganizationValues = async () => {
     setIsLoading(true);
+    try {
     const expenseCategories =
       await getOrganizationValuesByKey('expenseCategories');
     const expenseTypes = await getOrganizationValuesByKey('expenseTypes');
@@ -80,6 +81,11 @@ const ExpenseManagement = () => {
     if (expensePaymentModes.status === 204) {
       toast.error('Please add expense payment modes in organization (Settings) values to add expenses');
     }
+  }
+    catch (error) {
+      setIsLoading(false);
+      throw new Error('Error fetching expenses:' + error);
+    } 
   };
   useEffect(() => {
     fetchOrganizationValues();
