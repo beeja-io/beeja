@@ -397,9 +397,9 @@ const MyProfileQuickDetailsComponent = ({
     };
 
     fetchProfileImage();
-    /*return () => {
+    return () => {
       setProfileImageUrl(null, false);
-    };*/
+    };
   }, [employee && employee.employee.id]);
   /* eslint-enable react-hooks/exhaustive-deps */
 

@@ -56,8 +56,6 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
       window.location.origin === ProdOriginURL
         ? `${window.location.origin}${LogoutUrl}`
         : `${import.meta.env.VITE_API_BASE_URL}${LogoutUrl}`;
-
-    setProfileImageUrl(null, false);
   };
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
@@ -70,7 +68,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
   const handleIsMenuExpanded = () => {
     setIsMenuExpanded(!isMenuExpanded);
   };
-  const { profileImageUrl ,setProfileImageUrl} = useProfileImage();
+  const { profileImageUrl } = useProfileImage();
   const [currentProfileImage, setCurrentProfileImage] = useState<string | null>(
     null
   );
