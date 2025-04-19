@@ -24,7 +24,7 @@ import { DeviceDetails } from '../entities/InventoryEntity';
 import { ExpenseFilterArea } from '../styles/ExpenseListStyles.style';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import { OrganizationValues } from '../entities/OrgValueEntity';
+import { OrganizationDefaultValuesDetails } from '../context/OrganizationDefaultValuesContext';
 
 const InventoryManagement = () => {
   const navigate = useNavigate();
@@ -156,38 +156,25 @@ const InventoryManagement = () => {
     fetchData();
   };
 
-  const [deviceTypes, setDeviceTypes] = useState<OrganizationValues>(
-    {} as OrganizationValues
-  );
-  const [inventoryProviders, setInventoryProviders] = useState<OrganizationValues>(
-    {} as OrganizationValues
-  )
+  const {deviceTypes, updateDeviceTypes , inventoryProviders, updateInventoryProviders} = OrganizationDefaultValuesDetails();
 
   const fetchOrganizationValues = async () => {
 
-    let deviceTypesFetched : any ;
-    const storedDeviceTypes = localStorage.getItem("deviceTypes");
-    if(storedDeviceTypes){
-      deviceTypesFetched = JSON.parse(storedDeviceTypes);
-    }
-    else{
-      deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
-      localStorage.setItem("deviceTypes",JSON.stringify(deviceTypesFetched));
-    }
+    const deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
 
     const inventoryProvidersFetched = await getOrganizationValuesByKey('inventoryProviders');
     if (!deviceTypesFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS'));
     } else {
-      setDeviceTypes(deviceTypesFetched.data);
+      updateDeviceTypes(deviceTypesFetched.data);
     }
     if (!inventoryProvidersFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_INVENTORY_PROVIDERS_IN_ORG_SETTINGS'));
     }
     else {
-      setInventoryProviders(inventoryProvidersFetched.data);
+      updateInventoryProviders(inventoryProvidersFetched.data);
     }
-    setDeviceTypes(deviceTypesFetched.data);
+    updateDeviceTypes(deviceTypesFetched.data);
   };
   useEffect(() => {
     fetchOrganizationValues();

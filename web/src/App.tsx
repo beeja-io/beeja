@@ -17,6 +17,7 @@ import axios from 'axios';
 import UnAuthorisedScreen from './screens/UnAuthorisedScreen.screen';
 import ServiceUnavailable from './screens/ServiceUnavailable.screen';
 import { ProfileImageProvider } from './context/ProfileImageContext';
+import { OrganizationDefaultValuesProvider } from './context/OrganizationDefaultValuesContext';
 
 function App() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -113,12 +114,14 @@ function App() {
           : Theme.light
       }
     >
-      <ApplicationContextProvider>
-        <Container>
-          <Toaster position="top-right" closeButton />
-          {renderContent()}
-        </Container>
-      </ApplicationContextProvider>
+      <OrganizationDefaultValuesProvider>
+        <ApplicationContextProvider>
+          <Container>
+            <Toaster position="top-right" closeButton />
+            {renderContent()}
+          </Container>
+        </ApplicationContextProvider>
+      </OrganizationDefaultValuesProvider>
     </ThemeProvider>
   );
 }
