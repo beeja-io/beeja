@@ -9,11 +9,11 @@ interface OrganizationDefaultValuesContextType {
   expenseCategories: OrganizationValues ;
   updateExpenseCategories: (expenseCategories: OrganizationValues) => void;
   expenseTypes: OrganizationValues ;
-  updateExpenseTypes: (inventoryProviders: OrganizationValues) => void;
+  updateExpenseTypes: (expenseTypes: OrganizationValues) => void;
   expenseDepartments: OrganizationValues ;
-  updateExpenseDepartments: (inventoryProviders: OrganizationValues) => void;
+  updateExpenseDepartments: (expenseDepartments: OrganizationValues) => void;
   expensePaymentModes: OrganizationValues ;
-  updateExpensePaymentModes: (inventoryProviders: OrganizationValues) => void;
+  updateExpensePaymentModes: (expensePaymentModes: OrganizationValues) => void;
 }
 
 export const OrganizationDefaultValuesContext = createContext<OrganizationDefaultValuesContextType>({
