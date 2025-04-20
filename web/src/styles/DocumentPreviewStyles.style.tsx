@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const DocumentPreviewModal = styled.section`
   width: 790px;
@@ -10,7 +10,7 @@ export const DocumentPreviewModal = styled.section`
 export const PaginationModal = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: "center";
+  align-items: 'center';
 `;
 
 export const ChevronButton = styled.div`

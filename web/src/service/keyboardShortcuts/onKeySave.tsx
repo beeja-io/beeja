@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 const useKeyCtrl = (keyCode: string, callback: () => void) => {
   useEffect(() => {
@@ -11,9 +11,9 @@ const useKeyCtrl = (keyCode: string, callback: () => void) => {
         callback();
       }
     };
-    document.addEventListener("keydown", keyPressSave);
+    document.addEventListener('keydown', keyPressSave);
     return () => {
-      document.removeEventListener("keydown", keyPressSave);
+      document.removeEventListener('keydown', keyPressSave);
     };
   }, [keyCode, callback]);
 };

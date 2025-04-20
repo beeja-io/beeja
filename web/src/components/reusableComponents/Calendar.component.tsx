@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ChevronleftSVG, ChevronRightSVG } from "../../svgs/CommonSvgs.svs";
+import { useState } from 'react';
+import { ChevronleftSVG, ChevronRightSVG } from '../../svgs/CommonSvgs.svs';
 import {
   Weekday,
   CalendarContainer,
@@ -10,11 +10,11 @@ import {
   MonthName,
   WeekdaysContainer,
   CalendarGrid,
-} from "../../styles/DatePickerStyles.style";
+} from '../../styles/DatePickerStyles.style';
 import {
   DayCell,
   ArrowButton,
-} from "../../styles/CalenderComponentStyles.style";
+} from '../../styles/CalenderComponentStyles.style';
 
 interface CalendarProps {
   minDate?: Date | null;
@@ -37,7 +37,7 @@ const Calendar: React.FC<CalendarProps> = ({
   const [currentDate, setCurrentDate] = useState(initialDate);
 
   const renderWeekdays = () => {
-    const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return weekdays.map((day) => <Weekday key={day}>{day}</Weekday>);
   };
 
@@ -53,7 +53,7 @@ const Calendar: React.FC<CalendarProps> = ({
     const prevMonth = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() - 1,
-      1,
+      1
     );
 
     const lastDateOfMonth = daysInMonth(prevMonth);
@@ -61,7 +61,7 @@ const Calendar: React.FC<CalendarProps> = ({
     const selectedDate = new Date(
       prevMonth.getFullYear(),
       prevMonth.getMonth(),
-      Math.min(currentDate.getDate(), lastDateOfMonth),
+      Math.min(currentDate.getDate(), lastDateOfMonth)
     );
 
     if (
@@ -82,7 +82,7 @@ const Calendar: React.FC<CalendarProps> = ({
     const nextMonth = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() + 1,
-      1,
+      1
     );
 
     const lastDateOfMonth = daysInMonth(nextMonth);
@@ -90,7 +90,7 @@ const Calendar: React.FC<CalendarProps> = ({
     const selectedDate = new Date(
       nextMonth.getFullYear(),
       nextMonth.getMonth(),
-      Math.min(currentDate.getDate(), lastDateOfMonth),
+      Math.min(currentDate.getDate(), lastDateOfMonth)
     );
 
     if (
@@ -111,7 +111,7 @@ const Calendar: React.FC<CalendarProps> = ({
     const selectedDay = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
-      day,
+      day
     );
 
     setCurrentDate(selectedDay);
@@ -137,7 +137,7 @@ const Calendar: React.FC<CalendarProps> = ({
     const prevMonthEndDate = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
-      0,
+      0
     ).getDate();
 
     for (
@@ -148,7 +148,7 @@ const Calendar: React.FC<CalendarProps> = ({
       days.push(
         <DayCell key={`prev-${i}`} isDisabled={true}>
           {i}
-        </DayCell>,
+        </DayCell>
       );
     }
 
@@ -156,7 +156,7 @@ const Calendar: React.FC<CalendarProps> = ({
       const currentDay = new Date(
         currentDate.getFullYear(),
         currentDate.getMonth(),
-        day,
+        day
       );
       const isBeforeMinDate = minDate && currentDay < minDate;
       const isAfterMaxDate = maxDate && currentDay > maxDate;
@@ -173,10 +173,10 @@ const Calendar: React.FC<CalendarProps> = ({
             !!(currentDate && currentDay.getTime() === currentDate.getTime())
           }
           onClick={isDisabled ? undefined : () => handleDayClick(day)}
-          className={isSelected ? "selectedDate" : ""}
+          className={isSelected ? 'selectedDate' : ''}
         >
           {day}
-        </DayCell>,
+        </DayCell>
       );
     }
 
@@ -184,7 +184,7 @@ const Calendar: React.FC<CalendarProps> = ({
       days.push(
         <DayCell key={`next-${i}`} isDisabled={true}>
           {i}
-        </DayCell>,
+        </DayCell>
       );
     }
 
@@ -211,9 +211,9 @@ const Calendar: React.FC<CalendarProps> = ({
             <ChevronleftSVG />
           </ArrowButton>
           <MonthName>
-            {`${new Intl.DateTimeFormat("en-US", {
-              month: "long",
-              year: "numeric",
+            {`${new Intl.DateTimeFormat('en-US', {
+              month: 'long',
+              year: 'numeric',
             }).format(currentDate)}`}
           </MonthName>
           <ArrowButton

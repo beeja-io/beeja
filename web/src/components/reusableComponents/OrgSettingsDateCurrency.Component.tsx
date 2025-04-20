@@ -1,31 +1,31 @@
-import { useState } from "react";
+import { useState } from 'react';
 import {
   BorderDivLine,
   TabContentEditArea,
   TabContentMainContainer,
   TabContentMainContainerHeading,
-} from "../../styles/MyProfile.style";
+} from '../../styles/MyProfile.style';
 import {
   EditWhitePenSVG,
   CheckBoxOnSVG,
   CrossMarkSVG,
-} from "../../svgs/CommonSvgs.svs";
+} from '../../svgs/CommonSvgs.svs';
 import {
   Container,
   ProfileHeading,
   Row,
-} from "../../styles/OrganizationSettingsStyles.style";
-import { Label, Select } from "../../styles/OrganizationSettingsStyles.style";
-import { IOrganization } from "../../entities/OrganizationEntity";
+} from '../../styles/OrganizationSettingsStyles.style';
+import { Label, Select } from '../../styles/OrganizationSettingsStyles.style';
+import { IOrganization } from '../../entities/OrganizationEntity';
 import {
   CURRENCY_TYPES,
   DATE_FORMATS,
   TIME_ZONES,
-} from "../../utils/themeUtils";
-import { useUser } from "../../context/UserContext";
-import { hasPermission } from "../../utils/permissionCheck";
-import { ORGANIZATION_MODULE } from "../../constants/PermissionConstants";
-import { useTranslation } from "react-i18next";
+} from '../../utils/themeUtils';
+import { useUser } from '../../context/UserContext';
+import { hasPermission } from '../../utils/permissionCheck';
+import { ORGANIZATION_MODULE } from '../../constants/PermissionConstants';
+import { useTranslation } from 'react-i18next';
 
 type DateCurrencyType = {
   organization: IOrganization;
@@ -73,15 +73,15 @@ export const OrganizationSettingsDateCurrency = ({
     }
   };
   const [updatedOrganization, setUpdatedOrganization] = useState<IOrganization>(
-    {} as IOrganization,
+    {} as IOrganization
   );
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    if (name.startsWith("preferences")) {
-      const preferences: string[] = name.split(".");
+    if (name.startsWith('preferences')) {
+      const preferences: string[] = name.split('.');
       setCompanyProfile({
         ...organization,
         preferences: {
@@ -98,7 +98,7 @@ export const OrganizationSettingsDateCurrency = ({
               ...prevState.preferences,
               [preferences[1]]: value,
             },
-          }) as IOrganization,
+          }) as IOrganization
       );
       return;
     }
@@ -106,11 +106,11 @@ export const OrganizationSettingsDateCurrency = ({
 
   return (
     <>
-      <ProfileHeading>{t("DATE_AND_CURRENCY")}</ProfileHeading>
+      <ProfileHeading>{t('DATE_AND_CURRENCY')}</ProfileHeading>
       <BorderDivLine width="100%" />
       <TabContentMainContainer>
         <TabContentMainContainerHeading>
-          <h4>{t("DATE_FORMAT")}</h4>
+          <h4>{t('DATE_FORMAT')}</h4>
           {user &&
             hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
               <TabContentEditArea>
@@ -125,11 +125,11 @@ export const OrganizationSettingsDateCurrency = ({
                   </span>
                 ) : (
                   <span>
-                    <span title={t("SAVE_CHANGES")} onClick={handleSaveChanges}>
+                    <span title={t('SAVE_CHANGES')} onClick={handleSaveChanges}>
                       <CheckBoxOnSVG />
                     </span>
                     <span
-                      title={t("DISCARD_CHANGES")}
+                      title={t('DISCARD_CHANGES')}
                       onClick={() => {
                         handleIsEditDateFormatModeOff();
                         handleCancelUpdate();
@@ -145,7 +145,7 @@ export const OrganizationSettingsDateCurrency = ({
         <BorderDivLine width="100%" />
         <Container>
           <Row>
-            <Label>{t("DATE_FORMAT")}</Label>
+            <Label>{t('DATE_FORMAT')}</Label>
             <Select
               name="preferences.dateFormat"
               onChange={handleInputChange}
@@ -153,7 +153,7 @@ export const OrganizationSettingsDateCurrency = ({
               value={
                 organization.preferences && organization.preferences.dateFormat
                   ? organization.preferences.dateFormat
-                  : ""
+                  : ''
               }
             >
               {Object.keys(DATE_FORMATS).map((key) => (
@@ -172,7 +172,7 @@ export const OrganizationSettingsDateCurrency = ({
               value={
                 organization.preferences && organization.preferences.timeZone
                   ? organization.preferences.timeZone
-                  : ""
+                  : ''
               }
             >
               {Object.keys(TIME_ZONES).map((key) => (
@@ -186,7 +186,7 @@ export const OrganizationSettingsDateCurrency = ({
       </TabContentMainContainer>
       <TabContentMainContainer>
         <TabContentMainContainerHeading>
-          <h4>{t("CURRENCY")}</h4>
+          <h4>{t('CURRENCY')}</h4>
 
           {user &&
             hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
@@ -202,11 +202,11 @@ export const OrganizationSettingsDateCurrency = ({
                   </span>
                 ) : (
                   <span>
-                    <span title={t("SAVE_CHANGES")} onClick={handleSaveChanges}>
+                    <span title={t('SAVE_CHANGES')} onClick={handleSaveChanges}>
                       <CheckBoxOnSVG />
                     </span>
                     <span
-                      title={t("DISCARD_CHANGES")}
+                      title={t('DISCARD_CHANGES')}
                       onClick={() => {
                         handleIsEditCurrencyModeOff();
                         handleCancelUpdate();
@@ -222,7 +222,7 @@ export const OrganizationSettingsDateCurrency = ({
         <BorderDivLine width="100%" />
         <Container>
           <Row>
-            <Label>{t("CURRENCY_TYPE")}</Label>
+            <Label>{t('CURRENCY_TYPE')}</Label>
             <Select
               name="preferences.currencyType"
               disabled={!isEditCurrencyModeOn}
@@ -231,7 +231,7 @@ export const OrganizationSettingsDateCurrency = ({
                 organization.preferences &&
                 organization.preferences.currencyType
                   ? organization.preferences.currencyType
-                  : ""
+                  : ''
               }
             >
               {Object.keys(CURRENCY_TYPES).map((key) => (

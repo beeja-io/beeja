@@ -1,10 +1,10 @@
-import { useNavigate } from "react-router-dom";
-import { Button } from "../styles/CommonStyles.style";
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../styles/CommonStyles.style';
 import {
   ErrorScreenContentArea,
   MainErrorScreenContainer,
-} from "../styles/ErrorScreenStyles.style";
-import { useTranslation } from "react-i18next";
+} from '../styles/ErrorScreenStyles.style';
+import { useTranslation } from 'react-i18next';
 
 const Error404Screen = () => {
   const navigate = useNavigate();
@@ -13,15 +13,15 @@ const Error404Screen = () => {
     <MainErrorScreenContainer>
       <ErrorScreenContentArea>
         <span className="errorCode">
-          {t("4")}
-          <span> {t("0")}</span> {t("4")}
+          {t('4')}
+          <span> {t('0')}</span> {t('4')}
         </span>
-        <span className="errorHeading">{t("SORRY_PAGE_NOT_FOUND")}</span>
+        <span className="errorHeading">{t('SORRY_PAGE_NOT_FOUND')}</span>
         <span className="errorDescription">
-          {t("THE_PAGE_REQUESTED_NOT_EXIST")}
+          {t('THE_PAGE_REQUESTED_NOT_EXIST')}
         </span>
-        <Button className="submit" onClick={() => navigate("/")}>
-          {t("GO_TO_HOME")}
+        <Button className="submit" onClick={() => navigate('/')}>
+          {t('GO_TO_HOME')}
         </Button>
       </ErrorScreenContentArea>
     </MainErrorScreenContainer>

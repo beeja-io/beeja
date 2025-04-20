@@ -1,5 +1,5 @@
 // styles/EmployeeIDCreate.style.ts
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const FormContainer = styled.form`
   display: flex;
@@ -21,8 +21,8 @@ export const FormGroup = styled.div`
     white-space: nowrap;
   }
 
-  input[type="text"],
-  input[type="number"] {
+  input[type='text'],
+  input[type='number'] {
     width: 470px;
     height: 54px;
     border-radius: 10px;
@@ -43,12 +43,12 @@ export const FormGroup = styled.div`
       font-size: 1rem;
     }
 
-    input[type="radio"] {
+    input[type='radio'] {
       margin-right: 5px;
     }
   }
   .custom-text-style {
-    font-family: "Nunito", sans-serif;
+    font-family: 'Nunito', sans-serif;
     font-size: 10px;
     font-weight: 400;
     line-height: 12.8px;
@@ -84,7 +84,7 @@ export const ToggleSwitchContainer = styled.div<ToggleSwitchContainerProps>`
     width: 44px;
     height: 26px;
     background: ${({ isChecked }: { isChecked: boolean }) =>
-      isChecked ? "#004080" : "#ccc"};
+      isChecked ? '#004080' : '#ccc'};
     border-radius: 1000px;
     transition: background-color 0.3s ease;
     padding: 2px;
@@ -98,7 +98,7 @@ export const ToggleSwitchContainer = styled.div<ToggleSwitchContainerProps>`
 
   .toggle-switch svg {
     transform: ${({ isChecked }: { isChecked: boolean }) =>
-      isChecked ? "translateX(18px)" : "translateX(0)"};
+      isChecked ? 'translateX(18px)' : 'translateX(0)'};
     transition: transform 0.3s ease;
   }
 `;
@@ -115,7 +115,7 @@ export const ToggleInfoContainer = styled.div`
 `;
 
 export const ToggleInfoText = styled.span`
-  font-family: "Nunito", sans-serif;
+  font-family: 'Nunito', sans-serif;
   font-size: 10px;
   font-weight: 400;
   line-height: 12.8px;

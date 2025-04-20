@@ -1,24 +1,24 @@
-import { useNavigate } from "react-router-dom";
-import { hasPermission } from "../utils/permissionCheck";
-import { RECRUITMENT_MODULE } from "../constants/PermissionConstants";
-import { useUser } from "../context/UserContext";
-import { Button } from "web-kit-components";
+import { useNavigate } from 'react-router-dom';
+import { hasPermission } from '../utils/permissionCheck';
+import { RECRUITMENT_MODULE } from '../constants/PermissionConstants';
+import { useUser } from '../context/UserContext';
+import { Button } from 'web-kit-components';
 import {
   ExpenseManagementMainContainer,
   ExpenseHeadingSection,
-} from "../styles/ExpenseManagementStyles.style";
-import { ArrowDownSVG } from "../svgs/CommonSvgs.svs";
-import { AddNewPlusSVG } from "../svgs/EmployeeListSvgs.svg";
-import { useCallback, useEffect, useState } from "react";
-import { IApplicant } from "../entities/ApplicantEntity";
-import { getAllApplicantList, getMyReferrals } from "../service/axiosInstance";
-import ApplicantsList from "../components/directComponents/ApplicantsList.component";
+} from '../styles/ExpenseManagementStyles.style';
+import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
+import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
+import { useCallback, useEffect, useState } from 'react';
+import { IApplicant } from '../entities/ApplicantEntity';
+import { getAllApplicantList, getMyReferrals } from '../service/axiosInstance';
+import ApplicantsList from '../components/directComponents/ApplicantsList.component';
 
 type RecruitmentManagementScreenProps = {
   isReferral: boolean;
 };
 const RecruitmentManagementScreen = (
-  props: RecruitmentManagementScreenProps,
+  props: RecruitmentManagementScreenProps
 ) => {
   const navigate = useNavigate();
   const { user } = useUser();
@@ -58,7 +58,7 @@ const RecruitmentManagementScreen = (
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {props.isReferral ? "Referrals" : "Hiring"}
+            {props.isReferral ? 'Referrals' : 'Hiring'}
           </span>
           {user &&
             (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT) ||
@@ -69,13 +69,13 @@ const RecruitmentManagementScreen = (
                 onClick={() =>
                   navigate(
                     !props.isReferral
-                      ? "/recruitment/hiring-management/new"
-                      : "/recruitment/my-referrals/refer",
+                      ? '/recruitment/hiring-management/new'
+                      : '/recruitment/my-referrals/refer'
                   )
                 }
               >
                 <AddNewPlusSVG /> &nbsp;
-                {props.isReferral ? "Add New Referral" : "Add Applicant"}
+                {props.isReferral ? 'Add New Referral' : 'Add Applicant'}
               </Button>
             )}
         </ExpenseHeadingSection>

@@ -1,19 +1,19 @@
-import { useState, useEffect } from "react";
-import AddRoleComponent from "../components/directComponents/AddRoles.component";
-import UserRoleList from "./UserRolesList.screen";
-import { getAllRolesInOrganization } from "../service/axiosInstance";
-import { Button } from "../styles/CommonStyles.style";
-import { BorderDivLine } from "../styles/MyProfile.style";
+import { useState, useEffect } from 'react';
+import AddRoleComponent from '../components/directComponents/AddRoles.component';
+import UserRoleList from './UserRolesList.screen';
+import { getAllRolesInOrganization } from '../service/axiosInstance';
+import { Button } from '../styles/CommonStyles.style';
+import { BorderDivLine } from '../styles/MyProfile.style';
 import {
   HeaderWrapper,
   ProfileHeading,
-} from "../styles/OrganizationSettingsStyles.style";
-import { IRole } from "../entities/RoleEntity";
-import { useUser } from "../context/UserContext";
-import { hasPermission } from "../utils/permissionCheck";
-import { PERMISSION_MODULE } from "../constants/PermissionConstants";
-import { AddNewPlusSVG } from "../svgs/EmployeeListSvgs.svg";
-import { useTranslation } from "react-i18next";
+} from '../styles/OrganizationSettingsStyles.style';
+import { IRole } from '../entities/RoleEntity';
+import { useUser } from '../context/UserContext';
+import { hasPermission } from '../utils/permissionCheck';
+import { PERMISSION_MODULE } from '../constants/PermissionConstants';
+import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
+import { useTranslation } from 'react-i18next';
 
 interface Role {
   id: string;
@@ -45,7 +45,7 @@ const UserRolesPermissionsComponent = () => {
       }));
       setRoles(rolesData);
       setIsLoaded(false);
-    } catch (error) {
+    } catch {
       setIsLoaded(false);
     }
   };
@@ -68,7 +68,7 @@ const UserRolesPermissionsComponent = () => {
   return (
     <>
       <HeaderWrapper>
-        <ProfileHeading>{t("USER_ROLES_AND_PERMISSIONS")}</ProfileHeading>
+        <ProfileHeading>{t('USER_ROLES_AND_PERMISSIONS')}</ProfileHeading>
         {showRoleForm ? (
           <Button
             width="112px"
@@ -76,13 +76,13 @@ const UserRolesPermissionsComponent = () => {
             className="submit btnMobile"
             onClick={handleCloseForm}
           >
-            {t("CANCEL")}
+            {t('CANCEL')}
           </Button>
         ) : (
           user &&
           hasPermission(
             user,
-            PERMISSION_MODULE.CREATE_ROLES_OF_ORGANIZATIONS,
+            PERMISSION_MODULE.CREATE_ROLES_OF_ORGANIZATIONS
           ) && (
             <Button
               width="142px"
@@ -90,7 +90,7 @@ const UserRolesPermissionsComponent = () => {
               className="submit btnMobile"
               onClick={handleAddRoleClick}
             >
-              <AddNewPlusSVG /> {t("ADD_ROLE")}
+              <AddNewPlusSVG /> {t('ADD_ROLE')}
             </Button>
           )
         )}

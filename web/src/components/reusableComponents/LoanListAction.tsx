@@ -1,19 +1,19 @@
-import { useRef, useState } from "react";
+import { useRef, useState } from 'react';
 import {
   ActionContainer,
   ActionMenu,
   ActionMenuContent,
   ActionMenuOption,
-} from "../../styles/DocumentTabStyles.style";
-import { ActionIcon } from "../../svgs/DocumentTabSvgs.svg";
-import SpinAnimation from "../loaders/SprinAnimation.loader";
-import { Loan } from "../../entities/LoanEntity";
-import CenterModalReject from "./CenterModalReject";
-import { statusChange } from "../../service/axiosInstance";
-import ToastMessage from "./ToastMessage.component";
-import { useUser } from "../../context/UserContext";
-import { LOAN_MODULE } from "../../constants/PermissionConstants";
-import { hasPermission } from "../../utils/permissionCheck";
+} from '../../styles/DocumentTabStyles.style';
+import { ActionIcon } from '../../svgs/DocumentTabSvgs.svg';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import { Loan } from '../../entities/LoanEntity';
+import CenterModalReject from './CenterModalReject';
+import { statusChange } from '../../service/axiosInstance';
+import ToastMessage from './ToastMessage.component';
+import { useUser } from '../../context/UserContext';
+import { LOAN_MODULE } from '../../constants/PermissionConstants';
+import { hasPermission } from '../../utils/permissionCheck';
 interface ActionProps {
   options: {
     title: string;
@@ -42,10 +42,10 @@ export const LoanAction: React.FC<ActionProps> = ({
   };
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
-    if (option == "Approve") {
+    if (option == 'Approve') {
       handleStatusApprove(currentLoan.id);
     }
-    if (option == "Reject") {
+    if (option == 'Reject') {
       handleRejectModal();
     }
     setIsOpen(false);
@@ -54,11 +54,11 @@ export const LoanAction: React.FC<ActionProps> = ({
   const handleStatusApprove = async (id: string) => {
     try {
       setIsResponseLoading(true);
-      await statusChange(id, "APPROVE");
+      await statusChange(id, 'APPROVE');
       fetchLoans();
       setIsResponseLoading(false);
       handleApproveMessage();
-    } catch (error) {
+    } catch {
       setIsResponseLoading(false);
     }
   };
@@ -69,12 +69,12 @@ export const LoanAction: React.FC<ActionProps> = ({
     try {
       handleRejectModal();
       setIsResponseLoading(true);
-      await statusChange(id, "REJECT", message);
+      await statusChange(id, 'REJECT', message);
 
       fetchLoans();
       setIsResponseLoading(false);
       handleRejectMessage();
-    } catch (error) {
+    } catch {
       setIsResponseLoading(false);
     }
   };
@@ -96,7 +96,7 @@ export const LoanAction: React.FC<ActionProps> = ({
   };
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (!target.closest(".dropdown-container")) {
+    if (!target.closest('.dropdown-container')) {
       setIsOpen(false);
     }
   };
@@ -107,14 +107,14 @@ export const LoanAction: React.FC<ActionProps> = ({
       currentLoan.employeeId === user.employeeId
     );
   };
-  document.addEventListener("click", handleClickOutside);
+  document.addEventListener('click', handleClickOutside);
 
   const handleDocumentClick = (e: MouseEvent) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
       setIsOpen(false);
     }
   };
-  window.addEventListener("click", handleDocumentClick);
+  window.addEventListener('click', handleDocumentClick);
 
   return (
     <>
@@ -123,8 +123,8 @@ export const LoanAction: React.FC<ActionProps> = ({
           onClick={() => {
             if (!isUserNotAllowed()) {
               if (
-                currentLoan.status !== "APPROVED" &&
-                currentLoan.status !== "REJECTED"
+                currentLoan.status !== 'APPROVED' &&
+                currentLoan.status !== 'REJECTED'
               ) {
                 openDropdown();
               }
@@ -134,19 +134,19 @@ export const LoanAction: React.FC<ActionProps> = ({
           <div
             style={{
               opacity:
-                currentLoan.status === "APPROVED" ||
-                currentLoan.status === "REJECTED" ||
+                currentLoan.status === 'APPROVED' ||
+                currentLoan.status === 'REJECTED' ||
                 isUserNotAllowed() ||
-                currentLoan.status === "REJECTED"
+                currentLoan.status === 'REJECTED'
                   ? 0.3
                   : 1,
               cursor:
-                currentLoan.status === "APPROVED" ||
-                currentLoan.status === "REJECTED" ||
+                currentLoan.status === 'APPROVED' ||
+                currentLoan.status === 'REJECTED' ||
                 isUserNotAllowed() ||
-                currentLoan.status === "REJECTED"
-                  ? "not-allowed"
-                  : "pointer",
+                currentLoan.status === 'REJECTED'
+                  ? 'not-allowed'
+                  : 'pointer',
             }}
           >
             <ActionIcon />
@@ -157,7 +157,7 @@ export const LoanAction: React.FC<ActionProps> = ({
             {options.map((option, index) => (
               <ActionMenuOption
                 key={index}
-                className={selectedOption === option.title ? "selected" : ""}
+                className={selectedOption === option.title ? 'selected' : ''}
                 onClick={() => handleOptionClick(option.title)}
               >
                 {option.title}
@@ -168,7 +168,7 @@ export const LoanAction: React.FC<ActionProps> = ({
       </ActionContainer>
       {isResponseLoading && <SpinAnimation />}
       {confirmRejectModal && (
-        <span style={{ cursor: "default" }}>
+        <span style={{ cursor: 'default' }}>
           <CenterModalReject
             handleModalClose={handleRejectModal}
             handleModalSubmit={handleModalSubmit}

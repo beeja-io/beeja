@@ -1,14 +1,14 @@
-import { useRef, useState } from "react";
+import { useRef, useState } from 'react';
 import {
   ActionContainer,
   ActionMenu,
   ActionMenuContent,
   ActionMenuOption,
-} from "../../styles/DocumentTabStyles.style";
-import { ActionIcon } from "../../svgs/DocumentTabSvgs.svg";
-import ToastMessage from "../reusableComponents/ToastMessage.component";
-import { IApplicant } from "../../entities/ApplicantEntity";
-import { useNavigate } from "react-router-dom";
+} from '../../styles/DocumentTabStyles.style';
+import { ActionIcon } from '../../svgs/DocumentTabSvgs.svg';
+import ToastMessage from '../reusableComponents/ToastMessage.component';
+import { IApplicant } from '../../entities/ApplicantEntity';
+import { useNavigate } from 'react-router-dom';
 
 interface ApplicantListActionsProps {
   applicant: IApplicant;
@@ -40,10 +40,10 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
-    if (option == "Delete") {
+    if (option == 'Delete') {
       handleDeleteModal();
     }
-    if (option == "Edit") {
+    if (option == 'Edit') {
       navigate(`/recruitment/hiring-management/${props.applicant.id}`);
     }
     setIsOpen(false);
@@ -52,21 +52,20 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (!target.closest(".dropdown-container")) {
+    if (!target.closest('.dropdown-container')) {
       setIsOpen(false);
     }
   };
 
-  document.addEventListener("click", handleClickOutside);
+  document.addEventListener('click', handleClickOutside);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDocumentClick = (e: any) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
       setIsOpen(false);
     }
   };
 
-  window.addEventListener("click", handleDocumentClick);
+  window.addEventListener('click', handleDocumentClick);
 
   return (
     <>
@@ -79,7 +78,7 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
             {props.options.map((option, index) => (
               <ActionMenuOption
                 key={index}
-                className={selectedOption === option.title ? "selected" : ""}
+                className={selectedOption === option.title ? 'selected' : ''}
                 onClick={() => handleOptionClick(option.title)}
               >
                 {option.svg}

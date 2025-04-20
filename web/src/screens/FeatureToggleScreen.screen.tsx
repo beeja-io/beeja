@@ -1,18 +1,18 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 import {
   ExpenseManagementMainContainer,
   ExpenseHeadingSection,
-} from "../styles/ExpenseManagementStyles.style";
-import { ArrowDownSVG } from "../svgs/CommonSvgs.svs";
-import { PayrollMainContainer } from "../styles/LoanApplicationStyles.style";
-import { FeatureToggleContainer } from "../styles/FeatureToggleStyles.style";
-import { EFeatureToggles, IFeatureToggle } from "../entities/FeatureToggle";
-import { SwitchLabel, StyledSwitch, Slider } from "../styles/InputStyles.style";
-import { removeUnderScore } from "../utils/stringUtils";
-import { useFeatureToggles } from "../context/FeatureToggleContext";
-import { ChangeEvent, useEffect, useState } from "react";
-import { updateFeatureTogglesByOrgId } from "../service/axiosInstance";
-import { useTranslation } from "react-i18next";
+} from '../styles/ExpenseManagementStyles.style';
+import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
+import { PayrollMainContainer } from '../styles/LoanApplicationStyles.style';
+import { FeatureToggleContainer } from '../styles/FeatureToggleStyles.style';
+import { EFeatureToggles, IFeatureToggle } from '../entities/FeatureToggle';
+import { SwitchLabel, StyledSwitch, Slider } from '../styles/InputStyles.style';
+import { removeUnderScore } from '../utils/stringUtils';
+import { useFeatureToggles } from '../context/FeatureToggleContext';
+import { ChangeEvent, useEffect, useState } from 'react';
+import { updateFeatureTogglesByOrgId } from '../service/axiosInstance';
+import { useTranslation } from 'react-i18next';
 
 const FeatureToggleScreen = () => {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const FeatureToggleScreen = () => {
     useState<IFeatureToggle>({} as IFeatureToggle);
 
   const [features, setFeatures] = useState<string[]>(
-    Array.from(featureToggles?.featureToggles ?? []),
+    Array.from(featureToggles?.featureToggles ?? [])
   );
 
   const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -51,8 +51,8 @@ const FeatureToggleScreen = () => {
     const updateFeatureTogglesOfOrg = async () => {
       if (Object.keys(featureTogglesToBeUpdated).length !== 0) {
         const res = await updateFeatureTogglesByOrgId(
-          featureToggles ? featureToggles.organizationId : "",
-          featureTogglesToBeUpdated,
+          featureToggles ? featureToggles.organizationId : '',
+          featureTogglesToBeUpdated
         );
         updateFeatureToggles(res.data);
       }
@@ -71,18 +71,18 @@ const FeatureToggleScreen = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t("FEATURE_TOGGLES")}
+            {t('FEATURE_TOGGLES')}
           </span>
         </ExpenseHeadingSection>
         <PayrollMainContainer>
-          <span>{t("CHOOESE_ALL_FEATURES_WHICH_SHOULD_ENABLE")}</span>
+          <span>{t('CHOOESE_ALL_FEATURES_WHICH_SHOULD_ENABLE')}</span>
 
           <FeatureToggleContainer>
             <div>
               <div>
                 {keys.map((key, index) => (
                   <span className="innerDiv" key={index}>
-                    {removeUnderScore(key.toString())}{" "}
+                    {removeUnderScore(key.toString())}{' '}
                     {featureToggles && (
                       <SwitchLabel>
                         <StyledSwitch

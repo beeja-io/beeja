@@ -1,13 +1,12 @@
-import React, { useRef, useState } from "react";
-/* eslint-disable */
+import React, { useRef, useState } from 'react';
 import {
   FilterDropdown,
   DropdownContainer,
   DropdownContent,
   DropdownOption,
   TickMark,
-} from "../../styles/DocumentTabStyles.style";
-import { TickmarkIcon } from "../../svgs/DocumentTabSvgs.svg";
+} from '../../styles/DocumentTabStyles.style';
+import { TickmarkIcon } from '../../svgs/DocumentTabSvgs.svg';
 
 interface FilterButtonProps {
   options: string[];
@@ -36,12 +35,12 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (!target.closest(".dropdown-container")) {
+    if (!target.closest('.dropdown-container')) {
       setIsOpen(false);
     }
   };
 
-  document.addEventListener("click", handleClickOutside);
+  document.addEventListener('click', handleClickOutside);
 
   const handleDocumentClick = (e: any) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
@@ -49,7 +48,7 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
     }
   };
 
-  window.addEventListener("click", handleDocumentClick);
+  window.addEventListener('click', handleDocumentClick);
 
   // if(isOpen){
   //   document.body.style.overflow = 'hidden';
@@ -69,7 +68,7 @@ export const FilterButton: React.FC<FilterButtonProps> = ({
           {options.map((option, index) => (
             <DropdownOption
               key={index}
-              className={selectedOption === option ? "selected" : ""}
+              className={selectedOption === option ? 'selected' : ''}
               onClick={() => handleOptionClick(option)}
             >
               {option}

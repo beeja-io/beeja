@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { EmployeeEntity } from "../../entities/EmployeeEntity";
+import { useCallback, useEffect, useState } from 'react';
+import { EmployeeEntity } from '../../entities/EmployeeEntity';
 import {
   TabContentMainContainer,
   TabContentMainContainerHeading,
@@ -9,26 +9,26 @@ import {
   TabContentTable,
   TabContentTableTd,
   InlineInput,
-} from "../../styles/MyProfile.style";
+} from '../../styles/MyProfile.style';
 import {
   EditWhitePenSVG,
   CheckBoxOnSVG,
   CrossMarkSVG,
-} from "../../svgs/CommonSvgs.svs";
-import { KYC_MODULE } from "../../constants/PermissionConstants";
-import { useUser } from "../../context/UserContext";
-import { useTranslation } from "react-i18next";
-import ToastMessage from "./ToastMessage.component";
-import SpinAnimation from "../loaders/SprinAnimation.loader";
-import { updateKycDetails } from "../../service/axiosInstance";
+} from '../../svgs/CommonSvgs.svs';
+import { KYC_MODULE } from '../../constants/PermissionConstants';
+import { useUser } from '../../context/UserContext';
+import { useTranslation } from 'react-i18next';
+import ToastMessage from './ToastMessage.component';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import { updateKycDetails } from '../../service/axiosInstance';
 import {
   isValidAccountNo,
   isValidIFSCCode,
   isValidPanCardNo,
   isValidAadhaarNumber,
   isValidPassportNumber,
-} from "../../utils/formInputValidators";
-import { hasPermission } from "../../utils/permissionCheck";
+} from '../../utils/formInputValidators';
+import { hasPermission } from '../../utils/permissionCheck';
 
 type KycTabContentProps = {
   heading: string;
@@ -97,41 +97,41 @@ const KycTabContent = ({
     showError: boolean,
     setValidationErrors: React.Dispatch<
       React.SetStateAction<{ [key: string]: string }>
-    >,
+    >
   ): boolean => {
     let isValid = true;
-    let errorMessage = "";
+    let errorMessage = '';
 
     switch (label) {
-      case "Account Number":
-        if (value.trim() !== "") {
+      case 'Account Number':
+        if (value.trim() !== '') {
           isValid = isValidAccountNo(value);
-          errorMessage = "Please enter a valid Account Number";
+          errorMessage = 'Please enter a valid Account Number';
         }
         break;
-      case "IFSC Code":
-        if (value.trim() !== "") {
+      case 'IFSC Code':
+        if (value.trim() !== '') {
           isValid = isValidIFSCCode(value);
-          errorMessage = "Please enter a valid IFSC Code";
+          errorMessage = 'Please enter a valid IFSC Code';
         }
         break;
-      case "PAN Number":
-        if (value.trim() !== "") {
+      case 'PAN Number':
+        if (value.trim() !== '') {
           isValid = isValidPanCardNo(value);
-          errorMessage = "PAN Number must be format of ABCDH9008L";
+          errorMessage = 'PAN Number must be format of ABCDH9008L';
         }
         break;
-      case "Aadhaar Number":
-        if (value.trim() !== "") {
+      case 'Aadhaar Number':
+        if (value.trim() !== '') {
           isValid = isValidAadhaarNumber(value);
           errorMessage =
-            "The Aadhaar Number should consist of exactly 12 digits.";
+            'The Aadhaar Number should consist of exactly 12 digits.';
         }
         break;
-      case "Passport Number":
-        if (value.trim() !== "" && value !== originalFormData[label]) {
+      case 'Passport Number':
+        if (value.trim() !== '' && value !== originalFormData[label]) {
           isValid = isValidPassportNumber(value);
-          errorMessage = "Please enter a valid Passport Number";
+          errorMessage = 'Please enter a valid Passport Number';
         }
         break;
       default:
@@ -146,13 +146,13 @@ const KycTabContent = ({
       setTimeout(() => {
         setValidationErrors((prevErrors) => ({
           ...prevErrors,
-          [label]: "",
+          [label]: '',
         }));
       }, 4000);
     } else {
       setValidationErrors((prevErrors) => ({
         ...prevErrors,
-        [label]: "",
+        [label]: '',
       }));
     }
 
@@ -160,16 +160,16 @@ const KycTabContent = ({
   };
 
   const handleChange = (label: string, newValue: string) => {
-    let processedValue = newValue.replace(/-/g, ""); // Remove hyphens for all fields
+    let processedValue = newValue.replace(/-/g, ''); // Remove hyphens for all fields
 
     // Automatically capitalize all alphabets
     processedValue = processedValue.toUpperCase();
 
     // Restrict input of alphabets for specific fields
-    const numericFields = ["Account Number", "Aadhaar Number"];
-    const alphanumericFields = ["IFSC Code", "PAN Number", "Passport Number"];
-    const bankInputFeilds = ["Bank Name"];
-    const branchInputFeilds = ["Branch Name"];
+    const numericFields = ['Account Number', 'Aadhaar Number'];
+    const alphanumericFields = ['IFSC Code', 'PAN Number', 'Passport Number'];
+    const bankInputFeilds = ['Bank Name'];
+    const branchInputFeilds = ['Branch Name'];
     if (numericFields.includes(label) && /\D/.test(processedValue)) {
       // If field should be numeric and contains non-numeric characters, ignore the change
       return;
@@ -243,22 +243,21 @@ const KycTabContent = ({
       const updatedData = { ...originalFormData, ...modifiedFields };
       await updateKycDetails(
         employee.employee.employeeId,
-        mapFormDataToBackendStructure(updatedData),
+        mapFormDataToBackendStructure(updatedData)
       );
       fetchEmployeeAgain();
       setIsUpdateToastMessage(true);
       setIsFormSubmitted(true);
       handleIsEditModeOn();
-    } catch (error) {
+    } catch {
       setIsUpdateErrorOccured(true);
     } finally {
       setIsUpdateResponseLoading(false);
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setBackendData = (obj: any, path: string, value: string): void => {
-    const keys = path.split(".");
+    const keys = path.split('.');
     keys.reduce((acc, key, index) => {
       if (index === keys.length - 1) {
         acc[key] = value;
@@ -271,7 +270,6 @@ const KycTabContent = ({
 
   const mapFormDataToBackendStructure = (data: {
     [key: string]: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): any => {
     const backendData: { [key: string]: string | undefined } = {};
 
@@ -289,22 +287,22 @@ const KycTabContent = ({
 
   const handleFinalDataToBeSentToBackend = (label: string): string => {
     switch (label) {
-      case "Aadhaar Number":
-        return "kycDetails.aadhaarNumber";
-      case "PAN Number":
-        return "kycDetails.panNumber";
-      case "Passport Number":
-        return "kycDetails.passportNumber";
-      case "Account Number":
-        return "bankDetails.accountNo";
-      case "IFSC Code":
-        return "bankDetails.ifscCode";
-      case "Bank Name":
-        return "bankDetails.bankName";
-      case "Branch Name":
-        return "bankDetails.branchName";
+      case 'Aadhaar Number':
+        return 'kycDetails.aadhaarNumber';
+      case 'PAN Number':
+        return 'kycDetails.panNumber';
+      case 'Passport Number':
+        return 'kycDetails.passportNumber';
+      case 'Account Number':
+        return 'bankDetails.accountNo';
+      case 'IFSC Code':
+        return 'bankDetails.ifscCode';
+      case 'Bank Name':
+        return 'bankDetails.bankName';
+      case 'Branch Name':
+        return 'bankDetails.branchName';
       default:
-        return label.toLowerCase().replace(/\s/g, "");
+        return label.toLowerCase().replace(/\s/g, '');
     }
   };
 
@@ -356,15 +354,15 @@ const KycTabContent = ({
                           onChange={(e) => handleChange(label, e.target.value)}
                           onBlur={() => handleBlur(label)}
                           maxLength={
-                            label === "Aadhaar Number" ||
-                            label === "Passport Number"
+                            label === 'Aadhaar Number' ||
+                            label === 'Passport Number'
                               ? 12
-                              : label === "PAN Number"
+                              : label === 'PAN Number'
                                 ? 10
-                                : label === "IFSC Code"
+                                : label === 'IFSC Code'
                                   ? 11
-                                  : label === "Bank Name" ||
-                                      label === "Branch Name"
+                                  : label === 'Bank Name' ||
+                                      label === 'Branch Name'
                                     ? 40
                                     : 10
                           }
@@ -378,7 +376,7 @@ const KycTabContent = ({
                       </div>
                     </TabContentTableTd>
                   ) : (
-                    <TabContentTableTd>{value || "-"}</TabContentTableTd>
+                    <TabContentTableTd>{value || '-'}</TabContentTableTd>
                   )}
                 </tr>
               ))}

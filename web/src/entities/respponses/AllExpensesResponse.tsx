@@ -1,4 +1,4 @@
-import { Expense } from "../ExpenseEntity";
+import { Expense } from '../ExpenseEntity';
 
 export interface AllExpensesResponse {
   expenses: Expense[];

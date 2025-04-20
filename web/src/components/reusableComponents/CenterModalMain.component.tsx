@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 import {
   CenterModalContainer,
   CenterModalTypeTwoInnerContainer,
-} from "../../styles/CenterModalStyles.style";
-import { CenterModalCloseSVG } from "../../svgs/CommonSvgs.svs";
-import { useTranslation } from "react-i18next";
+} from '../../styles/CenterModalStyles.style';
+import { CenterModalCloseSVG } from '../../svgs/CommonSvgs.svs';
+import { useTranslation } from 'react-i18next';
 
 type CenterModalProps = {
   heading: string;

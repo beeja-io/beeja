@@ -1,4 +1,4 @@
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes } from 'styled-components';
 
 const rippleAnimation = keyframes`
   0% {
@@ -15,7 +15,7 @@ const RippleLoaderWrapper = styled.div<{ height?: string }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: ${(props) => (props.height ? props.height : "100vh")};
+  height: ${(props) => (props.height ? props.height : '100vh')};
   position: relative;
   background-color: ${(props) => props.theme.colors.blackColors.white};
 `;

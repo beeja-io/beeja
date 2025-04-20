@@ -1,5 +1,5 @@
-import { useUser } from "../../context/UserContext";
-import { EmployeeEntity } from "../../entities/EmployeeEntity";
+import { useUser } from '../../context/UserContext';
+import { EmployeeEntity } from '../../entities/EmployeeEntity';
 import {
   BorderDivLine,
   InlineInput,
@@ -9,28 +9,28 @@ import {
   TabContentMainContainerHeading,
   TabContentTable,
   TabContentTableTd,
-} from "../../styles/MyProfile.style";
+} from '../../styles/MyProfile.style';
 import {
   EditWhitePenSVG,
   CheckBoxOnSVG,
   CrossMarkSVG,
-} from "../../svgs/CommonSvgs.svs";
-import { useTranslation } from "react-i18next";
-import { SelectInput } from "../reusableComponents/MyProfileGeneralTabContent.component";
-import { useEffect, useMemo, useState } from "react";
+} from '../../svgs/CommonSvgs.svs';
+import { useTranslation } from 'react-i18next';
+import { SelectInput } from '../reusableComponents/MyProfileGeneralTabContent.component';
+import { useEffect, useMemo, useState } from 'react';
 import {
   getHealthInsuranceDetails,
   postHealthInsuranceDetails,
   updateHealthInsuranceDetails,
-} from "../../service/axiosInstance";
-import SpinAnimation from "../loaders/SprinAnimation.loader";
-import { capitalizeFirstLetter } from "../../utils/stringUtils";
-import { toast } from "sonner";
-import axios, { AxiosError } from "axios";
-import { ValidationText } from "../../styles/DocumentTabStyles.style";
-import { HEALTH_INSURANCE_MODULE } from "../../constants/PermissionConstants";
-import { HealthInsurance } from "../../entities/HealthInsuranceEntity";
-import { hasPermission } from "../../utils/permissionCheck";
+} from '../../service/axiosInstance';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import { capitalizeFirstLetter } from '../../utils/stringUtils';
+import { toast } from 'sonner';
+import axios, { AxiosError } from 'axios';
+import { ValidationText } from '../../styles/DocumentTabStyles.style';
+import { HEALTH_INSURANCE_MODULE } from '../../constants/PermissionConstants';
+import { HealthInsurance } from '../../entities/HealthInsuranceEntity';
+import { hasPermission } from '../../utils/permissionCheck';
 
 type DeductionTabProps = {
   heading: string;
@@ -78,35 +78,35 @@ const DeductionsTab = ({
   const healthInsuranceDetails = useMemo(
     () => [
       {
-        label: "Gross Premium",
+        label: 'Gross Premium',
         value:
           healthInsurance && healthInsurance.grossPremium
             ? healthInsurance.grossPremium.toString()
-            : "-",
+            : '-',
       },
       {
-        label: "Instalment Type",
+        label: 'Instalment Type',
         value:
           healthInsurance && healthInsurance.instalmentType
             ? healthInsurance.instalmentType
-            : "-",
+            : '-',
       },
       {
-        label: "Instalment Amount",
+        label: 'Instalment Amount',
         value:
           healthInsurance && healthInsurance.instalmentAmount
             ? healthInsurance.instalmentAmount.toString()
-            : "-",
+            : '-',
       },
       {
-        label: "No. of Instalments",
+        label: 'No. of Instalments',
         value:
           healthInsurance && healthInsurance.instalmentFrequency
             ? healthInsurance.instalmentFrequency.toString()
-            : "-",
+            : '-',
       },
     ],
-    [healthInsurance],
+    [healthInsurance]
   );
 
   const [formData, setFormData] = useState<{ [key: string]: string }>({});
@@ -127,13 +127,13 @@ const DeductionsTab = ({
     };
 
     if (
-      (label === "Gross Premium" || label === "Instalment Type") &&
-      updatedFormData["Instalment Type"] != "-"
+      (label === 'Gross Premium' || label === 'Instalment Type') &&
+      updatedFormData['Instalment Type'] != '-'
     ) {
-      const grossAmount = parseInt(updatedFormData["Gross Premium"]);
-      const instalmentType = updatedFormData["Instalment Type"];
+      const grossAmount = parseInt(updatedFormData['Gross Premium']);
+      const instalmentType = updatedFormData['Instalment Type'];
       const noOfMonths =
-        instalmentType === "MONTHLY" || instalmentType === "Monthly" ? 12 : 4;
+        instalmentType === 'MONTHLY' || instalmentType === 'Monthly' ? 12 : 4;
       const installmentAmount = (grossAmount / noOfMonths).toFixed(2);
       updatedFormData = {
         ...updatedFormData,
@@ -146,28 +146,28 @@ const DeductionsTab = ({
   useEffect(() => {
     const defaultFormData: { [key: string]: string } = {};
     healthInsuranceDetails.forEach(({ label, value }) => {
-      if (label !== "No. of Instalments") {
+      if (label !== 'No. of Instalments') {
         defaultFormData[label] = value;
       }
     });
-    defaultFormData["employeeId"] = employee.employee.employeeId;
+    defaultFormData['employeeId'] = employee.employee.employeeId;
     setFormData(defaultFormData);
   }, [healthInsuranceDetails, employee.employee.employeeId]);
 
   const handleFinalDataToBeSentToBackend = (label: string): string => {
     switch (label) {
-      case "Gross Premium":
-        return "grossPremium";
-      case "Instalment Amount":
-        return "instalmentAmount";
-      case "Instalment Type":
-        return "instalmentType";
-      case "instalmentAmount":
-        return "instalmentAmount";
-      case "employeeId":
-        return "employeeId";
+      case 'Gross Premium':
+        return 'grossPremium';
+      case 'Instalment Amount':
+        return 'instalmentAmount';
+      case 'Instalment Type':
+        return 'instalmentType';
+      case 'instalmentAmount':
+        return 'instalmentAmount';
+      case 'employeeId':
+        return 'employeeId';
       default:
-        return label.toLowerCase().replace(/\s/g, "");
+        return label.toLowerCase().replace(/\s/g, '');
     }
   };
 
@@ -178,62 +178,62 @@ const DeductionsTab = ({
       transformedData[handleFinalDataToBeSentToBackend(label)] = value;
     });
     if (
-      transformedData["grossPremium"] === null ||
-      transformedData["grossPremium"] === undefined ||
-      transformedData["grossPremium"] === "-" ||
-      transformedData["grossPremium"] === ""
+      transformedData['grossPremium'] === null ||
+      transformedData['grossPremium'] === undefined ||
+      transformedData['grossPremium'] === '-' ||
+      transformedData['grossPremium'] === ''
     ) {
-      toast.error("Error, Enter Gross Premium");
+      toast.error('Error, Enter Gross Premium');
       setISResponseLoading(false);
       return;
     }
     if (
-      transformedData["instalmentType"] === "Select" ||
-      transformedData["instalmentType"] === undefined ||
-      transformedData["instalmentType"] === "-" ||
-      transformedData["instalmentType"] === ""
+      transformedData['instalmentType'] === 'Select' ||
+      transformedData['instalmentType'] === undefined ||
+      transformedData['instalmentType'] === '-' ||
+      transformedData['instalmentType'] === ''
     ) {
-      toast.error("Error, Select Instalment Type");
+      toast.error('Error, Select Instalment Type');
       setISResponseLoading(false);
       return;
     }
-    transformedData["instalmentType"] =
-      transformedData["instalmentType"].toUpperCase();
+    transformedData['instalmentType'] =
+      transformedData['instalmentType'].toUpperCase();
     const hasGrossAmountMinus = healthInsuranceDetails.some(
       (healthInsuranceDetails) =>
-        healthInsuranceDetails.label === "Instalment Amount" &&
-        healthInsuranceDetails.value === "-",
+        healthInsuranceDetails.label === 'Instalment Amount' &&
+        healthInsuranceDetails.value === '-'
     );
     if (hasGrossAmountMinus) {
       toast.promise(postHealthInsuranceDetails(transformedData), {
-        loading: "Adding health Insurance...",
+        loading: 'Adding health Insurance...',
         closeButton: true,
         success: () => {
           setISResponseLoading(false);
           fetchHealthInsurance();
           handleIsEditModeOn();
           setISResponseLoading(false);
-          return "The Health Insurance details has been Submitted successfully";
+          return 'The Health Insurance details has been Submitted successfully';
         },
         error: (error) => {
           setISResponseLoading(false);
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;
-            if (axiosError.code === "ERR_NETWORK") {
-              return "Network Error, Please check connection";
+            if (axiosError.code === 'ERR_NETWORK') {
+              return 'Network Error, Please check connection';
             }
-            if (axiosError.code === "ECONNABORTED") {
-              return "Request timeout, Please try again";
+            if (axiosError.code === 'ECONNABORTED') {
+              return 'Request timeout, Please try again';
             }
           }
-          return "Request Unsuccessful, Please try again";
+          return 'Request Unsuccessful, Please try again';
         },
       });
     } else {
       toast.promise(
         updateHealthInsuranceDetails(
           employee.employee.employeeId,
-          transformedData,
+          transformedData
         ),
         {
           loading: `Updating health insurance of ${employee.employee.employeeId}...`,
@@ -244,25 +244,25 @@ const DeductionsTab = ({
             setISResponseLoading(false);
             setFormData((prev) => ({
               ...prev,
-              "Instalment Type": transformedData["instalmentType"],
-              "Gross Premium": transformedData["grossPremium"],
+              'Instalment Type': transformedData['instalmentType'],
+              'Gross Premium': transformedData['grossPremium'],
             }));
-            return "The Health Insurance details has been Updated successfully";
+            return 'The Health Insurance details has been Updated successfully';
           },
           error: (error) => {
             setISResponseLoading(false);
             if (axios.isAxiosError(error)) {
               const axiosError = error as AxiosError;
-              if (axiosError.code === "ERR_NETWORK") {
-                return "Network Error, Please check connection";
+              if (axiosError.code === 'ERR_NETWORK') {
+                return 'Network Error, Please check connection';
               }
-              if (axiosError.code === "ECONNABORTED") {
-                return "Request timeout, Please try again";
+              if (axiosError.code === 'ECONNABORTED') {
+                return 'Request timeout, Please try again';
               }
             }
-            return "Request Unsuccessful, Please try again";
+            return 'Request Unsuccessful, Please try again';
           },
-        },
+        }
       );
     }
   };
@@ -308,7 +308,7 @@ const DeductionsTab = ({
             )}
           </TabContentEditArea>
         ) : (
-          ""
+          ''
         )}
       </TabContentMainContainerHeading>
       <BorderDivLine width="100%" />
@@ -321,52 +321,52 @@ const DeductionsTab = ({
                   user &&
                   hasPermission(
                     user,
-                    HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE,
+                    HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE
                   ) &&
-                  label === "No. of Instalments"
+                  label === 'No. of Instalments'
                 ) && (
                   <tr key={label}>
                     <TabContentTableTd>
-                      {t(label)}{" "}
+                      {t(label)}{' '}
                       {isEditModeOn &&
-                        label != "Instalment Amount" &&
-                        label != "No. of Instalments" && (
+                        label != 'Instalment Amount' &&
+                        label != 'No. of Instalments' && (
                           <ValidationText className="star">*</ValidationText>
                         )}
                     </TabContentTableTd>
                     {isEditModeOn &&
-                    label != "Instalment Amount" &&
-                    label != "No. of Instalments" ? (
+                    label != 'Instalment Amount' &&
+                    label != 'No. of Instalments' ? (
                       <TabContentTableTd>
-                        {label === "Instalment Type" ? (
+                        {label === 'Instalment Type' ? (
                           <SelectInput
                             label={label}
                             value={formData[value]}
-                            options={["Monthly", "Quarterly"]}
+                            options={['Monthly', 'Quarterly']}
                             onChange={(label, selectedValue) =>
                               handleChange(label, selectedValue)
                             }
                             selected={
-                              formData["Instalment Type"] == "MONTHLY"
-                                ? "Monthly"
-                                : formData["Instalment Type"] == "QUARTERLY"
-                                  ? "Quarterly"
-                                  : ""
+                              formData['Instalment Type'] == 'MONTHLY'
+                                ? 'Monthly'
+                                : formData['Instalment Type'] == 'QUARTERLY'
+                                  ? 'Quarterly'
+                                  : ''
                             }
                           />
                         ) : (
                           <InlineInput
                             type="text"
-                            placeholder={"Enter Amount"}
-                            value={formData[label] || ""}
+                            placeholder={'Enter Amount'}
+                            value={formData[label] || ''}
                             onChange={(e) => {
                               const inputValue = e.target.value;
                               const labelsWhichAllowOnlyNumbers = [
-                                "Gross Premium",
+                                'Gross Premium',
                               ];
                               if (labelsWhichAllowOnlyNumbers.includes(label)) {
                                 const numericInputValue = inputValue
-                                  .replace(/[^0-9]/g, "")
+                                  .replace(/[^0-9]/g, '')
                                   .slice(0, 10);
                                 handleChange(label, numericInputValue);
                               } else {
@@ -376,10 +376,10 @@ const DeductionsTab = ({
                           />
                         )}
                       </TabContentTableTd>
-                    ) : label === "Instalment Amount" ? (
+                    ) : label === 'Instalment Amount' ? (
                       <TabContentTableTd>
-                        {!isNaN(parseFloat(formData["instalmentAmount"]))
-                          ? formData["instalmentAmount"]
+                        {!isNaN(parseFloat(formData['instalmentAmount']))
+                          ? formData['instalmentAmount']
                           : value}
                       </TabContentTableTd>
                     ) : (
@@ -388,7 +388,7 @@ const DeductionsTab = ({
                       </TabContentTableTd>
                     )}
                   </tr>
-                ),
+                )
             )}
           </TabContentTable>
         </div>

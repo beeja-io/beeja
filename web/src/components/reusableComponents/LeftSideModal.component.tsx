@@ -1,8 +1,8 @@
-import React from "react";
+import React from 'react';
 import {
   LeftSideModalContainer,
   LeftSideModalInnerContainer,
-} from "../../styles/LeftModalStyles.style";
+} from '../../styles/LeftModalStyles.style';
 
 type SideModalProps = {
   handleClose: () => void;

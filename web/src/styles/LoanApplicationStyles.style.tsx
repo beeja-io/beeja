@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 export const LoanApplicationFormContainer = styled.form`
   .formArea {
     display: flex;
@@ -63,7 +63,7 @@ export const Checkbox = styled.input`
   height: 24px;
   border-radius: 4px;
   accent-color: #005792;
-  background-color: ${(props) => (props.checked ? "#005792" : "transparent")};
+  background-color: ${(props) => (props.checked ? '#005792' : 'transparent')};
 
   &.small {
     width: 16px;
@@ -129,35 +129,35 @@ export const StatusIndicator = styled.div<{ status: string }>`
   text-align: center;
   color: ${({ status }) => {
     switch (status) {
-      case "WAITING":
-      case "APPLIED":
-        return "#CE9900";
-      case "REJECTED":
-        return "#EB4335";
-      case "APPROVED":
-      case "HIRED":
-        return "#005792";
-      case "INTERVIEW_SCHEDULED":
-        return "#000000";
-      case "SHORTLISTED":
-        return "#96d39d";
+      case 'WAITING':
+      case 'APPLIED':
+        return '#CE9900';
+      case 'REJECTED':
+        return '#EB4335';
+      case 'APPROVED':
+      case 'HIRED':
+        return '#005792';
+      case 'INTERVIEW_SCHEDULED':
+        return '#000000';
+      case 'SHORTLISTED':
+        return '#96d39d';
       default:
-        return "black";
+        return 'black';
     }
   }};
   background-color: ${({ status }) => {
     switch (status) {
-      case "WAITING":
-      case "APPLIED":
-        return "#FFF4D8";
-      case "REJECTED":
-        return "#F1C6C6";
-      case "APPROVED":
-        return "#A8CFEA";
-      case "INTERVIEW_SCHEDULED":
-        return "#8ed2eb93";
+      case 'WAITING':
+      case 'APPLIED':
+        return '#FFF4D8';
+      case 'REJECTED':
+        return '#F1C6C6';
+      case 'APPROVED':
+        return '#A8CFEA';
+      case 'INTERVIEW_SCHEDULED':
+        return '#8ed2eb93';
       default:
-        return "rgba(0, 0, 0, 0.1)";
+        return 'rgba(0, 0, 0, 0.1)';
     }
   }};
   margin: auto;

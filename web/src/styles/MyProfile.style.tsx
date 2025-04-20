@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const MyProfileMainContainer = styled.section`
   width: 100%;
@@ -19,7 +19,7 @@ export const ImagePreviewContainer = styled.div<ImagePreviewContainerProps>`
   border-radius: 50%;
   border: 2px solid #000;
   margin: auto;
-  cursor: ${(props) => (props.isDragging ? "grabbing" : "grab")};
+  cursor: ${(props) => (props.isDragging ? 'grabbing' : 'grab')};
 `;
 
 interface ImagePreviewProps {
@@ -215,7 +215,7 @@ export const MyProfileTabsMainContainer = styled.section`
 
 export const BorderDivLine = styled.hr<{ width?: string }>`
   display: flex;
-  width: ${(props) => (props.width ? props.width : "252px")};
+  width: ${(props) => (props.width ? props.width : '252px')};
   height: 1px;
   align-items: center;
   gap: 10px;

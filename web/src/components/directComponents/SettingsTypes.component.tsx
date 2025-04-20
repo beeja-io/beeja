@@ -1,32 +1,32 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 import {
   getAllSettingTypes,
   updateSettingType,
-} from "../../service/axiosInstance";
-import { ValidationText } from "../../styles/DocumentTabStyles.style";
-import { InputContainer } from "../../styles/SettingsStyles.style";
-import { TableBodyRow } from "../../styles/DocumentTabStyles.style";
-import ToastMessage from "../reusableComponents/ToastMessage.component";
-import CenterModal from "../reusableComponents/CenterModal.component";
+} from '../../service/axiosInstance';
+import { ValidationText } from '../../styles/DocumentTabStyles.style';
+import { InputContainer } from '../../styles/SettingsStyles.style';
+import { TableBodyRow } from '../../styles/DocumentTabStyles.style';
+import ToastMessage from '../reusableComponents/ToastMessage.component';
+import CenterModal from '../reusableComponents/CenterModal.component';
 import {
   TabContentMainContainer,
   TabContentMainContainerHeading,
-} from "../../styles/MyProfile.style";
-import { Hr } from "../../styles/LoanApplicationStyles.style";
-import { Button } from "../../styles/CommonStyles.style";
-import { AddNewPlusSVG } from "../../svgs/EmployeeListSvgs.svg";
-import { EditIcon, DeleteIcon } from "../../svgs/ExpenseListSvgs.svg";
+} from '../../styles/MyProfile.style';
+import { Hr } from '../../styles/LoanApplicationStyles.style';
+import { Button } from '../../styles/CommonStyles.style';
+import { AddNewPlusSVG } from '../../svgs/EmployeeListSvgs.svg';
+import { EditIcon, DeleteIcon } from '../../svgs/ExpenseListSvgs.svg';
 import {
   Table,
   TableContainer,
   TableHead,
-} from "../../styles/TableStyles.style";
-import { ExpenseTypeAction } from "../reusableComponents/ExpenseTyeAction";
-import CenterModalExpense from "../reusableComponents/CenterModalExpense.component";
-import { OrgValues } from "../../entities/OrgDefaultsEntity";
-import { useUser } from "../../context/UserContext";
-import { useTranslation } from "react-i18next";
-import { AlertISVG } from "../../svgs/CommonSvgs.svs";
+} from '../../styles/TableStyles.style';
+import { ExpenseTypeAction } from '../reusableComponents/ExpenseTyeAction';
+import CenterModalExpense from '../reusableComponents/CenterModalExpense.component';
+import { OrgValues } from '../../entities/OrgDefaultsEntity';
+import { useUser } from '../../context/UserContext';
+import { useTranslation } from 'react-i18next';
+import { AlertISVG } from '../../svgs/CommonSvgs.svs';
 
 export const SettingsTypes = ({
   keyvalue,
@@ -40,22 +40,22 @@ export const SettingsTypes = ({
   const [actionType, setActionType] = useState<string | null>(null);
   const [indexvalue, setIndexvalue] = useState<number>();
   const [newSettingType, setNewSettingType] = useState<OrgValues>({
-    value: "",
-    description: "",
+    value: '',
+    description: '',
   });
   const [settingTypes, setSettingTypes] = useState<
     { orgValues: OrgValues; index: number }[] | null
   >(null);
   const [isValueInvalid, setIsValueInvalid] = useState(false);
   const [toastMessage, setToastMessage] = useState<{
-    type: "success" | "error";
+    type: 'success' | 'error';
     heading: string;
     body: string;
   } | null>(null);
   const [isCreatedToastMessage, setIsCreatedToastMessage] = useState(false);
   const Actions = [
-    { title: "Edit", svg: <EditIcon /> },
-    { title: "Delete", svg: <DeleteIcon /> },
+    { title: 'Edit', svg: <EditIcon /> },
+    { title: 'Delete', svg: <DeleteIcon /> },
   ];
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const handleOpenModal = () => setIsCreateModalOpen(true);
@@ -72,20 +72,20 @@ export const SettingsTypes = ({
     setIsCreateModalOpen(false);
     setIsValueInvalid(false);
     setNewSettingType({
-      value: "",
-      description: "",
+      value: '',
+      description: '',
     });
   };
   const handleAction = (
     action: string,
-    expense: { orgValues: OrgValues; index: number },
+    expense: { orgValues: OrgValues; index: number }
   ) => {
     setActionType(action);
     setNewSettingType(expense.orgValues);
     setIndexvalue(expense.index);
-    if (action === "Edit") {
+    if (action === 'Edit') {
       handleOpenModal();
-    } else if (action === "Delete") {
+    } else if (action === 'Delete') {
       handleDeleteModal();
     }
   };
@@ -110,16 +110,16 @@ export const SettingsTypes = ({
           (item: OrgValues, index: number) => ({
             orgValues: item,
             index,
-          }),
+          })
         );
         setSettingTypes(updatedValues);
       }
     } catch (error) {
       setIsCreatedToastMessage(true);
       setToastMessage({
-        type: "error",
-        heading: "Failed To Fetch Type",
-        body: "Unsuccessfull Fetch Type",
+        type: 'error',
+        heading: 'Failed To Fetch Type',
+        body: 'Unsuccessfull Fetch Type',
       });
     }
   };
@@ -127,18 +127,18 @@ export const SettingsTypes = ({
   let updatedSettingTypes;
   const handleSubmitButton = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    if (newSettingType.value.trim() === "") {
+    if (newSettingType.value.trim() === '') {
       setIsValueInvalid(true);
       return;
     }
     updatedSettingTypes =
-      actionType === "Delete"
+      actionType === 'Delete'
         ? settingTypes?.filter((category) => category.index !== indexvalue)
-        : actionType === "Edit"
+        : actionType === 'Edit'
           ? settingTypes?.map((category) =>
               category.index === indexvalue
                 ? { orgValues: newSettingType, index: category.index }
-                : category,
+                : category
             )
           : [
               ...(settingTypes || []),
@@ -148,7 +148,7 @@ export const SettingsTypes = ({
               },
             ];
 
-    if (actionType === "Delete") {
+    if (actionType === 'Delete') {
       handleDeleteModal();
     }
     const data = {
@@ -165,17 +165,17 @@ export const SettingsTypes = ({
       fetchSettingsTypes();
       setIsCreatedToastMessage(true);
       setToastMessage({
-        type: "success",
+        type: 'success',
         heading:
-          actionType === "Delete"
+          actionType === 'Delete'
             ? `${type} Deleted`
-            : actionType === "Edit"
+            : actionType === 'Edit'
               ? `${type} Updated`
               : `${type} Created`,
         body:
-          actionType === "Delete"
+          actionType === 'Delete'
             ? `${type} has been deleted successfully.`
-            : actionType === "Edit"
+            : actionType === 'Edit'
               ? `${type} has been updated successfully.`
               : `${type} has been created successfully.`,
       });
@@ -183,9 +183,9 @@ export const SettingsTypes = ({
     } catch (error) {
       setIsCreatedToastMessage(true);
       setToastMessage({
-        type: "error",
-        heading: "Failed To Create Type",
-        body: "Unsuccessfull create Type",
+        type: 'error',
+        heading: 'Failed To Create Type',
+        body: 'Unsuccessfull create Type',
       });
     }
   };
@@ -196,7 +196,7 @@ export const SettingsTypes = ({
         <h4>{type}</h4>
         <Button className="submit shadow buttonstyle" onClick={handleOpenModal}>
           <AddNewPlusSVG />
-          {t("ADD")} {type}
+          {t('ADD')} {type}
         </Button>
       </TabContentMainContainerHeading>
       <Hr />
@@ -246,10 +246,10 @@ export const SettingsTypes = ({
           handleModalClose={handleCloseModal}
           handleModalSubmit={handleSubmitButton}
           modalHeading={
-            actionType === "Edit" ? `Edit ${type}` : `Create New ${type}`
+            actionType === 'Edit' ? `Edit ${type}` : `Create New ${type}`
           }
           modalLeftButtonText="Cancel"
-          modalRightButtonText={actionType === "Edit" ? "Update" : "Create"}
+          modalRightButtonText={actionType === 'Edit' ? 'Update' : 'Create'}
           onChange={handleInputChange}
         >
           <div>
@@ -260,26 +260,26 @@ export const SettingsTypes = ({
               <input
                 type="text"
                 value={newSettingType.value}
-                onChange={(e) => handleInputChange("value", e.target.value)}
+                onChange={(e) => handleInputChange('value', e.target.value)}
               />
             </InputContainer>
             {isValueInvalid && (
-              <div style={{ paddingLeft: "150px" }}>
+              <div style={{ paddingLeft: '150px' }}>
                 <ValidationText>
                   <AlertISVG />
-                  {t("THE_FIELD_IS_MANDATORY")}{" "}
+                  {t('THE_FIELD_IS_MANDATORY')}{' '}
                 </ValidationText>
               </div>
             )}
           </div>
           <div>
             <InputContainer>
-              <label>{t("DESCRIPTION")}:</label>
+              <label>{t('DESCRIPTION')}:</label>
               <input
                 type="text"
                 value={newSettingType.description}
                 onChange={(e) =>
-                  handleInputChange("description", e.target.value)
+                  handleInputChange('description', e.target.value)
                 }
               />
             </InputContainer>
@@ -288,7 +288,7 @@ export const SettingsTypes = ({
       )}
 
       {confirmDeleteModal && (
-        <span style={{ cursor: "default" }}>
+        <span style={{ cursor: 'default' }}>
           <CenterModal
             handleModalClose={handleDeleteModal}
             handleModalLeftButtonClick={handleDeleteModal}

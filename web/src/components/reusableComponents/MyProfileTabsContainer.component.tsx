@@ -1,28 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   MyProfileTabsDiv,
   MyProfileTabsMainContainer,
-} from "../../styles/MyProfile.style";
-import { EmployeeEntity } from "../../entities/EmployeeEntity";
-import { useUser } from "../../context/UserContext";
-import { GeneralDetailsTab } from "./MyProfileGeneralTabContent.component";
-import KycTabContent from "./MyProfileKYCTabContent.component";
-import { DocumentTabContent } from "./MyProfileDocumentTabContent.component";
-import DeductionsTab from "../directComponents/DeductionsTab.component";
+} from '../../styles/MyProfile.style';
+import { EmployeeEntity } from '../../entities/EmployeeEntity';
+import { useUser } from '../../context/UserContext';
+import { GeneralDetailsTab } from './MyProfileGeneralTabContent.component';
+import KycTabContent from './MyProfileKYCTabContent.component';
+import { DocumentTabContent } from './MyProfileDocumentTabContent.component';
+import DeductionsTab from '../directComponents/DeductionsTab.component';
 import {
   DOCUMENT_MODULE,
   EMPLOYEE_MODULE,
   HEALTH_INSURANCE_MODULE,
   KYC_MODULE,
-} from "../../constants/PermissionConstants";
-import { hasPermission } from "../../utils/permissionCheck";
-import { hasFeature } from "../../utils/featureCheck";
-import { useFeatureToggles } from "../../context/FeatureToggleContext";
-import { EFeatureToggles } from "../../entities/FeatureToggle";
-import HappyBirthday from "../directComponents/HappyBirthday";
-import leafsAnimation from "../../images/birthdayAnimation.gif";
-import { LOADING } from "../../constants/Constants";
-import { useTranslation } from "react-i18next";
+} from '../../constants/PermissionConstants';
+import { hasPermission } from '../../utils/permissionCheck';
+import { hasFeature } from '../../utils/featureCheck';
+import { useFeatureToggles } from '../../context/FeatureToggleContext';
+import { EFeatureToggles } from '../../entities/FeatureToggle';
+import HappyBirthday from '../directComponents/HappyBirthday';
+import leafsAnimation from '../../images/birthdayAnimation.gif';
+import { LOADING } from '../../constants/Constants';
+import { useTranslation } from 'react-i18next';
 
 type MyProfileTabsContainerComponentProps = {
   employee: EmployeeEntity;
@@ -37,8 +37,8 @@ const MyProfileTabsContainerComponent = ({
   const { user } = useUser();
   const { t } = useTranslation();
   const { featureToggles } = useFeatureToggles();
-  const [selectedTab, setSelectedTab] = useState("general");
-  const [isActiveTab, setIsActiveTab] = useState("general");
+  const [selectedTab, setSelectedTab] = useState('general');
+  const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
     setSelectedTab(isActiveTab);
   }, [employee, isActiveTab]);
@@ -50,152 +50,152 @@ const MyProfileTabsContainerComponent = ({
 
   const personalDetails = [
     {
-      label: "Full Name",
-      value: employee.account.firstName + " " + employee.account.lastName,
+      label: 'Full Name',
+      value: employee.account.firstName + ' ' + employee.account.lastName,
     },
     {
-      label: "Date of Birth",
+      label: 'Date of Birth',
       value:
         employee.employee.personalInformation &&
         employee.employee.personalInformation.dateOfBirth
           ? employee.employee.personalInformation.dateOfBirth
-          : "-",
+          : '-',
     },
     {
-      label: "Nationality",
+      label: 'Nationality',
       value:
         employee.employee.personalInformation &&
         employee.employee.personalInformation.nationality
           ? employee.employee.personalInformation.nationality
-          : "-",
+          : '-',
     },
-    { label: "Email Address", value: employee.account.email },
+    { label: 'Email Address', value: employee.account.email },
     {
-      label: "Alt Email Address",
+      label: 'Alt Email Address',
       value:
         employee.employee.contact && employee.employee.contact.alternativeEmail
           ? employee.employee.contact.alternativeEmail
-          : "-",
+          : '-',
     },
     {
-      label: "Gender",
+      label: 'Gender',
       value:
         employee.employee.personalInformation &&
         employee.employee.personalInformation.gender
           ? employee.employee.personalInformation.gender
-          : "-",
+          : '-',
     },
     {
-      label: "Marital Status",
+      label: 'Marital Status',
       value:
         employee.employee.personalInformation &&
         employee.employee.personalInformation.maritalStatus
           ? employee.employee.personalInformation.maritalStatus
-          : "-",
+          : '-',
     },
     // FIXME - Update personal Tax ID
-    { label: "Personal Tax ID", value: "-" },
+    { label: 'Personal Tax ID', value: '-' },
     {
-      label: "Phone Number",
+      label: 'Phone Number',
       value:
         employee.employee.contact && employee.employee.contact.phone
           ? employee.employee.contact.phone
-          : "-",
+          : '-',
     },
     {
-      label: "Alt Phone Number",
+      label: 'Alt Phone Number',
       value:
         employee.employee.contact && employee.employee.contact.alternativePhone
           ? employee.employee.contact.alternativePhone
-          : "-",
+          : '-',
     },
   ];
 
   const addressDetails = [
     {
-      label: "Primary Address",
+      label: 'Primary Address',
       value:
         employee.employee.address && employee.employee.address.landMark
           ? employee.employee.address.landMark
-          : "-",
+          : '-',
     },
     {
-      label: "City",
+      label: 'City',
       value:
         employee.employee.address && employee.employee.address.city
           ? employee.employee.address.city
-          : "-",
+          : '-',
     },
     {
-      label: "State",
+      label: 'State',
       value:
         employee.employee.address && employee.employee.address.state
           ? employee.employee.address.state
-          : "-",
+          : '-',
     },
     {
-      label: "Country",
+      label: 'Country',
       value:
         employee.employee.address && employee.employee.address.country
           ? employee.employee.address.country
-          : "-",
+          : '-',
     },
     {
-      label: "Postal Code",
+      label: 'Postal Code',
       value:
         employee.employee.address && employee.employee.address.pinCode
           ? employee.employee.address.pinCode
-          : "-",
+          : '-',
     },
   ];
 
   const jobDetails = [
     {
-      label: "Employee Id",
+      label: 'Employee Id',
       value:
         employee && employee.account.employeeId
           ? employee.account.employeeId
-          : "-",
+          : '-',
     },
     {
-      label: "Designation",
+      label: 'Designation',
       value:
         employee && employee.employee.jobDetails
           ? employee.employee.jobDetails.designation
-          : "-",
+          : '-',
     },
     {
-      label: "Department",
+      label: 'Department',
       value:
         employee &&
         employee.employee.jobDetails &&
         employee.employee.jobDetails.department
           ? employee.employee.jobDetails.department
-          : "-",
+          : '-',
     },
     {
-      label: "Employment Type",
+      label: 'Employment Type',
       value:
         employee &&
         employee.employee.jobDetails &&
         employee.employee.jobDetails.employementType
           ? employee.employee.jobDetails.employementType
-          : "-",
+          : '-',
     },
     {
-      label: "Joining Date",
+      label: 'Joining Date',
       value:
         employee &&
         employee.employee.jobDetails &&
         employee.employee.jobDetails.joiningDate
           ? employee.employee.jobDetails.joiningDate
-          : "-",
+          : '-',
     },
   ];
 
   const nomineeDetails = [
     {
-      label: "Name",
+      label: 'Name',
       value:
         employee &&
         employee.employee &&
@@ -203,10 +203,10 @@ const MyProfileTabsContainerComponent = ({
         employee.employee.personalInformation.nomineeDetails &&
         employee.employee.personalInformation.nomineeDetails.name
           ? employee.employee.personalInformation.nomineeDetails.name
-          : "-",
+          : '-',
     },
     {
-      label: "Email",
+      label: 'Email',
       value:
         employee &&
         employee.employee &&
@@ -214,10 +214,10 @@ const MyProfileTabsContainerComponent = ({
         employee.employee.personalInformation.nomineeDetails &&
         employee.employee.personalInformation.nomineeDetails.email
           ? employee.employee.personalInformation.nomineeDetails.email
-          : "-",
+          : '-',
     },
     {
-      label: "Phone",
+      label: 'Phone',
       value:
         employee &&
         employee.employee &&
@@ -225,10 +225,10 @@ const MyProfileTabsContainerComponent = ({
         employee.employee.personalInformation.nomineeDetails &&
         employee.employee.personalInformation.nomineeDetails.phone
           ? employee.employee.personalInformation.nomineeDetails.phone
-          : "-",
+          : '-',
     },
     {
-      label: "Relation Type",
+      label: 'Relation Type',
       value:
         employee &&
         employee.employee &&
@@ -236,41 +236,41 @@ const MyProfileTabsContainerComponent = ({
         employee.employee.personalInformation.nomineeDetails &&
         employee.employee.personalInformation.nomineeDetails.relationType
           ? employee.employee.personalInformation.nomineeDetails.relationType
-          : "-",
+          : '-',
     },
   ];
 
   const kycDetails = [
     {
-      label: "Aadhaar Number",
-      value: employee?.employee?.kycDetails?.aadhaarNumber ?? "-",
+      label: 'Aadhaar Number',
+      value: employee?.employee?.kycDetails?.aadhaarNumber ?? '-',
     },
     {
-      label: "PAN Number",
-      value: employee?.employee?.kycDetails?.panNumber ?? "-",
+      label: 'PAN Number',
+      value: employee?.employee?.kycDetails?.panNumber ?? '-',
     },
     {
-      label: "Passport Number",
-      value: employee?.employee?.kycDetails?.passportNumber ?? "-",
+      label: 'Passport Number',
+      value: employee?.employee?.kycDetails?.passportNumber ?? '-',
     },
   ];
 
   const bankDetails = [
     {
-      label: "Account Number",
-      value: employee?.employee?.bankDetails?.accountNo ?? "-",
+      label: 'Account Number',
+      value: employee?.employee?.bankDetails?.accountNo ?? '-',
     },
     {
-      label: "IFSC Code",
-      value: employee?.employee?.bankDetails?.ifscCode ?? "-",
+      label: 'IFSC Code',
+      value: employee?.employee?.bankDetails?.ifscCode ?? '-',
     },
     {
-      label: "Bank Name",
-      value: employee?.employee?.bankDetails?.bankName ?? "-",
+      label: 'Bank Name',
+      value: employee?.employee?.bankDetails?.bankName ?? '-',
     },
     {
-      label: "Branch Name",
-      value: employee?.employee?.bankDetails?.branchName ?? "-",
+      label: 'Branch Name',
+      value: employee?.employee?.bankDetails?.branchName ?? '-',
     },
   ];
 
@@ -344,7 +344,7 @@ const MyProfileTabsContainerComponent = ({
   };
   const [showBirthdayAnimation, setShowBirthdayAnimation] = useState(false);
   const birthDate = employee?.employee?.personalInformation?.dateOfBirth;
-  const todayDate = new Date().toISOString().split("T")[0];
+  const todayDate = new Date().toISOString().split('T')[0];
   const birthDateObj = birthDate ? new Date(birthDate) : null;
 
   const isValidBirthDate =
@@ -356,7 +356,7 @@ const MyProfileTabsContainerComponent = ({
     : null;
 
   useEffect(() => {
-    const birthdayFlag = localStorage.getItem("birthdayAnimationShown");
+    const birthdayFlag = localStorage.getItem('birthdayAnimationShown');
     if (
       user &&
       user.employeeId === employee.account.employeeId &&
@@ -365,7 +365,7 @@ const MyProfileTabsContainerComponent = ({
       !birthdayFlag
     ) {
       setShowBirthdayAnimation(true);
-      localStorage.setItem("birthdayAnimationShown", "true");
+      localStorage.setItem('birthdayAnimationShown', 'true');
     }
   }, [todayMonthDay, birthMonthDay, user, employee.account.employeeId]);
   return (
@@ -385,30 +385,30 @@ const MyProfileTabsContainerComponent = ({
       <MyProfileTabsDiv>
         <ul>
           <li
-            className={isActiveTab === "general" ? "active" : ""}
+            className={isActiveTab === 'general' ? 'active' : ''}
             onClick={() => {
-              handleTabChange("general");
-              handleIsActiveTab("general");
-              chooseTab("General");
+              handleTabChange('general');
+              handleIsActiveTab('general');
+              chooseTab('General');
             }}
           >
-            {t("GENERAL")}
+            {t('GENERAL')}
           </li>
           {(employee.account.employeeId === user?.employeeId ||
             (user &&
               hasPermission(
                 user,
-                EMPLOYEE_MODULE.READ_COMPLETE_EMPLOYEE_DETAILS,
+                EMPLOYEE_MODULE.READ_COMPLETE_EMPLOYEE_DETAILS
               ))) && (
             <li
-              className={isActiveTab === "job" ? "active" : ""}
+              className={isActiveTab === 'job' ? 'active' : ''}
               onClick={() => {
-                handleTabChange("job");
-                handleIsActiveTab("job");
-                chooseTab("Job");
+                handleTabChange('job');
+                handleIsActiveTab('job');
+                chooseTab('Job');
               }}
             >
-              {t("JOB")}
+              {t('JOB')}
             </li>
           )}
 
@@ -425,63 +425,63 @@ const MyProfileTabsContainerComponent = ({
           {((employee.account.employeeId === user?.employeeId &&
             employee.account.roles.some((role) =>
               role.permissions.some(
-                (permission) => permission === DOCUMENT_MODULE.READ_DOCUMENT,
-              ),
+                (permission) => permission === DOCUMENT_MODULE.READ_DOCUMENT
+              )
             )) ||
             (user &&
               hasPermission(user, EMPLOYEE_MODULE.READ_ENTIRE_DOCUMENTS))) && (
             <li
-              className={isActiveTab === "documents" ? "active" : ""}
+              className={isActiveTab === 'documents' ? 'active' : ''}
               onClick={() => {
-                handleTabChange("documents");
-                handleIsActiveTab("documents");
-                chooseTab("Documents");
+                handleTabChange('documents');
+                handleIsActiveTab('documents');
+                chooseTab('Documents');
               }}
             >
-              {t("DOCUMENTS")}
+              {t('DOCUMENTS')}
             </li>
           )}
           {(employee.account.employeeId === user?.employeeId ||
             (user &&
               hasPermission(
                 user,
-                HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE,
+                HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE
               ))) && (
             <li
-              className={isActiveTab === "deductions" ? "active" : ""}
+              className={isActiveTab === 'deductions' ? 'active' : ''}
               onClick={() => {
-                handleTabChange("deductions");
-                handleIsActiveTab("deductions");
-                chooseTab("Deductions");
+                handleTabChange('deductions');
+                handleIsActiveTab('deductions');
+                chooseTab('Deductions');
               }}
             >
-              {t("DEDUCTIONS")}
+              {t('DEDUCTIONS')}
             </li>
           )}
           {user &&
             featureToggles &&
             hasFeature(
               featureToggles.featureToggles,
-              EFeatureToggles.KYC_MANAGEMENT,
+              EFeatureToggles.KYC_MANAGEMENT
             ) &&
             ((hasPermission(user, KYC_MODULE.READ_KYC) &&
               employee.account.employeeId === user.employeeId) ||
               hasPermission(user, KYC_MODULE.READ_ALL_KYC)) && (
               <li
-                className={isActiveTab === "kyc" ? "active" : ""}
+                className={isActiveTab === 'kyc' ? 'active' : ''}
                 onClick={() => {
-                  handleTabChange("kyc");
-                  handleIsActiveTab("kyc");
+                  handleTabChange('kyc');
+                  handleIsActiveTab('kyc');
                 }}
               >
-                {t("KYC")}
+                {t('KYC')}
               </li>
             )}
         </ul>
       </MyProfileTabsDiv>
 
-      <div style={{ overflow: "hidden" }}>
-        {selectedTab === "general" && (
+      <div style={{ overflow: 'hidden' }}>
+        {selectedTab === 'general' && (
           <div>
             <GeneralDetailsTab
               heading="Personal Info"
@@ -502,7 +502,7 @@ const MyProfileTabsContainerComponent = ({
             {user &&
               (hasPermission(
                 user,
-                EMPLOYEE_MODULE.READ_COMPLETE_EMPLOYEE_DETAILS,
+                EMPLOYEE_MODULE.READ_COMPLETE_EMPLOYEE_DETAILS
               ) ||
                 // FIXME - Update after discussion with Prasad/Jay
                 user.employeeId === employee.account.employeeId) && (
@@ -517,7 +517,7 @@ const MyProfileTabsContainerComponent = ({
               )}
           </div>
         )}
-        {selectedTab === "job" && (
+        {selectedTab === 'job' && (
           <GeneralDetailsTab
             heading="Employment Info"
             details={jobDetails}
@@ -527,7 +527,7 @@ const MyProfileTabsContainerComponent = ({
             handleIsEditModeOn={handleIsJobAddressDetailsEditModeOn}
           />
         )}
-        {selectedTab === "deductions" && (
+        {selectedTab === 'deductions' && (
           <DeductionsTab
             heading="Health Insurance"
             handleIsEditModeOn={handleIsHealthInsuranceDetailsEditModeOn}
@@ -535,12 +535,12 @@ const MyProfileTabsContainerComponent = ({
             employee={employee}
           />
         )}
-        {selectedTab === "payroll" && <>PAYROLL</>}
-        {selectedTab === "documents" && (
+        {selectedTab === 'payroll' && <>PAYROLL</>}
+        {selectedTab === 'documents' && (
           <DocumentTabContent employee={employee} />
         )}
 
-        {selectedTab === "kyc" && (
+        {selectedTab === 'kyc' && (
           <div>
             <KycTabContent
               heading="KYC"

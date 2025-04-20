@@ -1,22 +1,22 @@
-import { useTranslation } from "react-i18next";
-import { LoginUrl, OriginURL, ProdOriginURL } from "../constants/UrlConstants";
-import { Button } from "../styles/CommonStyles.style";
+import { useTranslation } from 'react-i18next';
+import { LoginUrl, OriginURL, ProdOriginURL } from '../constants/UrlConstants';
+import { Button } from '../styles/CommonStyles.style';
 import {
   BrandText,
   LoginContainer,
   LoginInnerContainer,
-} from "../styles/LoginStyles.style";
-import { GoogleIconSVG } from "../svgs/CommonSvgs.svs";
+} from '../styles/LoginStyles.style';
+import { GoogleIconSVG } from '../svgs/CommonSvgs.svs';
 import {
   ERR_ACCOUNT_NOT_FOUND,
   ERR_ACCOUNT_NOT_FOUND_TEXT,
   LoginText1,
   LoginText2,
   SignInWithGoogleText,
-} from "../constants/Constants";
-import { LoginBgSVG } from "../svgs/LoginBgSVG.svg";
-import { toast } from "sonner";
-import { Text } from "web-kit-components";
+} from '../constants/Constants';
+import { LoginBgSVG } from '../svgs/LoginBgSVG.svg';
+import { toast } from 'sonner';
+import { Text } from 'web-kit-components';
 
 const LoginScreen = () => {
   const { t } = useTranslation();
@@ -33,7 +33,7 @@ const LoginScreen = () => {
   };
 
   const urlSearchParams = new URLSearchParams(window.location.search);
-  const error = urlSearchParams.get("error");
+  const error = urlSearchParams.get('error');
 
   return (
     <LoginContainer>
@@ -51,8 +51,8 @@ const LoginScreen = () => {
             width="480px"
             onClick={() => {
               handleLogin();
-              toast.loading("Signing in with Google", {
-                description: "Please wait",
+              toast.loading('Signing in with Google', {
+                description: 'Please wait',
                 closeButton: false,
               });
             }}

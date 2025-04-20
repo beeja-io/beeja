@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { LoggedInUserEntity } from "../entities/LoggedInUserEntity";
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { LoggedInUserEntity } from '../entities/LoggedInUserEntity';
 
 type UserContextType = {
   user: LoggedInUserEntity | null;
@@ -20,7 +20,6 @@ export const UserProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useUser = () => {
   const context = useContext(UserContext);
 

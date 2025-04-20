@@ -10,32 +10,32 @@ import {
   Hr,
   ChildDiv1,
   ChildDiv2,
-} from "../styles/LoanApplicationStyles.style";
+} from '../styles/LoanApplicationStyles.style';
 
-import { useEffect, useState } from "react";
-import ToastMessage from "../components/reusableComponents/ToastMessage.component";
-import { postLoan } from "../service/axiosInstance";
-import SpinAnimation from "../components/loaders/SprinAnimation.loader";
-import { Button, HighlightedBoxes } from "../styles/CommonStyles.style";
-import { RedcircleExclamatory } from "../svgs/CommonSvgs.svs";
-import CenterModal from "../components/reusableComponents/CenterModal.component";
+import { useEffect, useState } from 'react';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
+import { postLoan } from '../service/axiosInstance';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import { Button, HighlightedBoxes } from '../styles/CommonStyles.style';
+import { RedcircleExclamatory } from '../svgs/CommonSvgs.svs';
+import CenterModal from '../components/reusableComponents/CenterModal.component';
 import {
   MonitorLoanTermsAndConditions,
   PersonalLoanTermsAndConditions,
-} from "../constants/Constants";
+} from '../constants/Constants';
 import {
   InputLabelContainer,
   ValidationText,
   TextInput,
-} from "../styles/DocumentTabStyles.style";
-import { toast } from "sonner";
-import axios, { AxiosError } from "axios";
-import { useUser } from "../context/UserContext";
-import useKeyPress from "../service/keyboardShortcuts/onKeyPress";
-import { hasPermission } from "../utils/permissionCheck";
-import { LOAN_MODULE } from "../constants/PermissionConstants";
-import useKeyCtrl from "../service/keyboardShortcuts/onKeySave";
-import { useTranslation } from "react-i18next";
+} from '../styles/DocumentTabStyles.style';
+import { toast } from 'sonner';
+import axios, { AxiosError } from 'axios';
+import { useUser } from '../context/UserContext';
+import useKeyPress from '../service/keyboardShortcuts/onKeyPress';
+import { hasPermission } from '../utils/permissionCheck';
+import { LOAN_MODULE } from '../constants/PermissionConstants';
+import useKeyCtrl from '../service/keyboardShortcuts/onKeySave';
+import { useTranslation } from 'react-i18next';
 interface LoanApplicationData {
   loanType: string;
   amount: string;
@@ -50,12 +50,12 @@ type LoanApplicationScreenProps = {
 const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
   const { user } = useUser();
   const { t } = useTranslation();
-  const [amount, setAmount] = useState<string>("");
-  const [emiTenure, setEmiTenure] = useState<string>("");
-  const [loanType, setLoanType] = useState<string>("");
-  const [loanPurpose, setLoanPurpose] = useState<string>("");
-  const [monthlyEMI, setMonthlyEMI] = useState<string>("");
-  const [emiStartDate, setEmiStartDate] = useState<string>("");
+  const [amount, setAmount] = useState<string>('');
+  const [emiTenure, setEmiTenure] = useState<string>('');
+  const [loanType, setLoanType] = useState<string>('');
+  const [loanPurpose, setLoanPurpose] = useState<string>('');
+  const [monthlyEMI, setMonthlyEMI] = useState<string>('');
+  const [emiStartDate, setEmiStartDate] = useState<string>('');
   const [isChecked, setIsChecked] = useState<boolean>(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isFormComplete, setIsFormComplete] = useState(false);
@@ -89,20 +89,20 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
   const handleLoanTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLoanType = e.target.value;
     setLoanType(newLoanType);
-    setIsEmiTenureEnabled(newLoanType !== "");
-    setEmiTenure("");
+    setIsEmiTenureEnabled(newLoanType !== '');
+    setEmiTenure('');
     switch (newLoanType) {
-      case "MONITOR_LOAN":
-        setEmiTenure("");
+      case 'MONITOR_LOAN':
+        setEmiTenure('');
         break;
-      case "PERSONAL_LOAN":
-        setEmiTenure("");
+      case 'PERSONAL_LOAN':
+        setEmiTenure('');
         break;
-      case "ADVANCE_SALARY":
-        setEmiTenure("");
+      case 'ADVANCE_SALARY':
+        setEmiTenure('');
         break;
       default:
-        setEmiTenure("");
+        setEmiTenure('');
         break;
     }
   };
@@ -112,7 +112,7 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
   };
 
   const handleEmiStartMonthChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const newEmiStartMonth = e.target.value;
     setEmiStartDate(newEmiStartMonth);
@@ -120,26 +120,26 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
 
   const renderEmiTenureOptions = () => {
     switch (loanType) {
-      case "MONITOR_LOAN":
+      case 'MONITOR_LOAN':
         return Array.from({ length: 6 }, (_, i) => i + 1).map((month) => (
           <option key={month} value={month}>
             {month}
           </option>
         ));
-      case "PERSONAL_LOAN":
+      case 'PERSONAL_LOAN':
         return Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
           <option key={month} value={month}>
             {month}
           </option>
         ));
-      case "ADVANCE_SALARY":
+      case 'ADVANCE_SALARY':
         return Array.from({ length: 1 }, (_, i) => i + 1).map((month) => (
           <option key={month} value={month}>
             {month}
           </option>
         ));
       default:
-        return <option value="">{t("SELECT_EMI_TENURE")}</option>;
+        return <option value="">{t('SELECT_EMI_TENURE')}</option>;
     }
   };
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -147,12 +147,12 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
   };
   useEffect(() => {
     if (amount && emiTenure) {
-      const loanAmount = parseFloat(amount.replace(/,/g, ""));
+      const loanAmount = parseFloat(amount.replace(/,/g, ''));
       const emiTenureMonths = parseInt(emiTenure);
       const monthlyEMIValue = (loanAmount / emiTenureMonths).toFixed(2);
       setMonthlyEMI(monthlyEMIValue);
     } else {
-      setMonthlyEMI("");
+      setMonthlyEMI('');
     }
   }, [amount, emiTenure]);
 
@@ -185,33 +185,33 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
         purpose: data.loanPurpose,
         monthlyEMI: parseFloat(data.monthlyEMI),
         emiStartDate:
-          data.emiStartDate === "CURRENT_MONTH"
+          data.emiStartDate === 'CURRENT_MONTH'
             ? currentDate.toISOString()
             : nextMonthDate.toISOString(),
         emiTenure: parseInt(data.emiTenure),
       }),
       {
-        loading: "Applying new loan...",
+        loading: 'Applying new loan...',
         closeButton: true,
         success: () => {
           setIsSubmitting(false);
           props.handleIsApplyLoanScreen();
-          return "Your loan request has been reached our team.";
+          return 'Your loan request has been reached our team.';
         },
         error: (error) => {
           setIsSubmitting(false);
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;
-            if (axiosError.code === "ERR_NETWORK") {
-              return "Network Error, Please check connection";
+            if (axiosError.code === 'ERR_NETWORK') {
+              return 'Network Error, Please check connection';
             }
-            if (axiosError.code === "ECONNABORTED") {
-              return "Request timeout, Please try again";
+            if (axiosError.code === 'ECONNABORTED') {
+              return 'Request timeout, Please try again';
             }
           }
-          return "Request Unsuccessful, Please try again";
+          return 'Request Unsuccessful, Please try again';
         },
-      },
+      }
     );
   };
 
@@ -226,10 +226,10 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
     e.preventDefault();
 
     if (
-      (loanType === "MONITOR_LOAN" &&
+      (loanType === 'MONITOR_LOAN' &&
         user &&
         parseFloat(amount) > user.organizations.loanLimit.monitorLoan) ||
-      (loanType === "PERSONAL_LOAN" &&
+      (loanType === 'PERSONAL_LOAN' &&
         user &&
         parseFloat(amount) > user.organizations.loanLimit.personalLoan)
     ) {
@@ -245,8 +245,8 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
       hasPermission(user, LOAN_MODULE.CREATE_LOAN) &&
       props.handleIsApplyLoanScreen();
   });
-  useKeyCtrl("s", () =>
-    handleSubmit(event as unknown as React.FormEvent<HTMLFormElement>),
+  useKeyCtrl('s', () =>
+    handleSubmit(event as unknown as React.FormEvent<HTMLFormElement>)
   );
 
   return (
@@ -254,44 +254,44 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
       <PayrollMainContainer>
         <LoanApplicationFormContainer onSubmit={handleSubmit}>
           <HeaderSection>
-            <h4>{t("LOAN_APPLICATION")}</h4>
+            <h4>{t('LOAN_APPLICATION')}</h4>
             <ButtonGroup>
               <Button
                 onClick={props.handleIsApplyLoanScreen}
                 width="112px"
                 height="40px"
               >
-                {t("CANCEL")}
+                {t('CANCEL')}
               </Button>
               <Button
                 width="112px"
                 height="40px"
                 disabled={!isFormComplete}
                 className={`${
-                  isFormComplete ? "formValidated" : "noFormValidated"
+                  isFormComplete ? 'formValidated' : 'noFormValidated'
                 }`}
               >
-                {t("SUBMIT")}
+                {t('SUBMIT')}
               </Button>
             </ButtonGroup>
           </HeaderSection>
           <Hr />
-          <TermsHeading>{t("TERMS_AND_CONDITIONS")}</TermsHeading>
+          <TermsHeading>{t('TERMS_AND_CONDITIONS')}</TermsHeading>
           <TermsLinks>
             <a target="_blank" href={MonitorLoanTermsAndConditions}>
-              {t("MONITOR_LOAN_TERNMS")}
+              {t('MONITOR_LOAN_TERNMS')}
             </a>
             <a target="_blank" href={PersonalLoanTermsAndConditions}>
-              {t("PERSONAL_LOAN_TERMS")}
+              {t('PERSONAL_LOAN_TERMS')}
             </a>
           </TermsLinks>
           <HighlightedBoxes>
             <div>
-              <h4>{t("MAXIMUM_MONITOR_LOAN_AMOUNT")}</h4>
+              <h4>{t('MAXIMUM_MONITOR_LOAN_AMOUNT')}</h4>
               <span>{user && user.organizations.loanLimit.monitorLoan}</span>
             </div>
             <div>
-              <h4>{t("MAXIMUM_PERSONAL_LOAN_AMOUNT")}</h4>
+              <h4>{t('MAXIMUM_PERSONAL_LOAN_AMOUNT')}</h4>
               <span>{user && user.organizations.loanLimit.personalLoan}</span>
             </div>
           </HighlightedBoxes>
@@ -300,7 +300,7 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
             <ChildDiv1>
               <InputLabelContainer>
                 <label>
-                  {t("LOAN_TYPE")}{" "}
+                  {t('LOAN_TYPE')}{' '}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <select
@@ -310,19 +310,19 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
                   value={loanType}
                   onChange={handleLoanTypeChange}
                   onKeyPress={(event) => {
-                    if (event.key === "Enter") {
+                    if (event.key === 'Enter') {
                       event.preventDefault();
                     }
                   }}
                 >
-                  <option value="">{t("SELECT_LOAN_TYPE")}</option>
-                  <option value="MONITOR_LOAN">{t("MONITOR_LOAN")}</option>
-                  <option value="PERSONAL_LOAN">{t("PERSONAL_LOAN")}</option>
+                  <option value="">{t('SELECT_LOAN_TYPE')}</option>
+                  <option value="MONITOR_LOAN">{t('MONITOR_LOAN')}</option>
+                  <option value="PERSONAL_LOAN">{t('PERSONAL_LOAN')}</option>
                 </select>
               </InputLabelContainer>
               <InputLabelContainer>
                 <label>
-                  {t("LOAN_AMOUNT")}{" "}
+                  {t('LOAN_AMOUNT')}{' '}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <TextInput
@@ -333,7 +333,7 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
                   value={amount}
                   onChange={handleAmount}
                   onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                    if (e.key === "Enter") {
+                    if (e.key === 'Enter') {
                       e.preventDefault();
                     } else {
                       const isNumeric = /^\d+$/.test(e.key);
@@ -342,20 +342,20 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
                       }
                     }
                   }}
-                  placeholder={t("ENTER_AMOUNT")}
+                  placeholder={t('ENTER_AMOUNT')}
                 />
               </InputLabelContainer>
               <InputLabelContainer>
-                <label>{t("MONTHLY_EMI")}</label>
+                <label>{t('MONTHLY_EMI')}</label>
                 <TextInput
                   className="largeInput"
                   type="text"
                   placeholder="₹ 0"
                   name="monthyEmi"
-                  value={"₹ " + monthlyEMI}
+                  value={'₹ ' + monthlyEMI}
                   disabled
                   onKeyPress={(event) => {
-                    if (event.key === "Enter") {
+                    if (event.key === 'Enter') {
                       event.preventDefault();
                     }
                   }}
@@ -365,18 +365,18 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
             <ChildDiv2>
               <InputLabelContainer>
                 <label>
-                  {t("LOAN_PURPOSE")}
+                  {t('LOAN_PURPOSE')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <TextInput
                   className="largeInput"
                   type="text"
-                  placeholder={t("ENTER_YOUR_TEXT_HERE")}
+                  placeholder={t('ENTER_YOUR_TEXT_HERE')}
                   name="loanPurpose"
                   value={loanPurpose}
                   onChange={handleLoanPurposeChange}
                   onKeyPress={(event) => {
-                    if (event.key === "Enter") {
+                    if (event.key === 'Enter') {
                       event.preventDefault();
                     }
                   }}
@@ -384,7 +384,7 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
               </InputLabelContainer>
               <InputLabelContainer>
                 <label>
-                  {t("EMI_TENURE_MONTHS")}{" "}
+                  {t('EMI_TENURE_MONTHS')}{' '}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <select
@@ -395,19 +395,19 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
                   onChange={(e) => setEmiTenure(e.target.value)}
                   disabled={!isEmiTenureEnabled}
                   onKeyPress={(event) => {
-                    if (event.key === "Enter") {
+                    if (event.key === 'Enter') {
                       event.preventDefault();
                     }
                   }}
                 >
-                  <option value="">{t("SELECT_EMI_TENURE")}</option>
+                  <option value="">{t('SELECT_EMI_TENURE')}</option>
                   {renderEmiTenureOptions()}
                 </select>
               </InputLabelContainer>
 
               <InputLabelContainer>
                 <label>
-                  {t("EMI_START_FROM")}{" "}
+                  {t('EMI_START_FROM')}{' '}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <select
@@ -416,14 +416,14 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
                   id="emiStartDate"
                   onChange={handleEmiStartMonthChange}
                   onKeyPress={(event) => {
-                    if (event.key === "Enter") {
+                    if (event.key === 'Enter') {
                       event.preventDefault();
                     }
                   }}
                 >
-                  <option value="">{t("SELECT_MONTH")}</option>
-                  <option value="CURRENT_MONTH">{t("CURRENT_MONTH")}</option>
-                  <option value="NEXT_MONTH">{t("NEXT_MONTH")}</option>
+                  <option value="">{t('SELECT_MONTH')}</option>
+                  <option value="CURRENT_MONTH">{t('CURRENT_MONTH')}</option>
+                  <option value="NEXT_MONTH">{t('NEXT_MONTH')}</option>
                 </select>
               </InputLabelContainer>
             </ChildDiv2>
@@ -436,7 +436,7 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
               checked={isChecked}
               onChange={handleCheckboxChange}
             />
-            <span>{t("I_HAVE_AGGREE_TERMS_AND_CONDITIONS")}</span>
+            <span>{t('I_HAVE_AGGREE_TERMS_AND_CONDITIONS')}</span>
           </CheckboxLabel>
         </LoanApplicationFormContainer>
         {showSuccessMessage && (

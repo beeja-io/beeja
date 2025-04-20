@@ -1,8 +1,8 @@
-import axios, { AxiosResponse } from "axios";
-import { OriginURL, ProdOriginURL } from "../constants/UrlConstants";
-import { IFeatureToggle } from "../entities/FeatureToggle";
-import { IAssignedInterviewer } from "../entities/ApplicantEntity";
-import { OrganizationValues } from "../entities/OrgValueEntity";
+import axios, { AxiosResponse } from 'axios';
+import { OriginURL, ProdOriginURL } from '../constants/UrlConstants';
+import { IFeatureToggle } from '../entities/FeatureToggle';
+import { IAssignedInterviewer } from '../entities/ApplicantEntity';
+import { OrganizationValues } from '../entities/OrgValueEntity';
 /* eslint-disable */
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -14,60 +14,60 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       const { pathname, origin } = window.location;
-      const loginPath = "/login";
+      const loginPath = '/login';
       const loginURL =
         origin === OriginURL || origin === ProdOriginURL
           ? `${origin}${loginPath}`
           : `${import.meta.env.VITE_API_BASE_URL}${loginPath}`;
 
       if (
-        pathname !== "/login" &&
-        pathname !== "/service-unavailable" &&
-        pathname !== "/" &&
-        pathname !== ""
+        pathname !== '/login' &&
+        pathname !== '/service-unavailable' &&
+        pathname !== '/' &&
+        pathname !== ''
       ) {
         window.location.href = loginURL;
       }
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 503) {
-      if (window.location.pathname !== "/service-unavailable") {
-        window.location.href = "/service-unavailable";
+      if (window.location.pathname !== '/service-unavailable') {
+        window.location.href = '/service-unavailable';
       }
     }
     return Promise.reject(error);
-  },
+  }
 );
 
 export const fetchMe = (): Promise<AxiosResponse> => {
-  return axiosInstance.get("/accounts/v1/users/me");
+  return axiosInstance.get('/accounts/v1/users/me');
 };
 
 export const updateEmployeeStatusByEmployeeId = (
-  employeeId: string,
+  employeeId: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(`/accounts/v1/users/${employeeId}/status`);
 };
 
 export const getEmployeesCount = (): Promise<AxiosResponse> => {
-  return axiosInstance.get("/accounts/v1/users/count");
+  return axiosInstance.get('/accounts/v1/users/count');
 };
 
 export const getAllEmployeesByPermission = (
-  permission: string,
+  permission: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.get(`/accounts/v1/users/permissions/${permission}`);
 };
 
 export const updateEmployeeRole = (
   employeeId: string,
-  roles: string[],
+  roles: string[]
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(`/accounts/v1/users/roles/${employeeId}`, {
     roles,
@@ -75,49 +75,49 @@ export const updateEmployeeRole = (
 };
 
 export const createEmployee = (data: any): Promise<AxiosResponse> => {
-  return axiosInstance.post("/accounts/v1/users", data);
+  return axiosInstance.post('/accounts/v1/users', data);
 };
 
 export const fetchEmployeeDetailsByEmployeeId = (
-  employeeId: string,
+  employeeId: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.get(`/employees/v1/users/${employeeId}`);
 };
 
 export const updateEmployeeDetailsByEmployeeId = (
   employeeId: string,
-  data?: any,
+  data?: any
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(`/employees/v1/users/${employeeId}`, data);
 };
 export const getAllEmployees = (
-  queryString: string,
+  queryString: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.get(`/employees/v1/users${queryString}`);
 };
 
 export const uploadProfilePicture = (
   file: File,
-  entityId: string,
+  entityId: string
 ): Promise<AxiosResponse> => {
   const formData = new FormData();
-  formData.append("file", file);
-  formData.append("entityId", entityId);
-  return axiosInstance.post("employees/v1/files/profile-pic", formData, {
+  formData.append('file', file);
+  formData.append('entityId', entityId);
+  return axiosInstance.post('employees/v1/files/profile-pic', formData, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
   });
 };
 
 export const uploadEmployeeFiles = (
-  formData: FormData,
+  formData: FormData
 ): Promise<AxiosResponse> => {
-  return axiosInstance.post("/employees/v1/files", formData);
+  return axiosInstance.post('/employees/v1/files', formData);
 };
 
 export const getAllFilesByEmployeeId = (
-  url: string,
+  url: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.get(url);
 };
@@ -127,10 +127,10 @@ export const deleteEmployeeFile = (fileId: string): Promise<AxiosResponse> => {
 };
 
 export const downloadEmployeeFile = (
-  fileId: string,
+  fileId: string
 ): Promise<AxiosResponse<Blob>> => {
   return axiosInstance.get(`/employees/v1/files/download/${fileId}`, {
-    responseType: "blob",
+    responseType: 'blob',
   });
 };
 
@@ -139,25 +139,25 @@ export const getAllSettingTypes = (key: String): Promise<AxiosResponse> => {
 };
 
 export const updateSettingType = (data: any): Promise<AxiosResponse> => {
-  return axiosInstance.put("/accounts/v1/organizations/update-values", data);
+  return axiosInstance.put('/accounts/v1/organizations/update-values', data);
 };
 
 export const getAllExpenses = (url?: string): Promise<AxiosResponse> => {
-  return axiosInstance.get(url || "/expenses/v1");
+  return axiosInstance.get(url || '/expenses/v1');
 };
 
 export const expenseReceiptDownload = (
-  fileId: string,
+  fileId: string
 ): Promise<AxiosResponse<Blob>> => {
   return axiosInstance.get(`/expenses/v1/receipts/${fileId}`, {
-    responseType: "blob",
+    responseType: 'blob',
   });
 };
 
 export const createExpense = (expense: FormData): Promise<AxiosResponse> => {
   return axiosInstance.post(`/expenses/v1`, expense, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
   });
 };
@@ -174,7 +174,7 @@ export const getIDPatterns = (patternType: string): Promise<AxiosResponse> => {
 
 export const updatePatternStatus = async (
   patternId: string,
-  patternType: string,
+  patternType: string
 ) => {
   try {
     const response = await axiosInstance.put(
@@ -185,7 +185,7 @@ export const updatePatternStatus = async (
           patternId,
           patternType,
         },
-      },
+      }
     );
     return response.data;
   } catch (error) {
@@ -199,7 +199,7 @@ export const deleteExpense = (expenseId: string): Promise<AxiosResponse> => {
 
 export const updateExpense = (
   expenseId: string,
-  data: any,
+  data: any
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(`/expenses/v1/${expenseId}`, data);
 };
@@ -213,7 +213,7 @@ export const postCompanyProfile = (data: any): Promise<AxiosResponse> => {
 export const uploadBulkPayslip = (data: FormData): Promise<AxiosResponse> => {
   return axiosInstance.post(`/finance/v1/payslips`, data, {
     headers: {
-      "Content-Type": "multipart/form-data",
+      'Content-Type': 'multipart/form-data',
     },
   });
 };
@@ -221,37 +221,37 @@ export const getAllLoans = (employeeId?: string): Promise<AxiosResponse> => {
   if (employeeId) {
     return axiosInstance.get(`/finance/v1/loans/${employeeId}`);
   } else {
-    return axiosInstance.get("/finance/v1/loans");
+    return axiosInstance.get('/finance/v1/loans');
   }
 };
 export const statusChange = (
   Id: string,
   status: string,
-  message?: string,
+  message?: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(
-    `/finance/v1/loans/${Id}/status?status=${status}&message=${message}`,
+    `/finance/v1/loans/${Id}/status?status=${status}&message=${message}`
   );
 };
 
 export const getHealthInsuranceDetails = (
-  employeeId: string,
+  employeeId: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.get(`/finance/v1/health-insurances/${employeeId}`);
 };
 
 export const updateHealthInsuranceDetails = (
   employeeId: string,
-  data: any,
+  data: any
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(
     `/finance/v1/health-insurances/employee/${employeeId}`,
-    data,
+    data
   );
 };
 
 export const postHealthInsuranceDetails = (
-  data: any,
+  data: any
 ): Promise<AxiosResponse> => {
   return axiosInstance.post(`/finance/v1/health-insurances`, data);
 };
@@ -271,7 +271,7 @@ export const deleteInventory = (id: string): Promise<AxiosResponse> => {
 };
 
 export const getAllRolesInOrganization = (): Promise<AxiosResponse> => {
-  return axiosInstance.get("/accounts/v1/roles");
+  return axiosInstance.get('/accounts/v1/roles');
 };
 
 export const getOrganizationById = (id: string): Promise<AxiosResponse> => {
@@ -280,24 +280,24 @@ export const getOrganizationById = (id: string): Promise<AxiosResponse> => {
 
 export const updateOrganizationById = (
   id: string,
-  data: any,
+  data: any
 ): Promise<AxiosResponse> => {
   return axiosInstance.patch(`/accounts/v1/organizations/${id}`, data);
 };
 
 export const downloadOrgFile = (): Promise<AxiosResponse<Blob>> => {
-  return axiosInstance.get("accounts/v1/organizations/logo", {
-    responseType: "blob",
+  return axiosInstance.get('accounts/v1/organizations/logo', {
+    responseType: 'blob',
   });
 };
 
 export const getFeatureToggles = (): Promise<AxiosResponse> => {
-  return axiosInstance.get("/accounts/v1/features");
+  return axiosInstance.get('/accounts/v1/features');
 };
 
 export const updateFeatureTogglesByOrgId = (
   organizationId: string,
-  data: IFeatureToggle,
+  data: IFeatureToggle
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(`/accounts/v1/features/${organizationId}`, data);
 };
@@ -315,83 +315,83 @@ export const deleteRole = (id: string): Promise<AxiosResponse> => {
 };
 
 export const getAllApplicantList = (): Promise<AxiosResponse> => {
-  return axiosInstance.get("/recruitments/v1/applicants");
+  return axiosInstance.get('/recruitments/v1/applicants');
 };
 
 export const postApplicant = (data: FormData): Promise<AxiosResponse> => {
-  return axiosInstance.post("/recruitments/v1/applicants", data);
+  return axiosInstance.post('/recruitments/v1/applicants', data);
 };
 
 export const downloadApplicantResume = (
-  fileId: string,
+  fileId: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.get(`/recruitments/v1/applicants/resume/${fileId}`, {
-    responseType: "blob",
+    responseType: 'blob',
   });
 };
 
 export const changeApplicationStatus = (
   applicantId: string,
-  status: string,
+  status: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(
-    `/recruitments/v1/applicants/${applicantId}/status/${status}`,
+    `/recruitments/v1/applicants/${applicantId}/status/${status}`
   );
 };
 export const referApplicant = (data: FormData): Promise<AxiosResponse> => {
-  return axiosInstance.post("/recruitments/v1/referrals", data);
+  return axiosInstance.post('/recruitments/v1/referrals', data);
 };
 
 export const getMyReferrals = (): Promise<AxiosResponse> => {
-  return axiosInstance.get("/recruitments/v1/referrals");
+  return axiosInstance.get('/recruitments/v1/referrals');
 };
 
 export const downloadReferralResume = (
-  fileId: string,
+  fileId: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.get(`/recruitments/v1/referrals/${fileId}`, {
-    responseType: "blob",
+    responseType: 'blob',
   });
 };
 
 export const postComment = (data: any) => {
-  return axiosInstance.post("/recruitments/v1/applicants/comments", data);
+  return axiosInstance.post('/recruitments/v1/applicants/comments', data);
 };
 
 export const assignInterviewer = (
   applicantId: string,
-  interviewer: IAssignedInterviewer,
+  interviewer: IAssignedInterviewer
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(
     `/recruitments/v1/applicants/${applicantId}/assign-interviewer`,
-    interviewer,
+    interviewer
   );
 };
 
 export const getApplicantById = (
-  applicantId: string,
+  applicantId: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.get(`/recruitments/v1/applicants/${applicantId}`);
 };
 
 export const updateKycDetails = (
   employeeId: string,
-  data?: any,
+  data?: any
 ): Promise<AxiosResponse> => {
   return axiosInstance.patch(`/employees/v1/users/${employeeId}/kyc`, data);
 };
 
 export const getOrganizationValuesByKey = (
-  key: string,
+  key: string
 ): Promise<AxiosResponse<OrganizationValues>> => {
   return axiosInstance.get(`/accounts/v1/organizations/values/${key}`);
 };
 
 export const updateOrganizationValues = (
-  orgDefaults: OrganizationValues,
+  orgDefaults: OrganizationValues
 ): Promise<AxiosResponse<OrganizationValues>> => {
   return axiosInstance.put(
-    "/accounts/v1/organizations/update-values",
-    orgDefaults,
+    '/accounts/v1/organizations/update-values',
+    orgDefaults
   );
 };

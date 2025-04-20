@@ -1,10 +1,10 @@
-import React, { ReactNode, createContext, useState } from "react";
-import { IFeatureToggle } from "../entities/FeatureToggle";
+import React, { ReactNode, createContext, useState } from 'react';
+import { IFeatureToggle } from '../entities/FeatureToggle';
 
 interface FeatureToggleContextType {
   featureToggles: IFeatureToggle | null | undefined;
   updateFeatureToggles: (
-    featureToggles: IFeatureToggle | null | undefined,
+    featureToggles: IFeatureToggle | null | undefined
   ) => void;
 }
 
@@ -21,7 +21,7 @@ export const FeatureToggleContextProvider: React.FC<{
   >(null);
 
   const updateFeatureToggles = (
-    featureToggles: IFeatureToggle | null | undefined,
+    featureToggles: IFeatureToggle | null | undefined
   ) => {
     setFeatureToggles(featureToggles);
   };
@@ -35,13 +35,12 @@ export const FeatureToggleContextProvider: React.FC<{
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useFeatureToggles = () => {
   const context = React.useContext(FeatureToggleContext);
 
   if (!context) {
     throw new Error(
-      "useFeatureToggles must be used within a FeatureToggleContextProvider",
+      'useFeatureToggles must be used within a FeatureToggleContextProvider'
     );
   }
 
