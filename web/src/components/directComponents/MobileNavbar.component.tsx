@@ -1,23 +1,23 @@
-import { useLocation } from "react-router-dom";
-import { MobileNavMainContainer } from "../../styles/MobileNavBar.style";
-import { HamburgeOpen } from "../../svgs/MobileMenuSvgs.svgs";
-import LeftSideModal from "../reusableComponents/LeftSideModal.component";
-import { useEffect, useState } from "react";
+import { useLocation } from 'react-router-dom';
+import { MobileNavMainContainer } from '../../styles/MobileNavBar.style';
+import { HamburgeOpen } from '../../svgs/MobileMenuSvgs.svgs';
+import LeftSideModal from '../reusableComponents/LeftSideModal.component';
+import { useEffect, useState } from 'react';
 import {
   BeejaIconSvg,
   ChevronDownSVG,
   DashBoardSVG,
   EmployeesSVG,
   MyProfileSVG,
-} from "../../svgs/NavBarSvgs.svg";
+} from '../../svgs/NavBarSvgs.svg';
 import {
   DashBoardButton,
   LeftNavList,
   NavHeader,
-} from "../../styles/NavBarStyles.style";
-import { StyledNavLink } from "../../styles/CommonStyles.style";
-import { useTranslation } from "react-i18next";
-import { Text } from "web-kit-components";
+} from '../../styles/NavBarStyles.style';
+import { StyledNavLink } from '../../styles/CommonStyles.style';
+import { useTranslation } from 'react-i18next';
+import { Text } from 'web-kit-components';
 
 type MobileNavBarProps = {
   handleIsOpen: () => void;
@@ -41,16 +41,16 @@ const MobileNavbar = (props: MobileNavBarProps) => {
             >
               <BeejaIconSvg />
               <div className="logo_name">
-                {" "}
-                &nbsp; {t("BEE")}
+                {' '}
+                &nbsp; {t('BEE')}
                 <span
                   style={{
-                    color: "#005792",
-                    fontFamily: "Rubik",
+                    color: '#005792',
+                    fontFamily: 'Rubik',
                     fontWeight: 400,
                   }}
                 >
-                  {t("JA")}
+                  {t('JA')}
                 </span>
               </div>
 
@@ -63,7 +63,7 @@ const MobileNavbar = (props: MobileNavBarProps) => {
               <StyledNavLink to="/">
                 <li>
                   <DashBoardButton>
-                    {t("DASHBOARD")}
+                    {t('DASHBOARD')}
                     <DashBoardSVG />
                   </DashBoardButton>
                 </li>
@@ -79,16 +79,16 @@ const MobileNavbar = (props: MobileNavBarProps) => {
                   <MyProfileSVG
                     props={{
                       isActive:
-                        openDropdown === "profile" ||
-                        currentPath === "/profile/me",
+                        openDropdown === 'profile' ||
+                        currentPath === '/profile/me',
                     }}
                   />
                 }
                 additionalSvgIcon={<ChevronDownSVG />}
-                isDropdownOpen={openDropdown === "profile"}
+                isDropdownOpen={openDropdown === 'profile'}
                 setDropdownOpen={() => {
                   setOpenDropdown((prev) =>
-                    prev === "profile" ? null : "profile",
+                    prev === 'profile' ? null : 'profile'
                   );
                 }}
               />
@@ -103,16 +103,16 @@ const MobileNavbar = (props: MobileNavBarProps) => {
                   <EmployeesSVG
                     props={{
                       isActive:
-                        openDropdown === "employees" ||
-                        currentPath === "/employees",
+                        openDropdown === 'employees' ||
+                        currentPath === '/employees',
                     }}
                   />
                 }
                 additionalSvgIcon={<ChevronDownSVG />}
-                isDropdownOpen={openDropdown === "employees"}
+                isDropdownOpen={openDropdown === 'employees'}
                 setDropdownOpen={() => {
                   setOpenDropdown((prev) =>
-                    prev === "employees" ? null : "employees",
+                    prev === 'employees' ? null : 'employees'
                   );
                 }}
               />
@@ -143,7 +143,7 @@ type ListItemProps = {
 export const ListItem: React.FC<ListItemProps> = (props) => {
   const { t } = useTranslation();
   const [isDropdownOpen, setDropdownOpen] = useState(
-    props.isDropdownOpen || false,
+    props.isDropdownOpen || false
   );
   const [selectedDropdownItem, setSelectedDropdownItem] = useState<
     string | null
@@ -170,35 +170,35 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
   }, [props.isDropdownOpen]);
 
   return (
-    <li key={props.linkTo} className={isDropdownOpen ? "dropdown-open" : ""}>
+    <li key={props.linkTo} className={isDropdownOpen ? 'dropdown-open' : ''}>
       <StyledNavLink
         to={props.linkTo}
-        className={`${isDropdownOpen ? "active" : ""} ${
+        className={`${isDropdownOpen ? 'active' : ''} ${
           isSelectedAndActive({
             name: props.linkName,
             link: props.linkTo,
           }) || props.dropdownItems?.some((item) => isSelectedAndActive(item))
-            ? "selected"
-            : ""
+            ? 'selected'
+            : ''
         }`}
         onClick={handleSelect}
       >
         <a
           style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
           }}
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <i
               style={{
                 color: isSelectedAndActive({
                   name: props.linkName,
                   link: props.linkTo,
                 })
-                  ? "red"
-                  : "red",
+                  ? 'red'
+                  : 'red',
               }}
             >
               {props.svgIcon}
@@ -212,8 +212,8 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
                     link: props.linkTo,
                   }) ||
                   props.dropdownItems?.some((item) => isSelectedAndActive(item))
-                    ? "#005792"
-                    : "black",
+                    ? '#005792'
+                    : 'black',
               }}
             >
               <Text fontWeight="500" onClick={props.handleClose}>
@@ -224,9 +224,9 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
           {props.hasAdditionalSvg && (
             <div
               style={{
-                position: "relative",
-                transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0)",
-                transition: "transform 0.3s ease",
+                position: 'relative',
+                transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)',
+                transition: 'transform 0.3s ease',
               }}
             >
               <i>{props.additionalSvgIcon}</i>

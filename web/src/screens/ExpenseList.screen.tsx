@@ -1,4 +1,4 @@
-import { ExpenseAction } from "../components/reusableComponents/ExpenseListAction";
+import { ExpenseAction } from '../components/reusableComponents/ExpenseListAction';
 import {
   DatePicker,
   DisplayFilters,
@@ -9,33 +9,33 @@ import {
   TableHead,
   TableList,
   TableListContainer,
-} from "../styles/ExpenseListStyles.style";
+} from '../styles/ExpenseListStyles.style';
 import {
   CalenderIcon,
   CalenderIconDark,
   DeleteIcon,
   EditIcon,
-} from "../svgs/ExpenseListSvgs.svg";
-import { useTranslation } from "react-i18next";
-import { formatDate } from "../utils/dateFormatter";
-import ZeroEntriesFound from "../components/reusableComponents/ZeroEntriesFound.compoment";
-import { getAllExpenses } from "../service/axiosInstance";
-import { useCallback, useEffect, useRef, useState, useMemo } from "react";
-import { VectorSVG } from "../svgs/CommonSvgs.svs";
+} from '../svgs/ExpenseListSvgs.svg';
+import { useTranslation } from 'react-i18next';
+import { formatDate } from '../utils/dateFormatter';
+import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
+import { getAllExpenses } from '../service/axiosInstance';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import { VectorSVG } from '../svgs/CommonSvgs.svs';
 // import InlineCalendar from '../components/reusableComponents/FromToDatePicker';
-import { AllExpensesResponse } from "../entities/respponses/AllExpensesResponse";
-import { Expense } from "../entities/ExpenseEntity";
-import AddExpenseForm from "../components/directComponents/AddExpenseForm.component";
-import CenterModalMain from "../components/reusableComponents/CenterModalMain.component";
-import Calendar from "../components/reusableComponents/Calendar.component";
-import { minDateOfFromCalendar } from "../constants/Constants";
-import { useUser } from "../context/UserContext";
-import { EXPENSE_MODULE } from "../constants/PermissionConstants";
-import Pagination from "../components/directComponents/Pagination.component";
-import { InfoCircleSVG } from "../svgs/NavBarSvgs.svg";
-import { formatToINR } from "../utils/currencyFormattors";
-import { hasPermission } from "../utils/permissionCheck";
-import { OrganizationValues } from "../entities/OrgValueEntity";
+import { AllExpensesResponse } from '../entities/respponses/AllExpensesResponse';
+import { Expense } from '../entities/ExpenseEntity';
+import AddExpenseForm from '../components/directComponents/AddExpenseForm.component';
+import CenterModalMain from '../components/reusableComponents/CenterModalMain.component';
+import Calendar from '../components/reusableComponents/Calendar.component';
+import { minDateOfFromCalendar } from '../constants/Constants';
+import { useUser } from '../context/UserContext';
+import { EXPENSE_MODULE } from '../constants/PermissionConstants';
+import Pagination from '../components/directComponents/Pagination.component';
+import { InfoCircleSVG } from '../svgs/NavBarSvgs.svg';
+import { formatToINR } from '../utils/currencyFormattors';
+import { hasPermission } from '../utils/permissionCheck';
+import { OrganizationValues } from '../entities/OrgValueEntity';
 
 type ExpenseListProps = {
   expenseCategories: OrganizationValues;
@@ -52,7 +52,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalSize, setTotalSize] = useState<number | undefined>(0);
   const [totalPages, setTotalPages] = useState<number | undefined>(
-    Math.ceil(totalSize ? totalSize / 10 : 0),
+    Math.ceil(totalSize ? totalSize / 10 : 0)
   );
 
   const handlePageChange = (page: number) => {
@@ -87,10 +87,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
   };
 
   useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
 
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   }, []);
 
@@ -107,43 +107,43 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const currentDate = useMemo(() => new Date(), []);
 
   const [toDate, setToDate] = useState<Date | null>();
-  const [departmentFilter, setDepartmentFilter] = useState<string>("");
-  const [categoryFilter, setCategoryFilter] = useState<string>("");
-  const [typeFilter, setTypeFilter] = useState<string>("");
-  const [paymentModeFilter, setPaymentModeFilter] = useState<string>("");
+  const [departmentFilter, setDepartmentFilter] = useState<string>('');
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
+  const [typeFilter, setTypeFilter] = useState<string>('');
+  const [paymentModeFilter, setPaymentModeFilter] = useState<string>('');
   const [settlementStatusFilter, setSettlementStatusFilter] =
     useState<boolean>();
-  const [sortBy, setSortBy] = useState<string>("expenseDate");
-  const [filterBasedOn, setFilterBasedOn] = useState<string>("expenseDate");
-  const [sortOrder, setSortOrder] = useState<string>("false");
+  const [sortBy, setSortBy] = useState<string>('expenseDate');
+  const [filterBasedOn, setFilterBasedOn] = useState<string>('expenseDate');
+  const [sortOrder, setSortOrder] = useState<string>('false');
   const [expenses, setExpenses] = useState<AllExpensesResponse>();
 
   const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedDepartment = e.target.value;
-    setDepartmentFilter(selectedDepartment !== "" ? selectedDepartment : "");
-    setCategoryFilter("");
-    setTypeFilter("");
+    setDepartmentFilter(selectedDepartment !== '' ? selectedDepartment : '');
+    setCategoryFilter('');
+    setTypeFilter('');
   };
   const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCategory = e.target.value;
-    setCategoryFilter(selectedCategory !== "" ? selectedCategory : "");
-    setTypeFilter("");
+    setCategoryFilter(selectedCategory !== '' ? selectedCategory : '');
+    setTypeFilter('');
   };
 
   const handleSettlementStatusChange = (
-    e: React.ChangeEvent<HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const selectedSettlementStatus = e.target.value;
     setSettlementStatusFilter(
-      selectedSettlementStatus !== ""
-        ? selectedSettlementStatus === "true"
-        : undefined,
+      selectedSettlementStatus !== ''
+        ? selectedSettlementStatus === 'true'
+        : undefined
     );
   };
 
   function dateFormat(date: Date) {
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
     const formattedDate = `${year}/${month}/${day}`;
 
@@ -155,30 +155,30 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const selectedFiltersText = () => {
     const filters = [
       {
-        key: "date",
+        key: 'date',
         value:
           fromDate && toDate
             ? `${formatDate(fromDate.toString())} - ${formatDate(
-                toDate.toString(),
+                toDate.toString()
               )}`
             : fromDate
               ? `From ${formatDate(fromDate.toString())}`
               : toDate
                 ? `Upto ${formatDate(toDate.toString())}`
-                : "",
+                : '',
       },
-      { key: "department", value: departmentFilter },
-      { key: "category", value: categoryFilter },
-      { key: "type", value: typeFilter },
-      { key: "paymentMode", value: paymentModeFilter },
+      { key: 'department', value: departmentFilter },
+      { key: 'category', value: categoryFilter },
+      { key: 'type', value: typeFilter },
+      { key: 'paymentMode', value: paymentModeFilter },
       {
-        key: "settlementStatus",
+        key: 'settlementStatus',
         value:
           settlementStatusFilter !== undefined
             ? settlementStatusFilter
-              ? "Settled"
-              : "Pending"
-            : "",
+              ? 'Settled'
+              : 'Pending'
+            : '',
       },
     ];
     return (
@@ -195,7 +195,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                   <VectorSVG />
                 </span>
               </span>
-            ),
+            )
         )}
       </ExpenseFilterArea>
     );
@@ -242,8 +242,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
 
       const url =
         filteredParams.length > 0
-          ? `/expenses/v1?${filteredParams.join("&")}`
-          : "/expenses/v1";
+          ? `/expenses/v1?${filteredParams.join('&')}`
+          : '/expenses/v1';
 
       const response = await getAllExpenses(url);
       const metadata = response.data.metadata;
@@ -252,7 +252,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
         metadata: metadata,
       };
       const totalPages = Math.ceil(
-        response.data.metadata.totalSize / itemsPerPage,
+        response.data.metadata.totalSize / itemsPerPage
       );
       setTotalSize(metadata.totalSize);
       handleTotalPages(totalPages ?? 1);
@@ -260,7 +260,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
       setFilteredResponseLoading(false);
     } catch (error) {
       setFilteredResponseLoading(false);
-      throw new Error("Error fetching expenses:" + error);
+      throw new Error('Error fetching expenses:' + error);
     }
   }, [
     categoryFilter,
@@ -302,42 +302,42 @@ export const ExpenseList = (props: ExpenseListProps) => {
 
   const clearFilters = (filterName: string) => {
     setCurrentPage(1);
-    if (filterName === "clearAll") {
-      setDepartmentFilter("");
-      setCategoryFilter("");
-      setTypeFilter("");
-      setPaymentModeFilter("");
+    if (filterName === 'clearAll') {
+      setDepartmentFilter('');
+      setCategoryFilter('');
+      setTypeFilter('');
+      setPaymentModeFilter('');
       setFromDate(null);
       setToDate(null);
       setSettlementStatusFilter(undefined);
     }
-    if (filterName === "department") {
-      setDepartmentFilter("");
+    if (filterName === 'department') {
+      setDepartmentFilter('');
     }
-    if (filterName === "category") {
-      setCategoryFilter("");
+    if (filterName === 'category') {
+      setCategoryFilter('');
     }
-    if (filterName === "type") {
-      setTypeFilter("");
+    if (filterName === 'type') {
+      setTypeFilter('');
     }
-    if (filterName === "paymentMode") {
-      setPaymentModeFilter("");
+    if (filterName === 'paymentMode') {
+      setPaymentModeFilter('');
     }
-    if (filterName === "date") {
+    if (filterName === 'date') {
       setFromDate(null);
       setToDate(null);
     }
-    if (filterName === "settlementStatus") {
+    if (filterName === 'settlementStatus') {
       setSettlementStatusFilter(undefined);
     }
   };
 
   const Actions = [
     ...(user && hasPermission(user, EXPENSE_MODULE.UPDATE_EXPENSE)
-      ? [{ title: "Edit", svg: <EditIcon /> }]
+      ? [{ title: 'Edit', svg: <EditIcon /> }]
       : []),
     ...(user && hasPermission(user, EXPENSE_MODULE.DELETE_EXPENSE)
-      ? [{ title: "Delete", svg: <DeleteIcon /> }]
+      ? [{ title: 'Delete', svg: <DeleteIcon /> }]
       : []),
   ];
 
@@ -354,7 +354,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
     setIsExpensePreviewModalOpen(!isExpensePreviewModalOpen);
   };
 
-  const [modeOfModal, setModeOfModal] = useState("Expense Preview");
+  const [modeOfModal, setModeOfModal] = useState('Expense Preview');
   const handleSetModeOfModal = (modalTitle: string) => {
     setModeOfModal(modalTitle);
   };
@@ -363,16 +363,16 @@ export const ExpenseList = (props: ExpenseListProps) => {
     <ExpenseListSection>
       <div className="mainDiv">
         <div className="Expense_Heading">
-          <p className="expenseListTitle underline">{t("LIST_OF_EXPENSES")}</p>
+          <p className="expenseListTitle underline">{t('LIST_OF_EXPENSES')}</p>
         </div>
         <FilterSection>
-          <div ref={calendarFromRef} style={{ position: "relative" }}>
+          <div ref={calendarFromRef} style={{ position: 'relative' }}>
             <DatePicker onClick={handleFromCalendarClick}>
               <span className="dateName">
                 <span className="dateChild">
                   {fromDate
-                    ? `${t("FROM")} ${formatDate(fromDate.toString())}`
-                    : `${t("FROM_DATE")}`}
+                    ? `${t('FROM')} ${formatDate(fromDate.toString())}`
+                    : `${t('FROM_DATE')}`}
                 </span>
                 <span className="calenderIcon">
                   <CalenderIconDark />
@@ -383,7 +383,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
             {showFromCalendar && (
               <div className="filterCalender">
                 <Calendar
-                  title={t("FROM_DATE")}
+                  title={t('FROM_DATE')}
                   minDate={minDateOfFromCalendar}
                   maxDate={currentDate}
                   handleDateInput={(selectedDate) => {
@@ -392,19 +392,19 @@ export const ExpenseList = (props: ExpenseListProps) => {
                   }}
                   selectedDate={fromDate ? fromDate : new Date()}
                   handleCalenderChange={function (): void {
-                    throw new Error("Function not implemented.");
+                    throw new Error('Function not implemented.');
                   }}
                 />
               </div>
             )}
           </div>
-          <div ref={calendarToRef} style={{ position: "relative" }}>
+          <div ref={calendarToRef} style={{ position: 'relative' }}>
             <DatePicker onClick={handleToCalendarClick}>
               <span className="dateName">
                 <span className="dateChild">
                   {toDate
-                    ? `${t("TO")} ${formatDate(toDate.toString())}`
-                    : t("TO_DATE")}
+                    ? `${t('TO')} ${formatDate(toDate.toString())}`
+                    : t('TO_DATE')}
                 </span>
                 <span className="calenderIcon">
                   <CalenderIconDark />
@@ -415,7 +415,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
             {showToCalendar && (
               <div className="filterCalender">
                 <Calendar
-                  title={t("TO_DATE")}
+                  title={t('TO_DATE')}
                   minDate={fromDate}
                   maxDate={maxToDate}
                   handleDateInput={(selectedDate) => {
@@ -437,7 +437,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
               setCurrentPage(1);
             }}
           >
-            <option value="">{t("DEPARTMENT")}</option>
+            <option value="">{t('DEPARTMENT')}</option>
             {props.expenseDepartments.values?.map((department) => (
               <option key={department.value} value={department.value}>
                 {department.value}
@@ -454,7 +454,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
               setCurrentPage(1);
             }}
           >
-            <option value="">{t("EXPENSE_CATEGORY")}</option>
+            <option value="">{t('EXPENSE_CATEGORY')}</option>
             {props.expenseCategories.values?.map((category) => (
               <option key={category.value} value={category.value}>
                 {category.value}
@@ -466,11 +466,11 @@ export const ExpenseList = (props: ExpenseListProps) => {
             name="type"
             value={typeFilter}
             onChange={(e) => {
-              setTypeFilter(e.target.value != "" ? e.currentTarget.value : "");
+              setTypeFilter(e.target.value != '' ? e.currentTarget.value : '');
               setCurrentPage(1);
             }}
           >
-            <option value="">{t("EXPENSE_TYPE")}</option>
+            <option value="">{t('EXPENSE_TYPE')}</option>
             {props.expenseTypes.values?.map((type) => (
               <option key={type.value} value={type.value}>
                 {type.value}
@@ -483,12 +483,12 @@ export const ExpenseList = (props: ExpenseListProps) => {
             value={paymentModeFilter}
             onChange={(e) => {
               setPaymentModeFilter(
-                e.target.value != "" ? e.currentTarget.value : "",
+                e.target.value != '' ? e.currentTarget.value : ''
               );
               setCurrentPage(1);
             }}
           >
-            <option value="">{t("MODE_OF_PAYMENT")}</option>
+            <option value="">{t('MODE_OF_PAYMENT')}</option>
             {/* FIXME - fetch from API Based on Country */}
             {props.expensePaymentModes.values?.map((type) => (
               <option key={type.value} value={type.value}>
@@ -502,53 +502,53 @@ export const ExpenseList = (props: ExpenseListProps) => {
             value={
               settlementStatusFilter !== undefined
                 ? settlementStatusFilter.toString()
-                : ""
+                : ''
             }
             onChange={(e) => {
               handleSettlementStatusChange(e);
               setCurrentPage(1);
             }}
           >
-            <option value="">{t("SETTLEMENT_STATUS")}</option>
-            <option value="true">{t("SETTLED")}</option>
-            <option value="false">{t("PENDING")}</option>
+            <option value="">{t('SETTLEMENT_STATUS')}</option>
+            <option value="true">{t('SETTLED')}</option>
+            <option value="false">{t('PENDING')}</option>
           </select>
         </FilterSection>
         <div className="right">
           <DisplayFilters>
-            <label>{t("FILTERS")} </label>
+            <label>{t('FILTERS')} </label>
             {isShowFilters ? (
               <>
                 {selectedFiltersText() && (
                   <span className="filterText">{selectedFiltersText()}</span>
                 )}
                 <span
-                  onClick={() => clearFilters("clearAll")}
+                  onClick={() => clearFilters('clearAll')}
                   className="clearFilters"
                 >
-                  {t("CLEAR_FILTERS")}
+                  {t('CLEAR_FILTERS')}
                 </span>
               </>
             ) : (
-              <span className="noFilters">{t("NO_FILTERS_APPLIED")}</span>
+              <span className="noFilters">{t('NO_FILTERS_APPLIED')}</span>
             )}
           </DisplayFilters>
           <span className="expenseListTitle amount">
-            {t("TOTAL_AMOUNT")}{" "}
+            {t('TOTAL_AMOUNT')}{' '}
             <span className="blackText">
-              ₹{" "}
+              ₹{' '}
               {expenses?.metadata.totalAmount !== undefined
                 ? formatToINR(
                     expenses.metadata.totalAmount.toFixed(
-                      2,
-                    ) as unknown as number,
+                      2
+                    ) as unknown as number
                   )
-                : "0.00"}
+                : '0.00'}
             </span>
           </span>
         </div>
         <DisplayFilters>
-          <label>{t("SORT_BY")} </label>
+          <label>{t('SORT_BY')} </label>
         </DisplayFilters>
         <FilterSection>
           <select
@@ -556,19 +556,19 @@ export const ExpenseList = (props: ExpenseListProps) => {
             name="sortBy"
             value={sortBy}
             onChange={(e) => {
-              setSortBy(e.target.value != "" ? e.currentTarget.value : "");
+              setSortBy(e.target.value != '' ? e.currentTarget.value : '');
               setFilterBasedOn(
-                e.target.value != "" ? e.currentTarget.value : "",
+                e.target.value != '' ? e.currentTarget.value : ''
               );
               setCurrentPage(1);
             }}
           >
             <option value="expenseDate" selected>
-              {t("EXPENSE_DATE")}
+              {t('EXPENSE_DATE')}
             </option>
-            <option value="requestedDate">{t("REQUESTED_DATE")}</option>
-            <option value="paymentSettled">{t("PAYMENT_DATE")}</option>
-            <option value="created_at">{t("CREATED_DATE")}</option>
+            <option value="requestedDate">{t('REQUESTED_DATE')}</option>
+            <option value="paymentSettled">{t('PAYMENT_DATE')}</option>
+            <option value="created_at">{t('CREATED_DATE')}</option>
           </select>
 
           <select
@@ -576,13 +576,13 @@ export const ExpenseList = (props: ExpenseListProps) => {
             name="sortBy"
             value={sortOrder}
             onChange={(e) => {
-              setSortOrder(e.target.value != "" ? e.currentTarget.value : "");
+              setSortOrder(e.target.value != '' ? e.currentTarget.value : '');
               setCurrentPage(1);
             }}
           >
-            <option value="false">{t("NEWEST_TO_OLDEST")}</option>
+            <option value="false">{t('NEWEST_TO_OLDEST')}</option>
             <option value="true" selected>
-              {t("OLDEST_TO_NEWEST")}
+              {t('OLDEST_TO_NEWEST')}
             </option>
           </select>
         </FilterSection>
@@ -591,13 +591,13 @@ export const ExpenseList = (props: ExpenseListProps) => {
           <span className="noFilters noMargin">
             <InfoCircleSVG />
             {`Showing current month expenses (sorted based on ${
-              sortBy === "expenseDate"
-                ? t("EXPENSE_DATE")
-                : sortBy === "requestedDate"
-                  ? t("REQUESTED_DATE")
-                  : sortBy === "paymentDate"
-                    ? t("PAYMENT_DATE")
-                    : t("CREATED_DATE")
+              sortBy === 'expenseDate'
+                ? t('EXPENSE_DATE')
+                : sortBy === 'requestedDate'
+                  ? t('REQUESTED_DATE')
+                  : sortBy === 'paymentDate'
+                    ? t('PAYMENT_DATE')
+                    : t('CREATED_DATE')
             })`}
           </span>
         )}
@@ -610,19 +610,19 @@ export const ExpenseList = (props: ExpenseListProps) => {
           ) : (
             <TableList>
               <TableHead>
-                <tr style={{ textAlign: "left", borderRadius: "10px" }}>
-                  <th>{t("DEPARTMENT")}</th>
-                  <th>{t("EXPENSE_CATEGORY")}</th>
-                  <th>{t("EXPENSE_TYPE")}</th>
-                  <th>{t("AMOUNT")}</th>
-                  <th>{t("BY_WHOM")}</th>
-                  <th>{t("MODE_OF_PAYMENT")}</th>
-                  <th>{t("EXPENSE_DATE")}</th>
-                  <th>{t("PAYMENT_SETTLED")}</th>
+                <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
+                  <th>{t('DEPARTMENT')}</th>
+                  <th>{t('EXPENSE_CATEGORY')}</th>
+                  <th>{t('EXPENSE_TYPE')}</th>
+                  <th>{t('AMOUNT')}</th>
+                  <th>{t('BY_WHOM')}</th>
+                  <th>{t('MODE_OF_PAYMENT')}</th>
+                  <th>{t('EXPENSE_DATE')}</th>
+                  <th>{t('PAYMENT_SETTLED')}</th>
                   {user &&
                     (hasPermission(user, EXPENSE_MODULE.UPDATE_EXPENSE) ||
                       hasPermission(user, EXPENSE_MODULE.DELETE_EXPENSE)) && (
-                      <th>{t("ACTION")}</th>
+                      <th>{t('ACTION')}</th>
                     )}
                 </tr>
               </TableHead>
@@ -644,7 +644,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     expenses.expenses.map((exp) => (
                       <TableBodyRow key={exp.id}>
                         <td onClick={() => handleExpenseToBePreviewed(exp)}>
-                          {exp.department ? exp.department : "-"}
+                          {exp.department ? exp.department : '-'}
                         </td>
                         <td onClick={() => handleExpenseToBePreviewed(exp)}>
                           {exp.category}
@@ -655,8 +655,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
                         <td onClick={() => handleExpenseToBePreviewed(exp)}>
                           {/* FIXME - Currency */}
                           {exp.amount === 0
-                            ? "-"
-                            : formatToINR(exp.amount) + " INR"}
+                            ? '-'
+                            : formatToINR(exp.amount) + ' INR'}
                         </td>
                         <td onClick={() => handleExpenseToBePreviewed(exp)}>
                           {exp.paymentMadeBy}
@@ -667,37 +667,37 @@ export const ExpenseList = (props: ExpenseListProps) => {
                         <td onClick={() => handleExpenseToBePreviewed(exp)}>
                           <span
                             style={{
-                              verticalAlign: "middle",
-                              marginRight: "6px",
+                              verticalAlign: 'middle',
+                              marginRight: '6px',
                             }}
                           >
                             <CalenderIcon />
                           </span>
                           {exp.expenseDate
                             ? formatDate(exp.expenseDate as unknown as string)
-                            : "-"}
+                            : '-'}
                         </td>
                         <td onClick={() => handleExpenseToBePreviewed(exp)}>
                           <span
                             style={{
-                              verticalAlign: "middle",
-                              marginRight: "6px",
+                              verticalAlign: 'middle',
+                              marginRight: '6px',
                             }}
                           >
                             <CalenderIcon />
                           </span>
                           {exp.paymentSettled
                             ? formatDate(
-                                exp.paymentSettled as unknown as string,
+                                exp.paymentSettled as unknown as string
                               )
-                            : "-"}
+                            : '-'}
                         </td>
                         {user?.roles.some((role) =>
                           role.permissions.some(
                             (permission) =>
                               permission === EXPENSE_MODULE.UPDATE_EXPENSE ||
-                              permission === EXPENSE_MODULE.DELETE_EXPENSE,
-                          ),
+                              permission === EXPENSE_MODULE.DELETE_EXPENSE
+                          )
                         ) && (
                           <td>
                             <ExpenseAction
@@ -740,12 +740,12 @@ export const ExpenseList = (props: ExpenseListProps) => {
         </TableListContainer>
       </div>
       {isExpensePreviewModalOpen && (
-        <span style={{ cursor: "default" }}>
+        <span style={{ cursor: 'default' }}>
           <CenterModalMain
             heading={modeOfModal}
             modalClose={() => {
               handleIsExpensePreviewModalOpen();
-              handleSetModeOfModal("Expense Preview");
+              handleSetModeOfModal('Expense Preview');
             }}
             actualContentContainer={
               <AddExpenseForm

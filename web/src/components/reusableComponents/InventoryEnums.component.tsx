@@ -3,8 +3,8 @@ interface InventoryOptions {
 }
 
 export enum Availability {
-  YES = "Yes",
-  NO = "No",
+  YES = 'Yes',
+  NO = 'No',
 }
 
 export const inventoryOptions: InventoryOptions = {

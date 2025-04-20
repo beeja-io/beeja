@@ -1,5 +1,5 @@
 // src/components/PaginationStyles.js
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const PaginationContainer = styled.nav`
   display: flex;

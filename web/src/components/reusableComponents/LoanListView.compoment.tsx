@@ -1,28 +1,28 @@
-import { useTranslation } from "react-i18next";
+import { useTranslation } from 'react-i18next';
 import {
   PayrollMainContainer,
   StatusIndicator,
-} from "../../styles/LoanApplicationStyles.style";
-import ZeroEntriesFound from "./ZeroEntriesFound.compoment";
-import { Button } from "../../styles/CommonStyles.style";
+} from '../../styles/LoanApplicationStyles.style';
+import ZeroEntriesFound from './ZeroEntriesFound.compoment';
+import { Button } from '../../styles/CommonStyles.style';
 import {
   TableListContainer,
   TableList,
   TableHead,
   TableBodyRow,
-} from "../../styles/DocumentTabStyles.style";
-import { getAllLoans } from "../../service/axiosInstance";
-import { useContext, useEffect, useState } from "react";
-import { CalenderIcon } from "../../svgs/DocumentTabSvgs.svg";
-import { LoanAction } from "./LoanListAction";
-import { useUser } from "../../context/UserContext";
-import SpinAnimation from "../loaders/SprinAnimation.loader";
-import { ApplicationContext } from "../../context/ApplicationContext";
-import CenterModalMain from "./CenterModalMain.component";
-import LoanPreview from "../directComponents/LoanPreview.component";
-import { Loan } from "../../entities/LoanEntity";
-import { LOAN_MODULE } from "../../constants/PermissionConstants";
-import { hasPermission } from "../../utils/permissionCheck";
+} from '../../styles/DocumentTabStyles.style';
+import { getAllLoans } from '../../service/axiosInstance';
+import { useContext, useEffect, useState } from 'react';
+import { CalenderIcon } from '../../svgs/DocumentTabSvgs.svg';
+import { LoanAction } from './LoanListAction';
+import { useUser } from '../../context/UserContext';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import { ApplicationContext } from '../../context/ApplicationContext';
+import CenterModalMain from './CenterModalMain.component';
+import LoanPreview from '../directComponents/LoanPreview.component';
+import { Loan } from '../../entities/LoanEntity';
+import { LOAN_MODULE } from '../../constants/PermissionConstants';
+import { hasPermission } from '../../utils/permissionCheck';
 type LoanListViewProps = {
   handleIsApplyLoanScreen: () => void;
 };
@@ -46,7 +46,7 @@ const LoanListView = (props: LoanListViewProps) => {
           const sortedLoans = res.data.sort(
             (firstLoan: Loan, secondLoan: Loan) =>
               new Date(secondLoan.createdAt).getTime() -
-              new Date(firstLoan.createdAt).getTime(),
+              new Date(firstLoan.createdAt).getTime()
           );
           updateLoanList(sortedLoans);
         }
@@ -55,7 +55,7 @@ const LoanListView = (props: LoanListViewProps) => {
           const res = await getAllLoans(user.employeeId);
           const sortedLoans = res.data.sort(
             (a: Loan, b: Loan) =>
-              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
 
           updateLoanList(sortedLoans);
@@ -75,18 +75,18 @@ const LoanListView = (props: LoanListViewProps) => {
     fetchLoans();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const Actions = [{ title: "Approve" }, { title: "Reject" }];
+  const Actions = [{ title: 'Approve' }, { title: 'Reject' }];
   const formatDate = (dateString: string | number | Date) =>
-    new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
+    new Intl.DateTimeFormat('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
     }).format(new Date(dateString));
   const formatLoanType = (loanType: string): string =>
     loanType
-      .split("_")
+      .split('_')
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(" ");
+      .join(' ');
   const formatStatus = (status: string) => {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
   };
@@ -105,11 +105,11 @@ const LoanListView = (props: LoanListViewProps) => {
         <section>
           {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
             <span>
-              <h4>{t("LIST_OF_LOANS")}</h4>
+              <h4>{t('LIST_OF_LOANS')}</h4>
             </span>
           ) : (
             <span>
-              <h4>{t("MY_LOANS")}</h4>
+              <h4>{t('MY_LOANS')}</h4>
             </span>
           )}
           {user && hasPermission(user, LOAN_MODULE.CREATE_LOAN) && (
@@ -119,7 +119,7 @@ const LoanListView = (props: LoanListViewProps) => {
               height="40px"
               onClick={props.handleIsApplyLoanScreen}
             >
-              {t("REQUESTED_LOAN")}
+              {t('REQUESTED_LOAN')}
             </Button>
           )}
         </section>
@@ -132,22 +132,22 @@ const LoanListView = (props: LoanListViewProps) => {
           ) : (
             <TableList>
               <TableHead>
-                <tr style={{ textAlign: "left", borderRadius: "10px" }}>
-                  <th>{t("LOAN_NUMBER")}</th>
-                  <th>{t("LOAN_TYPE")}</th>
+                <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
+                  <th>{t('LOAN_NUMBER')}</th>
+                  <th>{t('LOAN_TYPE')}</th>
                   {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
                     <th>Employee ID</th>
                   ) : (
-                    ""
+                    ''
                   )}
 
-                  <th>{t("REQUESTED_DATE")}</th>
-                  <th>{t("LOAN_AMOUNT")}</th>
-                  <th className="statusHeader">{t("STATUS")}</th>
+                  <th>{t('REQUESTED_DATE')}</th>
+                  <th>{t('LOAN_AMOUNT')}</th>
+                  <th className="statusHeader">{t('STATUS')}</th>
                   {user && hasPermission(user, LOAN_MODULE.STATUS_CHANGE) ? (
-                    <th>{t("ACTION")}</th>
+                    <th>{t('ACTION')}</th>
                   ) : (
-                    ""
+                    ''
                   )}
                 </tr>
               </TableHead>
@@ -182,7 +182,7 @@ const LoanListView = (props: LoanListViewProps) => {
                           {loan.employeeId}
                         </td>
                       ) : (
-                        ""
+                        ''
                       )}
 
                       <td
@@ -193,8 +193,8 @@ const LoanListView = (props: LoanListViewProps) => {
                       >
                         <span
                           style={{
-                            verticalAlign: "middle",
-                            marginRight: "6px",
+                            verticalAlign: 'middle',
+                            marginRight: '6px',
                           }}
                         >
                           <CalenderIcon />
@@ -202,7 +202,7 @@ const LoanListView = (props: LoanListViewProps) => {
 
                         {loan.createdAt != null
                           ? formatDate(loan.createdAt)
-                          : "-"}
+                          : '-'}
                       </td>
                       <td
                         onClick={() => {
@@ -210,7 +210,7 @@ const LoanListView = (props: LoanListViewProps) => {
                           handleIsLoanPreviewModalOpen();
                         }}
                       >
-                        {loan.amount === 0 ? "-" : loan.amount + " INR"}
+                        {loan.amount === 0 ? '-' : loan.amount + ' INR'}
                       </td>
                       <td
                         onClick={() => {
@@ -232,7 +232,7 @@ const LoanListView = (props: LoanListViewProps) => {
                           />
                         </td>
                       ) : (
-                        ""
+                        ''
                       )}
                     </TableBodyRow>
                   ))}

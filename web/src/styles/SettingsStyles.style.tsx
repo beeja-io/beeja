@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 export const SettingsMainContainer = styled.section`
   padding: 30px;
 `;
@@ -61,7 +61,7 @@ export const NavList = styled.div`
     position: relative;
   }
   .dropdown-menu:after {
-    content: "";
+    content: '';
     position: absolute;
     left: -20px;
     top: 0;
@@ -76,7 +76,7 @@ export const NavList = styled.div`
     align-items: center;
   }
   .dropdown-item-thread::before {
-    content: "";
+    content: '';
     position: absolute;
     left: -20px;
     transform: translateY(-10%);
@@ -117,7 +117,7 @@ export const NavList = styled.div`
     position: relative;
   }
   .dropdown-menu:after {
-    content: "";
+    content: '';
     position: absolute;
     left: -20px;
     top: 0;
@@ -132,7 +132,7 @@ export const NavList = styled.div`
     align-items: center;
   }
   .dropdown-item-thread::before {
-    content: "";
+    content: '';
     position: absolute;
     left: -20px;
     transform: translateY(-10%);
@@ -233,7 +233,7 @@ export const InputContainer = styled.div<{ isValueInvalid?: boolean }>`
     flex: 2; /* Adjusts to share space */
     padding: 10px;
     font-size: 14px;
-    border: 1px solid ${(props) => (props.isValueInvalid ? "red" : "#ccc")};
+    border: 1px solid ${(props) => (props.isValueInvalid ? 'red' : '#ccc')};
     border-radius: 4px;
     box-sizing: border-box;
 
@@ -270,7 +270,7 @@ export const ButtonContainer = styled.div`
     border: 1px solid ${(props) => props.theme.colors.blackColors.black4};
     background-color: #0056b3;
     color: ${(props) =>
-      props.theme.colors.white ? props.theme.colors.white : "#ffffff"};
+      props.theme.colors.white ? props.theme.colors.white : '#ffffff'};
     padding: 10px 20px;
     border-radius: 8px;
     cursor: pointer;

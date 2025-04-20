@@ -1,7 +1,7 @@
-import { SetStateAction, useState } from "react";
-import styled from "styled-components";
-import { useTranslation } from "react-i18next";
-import { ChevronleftSVG, ChevronRightSVG } from "../../svgs/CommonSvgs.svs";
+import { SetStateAction, useState } from 'react';
+import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
+import { ChevronleftSVG, ChevronRightSVG } from '../../svgs/CommonSvgs.svs';
 import {
   Weekday,
   CalendarContainer,
@@ -13,7 +13,7 @@ import {
   MonthName,
   WeekdaysContainer,
   CalendarGrid,
-} from "../../styles/DatePickerStyles.style";
+} from '../../styles/DatePickerStyles.style';
 
 interface DayCellProps {
   isToday?: boolean;
@@ -27,8 +27,8 @@ const DayCell = styled.div<DayCellProps>`
   text-align: center;
   padding: 8px;
   cursor: pointer;
-  color: ${(props) => (props.isSelected ? "#fff" : "#000")};
-  background: ${(props) => (props.isSelected ? "red" : "transparent")};
+  color: ${(props) => (props.isSelected ? '#fff' : '#000')};
+  background: ${(props) => (props.isSelected ? 'red' : 'transparent')};
 
   &:hover {
     border-radius: 10px;
@@ -60,7 +60,7 @@ interface InlineCalendarProps {
     month: number,
     year: number,
     isSecondMonth: boolean,
-    isFrom: boolean,
+    isFrom: boolean
   ) => void;
   defaultStartDate?: number | null;
   defaultEndDate?: number | null;
@@ -72,11 +72,11 @@ export const InlineCalendar = ({
   defaultEndDate,
 }: InlineCalendarProps) => {
   const [firstMonthYear, setFirstMonthYear] = useState(
-    new Date().getFullYear(),
+    new Date().getFullYear()
   );
   const [firstMonth, setFirstMonth] = useState(new Date().getMonth());
   const [secondMonthYear, setSecondMonthYear] = useState(
-    new Date().getFullYear(),
+    new Date().getFullYear()
   );
   const [secondMonth, setSecondMonth] = useState(new Date().getMonth());
   const [currentDay] = useState(new Date().getDate());
@@ -90,7 +90,7 @@ export const InlineCalendar = ({
   const [secondMonthSelectedDate, setSecondMonthSelectedDate] =
     useState<number>();
   const renderWeekdays = () => {
-    const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]; // Start with Monday
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; // Start with Monday
     return weekdays.map((day) => <Weekday key={day}>{day}</Weekday>);
   };
   const isDateInRange = (
@@ -98,7 +98,7 @@ export const InlineCalendar = ({
     month: number,
     year: number,
     selectedFromDate: Date | null,
-    selectedToDate: Date | null,
+    selectedToDate: Date | null
   ): boolean => {
     if (!selectedFromDate || !selectedToDate) {
       return false;
@@ -116,8 +116,8 @@ export const InlineCalendar = ({
     // Old month Dates
     const createDayCell = (dayNumber: number, isOldDay: boolean) => (
       <DayCell
-        style={{ color: "#A0AEC0", cursor: "not-allowed" }}
-        key={`${isOldDay ? "prev" : "current"}-${dayNumber}`}
+        style={{ color: '#A0AEC0', cursor: 'not-allowed' }}
+        key={`${isOldDay ? 'prev' : 'current'}-${dayNumber}`}
         isOldDay={isOldDay}
       >
         {dayNumber}
@@ -125,7 +125,7 @@ export const InlineCalendar = ({
     );
 
     const blanks = Array.from({ length: daysFromPrevMonth }, (_, i) =>
-      createDayCell(daysInMonth - daysFromPrevMonth + i + 1, true),
+      createDayCell(daysInMonth - daysFromPrevMonth + i + 1, true)
     );
 
     const days = Array.from({ length: daysInMonth }, (_, i) => {
@@ -137,7 +137,7 @@ export const InlineCalendar = ({
             month,
             year,
             selectedSecondMonthFromDate,
-            selectedSecondMonthToDate,
+            selectedSecondMonthToDate
           )) ||
         (!isSecondMonth &&
           isDateInRange(
@@ -145,7 +145,7 @@ export const InlineCalendar = ({
             month,
             year,
             selectedFirstMonthFromDate,
-            selectedFirstMonthToDate,
+            selectedFirstMonthToDate
           ));
       const isCurrentMonthOldDay = i < firstDayOfMonth && !isSelected;
 
@@ -154,8 +154,8 @@ export const InlineCalendar = ({
           className={
             firstMonthSelectedDate === dayNumber ||
             defaultStartDate === dayNumber
-              ? "selectedDate"
-              : ""
+              ? 'selectedDate'
+              : ''
           }
           key={dayNumber}
           isToday={dayNumber === currentDay}
@@ -168,7 +168,7 @@ export const InlineCalendar = ({
               month,
               year,
               isSecondMonth,
-              isSecondMonth ? false : true,
+              isSecondMonth ? false : true
             );
             setFirstMonthSelectedDate(dayNumber);
           }}
@@ -184,7 +184,7 @@ export const InlineCalendar = ({
   const renderSecondMonthDays = (
     year: number,
     month: number,
-    isSecondMonth: boolean,
+    isSecondMonth: boolean
   ) => {
     const firstDayOfMonth = new Date(year, month, 1).getDay(); // 0-indexed
     const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -193,8 +193,8 @@ export const InlineCalendar = ({
     // Old month Dates
     const createDayCell = (dayNumber: number, isOldDay: boolean) => (
       <DayCell
-        style={{ color: "#A0AEC0", cursor: "not-allowed" }}
-        key={`${isOldDay ? "prev" : "current"}-${dayNumber}`}
+        style={{ color: '#A0AEC0', cursor: 'not-allowed' }}
+        key={`${isOldDay ? 'prev' : 'current'}-${dayNumber}`}
         isOldDay={isOldDay}
       >
         {dayNumber}
@@ -202,7 +202,7 @@ export const InlineCalendar = ({
     );
 
     const blanks = Array.from({ length: daysFromPrevMonth }, (_, i) =>
-      createDayCell(daysInMonth - daysFromPrevMonth + i + 1, true),
+      createDayCell(daysInMonth - daysFromPrevMonth + i + 1, true)
     );
 
     const days = Array.from({ length: daysInMonth }, (_, i) => {
@@ -214,7 +214,7 @@ export const InlineCalendar = ({
             month,
             year,
             selectedSecondMonthFromDate,
-            selectedSecondMonthToDate,
+            selectedSecondMonthToDate
           )) ||
         (!isSecondMonth &&
           isDateInRange(
@@ -222,7 +222,7 @@ export const InlineCalendar = ({
             month,
             year,
             selectedFirstMonthFromDate,
-            selectedFirstMonthToDate,
+            selectedFirstMonthToDate
           ));
       const isCurrentMonthOldDay = i < firstDayOfMonth && !isSelected;
 
@@ -231,8 +231,8 @@ export const InlineCalendar = ({
           className={
             secondMonthSelectedDate === dayNumber ||
             defaultEndDate === dayNumber
-              ? "selectedDate"
-              : ""
+              ? 'selectedDate'
+              : ''
           }
           key={dayNumber}
           isToday={dayNumber === currentDay}
@@ -245,7 +245,7 @@ export const InlineCalendar = ({
               month,
               year,
               isSecondMonth,
-              isSecondMonth ? false : true,
+              isSecondMonth ? false : true
             );
             setSecondMonthSelectedDate(dayNumber);
           }}
@@ -276,17 +276,17 @@ export const InlineCalendar = ({
       (arg0: (prevYear: any) => any): void;
     },
     currentMonth: number,
-    isIncrement: boolean,
+    isIncrement: boolean
   ) => {
     setMonth((prevMonth) =>
-      isIncrement ? (prevMonth + 1) % 12 : prevMonth === 0 ? 11 : prevMonth - 1,
+      isIncrement ? (prevMonth + 1) % 12 : prevMonth === 0 ? 11 : prevMonth - 1
     );
     setYear((prevYear) =>
       currentMonth === (isIncrement ? 11 : 0)
         ? isIncrement
           ? prevYear + 1
           : prevYear - 1
-        : prevYear,
+        : prevYear
     );
   };
 
@@ -304,7 +304,7 @@ export const InlineCalendar = ({
       (value: SetStateAction<number>): void;
     },
     month: number,
-    isIncrement: boolean,
+    isIncrement: boolean
   ) => {
     return () => handleMonthChange(setMonth, setYear, month, isIncrement);
   };
@@ -313,30 +313,30 @@ export const InlineCalendar = ({
     setFirstMonth,
     setFirstMonthYear,
     firstMonth,
-    false,
+    false
   );
   const handleNextFirstMonth = createMonthHandlers(
     setFirstMonth,
     setFirstMonthYear,
     firstMonth,
-    true,
+    true
   );
   const handlePrevSecondMonth = createMonthHandlers(
     setSecondMonth,
     setSecondMonthYear,
     secondMonth,
-    false,
+    false
   );
   const handleNextSecondMonth = createMonthHandlers(
     setSecondMonth,
     setSecondMonthYear,
     secondMonth,
-    true,
+    true
   );
   return (
     <CalendarContainer>
       <CalendarHeader>
-        {t("SET_DATE")}
+        {t('SET_DATE')}
         <HeaderLine />
       </CalendarHeader>
 
@@ -348,10 +348,10 @@ export const InlineCalendar = ({
             </ArrowButton>
             <MonthName>
               {`${new Date(firstMonthYear, firstMonth, 1).toLocaleDateString(
-                "en-US",
+                'en-US',
                 {
-                  month: "long",
-                },
+                  month: 'long',
+                }
               )} ${firstMonthYear}`}
             </MonthName>
             <ArrowButton onClick={handleNextFirstMonth}>
@@ -371,10 +371,10 @@ export const InlineCalendar = ({
             </ArrowButton>
             <MonthName>
               {`${new Date(secondMonthYear, secondMonth, 1).toLocaleDateString(
-                "en-US",
+                'en-US',
                 {
-                  month: "long",
-                },
+                  month: 'long',
+                }
               )} ${secondMonthYear}`}
             </MonthName>
             <ArrowButton onClick={handleNextSecondMonth}>

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
-import { LoggedInUserEntity } from "../entities/LoggedInUserEntity";
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { LoggedInUserEntity } from '../entities/LoggedInUserEntity';
 
 type UserContextType = {
   user: LoggedInUserEntity | null;

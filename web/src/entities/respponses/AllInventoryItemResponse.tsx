@@ -1,4 +1,4 @@
-import { DeviceDetails } from "../InventoryEntity";
+import { DeviceDetails } from '../InventoryEntity';
 export interface AllInventoryResponse {
   inventory: DeviceDetails[];
   metadata: {

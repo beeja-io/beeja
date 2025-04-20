@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 export const ProfileHeading = styled.div`
   height: 28px;
   font-size: 20px;
@@ -167,8 +167,8 @@ export const Logo = styled.div<{ isEditModeOn: boolean }>`
   }
 
   .uploadIcon {
-    display: ${(props) => (props.isEditModeOn ? "block" : "none")};
-    cursor: ${(props) => (props.isEditModeOn ? "pointer" : "default")};
+    display: ${(props) => (props.isEditModeOn ? 'block' : 'none')};
+    cursor: ${(props) => (props.isEditModeOn ? 'pointer' : 'default')};
     margin-left: 40px;
   }
 `;
@@ -181,7 +181,7 @@ export const FileUploadSection = styled.div<{ isEditModeOn: boolean }>`
   padding: 20px;
   border: 1.5px dashed ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 10px;
-  cursor: ${(props) => (props.isEditModeOn ? "pointer" : "default")};
+  cursor: ${(props) => (props.isEditModeOn ? 'pointer' : 'default')};
   span {
     padding-left: 10px;
     padding-right: 5px;
@@ -190,7 +190,7 @@ export const FileUploadSection = styled.div<{ isEditModeOn: boolean }>`
     font-weight: 400;
   }
 
-  input[type="file"] {
+  input[type='file'] {
     position: absolute;
     left: 10px;
     top: 10px;

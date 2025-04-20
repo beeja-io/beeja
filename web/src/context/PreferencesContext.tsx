@@ -1,12 +1,12 @@
-import React, { ReactNode, createContext, useState } from "react";
-import { IPreferences } from "../entities/OrganizationEntity";
+import React, { ReactNode, createContext, useState } from 'react';
+import { IPreferences } from '../entities/OrganizationEntity';
 
 type PreferencesContextType = {
   preferences: IPreferences | null;
   setPreferences: (preferences: IPreferences | null) => void;
 };
 const PreferencesContext = createContext<PreferencesContextType | undefined>(
-  undefined,
+  undefined
 );
 
 export const PreferencesProvider: React.FC<{ children: ReactNode }> = ({

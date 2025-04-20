@@ -1,17 +1,17 @@
 import {
   InputLabelContainer,
   TextInput,
-} from "../../styles/DocumentTabStyles.style";
-import { DeviceDetails } from "../../entities/InventoryEntity";
-import { ExpenseAddFormMainContainer } from "../../styles/ExpenseManagementStyles.style";
-import { Button } from "../../styles/CommonStyles.style";
-import { useUser } from "../../context/UserContext";
-import { INVENTORY_MODULE } from "../../constants/PermissionConstants";
-import { removeUnderScore } from "../../utils/stringUtils";
-import { formatDate } from "../../utils/dateFormatter";
-import useKeyPress from "../../service/keyboardShortcuts/onKeyPress";
-import { hasPermission } from "../../utils/permissionCheck";
-import { useTranslation } from "react-i18next";
+} from '../../styles/DocumentTabStyles.style';
+import { DeviceDetails } from '../../entities/InventoryEntity';
+import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
+import { Button } from '../../styles/CommonStyles.style';
+import { useUser } from '../../context/UserContext';
+import { INVENTORY_MODULE } from '../../constants/PermissionConstants';
+import { removeUnderScore } from '../../utils/stringUtils';
+import { formatDate } from '../../utils/dateFormatter';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import { hasPermission } from '../../utils/permissionCheck';
+import { useTranslation } from 'react-i18next';
 type PreviewInventoryFormProps = {
   formData: DeviceDetails;
   handleClose: () => void;
@@ -37,7 +37,7 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
       <div className="formInputs">
         <div>
           <InputLabelContainer>
-            <label>{t("DEVICE_NUMBER")}</label>
+            <label>{t('DEVICE_NUMBER')}</label>
             <TextInput
               type="text"
               name="deviceNumber"
@@ -46,9 +46,9 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
               readOnly
             />
           </InputLabelContainer>
-          {props.formData.device === "Accessories" && (
+          {props.formData.device === 'Accessories' && (
             <InputLabelContainer>
-              <label>{t("ACCESSORY_TYPE")}</label>
+              <label>{t('ACCESSORY_TYPE')}</label>
               <TextInput
                 type="text"
                 name="accessoryType"
@@ -56,14 +56,14 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
                 value={
                   props.formData.accessoryType
                     ? removeUnderScore(props.formData.accessoryType)
-                    : ""
+                    : ''
                 }
                 readOnly
               />
             </InputLabelContainer>
           )}
           <InputLabelContainer>
-            <label>{t("TYPE")}</label>
+            <label>{t('TYPE')}</label>
             <TextInput
               type="text"
               name="type"
@@ -73,7 +73,7 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
             />
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t("SPECIFICATIONS")}</label>
+            <label>{t('SPECIFICATIONS')}</label>
             <TextInput
               type="text"
               name="specifications"
@@ -83,7 +83,7 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
             />
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t("AVAILABILITY")}</label>
+            <label>{t('AVAILABILITY')}</label>
             <TextInput
               type="text"
               name="availability"
@@ -93,23 +93,23 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
             />
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t("DATE_OF_PURCHASE")}</label>
+            <label>{t('DATE_OF_PURCHASE')}</label>
             <TextInput
               type="text"
               name="dateOfPurchase"
               value={
                 props.formData.dateOfPurchase
                   ? formatDate(
-                      new Date(props.formData.dateOfPurchase).toDateString(),
+                      new Date(props.formData.dateOfPurchase).toDateString()
                     )
-                  : ""
+                  : ''
               }
               className="largeInput grayText"
               readOnly
             />
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t("PRICE")}</label>
+            <label>{t('PRICE')}</label>
             <TextInput
               type="number"
               name="price"
@@ -118,9 +118,9 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
               readOnly
             />
           </InputLabelContainer>
-          {props.formData.device !== "Accessories" && (
+          {props.formData.device !== 'Accessories' && (
             <InputLabelContainer>
-              <label>{t("COMMENTS")}</label>
+              <label>{t('COMMENTS')}</label>
               <TextInput
                 type="text"
                 name="comments"
@@ -133,7 +133,7 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
         </div>
         <div>
           <InputLabelContainer>
-            <label>{t("DEVICE")}</label>
+            <label>{t('DEVICE')}</label>
             <TextInput
               type="text"
               name="device"
@@ -143,7 +143,7 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
             />
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t("PROVIDER")}</label>
+            <label>{t('PROVIDER')}</label>
             <TextInput
               type="text"
               name="provider"
@@ -153,7 +153,7 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
             />
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t("MODEL")}</label>
+            <label>{t('MODEL')}</label>
             <TextInput
               type="text"
               name="model"
@@ -164,41 +164,41 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
           </InputLabelContainer>
           <InputLabelContainer>
             <label>
-              {t("OS")}
-              {["DESKTOP", "MUSIC_SYSTEM", "PRINTER", "ACCESSORIES"].includes(
-                props.formData.device,
+              {t('OS')}
+              {['DESKTOP', 'MUSIC_SYSTEM', 'PRINTER', 'ACCESSORIES'].includes(
+                props.formData.device
               ) && null}
             </label>
             <TextInput
               type="text"
               name="os"
               className="largeInput grayText"
-              value={props.formData.os ? props.formData.os : "-"}
+              value={props.formData.os ? props.formData.os : '-'}
               readOnly
               disabled={
-                props.formData.device === "Accessories" ||
-                props.formData.device.toUpperCase() === "MUSIC SYSTEM"
+                props.formData.device === 'Accessories' ||
+                props.formData.device.toUpperCase() === 'MUSIC SYSTEM'
               }
             />
           </InputLabelContainer>
           <InputLabelContainer>
             <label>
-              {t("RAM")}
-              {["DESKTOP", "MUSIC_SYSTEM", "PRINTER", "ACCESSORIES"].includes(
-                props.formData.device,
+              {t('RAM')}
+              {['DESKTOP', 'MUSIC_SYSTEM', 'PRINTER', 'ACCESSORIES'].includes(
+                props.formData.device
               ) && null}
             </label>
             <TextInput
               type="text"
               name="ram"
               className="largeInput grayText"
-              value={props.formData.ram ? props.formData.ram : "-"}
+              value={props.formData.ram ? props.formData.ram : '-'}
               readOnly
-              disabled={props.formData.device === "Accessories"}
+              disabled={props.formData.device === 'Accessories'}
             />
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t("PRODUCT_ID_SERIAL_NUMBER")}</label>
+            <label>{t('PRODUCT_ID_SERIAL_NUMBER')}</label>
             <TextInput
               type="text"
               name="productId"
@@ -207,9 +207,9 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
               readOnly
             />
           </InputLabelContainer>
-          {props.formData.device === "Accessories" && (
+          {props.formData.device === 'Accessories' && (
             <InputLabelContainer>
-              <label>{t("COMMENTS")}</label>
+              <label>{t('COMMENTS')}</label>
               <TextInput
                 type="text"
                 name="comments"
@@ -223,7 +223,7 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
       </div>
       <div className="formButtons">
         <Button onClick={props.handleClose} fontSize="16px" width="145px">
-          {t("CANCEL")}
+          {t('CANCEL')}
         </Button>
         {hasEditPermission && (
           <Button
@@ -232,7 +232,7 @@ const PreviewInventoryForm = (props: PreviewInventoryFormProps) => {
             width="145px"
             className="submit"
           >
-            {t("EDIT")}
+            {t('EDIT')}
           </Button>
         )}
       </div>

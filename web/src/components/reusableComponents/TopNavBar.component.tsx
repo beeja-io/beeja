@@ -1,26 +1,26 @@
-import { useTranslation } from "react-i18next";
-import { TopNavBar, TopNavRightIcons } from "../../styles/NavBarStyles.style";
+import { useTranslation } from 'react-i18next';
+import { TopNavBar, TopNavRightIcons } from '../../styles/NavBarStyles.style';
 import {
   NotificationSVG,
   LogoutSVG,
   LanguageIcon,
-} from "../../svgs/NavBarSvgs.svg";
+} from '../../svgs/NavBarSvgs.svg';
 import {
   LogoutUrl,
   OriginURL,
   ProdOriginURL,
-} from "../../constants/UrlConstants";
-import CenterModal from "./CenterModal.component";
-import { useEffect, useState } from "react";
-import { useProfileImage } from "../../context/ProfileImageContext";
-import { LogoutModalSVG } from "../../svgs/CommonSvgs.svs";
-import { useNavigate } from "react-router-dom";
-import { Hamburger } from "../../svgs/MobileMenuSvgs.svgs";
-import MobileNavbar from "../directComponents/MobileNavbar.component";
-import useKeyPress from "../../service/keyboardShortcuts/onKeyPress";
-import { Monogram } from "../../styles/EmployeeListStyles.style";
-import { useUser } from "../../context/UserContext";
-import { EmployeeEntity } from "../../entities/EmployeeEntity";
+} from '../../constants/UrlConstants';
+import CenterModal from './CenterModal.component';
+import { useEffect, useState } from 'react';
+import { useProfileImage } from '../../context/ProfileImageContext';
+import { LogoutModalSVG } from '../../svgs/CommonSvgs.svs';
+import { useNavigate } from 'react-router-dom';
+import { Hamburger } from '../../svgs/MobileMenuSvgs.svgs';
+import MobileNavbar from '../directComponents/MobileNavbar.component';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import { Monogram } from '../../styles/EmployeeListStyles.style';
+import { useUser } from '../../context/UserContext';
+import { EmployeeEntity } from '../../entities/EmployeeEntity';
 type topNavBarProps = {
   employee?: EmployeeEntity | undefined;
 };
@@ -29,16 +29,16 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
   const { i18n } = useTranslation();
 
   const languages = [
-    { code: "en", label: "English" },
-    { code: "de", label: "Deutsch" },
+    { code: 'en', label: 'English' },
+    { code: 'de', label: 'Deutsch' },
   ];
 
   const handleChangeLanguage = (
-    event: React.ChangeEvent<HTMLSelectElement>,
+    event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     const selectedLanguage = event.target.value;
     i18n.changeLanguage(selectedLanguage);
-    localStorage.setItem("i18nextLng", selectedLanguage);
+    localStorage.setItem('i18nextLng', selectedLanguage);
   };
   const handleLogout = async () => {
     /*If application is running
@@ -64,7 +64,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
   };
   const { profileImageUrl } = useProfileImage();
   const [currentProfileImage, setCurrentProfileImage] = useState<string | null>(
-    null,
+    null
   );
 
   const { user } = useUser();
@@ -74,7 +74,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
     if (profileImageUrl && isOwnProfile) {
       setCurrentProfileImage(profileImageUrl);
     }
-    const storedImageUrl = localStorage.getItem("profileImageUrl");
+    const storedImageUrl = localStorage.getItem('profileImageUrl');
     if (storedImageUrl) setCurrentProfileImage(storedImageUrl);
   }, [profileImageUrl]);
   /* eslint-enable react-hooks/exhaustive-deps */
@@ -102,8 +102,8 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
           </span>
         </SearchBox>*/}
         <span className="topNavLinks">
-          <span>{t("DOCUMENTS")}</span>
-          <span>{t("PAYSLIPS")}</span>
+          <span>{t('DOCUMENTS')}</span>
+          <span>{t('PAYSLIPS')}</span>
         </span>
       </span>
       <TopNavRightIcons>
@@ -120,17 +120,17 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
         <span>
           <NotificationSVG />
         </span>
-        <span onClick={() => navigate("/profile/me")}>
+        <span onClick={() => navigate('/profile/me')}>
           {currentProfileImage ? (
             <img
               src={currentProfileImage}
-              alt={t("PROFILE")}
+              alt={t('PROFILE')}
               key={currentProfileImage}
-              style={{ borderRadius: "50%", width: "40px", height: "40px" }}
+              style={{ borderRadius: '50%', width: '40px', height: '40px' }}
             />
           ) : (
             <Monogram
-              title={t("ABOUT_ME")}
+              title={t('ABOUT_ME')}
               className={`${user && user.firstName.charAt(0).toUpperCase()}`}
             >
               {user && user.firstName.charAt(0).toUpperCase()}
@@ -138,7 +138,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
             </Monogram>
           )}
         </span>
-        <span onClick={handleIsLogoutModalOpen} title={t("LOGOUT")}>
+        <span onClick={handleIsLogoutModalOpen} title={t('LOGOUT')}>
           <LogoutSVG />
         </span>
       </TopNavRightIcons>

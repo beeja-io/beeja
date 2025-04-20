@@ -1,5 +1,5 @@
-import React, { ReactNode, createContext, useState } from "react";
-import { Expense } from "../entities/ExpenseEntity";
+import React, { ReactNode, createContext, useState } from 'react';
+import { Expense } from '../entities/ExpenseEntity';
 
 interface ExpenseListContextType {
   expenseList: Expense[] | null | undefined;
@@ -15,7 +15,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [expenseList, setExpenseList] = useState<Expense[] | null | undefined>(
-    null,
+    null
   );
 
   const updateExpenseList = (expenseList: Expense[] | null | undefined) => {

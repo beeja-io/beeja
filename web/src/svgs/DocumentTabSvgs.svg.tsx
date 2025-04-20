@@ -195,7 +195,7 @@ export const DownloadIcon = (props: any) => {
     >
       <path
         d="M12 17H21M12 11H18M12 5H15M3 14.625L4.50518 16.3183C5.30076 17.2134 6.69924 17.2134 7.49482 16.3183L9 14.625M6 17V5"
-        stroke={props.stroke ? "#005792" : "#28303F"}
+        stroke={props.stroke ? '#005792' : '#28303F'}
         stroke-width="1.5"
         stroke-linecap="round"
       />

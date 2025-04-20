@@ -1,20 +1,20 @@
-import React, { useRef, useState } from "react";
-import { ActionIcon } from "../../svgs/ExpenseListSvgs.svg";
+import React, { useRef, useState } from 'react';
+import { ActionIcon } from '../../svgs/ExpenseListSvgs.svg';
 /* eslint-disable */
 import {
   ActionContainer,
   ActionMenuContent,
   ActionMenuOption,
   ActionMenu,
-} from "../../styles/ExpenseListStyles.style";
-import { deleteExpense } from "../../service/axiosInstance";
-import SpinAnimation from "../loaders/SprinAnimation.loader";
-import ToastMessage from "./ToastMessage.component";
-import { Expense } from "../../entities/ExpenseEntity";
-import CenterModalMain from "./CenterModalMain.component";
-import AddExpenseForm from "../directComponents/AddExpenseForm.component";
-import CenterModal from "./CenterModal.component";
-import { OrganizationValues } from "../../entities/OrgValueEntity";
+} from '../../styles/ExpenseListStyles.style';
+import { deleteExpense } from '../../service/axiosInstance';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import ToastMessage from './ToastMessage.component';
+import { Expense } from '../../entities/ExpenseEntity';
+import CenterModalMain from './CenterModalMain.component';
+import AddExpenseForm from '../directComponents/AddExpenseForm.component';
+import CenterModal from './CenterModal.component';
+import { OrganizationValues } from '../../entities/OrgValueEntity';
 
 interface ActionProps {
   options: {
@@ -70,16 +70,16 @@ export const ExpenseAction: React.FC<ActionProps> = ({
       fetchExpenses();
     } catch (error) {
       setIsResponseLoading(false);
-      console.error("Error deleting expense:", error);
+      console.error('Error deleting expense:', error);
     }
   };
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
-    if (option == "Delete") {
+    if (option == 'Delete') {
       handleDeleteModal();
     }
-    if (option == "Edit") {
+    if (option == 'Edit') {
       handleIsEditModalOpen();
     }
     setIsOpen(false);
@@ -88,12 +88,12 @@ export const ExpenseAction: React.FC<ActionProps> = ({
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (!target.closest(".dropdown-container")) {
+    if (!target.closest('.dropdown-container')) {
       setIsOpen(false);
     }
   };
 
-  document.addEventListener("click", handleClickOutside);
+  document.addEventListener('click', handleClickOutside);
 
   const handleDocumentClick = (e: any) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
@@ -101,7 +101,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
     }
   };
 
-  window.addEventListener("click", handleDocumentClick);
+  window.addEventListener('click', handleDocumentClick);
 
   return (
     <>
@@ -114,7 +114,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
             {options.map((option, index) => (
               <ActionMenuOption
                 key={index}
-                className={selectedOption === option.title ? "selected" : ""}
+                className={selectedOption === option.title ? 'selected' : ''}
                 onClick={() => handleOptionClick(option.title)}
               >
                 {option.svg}
@@ -125,7 +125,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
         )}
       </ActionContainer>
       {confirmDeleteModal && (
-        <span style={{ cursor: "default" }}>
+        <span style={{ cursor: 'default' }}>
           <CenterModal
             handleModalClose={handleDeleteModal}
             handleModalSubmit={() => deleteSelectedExpense(currentExpense.id)}
@@ -144,7 +144,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
         />
       )}
       {isEditModalOpen && (
-        <span style={{ cursor: "default" }}>
+        <span style={{ cursor: 'default' }}>
           <CenterModalMain
             heading="Edit Expense"
             modalClose={handleIsEditModalOpen}

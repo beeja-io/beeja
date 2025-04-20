@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 import {
   DisplayFilters,
   ExpenseHeading,
@@ -9,28 +9,28 @@ import {
   TableHead,
   TableList,
   TableListContainer,
-} from "../styles/ExpenseListStyles.style";
-import ZeroEntriesFound from "../components/reusableComponents/ZeroEntriesFound.compoment";
-import { CalenderIcon, DeleteIcon } from "../svgs/DocumentTabSvgs.svg";
-import { SearchBox, SearchInput } from "../styles/NavBarStyles.style";
-import { SearchSVG } from "../svgs/NavBarSvgs.svg";
-import { InventoryListAction } from "../components/reusableComponents/InventoryListAction.component";
-import { DeviceDetails } from "../entities/InventoryEntity";
-import PreviewInventoryForm from "../components/directComponents/PreviewInventory.component";
-import EditInventoryForm from "../components/directComponents/EditInventory.component";
-import CenterModalMain from "../components/reusableComponents/CenterModalMain.component";
-import ToastMessage from "../components/reusableComponents/ToastMessage.component";
-import { EditIcon } from "../svgs/ExpenseListSvgs.svg";
-import { useUser } from "../context/UserContext";
-import { INVENTORY_MODULE } from "../constants/PermissionConstants";
-import { capitalizeFirstLetter, removeUnderScore } from "../utils/stringUtils";
-import { formatDate } from "../utils/dateFormatter";
-import { hasPermission } from "../utils/permissionCheck";
-import { keyPressFind } from "../service/keyboardShortcuts/shortcutValidator";
-import Pagination from "../components/directComponents/Pagination.component";
-import { inventoryOptions } from "../components/reusableComponents/InventoryEnums.component";
-import { useTranslation } from "react-i18next";
-import { OrganizationValues } from "../entities/OrgValueEntity";
+} from '../styles/ExpenseListStyles.style';
+import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
+import { CalenderIcon, DeleteIcon } from '../svgs/DocumentTabSvgs.svg';
+import { SearchBox, SearchInput } from '../styles/NavBarStyles.style';
+import { SearchSVG } from '../svgs/NavBarSvgs.svg';
+import { InventoryListAction } from '../components/reusableComponents/InventoryListAction.component';
+import { DeviceDetails } from '../entities/InventoryEntity';
+import PreviewInventoryForm from '../components/directComponents/PreviewInventory.component';
+import EditInventoryForm from '../components/directComponents/EditInventory.component';
+import CenterModalMain from '../components/reusableComponents/CenterModalMain.component';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
+import { EditIcon } from '../svgs/ExpenseListSvgs.svg';
+import { useUser } from '../context/UserContext';
+import { INVENTORY_MODULE } from '../constants/PermissionConstants';
+import { capitalizeFirstLetter, removeUnderScore } from '../utils/stringUtils';
+import { formatDate } from '../utils/dateFormatter';
+import { hasPermission } from '../utils/permissionCheck';
+import { keyPressFind } from '../service/keyboardShortcuts/shortcutValidator';
+import Pagination from '../components/directComponents/Pagination.component';
+import { inventoryOptions } from '../components/reusableComponents/InventoryEnums.component';
+import { useTranslation } from 'react-i18next';
+import { OrganizationValues } from '../entities/OrgValueEntity';
 
 interface Inventory extends DeviceDetails {
   deviceNumber: string;
@@ -83,12 +83,12 @@ const InventoryList = ({
 }: Props) => {
   const { user } = useUser();
   const Actions = [
-    { title: "Edit", svg: <EditIcon /> },
-    { title: "Delete", svg: <DeleteIcon /> },
+    { title: 'Edit', svg: <EditIcon /> },
+    { title: 'Delete', svg: <DeleteIcon /> },
   ];
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedInventory, setSelectedInventory] = useState<Inventory | null>(
-    null,
+    null
   );
 
   const [isEditInventoryOpen, setIsEditInventoryOpen] = useState(false);
@@ -123,13 +123,13 @@ const InventoryList = ({
     <>
       <StyledDiv>
         <ExpenseHeading>
-          <ExpenseTitle>{t("INVENTORY_LIST")}</ExpenseTitle>
+          <ExpenseTitle>{t('INVENTORY_LIST')}</ExpenseTitle>
           <SearchBox className="search">
             <span className="span">
               <SearchSVG />
               <SearchInput
                 ref={searchInputRef}
-                placeholder={t("SEARCH_BY_SERIAL_NUMBER")}
+                placeholder={t('SEARCH_BY_SERIAL_NUMBER')}
               />
             </span>
           </SearchBox>
@@ -144,7 +144,7 @@ const InventoryList = ({
               currentPage;
             }}
           >
-            <option value="">Device</option>{" "}
+            <option value="">Device</option>{' '}
             {deviceTypes.values?.map((device) => (
               <option key={device.value} value={device.value}>
                 {capitalizeFirstLetter(device.value)}
@@ -160,7 +160,7 @@ const InventoryList = ({
               currentPage;
             }}
           >
-            <option value="availability">Availability</option>{" "}
+            <option value="availability">Availability</option>{' '}
             {inventoryOptions.availability.map((availability) => (
               <option key={availability} value={availability}>
                 {availability}
@@ -177,7 +177,7 @@ const InventoryList = ({
                 currentPage;
               }}
             >
-              <option value="">Provider</option>{" "}
+              <option value="">Provider</option>{' '}
               {inventoryProviders.values.map((provider) => (
                 <option key={provider.value} value={provider.value}>
                   {provider.value}
@@ -193,7 +193,7 @@ const InventoryList = ({
               <>
                 <span className="filterText">{selectedFiltersText()}</span>
                 <span
-                  onClick={() => clearFilters("clearAll")}
+                  onClick={() => clearFilters('clearAll')}
                   className="clearFilters"
                 >
                   Clear Filters
@@ -213,15 +213,15 @@ const InventoryList = ({
           ) : (
             <TableList>
               <TableHead>
-                <tr style={{ textAlign: "left", borderRadius: "10px" }}>
-                  <th>{t("DEVICE_NUMBER")}</th>
-                  <th>{t("DEVICE")}</th>
-                  <th>{t("PROVIDER")}</th>
-                  <th>{t("OS")}</th>
-                  <th>{t("RAM")}</th>
-                  <th>{t("DATE_OF_PURCHASE")}</th>
-                  <th>{t("AVAILABILITY")}</th>
-                  <th>{t("ACTION")}</th>
+                <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
+                  <th>{t('DEVICE_NUMBER')}</th>
+                  <th>{t('DEVICE')}</th>
+                  <th>{t('PROVIDER')}</th>
+                  <th>{t('OS')}</th>
+                  <th>{t('RAM')}</th>
+                  <th>{t('DATE_OF_PURCHASE')}</th>
+                  <th>{t('AVAILABILITY')}</th>
+                  <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
               <tbody>
@@ -251,31 +251,31 @@ const InventoryList = ({
                             {removeUnderScore(inventory.device)}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
-                            {inventory.provider ? inventory.provider : "-"}
+                            {inventory.provider ? inventory.provider : '-'}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
-                            {inventory.os ? inventory.os : "-"}
+                            {inventory.os ? inventory.os : '-'}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
-                            {inventory.ram ? inventory.ram : "-"}
+                            {inventory.ram ? inventory.ram : '-'}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
                             <span
                               style={{
-                                verticalAlign: "middle",
-                                marginRight: "6px",
+                                verticalAlign: 'middle',
+                                marginRight: '6px',
                               }}
                             >
                               <CalenderIcon />
                             </span>
                             {formatDate(inventory.dateOfPurchase.toString())
                               ? formatDate(inventory.dateOfPurchase.toString())
-                              : "-"}
+                              : '-'}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
                             {inventory.availability
                               ? inventory.availability
-                              : "-"}
+                              : '-'}
                           </td>
                           <td>
                             <InventoryListAction

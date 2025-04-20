@@ -1,23 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { months } from "./monthsConstants";
+import { months } from './monthsConstants';
 
 const currentMonth = new Date().getMonth();
 
 export function formatDate(inputDateString: string): string {
   const originalDate = new Date(inputDateString);
   const options: Intl.DateTimeFormatOptions = {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
   };
-  return new Intl.DateTimeFormat("en-US", options).format(originalDate);
+  return new Intl.DateTimeFormat('en-US', options).format(originalDate);
 }
 
 export const getCurrentDate = () => {
   const now = new Date();
   const year = now.getFullYear();
-  const month = (now.getMonth() + 1).toString().padStart(2, "0");
-  const day = now.getDate().toString().padStart(2, "0");
+  const month = (now.getMonth() + 1).toString().padStart(2, '0');
+  const day = now.getDate().toString().padStart(2, '0');
   return `${year}-${month}-${day}`;
 };
 
@@ -36,19 +36,19 @@ for (let i = 0; i < 3; i++) {
 export function formatDateYYYYMMDD(dateString: string): string {
   const date = new Date(dateString);
   const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
 
   return `${year}-${month}-${day}`;
 }
 export function formatDateDDMMYYYY(dateString: string): string {
   const date = new Date(dateString);
   if (!dateString) {
-    return "dd-mm-yyyy";
+    return 'dd-mm-yyyy';
   }
   const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
 
   return `${day}-${month}-${year}`;
 }
@@ -72,11 +72,11 @@ export function monthsDiff(startDate: Date, endDate: Date): number {
 
 export function formatDateDDMMYYYYHHMM(dateString: string): string {
   const date = new Date(dateString);
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
   const year = date.getFullYear();
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, '0');
+  const minutes = date.getMinutes().toString().padStart(2, '0');
 
   return `${day}-${month}-${year} ${hours}:${minutes}`;
 }

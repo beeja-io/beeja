@@ -24,11 +24,11 @@ export interface IApplicant {
   positionAppliedFor: string;
   resumeId: string;
   status:
-    | "APPLIED"
-    | "SHORTLISTED"
-    | "INTERVIEW_SCHEDULED"
-    | "HIRED"
-    | "REJECTED";
+    | 'APPLIED'
+    | 'SHORTLISTED'
+    | 'INTERVIEW_SCHEDULED'
+    | 'HIRED'
+    | 'REJECTED';
   organizationId: string;
   assignedInterviewers: IAssignedInterviewer[];
   notes: string[];
