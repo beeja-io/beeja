@@ -3,7 +3,7 @@ import tseslint from 'typescript-eslint';
 import pluginReactHooks from 'eslint-plugin-react-hooks';
 import pluginReactRefresh from 'eslint-plugin-react-refresh';
 
-const tsconfigPath = './tsconfig.json';
+const tsconfigPath = './tsconfig.eslint.json';
 
 export default [
   {
