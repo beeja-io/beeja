@@ -62,11 +62,16 @@ public class DefaultFileStorageService implements FileStorageService {
 
     // Generate final file path with extension
     String filePath = generateFilePath(savedFile) + fileExtension;
-    Path destinationPath = Paths.get(storagePath.toString(), filePath);
+    Path destinationPath = Paths.get(storagePath.toString(), filePath).normalize();
+
+    // Ensure the destination path is within the storage directory
+    if (!destinationPath.startsWith(storagePath)) {
+        throw new IOException("Invalid file path: Path traversal attempt detected.");
+    }
 
     Path parentDir = destinationPath.getParent();
     if (parentDir != null && !Files.exists(parentDir)) {
-      Files.createDirectories(parentDir);
+        Files.createDirectories(parentDir);
     }
 
         try {
