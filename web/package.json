@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npm run && vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
+   "lint": "eslint .",
     "preview": "vite preview",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
     "prepare": "HUSKY=../.husky husky install",

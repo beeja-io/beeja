@@ -61,7 +61,7 @@ const LoanListView = (props: LoanListViewProps) => {
           updateLoanList(sortedLoans);
         }
       }
-    } catch (error) {
+    } catch {
       setLoading(false);
     } finally {
       setLoading(false);

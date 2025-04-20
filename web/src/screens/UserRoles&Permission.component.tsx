@@ -45,7 +45,7 @@ const UserRolesPermissionsComponent = () => {
       }));
       setRoles(rolesData);
       setIsLoaded(false);
-    } catch (error) {
+    } catch {
       setIsLoaded(false);
     }
   };

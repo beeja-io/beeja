@@ -59,6 +59,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
 
           if (contentDisposition) {
             const match = contentDisposition.match(
+              // eslint-disable-next-line no-useless-escape
               /filename\*?=['"]?(?:UTF-8'')?([^;'\"]+)/
             );
             if (match && match[1]) {
@@ -82,7 +83,6 @@ const ApplicantsList = (props: ApplicantsListProps) => {
         }
       );
     } catch (error) {
-      console.error('Download failed:', error);
       toast.error('Failed to download file.');
     }
   };

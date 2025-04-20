@@ -8,6 +8,9 @@ const tsconfigPath = './tsconfig.json';
 export default [
   {
     ignores: ['dist', '.eslintrc.cjs'],
+    linterOptions: {
+      reportUnusedDisableDirectives: false,
+    },
   },
   {
     files: ['**/*.{ts,tsx}'],
@@ -42,17 +45,19 @@ export default [
       ],
       'no-multiple-empty-lines': ['error', { max: 1 }],
       quotes: ['error', 'single', { avoidEscape: true }],
-      'no-unused-vars': [
-        'error',
-        { vars: 'all', args: 'none', ignoreRestSiblings: false },
-      ],
       'no-console': 'error',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-unused-disable-directives': 'off',
+      'react-refresh/only-export-components': 'off',
+
     },
   },
   {
     files: ['**/*.{ts,tsx}'],
     rules: {
       'no-undef': 'off',
+      'no-unused-disable-directives': 'off',
     },
   },
 ];

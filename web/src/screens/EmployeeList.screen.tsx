@@ -142,7 +142,7 @@ const EmployeeList = () => {
               };
               reader.readAsDataURL(response.data);
             });
-          } catch (error) {
+          } catch {
             throw new Error('Error fetching profile image:');
           }
         }
@@ -170,7 +170,7 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('employmentTypes');
       setEmployeeTypes(response.data);
-    } catch (error) {
+    } catch {
       setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES'));
     }
   };
@@ -179,7 +179,7 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('departments');
       setDepartmentOptions(response.data);
-    } catch (error) {
+    } catch {
       setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
     }
   };
@@ -188,7 +188,7 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('jobTitles');
       setJobTitles(response.data);
-    } catch (error) {
+    } catch {
       setError(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
     }
   };
@@ -222,7 +222,7 @@ const EmployeeList = () => {
       } else {
         setError(null);
       }
-    } catch (error) {
+    } catch {
       setError(t('ERROR_WHILE_FETCHING_EMPLOYEES'));
     } finally {
       setLoadingData(false);
@@ -235,6 +235,7 @@ const EmployeeList = () => {
     JobTitleFilter,
     EmployeeStatusFilter,
     updateEmployeeList,
+    t
   ]);
 
   const fetchEmployeeCount = async () => {
@@ -248,6 +249,7 @@ const EmployeeList = () => {
 
   useEffect(() => {
     fetchEmployeeCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -653,7 +655,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCreateEmployee = async (e: any) => {
     e.preventDefault();
     const newErrors = {

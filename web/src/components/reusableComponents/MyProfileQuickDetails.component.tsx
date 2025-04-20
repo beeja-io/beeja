@@ -103,7 +103,7 @@ const MyProfileQuickDetailsComponent = ({
         (await updateEmployeeStatusByEmployeeId(employee.account.employeeId));
       fetchEmployeeAgain();
       handleIsActiveModalOpen();
-    } catch (error) {
+    } catch {
       setIsLoadingResponse(false);
     } finally {
       setIsLoadingResponse(false);

@@ -264,7 +264,6 @@ export const InlineCalendar = ({
       (value: SetStateAction<number>): void;
       (value: SetStateAction<number>): void;
       (value: SetStateAction<number>): void;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (arg0: (prevMonth: any) => number): void;
     },
     setYear: {
@@ -272,7 +271,6 @@ export const InlineCalendar = ({
       (value: SetStateAction<number>): void;
       (value: SetStateAction<number>): void;
       (value: SetStateAction<number>): void;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (arg0: (prevYear: any) => any): void;
     },
     currentMonth: number,

@@ -87,7 +87,7 @@ const OrganizationSettings = () => {
       setCompanyProfile(response.data);
       setTempOrganization(response.data);
       setIsUpdateResponseLoading(false);
-    } catch (error) {
+    } catch {
       setIsUpdateResponseLoading(false);
     }
   };

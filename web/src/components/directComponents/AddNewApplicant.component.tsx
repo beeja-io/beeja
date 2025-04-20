@@ -33,10 +33,10 @@ import { t } from 'i18next';
 import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 
-type AddNewApplicant = {
+type AddNewApplicantProps = {
   isReferScreen: boolean;
 };
-const AddNewApplicant = (props: AddNewApplicant) => {
+const AddNewApplicant = (props: AddNewApplicantProps) => {
   const navigate = useNavigate();
   const { user } = useUser();
   const goToPreviousPage = () => {
@@ -139,7 +139,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
       } else {
         toast.error('Failed to save applicant');
       }
-    } catch (error) {
+    } catch {
       toast.error('An error occurred while saving the applicant');
     } finally {
       setIsLoading(false);
@@ -153,7 +153,7 @@ const AddNewApplicant = (props: AddNewApplicant) => {
       try {
         const response = await getOrganizationValuesByKey('jobTitles');
         setJobTitles(response.data);
-      } catch (error) {
+      } catch {
         toast.error(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
       } finally {
         setApiLoading(false);

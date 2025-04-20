@@ -44,12 +44,12 @@ import { useFeatureToggles } from '../context/FeatureToggleContext';
 import { EFeatureToggles } from '../entities/FeatureToggle';
 import { useTranslation } from 'react-i18next';
 
-interface ThemeOption {
+interface IThemeOptions {
   label: string;
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 }
 
-const themeOptions: ThemeOption[] = [
+const themeOptions: IThemeOptions[] = [
   {
     label: 'Light',
     icon: LightThemeBannerSVG,
@@ -129,7 +129,7 @@ function ThemesAndTypography() {
         user ? user.organizations.id : ''
       );
       setUpdatedOrganization(response.data);
-    } catch (error) {
+    } catch {
       alert('error');
     }
   };

@@ -256,7 +256,6 @@ export const GeneralDetailsTab = ({
       setOriginalFormData(defaultFormData);
       setModifiedFields({});
       handleIsEditModeOn();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (
         error.response &&
@@ -275,7 +274,6 @@ export const GeneralDetailsTab = ({
 
   const mapFormDataToBackendStructure = (data: {
     [key: string]: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): any => {
     const backendData: { [key: string]: string | undefined } = {};
 
@@ -356,7 +354,6 @@ export const GeneralDetailsTab = ({
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setBackendData = (obj: any, path: string, value: string): void => {
     const keys = path.split('.');
     keys.reduce((acc, key, index) => {
@@ -415,20 +412,18 @@ export const GeneralDetailsTab = ({
             await getOrganizationValuesByKey('jobTitles');
           const employmentTypesResponse =
             await getOrganizationValuesByKey('employmentTypes');
-          console.log('response', jobDetailsResponse.data.values);
           setEmploymentTypes(employmentTypesResponse.data);
           setJobTitles(jobDetailsResponse.data);
           setDepartmentList(response.data);
           setIsDefaultResponseLoading(false);
         } catch (error) {
           setIsDefaultResponseLoading(false);
-          console.error('error in fetching values', error);
         }
       };
 
       fetchData();
     }
-  }, []);
+  }, [heading]);
 
   return (
     <>

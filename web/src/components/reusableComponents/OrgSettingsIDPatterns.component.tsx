@@ -29,7 +29,6 @@ interface OrgSettingsIDPatternsProps {
 export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
   patternType,
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { t } = useTranslation();
   const [patterns, setPatterns] = useState<any[]>([]);
   const [isCreateScreenOpen, setIsCreateScreenOpen] = useState(false);

@@ -76,7 +76,7 @@ const EditApplicant = () => {
       setApplicant(response.data);
       setIsLoading(false);
       toast.success('Comment added successfully');
-    } catch (error) {
+    } catch {
       setIsLoading(false);
       toast.error('Failed to post comment');
     }

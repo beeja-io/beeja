@@ -1,4 +1,4 @@
-/* eslint-disable react-refresh/only-export-components */
+ 
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 type ProfileImageContextType = {
@@ -45,4 +45,4 @@ export const useProfileImage = () => {
 
   return context;
 };
-/* eslint-enable react-refresh/only-export-components */
+ 
