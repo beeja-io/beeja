@@ -20,7 +20,7 @@ export const PreferencesProvider: React.FC<{ children: ReactNode }> = ({
     </PreferencesContext.Provider>
   );
 };
- 
+
 export const usePreferences = () => {
   const context = React.useContext(PreferencesContext);
 

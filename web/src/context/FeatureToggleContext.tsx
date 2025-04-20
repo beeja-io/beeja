@@ -34,7 +34,7 @@ export const FeatureToggleContextProvider: React.FC<{
     </FeatureToggleContext.Provider>
   );
 };
- 
+
 export const useFeatureToggles = () => {
   const context = React.useContext(FeatureToggleContext);
 

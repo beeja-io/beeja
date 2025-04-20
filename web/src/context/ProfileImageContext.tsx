@@ -1,4 +1,3 @@
- 
 import { createContext, useContext, useState, ReactNode } from 'react';
 
 type ProfileImageContextType = {
@@ -45,4 +44,3 @@ export const useProfileImage = () => {
 
   return context;
 };
- 

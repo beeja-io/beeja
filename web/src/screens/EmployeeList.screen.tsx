@@ -235,7 +235,7 @@ const EmployeeList = () => {
     JobTitleFilter,
     EmployeeStatusFilter,
     updateEmployeeList,
-    t
+    t,
   ]);
 
   const fetchEmployeeCount = async () => {
