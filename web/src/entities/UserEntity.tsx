@@ -1,5 +1,5 @@
-import { Role } from './LoggedInUserEntity';
-import { IOrganization } from './OrganizationEntity';
+import { Role } from "./LoggedInUserEntity";
+import { IOrganization } from "./OrganizationEntity";
 
 export interface User {
   id: string;

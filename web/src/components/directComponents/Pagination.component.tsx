@@ -1,11 +1,11 @@
-import { t } from 'i18next';
+import { t } from "i18next";
 import {
   PaginationContainer,
   PaginationList,
   PaginationItem,
   PaginationButton,
   PaginationActionArea,
-} from '../../styles/StyledPagination.style';
+} from "../../styles/StyledPagination.style";
 
 /**
  * @example https://www.freecodecamp.org/news/build-a-custom-pagination-component-in-react/
@@ -51,12 +51,12 @@ const Pagination = ({
       }
 
       if (startPage > 1) {
-        pageNumbers.unshift('...');
+        pageNumbers.unshift("...");
         pageNumbers.unshift(1);
       }
 
       if (endPage < totalPages) {
-        pageNumbers.push('...');
+        pageNumbers.push("...");
         pageNumbers.push(totalPages);
       }
     }
@@ -69,7 +69,7 @@ const Pagination = ({
   return (
     <PaginationContainer>
       <PaginationList>
-        <PaginationItem className={currentPage === 1 ? 'disabled' : ''}>
+        <PaginationItem className={currentPage === 1 ? "disabled" : ""}>
           <PaginationButton
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
@@ -81,7 +81,7 @@ const Pagination = ({
         {pageNumbers.map((number, index) => (
           <PaginationItem
             key={index}
-            className={currentPage === number ? 'active' : ''}
+            className={currentPage === number ? "active" : ""}
           >
             <PaginationButton
               onClick={() => handlePageChange(number as number)}
@@ -91,7 +91,7 @@ const Pagination = ({
           </PaginationItem>
         ))}
         <PaginationItem
-          className={currentPage === totalPages ? 'disabled' : ''}
+          className={currentPage === totalPages ? "disabled" : ""}
         >
           <PaginationButton
             onClick={() => handlePageChange(currentPage + 1)}
@@ -104,9 +104,10 @@ const Pagination = ({
       </PaginationList>
       <PaginationActionArea>
         <span>
-          {t("SHOWING")} {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)}{' '}
-          {t("TO")} {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{' '}
-         {t("ENTRIES")}
+          {t("SHOWING")}{" "}
+          {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)} {t("TO")}{" "}
+          {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{" "}
+          {t("ENTRIES")}
         </span>
 
         <select

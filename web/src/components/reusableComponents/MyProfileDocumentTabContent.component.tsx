@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from "react";
 /* eslint-disable */
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import {
   DocumentContainer,
   DocumentHeadSection,
@@ -15,9 +15,9 @@ import {
   TextInput,
   UploadButton,
   ValidationText,
-} from '../../styles/DocumentTabStyles.style';
-import SideModal from './SideModal.component';
-import { Button } from '../../styles/CommonStyles.style';
+} from "../../styles/DocumentTabStyles.style";
+import SideModal from "./SideModal.component";
+import { Button } from "../../styles/CommonStyles.style";
 import {
   FileUploadIcon,
   FileTextIcon,
@@ -28,32 +28,32 @@ import {
   FormFileCloseIcon,
   NoDocsIcon,
   CalenderIcon,
-} from '../../svgs/DocumentTabSvgs.svg';
-import { DocumentAction } from './DocumentAction';
+} from "../../svgs/DocumentTabSvgs.svg";
+import { DocumentAction } from "./DocumentAction";
 import {
   getAllFilesByEmployeeId,
   uploadEmployeeFiles,
-} from '../../service/axiosInstance';
-import { EmployeeEntity } from '../../entities/EmployeeEntity';
-import { FileEntity } from '../../entities/FileEntity';
-import { formatDate } from '../../utils/dateFormatter';
-import PulseLoader from '../loaders/PulseAnimation.loader';
-import { AlertISVG } from '../../svgs/CommonSvgs.svs';
+} from "../../service/axiosInstance";
+import { EmployeeEntity } from "../../entities/EmployeeEntity";
+import { FileEntity } from "../../entities/FileEntity";
+import { formatDate } from "../../utils/dateFormatter";
+import PulseLoader from "../loaders/PulseAnimation.loader";
+import { AlertISVG } from "../../svgs/CommonSvgs.svs";
 import {
   DocumnentNameRequired,
   FileRequired,
   UploadFileError,
-} from '../../constants/Constants';
-import ToastMessage from './ToastMessage.component';
-import { EditIcon } from '../../svgs/ExpenseListSvgs.svg';
-import { useUser } from '../../context/UserContext';
-import { DOCUMENT_MODULE } from '../../constants/PermissionConstants';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { hasPermission } from '../../utils/permissionCheck';
-import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
-import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
-import Pagination from '../directComponents/Pagination.component';
+} from "../../constants/Constants";
+import ToastMessage from "./ToastMessage.component";
+import { EditIcon } from "../../svgs/ExpenseListSvgs.svg";
+import { useUser } from "../../context/UserContext";
+import { DOCUMENT_MODULE } from "../../constants/PermissionConstants";
+import axios from "axios";
+import { toast } from "sonner";
+import { hasPermission } from "../../utils/permissionCheck";
+import useKeyCtrl from "../../service/keyboardShortcuts/onKeySave";
+import useKeyPress from "../../service/keyboardShortcuts/onKeyPress";
+import Pagination from "../directComponents/Pagination.component";
 type DocumentTabContentProps = {
   employee: EmployeeEntity;
 };
@@ -70,39 +70,39 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
 
   const handleClose = () => {
     setIsCreateDocumentModelOpen(false);
-    setDocumentName('');
-    setDescription('');
-    setCategory('');
+    setDocumentName("");
+    setDescription("");
+    setCategory("");
     removeFile();
-    setErrors((prevErrors) => ({ ...prevErrors, emptyFile: '' }));
-    setErrors((prevErrors) => ({ ...prevErrors, emptyDocumentType: '' }));
+    setErrors((prevErrors) => ({ ...prevErrors, emptyFile: "" }));
+    setErrors((prevErrors) => ({ ...prevErrors, emptyDocumentType: "" }));
   };
 
   const documentType = [
-    'Identity',
-    'Payslip',
-    'ADDRESS_PROOF',
-    'Education',
-    'NDA',
-    'Tax_Exit_Doc',
-    'Equipment_Policy',
-    'Appraisal Letter',
+    "Identity",
+    "Payslip",
+    "ADDRESS_PROOF",
+    "Education",
+    "NDA",
+    "Tax_Exit_Doc",
+    "Equipment_Policy",
+    "Appraisal Letter",
   ];
   const Actions = [
     ...(user &&
     (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
       hasPermission(user, DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS))
-      ? [{ title: 'Download', svg: <DownloadIcon /> }]
+      ? [{ title: "Download", svg: <DownloadIcon /> }]
       : []),
     ...(user &&
     (hasPermission(user, DOCUMENT_MODULE.DELETE_DOCUMENT) ||
       hasPermission(user, DOCUMENT_MODULE.DELETE_ENTIRE_DOCUMENTS))
-      ? [{ title: 'Delete', svg: <DeleteIcon /> }]
+      ? [{ title: "Delete", svg: <DeleteIcon /> }]
       : []),
     ...(user &&
     (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
       hasPermission(user, DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS))
-      ? [{ title: 'Preview', svg: <EditIcon /> }]
+      ? [{ title: "Preview", svg: <EditIcon /> }]
       : []),
   ];
 
@@ -115,13 +115,13 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     if (fileInput.files && fileInput.files.length > 0) {
       setSelectedFileName(fileInput.files[0].name);
       setSelectedFile(fileInput.files[0] || null);
-      setErrors((prevErrors) => ({ ...prevErrors, emptyFile: '' }));
+      setErrors((prevErrors) => ({ ...prevErrors, emptyFile: "" }));
     }
   };
 
   const removeFile = () => {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    fileInput.value = '';
+    const fileInput = document.getElementById("fileInput") as HTMLInputElement;
+    fileInput.value = "";
     setSelectedFileName(null);
     setSelectedFile(null);
   };
@@ -130,7 +130,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     event.preventDefault();
     event.stopPropagation();
 
-    event.dataTransfer.dropEffect = 'copy';
+    event.dataTransfer.dropEffect = "copy";
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -145,11 +145,11 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
   };
 
   const [allFilesList, setAllFilesList] = useState<FileEntity[]>([]);
-  const [documentName, setDocumentName] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [category, setCategory] = useState<string>('');
+  const [documentName, setDocumentName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [category, setCategory] = useState<string>("");
   const [isResponseLoading, setIsResponseLoading] = useState(false);
-  const [responseMessage, setResponseMessage] = useState('');
+  const [responseMessage, setResponseMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalPages, setTotalPages] = useState<number>(0);
@@ -167,8 +167,8 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
   };
 
   const [errors, setErrors] = useState({
-    emptyDocumentType: '',
-    emptyFile: '',
+    emptyDocumentType: "",
+    emptyFile: "",
   });
 
   useEffect(() => {
@@ -188,7 +188,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
       const filteredParams = queryParams.filter((param) => param.length > 0);
       const url =
         filteredParams.length > 0
-          ? `/employees/v1/files/${entityId}?${filteredParams.join('&')}`
+          ? `/employees/v1/files/${entityId}?${filteredParams.join("&")}`
           : `/employees/v1/files/${entityId}`;
       const response = await getAllFilesByEmployeeId(url);
       const totalSize = response.data.metadata.totalSize;
@@ -198,7 +198,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
       handleTotalPages(totalPages ?? 1);
       setAllFilesList(response.data.files);
     } catch (error) {
-      throw new Error('Error fetching data:' + error);
+      throw new Error("Error fetching data:" + error);
     } finally {
       setIsLoading(false);
     }
@@ -213,15 +213,15 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     const { value } = e.target;
 
     setCategory(value);
-    setErrors((prevErrors) => ({ ...prevErrors, emptyDocumentType: '' }));
+    setErrors((prevErrors) => ({ ...prevErrors, emptyDocumentType: "" }));
   };
 
   const handleFormSubmit = async (event: any) => {
     event.preventDefault();
 
     const newErrors = {
-      emptyDocumentType: category === '' ? DocumnentNameRequired : '',
-      emptyFile: selectedFile === null ? FileRequired : '',
+      emptyDocumentType: category === "" ? DocumnentNameRequired : "",
+      emptyFile: selectedFile === null ? FileRequired : "",
     };
 
     setErrors(newErrors);
@@ -229,14 +229,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     if (selectedFile && !newErrors.emptyDocumentType && !newErrors.emptyFile) {
       try {
         const formData = new FormData();
-        formData.append('file', selectedFile);
+        formData.append("file", selectedFile);
         if (documentName.length > 0) {
-          formData.append('name', documentName);
+          formData.append("name", documentName);
         }
-        formData.append('description', description);
-        formData.append('fileType', category);
-        formData.append('entityId', props.employee.account.employeeId);
-        formData.append('entityType', 'employee');
+        formData.append("description", description);
+        formData.append("fileType", category);
+        formData.append("entityId", props.employee.account.employeeId);
+        formData.append("entityType", "employee");
 
         setIsResponseLoading(true);
         await uploadEmployeeFiles(formData);
@@ -245,17 +245,17 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
 
         handleClose();
         setSelectedFile(null);
-        setDocumentName('');
-        setDescription('');
-        setCategory('');
+        setDocumentName("");
+        setDescription("");
+        setCategory("");
         setIsUpdateToastMessage(true);
       } catch (error) {
         if (axios.isAxiosError(error)) {
           const { response } = error;
           if (response) {
             if (response.status === 413) {
-              toast('File size is too large');
-              setResponseMessage('File size exceeds the 10 MB limit');
+              toast("File size is too large");
+              setResponseMessage("File size exceeds the 10 MB limit");
             }
             return;
           }
@@ -264,24 +264,35 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
       } finally {
         setIsResponseLoading(false);
         setTimeout(() => {
-          setResponseMessage('');
+          setResponseMessage("");
         }, 5000);
       }
     }
   };
 
   const handleDocumentTypeChange = (
-    e: React.ChangeEvent<HTMLSelectElement>
+    e: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     setCategory(e.target.value);
     handleChange(e);
   };
-  useKeyCtrl('s', () =>
-    handleFormSubmit(event as unknown as React.FormEvent<HTMLFormElement>)
+  useKeyCtrl("s", () =>
+    handleFormSubmit(event as unknown as React.FormEvent<HTMLFormElement>),
   );
   useKeyPress(27, () => {
     handleClose();
   });
+  useEffect(() => {
+    if (isCreateDocumentModelOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isCreateDocumentModelOpen]);
   return (
     <>
       <DocumentContainer>
@@ -289,14 +300,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
           <div className="document_heading">
             {user?.employeeId === props.employee.account.employeeId ? (
               <>
-                <p>{t('My Documents')}</p>
+                <p>{t("My Documents")}</p>
               </>
             ) : (
               <>
-                <p>{t('Documents')}</p>
+                <p>{t("Documents")}</p>
               </>
             )}
-            <span>{t('List of Documents')}</span>
+            <span>{t("List of Documents")}</span>
           </div>
           <div>
             {/* TODO: Document Filter */}
@@ -311,14 +322,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
               (user &&
                 hasPermission(
                   user,
-                  DOCUMENT_MODULE.CREATE_ENTIRE_DOCUMENTS
+                  DOCUMENT_MODULE.CREATE_ENTIRE_DOCUMENTS,
                 ))) && (
               <UploadButton
                 className="submit"
                 onClick={handleIsCreateDocumentModal}
               >
                 <FileUploadIcon />
-                {t('Upload Document')}
+                {t("Upload Document")}
               </UploadButton>
             )}
           </div>
@@ -330,22 +341,22 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
           <TableList>
             <TableHead>
               <tr className="documentsTableTow">
-                <th>{t('Name')}</th>
-                <th>{t('Document Type')}</th>
-                <th>{t('Created Date')}</th>
-                <th>{t('Created By')}</th>
+                <th>{t("Name")}</th>
+                <th>{t("Document Type")}</th>
+                <th>{t("Created Date")}</th>
+                <th>{t("Created By")}</th>
                 {user &&
                   (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
                     hasPermission(user, DOCUMENT_MODULE.DELETE_DOCUMENT) ||
                     hasPermission(
                       user,
-                      DOCUMENT_MODULE.DELETE_ENTIRE_DOCUMENTS
+                      DOCUMENT_MODULE.DELETE_ENTIRE_DOCUMENTS,
                     ) ||
                     hasPermission(user, DOCUMENT_MODULE.UPDATE_DOCUMENT) ||
                     hasPermission(
                       user,
-                      DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS
-                    )) && <th>{t('Actions')}</th>}
+                      DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS,
+                    )) && <th>{t("Actions")}</th>}
               </tr>
             </TableHead>
 
@@ -356,38 +367,38 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     <td className="truncate_filename" title={file.name}>
                       <span
                         style={{
-                          verticalAlign: 'middle',
-                          marginRight: '12px',
+                          verticalAlign: "middle",
+                          marginRight: "12px",
                         }}
                       >
                         <FileTextIcon />
                       </span>
-                      {file.name ? file.name : '-'}
+                      {file.name ? file.name : "-"}
                     </td>
-                    <td>{file.fileType ? file.fileType : '-'}</td>
+                    <td>{file.fileType ? file.fileType : "-"}</td>
                     <td>
                       <span
                         style={{
-                          verticalAlign: 'middle',
-                          marginRight: '12px',
+                          verticalAlign: "middle",
+                          marginRight: "12px",
                         }}
                       >
                         <CalenderIcon />
                       </span>
                       {file.createdAt && formatDate(file.createdAt)}
                     </td>
-                    <td>{file.createdByName ? file.createdByName : '-'}</td>
+                    <td>{file.createdByName ? file.createdByName : "-"}</td>
                     {user &&
                       (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
                         hasPermission(user, DOCUMENT_MODULE.DELETE_DOCUMENT) ||
                         hasPermission(
                           user,
-                          DOCUMENT_MODULE.DELETE_ENTIRE_DOCUMENTS
+                          DOCUMENT_MODULE.DELETE_ENTIRE_DOCUMENTS,
                         ) ||
                         hasPermission(user, DOCUMENT_MODULE.UPDATE_DOCUMENT) ||
                         hasPermission(
                           user,
-                          DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS
+                          DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS,
                         )) && (
                         <td>
                           <DocumentAction
@@ -431,28 +442,28 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
           isModalOpen={isCreateDocumentModelOpen}
           innerContainerContent={
             <FileUploadForm
-              style={{ cursor: isResponseLoading ? 'progress' : '' }}
+              style={{ cursor: isResponseLoading ? "progress" : "" }}
               className="documentsUploadForm"
             >
               <form onSubmit={handleFormSubmit}>
                 <div>
-                  <p style={{ fontSize: '24px', fontWeight: 700 }}>
+                  <p style={{ fontSize: "24px", fontWeight: 700 }}>
                     {t("ADD_NEW_DOCUMENT")}
                   </p>
                   <InputLabelContainer>
                     <label>
-                      {t("DOCUMENT_TYPE")}{' '}
+                      {t("DOCUMENT_TYPE")}{" "}
                       <ValidationText className="star">*</ValidationText>
                     </label>
                     <select
                       style={{
-                        borderColor: errors.emptyDocumentType ? 'red' : '',
+                        borderColor: errors.emptyDocumentType ? "red" : "",
                       }}
                       value={category}
                       onChange={handleDocumentTypeChange}
                       className="selectoption"
                     >
-                      {['Select a Type', ...documentType].map((option) => (
+                      {["Select a Type", ...documentType].map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
@@ -487,12 +498,12 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
 
                   <InputLabelContainer>
                     <label>
-                      {t("CHOOSE/DARG_FILE")}{' '}
+                      {t("CHOOSE/DARG_FILE")}{" "}
                       <ValidationText className="star">*</ValidationText>
                     </label>
 
                     <FileUploadField
-                      style={{ borderColor: errors.emptyFile ? 'red' : '' }}
+                      style={{ borderColor: errors.emptyFile ? "red" : "" }}
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
                     >
@@ -504,14 +515,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                         type="file"
                         accept="application/pdf,application/vnd.ms-excel,application/msword,image/png,image/jpeg"
                         id="fileInput"
-                        style={{ display: 'none' }}
+                        style={{ display: "none" }}
                         onChange={handleFileChange}
                       />
                     </FileUploadField>
                     {selectedFileName && (
                       <FormFileSelected
                         style={{
-                          borderColor: responseMessage.length ? 'red' : '',
+                          borderColor: responseMessage.length ? "red" : "",
                         }}
                       >
                         <FormFileIcon />
@@ -537,14 +548,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                   <div>
                     <div
                       style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
+                        display: "flex",
+                        justifyContent: "space-between",
                       }}
                     >
                       <Button
                         style={
                           isResponseLoading
-                            ? { opacity: 0.3, cursor: 'not-allowed' }
+                            ? { opacity: 0.3, cursor: "not-allowed" }
                             : {}
                         }
                         onClick={(e) => {
@@ -561,7 +572,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       </Button>
                       <Button
                         className="submit"
-                        style={{ cursor: isResponseLoading ? 'progress' : '' }}
+                        style={{ cursor: isResponseLoading ? "progress" : "" }}
                       >
                         Submit
                       </Button>

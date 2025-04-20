@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const CenterModalContainer = styled.section`
   position: fixed;
@@ -36,8 +36,8 @@ export const CenterModelMainContainer = styled.section<{
   isExpanded?: boolean;
 }>`
   display: inline-flex;
-  height: 415px;
-  width: ${(props) => (props.Width ? props.Width : 'fit-content')};
+  // height: 415px;
+  width: ${(props) => (props.Width ? props.Width : "500px")};
   padding: 35px 45px;
   flex-direction: column;
   justify-content: center;
@@ -77,16 +77,18 @@ export const CenterModelMainContainer = styled.section<{
     font-family: Nunito;
     font-size: 28px;
     font-style: normal;
-    font-weight: 500;
-    line-height: 125%; /* 40px */
+    font-weight: 700;
+    //line-height: 125%; /* 40px */
   }
   .modalContent {
     color: ${(props) => props.theme.colors.blackColors.black1};
     text-align: center;
-    font-size: 25px;
+    font-size: 22px;
     font-style: normal;
-    font-weight: 300;
-    line-height: 125%; /* 35px */
+    font-weight: 500;
+    //line-height: 125%; /* 35px */
+    font-family: Nunito;
+    margin-top: 10px;
   }
 
   @media screen and (max-width: 500px) {
@@ -145,7 +147,7 @@ export const CenterModelMainContainer = styled.section<{
         }
       }
       &.loading::after {
-        content: '';
+        content: "";
         width: 16px;
         height: 16px;
 

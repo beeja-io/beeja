@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   MyProfileHeadingSection,
   MyProfileInformationContainer,
   MyProfileInnerContainer,
   MyProfileMainContainer,
-} from '../styles/MyProfile.style';
-import { EmployeeEntity } from '../entities/EmployeeEntity';
-import MyProfileQuickDetailsComponent from '../components/reusableComponents/MyProfileQuickDetails.component';
-import MyProfileTabsContainerComponent from '../components/reusableComponents/MyProfileTabsContainer.component';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
-import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
-import { fetchEmployeeDetailsByEmployeeId } from '../service/axiosInstance';
+} from "../styles/MyProfile.style";
+import { EmployeeEntity } from "../entities/EmployeeEntity";
+import MyProfileQuickDetailsComponent from "../components/reusableComponents/MyProfileQuickDetails.component";
+import MyProfileTabsContainerComponent from "../components/reusableComponents/MyProfileTabsContainer.component";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useUser } from "../context/UserContext";
+import { ArrowDownSVG } from "../svgs/CommonSvgs.svs";
+import { fetchEmployeeDetailsByEmployeeId } from "../service/axiosInstance";
 
 const MyProfileScreen = () => {
   const [employee, setEmployee] = useState<EmployeeEntity>();
@@ -33,7 +33,7 @@ const MyProfileScreen = () => {
       }
     } catch (error) {
       setIsUpdateResponseLoading(false);
-      throw new Error('Error fetching data:' + error);
+      throw new Error("Error fetching data:" + error);
     }
   };
 
@@ -50,7 +50,7 @@ const MyProfileScreen = () => {
     navigate(-1);
   };
 
-  const [tabName, setTabName] = useState('General');
+  const [tabName, setTabName] = useState("General");
   const chooseTab = (tab: string) => {
     setTabName(tab);
   };
@@ -59,7 +59,7 @@ const MyProfileScreen = () => {
     <MyProfileMainContainer>
       <MyProfileInnerContainer>
         <MyProfileHeadingSection>
-          {' '}
+          {" "}
           <span onClick={goToPreviousPage}>
             <ArrowDownSVG />
           </span>

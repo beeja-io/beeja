@@ -1,6 +1,6 @@
-import { useTranslation } from 'react-i18next';
-import { ZeroEntriesFoundMainContainer } from '../../styles/ZeroEntriesFoundStyles.Style';
-import { NoDocsIcon } from '../../svgs/DocumentTabSvgs.svg';
+import { useTranslation } from "react-i18next";
+import { ZeroEntriesFoundMainContainer } from "../../styles/ZeroEntriesFoundStyles.Style";
+import { NoDocsIcon } from "../../svgs/DocumentTabSvgs.svg";
 
 type ZeroEntriesFound = {
   heading: string;

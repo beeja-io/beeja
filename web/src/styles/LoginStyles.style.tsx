@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const LoginContainer = styled.section`
   min-width: 100vw;
@@ -18,7 +18,7 @@ export const LoginContainer = styled.section`
 
 export const BrandText = styled.span`
   color: #000;
-  font-family: 'Rubik', sans-serif;
+  font-family: "Rubik", sans-serif;
   font-size: 60.734px;
   font-style: normal;
   font-weight: 400;
@@ -26,7 +26,7 @@ export const BrandText = styled.span`
 
   span {
     color: #005792;
-    font-family: 'Rubik', sans-serif;
+    font-family: "Rubik", sans-serif;
   }
 `;
 

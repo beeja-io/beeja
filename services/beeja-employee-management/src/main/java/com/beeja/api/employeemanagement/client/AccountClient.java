@@ -29,7 +29,7 @@ public interface AccountClient {
   ResponseEntity<?> updateUser(
       @PathVariable String employeeId, @RequestBody EmployeeUpdateRequest updatedUser);
 
-  @GetMapping("v1/users/ispresent/{email}")
+  @GetMapping("v1/users/exists/{email}")
   Boolean isUserPresentWithMail(@PathVariable String email);
 
   @RequestMapping(value = "/v1/users/emp-ids", method = RequestMethod.POST)

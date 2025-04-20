@@ -4,12 +4,12 @@ export const formatFileSize = (fileSizeInBytes: number): string => {
   const gigaByte = megaByte * 1024;
 
   if (fileSizeInBytes < kiloByte) {
-    return fileSizeInBytes.toFixed(2) + ' B';
+    return fileSizeInBytes.toFixed(2) + " B";
   } else if (fileSizeInBytes < megaByte) {
-    return (fileSizeInBytes / kiloByte).toFixed(2) + ' KB';
+    return (fileSizeInBytes / kiloByte).toFixed(2) + " KB";
   } else if (fileSizeInBytes < gigaByte) {
-    return (fileSizeInBytes / megaByte).toFixed(2) + ' MB';
+    return (fileSizeInBytes / megaByte).toFixed(2) + " MB";
   } else {
-    return (fileSizeInBytes / gigaByte).toFixed(2) + ' GB';
+    return (fileSizeInBytes / gigaByte).toFixed(2) + " GB";
   }
 };

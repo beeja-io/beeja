@@ -1,27 +1,27 @@
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   BorderDivLine,
   TabContentEditArea,
   TabContentMainContainer,
   TabContentMainContainerHeading,
-} from '../../styles/MyProfile.style';
+} from "../../styles/MyProfile.style";
 import {
   LoanFields,
   ProfileHeading,
   Select,
-} from '../../styles/OrganizationSettingsStyles.style';
+} from "../../styles/OrganizationSettingsStyles.style";
 import {
   EditWhitePenSVG,
   CheckBoxOnSVG,
   CrossMarkSVG,
-} from '../../svgs/CommonSvgs.svs';
-import { InfoCircleSVG } from '../../svgs/NavBarSvgs.svg';
-import { TextInput } from '../../styles/InputStyles.style';
-import { IOrganization } from '../../entities/OrganizationEntity';
-import { toast } from 'sonner';
-import { Checkbox } from '../../styles/LoanApplicationStyles.style';
-import { handleNumericInputKeyDown } from '../../utils/navigation.keys';
+} from "../../svgs/CommonSvgs.svs";
+import { InfoCircleSVG } from "../../svgs/NavBarSvgs.svg";
+import { TextInput } from "../../styles/InputStyles.style";
+import { IOrganization } from "../../entities/OrganizationEntity";
+import { toast } from "sonner";
+import { Checkbox } from "../../styles/LoanApplicationStyles.style";
+import { handleNumericInputKeyDown } from "../../utils/navigation.keys";
 
 type OrgSettingsLOANType = {
   organization: IOrganization;
@@ -31,7 +31,7 @@ type OrgSettingsLOANType = {
   setCompanyProfile: (org: IOrganization) => void;
 };
 const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
-  const { t } = useTranslation(); 
+  const { t } = useTranslation();
   const [isEditMonitorLoan, setIsEditMonitorLoan] = useState(false);
   const handleIsEditMonitorLoan = () => {
     setIsEditMonitorLoan(!isEditMonitorLoan);
@@ -41,10 +41,10 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
     setIsEditPersonalLoan(!isEditPersonalLoan);
   };
   const [updatedOrganization, setUpdatedOrganization] = useState<IOrganization>(
-    {} as IOrganization
+    {} as IOrganization,
   );
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     props.setCompanyProfile({
@@ -63,7 +63,7 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
             ...prevState.loanLimit,
             [name]: value,
           },
-        }) as IOrganization
+        }) as IOrganization,
     );
   };
 
@@ -76,13 +76,13 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
       updatedOrganization.loanLimit &&
       (updatedOrganization.loanLimit.monitorLoan === undefined ||
         updatedOrganization.loanLimit.monitorLoan === null ||
-        updatedOrganization.loanLimit.monitorLoan.toString() === '' ||
+        updatedOrganization.loanLimit.monitorLoan.toString() === "" ||
         updatedOrganization.loanLimit.monitorLoan
           .toString()
-          .replace(/0/g, '')
-          .trim() === '')
+          .replace(/0/g, "")
+          .trim() === "")
     ) {
-      toast.error('Please enter Monitor loan limit (must greater than 0)');
+      toast.error("Please enter Monitor loan limit (must greater than 0)");
       return;
     }
     props.handleUpdateOrganization(updatedOrganization);
@@ -98,13 +98,13 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
       updatedOrganization.loanLimit &&
       (updatedOrganization.loanLimit.personalLoan === undefined ||
         updatedOrganization.loanLimit.personalLoan === null ||
-        updatedOrganization.loanLimit.personalLoan.toString() === '' ||
+        updatedOrganization.loanLimit.personalLoan.toString() === "" ||
         updatedOrganization.loanLimit.personalLoan
           .toString()
-          .replace(/0/g, '')
-          .trim() === '')
+          .replace(/0/g, "")
+          .trim() === "")
     ) {
-      toast.error('Please enter Personal loan limit (must greater than 0)');
+      toast.error("Please enter Personal loan limit (must greater than 0)");
       return;
     }
     props.handleUpdateOrganization(updatedOrganization);
@@ -253,12 +253,14 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
           {t("ENABLE_BASE_SALARY_MULTIPLIER_OPTION")}
         </div>
 
-        <LoanFields style={{ color: 'gray' }}>
+        <LoanFields style={{ color: "gray" }}>
           <div className="label">
             <span className="textMedium">Base salary multiplier</span>
             <span className="label-info">
               <InfoCircleSVG height={37} width={37} /> This base salary
-              {t(  "MULTIPLIER_WILL_APPLIES_TO_ALL_EMPLOYEE’S_SALARIES_TO_DETERMINE_THE_LOAN_LIMIT")}
+              {t(
+                "MULTIPLIER_WILL_APPLIES_TO_ALL_EMPLOYEE’S_SALARIES_TO_DETERMINE_THE_LOAN_LIMIT",
+              )}
             </span>
           </div>
           <Select
@@ -276,7 +278,7 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
           </Select>
           <div className="label">
             <span className="label-info">
-              {' '}
+              {" "}
               <InfoCircleSVG height={14} width={14} /> Salary Multiplier will be
               {t("AVAILABLE_SOON!!")}
             </span>

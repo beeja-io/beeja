@@ -1,59 +1,59 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
-import { Button } from '../../styles/CommonStyles.style';
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { Button } from "../../styles/CommonStyles.style";
 import {
   FileUploadField,
   FormFileSelected,
   InputLabelContainer,
   ValidationText,
-} from '../../styles/DocumentTabStyles.style';
-import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
+} from "../../styles/DocumentTabStyles.style";
+import { ExpenseAddFormMainContainer } from "../../styles/ExpenseManagementStyles.style";
 import {
   Slider,
   StyledSwitch,
   SwitchLabel,
   TextInput,
-} from '../../styles/InputStyles.style';
-import { FormFileCloseIcon } from '../../svgs/DocumentTabSvgs.svg';
+} from "../../styles/InputStyles.style";
+import { FormFileCloseIcon } from "../../svgs/DocumentTabSvgs.svg";
 import {
   CalenderIconDark,
   FileTextIcon,
   UploadReceiptIcon,
-} from '../../svgs/ExpenseListSvgs.svg';
-import { CreateExpenseRequest } from '../../entities/Requests/CreateExpense';
+} from "../../svgs/ExpenseListSvgs.svg";
+import { CreateExpenseRequest } from "../../entities/Requests/CreateExpense";
 import {
   createExpense,
   expenseReceiptDownload,
   updateExpense,
-} from '../../service/axiosInstance';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import ToastMessage from '../reusableComponents/ToastMessage.component';
+} from "../../service/axiosInstance";
+import SpinAnimation from "../loaders/SprinAnimation.loader";
+import ToastMessage from "../reusableComponents/ToastMessage.component";
 import {
   compareTwoDates,
   formatDate,
   formatDateYYYYMMDD,
   getCurrentDate,
-} from '../../utils/dateFormatter';
-import { Expense } from '../../entities/ExpenseEntity';
-import { UpdateExpenseRequest } from '../../entities/Requests/UpdateExpenseRequest';
-import axios, { AxiosError } from 'axios';
-import { UndoSVG } from '../../svgs/CommonSvgs.svs';
-import Calendar from '../reusableComponents/Calendar.component';
-import { useUser } from '../../context/UserContext';
-import { EXPENSE_MODULE } from '../../constants/PermissionConstants';
-import DocumentPreviewMain from '../reusableComponents/DocumentPreviewMain.component';
-import DocumentDownload from './DocumentDownload.component';
-import { ForbiddenError, PreviewReceiptError } from '../../constants/Constants';
-import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
-import { toast } from 'sonner';
-import { hasPermission } from '../../utils/permissionCheck';
-import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
-import { OrganizationValues } from '../../entities/OrgValueEntity';
-import { useTranslation } from 'react-i18next';
+} from "../../utils/dateFormatter";
+import { Expense } from "../../entities/ExpenseEntity";
+import { UpdateExpenseRequest } from "../../entities/Requests/UpdateExpenseRequest";
+import axios, { AxiosError } from "axios";
+import { UndoSVG } from "../../svgs/CommonSvgs.svs";
+import Calendar from "../reusableComponents/Calendar.component";
+import { useUser } from "../../context/UserContext";
+import { EXPENSE_MODULE } from "../../constants/PermissionConstants";
+import DocumentPreviewMain from "../reusableComponents/DocumentPreviewMain.component";
+import DocumentDownload from "./DocumentDownload.component";
+import { ForbiddenError, PreviewReceiptError } from "../../constants/Constants";
+import useKeyPress from "../../service/keyboardShortcuts/onKeyPress";
+import { toast } from "sonner";
+import { hasPermission } from "../../utils/permissionCheck";
+import useKeyCtrl from "../../service/keyboardShortcuts/onKeySave";
+import { OrganizationValues } from "../../entities/OrgValueEntity";
+import { useTranslation } from "react-i18next";
 
 type AddExpenseFormProps = {
   handleClose: () => void;
   handleLoadExpenses: () => void;
-  mode: 'preview' | 'create' | 'edit';
+  mode: "preview" | "create" | "edit";
   expense?: Expense;
   // fileId: string;
   handleModeOfModal?: (modalTitle: string) => void;
@@ -74,7 +74,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
     isDocumentPreviewResponseLoading,
     setIsDocumentPreviewResponseLoading,
   ] = useState(false);
-  const [responseErrorMessage, setResponseErrorMessage] = useState('');
+  const [responseErrorMessage, setResponseErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const handleShowErrorMessage = () => {
     setShowErrorMessage(!showErrorMessage);
@@ -88,7 +88,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const fileId: string =
     props.expense?.fileId && props.expense?.files && props.expense?.files[0].id
       ? props.expense?.fileId && props.expense?.files[0].id
-      : '';
+      : "";
   const [images, setImages] = useState(null);
   const [fileExtension, setFileExtension] = useState<string>();
   const [name, setName] = useState<string | undefined>();
@@ -104,20 +104,20 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const expenseReceiptPreview = async (
     fileName: string,
     fileId: string,
-    fileType: string | undefined
+    fileType: string | undefined,
   ) => {
     try {
       setIsDocumentPreviewResponseLoading(true);
       const response = await expenseReceiptDownload(fileId);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const imageUrl: any = window.URL.createObjectURL(
-        new Blob([response.data])
+        new Blob([response.data]),
       );
       setImages(imageUrl);
       setName(fileName);
       setFileExtension(fileType);
-      const link = document.createElement('img');
-      link.setAttribute('preview', `${fileName}.${fileType}`);
+      const link = document.createElement("img");
+      link.setAttribute("preview", `${fileName}.${fileType}`);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(imageUrl);
@@ -133,7 +133,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
           setResponseErrorMessage(PreviewReceiptError);
           handleShowErrorMessage();
         } else {
-          setResponseErrorMessage('SOMETHING_ERROR_HAPPENED');
+          setResponseErrorMessage("SOMETHING_ERROR_HAPPENED");
           handleShowErrorMessage();
         }
       }
@@ -146,62 +146,62 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       // Checking undefined values and adding to list to display in toast!
       const errorMessages = [];
       if (newExpense.amount === undefined) {
-        errorMessages.push('Amount');
+        errorMessages.push("Amount");
       }
-      if (newExpense.department == undefined || newExpense.department == '') {
-        errorMessages.push('Department');
+      if (newExpense.department == undefined || newExpense.department == "") {
+        errorMessages.push("Department");
       }
-      if (newExpense.category == undefined || newExpense.category == '') {
-        errorMessages.push('Category');
+      if (newExpense.category == undefined || newExpense.category == "") {
+        errorMessages.push("Category");
       }
-      if (newExpense.type == undefined || newExpense.type == '') {
-        errorMessages.push('Type');
+      if (newExpense.type == undefined || newExpense.type == "") {
+        errorMessages.push("Type");
       }
       if (
         newExpense.modeOfPayment == undefined ||
-        newExpense.modeOfPayment == ''
+        newExpense.modeOfPayment == ""
       ) {
-        errorMessages.push('Mode of Payment');
+        errorMessages.push("Mode of Payment");
       }
       if (
         newExpense.paymentMadeBy == undefined ||
-        newExpense.paymentMadeBy == ''
+        newExpense.paymentMadeBy == ""
       ) {
-        errorMessages.push('Payment Made By');
+        errorMessages.push("Payment Made By");
       }
       if (expenseDate == undefined || expenseDate == null) {
-        errorMessages.push('Expense Date');
+        errorMessages.push("Expense Date");
       }
       if (errorMessages.length > 0) {
         handleShowErrorMessage();
-        setResponseErrorMessage('Please fill ' + errorMessages);
+        setResponseErrorMessage("Please fill " + errorMessages);
         return;
       }
       const formData = new FormData();
       // Append each field to the FormData object
-      formData.append('department', newExpense.department);
-      formData.append('category', newExpense.category);
-      formData.append('type', newExpense.type);
+      formData.append("department", newExpense.department);
+      formData.append("category", newExpense.category);
+      formData.append("type", newExpense.type);
       if (newExpense.amount) {
-        formData.append('amount', newExpense.amount.toString());
+        formData.append("amount", newExpense.amount.toString());
       }
-      formData.append('currencyCode', newExpense.currencyCode);
-      formData.append('modeOfPayment', newExpense.modeOfPayment);
-      formData.append('merchant', newExpense.merchant);
+      formData.append("currencyCode", newExpense.currencyCode);
+      formData.append("modeOfPayment", newExpense.modeOfPayment);
+      formData.append("merchant", newExpense.merchant);
       if (newExpense.isClaimed != null) {
-        formData.append('claimed', newExpense.isClaimed.toString());
+        formData.append("claimed", newExpense.isClaimed.toString());
       }
-      formData.append('paymentMadeBy', newExpense.paymentMadeBy);
+      formData.append("paymentMadeBy", newExpense.paymentMadeBy);
       if (newExpense.description !== undefined) {
-        formData.append('description', newExpense.description);
+        formData.append("description", newExpense.description);
       } else {
-        formData.append('description', 'null');
+        formData.append("description", "null");
       }
 
       // Append files individually to prevent non null exception
       if (newExpense && newExpense.files && newExpense.files.length > 0) {
         if (newExpense.files.length > 3) {
-          toast.error('Max 3 files allowed');
+          toast.error("Max 3 files allowed");
           return;
         }
         newExpense.files.forEach((file, index) => {
@@ -210,20 +210,20 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
       if (expenseDate != null) {
         formData.append(
-          'expenseDate',
-          formatDateYYYYMMDD(expenseDate.toString())
+          "expenseDate",
+          formatDateYYYYMMDD(expenseDate.toString()),
         );
       }
       if (paymentDate != null) {
         formData.append(
-          'paymentDate',
-          formatDateYYYYMMDD(paymentDate.toString())
+          "paymentDate",
+          formatDateYYYYMMDD(paymentDate.toString()),
         );
       }
       if (requestedDate != null) {
         formData.append(
-          'requestedDate',
-          formatDateYYYYMMDD(requestedDate.toString())
+          "requestedDate",
+          formatDateYYYYMMDD(requestedDate.toString()),
         );
       }
       setIsResponseLoading(true);
@@ -237,23 +237,23 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         if (axios.isAxiosError(error)) {
           const { response } = error;
           if (response) {
-            if (response.data.startsWith('At least one receipt is required')) {
+            if (response.data.startsWith("At least one receipt is required")) {
               setResponseErrorMessage(
-                'ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED'
+                "ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED",
               );
               handleShowErrorMessage();
             } else if (response.status === 403) {
               window.location.reload();
             } else if (response.status === 500) {
               setResponseErrorMessage(
-                'SYSTEM_IS_FACING_DIFFICULTIES_IN_EXPENSE_CREATION'
+                "SYSTEM_IS_FACING_DIFFICULTIES_IN_EXPENSE_CREATION",
               );
               handleShowErrorMessage();
             } else if (response.status === 413) {
               setResponseErrorMessage(response.data);
               handleShowErrorMessage();
             } else {
-              setResponseErrorMessage('SOMETHING_ERROR_HAPPENED');
+              setResponseErrorMessage("SOMETHING_ERROR_HAPPENED");
               handleShowErrorMessage();
             }
           }
@@ -263,7 +263,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         setIsResponseLoading(false);
       }
     } else {
-      setResponseErrorMessage('PLEASE_FILL_ALL_FIELDS');
+      setResponseErrorMessage("PLEASE_FILL_ALL_FIELDS");
       handleShowErrorMessage();
     }
   };
@@ -272,7 +272,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
     event.preventDefault();
     event.stopPropagation();
 
-    event.dataTransfer.dropEffect = 'copy';
+    event.dataTransfer.dropEffect = "copy";
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -289,7 +289,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       const selectedFiles = Array.from(event.target.files);
       setSelectedFile((prevFiles) => [...prevFiles, ...selectedFiles]);
 
-      if (modeOfModal === 'create') {
+      if (modeOfModal === "create") {
         setNewExpense((prev) => ({
           ...prev!,
           files: [...(prev?.files || []), ...selectedFiles],
@@ -303,8 +303,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
     }
   };
 
-  const removeFile = (index: number, type: 'create' | 'edit') => {
-    if (type == 'edit') {
+  const removeFile = (index: number, type: "create" | "edit") => {
+    if (type == "edit") {
       setExpenseToBeUpdated((prev) => ({
         ...prev!,
         newFiles: prev?.newFiles.filter((_, i) => i !== index) || [],
@@ -328,12 +328,12 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   };
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const fieldName = e.currentTarget.name;
     const fieldValue = e.currentTarget.value;
 
-    if (fieldName === 'paymentDate' && fieldValue.length === 0) {
+    if (fieldName === "paymentDate" && fieldValue.length === 0) {
       setNewExpense((prevExpense) => {
         if (!prevExpense) {
           return prevExpense;
@@ -341,10 +341,10 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
 
         return {
           ...prevExpense,
-          paymentDate: 'No Payment Date',
+          paymentDate: "No Payment Date",
         };
       });
-    } else if (fieldName === 'expenseDate' && fieldValue.length === 0) {
+    } else if (fieldName === "expenseDate" && fieldValue.length === 0) {
       setNewExpense((prevExpense) => {
         if (!prevExpense) {
           return prevExpense;
@@ -352,10 +352,10 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
 
         return {
           ...prevExpense,
-          expenseDate: 'No Expense Date',
+          expenseDate: "No Expense Date",
         };
       });
-    } else if (fieldName === 'requestedDate' && fieldValue.length === 0) {
+    } else if (fieldName === "requestedDate" && fieldValue.length === 0) {
       setNewExpense((prevExpense) => {
         if (!prevExpense) {
           return prevExpense;
@@ -363,7 +363,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
 
         return {
           ...prevExpense,
-          requestedDate: 'No Requested Date',
+          requestedDate: "No Requested Date",
         };
       });
     } else {
@@ -385,16 +385,16 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   };
   const handleFilesToBeDeletedWhileUpdating_Undo = (fileId: string) => {
     setFilesToBeDeletedWhileUpdating((prev) =>
-      prev.filter((id) => id !== fileId)
+      prev.filter((id) => id !== fileId),
     );
   };
   const handleUpdateChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const fieldName = e.currentTarget.name;
     const fieldValue = e.currentTarget.value;
 
-    if (fieldName === 'paymentDate' && fieldValue.length === 0) {
+    if (fieldName === "paymentDate" && fieldValue.length === 0) {
       setExpenseToBeUpdated((prevExpense) => {
         if (!prevExpense) {
           return prevExpense;
@@ -402,7 +402,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
 
         return {
           ...prevExpense,
-          paymentDate: 'No Payment Date',
+          paymentDate: "No Payment Date",
         };
       });
     } else if (expenseDate == null) {
@@ -413,10 +413,10 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
 
         return {
           ...prevExpense,
-          expenseDate: 'No Expense Date',
+          expenseDate: "No Expense Date",
         };
       });
-    } else if (fieldName === 'requestedDate' && fieldValue.length === 0) {
+    } else if (fieldName === "requestedDate" && fieldValue.length === 0) {
       setExpenseToBeUpdated((prevExpense) => {
         if (!prevExpense) {
           return prevExpense;
@@ -424,7 +424,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
 
         return {
           ...prevExpense,
-          requestedDate: 'No Requested Date',
+          requestedDate: "No Requested Date",
         };
       });
     } else {
@@ -442,7 +442,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   };
 
   const handleUpdateExpenseSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
+    e: React.FormEvent<HTMLFormElement>,
   ) => {
     e.preventDefault();
     if (props.expense && expenseToBeUpdated) {
@@ -450,69 +450,69 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       const errorMessages = [];
       if (
         expenseToBeUpdated.amount === undefined ||
-        expenseToBeUpdated.amount == ''
+        expenseToBeUpdated.amount == ""
       ) {
-        errorMessages.push('Amount');
+        errorMessages.push("Amount");
       }
       if (
         expenseToBeUpdated.department == undefined ||
-        expenseToBeUpdated.department == ''
+        expenseToBeUpdated.department == ""
       ) {
-        errorMessages.push('department');
+        errorMessages.push("department");
       }
       if (
         expenseToBeUpdated.category == undefined ||
-        expenseToBeUpdated.category == ''
+        expenseToBeUpdated.category == ""
       ) {
-        errorMessages.push('Category');
+        errorMessages.push("Category");
       }
       if (
         expenseToBeUpdated.type == undefined ||
-        expenseToBeUpdated.type == ''
+        expenseToBeUpdated.type == ""
       ) {
-        errorMessages.push('Type');
+        errorMessages.push("Type");
       }
       if (
         expenseToBeUpdated.modeOfPayment == undefined ||
-        expenseToBeUpdated.modeOfPayment == ''
+        expenseToBeUpdated.modeOfPayment == ""
       ) {
-        errorMessages.push('Mode of Payment');
+        errorMessages.push("Mode of Payment");
       }
       if (
         expenseToBeUpdated.paymentMadeBy == undefined ||
-        expenseToBeUpdated.paymentMadeBy == ''
+        expenseToBeUpdated.paymentMadeBy == ""
       ) {
-        errorMessages.push('Payment Made By');
+        errorMessages.push("Payment Made By");
       }
       if (
         expenseToBeUpdated.expenseDate == undefined ||
-        expenseToBeUpdated.expenseDate == 'No Expense Date'
+        expenseToBeUpdated.expenseDate == "No Expense Date"
       ) {
-        errorMessages.push('Expense Date');
+        errorMessages.push("Expense Date");
       }
 
       if (errorMessages.length > 0) {
         handleShowErrorMessage();
-        setResponseErrorMessage('Please fill ' + errorMessages);
+        setResponseErrorMessage("Please fill " + errorMessages);
         return;
       }
 
       const formData = new FormData();
       // Append each field to the FormData object
-      formData.append('department', expenseToBeUpdated.department);
-      formData.append('category', expenseToBeUpdated.category);
-      formData.append('type', expenseToBeUpdated.type);
+      formData.append("department", expenseToBeUpdated.department);
+      formData.append("category", expenseToBeUpdated.category);
+      formData.append("type", expenseToBeUpdated.type);
       if (expenseToBeUpdated.amount) {
-        formData.append('amount', expenseToBeUpdated.amount.toString());
+        formData.append("amount", expenseToBeUpdated.amount.toString());
       }
-      formData.append('currencyCode', expenseToBeUpdated.currencyCode);
-      formData.append('modeOfPayment', expenseToBeUpdated.modeOfPayment);
-      formData.append('merchant', expenseToBeUpdated.merchant);
+      formData.append("currencyCode", expenseToBeUpdated.currencyCode);
+      formData.append("modeOfPayment", expenseToBeUpdated.modeOfPayment);
+      formData.append("merchant", expenseToBeUpdated.merchant);
       if (expenseToBeUpdated.claimed != null) {
-        formData.append('claimed', expenseToBeUpdated.claimed.toString());
+        formData.append("claimed", expenseToBeUpdated.claimed.toString());
       }
-      formData.append('paymentMadeBy', expenseToBeUpdated.paymentMadeBy);
-      formData.append('description', expenseToBeUpdated.description);
+      formData.append("paymentMadeBy", expenseToBeUpdated.paymentMadeBy);
+      formData.append("description", expenseToBeUpdated.description);
 
       // Append files individually to prevent non null exception
       if (
@@ -526,25 +526,25 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
       if (expenseDate != null) {
         formData.append(
-          'expenseDate',
-          formatDateYYYYMMDD(expenseDate.toString())
+          "expenseDate",
+          formatDateYYYYMMDD(expenseDate.toString()),
         );
       }
       if (paymentDate != null) {
         formData.append(
-          'paymentSettled',
-          formatDateYYYYMMDD(paymentDate.toString())
+          "paymentSettled",
+          formatDateYYYYMMDD(paymentDate.toString()),
         );
       }
       if (requestedDate != null) {
         formData.append(
-          'requestedDate',
-          formatDateYYYYMMDD(requestedDate.toString())
+          "requestedDate",
+          formatDateYYYYMMDD(requestedDate.toString()),
         );
       }
       if (filedToBeDeletedWhileUpdating.length > 0) {
         filedToBeDeletedWhileUpdating.forEach((fileId) => {
-          formData.append('deleteFileId', fileId);
+          formData.append("deleteFileId", fileId);
         });
       }
 
@@ -553,29 +553,29 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         await updateExpense(props.expense?.id, formData);
         handleShowSuccessMessage();
         await props.handleLoadExpenses();
-        handleModeOfModal && handleModeOfModal('preview');
+        handleModeOfModal && handleModeOfModal("preview");
         props.handleClose();
       } catch (error) {
         if (axios.isAxiosError(error)) {
           const { response } = error;
           if (response) {
-            if (response.data.startsWith('At least one receipt is required')) {
+            if (response.data.startsWith("At least one receipt is required")) {
               setResponseErrorMessage(
-                'ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED'
+                "ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED",
               );
               handleShowErrorMessage();
             } else if (response.status === 403) {
               window.location.reload();
             } else if (response.status === 500) {
               setResponseErrorMessage(
-                'SYSTEM_IS_FACING_DIFFICULTIES_IN_EXPENSE_CREATION'
+                "SYSTEM_IS_FACING_DIFFICULTIES_IN_EXPENSE_CREATION",
               );
               handleShowErrorMessage();
             } else if (response.status === 413) {
               setResponseErrorMessage(response.data);
               handleShowErrorMessage();
             } else {
-              setResponseErrorMessage('SOMETHING_ERROR_HAPPENED');
+              setResponseErrorMessage("SOMETHING_ERROR_HAPPENED");
               handleShowErrorMessage();
             }
           }
@@ -585,14 +585,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         setIsResponseLoading(false);
       }
     } else {
-      setResponseErrorMessage('PLEASE_FILL_ALL_FIELDS');
+      setResponseErrorMessage("PLEASE_FILL_ALL_FIELDS");
       handleShowErrorMessage();
     }
   };
 
-  const [departments, setDepartments] = useState<string>('');
-  const [categories, setCategories] = useState<string>('');
-  const [types, setTypes] = useState<string>('');
+  const [departments, setDepartments] = useState<string>("");
+  const [categories, setCategories] = useState<string>("");
+  const [types, setTypes] = useState<string>("");
 
   const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
@@ -614,14 +614,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
 
   // changing mode from props
   const [modeOfModal, setModeOfModal] = useState(props.mode);
-  const handleModeOfModal = (mode: 'edit' | 'preview' | 'create') => {
-    mode === 'preview'
-      ? props.handleModeOfModal && props.handleModeOfModal('Expense Preview')
+  const handleModeOfModal = (mode: "edit" | "preview" | "create") => {
+    mode === "preview"
+      ? props.handleModeOfModal && props.handleModeOfModal("Expense Preview")
       : setModeOfModal(mode);
   };
 
   const [checkClaim, setCheckClaim] = useState(
-    modeOfModal === 'edit' ? props.expense?.claimed : false
+    modeOfModal === "edit" ? props.expense?.claimed : false,
   );
   const handleClaimCheck = () => {
     setCheckClaim(!checkClaim);
@@ -636,7 +636,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   };
 
   const [checkUpdateClaim, setCheckUpdateClaim] = useState(
-    props.expense?.claimed
+    props.expense?.claimed,
   );
 
   const handleUpdateClaimCheck = () => {
@@ -656,14 +656,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       calendarFromRef.current &&
       !calendarFromRef.current.contains(event.target as Node)
     ) {
-      handleCalenderOpen(false, 'expense');
+      handleCalenderOpen(false, "expense");
     }
   };
   useEffect(() => {
-    document.addEventListener('click', handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
 
     return () => {
-      document.removeEventListener('click', handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -674,14 +674,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       calendarPaymentRef.current &&
       !calendarPaymentRef.current.contains(event.target as Node)
     ) {
-      handleCalenderOpen(false, 'payment');
+      handleCalenderOpen(false, "payment");
     }
   };
   useEffect(() => {
-    document.addEventListener('click', handleClickOutsidePayment);
+    document.addEventListener("click", handleClickOutsidePayment);
 
     return () => {
-      document.removeEventListener('click', handleClickOutsidePayment);
+      document.removeEventListener("click", handleClickOutsidePayment);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -692,14 +692,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       calendarRequestedRef.current &&
       !calendarRequestedRef.current.contains(event.target as Node)
     ) {
-      handleCalenderOpen(false, 'requested');
+      handleCalenderOpen(false, "requested");
     }
   };
   useEffect(() => {
-    document.addEventListener('click', handleClickOutsideRequested);
+    document.addEventListener("click", handleClickOutsideRequested);
 
     return () => {
-      document.removeEventListener('click', handleClickOutsideRequested);
+      document.removeEventListener("click", handleClickOutsideRequested);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -711,11 +711,11 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
     useState<boolean>(false);
   const handleCalenderOpen = (
     isOpen: boolean,
-    calenderType: 'expense' | 'payment' | 'requested'
+    calenderType: "expense" | "payment" | "requested",
   ) => {
-    if (calenderType == 'expense') {
+    if (calenderType == "expense") {
       setIsCalenderOpen(isOpen);
-    } else if (calenderType == 'payment') {
+    } else if (calenderType == "payment") {
       setIsPaymentCalenderOpen(isOpen);
     } else {
       setIsRequestedCalenderOpen(isOpen);
@@ -725,36 +725,36 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const [requestedDate, setRequestedDate] = useState<Date | null>();
   const [paymentDate, setPaymentDate] = useState<Date | null>();
   useEffect(() => {
-    if (modeOfModal == 'edit' && props.expense) {
+    if (modeOfModal == "edit" && props.expense) {
       setExpenseDate(
-        new Date(formatDateYYYYMMDD(props.expense?.expenseDate.toString()))
+        new Date(formatDateYYYYMMDD(props.expense?.expenseDate.toString())),
       );
       if (props.expense && props.expense.paymentDate) {
         setPaymentDate(
-          new Date(formatDateYYYYMMDD(props.expense?.paymentDate.toString()))
+          new Date(formatDateYYYYMMDD(props.expense?.paymentDate.toString())),
         );
       }
       setRequestedDate(
-        new Date(formatDateYYYYMMDD(props.expense?.requestedDate.toString()))
+        new Date(formatDateYYYYMMDD(props.expense?.requestedDate.toString())),
       );
     }
   }, [modeOfModal, props.expense, props.expense?.expenseDate]);
 
   useKeyPress(27, () => {
-    if (modeOfModal === 'preview') {
+    if (modeOfModal === "preview") {
       props.handleClose();
     }
   });
   useEffect(() => {
-    if ((props.mode === 'preview' || props.mode === 'edit') && props.expense) {
-      setDepartments(props.expense.department || '');
-      setCategories(props.expense.category || '');
-      setTypes(props.expense.type || '');
+    if ((props.mode === "preview" || props.mode === "edit") && props.expense) {
+      setDepartments(props.expense.department || "");
+      setCategories(props.expense.category || "");
+      setTypes(props.expense.type || "");
     }
   }, [props.mode, props.expense]);
 
-  useKeyCtrl('s', () =>
-    handleExpenseSubmit(event as unknown as React.FormEvent<HTMLFormElement>)
+  useKeyCtrl("s", () =>
+    handleExpenseSubmit(event as unknown as React.FormEvent<HTMLFormElement>),
   );
   useKeyPress(27, () => {
     props.handleClose();
@@ -762,7 +762,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   return (
     <ExpenseAddFormMainContainer
       onSubmit={
-        props.mode === 'create'
+        props.mode === "create"
           ? handleExpenseSubmit
           : handleUpdateExpenseSubmit
       }
@@ -771,8 +771,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         <div>
           <InputLabelContainer>
             <label>
-              {t('DEPARTMENT')}{' '}
-              {modeOfModal !== 'preview' && (
+              {t("DEPARTMENT")}{" "}
+              {modeOfModal !== "preview" && (
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
@@ -782,29 +782,29 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               value={departments}
               onChange={(e) => {
                 handleDepartmentChange(e);
-                props.mode === 'create'
+                props.mode === "create"
                   ? handleChange(e)
                   : handleUpdateChange(e);
               }}
               onKeyPress={(event) => {
-                if (event.key === 'Enter') {
+                if (event.key === "Enter") {
                   event.preventDefault();
                 }
               }}
-              disabled={modeOfModal === 'preview'}
+              disabled={modeOfModal === "preview"}
             >
-              {modeOfModal === 'preview' &&
+              {modeOfModal === "preview" &&
               props.expense?.department === null ? (
                 <option value="-">-</option>
               ) : (
                 <>
-                  <option value="">{t('SELECT_DEPARTMENT')}</option>
+                  <option value="">{t("SELECT_DEPARTMENT")}</option>
                   {props.expenseDepartments.values.map((internalValue) => (
                     <option
                       key={internalValue.value}
                       value={internalValue.value}
                       selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
+                        (modeOfModal === "edit" || modeOfModal === "preview") &&
                         props.expense?.department === internalValue.value
                       }
                     >
@@ -817,8 +817,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
           </InputLabelContainer>
           <InputLabelContainer>
             <label>
-              {t('TYPE_OF_EXPENSE')}{' '}
-              {modeOfModal !== 'preview' && (
+              {t("TYPE_OF_EXPENSE")}{" "}
+              {modeOfModal !== "preview" && (
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
@@ -828,28 +828,28 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               value={types}
               onChange={(e) => {
                 handleTypeChange(e);
-                props.mode === 'create'
+                props.mode === "create"
                   ? handleChange(e)
                   : handleUpdateChange(e);
               }}
               onKeyPress={(event) => {
-                if (event.key === 'Enter') {
+                if (event.key === "Enter") {
                   event.preventDefault();
                 }
               }}
-              disabled={modeOfModal === 'preview'}
+              disabled={modeOfModal === "preview"}
             >
-              {modeOfModal === 'preview' && props.expense?.type === null ? (
+              {modeOfModal === "preview" && props.expense?.type === null ? (
                 <option value="-">-</option>
               ) : (
                 <>
-                  <option value="">{t('SELECT_TYPE')}</option>
+                  <option value="">{t("SELECT_TYPE")}</option>
                   {props.expenseTypes.values?.map((type) => (
                     <option
                       key={type.value}
                       value={type.value}
                       selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
+                        (modeOfModal === "edit" || modeOfModal === "preview") &&
                         props.expense?.type === type.value
                       }
                     >
@@ -862,8 +862,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
           </InputLabelContainer>
           <InputLabelContainer>
             <label>
-              {t('MODE_OF_PAYMENT')}{' '}
-              {modeOfModal !== 'preview' && (
+              {t("MODE_OF_PAYMENT")}{" "}
+              {modeOfModal !== "preview" && (
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
@@ -875,22 +875,22 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 (newExpense && newExpense.modeOfPayment)
               }
               onChange={
-                props.mode === 'create' ? handleChange : handleUpdateChange
+                props.mode === "create" ? handleChange : handleUpdateChange
               }
               onKeyPress={(event) => {
-                if (event.key === 'Enter') {
+                if (event.key === "Enter") {
                   event.preventDefault();
                 }
               }}
-              disabled={modeOfModal === 'preview'}
+              disabled={modeOfModal === "preview"}
             >
-              <option value="">{t('SELECT_MODE')}</option>
+              <option value="">{t("SELECT_MODE")}</option>
               {props.expensePaymentModes?.values?.map((mode) => (
                 <option
                   key={mode.value}
                   value={mode.value}
                   selected={
-                    (modeOfModal === 'edit' || modeOfModal === 'preview') &&
+                    (modeOfModal === "edit" || modeOfModal === "preview") &&
                     props.expense?.modeOfPayment === mode.value
                   }
                 >
@@ -901,8 +901,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
           </InputLabelContainer>
           <InputLabelContainer>
             <label>
-              {t('WHO_MADE_PAYMENT')}{' '}
-              {modeOfModal !== 'preview' && (
+              {t("WHO_MADE_PAYMENT")}{" "}
+              {modeOfModal !== "preview" && (
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
@@ -910,75 +910,75 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               className="selectoption largeSelectOption"
               name="paymentMadeBy"
               onChange={
-                props.mode === 'create' ? handleChange : handleUpdateChange
+                props.mode === "create" ? handleChange : handleUpdateChange
               }
               onKeyPress={(event) => {
-                if (event.key === 'Enter') {
+                if (event.key === "Enter") {
                   event.preventDefault();
                 }
               }}
-              disabled={modeOfModal === 'preview' && true}
+              disabled={modeOfModal === "preview" && true}
             >
-              <option value="">{t('SELECT')}</option>
+              <option value="">{t("SELECT")}</option>
               <option
                 value="Accounts Manager"
                 selected={
-                  (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                  props.expense?.paymentMadeBy === 'Accounts Manager'
+                  (modeOfModal === "edit" || modeOfModal === "preview") &&
+                  props.expense?.paymentMadeBy === "Accounts Manager"
                 }
               >
-                {t('ACCOUNTS_MANAGER')}
+                {t("ACCOUNTS_MANAGER")}
               </option>
               <option
                 value="Super Admin"
                 selected={
-                  (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                  props.expense?.paymentMadeBy === 'Super Admin'
+                  (modeOfModal === "edit" || modeOfModal === "preview") &&
+                  props.expense?.paymentMadeBy === "Super Admin"
                 }
               >
-                {t('SUPER_ADMIN')}
+                {t("SUPER_ADMIN")}
               </option>
             </select>
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t('REQUESTED_DATE')}</label>
+            <label>{t("REQUESTED_DATE")}</label>
             <span ref={calendarRequestedRef} className="calendarField">
               <TextInput
                 type="text"
                 placeholder="Enter Date"
                 name="requestedDate"
                 onChange={
-                  modeOfModal === 'create' ? handleChange : handleUpdateChange
+                  modeOfModal === "create" ? handleChange : handleUpdateChange
                 }
                 onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     event.preventDefault();
                   }
                 }}
                 min={
-                  modeOfModal === 'edit'
+                  modeOfModal === "edit"
                     ? expenseToBeUpdated?.expenseDate.slice(0, 10)
                     : newExpense?.expenseDate
                 }
                 max={getCurrentDate()}
-                className={modeOfModal === 'preview' ? 'disabledPreview' : ''}
+                className={modeOfModal === "preview" ? "disabledPreview" : ""}
                 value={
                   requestedDate
                     ? formatDate(requestedDate.toString())
-                    : modeOfModal === 'preview' &&
+                    : modeOfModal === "preview" &&
                         props.expense &&
                         props.expense.requestedDate
                       ? formatDate(props.expense?.requestedDate.toString())
-                      : ''
+                      : ""
                 }
-                onFocus={() => handleCalenderOpen(true, 'requested')}
+                onFocus={() => handleCalenderOpen(true, "requested")}
                 disabled={expenseDate == null}
                 autoComplete="off"
               />
               <span
                 className="iconArea"
                 onClick={() =>
-                  expenseDate && handleCalenderOpen(true, 'requested')
+                  expenseDate && handleCalenderOpen(true, "requested")
                 }
               >
                 <CalenderIconDark />
@@ -986,12 +986,12 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               <div className="calendarSpace" ref={calendarRequestedRef}>
                 {isRequestedCalenderOpen && (
                   <Calendar
-                    title={t('REQUESTED_DATE')}
+                    title={t("REQUESTED_DATE")}
                     minDate={expenseDate ? expenseDate : null}
                     maxDate={new Date()}
                     handleDateInput={(selectedDate) => {
                       setRequestedDate(selectedDate);
-                      handleCalenderOpen(false, 'requested');
+                      handleCalenderOpen(false, "requested");
                       if (
                         selectedDate &&
                         paymentDate &&
@@ -1002,7 +1002,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                     }}
                     selectedDate={requestedDate ? requestedDate : null}
                     handleCalenderChange={function (): void {
-                      throw new Error(t('FUNCTION_NOT_IMPLEMENTED'));
+                      throw new Error(t("FUNCTION_NOT_IMPLEMENTED"));
                     }}
                   />
                 )}
@@ -1010,53 +1010,53 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
             </span>
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t('DESCRIPTION')}</label>
+            <label>{t("DESCRIPTION")}</label>
             <TextInput
-              className={modeOfModal === 'preview' ? 'disabledPreview' : ''}
+              className={modeOfModal === "preview" ? "disabledPreview" : ""}
               type="text"
-              placeholder={t('DESCRIPTION_OPTIONAL')}
+              placeholder={t("DESCRIPTION_OPTIONAL")}
               name="description"
               onChange={
-                props.mode === 'create' ? handleChange : handleUpdateChange
+                props.mode === "create" ? handleChange : handleUpdateChange
               }
               onKeyPress={(event) => {
-                if (event.key === 'Enter') {
+                if (event.key === "Enter") {
                   event.preventDefault();
                 }
               }}
-              readOnly={modeOfModal === 'preview'}
+              readOnly={modeOfModal === "preview"}
               value={
-                modeOfModal === 'preview'
+                modeOfModal === "preview"
                   ? props.expense?.description
-                    ? props.expense.description === 'undefined'
-                      ? '-'
+                    ? props.expense.description === "undefined"
+                      ? "-"
                       : props.expense.description
-                    : '-'
-                  : modeOfModal === 'edit'
+                    : "-"
+                  : modeOfModal === "edit"
                     ? expenseToBeUpdated?.description &&
-                      expenseToBeUpdated.description !== 'undefined'
+                      expenseToBeUpdated.description !== "undefined"
                       ? expenseToBeUpdated.description
-                      : ''
-                    : newExpense?.description ?? ''
+                      : ""
+                    : newExpense?.description ?? ""
               }
-              disabled={modeOfModal === 'preview'}
+              disabled={modeOfModal === "preview"}
             />
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t('CLAIM_EXPENSE')}</label>
+            <label>{t("CLAIM_EXPENSE")}</label>
             <SwitchLabel>
               <StyledSwitch
                 type="checkbox"
                 onChange={
-                  modeOfModal === 'create'
+                  modeOfModal === "create"
                     ? handleClaimCheck
                     : handleUpdateClaimCheck
                 }
                 name="isClaimed"
-                disabled={modeOfModal === 'preview'}
+                disabled={modeOfModal === "preview"}
                 checked={
-                  modeOfModal === 'create'
-                    ? props.expense && props.mode === 'preview'
+                  modeOfModal === "create"
+                    ? props.expense && props.mode === "preview"
                       ? props.expense.claimed
                       : checkClaim
                     : checkUpdateClaim
@@ -1069,8 +1069,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         <div>
           <InputLabelContainer>
             <label>
-              {t('CATEGORY')}{' '}
-              {modeOfModal !== 'preview' && (
+              {t("CATEGORY")}{" "}
+              {modeOfModal !== "preview" && (
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
@@ -1080,28 +1080,28 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               value={categories}
               onChange={(e) => {
                 handleCategoryChange(e);
-                props.mode === 'create'
+                props.mode === "create"
                   ? handleChange(e)
                   : handleUpdateChange(e);
               }}
               onKeyPress={(event) => {
-                if (event.key === 'Enter') {
+                if (event.key === "Enter") {
                   event.preventDefault();
                 }
               }}
-              disabled={modeOfModal === 'preview'}
+              disabled={modeOfModal === "preview"}
             >
-              {modeOfModal === 'preview' && props.expense?.category === null ? (
+              {modeOfModal === "preview" && props.expense?.category === null ? (
                 <option value="-">-</option>
               ) : (
                 <>
-                  <option value="">{t('SELECT_CATEGORY')}</option>
+                  <option value="">{t("SELECT_CATEGORY")}</option>
                   {props.expenseCategories?.values?.map((category) => (
                     <option
                       key={category.value}
                       value={category.value}
                       selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
+                        (modeOfModal === "edit" || modeOfModal === "preview") &&
                         props.expense?.category === category.value
                       }
                     >
@@ -1114,20 +1114,20 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
           </InputLabelContainer>
           <InputLabelContainer>
             <label>
-              {t('AMOUNT')}{' '}
-              {modeOfModal !== 'preview' && (
+              {t("AMOUNT")}{" "}
+              {modeOfModal !== "preview" && (
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
             <TextInput
-              className={modeOfModal === 'preview' ? 'disabledPreview' : ''}
+              className={modeOfModal === "preview" ? "disabledPreview" : ""}
               type="text"
               name="amount"
               onChange={
-                props.mode === 'create' ? handleChange : handleUpdateChange
+                props.mode === "create" ? handleChange : handleUpdateChange
               }
               onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   e.preventDefault();
                 } else {
                   const isNumeric = /^\d+$/.test(e.key);
@@ -1146,81 +1146,81 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                   ? expenseToBeUpdated.amount
                   : newExpense?.amount
               }
-              placeholder={'Enter Amount (₹)'}
-              disabled={modeOfModal === 'preview' && true}
+              placeholder={"Enter Amount (₹)"}
+              disabled={modeOfModal === "preview" && true}
             />
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t('MERCHANT')}</label>
+            <label>{t("MERCHANT")}</label>
             <TextInput
-              className={modeOfModal === 'preview' ? 'disabledPreview' : ''}
+              className={modeOfModal === "preview" ? "disabledPreview" : ""}
               type="text"
-              placeholder={t('EXAMPLE_FLIPKART')}
+              placeholder={t("EXAMPLE_FLIPKART")}
               name="merchant"
               onChange={
-                props.mode === 'create' ? handleChange : handleUpdateChange
+                props.mode === "create" ? handleChange : handleUpdateChange
               }
               onKeyPress={(event) => {
-                if (event.key === 'Enter') {
+                if (event.key === "Enter") {
                   event.preventDefault();
                 }
               }}
               value={
-                modeOfModal === 'create'
+                modeOfModal === "create"
                   ? newExpense?.merchant
-                  : expenseToBeUpdated?.merchant != 'undefined'
+                  : expenseToBeUpdated?.merchant != "undefined"
                     ? expenseToBeUpdated?.merchant
-                    : ''
+                    : ""
               }
-              disabled={modeOfModal === 'preview' && true}
+              disabled={modeOfModal === "preview" && true}
             />
           </InputLabelContainer>
           <InputLabelContainer ref={calendarFromRef}>
             <label>
-              {t('EXPENSE_DATE')}{' '}
-              {modeOfModal !== 'preview' && (
+              {t("EXPENSE_DATE")}{" "}
+              {modeOfModal !== "preview" && (
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
             <span ref={calendarFromRef} className="calendarField">
               <TextInput
                 type="text"
-                placeholder={t('ENTER_DATE')}
+                placeholder={t("ENTER_DATE")}
                 name="expenseDate"
                 onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     event.preventDefault();
                   }
                 }}
-                className={modeOfModal === 'preview' ? 'disabledPreview' : ''}
-                disabled={modeOfModal === 'preview'}
+                className={modeOfModal === "preview" ? "disabledPreview" : ""}
+                disabled={modeOfModal === "preview"}
                 value={
                   expenseDate
                     ? formatDate(expenseDate.toString())
-                    : modeOfModal === 'preview' && props.expense
+                    : modeOfModal === "preview" && props.expense
                       ? formatDate(props.expense?.expenseDate.toString())
-                      : modeOfModal === 'edit' && expenseToBeUpdated
+                      : modeOfModal === "edit" && expenseToBeUpdated
                         ? formatDate(expenseToBeUpdated.expenseDate.toString())
-                        : ''
+                        : ""
                 }
-                onFocus={() => handleCalenderOpen(true, 'expense')}
+                onFocus={() => handleCalenderOpen(true, "expense")}
                 autoComplete="off"
               />
               <span
                 className="iconArea"
-                onClick={() => handleCalenderOpen(true, 'expense')}
+                onClick={() => handleCalenderOpen(true, "expense")}
               >
                 <CalenderIconDark />
               </span>
               <div className="calendarSpace" ref={calendarFromRef}>
                 {isCalenderOpen && (
                   <Calendar
-                    title={t('EXPENSE_DATE')}
-                    minDate={new Date('01-20-2020')}
+                    title={t("EXPENSE_DATE")}
+                    minDate={new Date("01-20-2020")}
                     maxDate={new Date()}
                     handleDateInput={(selectedDate) => {
                       setExpenseDate(selectedDate);
-                      handleCalenderOpen(false, 'expense');
+                      handleCalenderOpen(false, "expense");
 
                       if (
                         selectedDate &&
@@ -1233,12 +1233,12 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                       // Clearing requested date if selected date is more
                       // than existing request date
                       if (
-                        modeOfModal === 'edit' &&
+                        modeOfModal === "edit" &&
                         props.expense &&
                         selectedDate &&
                         compareTwoDates(
                           selectedDate.toString(),
-                          expenseDate?.toString()
+                          expenseDate?.toString(),
                         )
                       ) {
                         setRequestedDate(null);
@@ -1247,7 +1247,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                     }}
                     selectedDate={expenseDate || null}
                     handleCalenderChange={function (): void {
-                      throw new Error(t('FUNCTION_NOT_IMPLEMENTED'));
+                      throw new Error(t("FUNCTION_NOT_IMPLEMENTED"));
                     }}
                   />
                 )}
@@ -1255,44 +1255,44 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
             </span>
           </InputLabelContainer>
           <InputLabelContainer>
-            <label>{t('PAYMENT_SETTLED')} </label>
+            <label>{t("PAYMENT_SETTLED")} </label>
             <span ref={calendarPaymentRef} className="calendarField">
               <TextInput
                 type="text"
-                placeholder={t('ENTER_DATE')}
+                placeholder={t("ENTER_DATE")}
                 name="paymentDate"
                 onChange={
-                  modeOfModal === 'create' ? handleChange : handleUpdateChange
+                  modeOfModal === "create" ? handleChange : handleUpdateChange
                 }
                 onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     event.preventDefault();
                   }
                 }}
                 min={
-                  modeOfModal === 'edit'
+                  modeOfModal === "edit"
                     ? expenseToBeUpdated?.requestedDate.slice(0, 10)
                     : newExpense?.requestedDate
                 }
                 max={getCurrentDate()}
-                className={modeOfModal === 'preview' ? 'disabledPreview' : ''}
+                className={modeOfModal === "preview" ? "disabledPreview" : ""}
                 value={
                   paymentDate
                     ? formatDate(paymentDate.toString())
-                    : modeOfModal === 'preview' &&
+                    : modeOfModal === "preview" &&
                         props.expense &&
                         props.expense.paymentDate
                       ? formatDate(props.expense.paymentDate.toString())
-                      : ''
+                      : ""
                 }
-                onFocus={() => handleCalenderOpen(true, 'payment')}
+                onFocus={() => handleCalenderOpen(true, "payment")}
                 disabled={requestedDate == null}
                 autoComplete="off"
               />
               <span
                 className="iconArea"
                 onClick={() =>
-                  requestedDate && handleCalenderOpen(true, 'payment')
+                  requestedDate && handleCalenderOpen(true, "payment")
                 }
               >
                 <CalenderIconDark />
@@ -1300,26 +1300,26 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               <div className="calendarSpace" ref={calendarPaymentRef}>
                 {isPaymentCalenderOpen && (
                   <Calendar
-                    title={t('PAYMENT_DATE')}
+                    title={t("PAYMENT_DATE")}
                     minDate={requestedDate ? requestedDate : null}
                     maxDate={new Date()}
                     handleDateInput={(selectedDate) => {
                       setPaymentDate(selectedDate);
-                      handleCalenderOpen(false, 'payment');
+                      handleCalenderOpen(false, "payment");
                     }}
                     selectedDate={paymentDate ? paymentDate : null}
                     handleCalenderChange={function (): void {
-                      throw new Error(t('FUNCTION_NOT_IMPLEMENTED'));
+                      throw new Error(t("FUNCTION_NOT_IMPLEMENTED"));
                     }}
                   />
                 )}
               </div>
             </span>
           </InputLabelContainer>
-          {modeOfModal === 'create' ? (
+          {modeOfModal === "create" ? (
             <InputLabelContainer className="fileInputSelected">
               <div>
-                <label>{t('UPLOAD_RECEIPTS')}</label>{' '}
+                <label>{t("UPLOAD_RECEIPTS")}</label>{" "}
               </div>
               <FileUploadField
                 className="expenseReceiptUpload"
@@ -1330,8 +1330,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                   <div>
                     <UploadReceiptIcon />
                     <div>
-                      {t('DRAG_AND_DROP_OR')}
-                      <span> {t('BROWSE')} </span>
+                      {t("DRAG_AND_DROP_OR")}
+                      <span> {t("BROWSE")} </span>
                     </div>
                   </div>
                 </label>
@@ -1340,18 +1340,18 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                     type="file"
                     accept="application/pdf,image/png,image/jpeg"
                     id="fileInput"
-                    style={{ display: 'none' }}
+                    style={{ display: "none" }}
                     onChange={handleFileChange}
                     multiple
                     onKeyPress={(event) => {
-                      if (event.key === 'Enter') {
+                      if (event.key === "Enter") {
                         event.preventDefault();
                       }
                     }}
                     maxLength={3}
                   />
                 ) : (
-                  <span title={t('MAXIMUM_THREE')}></span>
+                  <span title={t("MAXIMUM_THREE")}></span>
                 )}
               </FileUploadField>
               {selectedFile.length > 0 && (
@@ -1362,7 +1362,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                       <span>{file.name}</span>
                       <span
                         className="redPointer"
-                        onClick={() => removeFile(index, 'create')}
+                        onClick={() => removeFile(index, "create")}
                       >
                         <FormFileCloseIcon />
                       </span>
@@ -1371,13 +1371,13 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 </div>
               )}
               <span className="fileFormatText">
-                {t('EXPENSE_FILE_FORMATS')}
+                {t("EXPENSE_FILE_FORMATS")}
               </span>
             </InputLabelContainer>
-          ) : modeOfModal === 'edit' ? (
+          ) : modeOfModal === "edit" ? (
             <InputLabelContainer className="fileInputSelected">
               <div>
-                <label>{t('UPLOAD_RECEIPTS')}</label>{' '}
+                <label>{t("UPLOAD_RECEIPTS")}</label>{" "}
               </div>
               <FileUploadField
                 className="expenseReceiptUpload"
@@ -1388,8 +1388,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                   <div>
                     <UploadReceiptIcon />
                     <div>
-                      {t('DRAG_AND_DROP_OR')}
-                      <span> {t('BROWSE')} </span>
+                      {t("DRAG_AND_DROP_OR")}
+                      <span> {t("BROWSE")} </span>
                     </div>
                   </div>
                 </label>
@@ -1398,17 +1398,17 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                     type="file"
                     accept="application/pdf,image/png,image/jpeg"
                     id="fileInput"
-                    style={{ display: 'none' }}
+                    style={{ display: "none" }}
                     onChange={handleFileChange}
                     multiple
                     onKeyPress={(event) => {
-                      if (event.key === 'Enter') {
+                      if (event.key === "Enter") {
                         event.preventDefault();
                       }
                     }}
                   />
                 ) : (
-                  <span title={t('MAXIMUM_THREE')}></span>
+                  <span title={t("MAXIMUM_THREE")}></span>
                 )}
               </FileUploadField>
               {props.expense &&
@@ -1421,24 +1421,24 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                         style={{
                           border: `${
                             filedToBeDeletedWhileUpdating.includes(file.id)
-                              ? '1.5px dashed #e74d3c9c'
-                              : '1.5px dashed white'
+                              ? "1.5px dashed #e74d3c9c"
+                              : "1.5px dashed white"
                           }`,
                           padding: filedToBeDeletedWhileUpdating.includes(
-                            file.id
+                            file.id,
                           )
-                            ? '3px 12.5px 3px 12px'
-                            : '6px 12.5px 6px 12px',
+                            ? "3px 12.5px 3px 12px"
+                            : "6px 12.5px 6px 12px",
                         }}
                         title={
                           filedToBeDeletedWhileUpdating.includes(file.id)
-                            ? 'File Deleted'
-                            : ''
+                            ? "File Deleted"
+                            : ""
                         }
                       >
                         {filedToBeDeletedWhileUpdating.includes(file.id) ? (
                           <span
-                            title={t('UNDO_DELETE')}
+                            title={t("UNDO_DELETE")}
                             onClick={() =>
                               handleFilesToBeDeletedWhileUpdating_Undo(file.id)
                             }
@@ -1471,7 +1471,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                       <span>{file.name}</span>
                       <span
                         className="redPointer"
-                        onClick={() => removeFile(index, 'edit')}
+                        onClick={() => removeFile(index, "edit")}
                       >
                         <FormFileCloseIcon />
                       </span>
@@ -1480,13 +1480,13 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 </div>
               )}
               <span className="fileFormatText">
-                {t('EXPENSE_FILE_FORMATS')}
+                {t("EXPENSE_FILE_FORMATS")}
               </span>
             </InputLabelContainer>
           ) : (
             <InputLabelContainer>
               <div>
-                <label>{t('UPLOADED_RECEIPTS')}</label>{' '}
+                <label>{t("UPLOADED_RECEIPTS")}</label>{" "}
               </div>
               {props.expense &&
                 props.expense.files &&
@@ -1502,7 +1502,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                               expenseReceiptPreview(
                                 file.name,
                                 file.id,
-                                file.name.split('.').pop()
+                                file.name.split(".").pop(),
                               );
                             }}
                           >
@@ -1524,36 +1524,36 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
           onClick={() => {
             props.handleClose();
             props.handleModeOfModal &&
-              props.handleModeOfModal('Expense Preview');
+              props.handleModeOfModal("Expense Preview");
           }}
         >
-          {t('CANCEL')}
+          {t("CANCEL")}
         </Button>
 
-        {modeOfModal === 'create' ? (
+        {modeOfModal === "create" ? (
           <Button fontSize="16px" className="submit">
-            {t('SUBMIT')}
+            {t("SUBMIT")}
           </Button>
-        ) : modeOfModal === 'edit' &&
+        ) : modeOfModal === "edit" &&
           user &&
           hasPermission(user, EXPENSE_MODULE.UPDATE_EXPENSE) ? (
           <Button fontSize="16px" className="submit">
-            {t('UPDATE')}
+            {t("UPDATE")}
           </Button>
         ) : user && hasPermission(user, EXPENSE_MODULE.UPDATE_EXPENSE) ? (
           // <div className="submitButton">Save Changes</div>
           <div
             className="submitButton"
             onClick={() => {
-              handleModeOfModal('edit');
+              handleModeOfModal("edit");
               props.handleModeOfModal &&
-                props.handleModeOfModal('Edit Expense');
+                props.handleModeOfModal("Edit Expense");
             }}
           >
-            {t('EDIT')}
+            {t("EDIT")}
           </div>
         ) : (
-          ''
+          ""
         )}
       </div>
       {showErrorMessage && (
@@ -1567,15 +1567,15 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody={'THE_EXPENSE_HAS_BEEN_ADDED'}
-          messageHeading={'SUCCESSFULLY_ADDED'}
+          messageBody={"THE_EXPENSE_HAS_BEEN_ADDED"}
+          messageHeading={"SUCCESSFULLY_ADDED"}
           handleClose={handleShowSuccessMessage}
         />
       )}
       {isExpenseReceiptPreviewModalOpen &&
         (!isDocumentPreviewResponseLoading && images ? (
           <DocumentPreviewMain
-            heading={t('RECEIPT_PREVIEW')}
+            heading={t("RECEIPT_PREVIEW")}
             subHeading={name}
             modalSVG={
               props.expense &&

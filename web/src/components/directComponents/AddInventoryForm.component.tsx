@@ -1,25 +1,23 @@
-import { useEffect, useRef, useState } from 'react';
-import { Button } from '../../styles/CommonStyles.style';
+import { useEffect, useRef, useState } from "react";
+import { Button } from "../../styles/CommonStyles.style";
 import {
   InputLabelContainer,
   TextInput,
   ValidationText,
-} from '../../styles/DocumentTabStyles.style';
-import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
-import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
-import Calendar from '../reusableComponents/Calendar.component';
-import { postInventory } from '../../service/axiosInstance';
-import ToastMessage from '../reusableComponents/ToastMessage.component';
-import { DeviceDetails } from '../../entities/InventoryEntity';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import axios from 'axios';
-import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
-import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
-import {
-  Availability
-} from '../reusableComponents/InventoryEnums.component';
-import { OrganizationValues } from '../../entities/OrgValueEntity';
-import { useTranslation } from 'react-i18next';
+} from "../../styles/DocumentTabStyles.style";
+import { ExpenseAddFormMainContainer } from "../../styles/ExpenseManagementStyles.style";
+import { CalenderIconDark } from "../../svgs/ExpenseListSvgs.svg";
+import Calendar from "../reusableComponents/Calendar.component";
+import { postInventory } from "../../service/axiosInstance";
+import ToastMessage from "../reusableComponents/ToastMessage.component";
+import { DeviceDetails } from "../../entities/InventoryEntity";
+import SpinAnimation from "../loaders/SprinAnimation.loader";
+import axios from "axios";
+import useKeyCtrl from "../../service/keyboardShortcuts/onKeySave";
+import useKeyPress from "../../service/keyboardShortcuts/onKeyPress";
+import { Availability } from "../reusableComponents/InventoryEnums.component";
+import { OrganizationValues } from "../../entities/OrgValueEntity";
+import { useTranslation } from "react-i18next";
 
 type AddInventoryFormProps = {
   handleClose: () => void;
@@ -43,23 +41,23 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
     setIsCalenderOpen(isOpen);
   };
 
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const formatDate = (date: Date): string => {
     const options: Intl.DateTimeFormatOptions = {
-      month: 'short',
-      day: '2-digit',
-      year: 'numeric',
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
     };
-    return new Intl.DateTimeFormat('en-US', options).format(date);
+    return new Intl.DateTimeFormat("en-US", options).format(date);
   };
 
   const [dateOfPurchase, setDateOfPurchase] = useState<Date | null>(null);
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = event.target;
-    if (name === 'purchaseDate') {
+    if (name === "purchaseDate") {
       setDateOfPurchase(value ? new Date(value) : null);
     } else {
       setFormData((prevState) => ({
@@ -87,11 +85,11 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
     } catch (error) {
       if (
         axios.isAxiosError(error) &&
-        error.response?.data.startsWith('Product ID already exists')
+        error.response?.data.startsWith("Product ID already exists")
       ) {
-        setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
+        setErrorMessage("PRODUCT_ID_ALREADY_EXIST");
       } else {
-        setErrorMessage('INVENTORY_NOT_UPLOADED');
+        setErrorMessage("INVENTORY_NOT_UPLOADED");
       }
       setIsResponseLoading(false);
       handleShowErrorMessage();
@@ -107,13 +105,13 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
         setIsCalenderOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-  useKeyCtrl('s', () =>
-    handleSubmitData(event as unknown as React.FormEvent<HTMLFormElement>)
+  useKeyCtrl("s", () =>
+    handleSubmitData(event as unknown as React.FormEvent<HTMLFormElement>),
   );
   useKeyPress(27, () => {
     props.handleClose();
@@ -127,7 +125,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
           <div>
             <InputLabelContainer>
               <label>
-                {t('DEVICE')}
+                {t("DEVICE")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <select
@@ -137,7 +135,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 onChange={handleChange}
                 required
               >
-                <option value="">{t('SELECT_DEVICE')}</option>
+                <option value="">{t("SELECT_DEVICE")}</option>
                 {props.deviceTypes.values?.map((deviceType) => (
                   <option key={deviceType.value} value={deviceType.value}>
                     {deviceType.value}
@@ -145,10 +143,10 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 ))}
               </select>
             </InputLabelContainer>
-            {formData.device === 'Accessories' && (
+            {formData.device === "Accessories" && (
               <InputLabelContainer>
                 <label>
-                  {t('ACCESSORY_TYPE')}
+                  {t("ACCESSORY_TYPE")}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <select
@@ -169,7 +167,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
             )}
             <InputLabelContainer>
               <label>
-                {t('TYPE')}
+                {t("TYPE")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <select
@@ -179,20 +177,20 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 onChange={handleChange}
                 required
               >
-                <option value="">{t('SELECT_TYPE')}</option>
-                <option value="New">{t('NEW')}</option>
-                <option value="Old">{t('OLD')}</option>
+                <option value="">{t("SELECT_TYPE")}</option>
+                <option value="New">{t("NEW")}</option>
+                <option value="Old">{t("OLD")}</option>
               </select>
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('SPECIFICATIONS')}
+                {t("SPECIFICATIONS")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
                 name="specifications"
-                placeholder={t('EXAMPLE_16_INCH_DISPLAY')}
+                placeholder={t("EXAMPLE_16_INCH_DISPLAY")}
                 className="largeInput"
                 value={formData.specifications}
                 onChange={handleChange}
@@ -201,7 +199,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('AVAILABILITY')}
+                {t("AVAILABILITY")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <select
@@ -211,22 +209,22 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 onChange={handleChange}
                 required
               >
-                <option value="">{t('SELECT_AVAILABILITY')}</option>
-                <option value="Yes">{t('YES')}</option>
-                <option value="No">{t('NO')}</option>
+                <option value="">{t("SELECT_AVAILABILITY")}</option>
+                <option value="Yes">{t("YES")}</option>
+                <option value="No">{t("NO")}</option>
               </select>
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('DATE_OF_PURCHASE')}
+                {t("DATE_OF_PURCHASE")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <span ref={calendarFromRef} className="calendarField">
                 <TextInput
                   type="text"
-                  placeholder={t('ENTER_DATE')}
+                  placeholder={t("ENTER_DATE")}
                   name="dateOfPurchase"
-                  value={dateOfPurchase ? formatDate(dateOfPurchase) : ''}
+                  value={dateOfPurchase ? formatDate(dateOfPurchase) : ""}
                   onFocus={() => handleCalenderOpen(true)}
                   required
                   autoComplete="off"
@@ -240,7 +238,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 <div className="calendarSpace" ref={calendarFromRef}>
                   {isCalenderOpen && (
                     <Calendar
-                      title={t('PURCHASE_DATE')}
+                      title={t("PURCHASE_DATE")}
                       handleDateInput={(selectedDate) => {
                         if (selectedDate instanceof Date) {
                           setDateOfPurchase(selectedDate);
@@ -253,7 +251,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                       }}
                       selectedDate={dateOfPurchase}
                       maxDate={new Date()}
-                      handleCalenderChange={() => { }}
+                      handleCalenderChange={() => {}}
                     />
                   )}
                 </div>
@@ -261,7 +259,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('PRICE')}
+                {t("PRICE")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
@@ -274,17 +272,17 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                   const allowedCharacters = /^[0-9.]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'ArrowLeft' &&
-                    event.key !== 'ArrowRight' &&
-                    event.key !== 'Backspace'
+                    event.key !== "ArrowLeft" &&
+                    event.key !== "ArrowRight" &&
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
-                  if (event.key === 'e') {
+                  if (event.key === "e") {
                     event.preventDefault();
                   }
                 }}
-                placeholder={t('ENTER_PRICE')}
+                placeholder={t("ENTER_PRICE")}
                 required
               />
             </InputLabelContainer>
@@ -292,7 +290,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
           <div>
             <InputLabelContainer>
               <label>
-                {t('PROVIDER')}
+                {t("PROVIDER")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <select
@@ -302,9 +300,12 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 onChange={handleChange}
                 required
               >
-                <option value="">{t('SELECT_INVENTORY_PROVIDER')}</option>
+                <option value="">{t("SELECT_INVENTORY_PROVIDER")}</option>
                 {props.inventoryProviders.values?.map((inventoryProvider) => (
-                  <option key={inventoryProvider.value} value={inventoryProvider.value}>
+                  <option
+                    key={inventoryProvider.value}
+                    value={inventoryProvider.value}
+                  >
                     {inventoryProvider.value}
                   </option>
                 ))}
@@ -312,13 +313,13 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('MODEL')}
+                {t("MODEL")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
                 name="model"
-                placeholder={t('EXAMPLE_M3_PRO')}
+                placeholder={t("EXAMPLE_M3_PRO")}
                 className="largeInput"
                 value={formData.model}
                 onChange={handleChange}
@@ -328,8 +329,8 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
             <InputLabelContainer>
               <label>
                 OS
-                {['Desktop', 'MUSIC_SYSTEM', 'Printer', 'Accessories'].includes(
-                  formData.device
+                {["Desktop", "MUSIC_SYSTEM", "Printer", "Accessories"].includes(
+                  formData.device,
                 ) ? null : (
                   <ValidationText className="star">*</ValidationText>
                 )}
@@ -337,68 +338,67 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
               <TextInput
                 type="text"
                 name="os"
-                placeholder={t('EXAMPLE_MAC_OS')}
-                value={formData.os ? formData.os : ''}
+                placeholder={t("EXAMPLE_MAC_OS")}
+                value={formData.os ? formData.os : ""}
                 className="largeInput"
                 onChange={handleChange}
                 disabled={
                   !(
-                    formData.device === 'Desktops' ||
-                    formData.device === 'Laptops' ||
-                    formData.device === 'Mobiles' ||
-                    formData.device === 'Tablets' ||
-                    formData.device === 'Desktop' ||
-                    formData.device === 'Laptop' ||
-                    formData.device === 'Mobile' ||
-                    formData.device === 'Tablet'
+                    formData.device === "Desktops" ||
+                    formData.device === "Laptops" ||
+                    formData.device === "Mobiles" ||
+                    formData.device === "Tablets" ||
+                    formData.device === "Desktop" ||
+                    formData.device === "Laptop" ||
+                    formData.device === "Mobile" ||
+                    formData.device === "Tablet"
                   )
                 }
-
                 required={
                   ![
-                    'Printer',
-                    'MUSIC_SYSTEM',
-                    'Desktop',
-                    'Accessories',
+                    "Printer",
+                    "MUSIC_SYSTEM",
+                    "Desktop",
+                    "Accessories",
                   ].includes(formData.device)
                 }
               />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('RAM')}
-                {['Desktop', 'MUSIC_SYSTEM', 'Printer', 'Accessories'].includes(
-                  formData.device
+                {t("RAM")}
+                {["Desktop", "MUSIC_SYSTEM", "Printer", "Accessories"].includes(
+                  formData.device,
                 ) ? null : (
                   <ValidationText className="star">*</ValidationText>
                 )}
               </label>
               <TextInput
                 type="text"
-                placeholder={t('ENTER_IN_GB')}
+                placeholder={t("ENTER_IN_GB")}
                 name="ram"
-                value={formData.ram ? formData.ram : ''}
+                value={formData.ram ? formData.ram : ""}
                 className="largeInput"
                 onChange={handleChange}
-                disabled={formData.device === 'Accessories'}
+                disabled={formData.device === "Accessories"}
                 autoComplete="off"
                 required={
                   ![
-                    'Printer',
-                    'Desktop',
-                    'MUSIC_SYSTEM',
-                    'Accessories',
+                    "Printer",
+                    "Desktop",
+                    "MUSIC_SYSTEM",
+                    "Accessories",
                   ].includes(formData.device)
                 }
                 onKeyDown={(event) => {
                   const allowedCharacters = /^[0-9.-]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
-                  if (event.key === 'e') {
+                  if (event.key === "e") {
                     event.preventDefault();
                   }
                 }}
@@ -406,13 +406,13 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('PRODUCT_ID_SERIAL_NUMBER')}
+                {t("PRODUCT_ID_SERIAL_NUMBER")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
                 name="productId"
-                placeholder={t('ENTER_PRODUCT_ID_OF_DEVICE')}
+                placeholder={t("ENTER_PRODUCT_ID_OF_DEVICE")}
                 className="largeInput"
                 value={formData.productId}
                 onChange={handleChange}
@@ -420,21 +420,21 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
               />
             </InputLabelContainer>
             <InputLabelContainer>
-              <label>{t('COMMENTS')}</label>
+              <label>{t("COMMENTS")}</label>
               <TextInput
                 type="text"
                 name="comments"
                 value={formData.comments}
                 className="largeInput"
-                placeholder={t('TYPE_YOUR_COMMENTS_HERE_OPTIONAL')}
+                placeholder={t("TYPE_YOUR_COMMENTS_HERE_OPTIONAL")}
                 onChange={handleChange}
               />
             </InputLabelContainer>
           </div>
         </div>
         <div className="formButtons">
-          <Button onClick={props.handleClose}>{t('CANCEL')}</Button>
-          <Button className="submit">{t('SUBMIT')}</Button>
+          <Button onClick={props.handleClose}>{t("CANCEL")}</Button>
+          <Button className="submit">{t("SUBMIT")}</Button>
         </div>
       </ExpenseAddFormMainContainer>
       {showErrorMessage && (
