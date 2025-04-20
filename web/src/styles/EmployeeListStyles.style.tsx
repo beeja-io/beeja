@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const EmployeeListContainer = styled.section`
   .profilePicArea {
@@ -157,7 +157,7 @@ export const Monogram = styled.span`
   }
 
   &.unique-monogram--hover-enabled:hover::after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: 0;
     left: 0;

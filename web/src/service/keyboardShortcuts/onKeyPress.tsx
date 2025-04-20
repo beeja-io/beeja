@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 const useKeyPress = (keyCode: number, callback: () => void) => {
   useEffect(() => {
@@ -7,16 +7,16 @@ const useKeyPress = (keyCode: number, callback: () => void) => {
       if (
         event.keyCode === keyCode &&
         activeElement &&
-        activeElement.tagName !== 'INPUT' &&
-        activeElement.tagName !== 'TEXTAREA'
+        activeElement.tagName !== "INPUT" &&
+        activeElement.tagName !== "TEXTAREA"
       ) {
         callback();
       }
     };
 
-    document.addEventListener('keydown', handleKeyPress);
+    document.addEventListener("keydown", handleKeyPress);
     return () => {
-      document.removeEventListener('keydown', handleKeyPress);
+      document.removeEventListener("keydown", handleKeyPress);
     };
   }, [keyCode, callback]);
 };

@@ -1,10 +1,10 @@
 import {
   CenterModalContainer,
   CenterModalTypeTwoInnerContainer,
-} from '../../styles/CenterModalStyles.style';
-import { CenterModalCloseSVG } from '../../svgs/CommonSvgs.svs';
-import DocumentPreview from '../directComponents/DocumentPreview.component';
-import { Expense } from '../../entities/ExpenseEntity';
+} from "../../styles/CenterModalStyles.style";
+import { CenterModalCloseSVG } from "../../svgs/CommonSvgs.svs";
+import DocumentPreview from "../directComponents/DocumentPreview.component";
+import { Expense } from "../../entities/ExpenseEntity";
 
 type CenterModalProps = {
   heading: string;

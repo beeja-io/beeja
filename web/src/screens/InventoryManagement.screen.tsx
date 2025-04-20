@@ -1,30 +1,30 @@
-import { useNavigate } from 'react-router-dom';
-import { Button } from '../styles/CommonStyles.style';
+import { useNavigate } from "react-router-dom";
+import { Button } from "../styles/CommonStyles.style";
 import {
   ExpenseHeadingSection,
   ExpenseManagementMainContainer,
-} from '../styles/ExpenseManagementStyles.style';
-import { ArrowDownSVG, VectorSVG } from '../svgs/CommonSvgs.svs';
-import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
-import { useEffect, useState, useCallback } from 'react';
-import CenterModalMain from '../components/reusableComponents/CenterModalMain.component';
-import AddInventoryForm from '../components/directComponents/AddInventoryForm.component';
-import InventoryList from './InventoryList.screen';
+} from "../styles/ExpenseManagementStyles.style";
+import { ArrowDownSVG, VectorSVG } from "../svgs/CommonSvgs.svs";
+import { AddNewPlusSVG } from "../svgs/EmployeeListSvgs.svg";
+import { useEffect, useState, useCallback } from "react";
+import CenterModalMain from "../components/reusableComponents/CenterModalMain.component";
+import AddInventoryForm from "../components/directComponents/AddInventoryForm.component";
+import InventoryList from "./InventoryList.screen";
 import {
   getInventory,
   getOrganizationValuesByKey,
-} from '../service/axiosInstance';
-import ToastMessage from '../components/reusableComponents/ToastMessage.component';
-import useKeyPress from '../service/keyboardShortcuts/onKeyPress';
-import { hasPermission } from '../utils/permissionCheck';
-import { INVENTORY_MODULE } from '../constants/PermissionConstants';
-import { useUser } from '../context/UserContext';
-import { AllInventoryResponse } from '../entities/respponses/AllInventoryItemResponse';
-import { DeviceDetails } from '../entities/InventoryEntity';
-import { ExpenseFilterArea } from '../styles/ExpenseListStyles.style';
-import { useTranslation } from 'react-i18next';
-import { toast } from 'sonner';
-import { OrganizationValues } from '../entities/OrgValueEntity';
+} from "../service/axiosInstance";
+import ToastMessage from "../components/reusableComponents/ToastMessage.component";
+import useKeyPress from "../service/keyboardShortcuts/onKeyPress";
+import { hasPermission } from "../utils/permissionCheck";
+import { INVENTORY_MODULE } from "../constants/PermissionConstants";
+import { useUser } from "../context/UserContext";
+import { AllInventoryResponse } from "../entities/respponses/AllInventoryItemResponse";
+import { DeviceDetails } from "../entities/InventoryEntity";
+import { ExpenseFilterArea } from "../styles/ExpenseListStyles.style";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+import { OrganizationValues } from "../entities/OrgValueEntity";
 
 const InventoryManagement = () => {
   const navigate = useNavigate();
@@ -57,21 +57,21 @@ const InventoryManagement = () => {
 
   const [deviceFilter, setDeviceFilter] = useState<string>();
   const [availabilityFilter, setAvailabilityFilter] = useState<string>();
-  const [providerFilter, setProviderFilter] = useState<string>('');
+  const [providerFilter, setProviderFilter] = useState<string>("");
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // const value = event.target.value;
     setDeviceFilter(event.target.value);
   };
 
   const handleAvailabilityChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     // const value = event.target.value;
     setAvailabilityFilter(event.target.value);
   };
 
   const handleProviderChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     setProviderFilter(event.target.value);
   };
@@ -81,7 +81,7 @@ const InventoryManagement = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalSize, setTotalSize] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(
-    Math.ceil(totalSize ? totalSize / 10 : 0)
+    Math.ceil(totalSize ? totalSize / 10 : 0),
   );
 
   const handlePageChange = (page: number) => {
@@ -103,15 +103,15 @@ const InventoryManagement = () => {
     try {
       setLoading(true);
       const queryParams = [];
-      if (deviceFilter != null && deviceFilter != '-')
+      if (deviceFilter != null && deviceFilter != "-")
         queryParams.push(
-          `device=${encodeURIComponent(deviceFilter.toUpperCase())}`
+          `device=${encodeURIComponent(deviceFilter.toUpperCase())}`,
         );
-      if (availabilityFilter != null && availabilityFilter != '-')
+      if (availabilityFilter != null && availabilityFilter != "-")
         queryParams.push(
-          `availability=${encodeURIComponent(availabilityFilter.toUpperCase())}`
+          `availability=${encodeURIComponent(availabilityFilter.toUpperCase())}`,
         );
-      if (providerFilter != null && providerFilter != '-')
+      if (providerFilter != null && providerFilter != "-")
         queryParams.push(`provider=${encodeURIComponent(providerFilter)}`);
       if (currentPage) {
         queryParams.push(`pageNumber=${currentPage}`);
@@ -124,8 +124,8 @@ const InventoryManagement = () => {
       const filteredParams = queryParams.filter((param) => param.length > 0);
       const url =
         filteredParams.length > 0
-          ? `/finance/v1/inventory?${filteredParams.join('&')}`
-          : '/finance/v1/inventory';
+          ? `/finance/v1/inventory?${filteredParams.join("&")}`
+          : "/finance/v1/inventory";
       const res = await getInventory(url);
       const metadata = res.data.metadata;
       const finalResponse: AllInventoryResponse = {
@@ -139,14 +139,14 @@ const InventoryManagement = () => {
       setInventoryList([...sortedInventory]);
       setLoading(false);
     } catch (error) {
-      throw new Error('Error fetching data:' + error);
+      throw new Error("Error fetching data:" + error);
     }
   }, [
     currentPage,
     itemsPerPage,
     deviceFilter,
     availabilityFilter,
-    providerFilter
+    providerFilter,
   ]);
 
   useEffect(() => {
@@ -157,24 +157,23 @@ const InventoryManagement = () => {
   };
 
   const [deviceTypes, setDeviceTypes] = useState<OrganizationValues>(
-    {} as OrganizationValues
+    {} as OrganizationValues,
   );
-  const [inventoryProviders, setInventoryProviders] = useState<OrganizationValues>(
-    {} as OrganizationValues
-  )
+  const [inventoryProviders, setInventoryProviders] =
+    useState<OrganizationValues>({} as OrganizationValues);
 
   const fetchOrganizationValues = async () => {
-    const deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
-    const inventoryProvidersFetched = await getOrganizationValuesByKey('inventoryProviders');
+    const deviceTypesFetched = await getOrganizationValuesByKey("deviceTypes");
+    const inventoryProvidersFetched =
+      await getOrganizationValuesByKey("inventoryProviders");
     if (!deviceTypesFetched?.data?.values?.length) {
-      toast.error(t('PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS'));
+      toast.error(t("PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS"));
     } else {
       setDeviceTypes(deviceTypesFetched.data);
     }
     if (!inventoryProvidersFetched?.data?.values?.length) {
-      toast.error(t('PLEASE_ADD_INVENTORY_PROVIDERS_IN_ORG_SETTINGS'));
-    }
-    else {
+      toast.error(t("PLEASE_ADD_INVENTORY_PROVIDERS_IN_ORG_SETTINGS"));
+    } else {
       setInventoryProviders(inventoryProvidersFetched.data);
     }
     setDeviceTypes(deviceTypesFetched.data);
@@ -187,9 +186,9 @@ const InventoryManagement = () => {
   const [isShowFilters, setIsShowFilters] = useState(false);
   const selectedFiltersText = () => {
     const filters = [
-      { key: 'device', value: deviceFilter },
-      { key: 'availability', value: availabilityFilter },
-      { key: 'provider', value: providerFilter }
+      { key: "device", value: deviceFilter },
+      { key: "availability", value: availabilityFilter },
+      { key: "provider", value: providerFilter },
     ];
 
     return (
@@ -206,26 +205,26 @@ const InventoryManagement = () => {
                   <VectorSVG />
                 </span>
               </span>
-            )
+            ),
         )}
       </ExpenseFilterArea>
     );
   };
   const clearFilters = (filterName: string) => {
     setCurrentPage(1);
-    if (filterName === 'clearAll') {
-      setDeviceFilter('');
-      setAvailabilityFilter('');
-      setProviderFilter('');
+    if (filterName === "clearAll") {
+      setDeviceFilter("");
+      setAvailabilityFilter("");
+      setProviderFilter("");
     }
-    if (filterName === 'device') {
-      setDeviceFilter('');
+    if (filterName === "device") {
+      setDeviceFilter("");
     }
-    if (filterName === 'availability') {
-      setAvailabilityFilter('');
+    if (filterName === "availability") {
+      setAvailabilityFilter("");
     }
-    if (filterName === 'provider') {
-      setProviderFilter('');
+    if (filterName === "provider") {
+      setProviderFilter("");
     }
   };
   useKeyPress(78, () => {
@@ -242,7 +241,7 @@ const InventoryManagement = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('INVENTORY_MANAGEMENT')}
+            {t("INVENTORY_MANAGEMENT")}
           </span>
           {user && hasPermission(user, INVENTORY_MODULE.CREATE_DEVICE) && (
             <Button
@@ -251,7 +250,7 @@ const InventoryManagement = () => {
               width="216px"
             >
               <AddNewPlusSVG />
-              {t('ADD_INVENTORY')}
+              {t("ADD_INVENTORY")}
             </Button>
           )}
         </ExpenseHeadingSection>

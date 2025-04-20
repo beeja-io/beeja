@@ -1,13 +1,13 @@
-import React, { useRef, useState } from 'react';
-import { ActionIcon } from '../../svgs/ExpenseListSvgs.svg';
+import React, { useRef, useState } from "react";
+import { ActionIcon } from "../../svgs/ExpenseListSvgs.svg";
 /* eslint-disable */
 import {
   ActionContainer,
   ActionMenuContent,
   ActionMenuOption,
   ActionMenu,
-} from '../../styles/ExpenseListStyles.style';
-import { OrgValues } from '../../entities/OrgDefaultsEntity';
+} from "../../styles/ExpenseListStyles.style";
+import { OrgValues } from "../../entities/OrgDefaultsEntity";
 
 interface ActionOption {
   title: string;
@@ -20,7 +20,7 @@ interface ExpenseActionProps {
   currentExpense: { orgValues: OrgValues; index: number };
   onActionClick: (
     action: string,
-    expense: { orgValues: OrgValues; index: number }
+    expense: { orgValues: OrgValues; index: number },
   ) => void; // Callback to handle action
 }
 
@@ -42,12 +42,12 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown-container')) {
+    if (!target.closest(".dropdown-container")) {
       setIsOpen(false);
     }
   };
 
-  document.addEventListener('click', handleClickOutside);
+  document.addEventListener("click", handleClickOutside);
 
   const handleDocumentClick = (e: any) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
@@ -55,7 +55,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
     }
   };
 
-  window.addEventListener('click', handleDocumentClick);
+  window.addEventListener("click", handleDocumentClick);
 
   return (
     <ActionContainer className="dropdown-container" ref={dropdownRef}>
@@ -67,7 +67,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
           {options.map((option, index) => (
             <ActionMenuOption
               key={index}
-              className={selectedOption === option.title ? 'selected' : ''}
+              className={selectedOption === option.title ? "selected" : ""}
               onClick={() => handleActionClick(option.title)}
             >
               {option.svg}

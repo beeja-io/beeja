@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import { BulkPayslipContainer } from '../styles/BulkPayslipStyles.style';
-import { Button } from '../styles/CommonStyles.style';
+import { useState } from "react";
+import { BulkPayslipContainer } from "../styles/BulkPayslipStyles.style";
+import { Button } from "../styles/CommonStyles.style";
 import {
   FileUploadField,
   FormFileSelected,
   InputLabelContainer,
   ValidationText,
-} from '../styles/DocumentTabStyles.style';
+} from "../styles/DocumentTabStyles.style";
 import {
   ExpenseHeadingSection,
   ExpenseManagementMainContainer,
-} from '../styles/ExpenseManagementStyles.style';
+} from "../styles/ExpenseManagementStyles.style";
 import {
   getCurrentThreeMonths,
   getCurrentTwoYears,
-} from '../utils/dateFormatter';
-import { FormFileCloseIcon, FormFileIcon } from '../svgs/DocumentTabSvgs.svg';
-import { uploadBulkPayslip } from '../service/axiosInstance';
-import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
-import { useNavigate } from 'react-router-dom';
-import SpinAnimation from '../components/loaders/SprinAnimation.loader';
-import ToastMessage from '../components/reusableComponents/ToastMessage.component';
-import { UploadReceiptIcon } from '../svgs/ExpenseListSvgs.svg';
-import { formatFileSize } from '../utils/fileSizeFormatter';
-import { months } from '../utils/monthsConstants';
-import axios, { AxiosError } from 'axios';
-import { useTranslation } from 'react-i18next';
+} from "../utils/dateFormatter";
+import { FormFileCloseIcon, FormFileIcon } from "../svgs/DocumentTabSvgs.svg";
+import { uploadBulkPayslip } from "../service/axiosInstance";
+import { ArrowDownSVG } from "../svgs/CommonSvgs.svs";
+import { useNavigate } from "react-router-dom";
+import SpinAnimation from "../components/loaders/SprinAnimation.loader";
+import ToastMessage from "../components/reusableComponents/ToastMessage.component";
+import { UploadReceiptIcon } from "../svgs/ExpenseListSvgs.svg";
+import { formatFileSize } from "../utils/fileSizeFormatter";
+import { months } from "../utils/monthsConstants";
+import axios, { AxiosError } from "axios";
+import { useTranslation } from "react-i18next";
 
 const BulkPayslip = () => {
   const [selectedFile, setSelectedFile] = useState<File>();
@@ -33,15 +33,15 @@ const BulkPayslip = () => {
   const { t } = useTranslation();
 
   const [monthOfPayslips, setMonthOfPayslips] = useState(
-    new Date().toLocaleString('default', { month: 'long' })
+    new Date().toLocaleString("default", { month: "long" }),
   );
 
   const [yearOfPayslips, setYearOfPayslips] = useState(
-    new Date().getFullYear().toString()
+    new Date().getFullYear().toString(),
   );
 
-  const [toastSuccessMessage, setToastSuccessMessage] = useState('');
-  const [toastErrorMessage, setToastErrorMessage] = useState('');
+  const [toastSuccessMessage, setToastSuccessMessage] = useState("");
+  const [toastErrorMessage, setToastErrorMessage] = useState("");
   const [isResponseLoading, setIsResponseLoading] = useState(false);
 
   const handleIsResponseLoading = (bool: boolean) => {
@@ -58,7 +58,7 @@ const BulkPayslip = () => {
   const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
-    event.dataTransfer.dropEffect = 'copy';
+    event.dataTransfer.dropEffect = "copy";
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
@@ -73,9 +73,9 @@ const BulkPayslip = () => {
 
   const removeFile = () => {
     setSelectedFile(undefined);
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    const fileInput = document.getElementById("fileInput") as HTMLInputElement;
     if (fileInput) {
-      fileInput.value = '';
+      fileInput.value = "";
     }
   };
 
@@ -95,37 +95,37 @@ const BulkPayslip = () => {
 
   const handleUploadBulkPayslipSubmit = async () => {
     if (selectedFile == null || selectedFile == undefined) {
-      handleToastErrorMessage('ZIP_IS_REQUIRED');
+      handleToastErrorMessage("ZIP_IS_REQUIRED");
       return;
     }
     const formData = new FormData();
     if (selectedFile) {
-      formData.append('zipFile', selectedFile);
+      formData.append("zipFile", selectedFile);
     }
-    formData.append('month', monthOfPayslips);
-    formData.append('year', yearOfPayslips);
+    formData.append("month", monthOfPayslips);
+    formData.append("year", yearOfPayslips);
     setIsResponseLoading(true);
     try {
       await uploadBulkPayslip(formData);
-      handleToastSuccessMessage('SUCCESSFULLY_UPLOADED');
+      handleToastSuccessMessage("SUCCESSFULLY_UPLOADED");
       removeFile();
       setMonthOfPayslips(
-        new Date().toLocaleString('default', { month: 'long' })
+        new Date().toLocaleString("default", { month: "long" }),
       );
       setYearOfPayslips(new Date().getFullYear().toString());
       handleIsResponseLoading(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError;
-        if (axiosError.code === 'ERR_NETWORK') {
-          handleToastErrorMessage('NETWORK_ISSUE');
+        if (axiosError.code === "ERR_NETWORK") {
+          handleToastErrorMessage("NETWORK_ISSUE");
         } else if (axiosError.response?.status === 503) {
-          handleToastErrorMessage('SERVICE_UNAVAILABLE');
+          handleToastErrorMessage("SERVICE_UNAVAILABLE");
         } else {
-          handleToastErrorMessage('UPLOAD_UNSUCCESSFUL');
+          handleToastErrorMessage("UPLOAD_UNSUCCESSFUL");
         }
       } else {
-        handleToastErrorMessage('UPLOAD_UNSUCCESSFUL');
+        handleToastErrorMessage("UPLOAD_UNSUCCESSFUL");
       }
     } finally {
       handleIsResponseLoading(false);
@@ -145,21 +145,21 @@ const BulkPayslip = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('UPLOAD_BULK_PAYSLIPS')}
+            {t("UPLOAD_BULK_PAYSLIPS")}
           </span>
         </ExpenseHeadingSection>
         <BulkPayslipContainer>
           <section className="topFields">
             <InputLabelContainer Width="400px">
               <label>
-                {t('MONTH')} <ValidationText className="star">*</ValidationText>
+                {t("MONTH")} <ValidationText className="star">*</ValidationText>
               </label>
               <select
                 className="selectoption"
                 name="month"
                 onChange={(e) => handleMonthChange(e.target.value)}
                 onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     event.preventDefault();
                   }
                 }}
@@ -177,14 +177,14 @@ const BulkPayslip = () => {
             </InputLabelContainer>
             <InputLabelContainer Width="400px">
               <label>
-                {t('YEAR')} <ValidationText className="star">*</ValidationText>
+                {t("YEAR")} <ValidationText className="star">*</ValidationText>
               </label>
               <select
                 className="selectoption"
                 name="year"
                 onChange={(e) => handleYearChange(e.target.value)}
                 onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     event.preventDefault();
                   }
                 }}
@@ -212,13 +212,13 @@ const BulkPayslip = () => {
           </section>
 
           <InputLabelContainer
-            style={{ width: '100%', alignSelf: 'flex-start' }}
+            style={{ width: "100%", alignSelf: "flex-start" }}
           >
             <div>
               <label>
-                {t('ATTACHMENT')}{' '}
+                {t("ATTACHMENT")}{" "}
                 <ValidationText className="star">*</ValidationText>
-              </label>{' '}
+              </label>{" "}
             </div>
             <FileUploadField
               className="bulkpayslipFile"
@@ -228,8 +228,8 @@ const BulkPayslip = () => {
               <label htmlFor="fileInput" className="bulkPayslipsLable">
                 <div>
                   <div className="textInInput">
-                    {t('DRAG_AND_DROP_OR')}
-                    <span className="blackTextInInput"> {t('BROWSE')} </span>
+                    {t("DRAG_AND_DROP_OR")}
+                    <span className="blackTextInInput"> {t("BROWSE")} </span>
                   </div>
                   <UploadReceiptIcon />
                 </div>
@@ -238,11 +238,11 @@ const BulkPayslip = () => {
                 type="file"
                 accept="application/zip"
                 id="fileInput"
-                style={{ display: 'none' }}
+                style={{ display: "none" }}
                 required
                 onChange={handleFileChange}
                 onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
+                  if (event.key === "Enter") {
                     event.preventDefault();
                   }
                 }}
@@ -258,7 +258,7 @@ const BulkPayslip = () => {
                   </span>
                   <span
                     style={{
-                      cursor: 'pointer',
+                      cursor: "pointer",
                     }}
                     onClick={() => removeFile()}
                   >
@@ -267,7 +267,7 @@ const BulkPayslip = () => {
                 </FormFileSelected>
               </div>
             )}
-            <span className="grayText">{t('FILE_FORMAT_ZIP')}</span>
+            <span className="grayText">{t("FILE_FORMAT_ZIP")}</span>
           </InputLabelContainer>
 
           <section className="buttonsArea">
@@ -276,7 +276,7 @@ const BulkPayslip = () => {
               className="submit"
               onClick={handleUploadBulkPayslipSubmit}
             >
-              {t('UPLOAD')}
+              {t("UPLOAD")}
             </Button>
           </section>
         </BulkPayslipContainer>
@@ -286,7 +286,7 @@ const BulkPayslip = () => {
           messageBody="PAYSLIPS_WILL_BE_DISTRIBUTED_SHORTLY"
           messageHeading={toastSuccessMessage}
           messageType="success"
-          handleClose={() => handleToastSuccessMessage('')}
+          handleClose={() => handleToastSuccessMessage("")}
         />
       )}
       {toastErrorMessage.length > 0 && (
@@ -294,7 +294,7 @@ const BulkPayslip = () => {
           messageBody="THE_BULK_PAYSLIP_HAS_NOT_UPLOADED"
           messageHeading={toastErrorMessage}
           messageType="error"
-          handleClose={() => handleToastErrorMessage('')}
+          handleClose={() => handleToastErrorMessage("")}
         />
       )}
       {isResponseLoading && <SpinAnimation />}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   BeejaIconSvg,
   CardSendSVG,
@@ -12,7 +12,7 @@ import {
   SettingsSVG,
   SunSVG,
   TrendingUpSVG,
-} from '../../svgs/NavBarSvgs.svg';
+} from "../../svgs/NavBarSvgs.svg";
 import {
   DarkTheme,
   DashBoardButton,
@@ -22,14 +22,14 @@ import {
   NavHeader,
   RightSection,
   ThemeToggler,
-} from '../../styles/NavBarStyles.style';
-import TopNavBarComponent from './TopNavBar.component';
-import { useTranslation } from 'react-i18next';
-import AllRoutes from '../../routes/allRoutes';
-import { StyledNavLink } from '../../styles/CommonStyles.style';
-import { useLocation } from 'react-router-dom';
-import Error404Screen from '../../screens/Error404Screen.screen';
-import { useUser } from '../../context/UserContext';
+} from "../../styles/NavBarStyles.style";
+import TopNavBarComponent from "./TopNavBar.component";
+import { useTranslation } from "react-i18next";
+import AllRoutes from "../../routes/allRoutes";
+import { StyledNavLink } from "../../styles/CommonStyles.style";
+import { useLocation } from "react-router-dom";
+import Error404Screen from "../../screens/Error404Screen.screen";
+import { useUser } from "../../context/UserContext";
 import {
   BULK_PAYSLIP_MODULE,
   EXPENSE_MODULE,
@@ -38,16 +38,16 @@ import {
   LOAN_MODULE,
   ORGANIZATION_MODULE,
   RECRUITMENT_MODULE,
-} from '../../constants/PermissionConstants';
-import ServiceUnavailable from '../../screens/ServiceUnavailable.screen';
-import { usePreferences } from '../../context/PreferencesContext';
-import { hasPermission } from '../../utils/permissionCheck';
-import { hasFeature } from '../../utils/featureCheck';
-import { useFeatureToggles } from '../../context/FeatureToggleContext';
-import { EFeatureToggles } from '../../entities/FeatureToggle';
-import { UserBoxWithLinkSVG } from '../../svgs/CommonSvgs.svs';
-import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
-import { t } from 'i18next';
+} from "../../constants/PermissionConstants";
+import ServiceUnavailable from "../../screens/ServiceUnavailable.screen";
+import { usePreferences } from "../../context/PreferencesContext";
+import { hasPermission } from "../../utils/permissionCheck";
+import { hasFeature } from "../../utils/featureCheck";
+import { useFeatureToggles } from "../../context/FeatureToggleContext";
+import { EFeatureToggles } from "../../entities/FeatureToggle";
+import { UserBoxWithLinkSVG } from "../../svgs/CommonSvgs.svs";
+import useKeyPress from "../../service/keyboardShortcuts/onKeyPress";
+import { t } from "i18next";
 
 const CompleteNavBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -68,14 +68,14 @@ const CompleteNavBar = () => {
   const location = useLocation();
   const currentPath = location.pathname;
 
-  const [activeTheme, setActiveTheme] = useState<'LIGHT' | 'DARK'>('LIGHT');
+  const [activeTheme, setActiveTheme] = useState<"LIGHT" | "DARK">("LIGHT");
 
-  const handleThemeClick = (theme: 'LIGHT' | 'DARK') => {
+  const handleThemeClick = (theme: "LIGHT" | "DARK") => {
     setActiveTheme(theme);
     changeTheme(theme);
   };
 
-  const changeTheme = (newTheme: 'LIGHT' | 'DARK') => {
+  const changeTheme = (newTheme: "LIGHT" | "DARK") => {
     if (preferences !== null) {
       setPreferences({
         ...preferences,
@@ -84,21 +84,21 @@ const CompleteNavBar = () => {
     }
   };
   useKeyPress(68, () => {
-    const newTheme = activeTheme === 'LIGHT' ? 'DARK' : 'LIGHT';
+    const newTheme = activeTheme === "LIGHT" ? "DARK" : "LIGHT";
     handleThemeClick(newTheme);
   });
   return (
     <>
       {user && featureToggles && (
         <>
-          {currentPath === '/notfound' ? (
+          {currentPath === "/notfound" ? (
             <Error404Screen />
-          ) : currentPath === '/service-unavailable' ? (
+          ) : currentPath === "/service-unavailable" ? (
             <ServiceUnavailable />
           ) : (
             <>
               <NavBarContainer
-                className={`sidebar ${sidebarOpen ? 'open' : ''}`}
+                className={`sidebar ${sidebarOpen ? "open" : ""}`}
                 onMouseEnter={handleMouseEnter}
               >
                 <NavHeader
@@ -106,8 +106,8 @@ const CompleteNavBar = () => {
                   isOpen={sidebarOpen ? true : false}
                 >
                   <BeejaIconSvg />
-                  <div className="logo_name" style={{ fontFamily: 'Rubik' }}>
-                    {' '}
+                  <div className="logo_name" style={{ fontFamily: "Rubik" }}>
+                    {" "}
                     &nbsp; {t("BEE")}
                     <span className="logo_name logo_name_blue">{t("JA")}</span>
                   </div>
@@ -120,7 +120,7 @@ const CompleteNavBar = () => {
                   <StyledNavLink to="/">
                     <li>
                       <DashBoardButton>
-                        {sidebarOpen ? 'Dashboard' : ''}
+                        {sidebarOpen ? "Dashboard" : ""}
                         <DashBoardSVG />
                       </DashBoardButton>
                     </li>
@@ -134,16 +134,16 @@ const CompleteNavBar = () => {
                       <MyProfileSVG
                         props={{
                           isActive:
-                            openDropdown === 'profile' ||
-                            currentPath === '/profile/me',
+                            openDropdown === "profile" ||
+                            currentPath === "/profile/me",
                         }}
                       />
                     }
                     additionalSvgIcon={<ChevronDownSVG />}
-                    isDropdownOpen={openDropdown === 'profile'}
+                    isDropdownOpen={openDropdown === "profile"}
                     setDropdownOpen={() => {
                       setOpenDropdown((prev) =>
-                        prev === 'profile' ? null : 'profile'
+                        prev === "profile" ? null : "profile",
                       );
                     }}
                   />
@@ -157,36 +157,36 @@ const CompleteNavBar = () => {
                       <EmployeesSVG
                         props={{
                           isActive:
-                            openDropdown === 'employees' ||
-                            currentPath === '/employees',
+                            openDropdown === "employees" ||
+                            currentPath === "/employees",
                         }}
                       />
                     }
                     additionalSvgIcon={<ChevronDownSVG />}
-                    isDropdownOpen={openDropdown === 'employees'}
+                    isDropdownOpen={openDropdown === "employees"}
                     setDropdownOpen={() => {
                       setOpenDropdown((prev) =>
-                        prev === 'employees' ? null : 'employees'
+                        prev === "employees" ? null : "employees",
                       );
                     }}
                   />
                   {(hasPermission(user, EXPENSE_MODULE.READ_EXPENSE) ||
                     hasPermission(
                       user,
-                      BULK_PAYSLIP_MODULE.CREATE_BULK_PAYSLIP
+                      BULK_PAYSLIP_MODULE.CREATE_BULK_PAYSLIP,
                     ) ||
                     hasPermission(user, INVENTORY_MODULE.READ_DEVICE)) &&
                     (hasFeature(
                       featureToggles.featureToggles,
-                      EFeatureToggles.LOAN_MANAGEMENT
+                      EFeatureToggles.LOAN_MANAGEMENT,
                     ) ||
                       hasFeature(
                         featureToggles.featureToggles,
-                        EFeatureToggles.INVENTORY_MANAGEMENT
+                        EFeatureToggles.INVENTORY_MANAGEMENT,
                       ) ||
                       hasFeature(
                         featureToggles.featureToggles,
-                        EFeatureToggles.EXPENSE_MANAGEMENT
+                        EFeatureToggles.EXPENSE_MANAGEMENT,
                       )) && (
                       <ListItem
                         isSideBarOpen={sidebarOpen}
@@ -197,8 +197,8 @@ const CompleteNavBar = () => {
                           <TrendingUpSVG
                             props={{
                               isActive:
-                                openDropdown === 'accounts' ||
-                                currentPath.startsWith('/accounts'),
+                                openDropdown === "accounts" ||
+                                currentPath.startsWith("/accounts"),
                             }}
                           />
                         }
@@ -206,54 +206,54 @@ const CompleteNavBar = () => {
                         dropdownItems={[
                           ...(hasPermission(
                             user,
-                            BULK_PAYSLIP_MODULE.CREATE_BULK_PAYSLIP
+                            BULK_PAYSLIP_MODULE.CREATE_BULK_PAYSLIP,
                           ) &&
-                            hasFeature(
-                              featureToggles.featureToggles,
-                              EFeatureToggles.BULK_PAY_SLIPS
-                            )
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.BULK_PAY_SLIPS,
+                          )
                             ? [
-                              {
-                                name: 'BULK_PAYSLIP_UPLOAD',
-                                link: '/accounts/bulk-payslip',
-                              },
-                            ]
+                                {
+                                  name: "BULK_PAYSLIP_UPLOAD",
+                                  link: "/accounts/bulk-payslip",
+                                },
+                              ]
                             : []),
                           ...(hasPermission(
                             user,
-                            EXPENSE_MODULE.READ_EXPENSE
+                            EXPENSE_MODULE.READ_EXPENSE,
                           ) &&
-                            hasFeature(
-                              featureToggles.featureToggles,
-                              EFeatureToggles.EXPENSE_MANAGEMENT
-                            )
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.EXPENSE_MANAGEMENT,
+                          )
                             ? [
-                              {
-                                name: 'EXPENSE_MANAGEMENT',
-                                link: '/accounts/expenses',
-                              },
-                            ]
+                                {
+                                  name: "EXPENSE_MANAGEMENT",
+                                  link: "/accounts/expenses",
+                                },
+                              ]
                             : []),
                           ...(hasPermission(
                             user,
-                            INVENTORY_MODULE.READ_DEVICE
+                            INVENTORY_MODULE.READ_DEVICE,
                           ) &&
-                            hasFeature(
-                              featureToggles.featureToggles,
-                              EFeatureToggles.INVENTORY_MANAGEMENT
-                            )
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.INVENTORY_MANAGEMENT,
+                          )
                             ? [
-                              {
-                                name: 'INVENTORY_MANAGEMENT',
-                                link: '/accounts/inventory',
-                              },
-                            ]
+                                {
+                                  name: "INVENTORY_MANAGEMENT",
+                                  link: "/accounts/inventory",
+                                },
+                              ]
                             : []),
                         ]}
-                        isDropdownOpen={openDropdown === 'accounts'}
+                        isDropdownOpen={openDropdown === "accounts"}
                         setDropdownOpen={() => {
                           setOpenDropdown((prev) =>
-                            prev === 'accounts' ? null : 'accounts'
+                            prev === "accounts" ? null : "accounts",
                           );
                         }}
                         hasAdditionalSvg
@@ -263,7 +263,7 @@ const CompleteNavBar = () => {
                   {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     hasFeature(
                       featureToggles.featureToggles,
-                      EFeatureToggles.LOAN_MANAGEMENT
+                      EFeatureToggles.LOAN_MANAGEMENT,
                     ) && (
                       <ListItem
                         isSideBarOpen={sidebarOpen}
@@ -274,38 +274,40 @@ const CompleteNavBar = () => {
                           <CardSendSVG
                             props={{
                               isActive:
-                                openDropdown === 'payroll' ||
-                                currentPath.startsWith('/payroll'),
+                                openDropdown === "payroll" ||
+                                currentPath.startsWith("/payroll"),
                             }}
                           />
                         }
                         additionalSvgIcon={<ChevronDownSVG />}
                         dropdownItems={[
                           ...(hasPermission(user, LOAN_MODULE.READ_LOAN) &&
-                            hasFeature(
-                              featureToggles.featureToggles,
-                              EFeatureToggles.LOAN_MANAGEMENT
-                            )
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.LOAN_MANAGEMENT,
+                          )
                             ? [
-                              {
-                                name: 'LOANS',
-                                link: '/payroll/deductions-loans',
-                              },
-                            ]
+                                {
+                                  name: "LOANS",
+                                  link: "/payroll/deductions-loans",
+                                },
+                              ]
                             : []),
                         ]}
-                        isDropdownOpen={openDropdown === 'payroll'}
+                        isDropdownOpen={openDropdown === "payroll"}
                         setDropdownOpen={() => {
                           setOpenDropdown((prev) =>
-                            prev === 'payroll' ? null : 'payroll'
+                            prev === "payroll" ? null : "payroll",
                           );
                         }}
                         hasAdditionalSvg
                       />
                     )}
 
-                  {
-                    hasFeature(featureToggles.featureToggles, EFeatureToggles.RECRUITMENT_MANAGEMENT) &&
+                  {hasFeature(
+                    featureToggles.featureToggles,
+                    EFeatureToggles.RECRUITMENT_MANAGEMENT,
+                  ) && (
                     <ListItem
                       isSideBarOpen={sidebarOpen}
                       linkTo="#"
@@ -315,41 +317,50 @@ const CompleteNavBar = () => {
                         <UserBoxWithLinkSVG
                           props={{
                             isActive:
-                              openDropdown === 'recruitment' ||
-                              currentPath === '/recruitment',
+                              openDropdown === "recruitment" ||
+                              currentPath === "/recruitment",
                           }}
                         />
                       }
                       additionalSvgIcon={<ChevronDownSVG />}
                       dropdownItems={[
-                        ...((hasPermission(user, RECRUITMENT_MODULE.GET_APPLICATIONS)
-                          || hasPermission(user, RECRUITMENT_MODULE.GET_ALL_APPLICANTS)
-                          || hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT))
+                        ...(hasPermission(
+                          user,
+                          RECRUITMENT_MODULE.GET_APPLICATIONS,
+                        ) ||
+                        hasPermission(
+                          user,
+                          RECRUITMENT_MODULE.GET_ALL_APPLICANTS,
+                        ) ||
+                        hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
                           ? [
-                            {
-                              name: 'Hiring',
-                              link: '/recruitment/hiring-management',
-                            },
-                          ]
+                              {
+                                name: "Hiring",
+                                link: "/recruitment/hiring-management",
+                              },
+                            ]
                           : []),
-                        ...((hasPermission(user, RECRUITMENT_MODULE.ACCESS_REFFERRAlS))
+                        ...(hasPermission(
+                          user,
+                          RECRUITMENT_MODULE.ACCESS_REFFERRAlS,
+                        )
                           ? [
-                            {
-                              name: 'Referrals',
-                              link: '/recruitment/my-referrals',
-                            },
-                          ]
+                              {
+                                name: "Referrals",
+                                link: "/recruitment/my-referrals",
+                              },
+                            ]
                           : []),
                       ]}
-                      isDropdownOpen={openDropdown === 'services'}
+                      isDropdownOpen={openDropdown === "services"}
                       setDropdownOpen={() => {
                         setOpenDropdown((prev) =>
-                          prev === 'services' ? null : 'services'
+                          prev === "services" ? null : "services",
                         );
                       }}
                       hasAdditionalSvg
                     />
-                  }
+                  )}
                   <ListItem
                     isSideBarOpen={sidebarOpen}
                     linkTo="#"
@@ -357,44 +368,44 @@ const CompleteNavBar = () => {
                     linkName="QUICK_LINKS"
                     svgIcon={
                       <TrendingUpSVG
-                        props={{ isActive: openDropdown === 'general' }}
+                        props={{ isActive: openDropdown === "general" }}
                       />
                     }
                     additionalSvgIcon={<ChevronDownSVG />}
                     dropdownItems={[
                       {
-                        name: 'HOLIDAY_LIST',
-                        link: 'https://docs.google.com/spreadsheets/d/1bdXKR23gAemnA7vKfg_2OUmGm-alFE3v6Devo6b5nxM/edit?gid=387637465#gid=387637465',
+                        name: "HOLIDAY_LIST",
+                        link: "https://docs.google.com/spreadsheets/d/1bdXKR23gAemnA7vKfg_2OUmGm-alFE3v6Devo6b5nxM/edit?gid=387637465#gid=387637465",
                       },
                     ]}
-                    isDropdownOpen={openDropdown === 'general'}
+                    isDropdownOpen={openDropdown === "general"}
                     setDropdownOpen={() => {
                       setOpenDropdown((prev) =>
-                        prev === 'general' ? null : 'general'
+                        prev === "general" ? null : "general",
                       );
                     }}
                     hasAdditionalSvg
                   />
                   {hasPermission(
                     user,
-                    FEATURE_TOGGLES_MODULE.UPDATE_FEATURE
+                    FEATURE_TOGGLES_MODULE.UPDATE_FEATURE,
                   ) && (
-                      <ListItem
-                        isSideBarOpen={sidebarOpen}
-                        linkTo="/features"
-                        tooltipName="Features"
-                        linkName="FEATURES"
-                        svgIcon={
-                          <FeatureToggleSVG
-                            props={{
-                              isActive:
-                                openDropdown === 'features' ||
-                                currentPath === '/features',
-                            }}
-                          />
-                        }
-                      />
-                    )}
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="/features"
+                      tooltipName="Features"
+                      linkName="FEATURES"
+                      svgIcon={
+                        <FeatureToggleSVG
+                          props={{
+                            isActive:
+                              openDropdown === "features" ||
+                              currentPath === "/features",
+                          }}
+                        />
+                      }
+                    />
+                  )}
                 </LeftNavList>
 
                 <LeftNavList className="bottomLinks">
@@ -407,11 +418,11 @@ const CompleteNavBar = () => {
                   /> */}
                   {hasPermission(
                     user,
-                    ORGANIZATION_MODULE.READ_ORGANIZATIONS
+                    ORGANIZATION_MODULE.READ_ORGANIZATIONS,
                   ) &&
                     hasFeature(
                       featureToggles.featureToggles,
-                      EFeatureToggles.ORGANIZATION_SETTINGS
+                      EFeatureToggles.ORGANIZATION_SETTINGS,
                     ) && (
                       <ListItem
                         isSideBarOpen={sidebarOpen}
@@ -422,16 +433,16 @@ const CompleteNavBar = () => {
                           <SettingsSVG
                             props={{
                               isActive:
-                                openDropdown === 'settings' ||
-                                currentPath === '/settings',
+                                openDropdown === "settings" ||
+                                currentPath === "/settings",
                             }}
                           />
                         }
                         additionalSvgIcon={<ChevronDownSVG />}
-                        isDropdownOpen={openDropdown === 'settings'}
+                        isDropdownOpen={openDropdown === "settings"}
                         setDropdownOpen={() => {
                           setOpenDropdown((prev) =>
-                            prev === 'settings' ? null : 'settings'
+                            prev === "settings" ? null : "settings",
                           );
                         }}
                       />
@@ -439,16 +450,16 @@ const CompleteNavBar = () => {
                   {sidebarOpen && (
                     <ThemeToggler>
                       <>
-                        <LightTheme onClick={() => handleThemeClick('LIGHT')}>
+                        <LightTheme onClick={() => handleThemeClick("LIGHT")}>
                           <SunSVG />
-                          {t('LIGHT')}
+                          {t("LIGHT")}
                         </LightTheme>
-                        <DarkTheme onClick={() => handleThemeClick('DARK')}>
+                        <DarkTheme onClick={() => handleThemeClick("DARK")}>
                           <MoonSVG />
-                          {t('DARK')}
+                          {t("DARK")}
                         </DarkTheme>
                       </>
-                      <span className="beta">{t('BETA')}</span>
+                      <span className="beta">{t("BETA")}</span>
                     </ThemeToggler>
                   )}
                 </LeftNavList>
@@ -483,7 +494,7 @@ type ListItemProps = {
 export const ListItem: React.FC<ListItemProps> = (props) => {
   const { t } = useTranslation();
   const [isDropdownOpen, setDropdownOpen] = useState(
-    props.isDropdownOpen || false
+    props.isDropdownOpen || false,
   );
   const [selectedDropdownItem, setSelectedDropdownItem] = useState<
     string | null
@@ -508,7 +519,7 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
   const handleDropdownItemClick = (item: { name: string; link: string }) => {
     if (isDropdownOpen) {
       setSelectedDropdownItem((prev) =>
-        prev === item.link ? null : item.link
+        prev === item.link ? null : item.link,
       );
     }
   };
@@ -527,34 +538,35 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
   };
 
   return (
-    <li key={props.linkTo} className={isDropdownOpen ? 'dropdown-open' : ''}>
+    <li key={props.linkTo} className={isDropdownOpen ? "dropdown-open" : ""}>
       <StyledNavLink
         to={props.linkTo}
-        className={`${isDropdownOpen ? 'active' : ''} ${isSelectedAndActive({
-          name: props.linkName,
-          link: props.linkTo,
-        }) || props.dropdownItems?.some((item) => isSelectedAndActive(item))
-          ? 'selected'
-          : ''
-          }`}
+        className={`${isDropdownOpen ? "active" : ""} ${
+          isSelectedAndActive({
+            name: props.linkName,
+            link: props.linkTo,
+          }) || props.dropdownItems?.some((item) => isSelectedAndActive(item))
+            ? "selected"
+            : ""
+        }`}
         onClick={handleSelect}
       >
         <a
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: "flex", alignItems: "center" }}>
             <i
               style={{
                 color: isSelectedAndActive({
                   name: props.linkName,
                   link: props.linkTo,
                 })
-                  ? 'red'
-                  : 'red',
+                  ? "red"
+                  : "red",
               }}
             >
               {props.svgIcon}
@@ -567,14 +579,15 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
                     name: props.linkName,
                     link: props.linkTo,
                   }) ||
-                    props.dropdownItems?.some((item) => isSelectedAndActive(item))
-                    ? '#005792'
-                    : 'black',
+                  props.dropdownItems?.some((item) => isSelectedAndActive(item))
+                    ? "#005792"
+                    : "black",
               }}
             >
               <span
-                className={`nav_Link ${isLinkActive() ? 'active_nav_link' : ''
-                  }`}
+                className={`nav_Link ${
+                  isLinkActive() ? "active_nav_link" : ""
+                }`}
               >
                 {t(props.linkName)}
               </span>
@@ -583,9 +596,9 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
           {props.hasAdditionalSvg && (
             <div
               style={{
-                position: 'relative',
-                transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0)',
-                transition: 'transform 0.3s ease',
+                position: "relative",
+                transform: isDropdownOpen ? "rotate(180deg)" : "rotate(0)",
+                transition: "transform 0.3s ease",
               }}
             >
               <i>{props.additionalSvgIcon}</i>
@@ -596,28 +609,29 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
 
       {props.dropdownItems && (
         <div
-          className={`dropdown-container ${isDropdownOpen ? 'open' : ''}`}
+          className={`dropdown-container ${isDropdownOpen ? "open" : ""}`}
           style={{
-            marginLeft: '40px',
-            display: `${props.isSideBarOpen ? '' : 'none'}`,
+            marginLeft: "40px",
+            display: `${props.isSideBarOpen ? "" : "none"}`,
           }}
         >
           {isDropdownOpen && (
             <ul>
               {props.dropdownItems.map((item) => (
-                <li key={item.link} style={{ display: 'inline' }}>
+                <li key={item.link} style={{ display: "inline" }}>
                   <StyledNavLink
                     target={
-                      item.link.startsWith('https://') ? '_blank' : undefined
+                      item.link.startsWith("https://") ? "_blank" : undefined
                     }
                     style={{
-                      display: 'flex',
-                      padding: '10px 0 20px 10px',
-                      marginTop: '4px',
+                      display: "flex",
+                      padding: "10px 0 20px 10px",
+                      marginTop: "4px",
                     }}
                     to={item.link}
-                    className={`dropdown-link ${isSelectedAndActive(item) ? 'selected' : ''
-                      }`}
+                    className={`dropdown-link ${
+                      isSelectedAndActive(item) ? "selected" : ""
+                    }`}
                     onClick={() => handleDropdownItemClick(item)}
                   >
                     <div className="dropdown-item">

@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 import {
   SideModalCloseButton,
   SideModalInnerContainer,
   SideModalMainContainer,
-} from '../../styles/SideModalStyles.style';
-import { GreaterThanSVG } from '../../svgs/CommonSvgs.svs';
+} from "../../styles/SideModalStyles.style";
+import { GreaterThanSVG } from "../../svgs/CommonSvgs.svs";
 
 type SideModalProps = {
   handleClose: () => void;
@@ -16,8 +16,8 @@ const SideModal = (props: SideModalProps) => {
     <SideModalMainContainer>
       <SideModalInnerContainer isModalOpen={props.isModalOpen}>
         <SideModalCloseButton onClick={props.handleClose}>
-          {' '}
-          <GreaterThanSVG />{' '}
+          {" "}
+          <GreaterThanSVG />{" "}
         </SideModalCloseButton>
         {props.innerContainerContent}
       </SideModalInnerContainer>

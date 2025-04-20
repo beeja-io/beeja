@@ -1,4 +1,4 @@
-import { IOrganization } from './OrganizationEntity';
+import { IOrganization } from "./OrganizationEntity";
 
 export interface EmployeeEntity {
   employee: {

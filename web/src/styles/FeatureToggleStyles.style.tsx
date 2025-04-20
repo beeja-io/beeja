@@ -1,4 +1,4 @@
-import { styled } from 'styled-components';
+import { styled } from "styled-components";
 
 export const FeatureToggleContainer = styled.div`
   display: flex;

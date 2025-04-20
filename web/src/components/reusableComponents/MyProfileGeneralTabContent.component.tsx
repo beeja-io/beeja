@@ -1,7 +1,7 @@
-import { ChangeEvent, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useUser } from '../../context/UserContext';
-import { EmployeeEntity } from '../../entities/EmployeeEntity';
+import { ChangeEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useUser } from "../../context/UserContext";
+import { EmployeeEntity } from "../../entities/EmployeeEntity";
 import {
   TabContentMainContainer,
   TabContentMainContainerHeading,
@@ -14,27 +14,30 @@ import {
   StyledCalendarIconDark,
   CalendarInputContainer,
   CalendarContainer,
-} from '../../styles/MyProfile.style';
+} from "../../styles/MyProfile.style";
 import {
   EditWhitePenSVG,
   CheckBoxOnSVG,
   CrossMarkSVG,
-} from '../../svgs/CommonSvgs.svs';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import ToastMessage from './ToastMessage.component';
-import { getOrganizationValuesByKey, updateEmployeeDetailsByEmployeeId } from '../../service/axiosInstance';
+} from "../../svgs/CommonSvgs.svs";
+import SpinAnimation from "../loaders/SprinAnimation.loader";
+import ToastMessage from "./ToastMessage.component";
+import {
+  getOrganizationValuesByKey,
+  updateEmployeeDetailsByEmployeeId,
+} from "../../service/axiosInstance";
 import {
   formatDate,
   formatDateYYYYMMDD,
   formatDateDDMMYYYY,
-} from '../../utils/dateFormatter';
-import { Select } from '../../styles/CommonStyles.style';
-import { EMPLOYEE_MODULE } from '../../constants/PermissionConstants';
-import Calendar from './Calendar.component';
-import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
-import { isValidEmail, isValidPINCode } from '../../utils/formInputValidators';
-import { hasPermission } from '../../utils/permissionCheck';
-import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
+} from "../../utils/dateFormatter";
+import { Select } from "../../styles/CommonStyles.style";
+import { EMPLOYEE_MODULE } from "../../constants/PermissionConstants";
+import Calendar from "./Calendar.component";
+import { CalenderIconDark } from "../../svgs/ExpenseListSvgs.svg";
+import { isValidEmail, isValidPINCode } from "../../utils/formInputValidators";
+import { hasPermission } from "../../utils/permissionCheck";
+import { OrgDefaults } from "../../entities/OrgDefaultsEntity";
 
 type GeneralDetailsTabProps = {
   heading: string;
@@ -125,7 +128,7 @@ export const GeneralDetailsTab = ({
     setIsFormSubmitted(false);
   };
   const [showCalendar, setShowCalendar] = useState(false);
-  const [joiningDate, setJoiningDate] = useState<string>('');
+  const [joiningDate, setJoiningDate] = useState<string>("");
   const toggleCalendar = () => {
     setShowCalendar((prev) => !prev);
   };
@@ -137,14 +140,14 @@ export const GeneralDetailsTab = ({
     setJoiningDate(formatDateYYYYMMDD(date.toString()));
     setFormData((prevData) => ({
       ...prevData,
-      ['Joining Date']: formatDateYYYYMMDD(date.toString()),
+      ["Joining Date"]: formatDateYYYYMMDD(date.toString()),
     }));
     if (
-      originalFormData['Joining Date'] !== formatDateYYYYMMDD(date.toString())
+      originalFormData["Joining Date"] !== formatDateYYYYMMDD(date.toString())
     ) {
       setModifiedFields((prevModifiedFields) => ({
         ...prevModifiedFields,
-        ['Joining Date']: formatDateYYYYMMDD(date.toString()),
+        ["Joining Date"]: formatDateYYYYMMDD(date.toString()),
       }));
     }
     setShowCalendar(false);
@@ -155,8 +158,8 @@ export const GeneralDetailsTab = ({
     setIsFormFieldsValid(!isFormFieldsValid);
   };
 
-  const [formErrorToastMessage, setFormErrorToastMessage] = useState('');
-  const [formErrorToastHead, setFormErrorToastHead] = useState('');
+  const [formErrorToastMessage, setFormErrorToastMessage] = useState("");
+  const [formErrorToastHead, setFormErrorToastHead] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,61 +167,62 @@ export const GeneralDetailsTab = ({
     setJoiningDate(joiningDate);
     setModifiedFields((prevState) => ({
       ...prevState,
-      'Joining Date': joiningDate,
+      "Joining Date": joiningDate,
     }));
-    const mobileNumbersLabels = ['Phone Number', 'Alt Phone Number', 'Phone'];
+    const mobileNumbersLabels = ["Phone Number", "Alt Phone Number", "Phone"];
     for (let i = 0; i <= mobileNumbersLabels.length - 1; i++) {
       if (
         mobileNumbersLabels[i] in modifiedFields &&
         formData[mobileNumbersLabels[i]].length < 10
       ) {
-        setFormErrorToastHead('Error in updating profile');
+        setFormErrorToastHead("Error in updating profile");
         setFormErrorToastMessage(`${mobileNumbersLabels[i]} must be 10 digits`);
         handleIsFormEmailValid();
         return;
       }
     }
 
-    const postalCode = 'Postal Code';
+    const postalCode = "Postal Code";
     if (
       postalCode in modifiedFields &&
       (formData[postalCode]?.trim().length < 6 ||
         !isValidPINCode(formData[postalCode]))
     ) {
-      setFormErrorToastHead('Error in updating profile');
-      setFormErrorToastMessage('Postal Code must be 6 digits!');
+      setFormErrorToastHead("Error in updating profile");
+      setFormErrorToastMessage("Postal Code must be 6 digits!");
       handleIsFormEmailValid();
       return;
     }
 
-    const fullName = 'Full Name';
+    const fullName = "Full Name";
     if (fullName in modifiedFields && formData[fullName]?.trim().length === 0) {
-      setFormErrorToastHead('Error in updating profile');
-      setFormErrorToastMessage('Full Name is mandatory, kindly fill it!');
+      setFormErrorToastHead("Error in updating profile");
+      setFormErrorToastMessage("Full Name is mandatory, kindly fill it!");
       handleIsFormEmailValid();
       return;
     }
-    const email = 'Email Address';
+    const email = "Email Address";
     if (email in modifiedFields && formData[email]?.trim().length === 0) {
-      setFormErrorToastHead('Error in updating profile');
-      setFormErrorToastMessage('Email is mandatory, kindly fill it!');
+      setFormErrorToastHead("Error in updating profile");
+      setFormErrorToastMessage("Email is mandatory, kindly fill it!");
       handleIsFormEmailValid();
       return;
     }
 
-    const emailLabels = ['Email Address', 'Alt Email Address', 'Email'];
+    const emailLabels = ["Email Address", "Alt Email Address", "Email"];
     for (const emailLabel of emailLabels) {
       const emailValue = formData[emailLabel] || originalFormData[emailLabel];
 
       if (emailLabel in modifiedFields && !isValidEmail(emailValue)) {
-        setFormErrorToastHead('Invalid Email');
+        setFormErrorToastHead("Invalid Email");
         setFormErrorToastMessage(
-          `${emailLabel === 'Email'
-            ? 'Emergency email'
-            : emailLabel === 'Email Address'
-              ? 'Email Address'
-              : 'Alt. Email Address'
-          } must be in format of example@exam.com`
+          `${
+            emailLabel === "Email"
+              ? "Emergency email"
+              : emailLabel === "Email Address"
+                ? "Email Address"
+                : "Alt. Email Address"
+          } must be in format of example@exam.com`,
         );
         handleIsFormEmailValid();
         return;
@@ -236,7 +240,7 @@ export const GeneralDetailsTab = ({
     try {
       await updateEmployeeDetailsByEmployeeId(
         employee.account.employeeId,
-        mapFormDataToBackendStructure(modifiedFields)
+        mapFormDataToBackendStructure(modifiedFields),
       );
       resetFormData();
       fetchEmployeeAgain();
@@ -257,7 +261,7 @@ export const GeneralDetailsTab = ({
       if (
         error.response &&
         error.response.data &&
-        error.response.data === 'Email is already registered'
+        error.response.data === "Email is already registered"
       ) {
         handleMailRegesteredError();
       } else {
@@ -280,14 +284,14 @@ export const GeneralDetailsTab = ({
         const backendKey = handleFinalDataToBeSentToBackend(label);
         let updatedValue = data[label];
 
-        if (label === 'Full Name') {
-          const fullNameWords = updatedValue.split(' ');
+        if (label === "Full Name") {
+          const fullNameWords = updatedValue.split(" ");
           // If more than one word, consider the last word as the last name
           if (fullNameWords.length > 1) {
             const lastName = fullNameWords.pop();
-            backendData['lastName'] = lastName;
-            updatedValue = fullNameWords.join(' ');
-          } else backendData['lastName'] = '';
+            backendData["lastName"] = lastName;
+            updatedValue = fullNameWords.join(" ");
+          } else backendData["lastName"] = "";
         }
         // Only include modified fields
         if (originalFormData[label] !== updatedValue) {
@@ -301,60 +305,60 @@ export const GeneralDetailsTab = ({
 
   const handleFinalDataToBeSentToBackend = (label: string): string => {
     switch (label) {
-      case 'Full Name':
-        return 'firstName';
-      case 'Date of Birth':
-        return 'personalInformation.dateOfBirth';
-      case 'Nationality':
-        return 'personalInformation.nationality';
-      case 'Email Address':
-        return 'email';
-      case 'Alt Email Address':
-        return 'contact.alternativeEmail';
-      case 'Gender':
-        return 'personalInformation.gender';
-      case 'Marital Status':
-        return 'personalInformation.maritalStatus';
-      case 'Phone Number':
-        return 'contact.phone';
-      case 'Alt Phone Number':
-        return 'contact.alternativePhone';
-      case 'Primary Address':
-        return 'address.landMark';
-      case 'City':
-        return 'address.city';
-      case 'State':
-        return 'address.state';
-      case 'Country':
-        return 'address.country';
-      case 'Postal Code':
-        return 'address.pinCode';
-      case 'Designation':
-        return 'jobDetails.designation';
-      case 'Employment Type':
-        return 'jobDetails.employementType';
-      case 'Department':
-        return 'jobDetails.department';
-      case 'Joining Date':
-        return 'jobDetails.joiningDate';
-      case 'Name':
-        return 'personalInformation.nomineeDetails.name';
-      case 'Email':
-        return 'personalInformation.nomineeDetails.email';
-      case 'Phone':
-        return 'personalInformation.nomineeDetails.phone';
-      case 'Relation Type':
-        return 'personalInformation.nomineeDetails.relationType';
-      case 'Aadhar Number':
-        return 'personalInformation.nomineeDetails.aadharNumber';
+      case "Full Name":
+        return "firstName";
+      case "Date of Birth":
+        return "personalInformation.dateOfBirth";
+      case "Nationality":
+        return "personalInformation.nationality";
+      case "Email Address":
+        return "email";
+      case "Alt Email Address":
+        return "contact.alternativeEmail";
+      case "Gender":
+        return "personalInformation.gender";
+      case "Marital Status":
+        return "personalInformation.maritalStatus";
+      case "Phone Number":
+        return "contact.phone";
+      case "Alt Phone Number":
+        return "contact.alternativePhone";
+      case "Primary Address":
+        return "address.landMark";
+      case "City":
+        return "address.city";
+      case "State":
+        return "address.state";
+      case "Country":
+        return "address.country";
+      case "Postal Code":
+        return "address.pinCode";
+      case "Designation":
+        return "jobDetails.designation";
+      case "Employment Type":
+        return "jobDetails.employementType";
+      case "Department":
+        return "jobDetails.department";
+      case "Joining Date":
+        return "jobDetails.joiningDate";
+      case "Name":
+        return "personalInformation.nomineeDetails.name";
+      case "Email":
+        return "personalInformation.nomineeDetails.email";
+      case "Phone":
+        return "personalInformation.nomineeDetails.phone";
+      case "Relation Type":
+        return "personalInformation.nomineeDetails.relationType";
+      case "Aadhar Number":
+        return "personalInformation.nomineeDetails.aadharNumber";
       default:
-        return label.toLowerCase().replace(/\s/g, '');
+        return label.toLowerCase().replace(/\s/g, "");
     }
   };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setBackendData = (obj: any, path: string, value: string): void => {
-    const keys = path.split('.');
+    const keys = path.split(".");
     keys.reduce((acc, key, index) => {
       if (index === keys.length - 1) {
         acc[key] = value;
@@ -385,33 +389,40 @@ export const GeneralDetailsTab = ({
     setIsUpdateResponseLoading(!isUpdateResponseLoading);
   };
   const editableFieldsForLoggedInEmployee = [
-    'Alt Email Address',
-    'Alt Phone Number',
+    "Alt Email Address",
+    "Alt Phone Number",
   ];
   const allowFullEditingAccess =
     user && hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES);
 
-  const [departmentList, setDepartmentList] = useState<OrgDefaults>({} as OrgDefaults);
+  const [departmentList, setDepartmentList] = useState<OrgDefaults>(
+    {} as OrgDefaults,
+  );
   const [jobTitles, setJobTitles] = useState<OrgDefaults>({} as OrgDefaults);
-  const [employmentTypes, setEmploymentTypes] = useState<OrgDefaults>({} as OrgDefaults);
-  const [isDefaultResponseLoading, setIsDefaultResponseLoading] = useState(false);
+  const [employmentTypes, setEmploymentTypes] = useState<OrgDefaults>(
+    {} as OrgDefaults,
+  );
+  const [isDefaultResponseLoading, setIsDefaultResponseLoading] =
+    useState(false);
 
   useEffect(() => {
-    if (heading === 'Employment Info') {
+    if (heading === "Employment Info") {
       const fetchData = async () => {
         try {
           setIsDefaultResponseLoading(true);
-          const response = await getOrganizationValuesByKey('departments');
-          const jobDetailsResponse = await getOrganizationValuesByKey('jobTitles');
-          const employmentTypesResponse = await getOrganizationValuesByKey('employmentTypes');
-          console.log('response', jobDetailsResponse.data.values);
+          const response = await getOrganizationValuesByKey("departments");
+          const jobDetailsResponse =
+            await getOrganizationValuesByKey("jobTitles");
+          const employmentTypesResponse =
+            await getOrganizationValuesByKey("employmentTypes");
+          console.log("response", jobDetailsResponse.data.values);
           setEmploymentTypes(employmentTypesResponse.data);
           setJobTitles(jobDetailsResponse.data);
           setDepartmentList(response.data);
           setIsDefaultResponseLoading(false);
         } catch (error) {
           setIsDefaultResponseLoading(false);
-          console.error('error in fetching values', error);
+          console.error("error in fetching values", error);
         }
       };
 
@@ -421,286 +432,223 @@ export const GeneralDetailsTab = ({
 
   return (
     <>
-      {isDefaultResponseLoading ? <SpinAnimation /> : <TabContentMainContainer>
-        <TabContentMainContainerHeading>
-          <h4>{heading}</h4>
-          {allowFullEditingAccess &&
+      {isDefaultResponseLoading ? (
+        <SpinAnimation />
+      ) : (
+        <TabContentMainContainer>
+          <TabContentMainContainerHeading>
+            <h4>{heading}</h4>
+            {allowFullEditingAccess &&
             user.employeeId != employee.account.employeeId ? (
-            <TabContentEditArea>
-              {user &&
-                (allowFullEditingAccess ||
-                  user.employeeId === employee.account.employeeId) &&
-                (!isEditModeOn ? (
-                  <span
-                    title={`Edit ${employee.account.firstName}'s Profile`}
-                    onClick={() => {
-                      handleIsEditModeOn();
-                      resetFormData();
-                    }}
-                  >
-                    <EditWhitePenSVG />
-                  </span>
-                ) : (
-                  <span>
-                    <span title="Save Changes" onClick={handleSubmit}>
-                      <CheckBoxOnSVG />
-                    </span>
+              <TabContentEditArea>
+                {user &&
+                  (allowFullEditingAccess ||
+                    user.employeeId === employee.account.employeeId) &&
+                  (!isEditModeOn ? (
                     <span
-                      title="Discard Changes"
+                      title={`Edit ${employee.account.firstName}'s Profile`}
                       onClick={() => {
-                        cancelEdit();
+                        handleIsEditModeOn();
                         resetFormData();
                       }}
                     >
-                      <CrossMarkSVG />
+                      <EditWhitePenSVG />
                     </span>
-                  </span>
-                ))}
-            </TabContentEditArea>
-          ) : heading === 'Personal Info' &&
-            user?.employeeId === employee.account.employeeId ? (
-            <TabContentEditArea>
-              {user &&
-                (allowFullEditingAccess ||
-                  user.employeeId === employee.account.employeeId) &&
-                (!isEditModeOn ? (
-                  <span
-                    title={`Edit ${employee.account.firstName}'s Profile`}
-                    onClick={() => {
-                      handleIsEditModeOn();
-                      resetFormData();
-                    }}
-                  >
-                    <EditWhitePenSVG />
-                  </span>
-                ) : (
-                  <span>
-                    <span title="Save Changes" onClick={handleSubmit}>
-                      <CheckBoxOnSVG />
+                  ) : (
+                    <span>
+                      <span title="Save Changes" onClick={handleSubmit}>
+                        <CheckBoxOnSVG />
+                      </span>
+                      <span
+                        title="Discard Changes"
+                        onClick={() => {
+                          cancelEdit();
+                          resetFormData();
+                        }}
+                      >
+                        <CrossMarkSVG />
+                      </span>
                     </span>
+                  ))}
+              </TabContentEditArea>
+            ) : heading === "Personal Info" &&
+              user?.employeeId === employee.account.employeeId ? (
+              <TabContentEditArea>
+                {user &&
+                  (allowFullEditingAccess ||
+                    user.employeeId === employee.account.employeeId) &&
+                  (!isEditModeOn ? (
                     <span
-                      title="Discard Changes"
+                      title={`Edit ${employee.account.firstName}'s Profile`}
                       onClick={() => {
-                        cancelEdit();
+                        handleIsEditModeOn();
                         resetFormData();
                       }}
                     >
-                      <CrossMarkSVG />
+                      <EditWhitePenSVG />
                     </span>
-                  </span>
-                ))}
-            </TabContentEditArea>
-          ) : (
-            ''
-          )}
-        </TabContentMainContainerHeading>
-        <BorderDivLine width="100%" />
-        <TabContentInnerContainer>
-          <div>
-            <TabContentTable>
-              {firstColumn.map(({ label, value }) => (
-                <tr key={label}>
-                  <TabContentTableTd>{t(label)}</TabContentTableTd>
-                  {isEditModeOn &&
+                  ) : (
+                    <span>
+                      <span title="Save Changes" onClick={handleSubmit}>
+                        <CheckBoxOnSVG />
+                      </span>
+                      <span
+                        title="Discard Changes"
+                        onClick={() => {
+                          cancelEdit();
+                          resetFormData();
+                        }}
+                      >
+                        <CrossMarkSVG />
+                      </span>
+                    </span>
+                  ))}
+              </TabContentEditArea>
+            ) : (
+              ""
+            )}
+          </TabContentMainContainerHeading>
+          <BorderDivLine width="100%" />
+          <TabContentInnerContainer>
+            <div>
+              <TabContentTable>
+                {firstColumn.map(({ label, value }) => (
+                  <tr key={label}>
+                    <TabContentTableTd>{t(label)}</TabContentTableTd>
+                    {isEditModeOn &&
                     ((user?.employeeId === employee.account.employeeId &&
                       editableFieldsForLoggedInEmployee.includes(label)) ||
                       (allowFullEditingAccess &&
                         user.employeeId !== employee.account.employeeId)) ? (
-                    <TabContentTableTd>
-                      {label === 'Country' ||
-                        label === 'Nationality' ||
-                        label === 'Department' ||
-                        label === 'Employment Type' ||
-                        label === 'Designation' ? (
-                        <SelectInput
-                          label={label}
-                          value={
-                            formData[label] !== undefined ? formData[label] : ''
-                          }
-                          options={
-                            label === 'Country'
-                              ? ['India', 'Germany', 'United States']
-                              : label === 'Nationality'
-                                ? ['Indian', 'German', 'American']
-                                : label === 'Department'
-                                  ? departmentList?.values.map(
-                                    (department) => department.value
-                                  )
-                                  : label === 'Employment Type'
-                                    ? employmentTypes?.values.map(
-                                      (employmentType) => employmentType.value
-                                    )
-                                    : label === 'Designation'
-                                      ? jobTitles?.values.map(
-                                        (jobTitle) => jobTitle.value
-                                      )
-                                      : []
-                          }
-                          onChange={(label, selectedValue) =>
-                            handleChange(label, selectedValue)
-                          }
-                        />
-                      ) : label === 'Joining Date' ? (
-                        <>
-                          <CalendarInputContainer>
-                            <InlineInput
-                              placeholder={t('Enter Joining Date')}
-                              value={
-                                joiningDate
-                                  ? formatDateDDMMYYYY(joiningDate)
-                                  : employee.employee.jobDetails &&
-                                    employee.employee.jobDetails.joiningDate
-                                    ? formatDateDDMMYYYY(
-                                      employee.employee.jobDetails.joiningDate
-                                    )
-                                    : ''
-                              }
-                              onChange={(e) => setJoiningDate(e.target.value)}
-                              disabled
-                            />
-                            <StyledCalendarIconDark>
-                              <span onClick={toggleCalendar}>
-                                <CalenderIconDark />
-                              </span>
-                            </StyledCalendarIconDark>
-                          </CalendarInputContainer>
-                        </>
-                      ) : (
-                        <InlineInput
-                          type={
-                            label === 'Date of Birth' ||
-                              label === 'Joining Date'
-                              ? 'date'
-                              : 'text'
-                          }
-                          max={new Date().toISOString().split('T')[0]}
-                          value={
-                            formData[label] !== undefined
-                              ? (label === 'Date of Birth' || label === 'Joining Date')
-                                ? formatDateYYYYMMDD(formData[label])
-                                : formData[label]
-                              : ''
-                          }
-                          placeholder={`Enter ${t(label)}`}
-                          onChange={(e) => {
-                            const inputValue = e.target.value;
-                            const labelsToExcludeFromStrictAlphabets = [
-                              'Email Address',
-                              'Alt Email Address',
-                              'Primary Address',
-                              'Email',
-                              'Phone',
-                              'Date of Birth',
-                              'Joining Date',
-                            ];
-                            if (label === 'Postal Code') {
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ''
-                              );
-                              const validValue = numericValue.slice(0, 6);
-                              handleChange(label, validValue);
-                            } else if (label === 'Aadhar Number') {
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ''
-                              );
-                              const validValue = numericValue.slice(0, 12);
-                              handleChange(label, validValue);
-                            } else if (label === 'Phone') {
-                              const numericValue = inputValue.replace(
-                                /\D/g,
-                                ''
-                              );
-                              const validValue = numericValue.slice(0, 10);
-                              handleChange(label, validValue);
-                            } else if (
-                              !labelsToExcludeFromStrictAlphabets.includes(
-                                label
-                              ) &&
-                              (/^[a-zA-Z\s]*$/.test(inputValue) ||
-                                inputValue === '')
-                            ) {
-                              handleChange(label, inputValue);
-                            }
-
-                            // For other cases in the exclusion list, allow any input
-                            else if (
-                              labelsToExcludeFromStrictAlphabets.includes(label)
-                            ) {
-                              handleChange(label, inputValue);
-                            }
-                          }}
-                        />
-                      )}
-                    </TabContentTableTd>
-                  ) : (
-                    <>
-                      {value != '-' &&
-                        (label === 'Joining Date' ||
-                          label === 'Date of Birth') ? (
-                        <TabContentTableTd>
-                          {formatDate(value)}
-                        </TabContentTableTd>
-                      ) : (
-                        <TabContentTableTd>{t(value)}</TabContentTableTd>
-                      )}
-                    </>
-                  )}
-                </tr>
-              ))}
-            </TabContentTable>
-          </div>
-          {secondColumn.length > 0 && (
-            <div>
-              <TabContentTable>
-                {secondColumn.map(({ label, value }) => (
-                  <tr key={label}>
-                    <TabContentTableTd>{t(label)}</TabContentTableTd>
-                    {isEditModeOn &&
-                      ((user?.employeeId === employee.account.employeeId &&
-                        editableFieldsForLoggedInEmployee.includes(label)) ||
-                        (allowFullEditingAccess &&
-                          user.employeeId !== employee.account.employeeId)) ? (
                       <TabContentTableTd>
-                        {label === 'Gender' || label === 'Marital Status' ? (
+                        {label === "Country" ||
+                        label === "Nationality" ||
+                        label === "Department" ||
+                        label === "Employment Type" ||
+                        label === "Designation" ? (
                           <SelectInput
                             label={label}
                             value={
                               formData[label] !== undefined
                                 ? formData[label]
-                                : ''
+                                : ""
                             }
                             options={
-                              label === 'Gender'
-                                ? ['Male', 'Female']
-                                : ['Married', 'Single']
+                              label === "Country"
+                                ? ["India", "Germany", "United States"]
+                                : label === "Nationality"
+                                  ? ["Indian", "German", "American"]
+                                  : label === "Department"
+                                    ? departmentList?.values.map(
+                                        (department) => department.value,
+                                      )
+                                    : label === "Employment Type"
+                                      ? employmentTypes?.values.map(
+                                          (employmentType) =>
+                                            employmentType.value,
+                                        )
+                                      : label === "Designation"
+                                        ? jobTitles?.values.map(
+                                            (jobTitle) => jobTitle.value,
+                                          )
+                                        : []
                             }
                             onChange={(label, selectedValue) =>
                               handleChange(label, selectedValue)
                             }
                           />
+                        ) : label === "Joining Date" ? (
+                          <>
+                            <CalendarInputContainer>
+                              <InlineInput
+                                placeholder={t("Enter Joining Date")}
+                                value={
+                                  joiningDate
+                                    ? formatDateDDMMYYYY(joiningDate)
+                                    : employee.employee.jobDetails &&
+                                        employee.employee.jobDetails.joiningDate
+                                      ? formatDateDDMMYYYY(
+                                          employee.employee.jobDetails
+                                            .joiningDate,
+                                        )
+                                      : ""
+                                }
+                                onChange={(e) => setJoiningDate(e.target.value)}
+                                disabled
+                              />
+                              <StyledCalendarIconDark>
+                                <span onClick={toggleCalendar}>
+                                  <CalenderIconDark />
+                                </span>
+                              </StyledCalendarIconDark>
+                            </CalendarInputContainer>
+                          </>
                         ) : (
                           <InlineInput
-                            type={label === 'Date of Birth' ? 'date' : 'text'}
-                            placeholder={`Enter ${label}`}
+                            type={
+                              label === "Date of Birth" ||
+                              label === "Joining Date"
+                                ? "date"
+                                : "text"
+                            }
+                            max={new Date().toISOString().split("T")[0]}
                             value={
                               formData[label] !== undefined
-                                ? formData[label]
-                                : value
+                                ? label === "Date of Birth" ||
+                                  label === "Joining Date"
+                                  ? formatDateYYYYMMDD(formData[label])
+                                  : formData[label]
+                                : ""
                             }
+                            placeholder={`Enter ${t(label)}`}
                             onChange={(e) => {
                               const inputValue = e.target.value;
-                              const labelsWhichAllowOnlyNumbers = [
-                                'Phone Number',
-                                'Alt Phone Number',
+                              const labelsToExcludeFromStrictAlphabets = [
+                                "Email Address",
+                                "Alt Email Address",
+                                "Primary Address",
+                                "Email",
+                                "Phone",
+                                "Date of Birth",
+                                "Joining Date",
                               ];
-                              if (labelsWhichAllowOnlyNumbers.includes(label)) {
-                                const numericInputValue = inputValue
-                                  .replace(/[^0-9]/g, '')
-                                  .slice(0, 10);
-                                handleChange(label, numericInputValue);
-                              } else {
+                              if (label === "Postal Code") {
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  "",
+                                );
+                                const validValue = numericValue.slice(0, 6);
+                                handleChange(label, validValue);
+                              } else if (label === "Aadhar Number") {
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  "",
+                                );
+                                const validValue = numericValue.slice(0, 12);
+                                handleChange(label, validValue);
+                              } else if (label === "Phone") {
+                                const numericValue = inputValue.replace(
+                                  /\D/g,
+                                  "",
+                                );
+                                const validValue = numericValue.slice(0, 10);
+                                handleChange(label, validValue);
+                              } else if (
+                                !labelsToExcludeFromStrictAlphabets.includes(
+                                  label,
+                                ) &&
+                                (/^[a-zA-Z\s]*$/.test(inputValue) ||
+                                  inputValue === "")
+                              ) {
+                                handleChange(label, inputValue);
+                              }
+
+                              // For other cases in the exclusion list, allow any input
+                              else if (
+                                labelsToExcludeFromStrictAlphabets.includes(
+                                  label,
+                                )
+                              ) {
                                 handleChange(label, inputValue);
                               }
                             }}
@@ -708,22 +656,98 @@ export const GeneralDetailsTab = ({
                         )}
                       </TabContentTableTd>
                     ) : (
-                      <TabContentTableTd>{t(value)}</TabContentTableTd>
+                      <>
+                        {value != "-" &&
+                        (label === "Joining Date" ||
+                          label === "Date of Birth") ? (
+                          <TabContentTableTd>
+                            {formatDate(value)}
+                          </TabContentTableTd>
+                        ) : (
+                          <TabContentTableTd>{t(value)}</TabContentTableTd>
+                        )}
+                      </>
                     )}
                   </tr>
                 ))}
               </TabContentTable>
             </div>
-          )}
-        </TabContentInnerContainer>
-      </TabContentMainContainer>}
+            {secondColumn.length > 0 && (
+              <div>
+                <TabContentTable>
+                  {secondColumn.map(({ label, value }) => (
+                    <tr key={label}>
+                      <TabContentTableTd>{t(label)}</TabContentTableTd>
+                      {isEditModeOn &&
+                      ((user?.employeeId === employee.account.employeeId &&
+                        editableFieldsForLoggedInEmployee.includes(label)) ||
+                        (allowFullEditingAccess &&
+                          user.employeeId !== employee.account.employeeId)) ? (
+                        <TabContentTableTd>
+                          {label === "Gender" || label === "Marital Status" ? (
+                            <SelectInput
+                              label={label}
+                              value={
+                                formData[label] !== undefined
+                                  ? formData[label]
+                                  : ""
+                              }
+                              options={
+                                label === "Gender"
+                                  ? ["Male", "Female"]
+                                  : ["Married", "Single"]
+                              }
+                              onChange={(label, selectedValue) =>
+                                handleChange(label, selectedValue)
+                              }
+                            />
+                          ) : (
+                            <InlineInput
+                              type={label === "Date of Birth" ? "date" : "text"}
+                              placeholder={`Enter ${label}`}
+                              value={
+                                formData[label] !== undefined
+                                  ? formData[label]
+                                  : value
+                              }
+                              onChange={(e) => {
+                                const inputValue = e.target.value;
+                                const labelsWhichAllowOnlyNumbers = [
+                                  "Phone Number",
+                                  "Alt Phone Number",
+                                ];
+                                if (
+                                  labelsWhichAllowOnlyNumbers.includes(label)
+                                ) {
+                                  const numericInputValue = inputValue
+                                    .replace(/[^0-9]/g, "")
+                                    .slice(0, 10);
+                                  handleChange(label, numericInputValue);
+                                } else {
+                                  handleChange(label, inputValue);
+                                }
+                              }}
+                            />
+                          )}
+                        </TabContentTableTd>
+                      ) : (
+                        <TabContentTableTd>{t(value)}</TabContentTableTd>
+                      )}
+                    </tr>
+                  ))}
+                </TabContentTable>
+              </div>
+            )}
+          </TabContentInnerContainer>
+        </TabContentMainContainer>
+      )}
 
       {isEditModeOn && showCalendar ? (
         <CalendarContainer>
           <Calendar
             title="Select a Date"
             handleCalenderChange={handleCalendarChange}
-            handleDateInput={() => { }}
+            handleDateInput={() => {}}
             selectedDate={null}
           />
         </CalendarContainer>
@@ -786,11 +810,11 @@ export const SelectInput: React.FC<SelectInputProps> = ({
     // FIXME - Update below select options as per FIGMA
     <Select
       style={{
-        width: '100%',
-        borderRadius: '5px',
+        width: "100%",
+        borderRadius: "5px",
         border: 0,
-        padding: '4px 3px',
-        outline: '0',
+        padding: "4px 3px",
+        outline: "0",
       }}
       value={value}
       onChange={(e: ChangeEvent<HTMLSelectElement>) =>

@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled, { css } from "styled-components";
 
 export const NavBarContainer = styled.section`
   border-right: 1px solid
@@ -85,7 +85,7 @@ export const NavBarContainer = styled.section`
   }
 
   &.sidebar li a::after {
-    content: '';
+    content: "";
     position: absolute;
     width: 100%;
     height: 100%;
@@ -184,7 +184,7 @@ export const NavHeader = styled.div<{ isOpen: boolean }>`
     font-weight: 600;
     opacity: ${(props) => (props.isOpen ? 1 : 0)};
     transition: all 0.5s ease;
-    font-family: 'Rubik';
+    font-family: "Rubik";
 
     .logo_name_blue {
       color: ${(props) => props.theme.colors.brandColors.primary};
@@ -345,7 +345,7 @@ export const LeftNavList = styled.ul`
     position: relative;
   }
   .dropdown-container:after {
-    content: '';
+    content: "";
     position: absolute;
     left: -20px;
     top: 0;
@@ -381,7 +381,7 @@ export const LeftNavList = styled.ul`
   }
 
   .dropdown-link::before {
-    content: '';
+    content: "";
     position: absolute;
     left: -22px;
     top: 50%;

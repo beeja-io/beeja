@@ -1,24 +1,24 @@
-import { IApplicant } from '../../entities/ApplicantEntity';
-import { useUser } from '../../context/UserContext';
-import { RECRUITMENT_MODULE } from '../../constants/PermissionConstants';
+import { IApplicant } from "../../entities/ApplicantEntity";
+import { useUser } from "../../context/UserContext";
+import { RECRUITMENT_MODULE } from "../../constants/PermissionConstants";
 import {
   TableBodyRow,
   TableHead,
   TableList,
-} from '../../styles/DocumentTabStyles.style';
-import ZeroEntriesFound from '../reusableComponents/ZeroEntriesFound.compoment';
-import { CalenderIcon } from '../../svgs/DocumentTabSvgs.svg';
-import { formatDate } from '../../utils/dateFormatter';
-import { ExpenseListSection } from '../../styles/ExpenseListStyles.style';
-import { StatusIndicator } from '../../styles/LoanApplicationStyles.style';
-import { removeUnderScore } from '../../utils/stringUtils';
-import { BulkPayslipContainer } from '../../styles/BulkPayslipStyles.style';
-import ApplicantListActions from '../actionsOfLists/ApplicantListActions';
-import { EditIcon } from '../../svgs/ExpenseListSvgs.svg';
-import { DownloadSVG } from '../../svgs/CommonSvgs.svs';
-import { downloadApplicantResume } from '../../service/axiosInstance';
-import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
+} from "../../styles/DocumentTabStyles.style";
+import ZeroEntriesFound from "../reusableComponents/ZeroEntriesFound.compoment";
+import { CalenderIcon } from "../../svgs/DocumentTabSvgs.svg";
+import { formatDate } from "../../utils/dateFormatter";
+import { ExpenseListSection } from "../../styles/ExpenseListStyles.style";
+import { StatusIndicator } from "../../styles/LoanApplicationStyles.style";
+import { removeUnderScore } from "../../utils/stringUtils";
+import { BulkPayslipContainer } from "../../styles/BulkPayslipStyles.style";
+import ApplicantListActions from "../actionsOfLists/ApplicantListActions";
+import { EditIcon } from "../../svgs/ExpenseListSvgs.svg";
+import { DownloadSVG } from "../../svgs/CommonSvgs.svs";
+import { downloadApplicantResume } from "../../service/axiosInstance";
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 type ApplicantsListProps = {
   allApplicants: IApplicant[];
@@ -28,15 +28,15 @@ type ApplicantsListProps = {
 };
 const ApplicantsList = (props: ApplicantsListProps) => {
   const { user } = useUser();
-   const { t } = useTranslation();
+  const { t } = useTranslation();
   const Actions = [
     ...(user?.roles.some((role) =>
       role.permissions.some(
         (permission) =>
-          permission === RECRUITMENT_MODULE.UPDATE_ENTIRE_APPLICANT
-      )
+          permission === RECRUITMENT_MODULE.UPDATE_ENTIRE_APPLICANT,
+      ),
     )
-      ? [{ title: 'Edit', svg: <EditIcon /> }]
+      ? [{ title: "Edit", svg: <EditIcon /> }]
       : []),
     // TODO: Update after implementing proper BE
     // ...(user?.roles.some((role) =>
@@ -58,7 +58,9 @@ const ApplicantsList = (props: ApplicantsListProps) => {
           let fileName = "resume_beeja.pdf";
 
           if (contentDisposition) {
-            const match = contentDisposition.match(/filename\*?=['"]?(?:UTF-8'')?([^;'\"]+)/);
+            const match = contentDisposition.match(
+              /filename\*?=['"]?(?:UTF-8'')?([^;'\"]+)/,
+            );
             if (match && match[1]) {
               fileName = decodeURIComponent(match[1]);
             }
@@ -77,14 +79,13 @@ const ApplicantsList = (props: ApplicantsListProps) => {
           loading: "Downloading...",
           success: "Downloaded successfully",
           error: "Failed to download file",
-        }
-      )
+        },
+      );
     } catch (error) {
       console.error("Download failed:", error);
       toast.error("Failed to download file.");
     }
   };
-
 
   return (
     <ExpenseListSection>
@@ -95,7 +96,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
           </div>
           <TableList>
             <TableHead>
-              <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
+              <tr style={{ textAlign: "left", borderRadius: "10px" }}>
                 <th>{t("ID")}</th>
                 <th>{t("NAME_OF_THE_APPLICANT")}</th>
                 <th>{t("POSITION")}</th>
@@ -124,17 +125,21 @@ const ApplicantsList = (props: ApplicantsListProps) => {
       ) : props.allApplicants.length > 0 ? (
         <div className="mainDiv">
           <div className="Expense_Heading">
-            <p className="expenseListTitle">{props.isReferral ?  t("LIST_OF_REFERRALS"): t("LIST_OF_APPLICANTS")}</p>
+            <p className="expenseListTitle">
+              {props.isReferral
+                ? t("LIST_OF_REFERRALS")
+                : t("LIST_OF_APPLICANTS")}
+            </p>
           </div>
           <TableList>
             <TableHead>
-              <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
+              <tr style={{ textAlign: "left", borderRadius: "10px" }}>
                 <th>{t("ID")}</th>
                 <th>{t("NAME_OF_THE_APPLICANT")}</th>
                 <th>{t("POSITION")}</th>
                 <th>{t("Phone_Number")}</th>
                 {!props.isReferral && <th>{t("REFERRED_BY")}</th>}
-                <th style={{ textAlign: 'center' }}>{t("STATUS")}</th>
+                <th style={{ textAlign: "center" }}>{t("STATUS")}</th>
                 <th>{t("REQUESTED_DATE")}</th>
                 <th>{t("RESUME/CV")}</th>
                 {!props.isReferral && <th>{t("ACTION")}</th>}
@@ -152,7 +157,11 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                       <td>{applicant.positionAppliedFor}</td>
                       <td>{applicant.phoneNumber}</td>
                       {!props.isReferral && (
-                        <td>{applicant.referredByEmployeeName ? applicant.referredByEmployeeName : '-'}</td>
+                        <td>
+                          {applicant.referredByEmployeeName
+                            ? applicant.referredByEmployeeName
+                            : "-"}
+                        </td>
                       )}
                       <td>
                         <StatusIndicator
@@ -166,8 +175,8 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                       <td>
                         <span
                           style={{
-                            verticalAlign: 'middle',
-                            marginRight: '6px',
+                            verticalAlign: "middle",
+                            marginRight: "6px",
                           }}
                         >
                           <CalenderIcon />
@@ -185,12 +194,12 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                         </span>
                       </td>
                       {!props.isReferral &&
-                        user?.roles.some((role) =>
-                          role.permissions.some(
-                            (permission) =>
-                              permission === RECRUITMENT_MODULE.UPDATE_APPLICANT
-                          )
-                        ) ? (
+                      user?.roles.some((role) =>
+                        role.permissions.some(
+                          (permission) =>
+                            permission === RECRUITMENT_MODULE.UPDATE_APPLICANT,
+                        ),
+                      ) ? (
                         <td>
                           <ApplicantListActions
                             options={Actions}
@@ -198,7 +207,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                           />
                         </td>
                       ) : (
-                        ''
+                        ""
                       )}
                     </TableBodyRow>
                   ))}

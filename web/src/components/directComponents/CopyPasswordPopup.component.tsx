@@ -1,14 +1,14 @@
-import { toast } from 'sonner';
+import { toast } from "sonner";
 import {
   CenterModalContainer,
   CenterModelMainContainer,
-} from '../../styles/CenterModalStyles.style';
-import { ValidationText } from '../../styles/InputStyles.style';
-import { CopySVG, EmailSVG } from '../../svgs/CommonSvgs.svs';
-import { Button } from '../../styles/CommonStyles.style';
-import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { SharePasswordThroughMailTemplate } from '../../templates/SharePasswordTemplate';
+} from "../../styles/CenterModalStyles.style";
+import { ValidationText } from "../../styles/InputStyles.style";
+import { CopySVG, EmailSVG } from "../../svgs/CommonSvgs.svs";
+import { Button } from "../../styles/CommonStyles.style";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { SharePasswordThroughMailTemplate } from "../../templates/SharePasswordTemplate";
 
 type CopyPasswordPopupProps = {
   employeeId: string;
@@ -25,7 +25,7 @@ const CopyPasswordPopup = (props: CopyPasswordPopupProps) => {
   };
   const { t } = useTranslation();
   const navigateToEmail = () => {
-    const subject = encodeURIComponent('Beeja Account Password');
+    const subject = encodeURIComponent("Beeja Account Password");
     const emailProps = {
       firstName: props.firstName,
       employeeId: props.employeeId,
@@ -44,10 +44,10 @@ const CopyPasswordPopup = (props: CopyPasswordPopupProps) => {
       navigator.clipboard
         .writeText(props.password)
         .then(() => {
-          toast.success(t('PASSWORD_COPIED_TO_CLIP_BOARD'));
+          toast.success(t("PASSWORD_COPIED_TO_CLIP_BOARD"));
         })
         .catch(() => {
-          toast.error(t('FAILED_TO_COPY'));
+          toast.error(t("FAILED_TO_COPY"));
         });
     }
   };
@@ -55,15 +55,15 @@ const CopyPasswordPopup = (props: CopyPasswordPopupProps) => {
     <CenterModalContainer>
       <CenterModelMainContainer className="mediumPopUp">
         <span>
-          {t('USER_CREATED_WITH_EMP_ID')} {props.employeeId}
+          {t("USER_CREATED_WITH_EMP_ID")} {props.employeeId}
         </span>
         <div className="passwordArea">
           <span className="passwordBox">
-            {props.password ? props.password : 'asd'}
+            {props.password ? props.password : "asd"}
           </span>
           <span
             className="passwordBox icon"
-            title={t('COPY_PASSWORD_TO_CLIP_BOARD')}
+            title={t("COPY_PASSWORD_TO_CLIP_BOARD")}
             onClick={() => {
               copyToClipboard();
               handlePasswordStored();
@@ -73,7 +73,7 @@ const CopyPasswordPopup = (props: CopyPasswordPopupProps) => {
           </span>
           <span
             className="passwordBox icon"
-            title={t('PASSWORD_ICON_TITLE_TO_MAIL')}
+            title={t("PASSWORD_ICON_TITLE_TO_MAIL")}
             onClick={() => {
               handlePasswordStored();
               navigateToEmail();
@@ -84,12 +84,12 @@ const CopyPasswordPopup = (props: CopyPasswordPopupProps) => {
         </div>
         <div>
           <ValidationText className="info">
-            <strong>{t('NOTE')}&nbsp; </strong> {t('PASSWORD_POPUP_NOTE')}
+            <strong>{t("NOTE")}&nbsp; </strong> {t("PASSWORD_POPUP_NOTE")}
           </ValidationText>
         </div>
         {passwordStored && (
           <Button className="submit" onClick={props.handleClose}>
-            {t('CLOSE')}
+            {t("CLOSE")}
           </Button>
         )}
       </CenterModelMainContainer>

@@ -14,39 +14,39 @@ import {
   ZoomSliderContainer,
   ZoomSlider,
   SliderIconContainer,
-} from '../../styles/MyProfile.style';
-import { EmployeeEntity } from '../../entities/EmployeeEntity';
+} from "../../styles/MyProfile.style";
+import { EmployeeEntity } from "../../entities/EmployeeEntity";
 import {
   ArrowDownSVG,
   BlueDotDividerSVG,
   GlobeIconSVG,
   MessageIconSVG,
   PhoneIconSVG,
-} from '../../svgs/CommonSvgs.svs';
-import React, { useEffect, useState, useRef, useContext } from 'react';
-import html2canvas from 'html2canvas';
-import { Button, StyledLink } from '../../styles/CommonStyles.style';
-import { useUser } from '../../context/UserContext';
-import { ApplicationContext } from '../../context/ApplicationContext';
+} from "../../svgs/CommonSvgs.svs";
+import React, { useEffect, useState, useRef, useContext } from "react";
+import html2canvas from "html2canvas";
+import { Button, StyledLink } from "../../styles/CommonStyles.style";
+import { useUser } from "../../context/UserContext";
+import { ApplicationContext } from "../../context/ApplicationContext";
 import {
   updateEmployeeStatusByEmployeeId,
   getAllRolesInOrganization,
   downloadEmployeeFile,
   uploadProfilePicture,
   updateEmployeeRole,
-} from '../../service/axiosInstance';
-import CenterModal from './CenterModal.component';
+} from "../../service/axiosInstance";
+import CenterModal from "./CenterModal.component";
 import {
   EMPLOYEE_MODULE,
   PROFILE_PIC_MODULE,
-} from '../../constants/PermissionConstants';
-import { IRole } from '../../entities/RoleEntity';
-import { Monogram } from '../../styles/EmployeeListStyles.style';
-import { TIME_ZONES } from '../../utils/themeUtils';
-import { hasPermission } from '../../utils/permissionCheck';
-import { toast } from 'sonner';
-import { useProfileImage } from '../../context/ProfileImageContext';
-import { LargeSVG, SmallSVG } from '../../svgs/profilePictureSvgs.svg';
+} from "../../constants/PermissionConstants";
+import { IRole } from "../../entities/RoleEntity";
+import { Monogram } from "../../styles/EmployeeListStyles.style";
+import { TIME_ZONES } from "../../utils/themeUtils";
+import { hasPermission } from "../../utils/permissionCheck";
+import { toast } from "sonner";
+import { useProfileImage } from "../../context/ProfileImageContext";
+import { LargeSVG, SmallSVG } from "../../svgs/profilePictureSvgs.svg";
 
 type QuickProfileProps = {
   employee: EmployeeEntity | undefined;
@@ -68,8 +68,8 @@ const MyProfileQuickDetailsComponent = ({
 
   const [allRolesInOrg, setAllRolesInOrg] = useState<IRole[]>();
   const [isLoadingResponseINTERNAL, setIsLoadingResponse] = useState(false);
-  const [roleChangeType, setRoleChangeType] = useState<'add' | 'delete' | null>(
-    null
+  const [roleChangeType, setRoleChangeType] = useState<"add" | "delete" | null>(
+    null,
   );
   const [isMonogramModalOpen, setIsMonogramModalOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -80,7 +80,7 @@ const MyProfileQuickDetailsComponent = ({
   const imageRef = useRef<HTMLImageElement | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startDrag, setStartDrag] = useState<{ x: number; y: number } | null>(
-    null
+    null,
   );
   const [croppedImage] = useState<string | null>(null);
   const { employeeList, updateEmployeeList } = useContext(ApplicationContext);
@@ -113,25 +113,22 @@ const MyProfileQuickDetailsComponent = ({
     setIsLoadingResponse(true);
     try {
       employee &&
-        (await updateEmployeeRole(
-          employee.account.employeeId,
-          roles
-        ));
+        (await updateEmployeeRole(employee.account.employeeId, roles));
 
-      setAddRoleButtonText('Add Role');
-      setDeleteRoleButtonText('Delete Role');
+      setAddRoleButtonText("Add Role");
+      setDeleteRoleButtonText("Delete Role");
       handleIsUpdateButtonShow();
       fetchEmployeeAgain();
       setIsUpdateButtonShow(false);
       setIsLoadingResponse(false);
-      if (roleChangeType === 'add') {
-        toast.success('Role Added successfully');
-      } else if (roleChangeType === 'delete') {
-        toast.success('Role Deleted successfully');
+      if (roleChangeType === "add") {
+        toast.success("Role Added successfully");
+      } else if (roleChangeType === "delete") {
+        toast.success("Role Deleted successfully");
       }
       fetchRoles();
     } catch (error) {
-      throw new Error('Error Updating roles: ' + error);
+      throw new Error("Error Updating roles: " + error);
     } finally {
       setIsLoadingResponse(false);
     }
@@ -139,7 +136,7 @@ const MyProfileQuickDetailsComponent = ({
 
   const addRole = (newRole: string) => {
     handleIsUpdateButtonShow();
-    setRoleChangeType('add');
+    setRoleChangeType("add");
     setRoles((prevRoles) => {
       if (!prevRoles.includes(newRole)) {
         return [...prevRoles, newRole];
@@ -150,7 +147,7 @@ const MyProfileQuickDetailsComponent = ({
 
   const deleteRole = (roleToDelete: string) => {
     handleIsUpdateButtonShow();
-    setRoleChangeType('delete');
+    setRoleChangeType("delete");
     setRoles((prevRoles) => {
       return prevRoles.filter((role) => role !== roleToDelete);
     });
@@ -184,19 +181,19 @@ const MyProfileQuickDetailsComponent = ({
         setIsDeleteRoleDropdown(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutSide);
+    document.addEventListener("mousedown", handleClickOutSide);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutSide);
+      document.removeEventListener("mousedown", handleClickOutSide);
     };
   }, []);
 
-  const [addRoleButtonText, setAddRoleButtonText] = useState('Add Role');
+  const [addRoleButtonText, setAddRoleButtonText] = useState("Add Role");
   const handleAddRoleButtonText = (role: string) => {
     setAddRoleButtonText(role);
   };
 
   const [deleteRoleButtonText, setDeleteRoleButtonText] =
-    useState('Delete Role');
+    useState("Delete Role");
   const HandleDeleteRoleButtonText = (role: string) => {
     setDeleteRoleButtonText(role);
   };
@@ -214,11 +211,11 @@ const MyProfileQuickDetailsComponent = ({
     employee?.employee.contact && employee?.employee?.contact?.phone;
 
   const canEditOwnProfilePic = user?.roles.some((role) =>
-    role.permissions.includes(PROFILE_PIC_MODULE.UPDATE_PROFILE_PHOTO_SELF)
+    role.permissions.includes(PROFILE_PIC_MODULE.UPDATE_PROFILE_PHOTO_SELF),
   );
 
   const canEditOtherProfilePic = user?.roles.some((role) =>
-    role.permissions.includes(PROFILE_PIC_MODULE.UPDATE_PROFILE_PHOTO_ALL)
+    role.permissions.includes(PROFILE_PIC_MODULE.UPDATE_PROFILE_PHOTO_ALL),
   );
 
   const showHoverEffect =
@@ -275,17 +272,17 @@ const MyProfileQuickDetailsComponent = ({
   };
 
   const handleFileUpload = () => {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/png, image/jpeg';
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "image/png, image/jpeg";
 
     fileInput.onchange = (event) => {
       const target = event.target as HTMLInputElement | null;
       if (target && target.files) {
         const file = target.files[0];
-        const validImageTypes = ['image/png', 'image/jpeg'];
+        const validImageTypes = ["image/png", "image/jpeg"];
         if (!validImageTypes.includes(file.type)) {
-          alert('Please upload a .png or .jpg file.');
+          alert("Please upload a .png or .jpg file.");
           return;
         }
         setSelectedImage(file);
@@ -296,23 +293,23 @@ const MyProfileQuickDetailsComponent = ({
 
   const cropImage = (): Promise<File> => {
     return new Promise((resolve, reject) => {
-      const previewDiv = document.getElementById('previewDiv');
-      if (!previewDiv) return reject('Preview div not found.');
+      const previewDiv = document.getElementById("previewDiv");
+      if (!previewDiv) return reject("Preview div not found.");
       html2canvas(previewDiv, {
-        backgroundColor: '#333333',
+        backgroundColor: "#333333",
         useCORS: true,
       })
         .then((canvas) => {
           canvas.toBlob((blob) => {
             if (blob) {
-              const file = new File([blob], 'cropped-preview.png', {
-                type: 'image/png',
+              const file = new File([blob], "cropped-preview.png", {
+                type: "image/png",
               });
               resolve(file);
             } else {
-              reject('Blob creation failed');
+              reject("Blob creation failed");
             }
-          }, 'image/png');
+          }, "image/png");
         })
         .catch((error) => {
           reject(`Failed to capture image: ${error.message}`);
@@ -330,7 +327,7 @@ const MyProfileQuickDetailsComponent = ({
       }
       const uploadResponse = await uploadProfilePicture(
         croppedImageFile,
-        entityId
+        entityId,
       );
 
       const newFileId = uploadResponse.data.profilePictureId;
@@ -343,13 +340,13 @@ const MyProfileQuickDetailsComponent = ({
               ...emp,
               employee: { ...emp.employee, profilePictureId: newFileId },
             }
-          : emp
+          : emp,
       );
       if (updatedEmployeeList) updateEmployeeList(updatedEmployeeList);
 
       const response = await downloadEmployeeFile(newFileId);
       if (!response.data || response.data.size === 0) {
-        throw new Error('Received empty or invalid blob data');
+        throw new Error("Received empty or invalid blob data");
       }
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -358,11 +355,11 @@ const MyProfileQuickDetailsComponent = ({
         setProfileImageUrl(imageUrl, isOwnProfile);
       };
       reader.onerror = () => {
-        throw new Error('Error converting blob to base64');
+        throw new Error("Error converting blob to base64");
       };
       reader.readAsDataURL(response.data);
     } catch (error) {
-      throw new Error('Error uploading or fetching cropped image: ' + error);
+      throw new Error("Error uploading or fetching cropped image: " + error);
     }
   };
   /* eslint-disable react-hooks/exhaustive-deps */
@@ -371,10 +368,10 @@ const MyProfileQuickDetailsComponent = ({
       if (employee?.employee.profilePictureId) {
         try {
           const response = await downloadEmployeeFile(
-            employee.employee.profilePictureId
+            employee.employee.profilePictureId,
           );
           if (!response.data || response.data.size === 0) {
-            throw new Error('Received empty or invalid blob data');
+            throw new Error("Received empty or invalid blob data");
           }
 
           const reader = new FileReader();
@@ -387,11 +384,11 @@ const MyProfileQuickDetailsComponent = ({
             setProfileImageUrl(imageUrl, isOwnProfile);
           };
           reader.onerror = () => {
-            throw new Error('Error converting blob to base64');
+            throw new Error("Error converting blob to base64");
           };
           reader.readAsDataURL(response.data);
         } catch (error) {
-          throw new Error('Error fetching profile image:' + error);
+          throw new Error("Error fetching profile image:" + error);
         }
       }
     };
@@ -413,9 +410,9 @@ const MyProfileQuickDetailsComponent = ({
                 className={`unique-monogram ${
                   (showHoverEffect && canEditOwnProfilePic) ||
                   canEditOtherProfilePic
-                    ? 'unique-monogram--hover-enabled'
-                    : ''
-                } ${employee ? employee.account.firstName.charAt(0).toUpperCase() : ''} quickDetails`}
+                    ? "unique-monogram--hover-enabled"
+                    : ""
+                } ${employee ? employee.account.firstName.charAt(0).toUpperCase() : ""} quickDetails`}
                 onClick={handleMonogramClick}
               >
                 {profileImageUrl ? (
@@ -425,9 +422,9 @@ const MyProfileQuickDetailsComponent = ({
                     ref={imageRef}
                     alt="PROFILE"
                     style={{
-                      borderRadius: '50%',
-                      width: '100%',
-                      height: '100%',
+                      borderRadius: "50%",
+                      width: "100%",
+                      height: "100%",
                     }}
                   />
                 ) : (
@@ -439,7 +436,7 @@ const MyProfileQuickDetailsComponent = ({
                   )
                 )}
               </Monogram>
-              <UserName style={{ width: '100%' }}>
+              <UserName style={{ width: "100%" }}>
                 <span className="skeleton skeleton-text">&nbsp;</span>
                 <span className="skeleton skeleton-text skeleton-text-short">
                   &nbsp;
@@ -448,7 +445,7 @@ const MyProfileQuickDetailsComponent = ({
               <RolesDiv>
                 <span className="skeleton skeleton-text skeleton-text-short">
                   &nbsp;
-                </span>{' '}
+                </span>{" "}
               </RolesDiv>
               <BorderDivLine />
               <QuickInfoContactContainer>
@@ -456,27 +453,27 @@ const MyProfileQuickDetailsComponent = ({
                   <span>
                     <MessageIconSVG />
                   </span>
-                  <span className="skeleton skeleton-text">&nbsp;</span>{' '}
+                  <span className="skeleton skeleton-text">&nbsp;</span>{" "}
                 </div>
                 <div className="contactInfo">
                   <span>
                     <PhoneIconSVG />
                   </span>
-                  <span className="skeleton skeleton-text">&nbsp;</span>{' '}
+                  <span className="skeleton skeleton-text">&nbsp;</span>{" "}
                 </div>
                 <div className="contactInfo">
                   <span>
                     <GlobeIconSVG isActive={false} />
                   </span>
                   {/* FIXME - Update this time zome */}
-                  <span className="skeleton skeleton-text">&nbsp;</span>{' '}
+                  <span className="skeleton skeleton-text">&nbsp;</span>{" "}
                 </div>
               </QuickInfoContactContainer>
               <BorderDivLine />
               <QuickInfoDepartmentContainer>
                 <div>
                   <span>Department</span>
-                  <span className="skeleton skeleton-text">&nbsp;</span>{' '}
+                  <span className="skeleton skeleton-text">&nbsp;</span>{" "}
                 </div>
               </QuickInfoDepartmentContainer>
             </MyProfileQuickDetails>
@@ -489,9 +486,9 @@ const MyProfileQuickDetailsComponent = ({
               className={`unique-monogram ${
                 (showHoverEffect && canEditOwnProfilePic) ||
                 canEditOtherProfilePic
-                  ? 'unique-monogram--hover-enabled'
-                  : ''
-              } ${employee ? employee.account.firstName.charAt(0).toUpperCase() : ''} quickDetails`}
+                  ? "unique-monogram--hover-enabled"
+                  : ""
+              } ${employee ? employee.account.firstName.charAt(0).toUpperCase() : ""} quickDetails`}
               onClick={handleMonogramClick}
             >
               {profileImageUrl ? (
@@ -501,9 +498,9 @@ const MyProfileQuickDetailsComponent = ({
                   ref={imageRef}
                   alt="PROFILE"
                   style={{
-                    borderRadius: '50%',
-                    width: '100%',
-                    height: '100%',
+                    borderRadius: "50%",
+                    width: "100%",
+                    height: "100%",
                   }}
                 />
               ) : (
@@ -519,13 +516,13 @@ const MyProfileQuickDetailsComponent = ({
               <span>
                 {employee?.account.firstName && employee?.account
                   ? employee?.account.firstName
-                  : ''}
+                  : ""}
                 &nbsp;
               </span>
               <span>
                 {employee?.account.lastName && employee?.account
                   ? employee?.account.lastName
-                  : ''}
+                  : ""}
               </span>
             </UserName>
             <RolesDiv>
@@ -538,18 +535,18 @@ const MyProfileQuickDetailsComponent = ({
                       <>
                         <BlueDotDividerSVG /> &nbsp;
                       </>
-                    )}{' '}
+                    )}{" "}
                   </React.Fragment>
                 ))}
             </RolesDiv>
             <span className="statusChangeButton">
               <MyProfileButton
-                style={{ cursor: 'auto' }}
+                style={{ cursor: "auto" }}
                 className={
-                  employee && !employee.account.active ? 'inactiveButton' : ''
+                  employee && !employee.account.active ? "inactiveButton" : ""
                 }
               >
-                {employee?.account.active ? 'ACTIVE' : 'INACTIVE'} &nbsp;{' '}
+                {employee?.account.active ? "ACTIVE" : "INACTIVE"} &nbsp;{" "}
               </MyProfileButton>
               {user &&
                 hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) &&
@@ -558,7 +555,7 @@ const MyProfileQuickDetailsComponent = ({
                   <span
                     className="arrowIcon"
                     title={`${
-                      !employee.account.active ? 'Active' : 'Inactive'
+                      !employee.account.active ? "Active" : "Inactive"
                     } user`}
                     onClick={() => handleIsActiveModalOpen()}
                   >
@@ -572,10 +569,10 @@ const MyProfileQuickDetailsComponent = ({
                 <span>
                   <StyledLink
                     to={
-                      'mailto:' +
+                      "mailto:" +
                       (employee?.account && employee?.account
                         ? employee?.account.email
-                        : '-')
+                        : "-")
                     }
                   >
                     <MessageIconSVG />
@@ -584,22 +581,22 @@ const MyProfileQuickDetailsComponent = ({
                 <span>
                   <StyledLink
                     to={
-                      'mailto:' +
+                      "mailto:" +
                       (employee?.account && employee?.account
                         ? employee?.account.email
-                        : '-')
+                        : "-")
                     }
                   >
                     <span
                       title={
                         employee?.account && employee?.account
                           ? employee?.account.email
-                          : '-'
+                          : "-"
                       }
                     >
                       {employee?.account && employee?.account
                         ? employee?.account.email
-                        : '-'}
+                        : "-"}
                     </span>
                   </StyledLink>
                 </span>
@@ -608,7 +605,7 @@ const MyProfileQuickDetailsComponent = ({
                 <span>
                   {hasContactPhone ? (
                     <StyledLink
-                      to={'tel:' + (employee?.employee?.contact?.phone || '-')}
+                      to={"tel:" + (employee?.employee?.contact?.phone || "-")}
                     >
                       <PhoneIconSVG />
                     </StyledLink>
@@ -624,19 +621,19 @@ const MyProfileQuickDetailsComponent = ({
                         employee.employee.contact &&
                         employee?.employee.contact.phone
                           ? employee?.employee.contact.phone
-                          : '-'
+                          : "-"
                       }
                     >
                       <StyledLink
                         to={
-                          'tel:' + (employee?.employee?.contact?.phone || '-')
+                          "tel:" + (employee?.employee?.contact?.phone || "-")
                         }
                       >
                         {employee?.employee &&
                         employee.employee.contact &&
                         employee?.employee.contact.phone
                           ? employee?.employee.contact.phone
-                          : '-'}
+                          : "-"}
                       </StyledLink>
                     </span>
                   ) : (
@@ -645,7 +642,7 @@ const MyProfileQuickDetailsComponent = ({
                       employee.employee.contact &&
                       employee?.employee.contact.phone
                         ? employee?.employee.contact.phone
-                        : '-'}
+                        : "-"}
                     </span>
                   )}
                 </span>
@@ -679,7 +676,7 @@ const MyProfileQuickDetailsComponent = ({
                   employee.employee.jobDetails &&
                   employee.employee.jobDetails.department
                     ? employee.employee.jobDetails.department
-                    : '-'}
+                    : "-"}
                 </span>
               </div>
               {/*<div title="Feature Not Available">
@@ -688,14 +685,14 @@ const MyProfileQuickDetailsComponent = ({
                   ? '>'
                   : null}
               </div> */}
-            </QuickInfoDepartmentContainer> 
+            </QuickInfoDepartmentContainer>
 
             {employee &&
               employee.account.active &&
               user &&
               hasPermission(
                 user,
-                EMPLOYEE_MODULE.UPDATE_ROLES_AND_PERMISSIONS
+                EMPLOYEE_MODULE.UPDATE_ROLES_AND_PERMISSIONS,
               ) &&
               user.employeeId !== employee.account.employeeId && (
                 <QuickInfoActionButtions>
@@ -715,8 +712,8 @@ const MyProfileQuickDetailsComponent = ({
                             .filter(
                               (role) =>
                                 !employee.account.roles.some(
-                                  (userRole) => userRole.name === role.name
-                                )
+                                  (userRole) => userRole.name === role.name,
+                                ),
                             )
                             .map((role) => role.name)}
                         />
@@ -737,7 +734,7 @@ const MyProfileQuickDetailsComponent = ({
                             }
                             deleteRoles={deleteRole}
                             options={employee.account.roles.map(
-                              (role) => role.name
+                              (role) => role.name,
                             )}
                           />
                         </div>
@@ -750,7 +747,7 @@ const MyProfileQuickDetailsComponent = ({
             <Button
               fontSize="14px"
               className="submit"
-              style={{ marginTop: '50px' }}
+              style={{ marginTop: "50px" }}
               onClick={() => {
                 handleUpdateRoles();
               }}
@@ -763,9 +760,9 @@ const MyProfileQuickDetailsComponent = ({
 
       {isActiveModalOpen && employee && (
         <CenterModal
-          modalHeading={`${!employee.account.active ? 'Active' : 'Inactive'}`}
+          modalHeading={`${!employee.account.active ? "Active" : "Inactive"}`}
           modalContent={`Are you sure to want to ${
-            !employee.account.active ? 'active' : 'inactive'
+            !employee.account.active ? "active" : "inactive"
           } '${employee.account.firstName}'`}
           handleModalClose={handleIsActiveModalOpen}
           handleModalSubmit={handleStatusChange}
@@ -776,7 +773,7 @@ const MyProfileQuickDetailsComponent = ({
         <CenterModal
           modalContent={
             <Monogram
-              className={`${employee ? employee.account.firstName.charAt(0).toUpperCase() : ''} quickDetails modal-monogram`}
+              className={`${employee ? employee.account.firstName.charAt(0).toUpperCase() : ""} quickDetails modal-monogram`}
               onClick={handleMonogramClick}
             >
               {profileImageUrl ? (
@@ -784,7 +781,7 @@ const MyProfileQuickDetailsComponent = ({
                   src={profileImageUrl}
                   ref={imageRef}
                   alt="PROFILE"
-                  style={{ borderRadius: '50%', width: '100%', height: '100%' }}
+                  style={{ borderRadius: "50%", width: "100%", height: "100%" }}
                 />
               ) : (
                 employee && (
@@ -815,7 +812,7 @@ const MyProfileQuickDetailsComponent = ({
                 <img
                   src={croppedImage}
                   alt="Cropped Monogram"
-                  style={{ borderRadius: '50%' }}
+                  style={{ borderRadius: "50%" }}
                 />
               ) : null}
             </div>

@@ -1,11 +1,11 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const TextInput = styled.input<{ isError?: boolean }>`
   outline: none;
   border-radius: 10px;
   border: 1px solid
     ${(props) =>
-      props.isError ? 'red' : props.theme.colors.grayColors.grayscale300};
+      props.isError ? "red" : props.theme.colors.grayColors.grayscale300};
   display: flex;
   padding: 16px 20px;
   align-items: flex-start;
@@ -33,8 +33,8 @@ export const StyledForm = styled.form`
   flex-direction: column;
   justify-content: space-between;
   min-height: 80vh;
-  max-height: 100svh; 
-  overflow-y: scroll; 
+  max-height: 100svh;
+  overflow-y: scroll;
   padding-right: 10px;
 
   .buttonArea {
@@ -99,7 +99,7 @@ export const Slider = styled.span`
   transition: 0.4s;
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     height: 26px;
     width: 26px;

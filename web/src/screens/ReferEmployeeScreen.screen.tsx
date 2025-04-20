@@ -1,4 +1,4 @@
-import AddNewApplicant from '../components/directComponents/AddNewApplicant.component';
+import AddNewApplicant from "../components/directComponents/AddNewApplicant.component";
 
 const ReferEmployeeScreen = () => {
   return <AddNewApplicant isReferScreen />;

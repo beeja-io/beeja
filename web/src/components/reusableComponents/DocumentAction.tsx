@@ -1,38 +1,38 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 import {
   ActionIcon,
   ChevronLeftSVG,
   ChevronRightSVG,
   DownloadIcon,
-} from '../../svgs/DocumentTabSvgs.svg';
+} from "../../svgs/DocumentTabSvgs.svg";
 /* eslint-disable */
 import {
   ActionContainer,
   ActionMenuContent,
   ActionMenuOption,
   ActionMenu,
-} from '../../styles/DocumentTabStyles.style';
+} from "../../styles/DocumentTabStyles.style";
 import {
   deleteEmployeeFile,
   downloadEmployeeFile,
-} from '../../service/axiosInstance';
-import axios, { AxiosError } from 'axios';
-import { useUser } from '../../context/UserContext';
-import CenterModal from './CenterModal.component';
-import CenterModalMain from './CenterModalMain.component';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import { Document, Page } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-import { pdfjs } from 'react-pdf';
-import { DOCUMENT_MODULE } from '../../constants/PermissionConstants';
-import { FileEntity } from '../../entities/FileEntity';
-import { hasPermission } from '../../utils/permissionCheck';
-import { t } from 'i18next';
+} from "../../service/axiosInstance";
+import axios, { AxiosError } from "axios";
+import { useUser } from "../../context/UserContext";
+import CenterModal from "./CenterModal.component";
+import CenterModalMain from "./CenterModalMain.component";
+import SpinAnimation from "../loaders/SprinAnimation.loader";
+import { Document, Page } from "react-pdf";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+import { pdfjs } from "react-pdf";
+import { DOCUMENT_MODULE } from "../../constants/PermissionConstants";
+import { FileEntity } from "../../entities/FileEntity";
+import { hasPermission } from "../../utils/permissionCheck";
+import { t } from "i18next";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url
+  "pdfjs-dist/build/pdf.worker.min.js",
+  import.meta.url,
 ).toString();
 
 interface ActionProps {
@@ -78,7 +78,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
     //FIXME ...
-    if (option === 'Delete') {
+    if (option === "Delete") {
       if (
         user &&
         ((hasPermission(user, DOCUMENT_MODULE.DELETE_DOCUMENT) &&
@@ -89,10 +89,10 @@ export const DocumentAction: React.FC<ActionProps> = ({
       }
     }
 
-    if (option == 'Download') {
+    if (option == "Download") {
       handleFileDownload(fileId, fileName, fileExtension);
     }
-    if (option == 'Preview') {
+    if (option == "Preview") {
       handleIsDocumentPreviewModalOpen();
       documentPreview(fileName, fileId);
     }
@@ -106,12 +106,12 @@ export const DocumentAction: React.FC<ActionProps> = ({
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown-container')) {
+    if (!target.closest(".dropdown-container")) {
       setIsOpen(false);
     }
   };
 
-  document.addEventListener('click', handleClickOutside);
+  document.addEventListener("click", handleClickOutside);
 
   const handleDocumentClick = (e: any) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
@@ -119,7 +119,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
     }
   };
 
-  window.addEventListener('click', handleDocumentClick);
+  window.addEventListener("click", handleDocumentClick);
 
   const handleConfirmDelete = () => {
     deleteFile(fileId);
@@ -134,21 +134,21 @@ export const DocumentAction: React.FC<ActionProps> = ({
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
-      throw new Error('Error deleting file: ' + error);
+      throw new Error("Error deleting file: " + error);
     }
   };
 
   const documentPreview = async (fileName: any, fileId: string) => {
-    console.log('FilePreview', fileName);
+    console.log("FilePreview", fileName);
     try {
       const response = await downloadEmployeeFile(fileId);
       console.log(response.data);
       const imageUrl: any = window.URL.createObjectURL(
-        new Blob([response.data])
+        new Blob([response.data]),
       );
       setImages(imageUrl);
-      const link = document.createElement('img');
-      link.setAttribute('preview', `${fileName}.${fileExtension}`);
+      const link = document.createElement("img");
+      link.setAttribute("preview", `${fileName}.${fileExtension}`);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(imageUrl);
@@ -157,7 +157,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError;
         if (axiosError.response?.status === 403) {
-          alert('No permissions');
+          alert("No permissions");
         } else {
           alert("Server Down! We'll come back soon");
         }
@@ -180,15 +180,15 @@ export const DocumentAction: React.FC<ActionProps> = ({
   const handleFileDownload = async (
     fileId: string,
     fileName: string,
-    fileExtension: string
+    fileExtension: string,
   ) => {
     try {
       const response = await downloadEmployeeFile(fileId);
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `${fileName}.${fileExtension}`);
+      link.setAttribute("download", `${fileName}.${fileExtension}`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -197,13 +197,13 @@ export const DocumentAction: React.FC<ActionProps> = ({
       if (axios.isAxiosError(error)) {
         const axiosError = error as AxiosError;
         if (axiosError.response?.status === 403) {
-          alert('No permissions');
+          alert("No permissions");
         } else {
           alert("Server Down! We'll come back soon");
-          console.error('Error downloading file:', axiosError);
+          console.error("Error downloading file:", axiosError);
         }
       } else {
-        console.error('Error downloading file:', error);
+        console.error("Error downloading file:", error);
       }
     }
   };
@@ -219,24 +219,24 @@ export const DocumentAction: React.FC<ActionProps> = ({
             {options.map(
               (option, index) =>
                 //FIXME ...
-                (option.title !== 'Delete' ||
+                (option.title !== "Delete" ||
                   (user &&
                     (hasPermission(user, DOCUMENT_MODULE.DELETE_DOCUMENT) ||
                       hasPermission(
                         user,
-                        DOCUMENT_MODULE.DELETE_ENTIRE_DOCUMENTS
+                        DOCUMENT_MODULE.DELETE_ENTIRE_DOCUMENTS,
                       )))) && (
                   <ActionMenuOption
                     key={index}
                     className={
-                      selectedOption === option.title ? 'selected' : ''
+                      selectedOption === option.title ? "selected" : ""
                     }
                     onClick={() => handleOptionClick(option.title)}
                   >
                     {option.svg}
                     {option.title}
                   </ActionMenuOption>
-                )
+                ),
             )}
           </ActionMenuContent>
         )}
@@ -251,23 +251,23 @@ export const DocumentAction: React.FC<ActionProps> = ({
         />
       )}
       {isDocumentPreviewModalOpen && (
-        <span style={{ cursor: 'default' }}>
+        <span style={{ cursor: "default" }}>
           <CenterModalMain
             heading="Document Preview"
             subHeading={fileName}
             modalSVG={
               <button
                 style={{
-                  width: '145px',
-                  height: '40px',
-                  display: 'inline-flex',
-                  padding: '8px 28px 8px 38px',
-                  justifyContent: 'flex-end',
-                  alignItems: 'center',
-                  borderRadius: '10px',
-                  border: '1px solid #005792',
-                  backgroundColor: '#FFF',
-                  cursor: 'pointer',
+                  width: "145px",
+                  height: "40px",
+                  display: "inline-flex",
+                  padding: "8px 28px 8px 38px",
+                  justifyContent: "flex-end",
+                  alignItems: "center",
+                  borderRadius: "10px",
+                  border: "1px solid #005792",
+                  backgroundColor: "#FFF",
+                  cursor: "pointer",
                 }}
                 onClick={() =>
                   handleFileDownload(fileId, fileName, fileExtension)
@@ -275,25 +275,25 @@ export const DocumentAction: React.FC<ActionProps> = ({
               >
                 <span
                   style={{
-                    display: 'flex',
-                    color: '#005792',
-                    textAlign: 'center',
-                    fontFamily: 'Nunito',
-                    fontSize: '16px',
-                    fontStyle: 'normal',
-                    fontWeight: '700',
-                    lineHeight: '150%' /* 24px */,
-                    letterSpacing: '0.3px',
-                    gap: '5px',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    display: "flex",
+                    color: "#005792",
+                    textAlign: "center",
+                    fontFamily: "Nunito",
+                    fontSize: "16px",
+                    fontStyle: "normal",
+                    fontWeight: "700",
+                    lineHeight: "150%" /* 24px */,
+                    letterSpacing: "0.3px",
+                    gap: "5px",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
                   <span
                     style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
                     <DownloadIcon stroke="#28303F" />
@@ -307,19 +307,19 @@ export const DocumentAction: React.FC<ActionProps> = ({
               images ? (
                 <div
                   style={{
-                    width: '790px',
-                    height: 'fit-content',
-                    border: '1px solid #F8F4F4',
-                    backgroundColor: '#F8F4F4 no-repeat',
+                    width: "790px",
+                    height: "fit-content",
+                    border: "1px solid #F8F4F4",
+                    backgroundColor: "#F8F4F4 no-repeat",
                   }}
                 >
-                  {images && fileExtension === 'pdf' ? (
+                  {images && fileExtension === "pdf" ? (
                     <Document file={images} onLoadSuccess={onDocumentSuccess}>
                       <div
                         style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
                         }}
                       >
                         <p className="pages">
@@ -327,10 +327,10 @@ export const DocumentAction: React.FC<ActionProps> = ({
                         </p>
                         <div
                           style={{
-                            display: 'flex',
-                            justifyContent: 'flex-start',
-                            alignItems: 'center',
-                            gap: '5px',
+                            display: "flex",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            gap: "5px",
                           }}
                         >
                           <button className="pageButton" onClick={prevPage}>
@@ -355,14 +355,14 @@ export const DocumentAction: React.FC<ActionProps> = ({
                       src={images}
                       id="myImg"
                       style={{
-                        width: '790px',
-                        height: '556px',
-                        border: '1px solid #F8F4F4',
-                        backgroundColor: '#F8F4F4 no-repeat',
+                        width: "790px",
+                        height: "556px",
+                        border: "1px solid #F8F4F4",
+                        backgroundColor: "#F8F4F4 no-repeat",
                       }}
                     />
                   ) : (
-                    ' '
+                    " "
                   )}
                 </div>
               ) : (

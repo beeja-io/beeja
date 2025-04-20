@@ -1,4 +1,4 @@
-import { styled } from 'styled-components';
+import { styled } from "styled-components";
 
 interface FontNameProps {
   fontFamily?: string;
@@ -12,9 +12,10 @@ export const FontName = styled.div<{ fontNameProps: FontNameProps }>`
   gap: 2px;
   color: ${(props) => props.theme.colors.blackColors.black1};
   font-family: ${({ fontNameProps }) =>
-    fontNameProps.fontFamily || 'var(--font-family-primary)'};
-  font-size: ${(props) => props.fontNameProps.fontSize || 'var(--font-size-primary)'};
-  /* font-size: ${(props) => props.fontNameProps.fontSize || '14px'}; */
+    fontNameProps.fontFamily || "var(--font-family-primary)"};
+  font-size: ${(props) =>
+    props.fontNameProps.fontSize || "var(--font-size-primary)"};
+  /* font-size: ${(props) => props.fontNameProps.fontSize || "14px"}; */
   font-style: normal;
   font-weight: 500;
   line-height: 160%;

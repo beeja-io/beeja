@@ -1,22 +1,22 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState } from "react";
 import {
   ActionContainer,
   ActionMenu,
   ActionMenuContent,
   ActionMenuOption,
-} from '../../styles/DocumentTabStyles.style';
-import { ActionIcon } from '../../svgs/DocumentTabSvgs.svg';
-import { DeviceDetails } from '../../entities/InventoryEntity';
-import { deleteInventory } from '../../service/axiosInstance';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import CenterModal from './CenterModal.component';
-import CenterModalMain from './CenterModalMain.component';
-import ToastMessage from './ToastMessage.component';
-import EditInventoryForm from '../directComponents/EditInventory.component';
-import { useUser } from '../../context/UserContext';
-import { INVENTORY_MODULE } from '../../constants/PermissionConstants';
-import { hasPermission } from '../../utils/permissionCheck';
-import { OrganizationValues } from '../../entities/OrgValueEntity';
+} from "../../styles/DocumentTabStyles.style";
+import { ActionIcon } from "../../svgs/DocumentTabSvgs.svg";
+import { DeviceDetails } from "../../entities/InventoryEntity";
+import { deleteInventory } from "../../service/axiosInstance";
+import SpinAnimation from "../loaders/SprinAnimation.loader";
+import CenterModal from "./CenterModal.component";
+import CenterModalMain from "./CenterModalMain.component";
+import ToastMessage from "./ToastMessage.component";
+import EditInventoryForm from "../directComponents/EditInventory.component";
+import { useUser } from "../../context/UserContext";
+import { INVENTORY_MODULE } from "../../constants/PermissionConstants";
+import { hasPermission } from "../../utils/permissionCheck";
+import { OrganizationValues } from "../../entities/OrgValueEntity";
 
 interface ActionProps {
   options: {
@@ -64,9 +64,9 @@ export const InventoryListAction: React.FC<ActionProps> = ({
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
-    if (option === 'Edit') {
+    if (option === "Edit") {
       setIsEditModalOpen(true);
-    } else if (option === 'Delete') {
+    } else if (option === "Delete") {
       setConfirmDeleteModal(true);
     }
     setIsOpen(false);
@@ -86,19 +86,19 @@ export const InventoryListAction: React.FC<ActionProps> = ({
 
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
-    if (!target.closest('.dropdown-container')) {
+    if (!target.closest(".dropdown-container")) {
       setIsOpen(false);
     }
   };
 
-  document.addEventListener('click', handleClickOutside);
+  document.addEventListener("click", handleClickOutside);
 
   const handleDocumentClick = (e: MouseEvent) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
       setIsOpen(false);
     }
   };
-  window.addEventListener('click', handleDocumentClick);
+  window.addEventListener("click", handleDocumentClick);
 
   const hasActionPermission =
     user &&
@@ -118,7 +118,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
           <div
             style={{
               opacity: !hasActionPermission ? 0.3 : 1,
-              cursor: !hasActionPermission ? 'not-allowed' : 'pointer',
+              cursor: !hasActionPermission ? "not-allowed" : "pointer",
             }}
           >
             <ActionIcon />
@@ -128,11 +128,11 @@ export const InventoryListAction: React.FC<ActionProps> = ({
           <ActionMenuContent>
             {options.map((option, index) => {
               const hasDeletePermission =
-                option.title === 'Delete' &&
+                option.title === "Delete" &&
                 user &&
                 hasPermission(user, INVENTORY_MODULE.DELETE_DEVICE);
               const hasEditPermission =
-                option.title === 'Edit' &&
+                option.title === "Edit" &&
                 user &&
                 hasPermission(user, INVENTORY_MODULE.UPDATE_DEVICE);
 
@@ -143,7 +143,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
               return (
                 <ActionMenuOption
                   key={index}
-                  className={selectedOption === option.title ? 'selected' : ''}
+                  className={selectedOption === option.title ? "selected" : ""}
                   onClick={() => handleOptionClick(option.title)}
                 >
                   {option.svg}
@@ -155,7 +155,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
         )}
       </ActionContainer>
       {confirmDeleteModal && (
-        <span style={{ cursor: 'default' }}>
+        <span style={{ cursor: "default" }}>
           <CenterModal
             handleModalClose={handleDeleteModal}
             handleModalSubmit={deleteSelectedDevice}
@@ -174,7 +174,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
         />
       )}
       {isEditModalOpen && (
-        <span style={{ cursor: 'default' }}>
+        <span style={{ cursor: "default" }}>
           <CenterModalMain
             heading="Edit Inventory"
             modalClose={handleOpenEditModal}

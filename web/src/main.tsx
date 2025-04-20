@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
-import { BrowserRouter } from 'react-router-dom';
-import { UserProvider } from './context/UserContext.tsx';
-import { PreferencesProvider } from './context/PreferencesContext.tsx';
-import { FeatureToggleContextProvider } from './context/FeatureToggleContext.tsx';
-import { I18nextProvider } from 'react-i18next';
-import i18n from '../i18n.ts';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import { BrowserRouter } from "react-router-dom";
+import { UserProvider } from "./context/UserContext.tsx";
+import { PreferencesProvider } from "./context/PreferencesContext.tsx";
+import { FeatureToggleContextProvider } from "./context/FeatureToggleContext.tsx";
+import { I18nextProvider } from "react-i18next";
+import i18n from "../i18n.ts";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
       <UserProvider>
@@ -21,5 +21,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         </FeatureToggleContextProvider>
       </UserProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

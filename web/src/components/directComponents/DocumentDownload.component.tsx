@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { expenseReceiptDownload } from '../../service/axiosInstance';
-import { DownloadIcon } from '../../svgs/DocumentTabSvgs.svg';
-import axios, { AxiosError } from 'axios';
-import { Expense } from '../../entities/ExpenseEntity';
-import ToastMessage from '../reusableComponents/ToastMessage.component';
-import { DownloadReceiptError } from '../../constants/Constants';
-import { useTranslation } from 'react-i18next';
+import { useState } from "react";
+import { expenseReceiptDownload } from "../../service/axiosInstance";
+import { DownloadIcon } from "../../svgs/DocumentTabSvgs.svg";
+import axios, { AxiosError } from "axios";
+import { Expense } from "../../entities/ExpenseEntity";
+import ToastMessage from "../reusableComponents/ToastMessage.component";
+import { DownloadReceiptError } from "../../constants/Constants";
+import { useTranslation } from "react-i18next";
 
 type DocumentDownloadProps = {
   expense?: Expense;
@@ -16,11 +16,11 @@ type DocumentDownloadProps = {
 
 const DocumentDownload = (props: DocumentDownloadProps) => {
   const { t } = useTranslation();
-  const fileId: string = props.fileId ? props.fileId : '';
-  const fileName: string = props.fileName ? props.fileName : '';
-  const fileType: string = props.fileExtension ? props.fileExtension : '';
+  const fileId: string = props.fileId ? props.fileId : "";
+  const fileName: string = props.fileName ? props.fileName : "";
+  const fileType: string = props.fileExtension ? props.fileExtension : "";
 
-  const [responseErrorMessage, setResponseErrorMessage] = useState('');
+  const [responseErrorMessage, setResponseErrorMessage] = useState("");
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const handleShowErrorMessage = () => {
     setShowErrorMessage(!showErrorMessage);
@@ -35,14 +35,14 @@ const DocumentDownload = (props: DocumentDownloadProps) => {
   const handleFileDownload = async (
     fileId: string,
     fileName: string,
-    fileType: string | undefined
+    fileType: string | undefined,
   ) => {
     try {
       const response = await expenseReceiptDownload(fileId);
       const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', `${fileName}.${fileType}`);
+      link.setAttribute("download", `${fileName}.${fileType}`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -64,7 +64,7 @@ const DocumentDownload = (props: DocumentDownloadProps) => {
   return (
     <>
       <div
-        title={t('DOWNLOAD')}
+        title={t("DOWNLOAD")}
         className="downloadButton"
         onClick={() => {
           handleFileDownload(fileId, fileName, fileType);
