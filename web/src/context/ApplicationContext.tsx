@@ -1,11 +1,11 @@
-import React, { ReactNode, createContext, useCallback, useState } from 'react';
-import { EmployeeEntity } from '../entities/EmployeeEntity';
-import { Loan } from '../entities/LoanEntity';
+import React, { ReactNode, createContext, useCallback, useState } from "react";
+import { EmployeeEntity } from "../entities/EmployeeEntity";
+import { Loan } from "../entities/LoanEntity";
 
 interface AppContextType {
   employeeList: EmployeeEntity[] | null | undefined;
   updateEmployeeList: (
-    employeeList: EmployeeEntity[] | null | undefined
+    employeeList: EmployeeEntity[] | null | undefined,
   ) => void;
   loanList: Loan[] | null | undefined;
   updateLoanList: (loanList: Loan[] | null | undefined) => void;
@@ -29,7 +29,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({
     (employeeList: EmployeeEntity[] | null | undefined) => {
       setEmployeeList(employeeList);
     },
-    []
+    [],
   );
   const [loanList, setLoanList] = useState<Loan[] | null | undefined>(null);
 

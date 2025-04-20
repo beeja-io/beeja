@@ -1,4 +1,4 @@
-import { IOrganization } from './OrganizationEntity';
+import { IOrganization } from "./OrganizationEntity";
 
 export type LoggedInUserEntity = {
   firstName: string;

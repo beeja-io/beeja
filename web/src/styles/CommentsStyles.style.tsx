@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const CommentContainer = styled.div`
   background-color: ${(props) => props.theme.colors.grayColors.gray12};

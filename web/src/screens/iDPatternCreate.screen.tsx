@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Button } from '../styles/CommonStyles.style';
+import React, { useState } from "react";
+import { Button } from "../styles/CommonStyles.style";
 import {
   MyProfileInnerContainer,
   MyProfileTabsDiv,
   UnderLineEmp,
-} from '../styles/MyProfile.style';
-import { createIDPattern } from '../service/axiosInstance';
+} from "../styles/MyProfile.style";
+import { createIDPattern } from "../service/axiosInstance";
 import {
   FormContainer,
   FormGroup,
@@ -13,18 +13,18 @@ import {
   ButtonGroup,
   ToggleInfoContainer,
   ToggleInfoText,
-} from '../styles/IDPatternCreateStyles.style';
+} from "../styles/IDPatternCreateStyles.style";
 import {
   CheckedSVG,
   UncheckedSVG,
   AlertIDPatternSVG,
-} from '../svgs/CreateIDPatternSvgs.svg';
-import { t } from 'i18next';
+} from "../svgs/CreateIDPatternSvgs.svg";
+import { t } from "i18next";
 
 interface EmployeeIDCreateProps {
   onClose: () => void;
   refreshPatterns: () => void;
-  patternType: 'LOAN_ID_PATTERN' | 'EMPLOYEE_ID_PATTERN' | 'DEVICE_ID_PATTERN';
+  patternType: "LOAN_ID_PATTERN" | "EMPLOYEE_ID_PATTERN" | "DEVICE_ID_PATTERN";
 }
 const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
   onClose,
@@ -33,7 +33,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
 }) => {
   const [formData, setFormData] = useState({
     idLength: null,
-    prefix: '',
+    prefix: "",
     initialSequence: null,
     active: false,
   });
@@ -50,7 +50,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
   const handleReset = () => {
     setFormData({
       idLength: null,
-      prefix: '',
+      prefix: "",
       initialSequence: null,
       active: false,
     });
@@ -77,15 +77,15 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
     refreshPatterns();
   };
   return (
-    <MyProfileInnerContainer className="settings-tab" style={{ width: '100%' }}>
+    <MyProfileInnerContainer className="settings-tab" style={{ width: "100%" }}>
       <MyProfileTabsDiv className="under-line emp">
         <UnderLineEmp>
-          {t("CREATE")}{' '}
-          {patternType === 'LOAN_ID_PATTERN'
-            ? 'Loan ID'
-            : patternType === 'EMPLOYEE_ID_PATTERN'
-              ? 'Employee ID'
-              : 'Device ID'}{' '}
+          {t("CREATE")}{" "}
+          {patternType === "LOAN_ID_PATTERN"
+            ? "Loan ID"
+            : patternType === "EMPLOYEE_ID_PATTERN"
+              ? "Employee ID"
+              : "Device ID"}{" "}
           {t("PATTERN")}
         </UnderLineEmp>
       </MyProfileTabsDiv>
@@ -113,10 +113,10 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
 
           <div
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              whiteSpace: 'nowrap',
+              display: "flex",
+              flexDirection: "column",
+              gap: "8px",
+              whiteSpace: "nowrap",
             }}
           >
             <input
@@ -125,10 +125,12 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
               placeholder="Specify Initial Sequence"
               onChange={handleInputChange}
             />
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
               <AlertIDPatternSVG></AlertIDPatternSVG>
               <span className="custom-text-style">
-                {t("AUTO_SEQUENCE_ID_WILL_START_FROM_THE_SPECIFIED_INTIAL_SEQUENCE_NUMBER")}
+                {t(
+                  "AUTO_SEQUENCE_ID_WILL_START_FROM_THE_SPECIFIED_INTIAL_SEQUENCE_NUMBER",
+                )}
               </span>
             </div>
           </div>
@@ -160,7 +162,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
             {t("CANCEL")}
           </Button>
           <Button className="submit-btn" type="submit">
-           {t("CREATE_PATTERN")}
+            {t("CREATE_PATTERN")}
           </Button>
         </ButtonGroup>
       </FormContainer>

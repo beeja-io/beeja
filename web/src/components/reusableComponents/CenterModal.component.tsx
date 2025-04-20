@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 import {
   CenterModalContainer,
   CenterModelMainContainer,
@@ -8,10 +8,10 @@ import {
   DashedBoxContent,
   DropText,
   MonogramArea,
-} from '../../styles/CenterModalStyles.style';
-import { LogoutModalSVG } from '../../svgs/CommonSvgs.svs';
-import { CloseButtonSVG } from '../../svgs/profilePictureSvgs.svg';
-import { CloudIconSVG } from '../../svgs/profilePictureSvgs.svg';
+} from "../../styles/CenterModalStyles.style";
+import { LogoutModalSVG } from "../../svgs/CommonSvgs.svs";
+import { CloseButtonSVG } from "../../svgs/profilePictureSvgs.svg";
+import { CloudIconSVG } from "../../svgs/profilePictureSvgs.svg";
 
 type CenterModalProps = {
   handleModalClose: () => void;
@@ -41,22 +41,22 @@ type CenterModalProps = {
 const CenterModal = (props: CenterModalProps) => {
   const rightButtonStyles = props.modalRightButtonClass
     ? {
-        backgroundColor: 'white',
-        border: `2px solid ${props.modalRightButtonBorderColor || 'red'}`,
-        color: `${props.modalRightButtonBorderColor || 'red'}`,
+        backgroundColor: "white",
+        border: `2px solid ${props.modalRightButtonBorderColor || "red"}`,
+        color: `${props.modalRightButtonBorderColor || "red"}`,
       }
     : {};
 
   const buttonContainerClass = props.compactButtonStyle
-    ? 'compactButtonContainer'
-    : '';
+    ? "compactButtonContainer"
+    : "";
 
   const { t } = useTranslation();
 
   return (
     <CenterModalContainer>
       <CenterModelMainContainer
-        className={`${props.modalType} ${props.isMonogramView ? 'modal-monogram' : ''} ${props.isImageSelected ? 'imageSelected' : ''} ${props.isDashedBox ? 'dashedBox' : ''}`}
+        className={`${props.modalType} ${props.isMonogramView ? "modal-monogram" : ""} ${props.isImageSelected ? "imageSelected" : ""} ${props.isDashedBox ? "dashedBox" : ""}`}
         Width={props.modalWidth}
         isExpanded={props.isExpanded}
       >
@@ -64,8 +64,8 @@ const CenterModal = (props: CenterModalProps) => {
           props.isImageSelected ||
           props.isDashedBox) && (
           <>
-             <EditProfileText>
-              {props.editText ? t(props.editText) : ''}
+            <EditProfileText>
+              {props.editText ? t(props.editText) : ""}
             </EditProfileText>
 
             <CloseButton onClick={props.handleModalClose}>
@@ -84,7 +84,7 @@ const CenterModal = (props: CenterModalProps) => {
           <DashedBox onClick={props.handleModalLeftButtonClick}>
             <DashedBoxContent>
               <CloudIconSVG />
-              <DropText>{t(props.dragText ? props.dragText : '')}</DropText>
+              <DropText>{t(props.dragText ? props.dragText : "")}</DropText>
             </DashedBoxContent>
           </DashedBox>
         )}
@@ -97,10 +97,12 @@ const CenterModal = (props: CenterModalProps) => {
             ) : (
               <>
                 <div className="modalHeading">
-                  {t(props.modalHeading ? props.modalHeading : '')}
+                  {t(props.modalHeading ? props.modalHeading : "")}
                 </div>
                 <div className="modalContent">
-                  {typeof props.modalContent === 'string' ? t(props.modalContent) : props.modalContent}
+                  {typeof props.modalContent === "string"
+                    ? t(props.modalContent)
+                    : props.modalContent}
                 </div>
               </>
             )}
@@ -110,21 +112,21 @@ const CenterModal = (props: CenterModalProps) => {
         {/* Modal Control Buttons */}
         <div className={`controlButtonArea ${buttonContainerClass}`}>
           <button
-            className={props.modalLeftButtonClass || 'closeButton'}
+            className={props.modalLeftButtonClass || "closeButton"}
             onClick={props.handleModalClose}
           >
-            {t(props.modalLeftButtonText || t('NO'))}
+            {t(props.modalLeftButtonText || t("NO"))}
           </button>
           <button
             disabled={props.isResponseLoading}
             className={
-              props.isResponseLoading ? 'loading' : props.modalRightButtonClass
+              props.isResponseLoading ? "loading" : props.modalRightButtonClass
             }
             style={rightButtonStyles}
             onClick={props.handleModalSubmit}
           >
-            {t(props.modalRightButtonText ? props.modalRightButtonText : '') ||
-              (props.isResponseLoading ? '' : t('YES'))}
+            {t(props.modalRightButtonText ? props.modalRightButtonText : "") ||
+              (props.isResponseLoading ? "" : t("YES"))}
           </button>
         </div>
       </CenterModelMainContainer>

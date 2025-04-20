@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const LoanPreviewModal = styled.section`
   max-width: 900px;

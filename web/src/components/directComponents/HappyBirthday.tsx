@@ -1,9 +1,9 @@
-import React, { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 const HappyBirthday: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-    const { t } = useTranslation();
+  const { t } = useTranslation();
   const birthday = useRef<Birthday | null>(null);
   const then = useRef<number>(new Date().getTime());
 
@@ -44,7 +44,7 @@ const HappyBirthday: React.FC = () => {
       if (!canvas) return;
 
       const isTouch = (e: MouseEvent | TouchEvent): e is TouchEvent =>
-        'touches' in e;
+        "touches" in e;
       const x = isTouch(evt)
         ? evt.touches[0].pageX
         : (evt as MouseEvent).clientX;
@@ -61,8 +61,8 @@ const HappyBirthday: React.FC = () => {
             x,
             y,
             random(0, 260),
-            random(30, 110)
-          )
+            random(30, 110),
+          ),
         );
       }
       this.counter = -1;
@@ -71,15 +71,15 @@ const HappyBirthday: React.FC = () => {
     update(delta: number) {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
       // Set the background to transparent
-      ctx.globalCompositeOperation = 'destination-out';
+      ctx.globalCompositeOperation = "destination-out";
       ctx.fillStyle = `rgba(0, 0, 0, ${7 * delta})`; // Transparent background
       ctx.fillRect(0, 0, this.width, this.height);
 
-      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalCompositeOperation = "lighter";
       for (const firework of this.fireworks) firework.update(delta);
 
       this.counter += delta * 3;
@@ -91,8 +91,8 @@ const HappyBirthday: React.FC = () => {
             random(0, this.width),
             random(this.spawnC, this.spawnD),
             random(0, 360),
-            random(30, 110)
-          )
+            random(30, 110),
+          ),
         );
         this.counter = 0;
       }
@@ -120,7 +120,7 @@ const HappyBirthday: React.FC = () => {
       targetX: number,
       targetY: number,
       shade: number,
-      offsprings: number
+      offsprings: number,
     ) {
       this.x = x;
       this.y = y;
@@ -133,7 +133,7 @@ const HappyBirthday: React.FC = () => {
     update(delta: number) {
       const canvas = canvasRef.current;
       if (!canvas) return;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
       if (this.dead) return;
@@ -156,7 +156,7 @@ const HappyBirthday: React.FC = () => {
             const targetY =
               (this.y + this.offsprings * Math.sin((PI2 * i) / babies)) | 0;
             birthday.current?.fireworks.push(
-              new Firework(this.x, this.y, targetX, targetY, this.shade, 0)
+              new Firework(this.x, this.y, targetX, targetY, this.shade, 0),
             );
           }
         }
@@ -184,7 +184,7 @@ const HappyBirthday: React.FC = () => {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const ctx = canvas?.getContext('2d');
+    const ctx = canvas?.getContext("2d");
     if (ctx && canvas) {
       birthday.current = new Birthday();
 
@@ -192,9 +192,9 @@ const HappyBirthday: React.FC = () => {
       const handleClick = (evt: MouseEvent | TouchEvent) =>
         birthday.current?.onClick(evt);
 
-      window.addEventListener('resize', handleResize);
-      document.addEventListener('click', handleClick);
-      document.addEventListener('touchstart', handleClick);
+      window.addEventListener("resize", handleResize);
+      document.addEventListener("click", handleClick);
+      document.addEventListener("touchstart", handleClick);
 
       const loop = () => {
         requestAnimationFrame(loop);
@@ -207,9 +207,9 @@ const HappyBirthday: React.FC = () => {
       loop();
 
       return () => {
-        window.removeEventListener('resize', handleResize);
-        document.removeEventListener('click', handleClick);
-        document.removeEventListener('touchstart', handleClick);
+        window.removeEventListener("resize", handleResize);
+        document.removeEventListener("click", handleClick);
+        document.removeEventListener("touchstart", handleClick);
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

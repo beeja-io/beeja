@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 import {
   CenterModalContainer,
   CenterModalTypeExpenseInnerContainer,
-} from '../../styles/CenterModalStyles.style';
-import { ButtonContainer } from '../../styles/SettingsStyles.style';
-import { useTranslation } from 'react-i18next';
-import { OrgValues } from '../../entities/OrgDefaultsEntity';
+} from "../../styles/CenterModalStyles.style";
+import { ButtonContainer } from "../../styles/SettingsStyles.style";
+import { useTranslation } from "react-i18next";
+import { OrgValues } from "../../entities/OrgDefaultsEntity";
 
 type CenterModalExpenseProps = {
   handleModalClose: () => void;

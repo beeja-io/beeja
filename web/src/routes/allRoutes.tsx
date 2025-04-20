@@ -1,12 +1,12 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from "react-router-dom";
 // import DashboardScreen from '../screens/DashboardScreen.screen';
-import MyProfileScreen from '../screens/MyProfileScreen.screen';
-import EmployeeList from '../screens/EmployeeList.screen';
-import BulkPayslip from '../screens/BulkPayslipScreen.screen';
-import Error404Screen from '../screens/Error404Screen.screen';
-import ExpenseManagement from '../screens/ExpenseManagement.screen';
-import { useUser } from '../context/UserContext';
-import LoanManagementScreen from '../screens/LoanManagementScreen.screen';
+import MyProfileScreen from "../screens/MyProfileScreen.screen";
+import EmployeeList from "../screens/EmployeeList.screen";
+import BulkPayslip from "../screens/BulkPayslipScreen.screen";
+import Error404Screen from "../screens/Error404Screen.screen";
+import ExpenseManagement from "../screens/ExpenseManagement.screen";
+import { useUser } from "../context/UserContext";
+import LoanManagementScreen from "../screens/LoanManagementScreen.screen";
 import {
   BULK_PAYSLIP_MODULE,
   EXPENSE_MODULE,
@@ -14,19 +14,19 @@ import {
   INVENTORY_MODULE,
   LOAN_MODULE,
   ORGANIZATION_MODULE,
-} from '../constants/PermissionConstants';
-import ServiceUnavailable from '../screens/ServiceUnavailable.screen';
-import InventoryManagement from '../screens/InventoryManagement.screen';
-import { hasPermission } from '../utils/permissionCheck';
-import OrganizationSettings from '../screens/OrganizationSettings.screen';
-import { useFeatureToggles } from '../context/FeatureToggleContext';
-import { hasFeature } from '../utils/featureCheck';
-import { EFeatureToggles } from '../entities/FeatureToggle';
-import FeatureToggleScreen from '../screens/FeatureToggleScreen.screen';
-import RecruitmentManagementScreen from '../screens/RecruitmentManagementScreen.screen';
-import AddNewApplicant from '../components/directComponents/AddNewApplicant.component';
-import EditApplicant from '../components/directComponents/EditApplicant.component';
-import ReferEmployeeScreen from '../screens/ReferEmployeeScreen.screen';
+} from "../constants/PermissionConstants";
+import ServiceUnavailable from "../screens/ServiceUnavailable.screen";
+import InventoryManagement from "../screens/InventoryManagement.screen";
+import { hasPermission } from "../utils/permissionCheck";
+import OrganizationSettings from "../screens/OrganizationSettings.screen";
+import { useFeatureToggles } from "../context/FeatureToggleContext";
+import { hasFeature } from "../utils/featureCheck";
+import { EFeatureToggles } from "../entities/FeatureToggle";
+import FeatureToggleScreen from "../screens/FeatureToggleScreen.screen";
+import RecruitmentManagementScreen from "../screens/RecruitmentManagementScreen.screen";
+import AddNewApplicant from "../components/directComponents/AddNewApplicant.component";
+import EditApplicant from "../components/directComponents/EditApplicant.component";
+import ReferEmployeeScreen from "../screens/ReferEmployeeScreen.screen";
 
 const AllRoutes = () => {
   return (
@@ -111,8 +111,14 @@ const AllRoutes = () => {
         path="/recruitment/hiring-management/new"
         element={<AddNewApplicant isReferScreen={false} />}
       />
-      <Route path="/recruitment/hiring-management/:id" element={<EditApplicant />} />
-      <Route path="/recruitment/my-referrals/refer" element={<ReferEmployeeScreen />} />
+      <Route
+        path="/recruitment/hiring-management/:id"
+        element={<EditApplicant />}
+      />
+      <Route
+        path="/recruitment/my-referrals/refer"
+        element={<ReferEmployeeScreen />}
+      />
       <Route
         path="/recruitment/my-referrals"
         element={<RecruitmentManagementScreen isReferral={true} />}

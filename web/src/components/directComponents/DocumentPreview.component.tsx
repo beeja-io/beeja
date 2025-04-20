@@ -1,23 +1,23 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   ChevronLeftSVG,
   ChevronRightSVG,
-} from '../../svgs/DocumentTabSvgs.svg';
-import { Document, Page } from 'react-pdf';
-import { pdfjs } from 'react-pdf';
+} from "../../svgs/DocumentTabSvgs.svg";
+import { Document, Page } from "react-pdf";
+import { pdfjs } from "react-pdf";
 import {
   ChevronButton,
   DocumentPreviewModal,
   PaginationModal,
-} from '../../styles/DocumentPreviewStyles.style';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import { useTranslation } from 'react-i18next';
+} from "../../styles/DocumentPreviewStyles.style";
+import "react-pdf/dist/Page/AnnotationLayer.css";
+import "react-pdf/dist/Page/TextLayer.css";
+import SpinAnimation from "../loaders/SprinAnimation.loader";
+import { useTranslation } from "react-i18next";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.js',
-  import.meta.url
+  "pdfjs-dist/build/pdf.worker.min.js",
+  import.meta.url,
 ).toString();
 
 type DocumentPreviewProps = {
@@ -44,11 +44,11 @@ const DocumentPreview = (props: DocumentPreviewProps) => {
 
   return (
     <DocumentPreviewModal>
-      {props.images && props.fileExtension === 'pdf' ? (
+      {props.images && props.fileExtension === "pdf" ? (
         <Document file={props.images} onLoadSuccess={onDocumentSuccess}>
           <PaginationModal>
             <p className="pages">
-              {t('PAGE')} {pageNumber} {t('OF')} {numPages}
+              {t("PAGE")} {pageNumber} {t("OF")} {numPages}
             </p>
             <ChevronButton>
               <div className="pageButton">
@@ -72,13 +72,13 @@ const DocumentPreview = (props: DocumentPreviewProps) => {
           src={props.images}
           id="myImg"
           style={{
-            width: 'fit-content',
-            maxWidth: '790px',
-            height: 'fit-content',
-            maxHeight: '90dvh',
-            overflowY: 'auto',
-            border: '1px solid #F8F4F4',
-            backgroundColor: '#F8F4F4 no-repeat',
+            width: "fit-content",
+            maxWidth: "790px",
+            height: "fit-content",
+            maxHeight: "90dvh",
+            overflowY: "auto",
+            border: "1px solid #F8F4F4",
+            backgroundColor: "#F8F4F4 no-repeat",
           }}
         />
       ) : (

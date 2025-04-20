@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
-import { NavLink } from 'react-router-dom';
-import styled from 'styled-components';
+import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import styled from "styled-components";
 
 export const ProfileIcon = styled.img<{ width?: string; height?: string }>`
-  width: ${(props) => (props.width ? props.width : '32px')};
-  height: ${(props) => (props.height ? props.height : '32px')};
+  width: ${(props) => (props.width ? props.width : "32px")};
+  height: ${(props) => (props.height ? props.height : "32px")};
   border-radius: 50%;
 `;
 
@@ -33,9 +33,9 @@ export const Button = styled.button<{
   fontSize?: string;
 }>`
   display: flex;
-  width: ${(props) => (props.width ? props.width : '162px')};
-  height: ${(props) => (props.height ? props.height : '56px')};
-  padding: ${(props) => (props.padding ? props.padding : '18px 24px')};
+  width: ${(props) => (props.width ? props.width : "162px")};
+  height: ${(props) => (props.height ? props.height : "56px")};
+  padding: ${(props) => (props.padding ? props.padding : "18px 24px")};
   justify-content: center;
   align-items: center;
   gap: 8px;
@@ -52,7 +52,7 @@ export const Button = styled.button<{
     props.color ? props.color : props.theme.colors.blackColors.black1};
   outline: none;
   cursor: pointer;
-  font-size: ${(props) => (props.fontSize ? props.fontSize : '12px')};
+  font-size: ${(props) => (props.fontSize ? props.fontSize : "12px")};
   white-space: nowrap;
 
   &.submit {
@@ -111,7 +111,7 @@ export const Button = styled.button<{
   }
 
   &.loading::after {
-    content: '';
+    content: "";
     width: 16px;
     height: 16px;
 

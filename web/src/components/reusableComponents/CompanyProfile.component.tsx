@@ -1,10 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   BorderDivLine,
   TabContentEditArea,
   TabContentMainContainer,
   TabContentMainContainerHeading,
-} from '../../styles/MyProfile.style';
+} from "../../styles/MyProfile.style";
 
 import {
   CheckBoxOnSVG,
@@ -12,7 +12,7 @@ import {
   CloudUpload,
   CrossMarkSVG,
   EditWhitePenSVG,
-} from '../../svgs/CommonSvgs.svs';
+} from "../../svgs/CommonSvgs.svs";
 import {
   Input,
   Select,
@@ -24,18 +24,18 @@ import {
   FileUploadSection,
   Logo,
   LogoText,
-} from '../../styles/OrganizationSettingsStyles.style';
-import { IOrganization } from '../../entities/OrganizationEntity';
-import { useUser } from '../../context/UserContext';
+} from "../../styles/OrganizationSettingsStyles.style";
+import { IOrganization } from "../../entities/OrganizationEntity";
+import { useUser } from "../../context/UserContext";
 import {
   downloadOrgFile,
   getOrganizationById,
   updateOrganizationById,
-} from '../../service/axiosInstance';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import { UploadReceiptIcon } from '../../svgs/ExpenseListSvgs.svg';
-import { toast } from 'sonner';
-import axios, { AxiosError } from 'axios';
+} from "../../service/axiosInstance";
+import SpinAnimation from "../loaders/SprinAnimation.loader";
+import { UploadReceiptIcon } from "../../svgs/ExpenseListSvgs.svg";
+import { toast } from "sonner";
+import axios, { AxiosError } from "axios";
 import {
   isValidESINumber,
   isValidEmail,
@@ -46,25 +46,25 @@ import {
   isValidPanCardNo,
   isValidTANNumber,
   isValidURL,
-} from '../../utils/formInputValidators';
-import { usePreferences } from '../../context/PreferencesContext';
-import { hasPermission } from '../../utils/permissionCheck';
-import { ORGANIZATION_MODULE } from '../../constants/PermissionConstants';
-import { useTranslation } from 'react-i18next';
+} from "../../utils/formInputValidators";
+import { usePreferences } from "../../context/PreferencesContext";
+import { hasPermission } from "../../utils/permissionCheck";
+import { ORGANIZATION_MODULE } from "../../constants/PermissionConstants";
+import { useTranslation } from "react-i18next";
 
 export const CompanyProfile = () => {
   const [isEditModeOn, setEditModeOn] = useState(false);
   const [companyProfile, setCompanyProfile] = useState<IOrganization>(
-    {} as IOrganization
+    {} as IOrganization,
   );
   const [tempOrganization, setTempOrganization] = useState<IOrganization>(
-    {} as IOrganization
+    {} as IOrganization,
   );
   const { user } = useUser();
   const { t } = useTranslation();
   const { preferences } = usePreferences();
   const [updatedOrganization, setUpdatedOrganization] = useState<IOrganization>(
-    {} as IOrganization
+    {} as IOrganization,
   );
 
   const [isUpdateResponseLoading, setIsUpdateResponseLoading] = useState(false);
@@ -73,7 +73,7 @@ export const CompanyProfile = () => {
     setIsUpdateResponseLoading(true);
     try {
       const response = await getOrganizationById(
-        user ? user.organizations.id : ''
+        user ? user.organizations.id : "",
       );
       setCompanyProfile(response.data);
       setTempOrganization(response.data);
@@ -100,11 +100,11 @@ export const CompanyProfile = () => {
   const handleInputChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
-    if (name.startsWith('address')) {
-      const addr: string[] = name.split('.');
+    if (name.startsWith("address")) {
+      const addr: string[] = name.split(".");
       setCompanyProfile(
         (prevState) =>
           ({
@@ -113,7 +113,7 @@ export const CompanyProfile = () => {
               ...prevState.address,
               [addr[1]]: value,
             },
-          }) as IOrganization
+          }) as IOrganization,
       );
       setUpdatedOrganization(
         (prevState) =>
@@ -123,12 +123,12 @@ export const CompanyProfile = () => {
               ...prevState.address,
               [addr[1]]: value,
             },
-          }) as IOrganization
+          }) as IOrganization,
       );
       return;
     }
-    if (name.startsWith('accounts')) {
-      const accountsKey: string[] = name.split('.');
+    if (name.startsWith("accounts")) {
+      const accountsKey: string[] = name.split(".");
       setCompanyProfile(
         (prevState) =>
           ({
@@ -137,7 +137,7 @@ export const CompanyProfile = () => {
               ...prevState.accounts,
               [accountsKey[1]]: value,
             },
-          }) as IOrganization
+          }) as IOrganization,
       );
       setUpdatedOrganization(
         (prevState) =>
@@ -147,7 +147,7 @@ export const CompanyProfile = () => {
               ...prevState.accounts,
               [accountsKey[1]]: value,
             },
-          }) as IOrganization
+          }) as IOrganization,
       );
       return;
     }
@@ -177,44 +177,44 @@ export const CompanyProfile = () => {
     }
   };
 
-  const [nameError, setNameError] = useState('');
-  const [panError, setPanError] = useState('');
-  const [pfError, setPFError] = useState<string>('');
-  const [tanError, setTANError] = useState<string>('');
-  const [esiError, setESIError] = useState<string>('');
-  const [gstError, setGSTError] = useState<string>('');
-  const [linError, setLINError] = useState<string>('');
-  const [emailError, setEmailError] = useState<string>('');
-  const [websiteError, setWebsiteError] = useState<string>('');
-  const [pinError, setPINError] = useState<string>('');
+  const [nameError, setNameError] = useState("");
+  const [panError, setPanError] = useState("");
+  const [pfError, setPFError] = useState<string>("");
+  const [tanError, setTANError] = useState<string>("");
+  const [esiError, setESIError] = useState<string>("");
+  const [gstError, setGSTError] = useState<string>("");
+  const [linError, setLINError] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [websiteError, setWebsiteError] = useState<string>("");
+  const [pinError, setPINError] = useState<string>("");
 
   const handleSubmitCompanyProfile = async () => {
     let hasErrors = false;
 
     // Reset error states
-    setNameError('');
-    setPanError('');
-    setPFError('');
-    setTANError('');
-    setESIError('');
-    setGSTError('');
-    setLINError('');
-    setEmailError('');
-    setWebsiteError('');
+    setNameError("");
+    setPanError("");
+    setPFError("");
+    setTANError("");
+    setESIError("");
+    setGSTError("");
+    setLINError("");
+    setEmailError("");
+    setWebsiteError("");
 
     if (
-      (updatedOrganization.name == null || updatedOrganization.name == '') &&
-      (companyProfile.name == null || companyProfile.name == '')
+      (updatedOrganization.name == null || updatedOrganization.name == "") &&
+      (companyProfile.name == null || companyProfile.name == "")
     ) {
-      setNameError('Name is mandatory');
+      setNameError("Name is mandatory");
       hasErrors = true;
     }
     if (updatedOrganization.address && updatedOrganization.address.pinCode) {
       if (!isValidPINCode(updatedOrganization.address.pinCode.toString())) {
-        setPINError('Enter Valid PIN');
+        setPINError("Enter Valid PIN");
         hasErrors = true;
       } else {
-        setPINError('');
+        setPINError("");
       }
     }
     if (
@@ -224,20 +224,20 @@ export const CompanyProfile = () => {
       if (
         !isValidPanCardNo(updatedOrganization.accounts.panNumber.toUpperCase())
       ) {
-        setPanError('PAN number must be in format of ABCD19008L');
+        setPanError("PAN number must be in format of ABCD19008L");
         hasErrors = true;
       } else {
-        setPanError('');
+        setPanError("");
       }
     }
     if (updatedOrganization.accounts && updatedOrganization.accounts.pfNumber) {
       if (
         !isValidPFNumber(updatedOrganization.accounts.pfNumber.toUpperCase())
       ) {
-        setPFError('PF number must be in format of MAMUM00641480000001258');
+        setPFError("PF number must be in format of MAMUM00641480000001258");
         hasErrors = true;
       } else {
-        setPFError('');
+        setPFError("");
       }
     }
     if (
@@ -247,10 +247,10 @@ export const CompanyProfile = () => {
       if (
         !isValidTANNumber(updatedOrganization.accounts.tanNumber.toUpperCase())
       ) {
-        setTANError('TAN number must be in format of ABCD12345E');
+        setTANError("TAN number must be in format of ABCD12345E");
         hasErrors = true;
       } else {
-        setTANError('');
+        setTANError("");
       }
     }
     if (
@@ -261,11 +261,11 @@ export const CompanyProfile = () => {
         !isValidESINumber(updatedOrganization.accounts.esiNumber.toUpperCase())
       ) {
         setESIError(
-          'ESI number must be a 17-digit numeric value, Ex: 31001234560000001'
+          "ESI number must be a 17-digit numeric value, Ex: 31001234560000001",
         );
         hasErrors = true;
       } else {
-        setESIError('');
+        setESIError("");
       }
     }
     if (
@@ -276,11 +276,11 @@ export const CompanyProfile = () => {
         !isValidGSTNumber(updatedOrganization.accounts.gstNumber.toUpperCase())
       ) {
         setGSTError(
-          'GST number must be a 15-character alphanumeric value, e.g., 22AAAAA0000A1Z5'
+          "GST number must be a 15-character alphanumeric value, e.g., 22AAAAA0000A1Z5",
         );
         hasErrors = true;
       } else {
-        setGSTError('');
+        setGSTError("");
       }
     }
     if (
@@ -291,31 +291,31 @@ export const CompanyProfile = () => {
         !isValidLINNumber(updatedOrganization.accounts.linNumber.toUpperCase())
       ) {
         setLINError(
-          'LIN number must be a 10-digit numeric value, Ex: 1234567890'
+          "LIN number must be a 10-digit numeric value, Ex: 1234567890",
         );
         hasErrors = true;
       } else {
-        setLINError('');
+        setLINError("");
       }
     }
     if (updatedOrganization.website) {
       if (!isValidURL(updatedOrganization.website)) {
-        setWebsiteError('Invalid URL format, Ex: https://example.com');
+        setWebsiteError("Invalid URL format, Ex: https://example.com");
         hasErrors = true;
       } else {
-        setWebsiteError('');
+        setWebsiteError("");
       }
     }
     if (
       updatedOrganization.email ||
-      companyProfile.email == '' ||
+      companyProfile.email == "" ||
       companyProfile.email == null
     ) {
       if (!isValidEmail(updatedOrganization.email)) {
-        setEmailError('Provide Valid Email');
+        setEmailError("Provide Valid Email");
         hasErrors = true;
       } else {
-        setEmailError('');
+        setEmailError("");
       }
     }
 
@@ -327,16 +327,16 @@ export const CompanyProfile = () => {
     const formData = new FormData();
     if (updatedOrganization) {
       const updatedOrganizationJSON = JSON.stringify(updatedOrganization);
-      formData.append('organizationFields', updatedOrganizationJSON);
+      formData.append("organizationFields", updatedOrganizationJSON);
     }
     if (file) {
-      formData.append('logo', file);
+      formData.append("logo", file);
     }
 
     toast.promise(
-      updateOrganizationById(user ? user.organizations.id : '', formData),
+      updateOrganizationById(user ? user.organizations.id : "", formData),
       {
-        loading: 'Updating Organization...',
+        loading: "Updating Organization...",
         closeButton: true,
         success: () => {
           fetchOrganization();
@@ -345,26 +345,26 @@ export const CompanyProfile = () => {
           setUpdatedOrganization({} as IOrganization);
           fetchOrgFile();
           setFile(undefined);
-          return 'Successfully Updated Organization Profile.';
+          return "Successfully Updated Organization Profile.";
         },
         error: (error) => {
           setIsUpdateResponseLoading(false);
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;
-            if (axiosError.code === 'ERR_NETWORK') {
-              return 'Network Error, Please check connection';
+            if (axiosError.code === "ERR_NETWORK") {
+              return "Network Error, Please check connection";
             }
-            if (axiosError.code === 'ECONNABORTED') {
-              return 'Request timeout, Please try again';
+            if (axiosError.code === "ECONNABORTED") {
+              return "Request timeout, Please try again";
             }
           }
-          return 'Request Unsuccessful, Please try again';
+          return "Request Unsuccessful, Please try again";
         },
-      }
+      },
     );
   };
 
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState("");
   const [isImageLoading, setIsImageLoading] = useState(false);
   const fetchOrgFile = () => {
     setIsImageLoading(true);
@@ -382,27 +382,27 @@ export const CompanyProfile = () => {
   useEffect(() => {
     fetchOrgFile();
   }, []);
-  const [textareaHeight] = useState<string>('43px');
+  const [textareaHeight] = useState<string>("43px");
 
   useEffect(() => {
-    const textarea = document.querySelector('textarea');
+    const textarea = document.querySelector("textarea");
     const adjustTextareaHeight = () => {
       if (textarea) {
-        textarea.style.height = '43px';
+        textarea.style.height = "43px";
         const scrollHeight = textarea.scrollHeight;
         textarea.style.height = `${scrollHeight}px`;
       }
     };
 
     if (textarea) {
-      textarea.addEventListener('keyup', adjustTextareaHeight);
+      textarea.addEventListener("keyup", adjustTextareaHeight);
     }
 
     return () => {
       if (!isEditModeOn && textarea) {
-        textarea.style.height = 'auto';
+        textarea.style.height = "auto";
       } else if (textarea) {
-        textarea.removeEventListener('keyup', adjustTextareaHeight);
+        textarea.removeEventListener("keyup", adjustTextareaHeight);
       }
     };
   }, [isEditModeOn]);
@@ -413,7 +413,7 @@ export const CompanyProfile = () => {
       <BorderDivLine width="100%" />
       <TabContentMainContainer>
         <TabContentMainContainerHeading>
-          <h4>{t('COMPANY_INFO')}</h4>
+          <h4>{t("COMPANY_INFO")}</h4>
           {user &&
             hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
               <TabContentEditArea>
@@ -446,11 +446,11 @@ export const CompanyProfile = () => {
         <BorderDivLine width="100%" />
         <Container>
           <Row>
-            <Label>{t('COMPANY_LOGO')}</Label>
+            <Label>{t("COMPANY_LOGO")}</Label>
             <Logo isEditModeOn={isEditModeOn}>
               <FileUploadSection isEditModeOn={isEditModeOn}>
                 {isImageLoading ? (
-                  t('LOADING')
+                  t("LOADING")
                 ) : (
                   <>
                     {file ? (
@@ -458,14 +458,14 @@ export const CompanyProfile = () => {
                         <span
                           className="imageClearIcon"
                           onClick={() => setFile(undefined)}
-                          title={t('CLEAR_IMAGE')}
+                          title={t("CLEAR_IMAGE")}
                         >
                           <CloseIcon theme={preferences?.theme} />
                         </span>
                         <div className="imageArea">
                           <img
                             src={URL.createObjectURL(file)}
-                            alt={t('UPLOADED_IMAGE')}
+                            alt={t("UPLOADED_IMAGE")}
                           />
                         </div>
                       </div>
@@ -476,13 +476,13 @@ export const CompanyProfile = () => {
                             className="imageArea"
                             onClick={handleImageDivClick}
                           >
-                            <img src={imageUrl} alt={t('FILE_PREVIEW')} />
+                            <img src={imageUrl} alt={t("FILE_PREVIEW")} />
                           </div>
                         )}
                       </>
                     )}
                     <span
-                      style={{ display: file || imageUrl ? 'none' : 'inline' }}
+                      style={{ display: file || imageUrl ? "none" : "inline" }}
                     >
                       <UploadReceiptIcon theme={preferences?.theme} />
                       <span>Upload Company </span> LOGO
@@ -506,8 +506,10 @@ export const CompanyProfile = () => {
                 <CloudUpload theme={preferences?.theme} />
               </span>
               <LogoText>
-                {' '}
-                {t( "THIS_LOGO_WILL_BE_DISPLAYED_ON_DOCUMENTS_SUCH_AS_PAYSLIPS_AND_TDS_WORKSHEETS")}
+                {" "}
+                {t(
+                  "THIS_LOGO_WILL_BE_DISPLAYED_ON_DOCUMENTS_SUCH_AS_PAYSLIPS_AND_TDS_WORKSHEETS",
+                )}
               </LogoText>
             </Logo>
           </Row>
@@ -521,7 +523,7 @@ export const CompanyProfile = () => {
                 value={
                   companyProfile.name && companyProfile.name != null
                     ? companyProfile.name
-                    : ''
+                    : ""
                 }
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
@@ -535,17 +537,17 @@ export const CompanyProfile = () => {
             <Label>{t("COMPANY_ADDRESS")}</Label>
             <Input
               name="address.addressOne"
-              placeholder={isEditModeOn ? 'Primary Address' : '-'}
+              placeholder={isEditModeOn ? "Primary Address" : "-"}
               type="text"
               value={
                 companyProfile.address &&
                 companyProfile.address.addressOne != null
                   ? companyProfile.address.addressOne
-                  : ''
+                  : ""
               }
               onChange={handleInputChange}
               disabled={!isEditModeOn}
-              autoComplete={'photo'}
+              autoComplete={"photo"}
             />
           </Row>
           <Row>
@@ -554,13 +556,13 @@ export const CompanyProfile = () => {
               name="address.addressTwo"
               type="text"
               placeholder={
-                isEditModeOn ? 'Address Two (Secondary Address)' : '-'
+                isEditModeOn ? "Address Two (Secondary Address)" : "-"
               }
               value={
                 companyProfile.address &&
                 companyProfile.address.addressTwo != null
                   ? companyProfile.address.addressTwo
-                  : ''
+                  : ""
               }
               onChange={handleInputChange}
               disabled={!isEditModeOn}
@@ -581,21 +583,21 @@ export const CompanyProfile = () => {
                     companyProfile.address != null &&
                     companyProfile.address.city != null
                       ? companyProfile.address.city
-                      : ''
+                      : ""
                   }
                   onKeyDown={(event) => {
                     const allowedCharacters = /^[a-zA-Z\s]+$/;
                     if (
                       !allowedCharacters.test(event.key) &&
-                      event.key !== 'Backspace' &&
-                      event.key !== 'ArrowLeft' &&
-                      event.key !== 'ArrowRight'
+                      event.key !== "Backspace" &&
+                      event.key !== "ArrowLeft" &&
+                      event.key !== "ArrowRight"
                     ) {
                       event.preventDefault();
                     }
                   }}
                   maxLength={20}
-                  placeholder={isEditModeOn ? 'City' : '-'}
+                  placeholder={isEditModeOn ? "City" : "-"}
                   onChange={handleInputChange}
                   disabled={!isEditModeOn}
                   autoComplete="off"
@@ -608,27 +610,27 @@ export const CompanyProfile = () => {
                     companyProfile.address &&
                     companyProfile.address.state != null
                       ? companyProfile.address.state
-                      : ''
+                      : ""
                   }
                   onChange={handleInputChange}
                   disabled={!isEditModeOn}
                 >
-                  <option value={''}>{t("SELECT_STATE")}</option>
-                  <option value={'Telangana'}>{t("TELANGANA")}</option>
-                  <option value={'AP'}>{t("ANDHRA_PRADESH")}</option>
-                  <option value={'Delhi'}>{t("DELHI")}</option>
+                  <option value={""}>{t("SELECT_STATE")}</option>
+                  <option value={"Telangana"}>{t("TELANGANA")}</option>
+                  <option value={"AP"}>{t("ANDHRA_PRADESH")}</option>
+                  <option value={"Delhi"}>{t("DELHI")}</option>
                 </Select>
               </div>
               <div>
                 <Input
                   name="address.pinCode"
                   type="number"
-                  placeholder={isEditModeOn ? 'Pin Code' : '-'}
+                  placeholder={isEditModeOn ? "Pin Code" : "-"}
                   value={
                     companyProfile.address &&
                     companyProfile.address.pinCode != null
                       ? companyProfile.address.pinCode
-                      : ''
+                      : ""
                   }
                   onChange={handleInputChange}
                   disabled={!isEditModeOn}
@@ -637,17 +639,17 @@ export const CompanyProfile = () => {
                     const allowedCharacters = /^[0-9]+$/;
                     if (
                       !allowedCharacters.test(event.key) &&
-                      event.key !== 'Backspace'
+                      event.key !== "Backspace"
                     ) {
                       event.preventDefault();
                     }
-                    if (event.key === 'e') {
+                    if (event.key === "e") {
                       event.preventDefault();
                     }
                     if (
                       companyProfile.address &&
                       companyProfile.address.pinCode.toString().length >= 6 &&
-                      event.key !== 'Backspace'
+                      event.key !== "Backspace"
                     ) {
                       event.preventDefault();
                     }
@@ -665,15 +667,15 @@ export const CompanyProfile = () => {
               value={
                 companyProfile.address && companyProfile.address.country != null
                   ? companyProfile.address.country
-                  : ''
+                  : ""
               }
               onChange={handleInputChange}
               disabled={!isEditModeOn}
             >
-              <option value={''}>{t("SELECT_COUNTRY")}</option>
-              <option value={'India'}>{t("INDIA")}</option>
-              <option value={'Germany'}>{t("GERMANY")}</option>
-              <option value={'US'}>{t("US")}</option>
+              <option value={""}>{t("SELECT_COUNTRY")}</option>
+              <option value={"India"}>{t("INDIA")}</option>
+              <option value={"Germany"}>{t("GERMANY")}</option>
+              <option value={"US"}>{t("US")}</option>
             </Select>
           </Row>
           <Row>
@@ -682,14 +684,14 @@ export const CompanyProfile = () => {
               name="filingAddress"
               placeholder={
                 isEditModeOn
-                  ? 'Filing Address (Visible in Payslips, Invoices etc)'
-                  : '-'
+                  ? "Filing Address (Visible in Payslips, Invoices etc)"
+                  : "-"
               }
               value={
                 companyProfile.filingAddress &&
                 companyProfile.filingAddress != null
                   ? companyProfile.filingAddress
-                  : ''
+                  : ""
               }
               onChange={handleInputChange}
               disabled={!isEditModeOn}
@@ -705,8 +707,8 @@ export const CompanyProfile = () => {
               <Input
                 name="email"
                 type="email"
-                placeholder={isEditModeOn ? 'Ex: help@organization.in' : '-'}
-                value={companyProfile.email ? companyProfile.email : ''}
+                placeholder={isEditModeOn ? "Ex: help@organization.in" : "-"}
+                value={companyProfile.email ? companyProfile.email : ""}
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
                 autoComplete="off"
@@ -714,11 +716,11 @@ export const CompanyProfile = () => {
                   const allowedCharacters = /^[a-zA-Z0-9@._-]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace' &&
-                    event.key !== 'Tab' &&
-                    event.key !== 'ArrowLeft' &&
-                    event.key !== 'ArrowRight' &&
-                    event.key !== 'Delete'
+                    event.key !== "Backspace" &&
+                    event.key !== "Tab" &&
+                    event.key !== "ArrowLeft" &&
+                    event.key !== "ArrowRight" &&
+                    event.key !== "Delete"
                   ) {
                     event.preventDefault();
                   }
@@ -733,8 +735,8 @@ export const CompanyProfile = () => {
               <Input
                 name="website"
                 type="url"
-                placeholder={isEditModeOn ? 'Ex: https://example.com' : '-'}
-                value={companyProfile.website ? companyProfile.website : ''}
+                placeholder={isEditModeOn ? "Ex: https://example.com" : "-"}
+                value={companyProfile.website ? companyProfile.website : ""}
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
                 autoComplete="off"
@@ -748,11 +750,11 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.pfNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter PF Number' : '-'}
+                placeholder={isEditModeOn ? "Enter PF Number" : "-"}
                 value={
                   companyProfile.accounts && companyProfile.accounts.pfNumber
                     ? companyProfile.accounts.pfNumber.toUpperCase()
-                    : ''
+                    : ""
                 }
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
@@ -762,14 +764,14 @@ export const CompanyProfile = () => {
                   const allowedCharacters = /^[a-zA-Z0-9]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
                   if (
                     companyProfile.address &&
                     companyProfile.address.pinCode.toString().length >= 22 &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
@@ -784,11 +786,11 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.tanNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter TAN Number' : '-'}
+                placeholder={isEditModeOn ? "Enter TAN Number" : "-"}
                 value={
                   companyProfile.accounts && companyProfile.accounts.tanNumber
                     ? companyProfile.accounts.tanNumber.toUpperCase()
-                    : ''
+                    : ""
                 }
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
@@ -799,14 +801,14 @@ export const CompanyProfile = () => {
                   const allowedCharacters = /^[a-zA-Z0-9]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
                   if (
                     companyProfile.address &&
                     companyProfile.address.pinCode.toString().length >= 10 &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
@@ -821,13 +823,13 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.panNumber"
                 placeholder={
-                  isEditModeOn ? 'Enter PAN Number  (Ex: ABCDR9115L)' : '-'
+                  isEditModeOn ? "Enter PAN Number  (Ex: ABCDR9115L)" : "-"
                 }
                 type="text"
                 value={
                   companyProfile.accounts && companyProfile.accounts.panNumber
                     ? companyProfile.accounts.panNumber.toUpperCase()
-                    : ''
+                    : ""
                 }
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
@@ -837,14 +839,14 @@ export const CompanyProfile = () => {
                   const allowedCharacters = /^[a-zA-Z0-9]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
                   if (
                     companyProfile.address &&
                     companyProfile.address.pinCode.toString().length >= 10 &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
@@ -859,11 +861,11 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.esiNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter ESI Number' : '-'}
+                placeholder={isEditModeOn ? "Enter ESI Number" : "-"}
                 value={
                   companyProfile.accounts && companyProfile.accounts.esiNumber
                     ? companyProfile.accounts.esiNumber.toUpperCase()
-                    : ''
+                    : ""
                 }
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
@@ -873,9 +875,9 @@ export const CompanyProfile = () => {
                   const allowedCharacters = /^[0-9]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace' &&
-                    event.key !== 'ArrowLeft' &&
-                    event.key !== 'ArrowRight'
+                    event.key !== "Backspace" &&
+                    event.key !== "ArrowLeft" &&
+                    event.key !== "ArrowRight"
                   ) {
                     event.preventDefault();
                   }
@@ -889,12 +891,12 @@ export const CompanyProfile = () => {
             <div>
               <Input
                 name="accounts.linNumber"
-                placeholder={isEditModeOn ? 'Enter LIN Number' : '-'}
+                placeholder={isEditModeOn ? "Enter LIN Number" : "-"}
                 type="text"
                 value={
                   companyProfile.accounts && companyProfile.accounts.linNumber
                     ? companyProfile.accounts.linNumber.toUpperCase()
-                    : ''
+                    : ""
                 }
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
@@ -904,21 +906,21 @@ export const CompanyProfile = () => {
                   const allowedCharacters = /^[0-9]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace' &&
-                    event.key !== 'ArrowLeft' &&
-                    event.key !== 'ArrowRight'
+                    event.key !== "Backspace" &&
+                    event.key !== "ArrowLeft" &&
+                    event.key !== "ArrowRight"
                   ) {
                     event.preventDefault();
                   }
-                  if (event.key === 'e') {
+                  if (event.key === "e") {
                     event.preventDefault();
                   }
                   if (
                     companyProfile.accounts &&
                     companyProfile.accounts.linNumber.toString().length >= 10 &&
-                    event.key !== 'Backspace' &&
-                    event.key !== 'ArrowLeft' &&
-                    event.key !== 'ArrowRight'
+                    event.key !== "Backspace" &&
+                    event.key !== "ArrowLeft" &&
+                    event.key !== "ArrowRight"
                   ) {
                     event.preventDefault();
                   }
@@ -934,11 +936,11 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.gstNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter GST Number' : '-'}
+                placeholder={isEditModeOn ? "Enter GST Number" : "-"}
                 value={
                   companyProfile.accounts && companyProfile.accounts.gstNumber
                     ? companyProfile.accounts.gstNumber.toUpperCase()
-                    : ''
+                    : ""
                 }
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
@@ -948,14 +950,14 @@ export const CompanyProfile = () => {
                   const allowedCharacters = /^[a-zA-Z0-9]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
                   if (
                     companyProfile.address &&
                     companyProfile.address.pinCode.toString().length >= 15 &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }

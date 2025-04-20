@@ -1,17 +1,17 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import {
   ExpenseManagementMainContainer,
   ExpenseHeadingSection,
-} from '../styles/ExpenseManagementStyles.style';
-import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
-import { useState } from 'react';
-import LoanApplicationScreen from './LoanApplicationScreen.screen';
-import LoanListView from '../components/reusableComponents/LoanListView.compoment';
-import useKeyPress from '../service/keyboardShortcuts/onKeyPress';
-import { useUser } from '../context/UserContext';
-import { hasPermission } from '../utils/permissionCheck';
-import { LOAN_MODULE } from '../constants/PermissionConstants';
-import { useTranslation } from 'react-i18next';
+} from "../styles/ExpenseManagementStyles.style";
+import { ArrowDownSVG } from "../svgs/CommonSvgs.svs";
+import { useState } from "react";
+import LoanApplicationScreen from "./LoanApplicationScreen.screen";
+import LoanListView from "../components/reusableComponents/LoanListView.compoment";
+import useKeyPress from "../service/keyboardShortcuts/onKeyPress";
+import { useUser } from "../context/UserContext";
+import { hasPermission } from "../utils/permissionCheck";
+import { LOAN_MODULE } from "../constants/PermissionConstants";
+import { useTranslation } from "react-i18next";
 
 const LoanManagementScreen = () => {
   const navigate = useNavigate();
@@ -39,7 +39,7 @@ const LoanManagementScreen = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('DEDUCTIONS_AND_LOANS')}
+            {t("DEDUCTIONS_AND_LOANS")}
           </span>
         </ExpenseHeadingSection>
         {isApplyLoanScreen ? (

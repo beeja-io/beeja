@@ -1,23 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button } from '../../styles/CommonStyles.style';
+import React, { useEffect, useRef, useState } from "react";
+import { Button } from "../../styles/CommonStyles.style";
 import {
   InputLabelContainer,
   TextInput,
   ValidationText,
-} from '../../styles/DocumentTabStyles.style';
-import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
-import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
-import Calendar from '../reusableComponents/Calendar.component';
-import { putInventory } from '../../service/axiosInstance';
-import ToastMessage from '../reusableComponents/ToastMessage.component';
+} from "../../styles/DocumentTabStyles.style";
+import { ExpenseAddFormMainContainer } from "../../styles/ExpenseManagementStyles.style";
+import { CalenderIconDark } from "../../svgs/ExpenseListSvgs.svg";
+import Calendar from "../reusableComponents/Calendar.component";
+import { putInventory } from "../../service/axiosInstance";
+import ToastMessage from "../reusableComponents/ToastMessage.component";
 import {
   DeviceDetails,
   IUpdateDeviceDetails,
-} from '../../entities/InventoryEntity';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import axios from 'axios';
-import { OrganizationValues } from '../../entities/OrgValueEntity';
-import { useTranslation } from 'react-i18next';
+} from "../../entities/InventoryEntity";
+import SpinAnimation from "../loaders/SprinAnimation.loader";
+import axios from "axios";
+import { OrganizationValues } from "../../entities/OrgValueEntity";
+import { useTranslation } from "react-i18next";
 
 type EditInventoryFormProps = {
   initialFormData: DeviceDetails; // Initial data to populate the form
@@ -40,10 +40,10 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
   const [isCalenderOpen, setIsCalenderOpen] = useState(false);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const [deviceToUpdate, setDeviceToUpdate] = useState<IUpdateDeviceDetails>(
-    {} as IUpdateDeviceDetails
+    {} as IUpdateDeviceDetails,
   );
 
   const handleShowErrorMessage = () => {
@@ -59,31 +59,31 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
 
   const formatDate = (date: Date): string => {
     const options: Intl.DateTimeFormatOptions = {
-      month: 'short',
-      day: '2-digit',
-      year: 'numeric',
+      month: "short",
+      day: "2-digit",
+      year: "numeric",
     };
-    return new Intl.DateTimeFormat('en-US', options).format(date);
+    return new Intl.DateTimeFormat("en-US", options).format(date);
   };
 
   const [dateOfPurchase, setDateOfPurchase] = useState<Date | null>(
     initialFormData.dateOfPurchase
       ? new Date(initialFormData.dateOfPurchase)
-      : null
+      : null,
   );
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = event.target;
     if (
-      (name == 'device' && value == 'MUSIC_SYSTEM') ||
-      (name == 'device' && value == 'ACCESSORIES')
+      (name == "device" && value == "MUSIC_SYSTEM") ||
+      (name == "device" && value == "ACCESSORIES")
     ) {
       setFormData((prevState) => ({
         ...prevState,
-        ram: '',
-        os: '',
+        ram: "",
+        os: "",
       }));
     }
     setFormData((prevState) => ({
@@ -91,13 +91,13 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
       [name]: value,
     }));
     if (
-      (name == 'device' && value == 'MUSIC_SYSTEM') ||
-      (name == 'device' && value == 'ACCESSORIES')
+      (name == "device" && value == "MUSIC_SYSTEM") ||
+      (name == "device" && value == "ACCESSORIES")
     ) {
       setDeviceToUpdate((prevState) => ({
         ...prevState,
-        ram: '',
-        os: '',
+        ram: "",
+        os: "",
       }));
     }
     setDeviceToUpdate((prevState) => ({
@@ -126,11 +126,11 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
     } catch (error) {
       if (
         axios.isAxiosError(error) &&
-        error.response?.data.startsWith('Product ID already exists')
+        error.response?.data.startsWith("Product ID already exists")
       ) {
-        setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
+        setErrorMessage("PRODUCT_ID_ALREADY_EXIST");
       } else {
-        setErrorMessage('INVENTORY_NOT_UPLOADED');
+        setErrorMessage("INVENTORY_NOT_UPLOADED");
       }
       setShowErrorMessage(true);
     } finally {
@@ -147,9 +147,9 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
         setIsCalenderOpen(false);
       }
     };
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -158,7 +158,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
     setDateOfPurchase(
       initialFormData.dateOfPurchase
         ? new Date(initialFormData.dateOfPurchase)
-        : null
+        : null,
     );
   }, [initialFormData]);
 
@@ -169,7 +169,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
           <div>
             <InputLabelContainer>
               <label>
-                {t('DEVICE')}
+                {t("DEVICE")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <select
@@ -179,7 +179,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 onChange={handleChange}
                 required
               >
-                <option value="">{t('SELECT_DEVICE')}</option>
+                <option value="">{t("SELECT_DEVICE")}</option>
                 {deviceTypes?.values?.map((device) => (
                   <option key={device.value} value={device.value}>
                     {device.description || device.value}
@@ -191,7 +191,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
             {formData.device === "Accessories" && (
               <InputLabelContainer>
                 <label>
-                  {t('ACCESSORY_TYPE')}
+                  {t("ACCESSORY_TYPE")}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <select
@@ -201,7 +201,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                   onChange={handleChange}
                   required
                 >
-                  <option value="">{t('SELECT_ACCESSORY_TYPE')}</option>
+                  <option value="">{t("SELECT_ACCESSORY_TYPE")}</option>
                   <option value="KEYBOARD">Keyboard</option>
                   <option value="CABLE">Cable</option>
                   <option value="HEADSET">Headset</option>
@@ -212,7 +212,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
             )}
             <InputLabelContainer>
               <label>
-                {t('TYPE')}
+                {t("TYPE")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <select
@@ -222,20 +222,20 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 onChange={handleChange}
                 required
               >
-                <option value="">{t('SELECT_TYPE')}</option>
-                <option value="NEW">{t('NEW')}</option>
-                <option value="OLD">{t('OLD')}</option>
+                <option value="">{t("SELECT_TYPE")}</option>
+                <option value="NEW">{t("NEW")}</option>
+                <option value="OLD">{t("OLD")}</option>
               </select>
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('SPECIFICATIONS')}
+                {t("SPECIFICATIONS")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
                 name="specifications"
-                placeholder={t('EXAMPLE_16_INCH_DISPLAY')}
+                placeholder={t("EXAMPLE_16_INCH_DISPLAY")}
                 className="largeInput"
                 value={formData.specifications}
                 onChange={handleChange}
@@ -244,7 +244,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('AVAILABILITY')}
+                {t("AVAILABILITY")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <select
@@ -254,23 +254,23 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 onChange={handleChange}
                 required
               >
-                <option value="">{t('SELECT_AVAILABILITY')}</option>
-                <option value="YES">{t('YES')}</option>
-                <option value="NO">{t('NO')}</option>
+                <option value="">{t("SELECT_AVAILABILITY")}</option>
+                <option value="YES">{t("YES")}</option>
+                <option value="NO">{t("NO")}</option>
               </select>
             </InputLabelContainer>
 
             <InputLabelContainer>
               <label>
-                {t('DATE_OF_PURCHASE')}
+                {t("DATE_OF_PURCHASE")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <span ref={calendarFromRef} className="calendarField">
                 <TextInput
                   type="text"
-                  placeholder={t('ENTER_DATE')}
+                  placeholder={t("ENTER_DATE")}
                   name="dateOfPurchase"
-                  value={dateOfPurchase ? formatDate(dateOfPurchase) : ''}
+                  value={dateOfPurchase ? formatDate(dateOfPurchase) : ""}
                   onFocus={() => handleCalenderOpen(true)}
                   required
                   autoComplete="off"
@@ -284,7 +284,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 <div className="calendarSpace" ref={calendarFromRef}>
                   {isCalenderOpen && (
                     <Calendar
-                      title={t('PURCHASE_DATE')}
+                      title={t("PURCHASE_DATE")}
                       handleDateInput={(selectedDate) => {
                         if (selectedDate instanceof Date) {
                           setDateOfPurchase(selectedDate);
@@ -297,7 +297,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                       }}
                       selectedDate={dateOfPurchase}
                       maxDate={new Date()}
-                      handleCalenderChange={() => { }}
+                      handleCalenderChange={() => {}}
                     />
                   )}
                 </div>
@@ -305,7 +305,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('PRICE')}
+                {t("PRICE")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
@@ -313,20 +313,20 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 name="price"
                 value={formData.price}
                 onChange={handleChange}
-                placeholder={t('ENTER_PRICE')}
+                placeholder={t("ENTER_PRICE")}
                 required
                 autoComplete="off"
                 onKeyDown={(event) => {
                   const allowedCharacters = /^[0-9.]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'ArrowLeft' &&
-                    event.key !== 'ArrowRight' &&
-                    event.key !== 'Backspace'
+                    event.key !== "ArrowLeft" &&
+                    event.key !== "ArrowRight" &&
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
-                  if (event.key === 'e') {
+                  if (event.key === "e") {
                     event.preventDefault();
                   }
                 }}
@@ -336,13 +336,13 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
           <div>
             <InputLabelContainer>
               <label>
-                {t('PROVIDER')}
+                {t("PROVIDER")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
                 name="provider"
-                placeholder={t('EXAMPLE_APPLE')}
+                placeholder={t("EXAMPLE_APPLE")}
                 className="largeInput"
                 value={formData.provider}
                 onChange={handleChange}
@@ -351,13 +351,13 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('MODEL')}
+                {t("MODEL")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
                 name="model"
-                placeholder={t('EXAMPLE_M3_PRO')}
+                placeholder={t("EXAMPLE_M3_PRO")}
                 className="largeInput"
                 value={formData.model}
                 onChange={handleChange}
@@ -366,9 +366,9 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('OS')}
-                {['DESKTOP', 'MUSIC_SYSTEM', 'PRINTER', 'ACCESSORIES'].includes(
-                  formData.device
+                {t("OS")}
+                {["DESKTOP", "MUSIC_SYSTEM", "PRINTER", "ACCESSORIES"].includes(
+                  formData.device,
                 ) ? null : (
                   <ValidationText className="star">*</ValidationText>
                 )}
@@ -376,38 +376,37 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
               <TextInput
                 type="text"
                 name="os"
-                placeholder={t('EXAMPLE_MAC_OS')}
-                value={formData.os ? formData.os : ''}
+                placeholder={t("EXAMPLE_MAC_OS")}
+                value={formData.os ? formData.os : ""}
                 className="largeInput"
                 onChange={handleChange}
                 disabled={
                   !(
-                    formData.device === 'Desktops' ||
-                    formData.device === 'Laptops' ||
-                    formData.device === 'Mobiles' ||
-                    formData.device === 'Tablets' ||
-                    formData.device === 'Desktop' ||
-                    formData.device === 'Laptop' ||
-                    formData.device === 'Mobile' ||
-                    formData.device === 'Tablet'
+                    formData.device === "Desktops" ||
+                    formData.device === "Laptops" ||
+                    formData.device === "Mobiles" ||
+                    formData.device === "Tablets" ||
+                    formData.device === "Desktop" ||
+                    formData.device === "Laptop" ||
+                    formData.device === "Mobile" ||
+                    formData.device === "Tablet"
                   )
                 }
-
                 required={
                   ![
-                    'PRINTER',
-                    'MUSIC_SYSTEM',
-                    'DESKTOP',
-                    'Accessories',
+                    "PRINTER",
+                    "MUSIC_SYSTEM",
+                    "DESKTOP",
+                    "Accessories",
                   ].includes(formData.device)
                 }
               />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('RAM')}
-                {['DESKTOP', 'MUSIC_SYSTEM', 'PRINTER', 'ACCESSORIES'].includes(
-                  formData.device
+                {t("RAM")}
+                {["DESKTOP", "MUSIC_SYSTEM", "PRINTER", "ACCESSORIES"].includes(
+                  formData.device,
                 ) ? null : (
                   <ValidationText className="star">*</ValidationText>
                 )}
@@ -415,28 +414,28 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
               <TextInput
                 type="text"
                 name="ram"
-                placeholder={t('ENTER_IN_GB')}
-                value={formData.ram ? formData.ram : ''}
+                placeholder={t("ENTER_IN_GB")}
+                value={formData.ram ? formData.ram : ""}
                 className="largeInput"
                 onChange={handleChange}
-                disabled={formData.device === 'Accessories'}
+                disabled={formData.device === "Accessories"}
                 required={
                   ![
-                    'PRINTER',
-                    'DESKTOP',
-                    'MUSIC_SYSTEM',
-                    'Accessories',
+                    "PRINTER",
+                    "DESKTOP",
+                    "MUSIC_SYSTEM",
+                    "Accessories",
                   ].includes(formData.device)
                 }
                 onKeyDown={(event) => {
                   const allowedCharacters = /^[0-9.-]+$/;
                   if (
                     !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace'
+                    event.key !== "Backspace"
                   ) {
                     event.preventDefault();
                   }
-                  if (event.key === 'e') {
+                  if (event.key === "e") {
                     event.preventDefault();
                   }
                 }}
@@ -444,13 +443,13 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
-                {t('PRODUCT_ID_SERIAL_NUMBER')}
+                {t("PRODUCT_ID_SERIAL_NUMBER")}
                 <ValidationText className="star">*</ValidationText>
               </label>
               <TextInput
                 type="text"
                 name="productId"
-                placeholder={t('ENTER_PRODUCT_ID_OF_DEVICE')}
+                placeholder={t("ENTER_PRODUCT_ID_OF_DEVICE")}
                 className="largeInput"
                 value={formData.productId}
                 onChange={handleChange}
@@ -458,13 +457,13 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
               />
             </InputLabelContainer>
             <InputLabelContainer>
-              <label>{t('COMMENTS')}</label>
+              <label>{t("COMMENTS")}</label>
               <TextInput
                 type="text"
                 name="comments"
                 value={formData.comments}
                 className="largeInput"
-                placeholder={t('TYPE_YOUR_COMMENTS_HERE_OPTIONAL')}
+                placeholder={t("TYPE_YOUR_COMMENTS_HERE_OPTIONAL")}
                 onChange={handleChange}
               />
             </InputLabelContainer>
@@ -472,10 +471,10 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
         </div>
         <div className="formButtons">
           <Button onClick={handleClose} fontSize="16px" width="145px">
-            {t('CANCEL')}
+            {t("CANCEL")}
           </Button>
           <Button className="submit" fontSize="16px" width="145px">
-            {t('UPDATE')}
+            {t("UPDATE")}
           </Button>
         </div>
       </ExpenseAddFormMainContainer>

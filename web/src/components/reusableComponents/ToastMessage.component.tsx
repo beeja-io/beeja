@@ -1,14 +1,14 @@
-import { useEffect } from 'react';
-import { ToastMainContainer } from '../../styles/ToastMessage.style';
+import { useEffect } from "react";
+import { ToastMainContainer } from "../../styles/ToastMessage.style";
 import {
   ErrorRedMark,
   SuccessGreenTick,
   ToastCloseCross,
-} from '../../svgs/CommonSvgs.svs';
-import { useTranslation } from 'react-i18next';
+} from "../../svgs/CommonSvgs.svs";
+import { useTranslation } from "react-i18next";
 
 type ToastMessageProps = {
-  messageType: 'success' | 'warn' | 'error';
+  messageType: "success" | "warn" | "error";
   messageHeading: string;
   messageBody: string;
   handleClose: () => void;
@@ -25,7 +25,7 @@ const ToastMessage = (props: ToastMessageProps) => {
   return (
     <ToastMainContainer>
       <span className={`${props.messageType} toastStatusIcon`}>
-        {props.messageType === 'success' ? (
+        {props.messageType === "success" ? (
           <SuccessGreenTick />
         ) : (
           <ErrorRedMark />

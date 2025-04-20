@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const BulkPayslipContainer = styled.section`
   display: flex;
@@ -53,7 +53,7 @@ export const BulkPayslipContainer = styled.section`
       }
     }
   }
-  
+
   @media screen and (max-width: 1387px) {
     .topFields {
       gap: 20px;

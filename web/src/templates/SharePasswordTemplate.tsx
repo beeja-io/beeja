@@ -8,6 +8,6 @@ export const SharePasswordThroughMailTemplate = (props: {
   return encodeURIComponent(
     `Hello ${props.firstName},\n\nYour account has been successfully created. Below are your credentials:\n\n` +
       `Employee ID: ${props.employeeId}\nEmail ID: ${props.email}\nPassword: ${props.password}\n\n` +
-      `Please store your password securely and do not share it with others.\n\nBest regards,\n${props.companyName}`
+      `Please store your password securely and do not share it with others.\n\nBest regards,\n${props.companyName}`,
   );
 };
