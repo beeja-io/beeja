@@ -204,6 +204,7 @@ class ExpenseServiceImplTest {
     String modeOfPayment = "Credit Card";
     String expenseType = "Office Supplies";
     String expenseCategory = "Stationery";
+    Boolean settlementStatus=true;
     String organizationId = "Org123";
     Map<String, Object> mockResult = Collections.singletonMap("totalAmount", 5000.0);
     AggregationResults<Map> mockAggregationResults = mock(AggregationResults.class);
@@ -220,6 +221,7 @@ class ExpenseServiceImplTest {
             modeOfPayment,
             expenseType,
             expenseCategory,
+            settlementStatus,
             organizationId);
     assertEquals(0.0, totalAmount);
   }
@@ -233,6 +235,7 @@ class ExpenseServiceImplTest {
     String modeOfPayment = "Credit Card";
     String expenseType = "Office Supplies";
     String expenseCategory = "Stationery";
+    Boolean settlementStatus=true;
     String organizationId = "Org123";
     long expectedCount = 10;
     when(mongoTemplate.count(any(Query.class), eq(Expense.class))).thenReturn(expectedCount);
@@ -245,6 +248,7 @@ class ExpenseServiceImplTest {
             modeOfPayment,
             expenseType,
             expenseCategory,
+            settlementStatus,
             organizationId);
     assertEquals(expectedCount, actualCount);
     verify(mongoTemplate).count(any(Query.class), eq(Expense.class));
@@ -254,6 +258,7 @@ class ExpenseServiceImplTest {
   void testGetFilteredExpenses() throws Exception {
     when(mongoTemplate.find(any(Query.class), eq(Expense.class)))
         .thenReturn(List.of(new Expense()));
+    boolean ascending = true;
     List<Expense> result =
         expenseService.getFilteredExpenses(
             new Date(),
@@ -267,7 +272,7 @@ class ExpenseServiceImplTest {
             1,
             10,
             "createdDate",
-            true);
+            true, ascending);
     assertNotNull(result);
     assertEquals(1, result.size());
     verify(mongoTemplate).find(any(Query.class), eq(Expense.class));

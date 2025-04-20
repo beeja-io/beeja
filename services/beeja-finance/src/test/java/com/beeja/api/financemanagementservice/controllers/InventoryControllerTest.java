@@ -162,14 +162,14 @@ public class InventoryControllerTest {
             anyString(),
             any(Availability.class),
             anyString(),
+            anyString(),
             anyString()))
         .thenReturn(filteredDevices);
     when(inventoryService.getTotalInventorySize(
-            any(), anyString(), any(), anyString(), anyString(), anyString()))
+            any(), anyString(), any(), anyString(), anyString(),anyString(), anyString()))
         .thenReturn(1L);
     ResponseEntity<InventoryResponseDTO> responseEntity =
-        inventoryController.filterInventory(
-            1, 10, Device.MOBILE, "Google", Availability.NO, "NA", "Mobile");
+        inventoryController.filterInventory(1, 10, Device.MOBILE, "Google", Availability.NO, "NA","NA", "Mobile");
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 

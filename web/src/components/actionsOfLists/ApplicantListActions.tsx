@@ -59,7 +59,6 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
 
   document.addEventListener('click', handleClickOutside);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDocumentClick = (e: any) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
       setIsOpen(false);

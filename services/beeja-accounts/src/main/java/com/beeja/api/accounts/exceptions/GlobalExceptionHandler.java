@@ -6,6 +6,7 @@ import com.beeja.api.accounts.enums.ErrorCode;
 import com.beeja.api.accounts.enums.ErrorType;
 import com.beeja.api.accounts.response.ErrorResponse;
 import com.beeja.api.accounts.utils.Constants;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 
 @ControllerAdvice
@@ -118,6 +121,20 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  @ExceptionHandler(DuplicateValueException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ResponseBody
+  public ErrorResponse handleDuplicateValueException(DuplicateValueException ex,WebRequest request) {
+    return  new ErrorResponse(
+            ErrorType.VALIDATION_ERROR,
+            ErrorCode.DUPLICATE_VALUE,
+            ex.getMessage(),
+            Constants.DOC_URL_RESOURCE_NOT_FOUND,
+            request.getDescription(false),
+            BEEJA + "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    );
+  }
   public String[] convertStringToArray(String commaSeparatedString) {
     return commaSeparatedString.split(",");
   }

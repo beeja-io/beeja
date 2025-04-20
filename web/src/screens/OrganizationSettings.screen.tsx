@@ -87,7 +87,7 @@ const OrganizationSettings = () => {
       setCompanyProfile(response.data);
       setTempOrganization(response.data);
       setIsUpdateResponseLoading(false);
-    } catch (error) {
+    } catch {
       setIsUpdateResponseLoading(false);
     }
   };
@@ -483,11 +483,9 @@ const OrganizationSettings = () => {
             {activeTab === 'DeviceIDPattern' && (
               <OrgSettingsIDPatterns patternType="DEVICE_ID_PATTERN" />
             )}
-             {activeTab === 'Providers' && (
-               <SettingsTypes
-               keyvalue="inventoryProviders"
-               type="Providers" 
-               />)}
+            {activeTab === 'Providers' && (
+              <SettingsTypes keyvalue="inventoryProviders" type="Providers" />
+            )}
           </SelectedTabSection>
         </SectionsContainer>
       </SettingsMainContainer>

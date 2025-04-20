@@ -8,9 +8,12 @@ import static com.beeja.api.expense.utils.Constants.SERVICE_DOWN_ERROR;
 
 import com.beeja.api.expense.client.FileClient;
 import com.beeja.api.expense.config.properties.AllowedContentTypes;
+import com.beeja.api.expense.enums.ErrorCode;
+import com.beeja.api.expense.enums.ErrorType;
 import com.beeja.api.expense.exceptions.ExpenseAlreadySettledException;
 import com.beeja.api.expense.exceptions.ExpenseNotFound;
 import com.beeja.api.expense.exceptions.OrganizationMismatchException;
+import com.beeja.api.expense.exceptions.handleInternalServerException;
 import com.beeja.api.expense.modal.Expense;
 import com.beeja.api.expense.modal.File;
 import com.beeja.api.expense.repository.ExpenseRepository;
@@ -20,6 +23,7 @@ import com.beeja.api.expense.requests.FileRequest;
 import com.beeja.api.expense.response.ExpenseDefaultValues;
 import com.beeja.api.expense.response.ExpenseValues;
 import com.beeja.api.expense.service.ExpenseService;
+import com.beeja.api.expense.utils.BuildErrorMessage;
 import com.beeja.api.expense.utils.Constants;
 import com.beeja.api.expense.utils.UserContext;
 import com.beeja.api.expense.utils.helpers.FileExtensionHelpers;
@@ -48,6 +52,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.beeja.api.expense.utils.Constants.*;
+
 @Service
 @Slf4j
 public class ExpenseServiceImpl implements ExpenseService {
@@ -74,12 +85,22 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseRepository.deleteById(expenseId);
         return expense.get();
       } else {
-        throw new ExpenseNotFound("Expense not found with ID: " + expenseId);
+        log.error(Constants.EXPENSE_NOT_FOUND + expenseId);
+        throw new ExpenseNotFound(
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.RESOURCE_NOT_FOUND,
+                        ErrorCode.EXPENSE_NOT_FOUND,
+                        EXPENSE_NOT_FOUND + expenseId));
       }
     } catch (ExpenseNotFound e) {
-      throw new ExpenseNotFound("Expense not found with ID: " + expenseId);
+            throw e;
     } catch (Exception e) {
-      throw new Exception(SERVICE_DOWN_ERROR + e.getMessage());
+      log.error(SERVICE_DOWN_ERROR, e.getMessage());
+      throw new Exception(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.API_ERROR,
+                      ErrorCode.SERVER_ERROR,
+              Constants.SERVICE_DOWN_ERROR));
     }
   }
 
@@ -101,7 +122,12 @@ public class ExpenseServiceImpl implements ExpenseService {
         for (MultipartFile file : updatedExpense.getNewFiles()) {
           if (!FileExtensionHelpers.isValidContentType(
               file.getContentType(), allowedContentTypes.getAllowedTypes())) {
-            throw new Exception(INVALID_FILE_FORMATS);
+            log.error(INVALID_FILE_FORMATS);
+            throw new Exception(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.INVALID_FILE_FORMAT,
+                            INVALID_FILE_FORMATS));
           }
         }
       } else if (updatedExpense.getNewFiles() != null
@@ -112,7 +138,12 @@ public class ExpenseServiceImpl implements ExpenseService {
                 updatedExpense.getNewFiles().size() + optionalExpense.get().getFileId().size());
       }
       if (finalFileCount > 3) {
-        throw new Exception(FILE_COUNT_ERROR + 3);
+        log.error(FILE_COUNT_ERROR + 3);
+        throw new Exception(
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.VALIDATION_ERROR,
+                        ErrorCode.FILE_COUNT_EXCEED,
+                        FILE_COUNT_ERROR + 3));
       }
 
       String loggedInUserOrganizationId =
@@ -188,11 +219,20 @@ public class ExpenseServiceImpl implements ExpenseService {
         existingExpense.setFileId(fileIds);
         return expenseRepository.save(existingExpense);
       } else {
+        log.error(Constants.EXPENSE_NOT_FOUND_ORGANIZATION+expenseId);
         throw new OrganizationMismatchException(
-            "No Expense Found in your organization with id: " + expenseId);
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.RESOURCE_NOT_FOUND,
+                        ErrorCode.EXPENSE_NOT_FOUND,
+                        Constants.EXPENSE_NOT_FOUND_ORGANIZATION+expenseId));
       }
     } catch (Exception e) {
-      throw new Exception(e.getMessage(), e);
+      log.error(Constants.ERROR_UPDATING_EXPENSE + e.getMessage());
+      throw new Exception(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.INTERNAL_SERVER_ERROR,
+                      ErrorCode.EXPENSE_UPDATE_FAILED,
+                      Constants.ERROR_UPDATING_EXPENSE));
     }
   }
 
@@ -204,7 +244,12 @@ public class ExpenseServiceImpl implements ExpenseService {
      * Currently the number of files is limited to 3
      * */
     if (createExpense.getFiles() != null && createExpense.getFiles().size() > 3) {
-      throw new Exception(FILE_COUNT_ERROR + 3);
+      log.error(FILE_COUNT_ERROR+3);
+      throw new Exception(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.VALIDATION_ERROR,
+                      ErrorCode.FILE_COUNT_EXCEED,
+                      FILE_COUNT_ERROR+3));
     }
 
     //        Checking the extensions of files
@@ -212,7 +257,12 @@ public class ExpenseServiceImpl implements ExpenseService {
       for (MultipartFile file : createExpense.getFiles()) {
         if (!FileExtensionHelpers.isValidContentType(
             file.getContentType(), allowedContentTypes.getAllowedTypes())) {
-          throw new Exception(INVALID_FILE_FORMATS);
+          log.error(INVALID_FILE_FORMATS);
+          throw new Exception(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.VALIDATION_ERROR,
+                          ErrorCode.INVALID_FILE_FORMAT,
+                          INVALID_FILE_FORMATS));
         }
       }
     }
@@ -269,29 +319,52 @@ public class ExpenseServiceImpl implements ExpenseService {
               fileClient.deleteFile(fileId);
             }
           }
-          throw new Exception(ERROR_SAVING_FILE_IN_FILE_SERVICE + ", " + e.getMessage());
+          log.error(ERROR_SAVING_FILE_IN_FILE_SERVICE, e.getMessage());
+          throw new Exception(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.INTERNAL_SERVER_ERROR,
+                          ErrorCode.ERROR_SAVING_FILE,
+                          ERROR_SAVING_FILE_IN_FILE_SERVICE));
         }
       }
     }
     try {
       return expenseRepository.save(newExpense);
     } catch (Exception e) {
-      throw new Exception(ERROR_SAVING_EXPENSE);
+      log.error(ERROR_SAVING_EXPENSE, e.getMessage());
+      throw new Exception(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.INTERNAL_SERVER_ERROR,
+                      ErrorCode.EXPENSE_SAVED_FAILED,
+                      ERROR_SAVING_EXPENSE));
     }
   }
 
   @Override
   public Expense getExpenseById(String expenseId) throws Exception {
     return expenseRepository
-        .findById(expenseId)
-        .orElseThrow(() -> new ExpenseNotFound("Expense not found with id: " + expenseId));
+            .findById(expenseId)
+            .orElseThrow(() -> {
+              String errorMessage = Constants.EXPENSE_NOT_FOUND + expenseId;
+              log.error(errorMessage);
+              throw new ExpenseNotFound(
+                      BuildErrorMessage.buildErrorMessage(
+                              ErrorType.RESOURCE_NOT_FOUND,
+                              ErrorCode.EXPENSE_NOT_FOUND,
+                              errorMessage));
+            });
   }
 
   @Override
   public Expense settleExpense(String expenseId) throws Exception {
     Expense expense = getExpenseById(expenseId);
     if (Constants.STATUS_SETTLED.equals(expense.getStatus())) {
-      throw new ExpenseAlreadySettledException(Constants.SETTLED);
+      log.error(Constants.SETTLED);
+      throw new ExpenseAlreadySettledException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.BAD_REQUEST,
+                      ErrorCode.EXPENSE_ALREADY_SETTLED,
+              Constants.SETTLED));
     }
     expense.setStatus(Constants.STATUS_SETTLED);
     return expenseRepository.save(expense);
@@ -299,64 +372,88 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public List<Expense> getFilteredExpenses(
-      Date startDate,
-      Date endDate,
-      String department,
-      String filterBasedOn,
-      String modeOfPayment,
-      String expenseType,
-      String expenseCategory,
-      String organizationId,
-      int pageNumber,
-      int pageSize,
-      String sortBy,
-      Boolean settlementStatus,
-      boolean ascending)
-      throws Exception {
-    Query query = new Query();
-
-    if (startDate != null && endDate != null) {
-      query.addCriteria(Criteria.where(sortBy).gte(startDate).lte(endDate));
-    } else if (endDate != null) {
-      query.addCriteria(Criteria.where(filterBasedOn).lte(endDate));
-    } else if (startDate != null) {
-      query.addCriteria(Criteria.where(filterBasedOn).gte(startDate));
+          Date startDate,
+          Date endDate,
+          String department,
+          String filterBasedOn,
+          String modeOfPayment,
+          String expenseType,
+          String expenseCategory,
+          String organizationId,
+          int pageNumber,
+          int pageSize,
+          String sortBy,
+          Boolean settlementStatus,
+          boolean ascending
+  ) {
+    if (pageNumber <= 0 || pageSize <= 0) {
+      log.error(Constants.INVALID_PAGINATION_PARAM);
+      throw new IllegalArgumentException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.BAD_REQUEST,
+                      ErrorCode.INVALID_PAGINATION_PARAMS,
+                      Constants.INVALID_PAGINATION_PARAM));
     }
 
-    if (modeOfPayment != null) {
-      query.addCriteria(Criteria.where("modeOfPayment").is(modeOfPayment));
-    }
+    try {
+      Query query = new Query();
 
-    if (expenseType != null) {
-      query.addCriteria(Criteria.where("type").is(expenseType));
-    }
+      if (startDate != null && endDate != null) {
+        query.addCriteria(Criteria.where(sortBy).gte(startDate).lte(endDate));
+      } else if (endDate != null) {
+        query.addCriteria(Criteria.where(filterBasedOn).lte(endDate));
+      } else if (startDate != null) {
+        query.addCriteria(Criteria.where(filterBasedOn).gte(startDate));
+      }
 
-    if (expenseCategory != null) {
-      query.addCriteria(Criteria.where("category").is(expenseCategory));
-    }
+      if (modeOfPayment != null) {
+        query.addCriteria(Criteria.where("modeOfPayment").is(modeOfPayment));
+      }
 
-    if (organizationId != null) {
-      query.addCriteria(Criteria.where("organizationId").is(organizationId));
-    }
+      if (expenseType != null) {
+        query.addCriteria(Criteria.where("type").is(expenseType));
+      }
 
-    if (department != null) {
-      query.addCriteria(Criteria.where("department").is(department));
-    }
+      if (expenseCategory != null) {
+        query.addCriteria(Criteria.where("category").is(expenseCategory));
+      }
 
-    if (settlementStatus != null && settlementStatus.equals(true)) {
-      query.addCriteria(Criteria.where("paymentSettled").ne(null));
-    } else if (settlementStatus != null && settlementStatus.equals(false)) {
-      query.addCriteria(Criteria.where("paymentSettled").is(null));
-    }
+      if (organizationId != null) {
+        query.addCriteria(Criteria.where("organizationId").is(organizationId));
+      }
 
-    int skip = (pageNumber - 1) * pageSize;
-    query.skip(skip).limit(pageSize);
+      if (department != null) {
+        query.addCriteria(Criteria.where("department").is(department));
+      }
 
-    if (sortBy != null && !sortBy.isEmpty()) {
-      Sort.Direction direction = ascending ? Sort.Direction.ASC : Sort.Direction.DESC;
-      query.with(Sort.by(direction, sortBy));
+      if (settlementStatus != null) {
+        if (settlementStatus) {
+          query.addCriteria(Criteria.where("paymentSettled").ne(null));
+        } else {
+          query.addCriteria(Criteria.where("paymentSettled").is(null));
+        }
+      }
+
+      int skip = (pageNumber - 1) * pageSize;
+      query.skip(skip).limit(pageSize);
+
+      if (sortBy != null && !sortBy.isEmpty()) {
+        Sort.Direction direction = ascending ? Sort.Direction.ASC : Sort.Direction.DESC;
+        query.with(Sort.by(direction, sortBy));
+      }
+
+      return mongoTemplate.find(query, Expense.class);
+
+    } catch (Exception e) {
+      log.error(Constants.ERROR_FILTERING_EXPENSE);
+      throw new handleInternalServerException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.INTERNAL_SERVER_ERROR,
+                      ErrorCode.EXPENSE_FILTERING_FAILED,
+                      ERROR_FILTERING_EXPENSE
+              )
+      );
     }
-    return mongoTemplate.find(query, Expense.class);
   }
 
   @Override
@@ -443,10 +540,17 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public ExpenseValues getExpenseDefaultValues(String organizationId) {
+    List<ExpenseDefaultValues> expenseDefaultValues = expenseRepository.findDistinctTypeByOrganizationId(organizationId);
 
-    List<ExpenseDefaultValues> expenseDefaultValues =
-        expenseRepository.findDistinctTypeByOrganizationId(organizationId);
-    //    take all the categories from the expenses and assign to categories
+    if (expenseDefaultValues.isEmpty()) {
+      log.error(Constants.ERROR_FETCH_EXPENSE_DEFAULTS + organizationId);
+      throw new handleInternalServerException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.INTERNAL_SERVER_ERROR,
+                      ErrorCode.EXPENSE_DEFAULT_FETCH_FAILED,
+                      Constants.ERROR_FETCH_EXPENSE_DEFAULTS + organizationId));
+    }
+
     ExpenseValues expenseValues = new ExpenseValues();
     Set<String> categories =
         expenseDefaultValues.stream()

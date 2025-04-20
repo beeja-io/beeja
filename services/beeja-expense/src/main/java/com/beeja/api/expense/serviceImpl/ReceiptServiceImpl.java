@@ -1,15 +1,19 @@
 package com.beeja.api.expense.serviceImpl;
 
 import com.beeja.api.expense.client.FileClient;
+import com.beeja.api.expense.enums.ErrorCode;
+import com.beeja.api.expense.enums.ErrorType;
 import com.beeja.api.expense.exceptions.FeignClientException;
 import com.beeja.api.expense.exceptions.UnAuthorisedException;
 import com.beeja.api.expense.response.FileDownloadResultMetaData;
 import com.beeja.api.expense.response.FileResponse;
 import com.beeja.api.expense.service.ReceiptService;
+import com.beeja.api.expense.utils.BuildErrorMessage;
 import com.beeja.api.expense.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -17,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class ReceiptServiceImpl implements ReceiptService {
 
   @Autowired FileClient fileClient;
@@ -35,10 +40,20 @@ public class ReceiptServiceImpl implements ReceiptService {
       ObjectMapper objectMapper = new ObjectMapper();
       FileResponse file = objectMapper.convertValue(responseBody, FileResponse.class);
       if (!Objects.equals(file.getEntityType(), "expense")) {
-        throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
+        log.error(Constants.UNAUTHORISED_ACCESS);
+        throw new UnAuthorisedException(
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.AUTHORIZATION_ERROR,
+                        ErrorCode.PERMISSION_MISSING,
+                        Constants.UNAUTHORISED_ACCESS));
       }
     } catch (Exception e) {
-      throw new FeignClientException(e.getMessage());
+      log.error(Constants.FILE_SERVICE_FETCH_FAILED);
+      throw new FeignClientException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.FEIGN_CLIENT_ERROR,
+                      ErrorCode.FILE_SERVICE_COMMUNICATION_FAILED,
+                      Constants.FILE_SERVICE_FETCH_FAILED));
     }
 
     try {
@@ -55,7 +70,12 @@ public class ReceiptServiceImpl implements ReceiptService {
         }
       };
     } catch (Exception e) {
-      throw new FeignClientException(e.getMessage());
+      log.error(Constants.FILE_DOWNLOAD_FAILED);
+      throw new FeignClientException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.FEIGN_CLIENT_ERROR,
+                      ErrorCode.FILE_DOWNLOAD_FAILED,
+                      Constants.FILE_DOWNLOAD_FAILED));
     }
   }
 

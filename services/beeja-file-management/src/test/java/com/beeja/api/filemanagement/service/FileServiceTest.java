@@ -23,6 +23,19 @@ import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 
+import java.io.FileNotFoundException;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 public class FileServiceTest {
 
@@ -43,12 +56,17 @@ public class FileServiceTest {
     verify(fileService, times(1)).listofFileByEntityId(entityId, page, size);
   }
 
-  @Test
-  void testDownloadFile_Success() throws Exception {
-    String fileId = "file123";
-    FileDownloadResult mockResult =
-        new FileDownloadResult(
-            new ByteArrayResource(new byte[0]), "user123", "entity123", "org123");
+    @Test
+    void testDownloadFile_Success() throws Exception {
+        String fileId = "file123";
+        FileDownloadResult mockResult = new FileDownloadResult(
+                new ByteArrayResource(new byte[0]),
+                "user123",
+                "entity123",
+                "org123",
+                "filename.pdf"
+        );
+
 
     when(fileService.downloadFile(fileId)).thenReturn(mockResult);
 
@@ -151,22 +169,36 @@ public class FileServiceTest {
 
       File result = fileService.getFileById(fileId);
 
-      assertNotNull(result);
-      assertEquals(mockFile, result);
-      verify(fileService, times(1)).getFileById(fileId);
+            assertNotNull(result);
+            assertEquals(mockFile, result);
+            verify(fileService, times(1)).getFileById(fileId);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
+    @Test
+    void testGetFileById_FileNotFound() {
+        String fileId = "file123";
+        try {
+            when(fileService.getFileById(fileId)).thenReturn(null);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
-  @Test
-  void testGetFileById_FileNotFound() {
-    String fileId = "file123";
-    when(fileService.getFileById(fileId)).thenReturn(null);
+        File result = null;
+        try {
+            result = fileService.getFileById(fileId);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
-    File result = fileService.getFileById(fileId);
-
-    assertNull(result);
-    verify(fileService, times(1)).getFileById(fileId);
-  }
+        assertNull(result);
+        try {
+            verify(fileService, times(1)).getFileById(fileId);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
   @Test
   void testUploadOrUpdateFile_Success() throws Exception {

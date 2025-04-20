@@ -103,7 +103,7 @@ const MyProfileQuickDetailsComponent = ({
         (await updateEmployeeStatusByEmployeeId(employee.account.employeeId));
       fetchEmployeeAgain();
       handleIsActiveModalOpen();
-    } catch (error) {
+    } catch {
       setIsLoadingResponse(false);
     } finally {
       setIsLoadingResponse(false);
@@ -113,10 +113,7 @@ const MyProfileQuickDetailsComponent = ({
     setIsLoadingResponse(true);
     try {
       employee &&
-        (await updateEmployeeRole(
-          employee.account.employeeId,
-          roles
-        ));
+        (await updateEmployeeRole(employee.account.employeeId, roles));
 
       setAddRoleButtonText('Add Role');
       setDeleteRoleButtonText('Delete Role');
@@ -682,12 +679,12 @@ const MyProfileQuickDetailsComponent = ({
                     : '-'}
                 </span>
               </div>
-              <div title="Feature Not Available">
+              {/*<div title="Feature Not Available">
                 {user &&
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES)
                   ? '>'
                   : null}
-              </div>
+              </div> */}
             </QuickInfoDepartmentContainer>
 
             {employee &&

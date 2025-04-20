@@ -111,7 +111,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     boolean isEmploymentTypeValid =
         orgDefaults.getValues().stream()
-            .anyMatch(value -> value.getValue().equalsIgnoreCase(user.getEmploymentType()));
+            .anyMatch(value -> value.getValue()!=null && value.getValue().equalsIgnoreCase(user.getEmploymentType()));
 
     if (!isEmploymentTypeValid) {
       throw new BadRequestException(
@@ -166,6 +166,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     try {
       createdUser = userRepository.save(user);
     } catch (Exception e) {
+      log.error(e.getMessage());
       throw new Exception(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.API_ERROR, ErrorCode.RESOURCE_CREATING_ERROR, Constants.USER_CREATE_ERROR));
