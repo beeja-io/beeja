@@ -34,6 +34,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,7 +48,7 @@ import java.util.zip.ZipInputStream;
 
 import static com.beeja.api.financemanagementservice.Utils.Constants.GET_ALL_LOANS;
 import static com.beeja.api.financemanagementservice.Utils.Constants.PDF;
-import static com.beeja.api.financemanagementservice.Utils.Constants.zipFile;
+import static com.beeja.api.financemanagementservice.Utils.Constants.ZIPFILE;
 
 /**
  * Implementation of the LoanService interface providing operations for managing loan requests and
