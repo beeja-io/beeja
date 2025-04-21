@@ -44,7 +44,6 @@ const UserRoleListAction: React.FC<UserRoleListActionProps> = ({
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDocumentClick = (e: any) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
       setIsOpen(false);

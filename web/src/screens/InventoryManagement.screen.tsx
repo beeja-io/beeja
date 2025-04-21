@@ -146,7 +146,7 @@ const InventoryManagement = () => {
     itemsPerPage,
     deviceFilter,
     availabilityFilter,
-    providerFilter
+    providerFilter,
   ]);
 
   useEffect(() => {
@@ -155,13 +155,12 @@ const InventoryManagement = () => {
   const updateInventoryList = () => {
     fetchData();
   };
-
+  
   const {deviceTypes, updateDeviceTypes , inventoryProviders, updateInventoryProviders} = OrganizationDefaultValuesDetails();
 
   const fetchOrganizationValues = async () => {
 
     const deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
-
     const inventoryProvidersFetched = await getOrganizationValuesByKey('inventoryProviders');
     if (!deviceTypesFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS'));
@@ -186,7 +185,7 @@ const InventoryManagement = () => {
     const filters = [
       { key: 'device', value: deviceFilter },
       { key: 'availability', value: availabilityFilter },
-      { key: 'provider', value: providerFilter }
+      { key: 'provider', value: providerFilter },
     ];
 
     return (

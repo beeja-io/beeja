@@ -52,7 +52,7 @@ const ExpenseManagement = () => {
 
   const fetchOrganizationValues = async () => {
     setIsLoading(true);
-
+    try {
     const expenseCategories = await getOrganizationValuesByKey('expenseCategories');
     const expenseTypes = await getOrganizationValuesByKey('expenseTypes');
     const expenseDepartments = await getOrganizationValuesByKey('departments');
@@ -73,7 +73,11 @@ const ExpenseManagement = () => {
       toast.error('Please add expense types in organization values (Settings) to add expenses');
     }
     if (expensePaymentModes.status === 204) {
-      toast.error('Please add expense payment modes in organization (Settings) values to add expenses');
+      toast.error('Please add expense payment modes in organization (Settings) values to add expenses'  
+    } 
+      catch (error) {
+      setIsLoading(false);
+      throw new Error('Error fetching expenses:' + error);
     }
   };
   useEffect(() => {
@@ -81,55 +85,87 @@ const ExpenseManagement = () => {
   }, []);
   return (
     <>
-      {isLoading ? <SpinAnimation /> : <>
-        <ExpenseManagementMainContainer>
-          <ExpenseHeadingSection>
-            <span className="heading">
-              <span onClick={goToPreviousPage}>
-                <ArrowDownSVG />
+      {isLoading ? (
+        <SpinAnimation />
+      ) : (
+        <>
+          <ExpenseManagementMainContainer>
+            <ExpenseHeadingSection>
+              <span className="heading">
+                <span onClick={goToPreviousPage}>
+                  <ArrowDownSVG />
+                </span>
+                {t('EXPENSE_MANAGEMENT')}
               </span>
-              {t('EXPENSE_MANAGEMENT')}
-            </span>
-            {user && hasPermission(user, EXPENSE_MODULE.CREATE_EXPENSE) && (
-              <Button
-                className="submit shadow"
-                onClick={() => expenseCategories && expenseDepartments && expensePaymentModes && expenseTypes && setIsCreateModalOpen(true)}
-                title={expenseCategories && expenseDepartments && expensePaymentModes && expenseTypes ? '' : 'Please add organization values in settings to add expenses'}
-                style={{ cursor: expenseCategories && expenseDepartments && expensePaymentModes && expenseTypes ? 'pointer' : 'not-allowed', backgroundColor: expenseCategories && expenseDepartments && expensePaymentModes && expenseTypes ? '' : '#d2d2d2' }}
-                width="216px"
-              >
-                <AddNewPlusSVG />
-                {t('ADD_NEW_EXPENSE')}
-              </Button>
-            )}
-          </ExpenseHeadingSection>
-          <ExpenseList
-            key={key}
-            expenseCategories={expenseCategories}
-            expenseTypes={expenseTypes}
-            expenseDepartments={expenseDepartments}
-            expensePaymentModes={expensePaymentModes}
-          />
-        </ExpenseManagementMainContainer>
+              {user && hasPermission(user, EXPENSE_MODULE.CREATE_EXPENSE) && (
+                <Button
+                  className="submit shadow"
+                  onClick={() =>
+                    expenseCategories &&
+                    expenseDepartments &&
+                    expensePaymentModes &&
+                    expenseTypes &&
+                    setIsCreateModalOpen(true)
+                  }
+                  title={
+                    expenseCategories &&
+                    expenseDepartments &&
+                    expensePaymentModes &&
+                    expenseTypes
+                      ? ''
+                      : 'Please add organization values in settings to add expenses'
+                  }
+                  style={{
+                    cursor:
+                      expenseCategories &&
+                      expenseDepartments &&
+                      expensePaymentModes &&
+                      expenseTypes
+                        ? 'pointer'
+                        : 'not-allowed',
+                    backgroundColor:
+                      expenseCategories &&
+                      expenseDepartments &&
+                      expensePaymentModes &&
+                      expenseTypes
+                        ? ''
+                        : '#d2d2d2',
+                  }}
+                  width="216px"
+                >
+                  <AddNewPlusSVG />
+                  {t('ADD_NEW_EXPENSE')}
+                </Button>
+              )}
+            </ExpenseHeadingSection>
+            <ExpenseList
+              key={key}
+              expenseCategories={expenseCategories}
+              expenseTypes={expenseTypes}
+              expenseDepartments={expenseDepartments}
+              expensePaymentModes={expensePaymentModes}
+            />
+          </ExpenseManagementMainContainer>
 
-        {isCreateModalOpen && (
-          <CenterModalMain
-            heading="ADD_NEW_EXPENSE"
-            modalClose={handleIsCreateModalOpen}
-            actualContentContainer={
-              <AddExpenseForm
-                handleClose={handleIsCreateModalOpen}
-                handleLoadExpenses={forceRerender}
-                mode="create"
-                expenseCategories={expenseCategories}
-                expenseTypes={expenseTypes}
-                expenseDepartments={expenseDepartments}
-                expensePaymentModes={expensePaymentModes}
-              />
-            }
-          />
-        )}
-      </>}
+          {isCreateModalOpen && (
+            <CenterModalMain
+              heading="ADD_NEW_EXPENSE"
+              modalClose={handleIsCreateModalOpen}
+              actualContentContainer={
+                <AddExpenseForm
+                  handleClose={handleIsCreateModalOpen}
+                  handleLoadExpenses={forceRerender}
+                  mode="create"
+                  expenseCategories={expenseCategories}
+                  expenseTypes={expenseTypes}
+                  expenseDepartments={expenseDepartments}
+                  expensePaymentModes={expensePaymentModes}
+                />
+              }
+            />
+          )}
+        </>
+      )}
     </>
   );
 };

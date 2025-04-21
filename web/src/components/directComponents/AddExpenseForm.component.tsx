@@ -109,7 +109,6 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
     try {
       setIsDocumentPreviewResponseLoading(true);
       const response = await expenseReceiptDownload(fileId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const imageUrl: any = window.URL.createObjectURL(
         new Blob([response.data])
       );
@@ -1037,7 +1036,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                       expenseToBeUpdated.description !== 'undefined'
                       ? expenseToBeUpdated.description
                       : ''
-                    : newExpense?.description ?? ''
+                    : (newExpense?.description ?? '')
               }
               disabled={modeOfModal === 'preview'}
             />

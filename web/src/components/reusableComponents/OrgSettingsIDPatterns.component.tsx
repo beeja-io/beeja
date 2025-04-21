@@ -29,7 +29,6 @@ interface OrgSettingsIDPatternsProps {
 export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
   patternType,
 }) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { t } = useTranslation();
   const [patterns, setPatterns] = useState<any[]>([]);
   const [isCreateScreenOpen, setIsCreateScreenOpen] = useState(false);
@@ -80,7 +79,7 @@ export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
               }}
             >
               <AddNewPlusSVG />
-              {t("CREATE_ID_PATTERN")}
+              {t('CREATE_ID_PATTERN')}
             </Button>
           </TabContentMainContainerHeading>
           <Hr />
@@ -88,10 +87,10 @@ export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
             <Table>
               <TableHead>
                 <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                  <th style={{ width: '250px' }}>{t("ID_LENGTH")}</th>
-                  <th style={{ width: '250px' }}>{t("ID_PREFIX")}</th>
-                  <th style={{ width: '250px' }}>{t("INTIAL_SEQUENCE")}</th>
-                  <th style={{ width: '105px' }}>{t("ACTIVE_PATTERN")}</th>
+                  <th style={{ width: '250px' }}>{t('ID_LENGTH')}</th>
+                  <th style={{ width: '250px' }}>{t('ID_PREFIX')}</th>
+                  <th style={{ width: '250px' }}>{t('INTIAL_SEQUENCE')}</th>
+                  <th style={{ width: '105px' }}>{t('ACTIVE_PATTERN')}</th>
                 </tr>
               </TableHead>
               <tbody>
