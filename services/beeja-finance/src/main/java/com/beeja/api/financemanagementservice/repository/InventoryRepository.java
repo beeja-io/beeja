@@ -23,4 +23,6 @@ public interface InventoryRepository extends MongoRepository<Inventory, String> 
   @Query(value = "{ 'deviceNumber': { $regex: ?0 } }", sort = "{ 'deviceNumber': -1 }")
   List<Inventory> findLastAddedDeviceByPrefix(String prefix);
 
+  Long countByOrganizationId(String organizationId);
+
 }
