@@ -110,7 +110,7 @@ const InventoryManagement = () => {
         queryParams.push(
           `device=${encodeURIComponent(deviceFilter.toUpperCase())}`
         );
-      if (availabilityFilter != null && availabilityFilter != '-')
+      if (availabilityFilter != null && availabilityFilter != '-' && availabilityFilter != 'availability')
         queryParams.push(
           `availability=${encodeURIComponent(availabilityFilter.toUpperCase())}`
         );
