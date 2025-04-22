@@ -39,7 +39,6 @@ class InventoryServiceImplTest {
 
   @BeforeEach
   void setUp() {
-    // Init sample DeviceDetails
     deviceDetails = new DeviceDetails();
     deviceDetails.setDevice(Device.MOBILE);
     deviceDetails.setProvider("Google");
@@ -53,7 +52,6 @@ class InventoryServiceImplTest {
 
   @Test
   void testAddDevice_Success() throws Exception {
-    // Arrange
     when(inventoryRepository.findByProductId("P001")).thenReturn(Optional.empty());
 
     Inventory savedInventory = new Inventory();
@@ -61,10 +59,8 @@ class InventoryServiceImplTest {
 
     when(inventoryRepository.save(any(Inventory.class))).thenReturn(savedInventory);
 
-    // Act
     Inventory result = inventoryService.addDevice(deviceDetails);
 
-    // Assert
     assertNotNull(result);
     assertEquals("P001", result.getProductId());
     verify(inventoryRepository).save(any(Inventory.class));
@@ -72,10 +68,8 @@ class InventoryServiceImplTest {
 
   @Test
   void testAddDevice_DuplicateProductId() {
-    // Arrange
     when(inventoryRepository.findByProductId("P001")).thenReturn(Optional.of(new Inventory()));
 
-    // Act & Assert
     assertThrows(DuplicateDataException.class, () -> inventoryService.addDevice(deviceDetails));
     verify(inventoryRepository, never()).save(any(Inventory.class));
   }
@@ -170,7 +164,7 @@ class InventoryServiceImplTest {
     when(mongoTemplate.count(any(Query.class), eq(Inventory.class))).thenReturn(40L);
 
     long size = inventoryService.getTotalInventorySize(
-            Device.MOBILE, "Amazon", Availability.YES, "Android", "org123", "");
+        Device.MOBILE, "Amazon", Availability.YES, "Android", "org123", "");
 
     assertEquals(40L, size);
   }

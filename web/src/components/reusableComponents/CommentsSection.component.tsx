@@ -34,8 +34,12 @@ const CommentsSection = (props: CommentSectionProps) => {
         />
         <Button
           className="normal"
-          type='submit'
-          onClick={(e) => { e.preventDefault(); props.handleSubmitComment(message); setMessage(''); }}
+          type="submit"
+          onClick={(e) => {
+            e.preventDefault();
+            props.handleSubmitComment(message);
+            setMessage('');
+          }}
         >
           {t('COMMENT')}
         </Button>

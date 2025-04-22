@@ -3,6 +3,7 @@ package com.beeja.api.financemanagementservice.serviceImpl;
 import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
+import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.enums.Availability;
 import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
@@ -10,6 +11,7 @@ import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
 import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
+import com.beeja.api.financemanagementservice.modals.clients.finance.OrganizationPattern;
 import com.beeja.api.financemanagementservice.repository.InventoryRepository;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import com.beeja.api.financemanagementservice.service.InventoryService;
@@ -26,7 +28,6 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Service
@@ -37,10 +38,13 @@ public class InventoryServiceImpl implements InventoryService {
   private final MongoOperations mongoOperations;
 
   @Autowired
+  AccountClient accountClient;
+
+  @Autowired
   public InventoryServiceImpl(
-          InventoryRepository inventoryRepository,
-          MongoTemplate mongoTemplate,
-          MongoOperations mongoOperations) {
+      InventoryRepository inventoryRepository,
+      MongoTemplate mongoTemplate,
+      MongoOperations mongoOperations) {
     this.inventoryRepository = inventoryRepository;
     this.mongoTemplate = mongoTemplate;
     this.mongoOperations = mongoOperations;
@@ -72,7 +76,7 @@ public class InventoryServiceImpl implements InventoryService {
     device.setDateOfPurchase(deviceDetails.getDateOfPurchase());
     device.setComments(deviceDetails.getComments());
     device.setAccessoryType(deviceDetails.getAccessoryType());
-    device.setDeviceNumber(UUID.randomUUID().toString().substring(0, 6).toUpperCase());
+    device.setDeviceNumber(generateDeviceId());
     device.setCreatedBy(UserContext.getLoggedInUserEmail());
     try {
       return inventoryRepository.save(device);
@@ -89,11 +93,29 @@ public class InventoryServiceImpl implements InventoryService {
     }
   }
 
-  /**
-   * Retrieves all devices from the inventory.
-   *
-   * @return List of all Inventory objects representing devices.
-   */
+  private String generateDeviceId() {
+    OrganizationPattern devicePattern =
+        accountClient.getActivePatternByType("DEVICE_ID_PATTERN").getBody();
+    String prefix = devicePattern.getPrefix();
+    int dIDLength = devicePattern.getPatternLength();
+    List<Inventory> devices = inventoryRepository.findLastAddedDeviceByPrefix("^" + prefix);
+    int newSequence =
+        devices.stream()
+            .findFirst()
+            .map(device -> {
+              String lastDeviceNumber = device.getDeviceNumber();
+              String lastSequenceStr = lastDeviceNumber.substring(prefix.length());
+              if (lastSequenceStr.isEmpty() || !lastSequenceStr.matches("\\d+")) {
+                return devicePattern.getInitialSequence();
+              }
+              return Integer.parseInt(lastSequenceStr) + 1;
+            })
+            .orElse(devicePattern.getInitialSequence());
+    int numberLength = dIDLength - prefix.length();
+    String formattedSeq = String.format("%0" + numberLength + "d", newSequence);
+    return prefix + formattedSeq;
+  }
+
   @Override
   public List<Inventory> filterInventory(
       int pageNumber,
@@ -102,34 +124,32 @@ public class InventoryServiceImpl implements InventoryService {
       String provider,
       Availability availability,
       String os,
+      String RAM,
       String searchTerm) {
     try {
-
       Query query = new Query();
-
       if (device != null) {
         query.addCriteria(Criteria.where("device").is(device));
       }
-      if (provider != null && StringUtils.hasText(provider)) {
-        query.addCriteria(
-            Criteria.where("provider").is(provider)); // Case-insensitive regex for provider
+      if (StringUtils.hasText(provider)) {
+        query.addCriteria(Criteria.where("provider").is(provider));
       }
       if (availability != null) {
         query.addCriteria(Criteria.where("availability").is(availability));
       }
-      if (os != null && StringUtils.hasText(os)) {
+      if (StringUtils.hasText(os)) {
         query.addCriteria(Criteria.where("os").is(os));
       }
-      if (searchTerm != null && !searchTerm.isEmpty()) {
+      if (StringUtils.hasText(RAM)) {
+        query.addCriteria(Criteria.where("RAM").is(RAM));
+      }
+      if (StringUtils.hasText(searchTerm)) {
         query.addCriteria(
             Criteria.where("deviceNumber").regex(".*" + Pattern.quote(searchTerm) + ".*", "i"));
       }
 
-      int skip = (pageNumber - 1) * pageSize;
-      query.skip(skip).limit(pageSize);
-
+      query.skip((pageNumber - 1) * pageSize).limit(pageSize);
       return mongoTemplate.find(query, Inventory.class);
-
     } catch (Exception e) {
       throw new RuntimeException(
           BuildErrorMessage.buildErrorMessage(
@@ -145,43 +165,35 @@ public class InventoryServiceImpl implements InventoryService {
       String provider,
       Availability availability,
       String os,
+      String RAM,
       String organizationId,
       String searchTerm) {
     Query query = new Query();
-
     if (device != null) {
       query.addCriteria(Criteria.where("device").is(device));
     }
-
     if (availability != null) {
       query.addCriteria(Criteria.where("availability").is(availability));
     }
-
-    if (os != null && !os.isEmpty()) {
+    if (StringUtils.hasText(os)) {
       query.addCriteria(Criteria.where("os").is(os));
     }
-
+    if (StringUtils.hasText(RAM)) {
+      query.addCriteria(Criteria.where("RAM").is(RAM));
+    }
     if (organizationId != null) {
       query.addCriteria(Criteria.where("organizationId").is(organizationId));
     }
-
-    if (provider != null && !provider.isEmpty()) {
+    if (StringUtils.hasText(provider)) {
       query.addCriteria(Criteria.where("provider").is(provider));
     }
-    if (searchTerm != null && !searchTerm.isEmpty()) {
+    if (StringUtils.hasText(searchTerm)) {
       query.addCriteria(
           Criteria.where("deviceNumber").regex(".*" + Pattern.quote(searchTerm) + ".*", "i"));
     }
-
     return mongoTemplate.count(query, Inventory.class);
   }
 
-  /**
-   * Retrieves all devices belonging to the logged-in user's organization.
-   *
-   * @param organizationId ID of the organization to filter devices.
-   * @return List of Inventory objects belonging to the organization.
-   */
   public List<Inventory> getAllDevicesByOrganizationId(String organizationId) {
     try {
       return inventoryRepository.findByOrganizationId(
@@ -195,14 +207,6 @@ public class InventoryServiceImpl implements InventoryService {
     }
   }
 
-  /**
-   * Deletes an existing device from the inventory.
-   *
-   * @param id ID of the device to be deleted.
-   * @return ResponseEntity with the deleted Inventory object if successful, or not found if no
-   *     device with the given ID exists.
-   * @throws Exception If there is an error deleting the device details.
-   */
   @Override
   public ResponseEntity<Inventory> deleteExistingDeviceDetails(String id) throws Exception {
     try {
@@ -230,15 +234,6 @@ public class InventoryServiceImpl implements InventoryService {
     }
   }
 
-  /**
-   * Updates details of an existing device in the inventory.
-   *
-   * @param updatedDeviceDetails Updated details of the device.
-   * @param deviceId ID of the device to be updated.
-   * @return The updated Inventory object.
-   * @throws DuplicateDataException If a product with the updated ID already exists.
-   * @throws Exception If there is an error updating the device details.
-   */
   @Override
   public Inventory updateDeviceDetails(DeviceDetails updatedDeviceDetails, String deviceId)
       throws Exception {
@@ -254,6 +249,7 @@ public class InventoryServiceImpl implements InventoryService {
                   Constants.PRODUCT_ID_ALREADY_EXISTS + updatedDeviceDetails.getProductId()));
         }
       }
+
       String loggedInUserOrganizationId =
           (String) UserContext.getLoggedInUserOrganization().get("id").toString();
       Optional<Inventory> optionalDeviceDetails =
@@ -262,19 +258,17 @@ public class InventoryServiceImpl implements InventoryService {
         Inventory existingDevice = optionalDeviceDetails.get();
         String actualProductId = existingDevice.getProductId();
 
-        Class<?> updatedDeviceDetailsClass = updatedDeviceDetails.getClass();
-        Class<?> existingDeviceClass = existingDevice.getClass();
-        for (Field field : updatedDeviceDetailsClass.getDeclaredFields()) {
+        for (Field field : updatedDeviceDetails.getClass().getDeclaredFields()) {
           field.setAccessible(true);
           Object value = field.get(updatedDeviceDetails);
           if (value != null) {
-            Field existingField = existingDeviceClass.getDeclaredField(field.getName());
+            Field existingField = existingDevice.getClass().getDeclaredField(field.getName());
             existingField.setAccessible(true);
             existingField.set(existingDevice, value);
           }
         }
-        if (updatedDeviceDetails.getProductId() == null
-            || updatedDeviceDetails.getProductId().isEmpty()) {
+
+        if (!StringUtils.hasText(updatedDeviceDetails.getProductId())) {
           existingDevice.setProductId(actualProductId);
         }
 
@@ -296,7 +290,4 @@ public class InventoryServiceImpl implements InventoryService {
               Constants.ERROR_UPDATING_DEVICE_DETAILS));
     }
   }
-
-
-
 }

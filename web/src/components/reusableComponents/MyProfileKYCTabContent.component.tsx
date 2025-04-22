@@ -249,14 +249,13 @@ const KycTabContent = ({
       setIsUpdateToastMessage(true);
       setIsFormSubmitted(true);
       handleIsEditModeOn();
-    } catch (error) {
+    } catch {
       setIsUpdateErrorOccured(true);
     } finally {
       setIsUpdateResponseLoading(false);
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setBackendData = (obj: any, path: string, value: string): void => {
     const keys = path.split('.');
     keys.reduce((acc, key, index) => {
@@ -271,7 +270,6 @@ const KycTabContent = ({
 
   const mapFormDataToBackendStructure = (data: {
     [key: string]: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }): any => {
     const backendData: { [key: string]: string | undefined } = {};
 

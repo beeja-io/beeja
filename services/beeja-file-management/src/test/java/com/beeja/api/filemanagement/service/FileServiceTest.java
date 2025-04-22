@@ -53,7 +53,8 @@ public class FileServiceTest {
                 new ByteArrayResource(new byte[0]),
                 "user123",
                 "entity123",
-                "org123"
+                "org123",
+                "filename.pdf"
         );
 
 
@@ -161,12 +162,25 @@ public class FileServiceTest {
     @Test
     void testGetFileById_FileNotFound() throws FileNotFoundException {
         String fileId = "file123";
-        when(fileService.getFileById(fileId)).thenReturn(null);
+        try {
+            when(fileService.getFileById(fileId)).thenReturn(null);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
-        File result = fileService.getFileById(fileId);
+        File result = null;
+        try {
+            result = fileService.getFileById(fileId);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
 
         assertNull(result);
-        verify(fileService, times(1)).getFileById(fileId);
+        try {
+            verify(fileService, times(1)).getFileById(fileId);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test
