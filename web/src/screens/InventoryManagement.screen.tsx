@@ -234,6 +234,16 @@ const InventoryManagement = () => {
       setIsCreateModalOpen(true);
   });
   const { t } = useTranslation();
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCreateModalOpen]);
   return (
     <>
       <ExpenseManagementMainContainer>

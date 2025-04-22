@@ -764,17 +764,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const handleIsExpenseFormOpen = () => {
     setIsExpenseFormOpen(!isExpenseFormOpen);
   };
-  useEffect(() => {
-    if (isExpenseFormOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-  
-    return () => {
-      document.body.style.overflow = ''; 
-    };
-  }, [isExpenseFormOpen])
+ 
   return (
     <ExpenseAddFormMainContainer
       onSubmit={
