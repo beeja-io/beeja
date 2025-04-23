@@ -1,6 +1,7 @@
 {
     "scripts": {
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "postinstall": "cd web && npm install"
     },
     "name": "beeja",
     "version": "1.0.0",
