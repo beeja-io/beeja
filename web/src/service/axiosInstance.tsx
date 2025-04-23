@@ -217,11 +217,11 @@ export const uploadBulkPayslip = (data: FormData): Promise<AxiosResponse> => {
     },
   });
 };
-export const getAllLoans = (employeeId?: string , url?: string): Promise<AxiosResponse> => {
+export const getAllLoans = (employeeId?: string): Promise<AxiosResponse> => {
   if (employeeId) {
     return axiosInstance.get(`/finance/v1/loans/${employeeId}`);
   } else {
-    return axiosInstance.get(url ||'/finance/v1/loans');
+    return axiosInstance.get('/finance/v1/loans');
   }
 };
 export const statusChange = (
