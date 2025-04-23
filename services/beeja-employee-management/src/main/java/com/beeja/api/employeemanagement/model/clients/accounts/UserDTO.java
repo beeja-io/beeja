@@ -1,12 +1,11 @@
 package com.beeja.api.employeemanagement.model.clients.accounts;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.Map;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Map;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor

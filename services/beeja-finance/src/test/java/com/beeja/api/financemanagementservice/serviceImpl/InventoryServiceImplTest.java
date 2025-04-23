@@ -1,5 +1,15 @@
 package com.beeja.api.financemanagementservice.serviceImpl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.Availability;
 import com.beeja.api.financemanagementservice.enums.Device;
@@ -7,6 +17,12 @@ import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.repository.InventoryRepository;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,23 +39,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -92,8 +91,7 @@ public class InventoryServiceImplTest {
     DeviceDetails deviceDetails = new DeviceDetails();
     deviceDetails.setProductId("P001");
     when(inventoryRepository.findByProductId("P001")).thenReturn(Optional.of(new Inventory()));
-    assertThrows(
-            DuplicateDataException.class, () -> inventoryService.addDevice(deviceDetails));
+    assertThrows(DuplicateDataException.class, () -> inventoryService.addDevice(deviceDetails));
   }
 
   @Test
@@ -152,7 +150,7 @@ public class InventoryServiceImplTest {
     updatedDeviceDetails.setProductId("P001");
     when(inventoryRepository.findByProductId("P001")).thenReturn(Optional.of(new Inventory()));
     assertThrows(
-            DuplicateDataException.class,
+        DuplicateDataException.class,
         () -> inventoryService.updateDeviceDetails(updatedDeviceDetails, "1"));
   }
 

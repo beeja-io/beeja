@@ -1,10 +1,9 @@
 package com.beeja.api.expense.utils;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Map;
 import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 public class UserContext {
   @Getter @Setter private static String loggedInUserEmail;

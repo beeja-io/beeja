@@ -1,6 +1,9 @@
 package tac.beeja.recruitmentapi.controllers;
 
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -8,7 +11,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import tac.beeja.recruitmentapi.annotations.HasPermission;
 import tac.beeja.recruitmentapi.enums.ApplicantStatus;
 import tac.beeja.recruitmentapi.model.Applicant;
@@ -146,10 +158,10 @@ public class ApplicantController {
   }
 
   @PutMapping("/{applicantID}/status/{status}")
-    @HasPermission(Constants.UPDATE_ENTIRE_APPLICANT)
-    public ResponseEntity<Applicant> changeStatusOfApplicant(
-        @PathVariable String applicantID, @PathVariable String status) throws Exception {
-      applicantService.changeStatusOfApplicant(applicantID, status);
-      return ResponseEntity.ok().build();
-    }
+  @HasPermission(Constants.UPDATE_ENTIRE_APPLICANT)
+  public ResponseEntity<Applicant> changeStatusOfApplicant(
+      @PathVariable String applicantID, @PathVariable String status) throws Exception {
+    applicantService.changeStatusOfApplicant(applicantID, status);
+    return ResponseEntity.ok().build();
+  }
 }

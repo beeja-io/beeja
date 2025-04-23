@@ -19,6 +19,11 @@ import com.beeja.api.filemanagement.enums.ErrorCode;
 import com.beeja.api.filemanagement.utils.helpers.FileExtensionHelpers;
 import com.beeja.api.filemanagement.utils.helpers.SizeConverter;
 import com.mongodb.MongoWriteException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -41,12 +46,11 @@ import java.util.Optional;
 @Service
 public class FileServiceImpl implements FileService {
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
-    @Autowired private AllowedContentTypes allowedContentTypes;
-    @Autowired private FileStorageService fileStorage;
-    @Autowired private FileRepository fileRepository;
-    @Autowired private FileStorageService fileStorageService ;
+  @Autowired private MongoTemplate mongoTemplate;
+  @Autowired private AllowedContentTypes allowedContentTypes;
+  @Autowired private FileStorageService fileStorage;
+  @Autowired private FileRepository fileRepository;
+  @Autowired private FileStorageService fileStorageService;
 
     @Override
     public File uploadFile(FileUploadRequest file) throws Exception {
@@ -62,22 +66,24 @@ public class FileServiceImpl implements FileService {
                                 Constants.INVALID_FILE_FORMATS));
             }
 
-            String fileName = (file.getName() != null) ? file.getName() : file.getFile().getOriginalFilename();
+      String fileName =
+          (file.getName() != null) ? file.getName() : file.getFile().getOriginalFilename();
 
-            if (file.getEntityType() == null) {
-                file.setEntityType(Constants.EMPLOYEE_ENTITY_TYPE);
-            }
+      if (file.getEntityType() == null) {
+        file.setEntityType(Constants.EMPLOYEE_ENTITY_TYPE);
+      }
 
-            File fileEntity = new File();
-            fileEntity.setFileSize(SizeConverter.formatFileSize(file.getFile().getSize()));
-            fileEntity.setName(fileName);
-            fileEntity.setEntityId(file.getEntityId());
-            fileEntity.setDescription(file.getDescription());
-            fileEntity.setFileFormat(FileExtensionHelpers.getExtension(file.getFile().getOriginalFilename()));
-            fileEntity.setEntityType(file.getEntityType());
-            fileEntity.setFileType(file.getFileType() != null ? file.getFileType() : "General");
+      File fileEntity = new File();
+      fileEntity.setFileSize(SizeConverter.formatFileSize(file.getFile().getSize()));
+      fileEntity.setName(fileName);
+      fileEntity.setEntityId(file.getEntityId());
+      fileEntity.setDescription(file.getDescription());
+      fileEntity.setFileFormat(
+          FileExtensionHelpers.getExtension(file.getFile().getOriginalFilename()));
+      fileEntity.setEntityType(file.getEntityType());
+      fileEntity.setFileType(file.getFileType() != null ? file.getFileType() : "General");
 
-            savedFile = fileRepository.save(fileEntity);
+      savedFile = fileRepository.save(fileEntity);
 
             try{
                 fileStorage.uploadFile(file.getFile(), savedFile);
@@ -195,19 +201,19 @@ public class FileServiceImpl implements FileService {
         }
     }
 
-    @Override
-    public FileResponse listofFileByEntityId(String entityId, int page, int size) throws Exception {
-        try {
-            MatchOperation matchStage =
-                    Aggregation.match(
-                            Criteria.where("entityId")
-                                    .is(entityId)
-                                    .and("organizationId")
-                                    .is(UserContext.getLoggedInUserOrganization().get("id").toString()));
-            SkipOperation skipStage =
-                    Aggregation.skip((long) (page - 1) * size); // Skip documents for pagination
-            LimitOperation limitStage = Aggregation.limit(size); // Limit to the specified size
-            Aggregation aggregation = Aggregation.newAggregation(matchStage, skipStage, limitStage);
+  @Override
+  public FileResponse listofFileByEntityId(String entityId, int page, int size) throws Exception {
+    try {
+      MatchOperation matchStage =
+          Aggregation.match(
+              Criteria.where("entityId")
+                  .is(entityId)
+                  .and("organizationId")
+                  .is(UserContext.getLoggedInUserOrganization().get("id").toString()));
+      SkipOperation skipStage =
+          Aggregation.skip((long) (page - 1) * size); // Skip documents for pagination
+      LimitOperation limitStage = Aggregation.limit(size); // Limit to the specified size
+      Aggregation aggregation = Aggregation.newAggregation(matchStage, skipStage, limitStage);
 
             Query query = new Query();
             query.addCriteria(Criteria.where("entityId").is(entityId));

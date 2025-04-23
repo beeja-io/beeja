@@ -1,9 +1,17 @@
 package com.beeja.api.employeemanagement.serviceImpl;
 
-import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
-import com.beeja.api.employeemanagement.response.EmployeeValues;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static com.beeja.api.employeemanagement.constants.PermissionConstants.CREATE_EMPLOYEE;
+import static com.beeja.api.employeemanagement.constants.PermissionConstants.READ_COMPLETE_EMPLOYEE_DETAILS;
+import static com.beeja.api.employeemanagement.constants.PermissionConstants.UPDATE_ALL_EMPLOYEES;
+import static com.beeja.api.employeemanagement.utils.Constants.EMAIL_ALREADY_REGISTERED;
+import static com.beeja.api.employeemanagement.utils.Constants.EMPLOYEE_NOT_FOUND;
+import static com.beeja.api.employeemanagement.utils.Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE;
+import static com.beeja.api.employeemanagement.utils.Constants.INVALID_PROFILE_PIC_FORMATS;
+import static com.beeja.api.employeemanagement.utils.Constants.SUCCESSFULLY_UPDATED_PROFILE_PHOTO;
+import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
+import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_TO_UPDATE_PROFILE_PIC;
+import static com.google.common.io.Files.getFileExtension;
+
 import com.beeja.api.employeemanagement.client.AccountClient;
 import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.enums.ErrorCode;
@@ -27,25 +35,17 @@ import com.beeja.api.employeemanagement.requests.EmployeeOrgRequest;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.FileUploadRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
+import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
+import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.beeja.api.employeemanagement.response.GetLimitedEmployee;
 import com.beeja.api.employeemanagement.service.EmployeeService;
 import com.beeja.api.employeemanagement.service.FileService;
 import com.beeja.api.employeemanagement.utils.BuildErrorMessage;
 import com.beeja.api.employeemanagement.utils.Constants;
 import com.beeja.api.employeemanagement.utils.UserContext;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,18 +57,17 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.google.common.io.Files.getFileExtension;
-import static com.beeja.api.employeemanagement.constants.PermissionConstants.CREATE_EMPLOYEE;
-import static com.beeja.api.employeemanagement.constants.PermissionConstants.READ_COMPLETE_EMPLOYEE_DETAILS;
-import static com.beeja.api.employeemanagement.constants.PermissionConstants.UPDATE_ALL_EMPLOYEES;
-import static com.beeja.api.employeemanagement.utils.Constants.EMAIL_ALREADY_REGISTERED;
-import static com.beeja.api.employeemanagement.utils.Constants.EMPLOYEE_NOT_FOUND;
-import static com.beeja.api.employeemanagement.utils.Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE;
-import static com.beeja.api.employeemanagement.utils.Constants.INVALID_PROFILE_PIC_FORMATS;
-import static com.beeja.api.employeemanagement.utils.Constants.SUCCESSFULLY_UPDATED_PROFILE_PHOTO;
-import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
-import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_TO_UPDATE_PROFILE_PIC;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
@@ -98,7 +97,7 @@ public class EmployeeServiceImpl implements EmployeeService {
       emp.setOrganizationId((String) organizationsMap.get("id"));
     }
 
-    if(employee.get("department") != null) {
+    if (employee.get("department") != null) {
       JobDetails jobDetails = new JobDetails();
       jobDetails.setDepartment(employee.get("department").toString());
       emp.setJobDetails(jobDetails);
@@ -488,11 +487,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setPfDetails(existingPfDetails);
       }
 
-      if (updatedPfDetails.getPFNumber() != null) {
-        existingPfDetails.setPFNumber(updatedPfDetails.getPFNumber());
+      if (updatedPfDetails.getPfNumber() != null) {
+        existingPfDetails.setPfNumber(updatedPfDetails.getPfNumber());
       }
-      if (updatedPfDetails.getUAN() != null) {
-        existingPfDetails.setUAN(updatedPfDetails.getUAN());
+      if (updatedPfDetails.getUan() != null) {
+        existingPfDetails.setUan(updatedPfDetails.getUan());
       }
       if (updatedPfDetails.getJoiningData() != null) {
         existingPfDetails.setJoiningData(updatedPfDetails.getJoiningData());
@@ -764,10 +763,21 @@ public class EmployeeServiceImpl implements EmployeeService {
   @Override
   public EmployeeValues getEmployeeValues() throws Exception {
     EmployeeValues employeeValues = new EmployeeValues();
-    List<EmployeeDefaultValues> employeeDefaultValues = employeeRepository.findDistinctTypeByOrganizationId(UserContext.getLoggedInUserOrganization().getId());
-    Set<String> departments = employeeDefaultValues.stream().map(EmployeeDefaultValues::getDepartment).collect(Collectors.toSet());
-    Set<String> designations = employeeDefaultValues.stream().map(EmployeeDefaultValues::getDesignation).collect(Collectors.toSet());
-    Set<String> employmentTypes = employeeDefaultValues.stream().map(EmployeeDefaultValues::getEmploymentType).collect(Collectors.toSet());
+    List<EmployeeDefaultValues> employeeDefaultValues =
+        employeeRepository.findDistinctTypeByOrganizationId(
+            UserContext.getLoggedInUserOrganization().getId());
+    Set<String> departments =
+        employeeDefaultValues.stream()
+            .map(EmployeeDefaultValues::getDepartment)
+            .collect(Collectors.toSet());
+    Set<String> designations =
+        employeeDefaultValues.stream()
+            .map(EmployeeDefaultValues::getDesignation)
+            .collect(Collectors.toSet());
+    Set<String> employmentTypes =
+        employeeDefaultValues.stream()
+            .map(EmployeeDefaultValues::getEmploymentType)
+            .collect(Collectors.toSet());
 
     employeeValues.setDepartments(departments);
     employeeValues.setDesignations(designations);

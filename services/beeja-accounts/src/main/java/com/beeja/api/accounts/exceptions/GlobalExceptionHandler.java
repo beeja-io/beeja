@@ -1,10 +1,15 @@
 package com.beeja.api.accounts.exceptions;
 
+import static com.beeja.api.accounts.utils.Constants.BEEJA;
+
 import com.beeja.api.accounts.enums.ErrorCode;
 import com.beeja.api.accounts.enums.ErrorType;
 import com.beeja.api.accounts.response.ErrorResponse;
 import com.beeja.api.accounts.utils.Constants;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -12,12 +17,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
-
-import static com.beeja.api.accounts.utils.Constants.BEEJA;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

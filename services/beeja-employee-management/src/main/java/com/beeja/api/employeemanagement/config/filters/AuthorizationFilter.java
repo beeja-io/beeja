@@ -1,24 +1,17 @@
 package com.beeja.api.employeemanagement.config.filters;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.beeja.api.employeemanagement.client.AccountClient;
 import com.beeja.api.employeemanagement.model.clients.accounts.OrganizationDTO;
 import com.beeja.api.employeemanagement.model.clients.accounts.RoleDTO;
 import com.beeja.api.employeemanagement.model.clients.accounts.UserDTO;
 import com.beeja.api.employeemanagement.utils.JwtUtils;
 import com.beeja.api.employeemanagement.utils.UserContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -26,6 +19,12 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
 @Slf4j
