@@ -90,7 +90,6 @@ function App() {
         return (
           <ProfileImageProvider>
             {' '}
-            {/* Wrap the main content with ProfileImageProvider */}
             <CompleteNavBar />
           </ProfileImageProvider>
         );
