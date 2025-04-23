@@ -25,6 +25,14 @@ import { LOAN_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
 type LoanListViewProps = {
   handleIsApplyLoanScreen: () => void;
+  currentPage: number;
+  totalApplicants: number;
+  pageSize: number;
+  setCurrentPage: (page: number) => void;
+  setPageSize: (size: number) => void;
+  setTotalApplicants: (total: number) => void;
+  loanList: any[];
+  loading: boolean;
 };
 const LoanListView = (props: LoanListViewProps) => {
   const { user } = useUser();
