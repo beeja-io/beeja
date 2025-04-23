@@ -66,8 +66,11 @@ const InventoryManagement = () => {
   const handleAvailabilityChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    // const value = event.target.value;
-    setAvailabilityFilter(event.target.value);
+    if (event.target.value === 'availability') {
+      setAvailabilityFilter('');
+    } else {
+      setAvailabilityFilter(event.target.value);
+    }
   };
 
   const handleProviderChange = (
@@ -107,7 +110,7 @@ const InventoryManagement = () => {
         queryParams.push(
           `device=${encodeURIComponent(deviceFilter.toUpperCase())}`
         );
-      if (availabilityFilter != null && availabilityFilter != '-')
+      if (availabilityFilter != null && availabilityFilter != '-' && availabilityFilter != 'availability')
         queryParams.push(
           `availability=${encodeURIComponent(availabilityFilter.toUpperCase())}`
         );
