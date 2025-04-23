@@ -66,8 +66,11 @@ const InventoryManagement = () => {
   const handleAvailabilityChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    // const value = event.target.value;
-    setAvailabilityFilter(event.target.value);
+    if (event.target.value === 'availability') {
+      setAvailabilityFilter('');
+    } else {
+      setAvailabilityFilter(event.target.value);
+    }
   };
 
   const handleProviderChange = (

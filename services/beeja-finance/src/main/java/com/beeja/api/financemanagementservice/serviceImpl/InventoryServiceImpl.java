@@ -17,6 +17,7 @@ import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import com.beeja.api.financemanagementservice.service.InventoryService;
 import com.mongodb.DuplicateKeyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -78,6 +79,8 @@ public class InventoryServiceImpl implements InventoryService {
     device.setAccessoryType(deviceDetails.getAccessoryType());
     device.setDeviceNumber(generateDeviceId());
     device.setCreatedBy(UserContext.getLoggedInUserEmail());
+    device.setOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+    device.setCreatedAt(new java.util.Date());
     try {
       return inventoryRepository.save(device);
     } catch (DuplicateKeyException e) {
@@ -113,7 +116,7 @@ public class InventoryServiceImpl implements InventoryService {
             .orElse(devicePattern.getInitialSequence());
     int numberLength = dIDLength - prefix.length();
     String formattedSeq = String.format("%0" + numberLength + "d", newSequence);
-    return prefix + formattedSeq;
+    return prefix.toUpperCase() + formattedSeq;
   }
 
   @Override
@@ -148,7 +151,9 @@ public class InventoryServiceImpl implements InventoryService {
             Criteria.where("deviceNumber").regex(".*" + Pattern.quote(searchTerm) + ".*", "i"));
       }
 
-      query.skip((pageNumber - 1) * pageSize).limit(pageSize);
+      int skip = (pageNumber - 1) * pageSize;
+      query.skip(skip).limit(pageSize);
+      query.with(Sort.by(Sort.Direction.DESC, "created_at"));
       return mongoTemplate.find(query, Inventory.class);
     } catch (Exception e) {
       throw new RuntimeException(
