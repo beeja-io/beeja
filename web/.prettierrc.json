@@ -1,0 +1,8 @@
+{
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true,
+    "ignore": ["**/node_modules/**", "**/build/**"]
+  }
+  
