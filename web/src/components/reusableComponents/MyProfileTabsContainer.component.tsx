@@ -50,11 +50,11 @@ const MyProfileTabsContainerComponent = ({
 
   const personalDetails = [
     {
-      label: 'Full Name',
+      label: t('FULL_NAME'),
       value: employee.account.firstName + ' ' + employee.account.lastName,
     },
     {
-      label: 'Date of Birth',
+      label: t('DATE_OF_BIRTH'),
       value:
         employee.employee.personalInformation &&
         employee.employee.personalInformation.dateOfBirth
@@ -62,23 +62,25 @@ const MyProfileTabsContainerComponent = ({
           : '-',
     },
     {
-      label: 'Nationality',
+      label: t('NATIONALITY'),
       value:
         employee.employee.personalInformation &&
         employee.employee.personalInformation.nationality
           ? employee.employee.personalInformation.nationality
           : '-',
     },
-    { label: 'Email Address', value: employee.account.email },
+    { label: t('EMAIL_ADDRESS'),
+       value: employee.account.email 
+    },
     {
-      label: 'Alt Email Address',
+      label: t('ALT_EMAIL_ADDRESS'),
       value:
         employee.employee.contact && employee.employee.contact.alternativeEmail
           ? employee.employee.contact.alternativeEmail
           : '-',
     },
     {
-      label: 'Gender',
+      label: t('GENDER'),
       value:
         employee.employee.personalInformation &&
         employee.employee.personalInformation.gender
@@ -86,7 +88,7 @@ const MyProfileTabsContainerComponent = ({
           : '-',
     },
     {
-      label: 'Marital Status',
+      label: t('MARITAL_STATUS'),
       value:
         employee.employee.personalInformation &&
         employee.employee.personalInformation.maritalStatus
@@ -94,16 +96,16 @@ const MyProfileTabsContainerComponent = ({
           : '-',
     },
     // FIXME - Update personal Tax ID
-    { label: 'Personal Tax ID', value: '-' },
+    { label: t('PERSONAL_TAX_ID'), value: '-' },
     {
-      label: 'Phone Number',
+      label: t('PHONE_NUMBER'),
       value:
         employee.employee.contact && employee.employee.contact.phone
           ? employee.employee.contact.phone
           : '-',
     },
     {
-      label: 'Alt Phone Number',
+      label: t('ALT_PHONE_NUMBER'),
       value:
         employee.employee.contact && employee.employee.contact.alternativePhone
           ? employee.employee.contact.alternativePhone
@@ -113,35 +115,35 @@ const MyProfileTabsContainerComponent = ({
 
   const addressDetails = [
     {
-      label: 'Primary Address',
+      label: t('PRIMARY_ADDRESS'),
       value:
         employee.employee.address && employee.employee.address.landMark
           ? employee.employee.address.landMark
           : '-',
     },
     {
-      label: 'City',
+      label: t('CITY'),
       value:
         employee.employee.address && employee.employee.address.city
           ? employee.employee.address.city
           : '-',
     },
     {
-      label: 'State',
+      label: t('STATE'),
       value:
         employee.employee.address && employee.employee.address.state
           ? employee.employee.address.state
           : '-',
     },
     {
-      label: 'Country',
+      label: t('COUNTRY'),
       value:
         employee.employee.address && employee.employee.address.country
           ? employee.employee.address.country
           : '-',
     },
     {
-      label: 'Postal Code',
+      label: t('POSTAL_CODE'),
       value:
         employee.employee.address && employee.employee.address.pinCode
           ? employee.employee.address.pinCode
@@ -151,21 +153,21 @@ const MyProfileTabsContainerComponent = ({
 
   const jobDetails = [
     {
-      label: 'Employee Id',
+      label: t('EMPLOYEE_ID'),
       value:
         employee && employee.account.employeeId
           ? employee.account.employeeId
           : '-',
     },
     {
-      label: 'Designation',
+      label: t('DESIGNATION'),
       value:
         employee && employee.employee.jobDetails
           ? employee.employee.jobDetails.designation
           : '-',
     },
     {
-      label: 'Department',
+      label: t('DEPARTMENT'),
       value:
         employee &&
         employee.employee.jobDetails &&
@@ -174,7 +176,7 @@ const MyProfileTabsContainerComponent = ({
           : '-',
     },
     {
-      label: 'Employment Type',
+      label: t('EMPLOYMENT_TYPE'),
       value:
         employee &&
         employee.employee.jobDetails &&
@@ -183,7 +185,7 @@ const MyProfileTabsContainerComponent = ({
           : '-',
     },
     {
-      label: 'Joining Date',
+      label: t('JOINING_DATE'),
       value:
         employee &&
         employee.employee.jobDetails &&
@@ -195,7 +197,7 @@ const MyProfileTabsContainerComponent = ({
 
   const nomineeDetails = [
     {
-      label: 'Name',
+      label: t('NAME'),
       value:
         employee &&
         employee.employee &&
@@ -206,7 +208,7 @@ const MyProfileTabsContainerComponent = ({
           : '-',
     },
     {
-      label: 'Email',
+      label: t('EMAIL'),
       value:
         employee &&
         employee.employee &&
@@ -217,7 +219,7 @@ const MyProfileTabsContainerComponent = ({
           : '-',
     },
     {
-      label: 'Phone',
+      label: t('PHONE'),
       value:
         employee &&
         employee.employee &&
@@ -228,7 +230,7 @@ const MyProfileTabsContainerComponent = ({
           : '-',
     },
     {
-      label: 'Relation Type',
+      label: t('RELATION_TYPE'),
       value:
         employee &&
         employee.employee &&
@@ -242,34 +244,34 @@ const MyProfileTabsContainerComponent = ({
 
   const kycDetails = [
     {
-      label: 'Aadhaar Number',
+      label: t('AADHAAR_NUMBER'),
       value: employee?.employee?.kycDetails?.aadhaarNumber ?? '-',
     },
     {
-      label: 'PAN Number',
+      label: t('PAN_NUMBER'),
       value: employee?.employee?.kycDetails?.panNumber ?? '-',
     },
     {
-      label: 'Passport Number',
+      label: t('PASSPORT_NUMBER'),
       value: employee?.employee?.kycDetails?.passportNumber ?? '-',
     },
   ];
 
   const bankDetails = [
     {
-      label: 'Account Number',
+      label: t('ACCOUNT_NUMBER'),
       value: employee?.employee?.bankDetails?.accountNo ?? '-',
     },
     {
-      label: 'IFSC Code',
+      label: t('IFSC_CODE'),
       value: employee?.employee?.bankDetails?.ifscCode ?? '-',
     },
     {
-      label: 'Bank Name',
+      label: t('BANK_NAME'),
       value: employee?.employee?.bankDetails?.bankName ?? '-',
     },
     {
-      label: 'Branch Name',
+      label: t('BRANCH_NAME'),
       value: employee?.employee?.bankDetails?.branchName ?? '-',
     },
   ];
@@ -484,7 +486,7 @@ const MyProfileTabsContainerComponent = ({
         {selectedTab === 'general' && (
           <div>
             <GeneralDetailsTab
-              heading="Personal Info"
+              heading={t('PERSONAL_INFO')}
               details={personalDetails}
               isEditModeOn={isPersonalDetailsEditModeOn}
               handleIsEditModeOn={handleIsPersonalDetailsEditModeOn}
@@ -492,7 +494,7 @@ const MyProfileTabsContainerComponent = ({
               fetchEmployeeAgain={fetchEmployeeAgain}
             />
             <GeneralDetailsTab
-              heading="Address"
+              heading={t('ADDRESS')}
               details={addressDetails}
               isEditModeOn={isAddressDetailsEditModeOn}
               handleIsEditModeOn={handleIsAddressDetailsEditModeOn}
@@ -507,7 +509,7 @@ const MyProfileTabsContainerComponent = ({
                 // FIXME - Update after discussion with Prasad/Jay
                 user.employeeId === employee.account.employeeId) && (
                 <GeneralDetailsTab
-                  heading="Emergency Contact"
+                  heading={t('EMERGENCY_CONTACT')}
                   details={nomineeDetails}
                   isEditModeOn={isNomineeDetailsEditModeOn}
                   handleIsEditModeOn={handleIsNomineeDetailsEditModeOn}
@@ -519,7 +521,7 @@ const MyProfileTabsContainerComponent = ({
         )}
         {selectedTab === 'job' && (
           <GeneralDetailsTab
-            heading="Employment Info"
+            heading={t('EMPLOYMENT_INFO')}
             details={jobDetails}
             employee={employee}
             fetchEmployeeAgain={fetchEmployeeAgain}
@@ -529,7 +531,7 @@ const MyProfileTabsContainerComponent = ({
         )}
         {selectedTab === 'deductions' && (
           <DeductionsTab
-            heading="Health Insurance"
+            heading={t('HEALTH_INSURANCE')}
             handleIsEditModeOn={handleIsHealthInsuranceDetailsEditModeOn}
             isEditModeOn={isHealthInsuranceDetailsEditModeOn}
             employee={employee}
@@ -543,7 +545,7 @@ const MyProfileTabsContainerComponent = ({
         {selectedTab === 'kyc' && (
           <div>
             <KycTabContent
-              heading="KYC"
+              heading={t('KYC')}
               details={kycDetails}
               isEditModeOn={isKycDetailsEditModeOn}
               employee={employee}
@@ -551,7 +553,7 @@ const MyProfileTabsContainerComponent = ({
               handleIsEditModeOn={handleIsKycDetailsEditModeOn}
             />
             <KycTabContent
-              heading="Bank Details"
+              heading={t('BANK_DETAILS')}
               details={bankDetails}
               isEditModeOn={isBankDetailsEditModeOn}
               employee={employee}
