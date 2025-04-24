@@ -1,10 +1,9 @@
 package com.beeja.api.financemanagementservice.repository;
 
 import com.beeja.api.financemanagementservice.modals.HealthInsurance;
+import java.util.Optional;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-
-import java.util.Optional;
 
 @Repository
 public interface HealthInsuranceRepository extends MongoRepository<HealthInsurance, String> {

@@ -3,15 +3,14 @@ package com.beeja.api.accounts.repository;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.model.User;
+import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 @Repository
 public interface UserRepository extends MongoRepository<User, String> {
-  List<User> findByEmployeeIdInAndOrganizations_Id(List<String> employeeIds, String organizationId);
+  List<User> findByEmployeeIdInAndOrganizationsId(List<String> employeeIds, String organizationId);
 
   User findByEmail(String email);
 

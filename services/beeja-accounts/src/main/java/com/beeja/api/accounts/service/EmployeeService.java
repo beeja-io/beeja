@@ -8,7 +8,6 @@ import com.beeja.api.accounts.requests.UpdateUserRequest;
 import com.beeja.api.accounts.requests.UpdateUserRoleRequest;
 import com.beeja.api.accounts.response.CreatedUserResponse;
 import com.beeja.api.accounts.response.EmployeeCount;
-
 import java.util.List;
 
 public interface EmployeeService {

@@ -11,11 +11,10 @@ import com.beeja.api.accounts.service.OrganizationPatternService;
 import com.beeja.api.accounts.utils.BuildErrorMessage;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -132,10 +131,10 @@ public class OrganizationPatternServiceImpl implements OrganizationPatternServic
 
   @Override
   public OrganizationPattern getActivePatternByPatternType(String patternType) throws Exception {
-    try{
+    try {
       return organizationPatternsRepository.findByOrganizationIdAndPatternTypeAndActive(
-              UserContext.getLoggedInUserOrganization().getId(), patternType, true);
-    }catch (Exception e){
+          UserContext.getLoggedInUserOrganization().getId(), patternType, true);
+    } catch (Exception e) {
       log.error("Error: " + e.getMessage());
       throw new Exception(Constants.UNABLE_TO_FETCH_DETAILS_FROM_DATABASE);
     }

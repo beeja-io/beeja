@@ -4,6 +4,7 @@ import com.beeja.api.filemanagement.enums.ErrorCode;
 import com.beeja.api.filemanagement.enums.ErrorType;
 import com.beeja.api.filemanagement.utils.Constants;
 import com.beeja.api.filemanagement.response.ErrorResponse;
+import java.nio.file.AccessDeniedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

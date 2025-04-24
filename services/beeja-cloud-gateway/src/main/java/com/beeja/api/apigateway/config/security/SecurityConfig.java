@@ -3,17 +3,15 @@ package com.beeja.api.apigateway.config.security;
 import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
 import com.beeja.api.apigateway.config.security.properties.AuthProperties;
+import com.beeja.api.apigateway.utils.Constants;
 import java.time.Duration;
 import java.util.List;
 import java.util.ServiceLoader;
-
-import com.beeja.api.apigateway.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,7 +30,6 @@ import reactor.core.publisher.Mono;
 public class SecurityConfig {
 
   @Autowired AuthProperties authProperties;
-
 
   @Autowired private ServerAuthenticationFailureHandler authenticationFailureHandler;
 
@@ -134,12 +131,12 @@ public class SecurityConfig {
   @Bean
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
     serverHttpSecurity.exceptionHandling(
-            exceptionHandlingSpec ->
-                    exceptionHandlingSpec.authenticationEntryPoint(
-                            ((exchange, ex) -> {
-                              exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                              return Mono.empty();
-                            })));
+        exceptionHandlingSpec ->
+            exceptionHandlingSpec.authenticationEntryPoint(
+                ((exchange, ex) -> {
+                  exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                  return Mono.empty();
+                })));
     ServiceLoader<AuthenticationProvider> loader = ServiceLoader.load(AuthenticationProvider.class);
 
     for (AuthenticationProvider provider : loader) {
@@ -155,15 +152,14 @@ public class SecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
-
   @Bean
   public CorsWebFilter corsWebFilter() throws Exception {
-    if(authProperties.getFrontEndUrl() == null || authProperties.getLocalFrontEndUrl() == null){
+    if (authProperties.getFrontEndUrl() == null || authProperties.getLocalFrontEndUrl() == null) {
       throw new Exception(Constants.ERROR_MISSING_FE_URLS);
     }
     CorsConfiguration corsConfig = new CorsConfiguration();
-    corsConfig.setAllowedOriginPatterns(List.of(authProperties.getFrontEndUrl(),
-            authProperties.getLocalFrontEndUrl()));
+    corsConfig.setAllowedOriginPatterns(
+        List.of(authProperties.getFrontEndUrl(), authProperties.getLocalFrontEndUrl()));
     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     corsConfig.setAllowedHeaders(List.of("*"));
     corsConfig.setAllowCredentials(true);
@@ -173,7 +169,6 @@ public class SecurityConfig {
 
     return new CorsWebFilter(source);
   }
-
 
   @Bean
   public CookieWebSessionIdResolver cookieSessionIdResolverWithoutSameSite() {

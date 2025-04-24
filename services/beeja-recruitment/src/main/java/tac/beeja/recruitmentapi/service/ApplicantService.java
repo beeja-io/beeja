@@ -1,5 +1,7 @@
 package tac.beeja.recruitmentapi.service;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.core.io.ByteArrayResource;
 import tac.beeja.recruitmentapi.enums.ApplicantStatus;
 import tac.beeja.recruitmentapi.model.Applicant;

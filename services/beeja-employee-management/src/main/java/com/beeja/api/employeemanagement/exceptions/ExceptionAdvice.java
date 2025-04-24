@@ -4,17 +4,16 @@ import com.beeja.api.employeemanagement.enums.ErrorCode;
 import com.beeja.api.employeemanagement.enums.ErrorType;
 import com.beeja.api.employeemanagement.response.ErrorResponse;
 import com.beeja.api.employeemanagement.utils.Constants;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.NoSuchElementException;
-import java.util.UUID;
 
 @ControllerAdvice
 public class ExceptionAdvice {

@@ -1,5 +1,7 @@
 package com.beeja.api.filemanagement.serviceImpl;
 
+import static com.beeja.api.filemanagement.utils.helpers.FileExtensionHelpers.FilePathGenerator.generateFilePath;
+
 import com.beeja.api.filemanagement.config.properties.DefaultStorageProperties;
 import com.beeja.api.filemanagement.model.File;
 import com.beeja.api.filemanagement.service.FileStorageService;
@@ -13,27 +15,28 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-
-import static com.beeja.api.filemanagement.utils.helpers.FileExtensionHelpers.FilePathGenerator.generateFilePath;
-
-import java.io.FileNotFoundException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
 @ConditionalOnProperty(name = "storage.provider", havingValue = "local")
 public class DefaultFileStorageService implements FileStorageService {
 
-    @Autowired
-    private DefaultStorageProperties storageDirectory;
+  @Autowired private DefaultStorageProperties storageDirectory;
 
-    public DefaultFileStorageService(){
-        log.info("DefaultFileStorageService bean created");
-    }
+  public DefaultFileStorageService() {
+    log.info("DefaultFileStorageService bean created");
+  }
 
     @Override
     public void uploadFile(MultipartFile file, File savedFile) throws IOException {
@@ -46,25 +49,30 @@ public class DefaultFileStorageService implements FileStorageService {
                             Constants.EMPTY_FILE_NOT_ALLOWED));
         }
 
-        Path storagePath = Paths.get(storageDirectory.getPath());
-        if (!Files.exists(storagePath)) {
-            Files.createDirectories(storagePath);
-        }
+    Path storagePath = Paths.get(storageDirectory.getPath());
+    if (!Files.exists(storagePath)) {
+      Files.createDirectories(storagePath);
+    }
 
-        String originalFilename = file.getOriginalFilename();
-        String fileExtension = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
+    String originalFilename = file.getOriginalFilename();
+    String fileExtension = "";
+    if (originalFilename != null && originalFilename.contains(".")) {
+      fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+    }
 
-        // Generate final file path with extension
-        String filePath = generateFilePath(savedFile) + fileExtension;
-        Path destinationPath = Paths.get(storagePath.toString(), filePath);
+    // Generate final file path with extension
+    String filePath = generateFilePath(savedFile) + fileExtension;
+    Path destinationPath = Paths.get(storagePath.toString(), filePath).normalize();
 
-        Path parentDir = destinationPath.getParent();
-        if (parentDir != null && !Files.exists(parentDir)) {
-            Files.createDirectories(parentDir);
-        }
+    // Ensure the destination path is within the storage directory
+    if (!destinationPath.startsWith(storagePath)) {
+        throw new IOException("Invalid file path: Path traversal attempt detected.");
+    }
+
+    Path parentDir = destinationPath.getParent();
+    if (parentDir != null && !Files.exists(parentDir)) {
+        Files.createDirectories(parentDir);
+    }
 
         try {
             Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
@@ -78,19 +86,17 @@ public class DefaultFileStorageService implements FileStorageService {
         }
     }
 
+  @Override
+  public byte[] downloadFile(File file) throws IOException {
+    if (file == null) {
+      throw new FileNotFoundException(Constants.NO_FILE_FOUND_WITH_GIVEN_ID);
+    }
 
+    Path storagePath = Paths.get(storageDirectory.getPath());
+    String filePath = generateFilePath(file);
+    String fullFilePath = filePath + "." + file.getFileFormat();
 
-    @Override
-    public byte[] downloadFile(File file) throws IOException {
-        if (file == null) {
-            throw new FileNotFoundException(Constants.NO_FILE_FOUND_WITH_GIVEN_ID);
-        }
-
-        Path storagePath = Paths.get(storageDirectory.getPath());
-        String filePath = generateFilePath(file);
-        String fullFilePath = filePath + "." + file.getFileFormat();
-
-        Path path = storagePath.resolve(fullFilePath);
+    Path path = storagePath.resolve(fullFilePath);
 
         if (!Files.exists(path)) {
             log.error(Constants.FILE_NOT_FOUND_AT_PATH + path);
@@ -125,11 +131,11 @@ public class DefaultFileStorageService implements FileStorageService {
                             Constants.NO_FILE_FOUND_WITH_GIVEN_ID+ file.getId()));
         }
 
-        Path storagePath = Paths.get(storageDirectory.getPath());
-        String filePath = generateFilePath(file);
-        String fullFilePath = filePath + "." + file.getFileFormat();
+    Path storagePath = Paths.get(storageDirectory.getPath());
+    String filePath = generateFilePath(file);
+    String fullFilePath = filePath + "." + file.getFileFormat();
 
-        Path path = storagePath.resolve(fullFilePath);
+    Path path = storagePath.resolve(fullFilePath);
 
         try {
             boolean deleted = Files.deleteIfExists(path);

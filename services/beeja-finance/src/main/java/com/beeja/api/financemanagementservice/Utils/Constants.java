@@ -53,14 +53,14 @@ public class Constants {
       "You have no required permissions to do this operation";
 
   // GCP PATH GENERATOR
-  public static final String expense = "expense";
+  public static final String EXPENSE = "expense";
 
-  public static final String id = "id";
+  public static final String ID_01 = "id";
   public static final String PDF = ".pdf";
   public static final String I_D = "_id";
-  public static final String PAYSLIP_ = "Payslip_";
-  public static final String zipFile = "zipFile";
-  public static final String organization = "organizations";
+  public static final String PAYSLIP = "Payslip_";
+  public static final String ZIPFILE = "zipFile";
+  public static final String ORGANIZATION = "organizations";
 
   // Bulk Payslips successful
   public static final String BULK_PAYSLIP_ADDED_SUCCESSFULLY =

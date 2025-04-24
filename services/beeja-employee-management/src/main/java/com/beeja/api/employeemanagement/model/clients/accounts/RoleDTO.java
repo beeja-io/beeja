@@ -1,10 +1,9 @@
 package com.beeja.api.employeemanagement.model.clients.accounts;
 
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Set;
 
 @Data
 @AllArgsConstructor

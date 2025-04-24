@@ -1,5 +1,14 @@
 package com.beeja.api.employeemanagement.serviceImpl;
 
+import static com.beeja.api.employeemanagement.constants.PermissionConstants.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.employeemanagement.client.AccountClient;
 import com.beeja.api.employeemanagement.model.*;
 import com.beeja.api.employeemanagement.model.clients.accounts.OrganizationDTO;
@@ -7,6 +16,14 @@ import com.beeja.api.employeemanagement.repository.EmployeeRepository;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.service.EmployeeService;
 import com.beeja.api.employeemanagement.utils.UserContext;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,29 +35,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import static com.beeja.api.employeemanagement.constants.PermissionConstants.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -228,6 +222,4 @@ public class EmployeeServiceImplTest {
 
     assertEquals(existingEmployee, result);
   }
-
-
 }

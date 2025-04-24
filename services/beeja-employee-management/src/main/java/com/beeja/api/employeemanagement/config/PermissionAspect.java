@@ -1,21 +1,20 @@
 package com.beeja.api.employeemanagement.config;
 
+import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
+
 import com.beeja.api.employeemanagement.annotations.HasPermission;
 import com.beeja.api.employeemanagement.enums.ErrorCode;
 import com.beeja.api.employeemanagement.enums.ErrorType;
 import com.beeja.api.employeemanagement.exceptions.UnAuthorisedException;
 import com.beeja.api.employeemanagement.utils.BuildErrorMessage;
 import com.beeja.api.employeemanagement.utils.UserContext;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
-import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
 
 @Aspect
 @Component

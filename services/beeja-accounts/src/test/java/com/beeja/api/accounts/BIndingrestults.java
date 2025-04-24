@@ -1,14 +1,13 @@
 package com.beeja.api.accounts;
 
+import java.beans.PropertyEditor;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-
-import java.beans.PropertyEditor;
-import java.util.List;
-import java.util.Map;
 
 public class BIndingrestults {
   BindingResult bindingResult =

@@ -1,5 +1,11 @@
 package com.beeja.api.expense.serviceImpl;
 
+import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_EXPENSE;
+import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_FILE_IN_FILE_SERVICE;
+import static com.beeja.api.expense.utils.Constants.FILE_COUNT_ERROR;
+import static com.beeja.api.expense.utils.Constants.INVALID_FILE_FORMATS;
+import static com.beeja.api.expense.utils.Constants.SERVICE_DOWN_ERROR;
+
 import com.beeja.api.expense.client.FileClient;
 import com.beeja.api.expense.config.properties.AllowedContentTypes;
 import com.beeja.api.expense.enums.ErrorCode;
@@ -7,7 +13,7 @@ import com.beeja.api.expense.enums.ErrorType;
 import com.beeja.api.expense.exceptions.ExpenseAlreadySettledException;
 import com.beeja.api.expense.exceptions.ExpenseNotFound;
 import com.beeja.api.expense.exceptions.OrganizationMismatchException;
-import com.beeja.api.expense.exceptions.handleInternalServerException;
+import com.beeja.api.expense.exceptions.HandleInternalServerException;
 import com.beeja.api.expense.modal.Expense;
 import com.beeja.api.expense.modal.File;
 import com.beeja.api.expense.repository.ExpenseRepository;
@@ -22,6 +28,16 @@ import com.beeja.api.expense.utils.Constants;
 import com.beeja.api.expense.utils.UserContext;
 import com.beeja.api.expense.utils.helpers.FileExtensionHelpers;
 import com.beeja.api.expense.utils.methods.ServiceMethods;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -430,7 +446,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     } catch (Exception e) {
       log.error(Constants.ERROR_FILTERING_EXPENSE);
-      throw new handleInternalServerException(
+      throw new HandleInternalServerException(
               BuildErrorMessage.buildErrorMessage(
                       ErrorType.INTERNAL_SERVER_ERROR,
                       ErrorCode.EXPENSE_FILTERING_FAILED,
@@ -516,7 +532,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     if (settlementStatus != null && settlementStatus.equals(true)) {
       query.addCriteria(Criteria.where("paymentSettled").ne(null));
     } else if (settlementStatus != null && settlementStatus.equals(false)) {
-        query.addCriteria(Criteria.where("paymentSettled").is(null));
+      query.addCriteria(Criteria.where("paymentSettled").is(null));
     }
 
     return mongoTemplate.count(query, Expense.class);
@@ -528,7 +544,7 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     if (expenseDefaultValues.isEmpty()) {
       log.error(Constants.ERROR_FETCH_EXPENSE_DEFAULTS + organizationId);
-      throw new handleInternalServerException(
+      throw new HandleInternalServerException(
               BuildErrorMessage.buildErrorMessage(
                       ErrorType.INTERNAL_SERVER_ERROR,
                       ErrorCode.EXPENSE_DEFAULT_FETCH_FAILED,
@@ -536,9 +552,18 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     ExpenseValues expenseValues = new ExpenseValues();
-    Set<String> categories = expenseDefaultValues.stream().map(ExpenseDefaultValues::getCategory).collect(Collectors.toSet());
-    Set<String> types = expenseDefaultValues.stream().map(ExpenseDefaultValues::getType).collect(Collectors.toSet());
-    Set<String> modeOfPayments = expenseDefaultValues.stream().map(ExpenseDefaultValues::getModeOfPayment).collect(Collectors.toSet());
+    Set<String> categories =
+        expenseDefaultValues.stream()
+            .map(ExpenseDefaultValues::getCategory)
+            .collect(Collectors.toSet());
+    Set<String> types =
+        expenseDefaultValues.stream()
+            .map(ExpenseDefaultValues::getType)
+            .collect(Collectors.toSet());
+    Set<String> modeOfPayments =
+        expenseDefaultValues.stream()
+            .map(ExpenseDefaultValues::getModeOfPayment)
+            .collect(Collectors.toSet());
 
     expenseValues.setExpenseCategories(categories);
     expenseValues.setExpenseTypes(types);
@@ -589,8 +614,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     if (settlementStatus != null && settlementStatus.equals(true)) {
       criteria.and("paymentSettled").ne(null);
-    }else if (settlementStatus != null && settlementStatus.equals(false)){
-        criteria.and("paymentSettled").is(null);
+    } else if (settlementStatus != null && settlementStatus.equals(false)) {
+      criteria.and("paymentSettled").is(null);
     }
     return criteria;
   }

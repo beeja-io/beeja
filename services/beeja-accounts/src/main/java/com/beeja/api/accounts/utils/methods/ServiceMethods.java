@@ -1,12 +1,11 @@
 package com.beeja.api.accounts.utils.methods;
 
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 
 public class ServiceMethods {
   public static String[] getNullPropertyNames(Object source) {

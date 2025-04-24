@@ -6,9 +6,8 @@ import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.Type;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
 import java.util.Date;
+import lombok.Data;
 
 @Data
 public class DeviceDetails {
@@ -27,7 +26,7 @@ public class DeviceDetails {
 
   private String specifications;
 
-  private String RAM;
+  private String ram;
 
   @NotNull private Availability availability;
 

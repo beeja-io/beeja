@@ -159,9 +159,9 @@ public class ExceptionAdvice {
                     LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
   }
-  @ExceptionHandler(handleInternalServerException.class)
+  @ExceptionHandler(HandleInternalServerException.class)
   public ResponseEntity<ErrorResponse> handlehandleInternalServerException(
-          handleInternalServerException e,WebRequest request){
+          HandleInternalServerException e,WebRequest request){
     String[] errorMessage = convertStringToArray(e.getMessage());
     ErrorResponse errorResponse =
             new ErrorResponse(

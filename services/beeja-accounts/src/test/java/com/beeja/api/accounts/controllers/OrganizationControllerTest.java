@@ -1,13 +1,20 @@
 package com.beeja.api.accounts.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.accounts.clients.EmployeeFeignClient;
-import com.beeja.api.accounts.exceptions.BadRequestException;
 import com.beeja.api.accounts.exceptions.OrganizationExceptions;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.User;
 import com.beeja.api.accounts.repository.OrganizationRepository;
 import com.beeja.api.accounts.response.OrganizationResponse;
 import com.beeja.api.accounts.service.OrganizationService;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -16,21 +23,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 class OrganizationControllerTest {
 
@@ -76,7 +68,6 @@ class OrganizationControllerTest {
           null,
           null,
           null);
-
 
   @Test
   void testGetAllEmployeesByOrganizationId_Success() throws Exception {
@@ -124,8 +115,6 @@ class OrganizationControllerTest {
         });
   }
 
-
-
   @Test
   public void testGetOrganizationById() throws Exception {
     // Arrange
@@ -145,6 +134,4 @@ class OrganizationControllerTest {
         new OrganizationResponse(),
         responseEntity.getBody()); // Check against the actual Organization object
   }
-
-
 }

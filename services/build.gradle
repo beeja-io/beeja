@@ -12,28 +12,11 @@ plugins {
 group 'com.beeja.api'
 version '1.0-SNAPSHOT'
 
-bootJar{
+bootJar {
     enabled(false)
 }
-bootBuildImage{
+bootBuildImage {
     enabled(false)
-}
-
-spotless {
-    java {
-        googleJavaFormat()
-    }
-}
-checkstyle {
-    toolVersion '8.36.1'
-    showViolations = true
-    configFile = file("config/checkstyle/checkstyle.xml")
-}
-checkstyleMain {
-    source = 'src/main/java'
-}
-checkstyleTest {
-    source = 'src/test/java'
 }
 
 ext {
@@ -43,24 +26,22 @@ repositories {
     mavenCentral()
 }
 
-
 subprojects {
 
     group = 'com.beeja.api'
     version = '1.0-SNAPSHOT'
 
-
     apply plugin: 'java'
-    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'java-library'
+    apply plugin: 'checkstyle'
     apply plugin: 'com.diffplug.spotless'
+    apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.springdoc.openapi-gradle-plugin'
     apply plugin: 'org.sonarqube'
 
     java {
-        sourceCompatibility = '17'
+        sourceCompatibility = JavaVersion.VERSION_17
     }
-
 
     repositories {
         mavenCentral()
@@ -70,9 +51,6 @@ subprojects {
         imports {
             mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
             mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-
-
-
         }
     }
 
@@ -82,19 +60,42 @@ subprojects {
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
-        implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.3'
+        implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.3'
+    }
 
+    checkstyle {
+        toolVersion = '10.12.1'
+        configFile = file("${rootDir}/config/checkstyle/checkstyle.xml")
+        showViolations = true
+    }
+
+    tasks.withType(Checkstyle).configureEach {
+        classpath = files()
+        reports {
+            xml.required = false
+            html.required = true
+            html.outputLocation = file("$buildDir/reports/checkstyle.html")
+        }
+    }
+
+    spotless {
+        java {
+            googleJavaFormat()
+            target 'src/**/*.java'
+        }
     }
 }
-
+task checkAll {
+    dependsOn subprojects.collect { it.tasks.matching { it.name == 'check' } }
+}
 
 test {
     useJUnitPlatform()
 }
 
-task installLocalGitHook(type: Copy){
-    from new File(rootProject.rootDir, '../../scripts/pre-commit')
-    into { new File(rootProject.rootDir, '.git/hooks')}
+task installLocalGitHook(type: Copy) {
+    from new File(rootProject.rootDir, '../services/scripts/pre-commit')
+    into { new File(rootProject.rootDir, '.git/hooks') }
     fileMode 0775
 }
 sonar{
@@ -105,6 +106,18 @@ sonar{
             property key, value
         }
     }
+}
+
+//Below line is used to get lineSeparator for checkStyles based on OS
+def osLineSeparator = System.getProperty("os.name").
+        toLowerCase().
+        contains("win") ? "crlf" : "lf"
+
+tasks.withType(Checkstyle) {
+    inputs.property("lineSeparator", osLineSeparator)
+    configProperties = [
+            'lineSeparator': osLineSeparator
+    ]
 }
 
 build.dependsOn installLocalGitHook

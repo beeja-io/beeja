@@ -3,7 +3,6 @@ package com.beeja.api.accounts.service;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.requests.AddRoleRequest;
-
 import java.util.List;
 
 public interface RoleService {
