@@ -956,7 +956,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 }}
                 min={
                   modeOfModal === 'edit'
-                    ? expenseToBeUpdated?.expenseDate.slice(0, 10)
+                    ? expenseToBeUpdated?.expenseDate?.slice?.(0, 10)
                     : newExpense?.expenseDate
                 }
                 max={getCurrentDate()}
@@ -1270,7 +1270,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 }}
                 min={
                   modeOfModal === 'edit'
-                    ? expenseToBeUpdated?.requestedDate.slice(0, 10)
+                    ? expenseToBeUpdated?.requestedDate?.slice?.(0, 10)
                     : newExpense?.requestedDate
                 }
                 max={getCurrentDate()}
@@ -1280,8 +1280,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                     ? formatDate(paymentDate.toString())
                     : modeOfModal === 'preview' &&
                         props.expense &&
-                        props.expense.paymentDate
-                      ? formatDate(props.expense.paymentDate.toString())
+                        props.expense.paymentSettled
+                      ? formatDate(props.expense.paymentSettled.toString())
                       : ''
                 }
                 onFocus={() => handleCalenderOpen(true, 'payment')}
