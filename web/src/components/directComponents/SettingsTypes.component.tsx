@@ -211,7 +211,7 @@ export const SettingsTypes = ({
             </tr>
           </TableHead>
           <tbody>
-            {settingTypes?.filter((settingTypes) => settingTypes.orgValues.value).map((settingTypes) => (
+            {settingTypes?.filter((settingTypes) => settingTypes.orgValues.value).sort((a, b) => a.orgValues.value.localeCompare(b.orgValues.value)).map((settingTypes) => (
               <TableBodyRow key={settingTypes.index}>
                 <td>{settingTypes.orgValues.value}</td>
                 <td>{settingTypes.orgValues.description}</td>
