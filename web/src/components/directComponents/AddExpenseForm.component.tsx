@@ -1282,7 +1282,12 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                         props.expense &&
                         props.expense.paymentSettled
                       ? formatDate(props.expense.paymentSettled.toString())
-                      : ''
+                      : modeOfModal === 'edit' &&
+                          expenseToBeUpdated?.paymentSettled
+                        ? formatDate(
+                            expenseToBeUpdated.paymentSettled.toString()
+                          )
+                        : ''
                 }
                 onFocus={() => handleCalenderOpen(true, 'payment')}
                 disabled={requestedDate == null}
