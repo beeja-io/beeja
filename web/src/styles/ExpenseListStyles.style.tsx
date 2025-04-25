@@ -154,7 +154,7 @@ export const ActionMenuContent = styled.div`
   right: 100%;
   transform: translateY(-70%);
   background-color: ${(props) => props.theme.colors.blackColors.white};
-  box-shadow: 0 8px 16px rgba(12, 175, 96, 0.2);
+  // box-shadow: 0 8px 16px rgba(12, 175, 96, 0.2);
 `;
 
 export const ActionMenuOption = styled.div`
