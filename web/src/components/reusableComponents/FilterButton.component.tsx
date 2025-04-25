@@ -1,5 +1,4 @@
 import React, { useRef, useState } from 'react';
-/* eslint-disable */
 import {
   FilterDropdown,
   DropdownContainer,

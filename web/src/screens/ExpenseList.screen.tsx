@@ -111,7 +111,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const [categoryFilter, setCategoryFilter] = useState<string>('');
   const [typeFilter, setTypeFilter] = useState<string>('');
   const [paymentModeFilter, setPaymentModeFilter] = useState<string>('');
-  const [settlementStatusFilter, setSettlementStatusFilter] = useState<boolean>();
+  const [settlementStatusFilter, setSettlementStatusFilter] =
+    useState<boolean>();
   const [sortBy, setSortBy] = useState<string>('expenseDate');
   const [filterBasedOn, setFilterBasedOn] = useState<string>('expenseDate');
   const [sortOrder, setSortOrder] = useState<string>('false');
@@ -134,7 +135,9 @@ export const ExpenseList = (props: ExpenseListProps) => {
   ) => {
     const selectedSettlementStatus = e.target.value;
     setSettlementStatusFilter(
-      selectedSettlementStatus !== '' ? selectedSettlementStatus === 'true' : undefined
+      selectedSettlementStatus !== ''
+        ? selectedSettlementStatus === 'true'
+        : undefined
     );
   };
 
@@ -156,8 +159,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
         value:
           fromDate && toDate
             ? `${formatDate(fromDate.toString())} - ${formatDate(
-              toDate.toString()
-            )}`
+                toDate.toString()
+              )}`
             : fromDate
               ? `From ${formatDate(fromDate.toString())}`
               : toDate
@@ -168,7 +171,15 @@ export const ExpenseList = (props: ExpenseListProps) => {
       { key: 'category', value: categoryFilter },
       { key: 'type', value: typeFilter },
       { key: 'paymentMode', value: paymentModeFilter },
-      { key: 'settlementStatus', value: settlementStatusFilter !== undefined ? settlementStatusFilter ? 'Settled' : 'Pending' : '' },
+      {
+        key: 'settlementStatus',
+        value:
+          settlementStatusFilter !== undefined
+            ? settlementStatusFilter
+              ? 'Settled'
+              : 'Pending'
+            : '',
+      },
     ];
     return (
       <ExpenseFilterArea>
@@ -222,8 +233,9 @@ export const ExpenseList = (props: ExpenseListProps) => {
       queryParams.push(`filterBasedOn=${filterBasedOn}`);
       queryParams.length > 4 ? setIsShowFilters(true) : setIsShowFilters(false);
 
-      if(settlementStatusFilter !== undefined) {
+      if (settlementStatusFilter !== undefined) {
         queryParams.push(`settlementStatus=${settlementStatusFilter}`);
+        setIsShowFilters(true);
       }
 
       queryParams.push(`ascending=${sortOrder}`);
@@ -263,7 +275,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
     filterBasedOn,
     sortOrder,
     departmentFilter,
-    settlementStatusFilter
+    settlementStatusFilter,
   ]);
 
   useEffect(() => {
@@ -316,7 +328,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
       setFromDate(null);
       setToDate(null);
     }
-    if(filterName === 'settlementStatus') {
+    if (filterName === 'settlementStatus') {
       setSettlementStatusFilter(undefined);
     }
   };
@@ -412,7 +424,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     setCurrentPage(1);
                   }}
                   selectedDate={toDate ? toDate : new Date()}
-                  handleCalenderChange={() => { }}
+                  handleCalenderChange={() => {}}
                 />
               </div>
             )}
@@ -488,7 +500,11 @@ export const ExpenseList = (props: ExpenseListProps) => {
           <select
             className="selectoption largeSelectOption"
             name="settlementStatus"
-            value={settlementStatusFilter !== undefined ? settlementStatusFilter.toString() : ''}
+            value={
+              settlementStatusFilter !== undefined
+                ? settlementStatusFilter.toString()
+                : ''
+            }
             onChange={(e) => {
               handleSettlementStatusChange(e);
               setCurrentPage(1);
@@ -524,10 +540,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
               ₹{' '}
               {expenses?.metadata.totalAmount !== undefined
                 ? formatToINR(
-                  expenses.metadata.totalAmount.toFixed(
-                    2
-                  ) as unknown as number
-                )
+                    expenses.metadata.totalAmount.toFixed(
+                      2
+                    ) as unknown as number
+                  )
                 : '0.00'}
             </span>
           </span>
@@ -575,14 +591,15 @@ export const ExpenseList = (props: ExpenseListProps) => {
         {fromDate == null && toDate == null && (
           <span className="noFilters noMargin">
             <InfoCircleSVG />
-            {`Showing current month expenses (sorted based on ${sortBy === 'expenseDate'
-              ? t('EXPENSE_DATE')
-              : sortBy === 'requestedDate'
-                ? t('REQUESTED_DATE')
-                : sortBy === 'paymentDate'
-                  ? t('PAYMENT_DATE')
-                  : t('CREATED_DATE')
-              })`}
+            {`Showing current month expenses (sorted based on ${
+              sortBy === 'expenseDate'
+                ? t('EXPENSE_DATE')
+                : sortBy === 'requestedDate'
+                  ? t('REQUESTED_DATE')
+                  : sortBy === 'paymentDate'
+                    ? t('PAYMENT_DATE')
+                    : t('CREATED_DATE')
+            })`}
           </span>
         )}
         <TableListContainer style={{ marginTop: 0 }}>
@@ -671,10 +688,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
                             <CalenderIcon />
                           </span>
                           {exp.paymentSettled
-                              ? formatDate(
+                            ? formatDate(
                                 exp.paymentSettled as unknown as string
                               )
-                              : '-'}
+                            : '-'}
                         </td>
                         {user?.roles.some((role) =>
                           role.permissions.some(
@@ -683,18 +700,18 @@ export const ExpenseList = (props: ExpenseListProps) => {
                               permission === EXPENSE_MODULE.DELETE_EXPENSE
                           )
                         ) && (
-                            <td>
-                              <ExpenseAction
-                                options={Actions}
-                                fetchExpenses={fetchExpenses}
-                                currentExpense={exp}
-                                expenseCategories={props.expenseCategories}
-                                expenseTypes={props.expenseTypes}
-                                expenseDepartments={props.expenseDepartments}
-                                expensePaymentModes={props.expensePaymentModes}
-                              />
-                            </td>
-                          )}
+                          <td>
+                            <ExpenseAction
+                              options={Actions}
+                              fetchExpenses={fetchExpenses}
+                              currentExpense={exp}
+                              expenseCategories={props.expenseCategories}
+                              expenseTypes={props.expenseTypes}
+                              expenseDepartments={props.expenseDepartments}
+                              expensePaymentModes={props.expensePaymentModes}
+                            />
+                          </td>
+                        )}
                       </TableBodyRow>
                     ))
                   ) : (

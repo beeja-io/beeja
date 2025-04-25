@@ -95,7 +95,7 @@ export const TableListContainer = styled.section`
   &.overFlowScroll {
     overflow: scroll;
   }
-  
+
   &.bgTable {
     background-color: white;
   }
@@ -423,6 +423,12 @@ export const FileUploadForm = styled.div`
   justify-content: space-between;
   width: 100%;
 
+  form {
+    min-height: 80vh;
+    max-height: 100svh;
+    overflow-y: scroll;
+    padding-right: 10px;
+  }
   .infoText {
     color: ${(props) => props.theme.colors.grayColors.gray7};
     font-size: 12px;
@@ -450,7 +456,7 @@ export const FileUploadField = styled.div`
     color: #a0aec0;
   }
 
-  .file-info-text{
+  .file-info-text {
     font-size: 12px;
   }
 
