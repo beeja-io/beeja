@@ -3,7 +3,10 @@ package com.beeja.api.filemanagement.serviceImpl;
 import com.beeja.api.filemanagement.config.properties.DefaultStorageProperties;
 import com.beeja.api.filemanagement.model.File;
 import com.beeja.api.filemanagement.service.FileStorageService;
+import com.beeja.api.filemanagement.utils.BuildErrorMessage;
 import com.beeja.api.filemanagement.utils.Constants;
+import com.beeja.api.filemanagement.enums.ErrorType;
+import com.beeja.api.filemanagement.enums.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -35,7 +38,12 @@ public class DefaultFileStorageService implements FileStorageService {
     @Override
     public void uploadFile(MultipartFile file, File savedFile) throws IOException {
         if (file == null || file.isEmpty()) {
-            throw new IOException(Constants.EMPTY_FILE_NOT_ALLOWED);
+            log.error(Constants.EMPTY_FILE_NOT_ALLOWED + file.getOriginalFilename());
+            throw new IOException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.INVALID_REQUEST,
+                            ErrorCode.EMPTY_FILE,
+                            Constants.EMPTY_FILE_NOT_ALLOWED));
         }
 
         Path storagePath = Paths.get(storageDirectory.getPath());
@@ -61,7 +69,12 @@ public class DefaultFileStorageService implements FileStorageService {
         try {
             Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            throw new IOException(Constants.ERROR_SAVING_FILE + e.getMessage(), e);
+            log.error(Constants.ERROR_SAVING_FILE, e.getMessage());
+            throw new IOException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.SERVICE_ERROR,
+                            ErrorCode.SERVICE_DOWN,
+                            Constants.ERROR_SAVING_FILE));
         }
     }
 
@@ -80,13 +93,23 @@ public class DefaultFileStorageService implements FileStorageService {
         Path path = storagePath.resolve(fullFilePath);
 
         if (!Files.exists(path)) {
-            throw new FileNotFoundException(Constants.FILE_NOT_FOUND_AT_PATH + path);
+            log.error(Constants.FILE_NOT_FOUND_AT_PATH + path);
+            throw new FileNotFoundException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                            ErrorCode.FILE_NOT_FOUND,
+                    Constants.FILE_NOT_FOUND_AT_PATH + path));
         }
 
         try {
             return Files.readAllBytes(path);
         } catch (IOException e) {
-            throw new IOException(Constants.ERROR_READING_FILE + e.getMessage(), e);
+            log.error(Constants.ERROR_READING_FILE + path, e.getMessage());
+            throw new IOException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.SERVICE_ERROR,
+                            ErrorCode.SERVICE_DOWN,
+                            Constants.ERROR_READING_FILE + path));
         }
     }
 
@@ -94,7 +117,12 @@ public class DefaultFileStorageService implements FileStorageService {
     @Override
     public void deleteFile(File file) throws IOException {
         if (file == null) {
-            throw new FileNotFoundException(Constants.NO_FILE_FOUND_WITH_GIVEN_ID);
+            log.error(Constants.NO_FILE_FOUND_WITH_GIVEN_ID + file.getId());
+            throw new FileNotFoundException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                            ErrorCode.FILE_NOT_FOUND,
+                            Constants.NO_FILE_FOUND_WITH_GIVEN_ID+ file.getId()));
         }
 
         Path storagePath = Paths.get(storageDirectory.getPath());
@@ -106,13 +134,22 @@ public class DefaultFileStorageService implements FileStorageService {
         try {
             boolean deleted = Files.deleteIfExists(path);
             if (!deleted) {
-                throw new FileNotFoundException(Constants.FILE_NOT_FOUND_AT_PATH + path);
+                log.error(Constants.FILE_NOT_FOUND_AT_PATH + path);
+                throw new FileNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                                ErrorCode.FILE_NOT_FOUND,
+                                Constants.FILE_NOT_FOUND_AT_PATH + path));
             }
         } catch (IOException e) {
-            throw new IOException(Constants.ERROR_DELETING_FILE + e.getMessage(), e);
+            log.error(Constants.ERROR_DELETING_FILE + path, e.getMessage());
+            throw new IOException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.SERVICE_ERROR,
+                            ErrorCode.RESOURCE_DELETING_ERROR,
+                    Constants.ERROR_DELETING_FILE + path));
         }
     }
-
 
     @Override
     public void updateFile(File file, MultipartFile newFile) throws IOException {
