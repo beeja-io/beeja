@@ -235,6 +235,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
 
       if (settlementStatusFilter !== undefined) {
         queryParams.push(`settlementStatus=${settlementStatusFilter}`);
+        setIsShowFilters(true);
       }
 
       queryParams.push(`ascending=${sortOrder}`);
