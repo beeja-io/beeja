@@ -216,6 +216,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       if (paymentDate != null) {
         formData.append(
           'paymentSettled',
+          'paymentSettled',
           formatDateYYYYMMDD(paymentDate.toString())
         );
       }
@@ -1282,7 +1283,12 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                         props.expense &&
                         props.expense.paymentSettled
                       ? formatDate(props.expense.paymentSettled.toString())
-                      : ''
+                      : modeOfModal === 'edit' &&
+                          expenseToBeUpdated?.paymentSettled
+                        ? formatDate(
+                            expenseToBeUpdated.paymentSettled.toString()
+                          )
+                        : ''
                 }
                 onFocus={() => handleCalenderOpen(true, 'payment')}
                 disabled={requestedDate == null}
