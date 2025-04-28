@@ -216,7 +216,6 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       if (paymentDate != null) {
         formData.append(
           'paymentSettled',
-          'paymentSettled',
           formatDateYYYYMMDD(paymentDate.toString())
         );
       }

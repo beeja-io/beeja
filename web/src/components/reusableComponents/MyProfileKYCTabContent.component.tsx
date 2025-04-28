@@ -349,14 +349,18 @@ const KycTabContent = ({
                       <div>
                         <InlineInput
                           type="text"
-                          value={Number(formData[label]) === 0 ? '' : formData[label] ?? ''}
+                          value={
+                            Number(formData[label]) === 0
+                              ? ''
+                              : (formData[label] ?? '')
+                          }
                           placeholder={
                             label === 'Account Number'
-                            ? 'Enter Account Number'
-                            : label === 'IFSC Code'
-                            ? 'Enter IFSC Code'
-                            : `Enter ${t(label)}`
-                        }
+                              ? 'Enter Account Number'
+                              : label === 'IFSC Code'
+                                ? 'Enter IFSC Code'
+                                : `Enter ${t(label)}`
+                          }
                           onChange={(e) => handleChange(label, e.target.value)}
                           onBlur={() => handleBlur(label)}
                           maxLength={
