@@ -580,6 +580,7 @@ export const GeneralDetailsTab = ({
                           </>
                         ) : (
                           <InlineInput
+                            disabled={label === 'Employee Id'}
                             type={
                               label === 'Date of Birth' ||
                               label === 'Joining Date'
