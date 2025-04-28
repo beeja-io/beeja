@@ -200,7 +200,7 @@ const InventoryList = ({
                 </span>
               </>
             ) : (
-              <span className="noFilters">No filters applied</span>
+              <span className="noFilters">&nbsp;No filters applied</span>
             )}
           </DisplayFilters>
         </div>
