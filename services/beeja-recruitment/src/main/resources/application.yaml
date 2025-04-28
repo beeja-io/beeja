@@ -2,9 +2,6 @@ server:
   servlet:
     context-path: /recruitments
   port: ${RECRUITMENT_SERVICE_PORT}
-  multipart:
-    max-file-size: 5MB
-    max-request-size: 5MB
 spring:
   application:
     name: recruitment-service
@@ -12,6 +9,10 @@ spring:
     mongodb:
       uri: ${RECRUITMENT_MONGO_URI}
       database: ${RECRUITMENT_MONGODB_DB_NAME}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 eureka:
   instance:
