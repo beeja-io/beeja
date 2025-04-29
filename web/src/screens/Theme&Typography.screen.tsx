@@ -44,12 +44,12 @@ import { useFeatureToggles } from '../context/FeatureToggleContext';
 import { EFeatureToggles } from '../entities/FeatureToggle';
 import { useTranslation } from 'react-i18next';
 
-interface ThemeOption {
+interface IThemeOptions {
   label: string;
   icon: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 }
 
-const themeOptions: ThemeOption[] = [
+const themeOptions: IThemeOptions[] = [
   {
     label: 'Light',
     icon: LightThemeBannerSVG,
@@ -115,14 +115,30 @@ function ThemesAndTypography() {
   );
 
   useEffect(() => {
-    user &&
-      setActiveFontName(
-        capitalizeFirstLetter(
-          user?.organizations.preferences.fontName.toUpperCase()
-        )
-      );
+    if (user?.organizations?.preferences) {
+      const { fontName, fontSize } = user.organizations.preferences;
+      if (fontName) {
+        setActiveFontName(capitalizeFirstLetter(fontName.toUpperCase()));
+        document.documentElement.style.setProperty(
+          '--font-family-primary',
+          fontName
+        );
+      }
+      if (fontSize) {
+        const fontSizePx = `${fontSize}px`;
+        const matchedOption = fontSizeOptions.find(
+          (option) => option.size === fontSizePx
+        );
+        if (matchedOption) {
+          setActiveFontStyle(matchedOption.label);
+          document.documentElement.style.setProperty(
+            '--font-size-primary',
+            matchedOption.size
+          );
+        }
+      }
+    }
   }, [user]);
-
   const fetchOrganization = async () => {
     try {
       const response = await getOrganizationById(
@@ -220,12 +236,54 @@ function ThemesAndTypography() {
   };
   const handleFontSizeChange = (fontSize: string) => {
     setActiveFontStyle(fontSize);
-    const selectedFontSize = fontSizeOptions.find((option) => option.label === fontSize)?.size;
-  
-    if (selectedFontSize) {
-      document.documentElement.style.setProperty('--font-size-primary', selectedFontSize);
-    
-  }
+    const selectedFontSize = fontSizeOptions.find(
+      (option) => option.label === fontSize
+    );
+    if (!selectedFontSize) return;
+
+    const formdata = new FormData();
+    const fontUpdated = {
+      preferences: {
+        fontSize: parseInt(selectedFontSize.size.replace('px', '')),
+      } as IPreferences,
+    } as IOrganization;
+
+    if (updatedOrganization) {
+      const updatedFontJSON = JSON.stringify(fontUpdated);
+      formdata.append('organizationFields', updatedFontJSON);
+    }
+
+    toast.promise(
+      updateOrganizationById(user ? user.organizations.id : '', formdata),
+      {
+        loading: 'Updating Font Size',
+        success: (Response) => {
+          fetchOrganization();
+          if (Response?.data?.preferences) {
+            setPreferences(Response.data.preferences);
+          }
+          setUpdatedOrganization({} as IOrganization);
+          document.documentElement.style.setProperty(
+            '--font-size-primary',
+            selectedFontSize.size
+          );
+          setActiveFontStyle(fontSize);
+          return `Successfully Updated Font Size to ${fontSize}`;
+        },
+        error: (error) => {
+          if (axios.isAxiosError(error)) {
+            const axiosError = error as AxiosError;
+            if (axiosError.code === 'ERR_NETWORK') {
+              return 'Network Error, Please check connection';
+            }
+            if (axiosError.code === 'ECONNABORTED') {
+              return 'Request timeout, Please try again';
+            }
+          }
+          return 'Request Unsuccessful, Please try again';
+        },
+      }
+    );
   };
   return (
     <>

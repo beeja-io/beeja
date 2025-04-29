@@ -35,7 +35,6 @@ export const FeatureToggleContextProvider: React.FC<{
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useFeatureToggles = () => {
   const context = React.useContext(FeatureToggleContext);
 

@@ -109,7 +109,6 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
     try {
       setIsDocumentPreviewResponseLoading(true);
       const response = await expenseReceiptDownload(fileId);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const imageUrl: any = window.URL.createObjectURL(
         new Blob([response.data])
       );
@@ -216,7 +215,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
       if (paymentDate != null) {
         formData.append(
-          'paymentDate',
+          'paymentSettled',
           formatDateYYYYMMDD(paymentDate.toString())
         );
       }
@@ -957,7 +956,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 }}
                 min={
                   modeOfModal === 'edit'
-                    ? expenseToBeUpdated?.expenseDate.slice(0, 10)
+                    ? expenseToBeUpdated?.expenseDate?.slice?.(0, 10)
                     : newExpense?.expenseDate
                 }
                 max={getCurrentDate()}
@@ -1037,7 +1036,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                       expenseToBeUpdated.description !== 'undefined'
                       ? expenseToBeUpdated.description
                       : ''
-                    : newExpense?.description ?? ''
+                    : (newExpense?.description ?? '')
               }
               disabled={modeOfModal === 'preview'}
             />
@@ -1271,7 +1270,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 }}
                 min={
                   modeOfModal === 'edit'
-                    ? expenseToBeUpdated?.requestedDate.slice(0, 10)
+                    ? expenseToBeUpdated?.requestedDate?.slice?.(0, 10)
                     : newExpense?.requestedDate
                 }
                 max={getCurrentDate()}
@@ -1281,9 +1280,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                     ? formatDate(paymentDate.toString())
                     : modeOfModal === 'preview' &&
                         props.expense &&
-                        props.expense.paymentDate
-                      ? formatDate(props.expense.paymentDate.toString())
-                      : ''
+                        props.expense.paymentSettled
+                      ? formatDate(props.expense.paymentSettled.toString())
+                      : modeOfModal === 'edit' &&
+                          expenseToBeUpdated?.paymentSettled
+                        ? formatDate(
+                            expenseToBeUpdated.paymentSettled.toString()
+                          )
+                        : ''
                 }
                 onFocus={() => handleCalenderOpen(true, 'payment')}
                 disabled={requestedDate == null}

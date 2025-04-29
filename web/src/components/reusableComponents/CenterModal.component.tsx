@@ -64,7 +64,7 @@ const CenterModal = (props: CenterModalProps) => {
           props.isImageSelected ||
           props.isDashedBox) && (
           <>
-             <EditProfileText>
+            <EditProfileText>
               {props.editText ? t(props.editText) : ''}
             </EditProfileText>
 
@@ -74,7 +74,7 @@ const CenterModal = (props: CenterModalProps) => {
           </>
         )}
         {!props.isMonogramView &&
-          !props.modalContent &&
+          //!props.modalContent &&
           !props.isImageSelected && (
             <div className="iconArea">
               {props.modalSVG ? props.modalSVG : <LogoutModalSVG />}
@@ -100,7 +100,9 @@ const CenterModal = (props: CenterModalProps) => {
                   {t(props.modalHeading ? props.modalHeading : '')}
                 </div>
                 <div className="modalContent">
-                  {typeof props.modalContent === 'string' ? t(props.modalContent) : props.modalContent}
+                  {typeof props.modalContent === 'string'
+                    ? t(props.modalContent)
+                    : props.modalContent}
                 </div>
               </>
             )}

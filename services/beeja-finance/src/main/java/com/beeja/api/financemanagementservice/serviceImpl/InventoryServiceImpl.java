@@ -3,6 +3,7 @@ package com.beeja.api.financemanagementservice.serviceImpl;
 import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
+import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.enums.Availability;
 import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
@@ -10,11 +11,13 @@ import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
 import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
+import com.beeja.api.financemanagementservice.modals.clients.finance.OrganizationPattern;
 import com.beeja.api.financemanagementservice.repository.InventoryRepository;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import com.beeja.api.financemanagementservice.service.InventoryService;
 import com.mongodb.DuplicateKeyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -45,6 +49,8 @@ public class InventoryServiceImpl implements InventoryService {
 
   @Autowired InventoryRepository inventoryRepository;
 
+  @Autowired
+  AccountClient accountClient;
   /**
    * Adds a new device to the inventory.
    *
@@ -79,8 +85,10 @@ public class InventoryServiceImpl implements InventoryService {
     device.setDateOfPurchase(deviceDetails.getDateOfPurchase());
     device.setComments(deviceDetails.getComments());
     device.setAccessoryType(deviceDetails.getAccessoryType());
-    device.setDeviceNumber(UUID.randomUUID().toString().substring(0, 6).toUpperCase());
+    device.setDeviceNumber(generateDeviceId());
     device.setCreatedBy(UserContext.getLoggedInUserEmail());
+    device.setOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+    device.setCreatedAt(new java.util.Date());
     try {
       return inventoryRepository.save(device);
     } catch (DuplicateKeyException e) {
@@ -96,11 +104,33 @@ public class InventoryServiceImpl implements InventoryService {
     }
   }
 
-  /**
-   * Retrieves all devices from the inventory.
-   *
-   * @return List of all Inventory objects representing devices.
+  /*
+    * Generates a unique device ID based on the organization's pattern and the current count of
+    * devices.
    */
+  private String generateDeviceId() {
+    OrganizationPattern devicePattern = accountClient
+            .getActivePatternByType("DEVICE_ID_PATTERN")
+            .getBody();
+
+    String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+    long sizeOfDevices = inventoryRepository.countByOrganizationId(orgId);
+    if (devicePattern == null) {
+      return String.valueOf(sizeOfDevices + 1);
+    }
+
+    String prefix = devicePattern.getPrefix() != null ? devicePattern.getPrefix() : "";
+    int dIDLength = devicePattern.getPatternLength();
+    int numberLength = dIDLength - prefix.length();
+    String formattedSeq = String.format("%0" + numberLength + "d", sizeOfDevices + 1);
+    return prefix.toUpperCase() + formattedSeq;
+  }
+
+  /**
+     * Retrieves all devices from the inventory.
+     *
+     * @return List of all Inventory objects representing devices.
+     */
   @Override
   public List<Inventory> filterInventory(
       int pageNumber,
@@ -109,6 +139,7 @@ public class InventoryServiceImpl implements InventoryService {
       String provider,
       Availability availability,
       String os,
+      String RAM,
       String searchTerm) {
     try {
 
@@ -127,6 +158,9 @@ public class InventoryServiceImpl implements InventoryService {
       if (os != null && StringUtils.hasText(os)) {
         query.addCriteria(Criteria.where("os").is(os));
       }
+      if (RAM != null && StringUtils.hasText(RAM)) {
+        query.addCriteria(Criteria.where("RAM").is(RAM));
+      }
       if (searchTerm != null && !searchTerm.isEmpty()) {
         query.addCriteria(
             Criteria.where("deviceNumber").regex(".*" + Pattern.quote(searchTerm) + ".*", "i"));
@@ -134,7 +168,7 @@ public class InventoryServiceImpl implements InventoryService {
 
       int skip = (pageNumber - 1) * pageSize;
       query.skip(skip).limit(pageSize);
-
+      query.with(Sort.by(Sort.Direction.DESC, "created_at"));
       return mongoTemplate.find(query, Inventory.class);
 
     } catch (Exception e) {
@@ -152,6 +186,7 @@ public class InventoryServiceImpl implements InventoryService {
       String provider,
       Availability availability,
       String os,
+      String RAM,
       String organizationId,
       String searchTerm) {
     Query query = new Query();
@@ -166,6 +201,10 @@ public class InventoryServiceImpl implements InventoryService {
 
     if (os != null && !os.isEmpty()) {
       query.addCriteria(Criteria.where("os").is(os));
+    }
+
+    if (RAM != null && !RAM.isEmpty()) {
+      query.addCriteria(Criteria.where("RAM").is(RAM));
     }
 
     if (organizationId != null) {

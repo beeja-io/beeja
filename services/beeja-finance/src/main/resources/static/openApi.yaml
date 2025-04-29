@@ -372,6 +372,49 @@ paths:
             tags:
                 - inventory-controller
             operationId: getAllDevices
+            parameters:
+                - name: pageNumber
+                  in: query
+                  required: false
+                  schema:
+                      type: integer
+                      default: 1
+                - name: pageSize
+                  in: query
+                  required: false
+                  schema:
+                      type: integer
+                      default: 10
+                - name: device
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                - name: provider
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                - name: availability
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                - name: os
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                - name: RAM
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                - name: searchTerm
+                  in: query
+                  required: false
+                  schema:
+                      type: string
             responses:
                 "500":
                     description: Internal Server Error

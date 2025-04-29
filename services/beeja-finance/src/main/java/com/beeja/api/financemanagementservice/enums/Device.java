@@ -1,5 +1,7 @@
 package com.beeja.api.financemanagementservice.enums;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 @Getter
@@ -24,5 +26,19 @@ public enum Device {
 
   Device(String displayName) {
     this.displayName = displayName;
+  }
+  @JsonValue
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  @JsonCreator
+  public static Device fromValue(String value) {
+    for (Device device : Device.values()) {
+      if (device.displayName.equalsIgnoreCase(value)) {
+        return device;
+      }
+    }
+    throw new IllegalArgumentException("Unknown device: " + value);
   }
 }

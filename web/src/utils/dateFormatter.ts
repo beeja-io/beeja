@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { months } from './monthsConstants';
 
 const currentMonth = new Date().getMonth();
