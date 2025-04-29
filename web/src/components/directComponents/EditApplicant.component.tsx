@@ -90,9 +90,9 @@ const EditApplicant = () => {
     toast.promise(
       async () => await changeApplicationStatus(applicant.id, newStatus),
       {
-        loading: 'Updating applicant status',
-        success: 'Applicant status updated successfully',
-        error: 'Failed to update applicant status',
+        loading: t('Updating applicant status'),
+        success: t('Applicant status updated successfully'),
+        error: t('Failed to update applicant status'),
       }
     );
   };
@@ -120,7 +120,7 @@ const EditApplicant = () => {
                 <div>
                   <InputLabelContainer>
                     <label>
-                      {t('First_Name')}{' '}
+                      {t('FIRST_NAME')}{' '}
                       <ValidationText className="star">*</ValidationText>
                     </label>
                     <TextInput
@@ -143,14 +143,14 @@ const EditApplicant = () => {
                           }
                         }
                       }}
-                      placeholder={'Ex: John'}
+                      placeholder={'PLACEHOLDER_FIRST_NAME'}
                       autoComplete="off"
                       style={{ cursor: 'not-allowed' }}
                     />
                   </InputLabelContainer>
                   <InputLabelContainer>
                     <label>
-                      {t('Last_Name')}{' '}
+                      {t('LAST_NAME')}{' '}
                       <ValidationText className="star">*</ValidationText>
                     </label>
                     <TextInput
@@ -173,7 +173,7 @@ const EditApplicant = () => {
                           }
                         }
                       }}
-                      placeholder={'Ex: Doe'}
+                      placeholder={'PLACEHOLDER_LAST_NAME'}
                       style={{ cursor: 'not-allowed' }}
                     />
                   </InputLabelContainer>
@@ -272,7 +272,7 @@ const EditApplicant = () => {
                           value={status}
                           selected={applicant.status === status}
                         >
-                          {status.replace('_', ' ')}
+                          {t(status.replace('_', ' '))}
                         </option>
                       ))}
                     </select>

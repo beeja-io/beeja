@@ -8,7 +8,6 @@ import { PayrollMainContainer } from '../styles/LoanApplicationStyles.style';
 import { FeatureToggleContainer } from '../styles/FeatureToggleStyles.style';
 import { EFeatureToggles, IFeatureToggle } from '../entities/FeatureToggle';
 import { SwitchLabel, StyledSwitch, Slider } from '../styles/InputStyles.style';
-import { removeUnderScore } from '../utils/stringUtils';
 import { useFeatureToggles } from '../context/FeatureToggleContext';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { updateFeatureTogglesByOrgId } from '../service/axiosInstance';
@@ -82,7 +81,7 @@ const FeatureToggleScreen = () => {
               <div>
                 {keys.map((key, index) => (
                   <span className="innerDiv" key={index}>
-                    {removeUnderScore(key.toString())}{' '}
+                    {t(key.toString())}{' '}
                     {featureToggles && (
                       <SwitchLabel>
                         <StyledSwitch

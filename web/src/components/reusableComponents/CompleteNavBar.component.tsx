@@ -54,6 +54,7 @@ const CompleteNavBar = () => {
   const { user } = useUser();
   const { featureToggles } = useFeatureToggles();
   const { preferences, setPreferences } = usePreferences();
+  const { t } = useTranslation();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -120,7 +121,7 @@ const CompleteNavBar = () => {
                   <StyledNavLink to="/">
                     <li>
                       <DashBoardButton>
-                        {sidebarOpen ? 'Dashboard' : ''}
+                        {sidebarOpen ? t('DASHBOARD') : ''}
                         <DashBoardSVG />
                       </DashBoardButton>
                     </li>
@@ -312,7 +313,7 @@ const CompleteNavBar = () => {
                       isSideBarOpen={sidebarOpen}
                       linkTo="#"
                       tooltipName="Recruitment"
-                      linkName="Recruitment"
+                      linkName="RECRUITMENT"
                       svgIcon={
                         <UserBoxWithLinkSVG
                           props={{
@@ -335,7 +336,7 @@ const CompleteNavBar = () => {
                         hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
                           ? [
                               {
-                                name: 'Hiring',
+                                name: 'HIRING',
                                 link: '/recruitment/hiring-management',
                               },
                             ]
@@ -346,7 +347,7 @@ const CompleteNavBar = () => {
                         )
                           ? [
                               {
-                                name: 'Referrals',
+                                name: 'REFERRALS',
                                 link: '/recruitment/my-referrals',
                               },
                             ]
@@ -492,7 +493,6 @@ type ListItemProps = {
 };
 
 export const ListItem: React.FC<ListItemProps> = (props) => {
-  const { t } = useTranslation();
   const [isDropdownOpen, setDropdownOpen] = useState(
     props.isDropdownOpen || false
   );

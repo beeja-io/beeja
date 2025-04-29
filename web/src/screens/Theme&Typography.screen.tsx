@@ -86,15 +86,15 @@ interface FontSizeOption {
 
 const fontSizeOptions: FontSizeOption[] = [
   {
-    label: 'Small',
+    label: 'FONT_SIZE_SMALL',
     size: '14px',
   },
   {
-    label: 'Medium',
+    label: 'FONT_SIZE_MEDIUM',
     size: '18px',
   },
   {
-    label: 'Large',
+    label: 'FONT_SIZE_LARGE',
     size: '20px',
   },
 ];
@@ -163,28 +163,26 @@ function ThemesAndTypography() {
     toast.promise(
       updateOrganizationById(user ? user.organizations.id : '', formdata),
       {
-        loading: 'Updating organization preferences',
+        loading: t('LOADING_UPDATE_ORG_PREF'),
         success: (Response) => {
           fetchOrganization();
           if (Response && Response.data && Response.data.preferences) {
             setPreferences(Response.data.preferences);
           }
           setUpdatedOrganization({} as IOrganization);
-          return `Successfully updated organization theme to ${capitalizeFirstLetter(
-            label
-          )} Theme`;
+          return t('SUCCESS_UPDATE_ORG_THEME', { theme: capitalizeFirstLetter(label) });
         },
         error: (error) => {
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;
             if (axiosError.code === 'ERR_NETWORK') {
-              return 'Network Error, Please check connection';
+              return t('NETWORK_ERROR');
             }
             if (axiosError.code === 'ECONNABORTED') {
-              return 'Request timeout, Please try again';
+              return t('REQUEST_TIMEOUT');
             }
           }
-          return 'Request Unsuccessful, Please try again';
+          return t('REQUEST_UNSUCCESSFUL');
         },
       }
     );
@@ -203,7 +201,7 @@ function ThemesAndTypography() {
     toast.promise(
       updateOrganizationById(user ? user.organizations.id : '', formdata),
       {
-        loading: 'Updating Preferences',
+        loading: t('LOADING_UPDATE_PREFS'),
         success: (Response) => {
           fetchOrganization();
           if (Response && Response.data && Response.data.preferences) {
@@ -215,21 +213,19 @@ function ThemesAndTypography() {
             Response.data.preferences.fontName
           );
           setActiveFontName(capitalizeFirstLetter(fontName));
-          return `Successfully Updated Font Style with ${capitalizeFirstLetter(
-            fontName
-          )}`;
+          return t('SUCCESS_UPDATE_FONT_STYLE', { fontName: capitalizeFirstLetter(fontName) });
         },
         error: (error) => {
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;
             if (axiosError.code === 'ERR_NETWORK') {
-              return 'Network Error, Please check connection';
+              return t('NETWORK_ERROR');
             }
             if (axiosError.code === 'ECONNABORTED') {
-              return 'Request timeout, Please try again';
+              return t('REQUEST_TIMEOUT');
             }
           }
-          return 'Request Unsuccessful, Please try again';
+          return t('REQUEST_UNSUCCESSFUL');
         },
       }
     );
@@ -308,7 +304,7 @@ function ThemesAndTypography() {
                 <ThemeDetails>
                   <ThemeLabel>
                     {preferences?.theme === option.label.toUpperCase()
-                      ? `${option.label + ' Mode'} (Active)`
+                      ? `${option.label + ' Mode'} ${t('ACTIVE')}`
                       : option.label + ' Mode'}
                   </ThemeLabel>
                   {preferences?.theme === option.label.toUpperCase() ? (
@@ -404,7 +400,7 @@ function ThemesAndTypography() {
                           />
                         )}
                         <FontName fontNameProps={{ fontSize: option.size }}>
-                          {option.label}
+                          {t(option.label)}
                         </FontName>
                       </OptionElement>
                     ))}

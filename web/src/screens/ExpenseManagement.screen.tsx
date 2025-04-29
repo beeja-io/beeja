@@ -42,7 +42,7 @@ const ExpenseManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const forceRerender = () => {
-    toast.success('Expense added successfully');
+    toast.success(t('EXPENSE_ADDED_SUCCESS'));
     setKey((prevKey) => prevKey + 1);
   };
   const [expenseCategories, setExpenseCategories] =
@@ -70,24 +70,16 @@ const ExpenseManagement = () => {
       setExpensePaymentModes(expensePaymentModes.data);
       setIsLoading(false);
       if (expenseDepartments.status === 204) {
-        toast.error(
-          'Please add departments in organization values (Settings) to add expenses'
-        );
+        toast.error(t('ADD_DEPARTMENTS'));
       }
       if (expenseCategories.status === 204) {
-        toast.error(
-          'Please add expense categories in organization values (Settings) to add expenses'
-        );
+        toast.error(t('ADD_EXPENSE_CATEGORIES'));
       }
       if (expenseTypes.status === 204) {
-        toast.error(
-          'Please add expense types in organization values (Settings) to add expenses'
-        );
+        toast.error(t('ADD_EXPENSE_TYPES'));
       }
       if (expensePaymentModes.status === 204) {
-        toast.error(
-          'Please add expense payment modes in organization (Settings) values to add expenses'
-        );
+        toast.error(t('ADD_EXPENSE_PAYMENT_MODES'));
       }
     } catch (error) {
       setIsLoading(false);
@@ -163,7 +155,7 @@ const ExpenseManagement = () => {
 
           {isCreateModalOpen && (
             <CenterModalMain
-              heading="ADD_NEW_EXPENSE"
+              heading={t('ADD_NEW_EXPENSE')}
               modalClose={handleIsCreateModalOpen}
               actualContentContainer={
                 <AddExpenseForm

@@ -96,7 +96,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       seledtedResume == undefined ||
       seledtedResume == null
     ) {
-      toast.error('Please fill mandatory (*) fields');
+      toast.error(t('FILL_MANDATORY_FIELDS'));
       return;
     }
 
@@ -104,14 +104,14 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       newApplicant.phoneNumber !== '' &&
       !newApplicant.phoneNumber.match(/^[0-9]{10}$/)
     ) {
-      toast.error('Please enter a valid phone number');
+      toast.error(t('ENTER_VALID_PHONE_NUMBER'));
       return;
     }
     if (
       newApplicant.email !== '' &&
       !newApplicant.email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$/)
     ) {
-      toast.error('Please enter a valid email address');
+      toast.error(t('ENTER_VALID_EMAIL_ADDRESS'));
       return;
     }
     try {
@@ -134,13 +134,14 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
         response = await postApplicant(newApplicantData);
       }
       if (response.status === 200) {
-        toast.success('Applicant saved successfully');
+        toast.success(t('APPLICANT_SAVED_SUCCESSFULLY'));
+
         navigate(-1);
       } else {
-        toast.error('Failed to save applicant');
+        toast.error(t('FAILED_TO_SAVE_APPLICANT'));
       }
     } catch {
-      toast.error('An error occurred while saving the applicant');
+      toast.error(t('ERROR_WHILE_SAVING_APPLICANT'));
     } finally {
       setIsLoading(false);
     }
@@ -173,7 +174,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
               <span onClick={goToPreviousPage}>
                 <ArrowDownSVG />
               </span>
-              {props.isReferScreen ? 'Refer An Employee' : 'Add New Applicant'}
+              {props.isReferScreen ? t('REFER_AN_EMPLOYEE') : t('ADD_NEW_APPLICANT')}
             </span>
           </ExpenseHeadingSection>
           <BulkPayslipContainer className="addNewApplicant">
@@ -181,7 +182,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
               <div>
                 <InputLabelContainer>
                   <label>
-                    {t('First_Name')}{' '}
+                  {t('FIRST_NAME')}{' '}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
@@ -201,13 +202,13 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                         }
                       }
                     }}
-                    placeholder={'Ex: John'}
+                    placeholder={t('PLACEHOLDER_FIRST_NAME')}
                     autoComplete="off"
                   />
                 </InputLabelContainer>
                 <InputLabelContainer>
                   <label>
-                    {t('Last_Name')}{' '}
+                  {t('LAST_NAME')}{' '}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
@@ -227,7 +228,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                         }
                       }
                     }}
-                    placeholder={'Ex: Doe'}
+                    placeholder={t('PLACEHOLDER_LAST_NAME')}
                   />
                 </InputLabelContainer>
               </div>
@@ -235,7 +236,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
               <div>
                 <InputLabelContainer>
                   <label>
-                    {t('Phone_Number')}{' '}
+                  {t('PHONE_NUMBER')}{' '}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
@@ -256,7 +257,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                         }
                       }
                     }}
-                    placeholder={'Enter Phone Number'}
+                    placeholder={t('PLACEHOLDER_PHONE_NUMBER')}
                   />
                 </InputLabelContainer>
                 <InputLabelContainer>
@@ -272,7 +273,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$"
                     autoComplete="off"
                     required
-                    placeholder={'Enter Email'}
+                    placeholder={t('PLACEHOLDER_EMAIL')}
                   />
                 </InputLabelContainer>
               </div>
@@ -295,10 +296,10 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                       }
                     }}
                   >
-                    <option value="">Select Position</option>
+                    <option value="">{t('SELECT_POSITION')}</option>
                     {jobTitles?.values.map((position, index) => (
                       <option key={index} value={position.value}>
-                        {position.value}
+                        {t(position.value)}
                       </option>
                     ))}
                   </select>
@@ -316,7 +317,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                       }
                     }}
                   >
-                    <option value="">Select Experience</option>
+                    <option value="">{t('SELECT_EXPERIENCE')}</option>
                     {noOfYearsExperience.map((number) => (
                       <option key={number} value={number}>
                         {number}
@@ -392,7 +393,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     type="submit"
                     disabled={isLoading}
                   >
-                    {isLoading ? '' : 'Submit'}
+                    {isLoading ? '' : t('SUBMIT')}
                   </Button>
                 )}
             </form>

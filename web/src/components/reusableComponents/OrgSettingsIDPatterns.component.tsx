@@ -49,7 +49,7 @@ export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
       await updatePatternStatus(patternId, patternType);
       await refreshPatterns();
     } catch (error) {
-      alert('Failed to update pattern status. Please try again.');
+      alert(t('FAILED_UPDATE_PATTERN_STATUS'));
       throw error;
     }
   };
@@ -66,10 +66,10 @@ export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
           <TabContentMainContainerHeading>
             <h4>
               {patternType === 'LOAN_ID_PATTERN'
-                ? 'Loan ID Pattern'
+                ? t('LOAN_ID_PATTERN')
                 : patternType === 'EMPLOYEE_ID_PATTERN'
-                  ? 'Employee ID Pattern'
-                  : 'Device ID Pattern'}
+                  ? t('EMPLOYEE_ID_PATTERN')
+                  : t('DEVICE_ID-PATTERN')}
             </h4>
 
             <Button

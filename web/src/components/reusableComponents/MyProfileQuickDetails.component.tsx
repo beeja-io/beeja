@@ -115,20 +115,20 @@ const MyProfileQuickDetailsComponent = ({
       employee &&
         (await updateEmployeeRole(employee.account.employeeId, roles));
 
-      setAddRoleButtonText('Add Role');
-      setDeleteRoleButtonText('Delete Role');
+      setAddRoleButtonText(t('ADD_ROLE'));
+      setDeleteRoleButtonText(t('DELETE_ROLE'));
       handleIsUpdateButtonShow();
       fetchEmployeeAgain();
       setIsUpdateButtonShow(false);
       setIsLoadingResponse(false);
       if (roleChangeType === 'add') {
-        toast.success('Role Added successfully');
+        toast.success(t('ROLE_ADDED_SUCCESS'));
       } else if (roleChangeType === 'delete') {
-        toast.success('Role Deleted successfully');
+        toast.success(t('ROLE_DELETED_SUCCESS'));
       }
       fetchRoles();
     } catch (error) {
-      throw new Error('Error Updating roles: ' + error);
+      throw new Error(t('ERROR_UPDATING_ROLES') + ': ' + error);
     } finally {
       setIsLoadingResponse(false);
     }
@@ -187,13 +187,13 @@ const MyProfileQuickDetailsComponent = ({
     };
   }, []);
 
-  const [addRoleButtonText, setAddRoleButtonText] = useState('Add Role');
+  const [addRoleButtonText, setAddRoleButtonText] = useState(t('ADD_ROLE'));
   const handleAddRoleButtonText = (role: string) => {
     setAddRoleButtonText(role);
   };
 
   const [deleteRoleButtonText, setDeleteRoleButtonText] =
-    useState('Delete Role');
+    useState(t('DELETE_ROLE'));
   const HandleDeleteRoleButtonText = (role: string) => {
     setDeleteRoleButtonText(role);
   };

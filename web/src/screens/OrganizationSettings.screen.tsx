@@ -54,6 +54,8 @@ const OrganizationSettings = () => {
   const [deviceDropdownOpen, setDeviceDropdownOpen] = useState(false);
   const [loanDropdownOpen, setLoanDropdownOpen] = useState(false);
 
+  const { t } = useTranslation();
+
   const { user } = useUser();
   const { featureToggles } = useFeatureToggles();
   const [isUpdateResponseLoading, setIsUpdateResponseLoading] = useState(false);
@@ -112,7 +114,7 @@ const OrganizationSettings = () => {
         parsedOrganization.loanLimit.monitorLoan = parseInt(
           parsedOrganization.loanLimit.monitorLoan
         );
-        updateType = 'Monitor Loans';
+        updateType = t('MONITOR_LOANS');
       }
       if (
         updatedOrganization.loanLimit &&
@@ -121,7 +123,7 @@ const OrganizationSettings = () => {
         parsedOrganization.loanLimit.personalLoan = parseInt(
           parsedOrganization.loanLimit.personalLoan
         );
-        updateType = 'Personal Loans';
+        updateType = t('PERSONAL_LOANS');
       }
       if (
         updatedOrganization.loanLimit &&
@@ -141,21 +143,21 @@ const OrganizationSettings = () => {
     toast.promise(
       updateOrganizationById(user ? user.organizations.id : '', formData),
       {
-        loading: 'Updating Organization...',
+        loading: t('UPDATING_ORG'),
         closeButton: true,
         success: () => {
           fetchOrganization();
           setIsUpdateResponseLoading(false);
           handleIsErrorOccuredWhileUpdating(false);
           switch (updateType) {
-            case 'Monitor Loans':
-              return 'Successfully Updated Monitor Loan Limit.';
-            case 'Personal Loans':
-              return 'Successfully Updated Personal Loan Limit.';
+            case t('MONITOR_LOANS'):
+              return t('SUCCESS_MONITOR_LOAN_LIMIT');
+            case t('PERSONAL_LOANS'):
+              return t('SUCCESS_PERSONAL_LOAN_LIMIT');
             case 'Salary Loans':
               return 'Successfully Updated Salary Loan Limit.';
             default:
-              return 'Your changes have been successfully saved. ';
+              return t('SUCCESS_CHANGES_SAVED');
           }
         },
         error: (error) => {
@@ -164,19 +166,18 @@ const OrganizationSettings = () => {
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;
             if (axiosError.code === 'ERR_NETWORK') {
-              return 'Network Error, Please check connection';
+              return t('NETWORK_ERROR');
             }
             if (axiosError.code === 'ECONNABORTED') {
-              return 'Request timeout, Please try again';
+              return t('REQUEST_TIMEOUT');
             }
           }
-          return 'Request Unsuccessful, Please try again';
+          return t('REQUEST_UNSUCCESSFUL');
         },
       }
     );
   };
 
-  const { t } = useTranslation();
 
   return (
     <>
@@ -250,13 +251,13 @@ const OrganizationSettings = () => {
                               handleTabClick('Loan types & Limits')
                             }
                           >
-                            {t('Loan types & Limits')}
+                            {t('LOAN_TYPES_LIMITS')}
                           </li>
                           <li
                             className={`dropdown-item-thread ${activeTab === 'Loan ID pattern' ? 'active' : ''}`}
                             onClick={() => handleTabClick('Loan ID pattern')}
                           >
-                            {t('Loan ID pattern')}
+                            {t('LOAN_ID_PATTERN')}
                           </li>
                         </ul>
                       )}
@@ -269,7 +270,7 @@ const OrganizationSettings = () => {
                           }}
                         >
                           <ExpenseIconSVG isActive={expenseDropdownOpen} />
-                          {t('Expense Settings')}
+                          {t('EXPENSE_SETTINGS')}
                         </li>
                         {expenseDropdownOpen && (
                           <ul className="dropdown-menu">
@@ -277,13 +278,13 @@ const OrganizationSettings = () => {
                               className={`dropdown-item-thread ${activeTab === 'ExpenseType' ? 'active' : ''}`}
                               onClick={() => handleTabClick('ExpenseType')}
                             >
-                              Expense Type
+                              {t('EXPENSE_TYPE')}
                             </li>
                             <li
                               className={`dropdown-item-thread ${activeTab === 'ModeOfPayments' ? 'active' : ''}`}
                               onClick={() => handleTabClick('ModeOfPayments')}
                             >
-                              Mode Of Payments
+                              {t('MODE_OF_PAYMENTS')}
                             </li>
                             <li
                               className={`dropdown-item-thread ${activeTab === 'ExpenseCategories' ? 'active' : ''}`}
@@ -291,7 +292,7 @@ const OrganizationSettings = () => {
                                 handleTabClick('ExpenseCategories')
                               }
                             >
-                              Expense Categories
+                              {t('EXPENSE_CATEGORIES')}
                             </li>
                           </ul>
                         )}
@@ -305,7 +306,7 @@ const OrganizationSettings = () => {
                           }}
                         >
                           <EmployeeIconSVG isActive={employeeDropdownOpen} />
-                          {t('Employee Settings')}
+                          {t('EMPLOYEE_SETTINGS')}
                         </li>
                         {employeeDropdownOpen && (
                           <ul className="dropdown-menu">
@@ -315,25 +316,25 @@ const OrganizationSettings = () => {
                                 handleTabClick('EmployeeIdPattern')
                               }
                             >
-                              Employee ID Pattern
+                              {t('EMPLOYEE_ID_PATTERN')}
                             </li>
                             <li
                               className={`dropdown-item-thread ${activeTab === 'EmploymentType' ? 'active' : ''}`}
                               onClick={() => handleTabClick('EmploymentType')}
                             >
-                              Employment Type
+                              {t('EMPLOYMENT_TYPE')}
                             </li>
                             <li
                               className={`dropdown-item-thread ${activeTab === 'jobtitles' ? 'active' : ''}`}
                               onClick={() => handleTabClick('jobtitles')}
                             >
-                              JobTitles
+                              {t('JOB_TITLES')}
                             </li>
                             <li
                               className={`dropdown-item-thread ${activeTab === 'departments' ? 'active' : ''}`}
                               onClick={() => handleTabClick('departments')}
                             >
-                              Departments
+                              {t('DEPARTMENTS')}
                             </li>
                           </ul>
                         )}
@@ -392,7 +393,7 @@ const OrganizationSettings = () => {
                     }}
                   >
                     <DeviceIconSVG isActive={deviceDropdownOpen} />
-                    {t('Device Settings')}
+                    {t('DEVICE_SETTINGS')}
                   </li>
                   {deviceDropdownOpen && (
                     <ul className="dropdown-menu">
@@ -400,19 +401,19 @@ const OrganizationSettings = () => {
                         className={`dropdown-item-thread ${activeTab === 'DeviceType' ? 'active' : ''}`}
                         onClick={() => handleTabClick('DeviceType')}
                       >
-                        Device Type
+                        {t('DEVICE_TYPE')}
                       </li>
                       <li
                         className={`dropdown-item-thread ${activeTab === 'DeviceIDPattern' ? 'active' : ''}`}
                         onClick={() => handleTabClick('DeviceIDPattern')}
                       >
-                        Device ID pattern
+                        {t('DEVICE_ID_PATTERN')}
                       </li>
                       <li
                         className={`dropdown-item-thread ${activeTab === 'Providers' ? 'active' : ''}`}
                         onClick={() => handleTabClick('Providers')}
                       >
-                        Providers
+                        {t('PROVIDERS')}
                       </li>
                     </ul>
                   )}

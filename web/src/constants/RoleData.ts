@@ -19,26 +19,26 @@ const roleData = [
   //   ],
   // },
   {
-    heading: 'Employee Profile',
+    heading: 'EMPLOYEE_PROFILE',
     labels: [
-      'Full Access',
-      'Create',
-      'Edit All Employees',
-      'Inactive',
-      'Role Change',
-      'Read All Employees',
-      'Read Full Info',
+      'FULL_ACCESS',
+      'CREATE',
+      'EDIT_ALL_EMPLOYEES',
+      'INACTIVE',
+      'ROLE_CHANGE',
+      'READ_ALL_EMPLOYEES',
+      'READ_FULL_INFO',
     ],
     subsections: [
       {
-        moduleName: 'Basic & Personal Info',
+        moduleName: 'BASIC_PERSONAL_INFO',
         permissions: [
-          { value: 'CEMP', label: 'Create' },
-          { value: 'UALEMP', label: 'Edit All Employees' },
-          { value: 'IEM', label: 'Inactive' },
-          { value: 'URAP', label: 'Update Roles' },
-          { value: 'GALEMP', label: 'Read All Employees' },
-          { value: 'RCEMP', label: 'Read Full Info' },
+          { value: 'CEMP', label: 'CREATE' },
+          { value: 'UALEMP', label: 'EDIT_ALL_EMPLOYEES' },
+          { value: 'IEM', label: 'INACTIVE' },
+          { value: 'URAP', label: 'UPDATE_ROLES' },
+          { value: 'GALEMP', label: 'READ_ALL_EMPLOYEES' },
+          { value: 'RCEMP', label: 'READ_FULL_INFO' },
         ],
       },
       // Add more subsections as needed
@@ -46,191 +46,226 @@ const roleData = [
   },
   {
     heading: 'KYC',
-    labels: ['Full Access', 'Self Read', 'Read', 'Self Edit', 'Edit'],
-    subsections: [
-      {
-        moduleName: 'Manage KYC',
-        permissions: [
-          { value: 'RKYC', label: 'Self Read' },
-          { value: 'RALKYC', label: 'Read' },
-          { value: 'UKYC', label: 'Self Edit' },
-          { value: 'UALKYC', label: 'Edit' },
-        ],
-      },
-      // Add more subsections as needed
-    ],
-  },
-  {
-    heading: 'Documents',
-    labels: ['Full Access', 'View', 'Upload', 'Delete', 'Update'],
-    subsections: [
-      {
-        moduleName: 'Manage Own Documents',
-        permissions: [
-          { value: 'RDM', label: 'View', default: 'true' },
-          { value: 'CDM', label: 'Upload' },
-          { value: 'DDM', label: 'Delete' },
-          { value: 'UDM', label: 'Update' },
-        ],
-      },
-      {
-        moduleName: 'Manage Employee Documents',
-        permissions: [
-          { value: 'RALDOC', label: 'View' },
-          { value: 'CALDOC', label: 'Upload' },
-          { value: 'DALDOC', label: 'Delete' },
-          { value: 'UALDOC', label: 'Update' },
-        ],
-      },
-      // Add more subsections as needed
-    ],
-  },
-  {
-    heading: 'Roles & Permissions',
-    labels: ['Full Access', 'Create', 'Edit', 'Delete'],
-    subsections: [
-      {
-        moduleName: 'Manage Roles',
-        permissions: [
-          { value: 'CRORG', label: 'Create' },
-          { value: 'URORG', label: 'Edit' },
-          { value: 'DRORG', label: 'Delete' },
-        ],
-      },
-      // Add more subsections as needed
-    ],
-  },
-  {
-    heading: 'Organization Preferences',
-    labels: ['Full Access', 'Read', 'Update'],
-    subsections: [
-      {
-        moduleName: 'Manage Organization',
-        permissions: [
-          { value: 'RORG', label: 'Read' },
-          { value: 'UORG', label: 'Update' },
-        ],
-      },
-      // Add more subsections as needed
-    ],
-  },
-  {
-    heading: 'Accounts',
-    labels: ['Full Access', 'View', 'Create', 'Export', 'Edit', 'Delete'],
-    subsections: [
-      {
-        moduleName: 'Bulk Payslips',
-        permissions: [
-          { value: '', label: 'View' },
-          { value: 'CBPS', label: 'Create' },
-          { value: '', label: 'Export' },
-          { value: '', label: 'Edit' },
-          { value: '', label: 'Delete' },
-        ],
-      },
-      {
-        moduleName: 'Expense Management',
-        permissions: [
-          { value: 'REX', label: 'View' },
-          { value: 'CEX', label: 'Create' },
-          { value: '', label: 'Export' },
-          { value: 'UEX', label: 'Edit' },
-          { value: 'DEX', label: 'Delete' },
-        ],
-      },
-      {
-        moduleName: 'Inventory Management',
-        permissions: [
-          { value: 'RDEV', label: 'View' },
-          { value: 'CDEV', label: 'Create' },
-          { value: '', label: 'Export' },
-          { value: 'UDEV', label: 'Edit' },
-          { value: 'DDEV', label: 'Delete' },
-        ],
-      },
-      // Add more subsections as needed
-    ],
-  },
-  {
-    heading: 'Loans',
     labels: [
-      'Full Access',
-      'View',
-      'View All Loans',
-      'Create',
-      'Edit',
-      'Approve',
+      'FULL_ACCESS',
+      'SELF_READ',
+      'READ',
+      'SELF_EDIT',
+      'EDIT',
     ],
     subsections: [
       {
-        moduleName: 'Loans',
+        moduleName: 'MANAGE_KYC',
         permissions: [
-          { value: 'RLON', label: 'View' },
-          { value: 'GALON', label: 'View All Loans' },
-          { value: 'CLON', label: 'Create' },
-          { value: 'ULON', label: 'Edit' },
-          { value: 'SCLON', label: 'Approve' },
+          { value: 'RKYC', label: 'SELF_READ' },
+          { value: 'RALKYC', label: 'READ' },
+          { value: 'UKYC', label: 'SELF_EDIT' },
+          { value: 'UALKYC', label: 'EDIT' },
         ],
       },
       // Add more subsections as needed
     ],
   },
   {
-    heading: 'Health Insurance',
-    labels: ['Full Access', 'View', 'Create', 'Edit', 'Delete'],
-    subsections: [
-      {
-        moduleName: 'Manage Health Insurance',
-        permissions: [
-          { value: 'RHIN', label: 'View', default: 'true' },
-          { value: 'CHIN', label: 'Create' },
-          { value: 'UHIN', label: 'Edit' },
-          { value: 'DHIN', label: 'Delete' },
-        ],
-      },
-      // Add more subsections as needed
-    ],
-  },
-  {
-    heading: 'Recruitment Management',
+    heading: 'DOCUMENTS',
     labels: [
-      'Full Access',
-      'Create Applicant',
-      'Read Applicants',
-      'Read All Applicants',
-      'Download Resume',
-      'Update Entire Applicant',
-      'Update Applicant',
-      'Take Interview',
-      'Delete Interview',
-      'Access Referrals',
+      'FULL_ACCESS',
+      'VIEW',
+      'UPLOAD',
+      'DELETE',
+      'UPDATE',
     ],
     subsections: [
       {
-        moduleName: 'Recruitment Management',
+        moduleName: 'MANAGE_OWN_DOCUMENTS',
         permissions: [
-          { value: 'CAPT', label: 'Create Applicant' },
-          { value: 'GAAPT', label: 'Read Applicants' },
-          { value: 'GENAPT', label: 'Read All Applicants' },
-          { value: 'RRSM', label: 'Download Resume' },
-          { value: 'UENTAP', label: 'Update Entire Applicant' },
-          { value: 'UAPL', label: 'Update Applicant' },
-          { value: 'TINT', label: 'Take Interview' },
-          { value: 'DINT', label: 'Delete Interview' },
-          { value: 'ACREF', label: 'Access Referrals' },
+          { value: 'RDM', label: 'VIEW', default: 'true' },
+          { value: 'CDM', label: 'UPLOAD' },
+          { value: 'DDM', label: 'DELETE' },
+          { value: 'UDM', label: 'UPDATE' },
+        ],
+      },
+      {
+        moduleName: 'MANAGE_EMPLOYEE_DOCUMENTS',
+        permissions: [
+          { value: 'RALDOC', label: 'VIEW' },
+          { value: 'CALDOC', label: 'UPLOAD' },
+          { value: 'DALDOC', label: 'DELETE' },
+          { value: 'UALDOC', label: 'UPDATE' },
+        ],
+      },
+      // Add more subsections as needed
+    ],
+  },
+  {
+    heading: 'ROLES_PERMISSIONS',
+    labels: [
+      'FULL_ACCESS',
+      'CREATE',
+      'EDIT',
+      'DELETE',
+    ],
+    subsections: [
+      {
+        moduleName: 'MANAGE_ROLES',
+        permissions: [
+          { value: 'CRORG', label: 'CREATE' },
+          { value: 'URORG', label: 'EDIT' },
+          { value: 'DRORG', label: 'DELETE' },
+        ],
+      },
+      // Add more subsections as needed
+    ],
+  },
+  {
+    heading: 'ORGANIZATION_PREFERENCE',
+    labels: ['FULL_ACCESS', 'READ', 'UPDATE'],
+    subsections: [
+      {
+        moduleName: 'MANAGE_ORGANIZATION',
+        permissions: [
+          { value: 'RORG', label: 'READ' },
+          { value: 'UORG', label: 'UPDATE' },
+        ],
+      },
+      // Add more subsections as needed
+    ],
+  },
+  {
+    heading: 'ACCOUNTS',
+    labels: [
+      'FULL_ACCESS',
+      'VIEW',
+      'CREATE',
+      'EXPORT',
+      'EDIT',
+      'DELETE',
+    ],
+    subsections: [
+      {
+        moduleName: 'BULK_PAYSLIPS',
+        permissions: [
+          { value: '', label: 'VIEW' },
+          { value: 'CBPS', label: 'CREATE' },
+          { value: '', label: 'EXPORT' },
+          { value: '', label: 'EDIT' },
+          { value: '', label: 'DELETE' },
+        ],
+      },
+      {
+        moduleName: 'EXPENSE_MANAGEMENT',
+        permissions: [
+          { value: 'REX', label: 'VIEW' },
+          { value: 'CEX', label: 'CREATE' },
+          { value: '', label: 'EXPORT' },
+          { value: 'UEX', label: 'EDIT' },
+          { value: 'DEX', label: 'DELETE' },
+        ],
+      },
+      {
+        moduleName: 'INVENTORY_MANAGEMENT',
+        permissions: [
+          { value: 'RDEV', label: 'VIEW' },
+          { value: 'CDEV', label: 'CREATE' },
+          { value: '', label: 'EXPORT' },
+          { value: 'UDEV', label: 'EDIT' },
+          { value: 'DDEV', label: 'DELETE' },
+        ],
+      },
+      // Add more subsections as needed
+    ],
+  },
+  {
+    heading: 'LOANS',
+    labels: [
+      'FULL_ACCESS',
+      'VIEW',
+      'VIEW_ALL_LOANS',
+      'CREATE',
+      'EDIT',
+      'APPROVE',
+    ],
+    subsections: [
+      {
+        moduleName: 'LOANS',
+        permissions: [
+          { value: 'RLON', label: 'VIEW' },
+          { value: 'GALON', label: 'VIEW_ALL_LOANS' },
+          { value: 'CLON', label: 'CREATE' },
+          { value: 'ULON', label: 'EDIT' },
+          { value: 'SCLON', label: 'APPROVE' },
+        ],
+      },
+      // Add more subsections as needed
+    ],
+  },
+  {
+    heading: 'HEALTH_INSURANCE',
+    labels: [
+      'FULL_ACCESS',
+      'VIEW',
+      'CREATE',
+      'EDIT',
+      'DELETE'
+    ],
+    subsections: [
+      {
+        moduleName: 'MANAGE_HEALTH_INSURANCE',
+        permissions: [
+          { value: 'RHIN', label: 'VIEW', default: 'true' },
+          { value: 'CHI', label: 'CREATE' },
+          { value: 'UHI', label: 'EDIT' },
+          { value: 'DHI', label: 'DELETE' }
+        ],
+      },
+      // Add more subsections as needed
+    ],
+  },
+  {
+    heading: 'RECRUITMENT_MANAGEMENT',
+    labels: [
+      'FULL_ACCESS',
+      'CREATE_APPLICANT',
+      'READ_APPLICANTS',
+      'READ_ALL_APPLICANTS',
+      'DOWNLOAD_RESUME',
+      'UPDATE_ENTIRE_APPLICANT',
+      'UPDATE_APPLICANT',
+      'TAKE_INTERVIEW',
+      'DELETE_INTERVIEW',
+      'ACCESS_REFERRALS'
+    ],
+    subsections: [
+      {
+        moduleName: 'RECRUITMENT_MANAGEMENT',
+        permissions: [
+          { value: 'CRA', label: 'CREATE_APPLICANT' },
+        { value: 'RRA', label: 'READ_APPLICANTS' },
+        { value: 'RALRA', label: 'READ_ALL_APPLICANTS' },
+        { value: 'DRA', label: 'DOWNLOAD_RESUME' },
+        { value: 'URRA', label: 'UPDATE_ENTIRE_APPLICANT' },
+        { value: 'URA', label: 'UPDATE_APPLICANT' },
+        { value: 'TIA', label: 'TAKE_INTERVIEW' },
+        { value: 'DIA', label: 'DELETE_INTERVIEW' },
+        { value: 'AR', label: 'ACCESS_REFERRALS' }
         ],
       },
     ],
   },
   {
-    heading: 'Profile Picture',
-    labels: ['Full Access', 'Edit Own', 'Edit Others'],
+    heading: 'PROFILE_PICTURE',
+    labels: [
+      'FULL_ACCESS',
+      'EDIT_PROFILE_PICTURE',
+      'EDIT_OWN',
+      'EDIT_OTHERS'
+    ],
     subsections: [
       {
-        moduleName: 'Edit Profile Picture',
+        moduleName: 'PROFILE_PICTURE',
         permissions: [
-          { value: 'UPPS', label: 'Edit Own' },
-          { value: 'UPPA', label: 'Edit Others' },
+          { value: 'UPPS', label: 'EDIT_OWN' },
+          { value: 'UPPA', label: 'EDIT_OTHERS' },
         ],
       },
       // Add more subsections as needed

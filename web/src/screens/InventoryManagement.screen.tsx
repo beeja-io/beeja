@@ -149,7 +149,7 @@ const InventoryManagement = () => {
       setInventoryList([...sortedInventory]);
       setLoading(false);
     } catch (error) {
-      throw new Error('Error fetching data:' + error);
+      throw new Error(t('ERROR_FETCHING_DATA') + error);
     }
   }, [
     currentPage,
@@ -307,8 +307,8 @@ const InventoryManagement = () => {
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody="THE_INVENTORY_HAS_BEEN_ADDED"
-          messageHeading="SUCCESSFULLY_ADDED"
+          messageBody={t('THE_INVENTORY_HAS_BEEN_ADDED')}
+          messageHeading={t('SUCCESSFULLY_ADDED')}
           handleClose={handleShowSuccessMessage}
         />
       )}
