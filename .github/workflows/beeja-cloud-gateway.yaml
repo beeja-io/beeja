@@ -4,8 +4,9 @@ on:
   pull_request:
     branches:
       - main
+      - PS-299
     paths:
-      - 'beeja-services/beeja-cloud-gateway/**'
+      - 'services/beeja-cloud-gateway/**'
 jobs:
 
   #CODE LINTING
@@ -24,7 +25,7 @@ jobs:
         java-version: '17'
 
     - name: Run Spotless Apply
-      working-directory: beeja-services/beeja-cloud-gateway
+      working-directory: services/beeja-cloud-gateway
       run: gradle spotlessApply
 
   #macos
@@ -42,7 +43,7 @@ jobs:
         java-version: '17'
 
     - name: Run Spotless Apply
-      working-directory: beeja-services/beeja-cloud-gateway
+      working-directory: services/beeja-cloud-gateway
       run: gradle spotlessApply
 
   #windows
@@ -60,7 +61,7 @@ jobs:
         java-version: '17'
 
     - name: Run Spotless Apply
-      working-directory: beeja-services/beeja-cloud-gateway
+      working-directory: services/beeja-cloud-gateway
       run: gradle spotlessApply
 
   # JUNIT Testing
@@ -78,7 +79,7 @@ jobs:
         java-version: '17'
 
     - name: Run Tests
-      working-directory: beeja-services/beeja-cloud-gateway
+      working-directory: services/beeja-cloud-gateway
       run: gradle test
 
     - name: Upload Test Results
@@ -87,3 +88,49 @@ jobs:
       with:
         name: junit-results
         path: build/test-results/test/
+
+  # Image Build and Scanning
+  trivy-image-scan:
+    permissions:
+      contents: read 
+      security-events: write
+
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      # - name: gradle wrapper
+      #   working-directory: beeja-services/beeja-cloud-gateway
+      #   run: gradle wrapper
+
+      - name: Generate jar package
+        working-directory: services/beeja-cloud-gateway
+        run: gradle :beeja-cloud-gateway:bootJar
+
+      - name: Build Docker Image
+        working-directory: services/beeja-cloud-gateway
+        run: docker build -t my-app:1.0 .
+        env:
+          DOCKER_BUILDKIT: 1
+
+      - name: Trivy Image Scanning for Vulnarability
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: my-app:1.0
+          format: 'sarif'
+          output: 'trivy-docker.sarif'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-docker.sarif'
