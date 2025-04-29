@@ -78,28 +78,28 @@ const DeductionsTab = ({
   const healthInsuranceDetails = useMemo(
     () => [
       {
-        label: 'Gross Premium',
+        label: t('GROSS_PREMIUM'),
         value:
           healthInsurance && healthInsurance.grossPremium
             ? healthInsurance.grossPremium.toString()
             : '-',
       },
       {
-        label: 'Instalment Type',
+        label: t('INSTALMENT_TYPE'),
         value:
           healthInsurance && healthInsurance.instalmentType
             ? healthInsurance.instalmentType
             : '-',
       },
       {
-        label: 'Instalment Amount',
+        label: t('INSTALMENT_AMOUNT'),
         value:
           healthInsurance && healthInsurance.instalmentAmount
             ? healthInsurance.instalmentAmount.toString()
             : '-',
       },
       {
-        label: 'No. of Instalments',
+        label: t('NUMBER_OF_INSTALMENTS'),
         value:
           healthInsurance && healthInsurance.instalmentFrequency
             ? healthInsurance.instalmentFrequency.toString()

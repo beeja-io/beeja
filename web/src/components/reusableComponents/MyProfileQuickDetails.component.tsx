@@ -47,6 +47,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { toast } from 'sonner';
 import { useProfileImage } from '../../context/ProfileImageContext';
 import { LargeSVG, SmallSVG } from '../../svgs/profilePictureSvgs.svg';
+import { useTranslation } from 'react-i18next';
 
 type QuickProfileProps = {
   employee: EmployeeEntity | undefined;
@@ -59,6 +60,8 @@ const MyProfileQuickDetailsComponent = ({
   isLoadingResponse,
 }: QuickProfileProps) => {
   const [roles, setRoles] = useState<string[]>([]);
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     if (employee?.account.roles) {
@@ -472,7 +475,7 @@ const MyProfileQuickDetailsComponent = ({
               <BorderDivLine />
               <QuickInfoDepartmentContainer>
                 <div>
-                  <span>Department</span>
+                <span>{t('Department')}</span>
                   <span className="skeleton skeleton-text">&nbsp;</span>{' '}
                 </div>
               </QuickInfoDepartmentContainer>
@@ -546,7 +549,7 @@ const MyProfileQuickDetailsComponent = ({
                   employee && !employee.account.active ? 'inactiveButton' : ''
                 }
               >
-                {employee?.account.active ? 'ACTIVE' : 'INACTIVE'} &nbsp;{' '}
+                {employee?.account.active ? t('ACTIVE') : t('INACTIVE')} &nbsp;{' '}
               </MyProfileButton>
               {user &&
                 hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) &&
@@ -670,7 +673,7 @@ const MyProfileQuickDetailsComponent = ({
             <BorderDivLine />
             <QuickInfoDepartmentContainer>
               <div>
-                <span>Department</span>
+                <span>{t('Department')}</span>
                 <span>
                   {employee &&
                   employee.employee.jobDetails &&

@@ -79,30 +79,30 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
   };
 
   const documentType = [
-    'Identity',
-    'Payslip',
-    'ADDRESS_PROOF',
-    'Education',
-    'NDA',
-    'Tax_Exit_Doc',
-    'Equipment_Policy',
-    'Appraisal Letter',
+    t('IDENTITY'),
+    t('PAYSLIP'),
+    t('ADDRESS_PROOF'),
+    t('EDUCATION'),
+    t('NDA'),
+    t('TAX_EXIT_DOC'),
+    t('EQUIPMENT_POLICY'),
+    t('APPRAISAL_LETTER'),
   ];
   const Actions = [
     ...(user &&
     (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
       hasPermission(user, DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS))
-      ? [{ title: 'Download', svg: <DownloadIcon /> }]
+      ? [{ title: t('DOWNLOAD'), svg: <DownloadIcon /> }]
       : []),
     ...(user &&
     (hasPermission(user, DOCUMENT_MODULE.DELETE_DOCUMENT) ||
       hasPermission(user, DOCUMENT_MODULE.DELETE_ENTIRE_DOCUMENTS))
-      ? [{ title: 'Delete', svg: <DeleteIcon /> }]
+      ? [{ title: t('DELETE'), svg: <DeleteIcon /> }]
       : []),
     ...(user &&
     (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
       hasPermission(user, DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS))
-      ? [{ title: 'Preview', svg: <EditIcon /> }]
+      ? [{ title: t('PREVIEW'), svg: <EditIcon /> }]
       : []),
   ];
 
@@ -198,7 +198,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
       handleTotalPages(totalPages ?? 1);
       setAllFilesList(response.data.files);
     } catch (error) {
-      throw new Error('Error fetching data:' + error);
+      throw new Error(t('ERROR_FETCHING_DATA') + error);
     } finally {
       setIsLoading(false);
     }
@@ -254,8 +254,8 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
           const { response } = error;
           if (response) {
             if (response.status === 413) {
-              toast('File size is too large');
-              setResponseMessage('File size exceeds the 10 MB limit');
+              toast(t('FILE_SIZE_TOO_LARGE'));
+              setResponseMessage(t('FILE_SIZE_LIMIT_EXCEEDED'));
             }
             return;
           }
@@ -300,14 +300,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
           <div className="document_heading">
             {user?.employeeId === props.employee.account.employeeId ? (
               <>
-                <p>{t('My Documents')}</p>
+                <p>{t('MY_DOCUMENTS')}</p>
               </>
             ) : (
               <>
-                <p>{t('Documents')}</p>
+                <p>{t('DOCUMENTS')}</p>
               </>
             )}
-            <span>{t('List of Documents')}</span>
+            <span>{t('LIST_OF_DOCUMENTS')}</span>
           </div>
           <div>
             {/* TODO: Document Filter */}
@@ -329,7 +329,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                 onClick={handleIsCreateDocumentModal}
               >
                 <FileUploadIcon />
-                {t('Upload Document')}
+                {t('UPLOAD_DOCUMENT')}
               </UploadButton>
             )}
           </div>
@@ -341,10 +341,10 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
           <TableList>
             <TableHead>
               <tr className="documentsTableTow">
-                <th>{t('Name')}</th>
-                <th>{t('Document Type')}</th>
-                <th>{t('Created Date')}</th>
-                <th>{t('Created By')}</th>
+                <th>{t('NAME')}</th>
+                <th>{t('DOCUMENT_TYPE')}</th>
+                <th>{t('CREATED_DATE')}</th>
+                <th>{t('CREATED_BY')}</th>
                 {user &&
                   (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
                     hasPermission(user, DOCUMENT_MODULE.DELETE_DOCUMENT) ||
@@ -356,7 +356,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     hasPermission(
                       user,
                       DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS
-                    )) && <th>{t('Actions')}</th>}
+                    )) && <th>{t('ACTIONS')}</th>}
               </tr>
             </TableHead>
 
@@ -418,9 +418,9 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
         ) : (
           <NoDocsContainer>
             <NoDocsIcon />
-            <p className="heading">There is no document here</p>
+            <p className="heading">{t('NO_DOCUMENT')}</p>
             <p className="description">
-              Please add new Document by clicking "Upload Document" above
+              {t('ADD_NEW_DOCUMENT_INFO')}
             </p>
           </NoDocsContainer>
         )}
@@ -463,7 +463,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       onChange={handleDocumentTypeChange}
                       className="selectoption"
                     >
-                      {['Select a Type', ...documentType].map((option) => (
+                      {[t('Select a Type'), ...documentType].map((option) => (
                         <option key={option} value={option}>
                           {option}
                         </option>
@@ -481,7 +481,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     <TextInput
                       type="text"
                       value={documentName}
-                      placeholder="Ex: Pan Card /Aadhar Card /Voter Id/ Driving License"
+                      placeholder={t('Placeholder Document Examples')}
                       onChange={(e) => setDocumentName(e.target.value)}
                     />
                   </InputLabelContainer>
@@ -491,14 +491,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     <TextInput
                       type="text"
                       value={description}
-                      placeholder="Ex: Pan Card front Image"
+                      placeholder={t('Placeholder Document Front Image')}
                       onChange={(e) => setDescription(e.target.value)}
                     />
                   </InputLabelContainer>
 
                   <InputLabelContainer>
                     <label>
-                      {t('CHOOSE/DARG_FILE')}{' '}
+                      {t('CHOOSE_DARG_FILE')}{' '}
                       <ValidationText className="star">*</ValidationText>
                     </label>
 
@@ -509,7 +509,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     >
                       <label htmlFor="fileInput">
                         <FormFileUploadIcon />
-                        {t('CHOOSE/DARG_FILE')}
+                        {t('CHOOSE_DARG_FILE')}
                       </label>
                       <input
                         type="file"
@@ -568,20 +568,20 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                         }}
                         className="cancel"
                       >
-                        Cancel
+                        {t('CANCEL')}
                       </Button>
                       <Button
                         className="submit"
                         style={{ cursor: isResponseLoading ? 'progress' : '' }}
                       >
-                        Submit
+                        {t('SUBMIT')}
                       </Button>
                     </div>
                   </div>
                 </div>
                 <br />
                 <span className="infoText">
-                  File format : .pdf, .png, .jpeg (Maximum Size: 10MB)
+                {t('FILE_FORMAT_INFO')}
                 </span>
               </form>
             </FileUploadForm>
