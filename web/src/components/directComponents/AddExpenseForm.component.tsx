@@ -49,7 +49,10 @@ import { hasPermission } from '../../utils/permissionCheck';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
 import { useTranslation } from 'react-i18next';
-import { EXPENSE_RECEIPT_FILE_SIZE, EXPENSE_RECEIPTS_TOTAL_REQUEST_SIZE } from '../../constants/FileSizes';
+import {
+  EXPENSE_RECEIPT_FILE_SIZE,
+  EXPENSE_RECEIPTS_TOTAL_REQUEST_SIZE,
+} from '../../constants/FileSizes';
 import { EXPENSE_RECEIPT_TYPES } from '../../constants/FileTypes';
 
 type AddExpenseFormProps = {
@@ -279,22 +282,22 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
-  
+
     if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
       const droppedFiles = Array.from(event.dataTransfer.files);
       const validFiles: File[] = [];
-  
+
       let hasTypeError = false;
       let hasSingleSizeError = false;
       let hasCombinedSizeError = false;
       let hasFileLimitError = false;
-  
+
       const currentFileCount = selectedFile.length;
 
       if (currentFileCount + droppedFiles.length > 3) {
         hasFileLimitError = true;
       }
-  
+
       droppedFiles.forEach((file) => {
         if (!EXPENSE_RECEIPT_TYPES.includes(file.type)) {
           hasTypeError = true;
@@ -305,9 +308,10 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         }
       });
 
-      const totalSize = validFiles.reduce((acc, file) => acc + file.size, 0) +
-                        selectedFile.reduce((acc, file) => acc + file.size, 0);
-  
+      const totalSize =
+        validFiles.reduce((acc, file) => acc + file.size, 0) +
+        selectedFile.reduce((acc, file) => acc + file.size, 0);
+
       if (totalSize > EXPENSE_RECEIPTS_TOTAL_REQUEST_SIZE) {
         hasCombinedSizeError = true;
       }
@@ -321,25 +325,25 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       ) {
         setSelectedFile((prevFiles) => [...prevFiles, ...validFiles]);
       }
- 
+
       if (hasTypeError) {
         toast.error(t('errors.unsupported_format'));
       }
-  
+
       if (hasSingleSizeError) {
         toast.error(t('errors.single_file_exceeds'));
       }
-  
+
       if (hasCombinedSizeError) {
         toast.error(t('errors.total_file_exceeds'));
       }
-  
+
       if (hasFileLimitError) {
         toast.error(t('errors.file_limit_exceeded'));
       }
     }
   };
-  
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const selectedFiles = Array.from(event.target.files);

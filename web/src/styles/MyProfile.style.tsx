@@ -443,15 +443,15 @@ export const TabContentTable = styled.table``;
 export const TabContentTableTd = styled.td`
   padding: 4px 8px 14px 0;
 
-  .selectOptionContent{
+  .selectOptionContent {
     border-radius: 5px;
     border: 0;
     width: 100%;
     padding: 4px 3px;
-    outline:0;
+    outline: 0;
     background-color: #f1f2f4;
   }
-    
+
   &:first-child {
     width: 90px;
     color: var(--greyscale-600, #687588);

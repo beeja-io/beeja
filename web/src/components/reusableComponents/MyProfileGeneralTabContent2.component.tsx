@@ -10,7 +10,7 @@ import {
   TabContentInnerContainer,
   TabContentTable,
   TabContentTableTd,
-  InlineInput
+  InlineInput,
 } from '../../styles/MyProfile.style';
 import {
   EditWhitePenSVG,
@@ -23,10 +23,7 @@ import {
   getOrganizationValuesByKey,
   updateEmployeeDetailsByEmployeeId,
 } from '../../service/axiosInstance';
-import {
-  formatDate,
-  formatDateYYYYMMDD
-} from '../../utils/dateFormatter';
+import { formatDate, formatDateYYYYMMDD } from '../../utils/dateFormatter';
 import { EMPLOYEE_MODULE } from '../../constants/PermissionConstants';
 import { isValidEmail, isValidPINCode } from '../../utils/formInputValidators';
 import { hasPermission } from '../../utils/permissionCheck';
@@ -52,7 +49,9 @@ export const GeneralDetailsTab = ({
   const { t } = useTranslation();
   const { user } = useUser();
 
-  const [modifiedFields, setModifiedFields] = useState<{ [key: string]: string }>( {} );
+  const [modifiedFields, setModifiedFields] = useState<{
+    [key: string]: string;
+  }>({});
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   let numToDivide = 1;
@@ -72,7 +71,9 @@ export const GeneralDetailsTab = ({
     handleIsEditModeOn();
   };
 
-  const [originalFormData, setOriginalFormData] = useState<{ [key: string]: string }>({});
+  const [originalFormData, setOriginalFormData] = useState<{
+    [key: string]: string;
+  }>({});
 
   // When form with new values is submitted , the new Values need to be updated in Form Data to display.
   useEffect(() => {
@@ -231,7 +232,9 @@ export const GeneralDetailsTab = ({
     }
   };
 
-  const mapFormDataToBackendStructure = (data: { [key: string]: string }): any => {
+  const mapFormDataToBackendStructure = (data: {
+    [key: string]: string;
+  }): any => {
     const backendData: { [key: string]: string | undefined } = {};
 
     for (const label in data) {
@@ -349,50 +352,64 @@ export const GeneralDetailsTab = ({
   const allowFullEditingAccess =
     user && hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES);
 
-  const [departmentList, setDepartmentList] = useState<OrgDefaults>( {} as OrgDefaults );
-  const [jobTitles, setJobTitles] = useState<OrgDefaults>( {} as OrgDefaults );
-  const [employmentTypes, setEmploymentTypes] = useState<OrgDefaults>( {} as OrgDefaults );
-  const [isDefaultResponseLoading, setIsDefaultResponseLoading] = useState(false);
-  
+  const [departmentList, setDepartmentList] = useState<OrgDefaults>(
+    {} as OrgDefaults
+  );
+  const [jobTitles, setJobTitles] = useState<OrgDefaults>({} as OrgDefaults);
+  const [employmentTypes, setEmploymentTypes] = useState<OrgDefaults>(
+    {} as OrgDefaults
+  );
+  const [isDefaultResponseLoading, setIsDefaultResponseLoading] =
+    useState(false);
+
   // Object.values is used to convert Object to array
-  const optionsByLabel:{ [key: string]: string[]} = {
-    Nationality: ['India','German','American'],
-    Country: ['India','Germany','UnitedStates'],
+  const optionsByLabel: { [key: string]: string[] } = {
+    Nationality: ['India', 'German', 'American'],
+    Country: ['India', 'Germany', 'UnitedStates'],
     Department: Object.values(departmentList),
     Designation: Object.values(jobTitles),
     'Employment Type': Object.values(employmentTypes),
-    Gender : ['Male', 'Female'],
-    'Marital Status' : ['Single', 'Married']
+    Gender: ['Male', 'Female'],
+    'Marital Status': ['Single', 'Married'],
   };
 
-  const labelsToExcludeFromStrictAlphabets = ['Email Address','Alt Email Address','Primary Address',
-    'Email','Phone','Date of Birth','Joining Date', 'Phone Number' ,'Alt Phone Number'
+  const labelsToExcludeFromStrictAlphabets = [
+    'Email Address',
+    'Alt Email Address',
+    'Primary Address',
+    'Email',
+    'Phone',
+    'Date of Birth',
+    'Joining Date',
+    'Phone Number',
+    'Alt Phone Number',
   ];
 
-const handleInputChange = (label: string, value: string) => {
+  const handleInputChange = (label: string, value: string) => {
     const inputValue = value;
     if (label === 'Postal Code') {
-        const validValue = inputValue.replace( /\D/g,'').slice(0, 6);  // maximum 6 digits it accepts for Postal Code
-        handleChange(label, validValue);
+      const validValue = inputValue.replace(/\D/g, '').slice(0, 6); // maximum 6 digits it accepts for Postal Code
+      handleChange(label, validValue);
+    } else if (label === 'Aadhar Number') {
+      const validValue = inputValue.replace(/\D/g, '').slice(0, 12); // maximum 6 digits it accepts for Aadhar Number
+      handleChange(label, validValue);
+    } else if (
+      label === 'Phone' ||
+      label === 'Phone Number' ||
+      label === 'Alt Phone Number'
+    ) {
+      const validValue = inputValue.replace(/\D/g, '').slice(0, 10); // maximum 10 digits it accepts for Phone Number
+      handleChange(label, validValue);
     }
-    else if (label === 'Aadhar Number') {
-        const validValue = inputValue.replace(/\D/g,'').slice(0, 12);   // maximum 6 digits it accepts for Aadhar Number
-        handleChange(label, validValue);
-    } 
-    else if (label === 'Phone' || label === 'Phone Number' || label ==='Alt Phone Number') {
-        const validValue = inputValue.replace(/\D/g,'').slice(0, 10);    // maximum 10 digits it accepts for Phone Number
-        handleChange(label, validValue);
-    } 
     // Only Alphabets and Spaces allowed for fields not in labelsToExcludeFromStrictAlphabets List.
-    else if ( !labelsToExcludeFromStrictAlphabets.includes(label) ) {
-        if((/^[a-zA-Z\s]*$/.test(inputValue) ||inputValue === '')){
-            handleChange(label, inputValue);
-        }
-    }
-    else if (labelsToExcludeFromStrictAlphabets.includes(label)) {
+    else if (!labelsToExcludeFromStrictAlphabets.includes(label)) {
+      if (/^[a-zA-Z\s]*$/.test(inputValue) || inputValue === '') {
         handleChange(label, inputValue);
+      }
+    } else if (labelsToExcludeFromStrictAlphabets.includes(label)) {
+      handleChange(label, inputValue);
     }
-}
+  };
 
   // Effect : This useEffect runs only when the Job tab is active.
   useEffect(() => {
@@ -421,9 +438,11 @@ const handleInputChange = (label: string, value: string) => {
   // Check if the edit area should be shown:
   // 1) User has full editing access and editing other profiles
   // 2) OR User is editing their Personal Info section only.
-  const showEditArea = (allowFullEditingAccess &&
-    user.employeeId != employee.account.employeeId) || (heading === 'Personal Info' &&
-        user?.employeeId === employee.account.employeeId)
+  const showEditArea =
+    (allowFullEditingAccess &&
+      user.employeeId != employee.account.employeeId) ||
+    (heading === 'Personal Info' &&
+      user?.employeeId === employee.account.employeeId);
 
   return (
     <>
@@ -465,8 +484,7 @@ const handleInputChange = (label: string, value: string) => {
                     </span>
                   ))}
               </TabContentEditArea>
-            ) 
-        }
+            )}
           </TabContentMainContainerHeading>
           <BorderDivLine width="100%" />
           <TabContentInnerContainer>
@@ -481,45 +499,75 @@ const handleInputChange = (label: string, value: string) => {
                       (allowFullEditingAccess &&
                         user.employeeId !== employee.account.employeeId)) ? (
                       <TabContentTableTd>
-                        {['Country','Nationality','Department','Employment Type','Designation'].includes(label)?
-                          (
-                            (<select 
-                                className="selectOptionContent" 
-                                onChange={(e) => handleChange(label,e.target.value)}
-                                value={formData[label] !== undefined ? formData[label] : '' }
-                              >
-                                <option value="">Select</option>
-                                {optionsByLabel[label].map((optionValue) => (
-                                  <option key={optionValue} value={optionValue}>{optionValue}</option>
-                                ))}
-                              </select>)
-                          ):(
-                            <InlineInput
-                            type={ label === 'Date of Birth' || label === 'Joining Date' ? 'date' : 'text'}
-                            max={label === 'Date of Birth' || label === 'Joining Date' ? new Date().toISOString().split('T')[0] : undefined }
-                            value={formData[label] !== undefined ?
-                                    (label === 'Date of Birth' || label === 'Joining Date' ? 
-                                        formatDateYYYYMMDD(formData[label]) : formData[label] ) : ""
-                                }
+                        {[
+                          'Country',
+                          'Nationality',
+                          'Department',
+                          'Employment Type',
+                          'Designation',
+                        ].includes(label) ? (
+                          <select
+                            className="selectOptionContent"
+                            onChange={(e) =>
+                              handleChange(label, e.target.value)
+                            }
+                            value={
+                              formData[label] !== undefined
+                                ? formData[label]
+                                : ''
+                            }
+                          >
+                            <option value="">Select</option>
+                            {optionsByLabel[label].map((optionValue) => (
+                              <option key={optionValue} value={optionValue}>
+                                {optionValue}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <InlineInput
+                            type={
+                              label === 'Date of Birth' ||
+                              label === 'Joining Date'
+                                ? 'date'
+                                : 'text'
+                            }
+                            max={
+                              label === 'Date of Birth' ||
+                              label === 'Joining Date'
+                                ? new Date().toISOString().split('T')[0]
+                                : undefined
+                            }
+                            value={
+                              formData[label] !== undefined
+                                ? label === 'Date of Birth' ||
+                                  label === 'Joining Date'
+                                  ? formatDateYYYYMMDD(formData[label])
+                                  : formData[label]
+                                : ''
+                            }
                             placeholder={`Enter ${t(label)}`}
-                            onChange={(e) => {handleInputChange(label,e.target.value);
-                                             if(label === 'Joining Date'){
-                                                setJoiningDate(e.target.value)
-                                             }
+                            onChange={(e) => {
+                              handleInputChange(label, e.target.value);
+                              if (label === 'Joining Date') {
+                                setJoiningDate(e.target.value);
+                              }
                             }}
-                            />
+                          />
                         )}
                       </TabContentTableTd>
-                      ) : (
-                        <>
-                          {value != '-' && (label === 'Joining Date' || label === 'Date of Birth') ? (
-                            <TabContentTableTd>
-                              {formatDate(value)}
-                            </TabContentTableTd>
-                          ) : (
-                            <TabContentTableTd>{t(value)}</TabContentTableTd>
-                          )}
-                        </>
+                    ) : (
+                      <>
+                        {value != '-' &&
+                        (label === 'Joining Date' ||
+                          label === 'Date of Birth') ? (
+                          <TabContentTableTd>
+                            {formatDate(value)}
+                          </TabContentTableTd>
+                        ) : (
+                          <TabContentTableTd>{t(value)}</TabContentTableTd>
+                        )}
+                      </>
                     )}
                   </tr>
                 ))}
@@ -538,21 +586,36 @@ const handleInputChange = (label: string, value: string) => {
                           user.employeeId !== employee.account.employeeId)) ? (
                         <TabContentTableTd>
                           {label === 'Gender' || label === 'Marital Status' ? (
-                              <select className="selectOptionContent" 
-                                onChange={(e) => handleChange(label,e.target.value)}
-                                value={formData[label] !== undefined ? formData[label] : ''}
-                              >
-                                <option value="">Select</option>
-                                {optionsByLabel[label].map((optionValue) => (
-                                    <option key={optionValue} value={optionValue}>{optionValue}</option>
-                                ))}
-                              </select>
+                            <select
+                              className="selectOptionContent"
+                              onChange={(e) =>
+                                handleChange(label, e.target.value)
+                              }
+                              value={
+                                formData[label] !== undefined
+                                  ? formData[label]
+                                  : ''
+                              }
+                            >
+                              <option value="">Select</option>
+                              {optionsByLabel[label].map((optionValue) => (
+                                <option key={optionValue} value={optionValue}>
+                                  {optionValue}
+                                </option>
+                              ))}
+                            </select>
                           ) : (
                             <InlineInput
-                                type={'text'}
-                                placeholder={`Enter ${label}`}
-                                value={ formData[label] !== undefined ? formData[label] : value }
-                                onChange={(e) => handleInputChange(label, e.target.value)}
+                              type={'text'}
+                              placeholder={`Enter ${label}`}
+                              value={
+                                formData[label] !== undefined
+                                  ? formData[label]
+                                  : value
+                              }
+                              onChange={(e) =>
+                                handleInputChange(label, e.target.value)
+                              }
                             />
                           )}
                         </TabContentTableTd>
@@ -606,5 +669,3 @@ const handleInputChange = (label: string, value: string) => {
     </>
   );
 };
-
-
