@@ -15,7 +15,6 @@ export const FontName = styled.div<{ fontNameProps: FontNameProps }>`
     fontNameProps.fontFamily || 'var(--font-family-primary)'};
   font-size: ${(props) =>
     props.fontNameProps.fontSize || 'var(--font-size-primary)'};
-  /* font-size: ${(props) => props.fontNameProps.fontSize || '14px'}; */
   font-style: normal;
   font-weight: 500;
   line-height: 160%;
