@@ -172,5 +172,11 @@
   "ENTER_YOUR_COMMENTS_HERE": "Enter your comment here...",
   "LEAVE_A_COMMENT": "Leave a Comment",
   "COMMENTS": "Comments",
-  "COMMENT": "Comment"
+  "COMMENT": "Comment",
+  "errors": {
+    "unsupported_format": "Nicht unterstütztes Dateiformat. Bitte laden Sie eine gültige Belegdatei hoch.",
+    "single_file_exceeds": "Dateigröße überschreitet 5 MB. Bitte laden Sie eine kleinere Datei hoch.",
+    "total_file_exceeds": "Die kombinierten Dateien überschreiten 20 MB. Bitte laden Sie kleinere Dateien hoch.",
+    "file_limit_exceeded": "Sie können maximal 3 Dateien hochladen."
+  }
 }
