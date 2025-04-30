@@ -1,0 +1,349 @@
+{
+	"info": {
+		"_postman_id": "8679775e-4a4a-48f9-a2ef-b15e56e1d0b8",
+		"name": "recruitmentService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43003168"
+	},
+	"item": [
+		{
+			"name": "Applicant",
+			"item": [
+				{
+					"name": "Get Applicants By Filter",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/recruitments/v1/applicants/combinedApplicants?firstName=Bruce",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"applicants",
+								"combinedApplicants"
+							],
+							"query": [
+								{
+									"key": "firstName",
+									"value": "Bruce"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Applicants",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\":\"Deo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/recruitments/v1/applicants",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"applicants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Applicant By Patch Method",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\":\"Reo\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/recruitments/v1/applicants/{{applicantID}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"applicants",
+								"{{applicantID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Applicant By Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/recruitments/v1/applicants/{{applicantID}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"applicants",
+								"{{applicantID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download File",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Submit FeedBack",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"applicantComments\":\"This is the new feed back\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/recruitments/v1/applicants/feedback/{{applicantID}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"applicants",
+								"feedback",
+								"{{applicantID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign Interviewer",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"assignedInterviewers\":\"Kiran\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/recruitments/v1/applicants/{{applicantID}}/assign-interviewer",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"applicants",
+								"{{applicantID}}",
+								"assign-interviewer"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Comment To Applicant",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"applicantId\":\"67ea4464c9ab837f813c9f43\",\r\n    \"comment\":\"Best performer\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/recruitments/v1/applicants/comments",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"applicants",
+								"comments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Status Of Applicant",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/recruitments/v1/applicants/67ea4464c9ab837f813c9f43/status/{{status}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"applicants",
+								"67ea4464c9ab837f813c9f43",
+								"status",
+								"{{status}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Interviewer By InterviewID",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/recruitments/v1/applicants/{{applicantID}}/interview/{{interviewID}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"applicants",
+								"{{applicantID}}",
+								"interview",
+								"{{interviewID}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Referrals",
+			"item": [
+				{
+					"name": "Get All My Referrals",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "resumeId",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{port}}/recruitments/v1/referrals",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"referrals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new Referal",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "resumeId",
+									"type": "file",
+									"src": "/C:/Users/prane/OneDrive/Documents/PraneethUniversityAdmissions/Desktop/1740205983257.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{port}}/recruitments/v1/referrals",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"recruitments",
+								"v1",
+								"referrals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Resume",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

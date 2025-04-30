@@ -95,6 +95,9 @@ eureka:
 auth.cors.allowed-origins:
   frontEndUrl: ${FRONTEND_URL}
   localFrontEndUrl: http://localhost:3000
+  urls:
+    - ${FRONTEND_URL}
+    - http://localhost:3000
 
 management:
   metrics:

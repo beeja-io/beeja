@@ -429,6 +429,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
   private boolean hasDuplicateValues(Set<OrgValues> values) {
     return values.stream()
+            .filter(v -> v.getValue() != null)
             .map(v -> v.getValue().toLowerCase())
             .collect(Collectors.toSet())
             .size() < values.size();
