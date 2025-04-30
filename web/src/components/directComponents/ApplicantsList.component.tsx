@@ -11,7 +11,6 @@ import { CalenderIcon } from '../../svgs/DocumentTabSvgs.svg';
 import { formatDate } from '../../utils/dateFormatter';
 import { ExpenseListSection } from '../../styles/ExpenseListStyles.style';
 import { StatusIndicator } from '../../styles/LoanApplicationStyles.style';
-import { removeUnderScore } from '../../utils/stringUtils';
 import { BulkPayslipContainer } from '../../styles/BulkPayslipStyles.style';
 import ApplicantListActions from '../actionsOfLists/ApplicantListActions';
 import { EditIcon } from '../../svgs/ExpenseListSvgs.svg';
@@ -36,7 +35,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
           permission === RECRUITMENT_MODULE.UPDATE_ENTIRE_APPLICANT
       )
     )
-      ? [{ title: 'Edit', svg: <EditIcon /> }]
+      ? [{ title: t('EDIT'), svg: <EditIcon /> }]
       : []),
     // TODO: Update after implementing proper BE
     // ...(user?.roles.some((role) =>
@@ -45,7 +44,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
     //       permission === RECRUITMENT_MODULE.UPDATE_ENTIRE_APPLICANT
     //   )
     // )
-    //   ? [{ title: 'Delete', svg: <DeleteIcon /> }]
+    //   ? [{ title: t('DELETE'), svg: <DeleteIcon /> }]
     //   : []),
   ];
 
@@ -77,13 +76,13 @@ const ApplicantsList = (props: ApplicantsListProps) => {
           window.URL.revokeObjectURL(url);
         },
         {
-          loading: 'Downloading...',
-          success: 'Downloaded successfully',
-          error: 'Failed to download file',
+          loading: t('DOWNLOADING'),
+          success: t('DOWNLOAD_SUCCESS'),
+          error: t('DOWNLOAD_FAILED'),
         }
       );
     } catch (error) {
-      toast.error('Failed to download file.');
+      toast.error(t('DOWNLOAD_FAILED'))
     }
   };
 
@@ -154,7 +153,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                       <td>
                         {applicant.firstName} {applicant.lastName}
                       </td>
-                      <td>{applicant.positionAppliedFor}</td>
+                      <td>{t(applicant.positionAppliedFor)}</td>
                       <td>{applicant.phoneNumber}</td>
                       {!props.isReferral && (
                         <td>
@@ -165,10 +164,10 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                       )}
                       <td>
                         <StatusIndicator
-                          status={applicant.status}
+                          status={(applicant.status)}
                           className="applicantStatus"
                         >
-                          {removeUnderScore(applicant.status)}
+                          {t(applicant.status)}
                         </StatusIndicator>
                       </td>
 

@@ -155,7 +155,7 @@ const AddRoleComponent: React.FC<Props> = ({
       <form onSubmit={handleSubmit}>
         <TabContentMainContainer>
           <TabContentMainContainerHeading>
-            <h4>{editingRole ? 'Edit Role' : 'Add Role'}</h4>
+          <h4>{editingRole ? t('EDIT_ROLE') : t('ADD_ROLE')}</h4>
           </TabContentMainContainerHeading>
           <BorderDivLine width="100%" />
           <br />
@@ -188,7 +188,7 @@ const AddRoleComponent: React.FC<Props> = ({
         {roleData.map((section, index) => (
           <TabContentMainContainer key={index} className="rolesPermissions">
             <TabContentMainContainerHeading>
-              <h4>{section.heading}</h4>
+              <h4>{t(section.heading)}</h4>
             </TabContentMainContainerHeading>
             <BorderDivLine width="100%" />
             <section className="scrollableTable">
@@ -198,7 +198,7 @@ const AddRoleComponent: React.FC<Props> = ({
                     <th></th>
                     {section.labels.map((label, labelIndex) => (
                       <td className="checkBoxes" key={labelIndex}>
-                        {label}
+                        {t(label)}
                       </td>
                     ))}
                   </tr>
@@ -206,7 +206,7 @@ const AddRoleComponent: React.FC<Props> = ({
                 <tbody>
                   {section.subsections.map((subsection, subIndex) => (
                     <tr key={subIndex}>
-                      <th>{subsection.moduleName}</th>
+                      <th>{t(subsection.moduleName)}</th>
                       {section.heading !== 'Employees' && (
                         <td key={subIndex} className="checkBoxes">
                           <Checkbox

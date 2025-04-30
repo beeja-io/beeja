@@ -591,7 +591,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
         {fromDate == null && toDate == null && (
           <span className="noFilters noMargin">
             <InfoCircleSVG />
-            {`Showing current month expenses (sorted based on ${
+            {`${t('SHOWING_CURRENT_MONTH_EXPENSES_SORTED')} ${
               sortBy === 'expenseDate'
                 ? t('EXPENSE_DATE')
                 : sortBy === 'requestedDate'
@@ -657,7 +657,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                           {/* FIXME - Currency */}
                           {exp.amount === 0
                             ? '-'
-                            : formatToINR(exp.amount) + ' INR'}
+                            : formatToINR(exp.amount)+ ' ' + t('CURRENCY')}
                         </td>
                         <td onClick={() => handleExpenseToBePreviewed(exp)}>
                           {exp.paymentMadeBy}
@@ -718,8 +718,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     <tr>
                       <td colSpan={7}>
                         <ZeroEntriesFound
-                          heading="THERE_IS_NO_EXPENSE_HISTORY_FOUND"
-                          message="YOU_HAVE_NOT_ADDED_ANY_EXPENSES"
+                          heading={t('THERE_IS_NO_EXPENSE_HISTORY_FOUND')}
+                          message={t('YOU_HAVE_NOT_ADDED_ANY_EXPENSES')}
                         />
                       </td>
                     </tr>

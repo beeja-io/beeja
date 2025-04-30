@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { IApplicant } from '../entities/ApplicantEntity';
 import { getAllApplicantList, getMyReferrals } from '../service/axiosInstance';
 import ApplicantsList from '../components/directComponents/ApplicantsList.component';
+import { useTranslation } from 'react-i18next';
 
 type RecruitmentManagementScreenProps = {
   isReferral: boolean;
@@ -27,6 +28,7 @@ const RecruitmentManagementScreen = (
   };
   const [allApplicants, setAllApplicants] = useState<IApplicant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const { t } = useTranslation();
 
   const handleIsLoading = () => {
     setIsLoading(!isLoading);
@@ -58,7 +60,7 @@ const RecruitmentManagementScreen = (
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {props.isReferral ? 'Referrals' : 'Hiring'}
+            {props.isReferral ? t('REFERRALS') : t('HIRING')}
           </span>
           {user &&
             (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT) ||
@@ -75,7 +77,7 @@ const RecruitmentManagementScreen = (
                 }
               >
                 <AddNewPlusSVG /> &nbsp;
-                {props.isReferral ? 'Add New Referral' : 'Add Applicant'}
+                {props.isReferral ? t('ADD_NEW_REFERRAL') : t('ADD_APPLICANT')}
               </Button>
             )}
         </ExpenseHeadingSection>

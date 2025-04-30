@@ -15,6 +15,7 @@ import CenterModalMain from './CenterModalMain.component';
 import AddExpenseForm from '../directComponents/AddExpenseForm.component';
 import CenterModal from './CenterModal.component';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
+import { useTranslation } from 'react-i18next';
 
 interface ActionProps {
   options: {
@@ -47,6 +48,8 @@ export const ExpenseAction: React.FC<ActionProps> = ({
   const openDropdown = () => {
     setIsOpen(!isOpen);
   };
+
+  const { t } = useTranslation();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const handleIsEditModalOpen = () => {
@@ -118,7 +121,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
                 onClick={() => handleOptionClick(option.title)}
               >
                 {option.svg}
-                {option.title}
+                {t(option.title.toUpperCase())}
               </ActionMenuOption>
             ))}
           </ActionMenuContent>
@@ -129,8 +132,8 @@ export const ExpenseAction: React.FC<ActionProps> = ({
           <CenterModal
             handleModalClose={handleDeleteModal}
             handleModalSubmit={() => deleteSelectedExpense(currentExpense.id)}
-            modalHeading="Delete"
-            modalContent={`Are you sure want to Delete the Expense of ₹ ${currentExpense.amount}`}
+            modalHeading={t('DELETE')}
+            modalContent={`${t("DELETE_EXPENSE_CONFIRMATION")} ${currentExpense.amount}`}
           />
         </span>
       )}
@@ -146,7 +149,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
       {isEditModalOpen && (
         <span style={{ cursor: 'default' }}>
           <CenterModalMain
-            heading="Edit Expense"
+            heading={t('EDIT_EXPENSE')}
             modalClose={handleIsEditModalOpen}
             actualContentContainer={
               <AddExpenseForm

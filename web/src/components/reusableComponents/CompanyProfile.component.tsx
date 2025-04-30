@@ -206,12 +206,12 @@ export const CompanyProfile = () => {
       (updatedOrganization.name == null || updatedOrganization.name == '') &&
       (companyProfile.name == null || companyProfile.name == '')
     ) {
-      setNameError('Name is mandatory');
+      setNameError(t('NAME_MANDATORY'));
       hasErrors = true;
     }
     if (updatedOrganization.address && updatedOrganization.address.pinCode) {
       if (!isValidPINCode(updatedOrganization.address.pinCode.toString())) {
-        setPINError('Enter Valid PIN');
+        setPINError(t('ENTER_VALID_PIN'));
         hasErrors = true;
       } else {
         setPINError('');
@@ -224,7 +224,7 @@ export const CompanyProfile = () => {
       if (
         !isValidPanCardNo(updatedOrganization.accounts.panNumber.toUpperCase())
       ) {
-        setPanError('PAN number must be in format of ABCD19008L');
+        setPanError(t('PAN_FORMAT_ERROR'));
         hasErrors = true;
       } else {
         setPanError('');
@@ -234,7 +234,7 @@ export const CompanyProfile = () => {
       if (
         !isValidPFNumber(updatedOrganization.accounts.pfNumber.toUpperCase())
       ) {
-        setPFError('PF number must be in format of MAMUM00641480000001258');
+        setPFError(t('PF_FORMAT_ERROR'));
         hasErrors = true;
       } else {
         setPFError('');
@@ -247,7 +247,7 @@ export const CompanyProfile = () => {
       if (
         !isValidTANNumber(updatedOrganization.accounts.tanNumber.toUpperCase())
       ) {
-        setTANError('TAN number must be in format of ABCD12345E');
+        setTANError(t('TAN_FORMAT_ERROR'));
         hasErrors = true;
       } else {
         setTANError('');
@@ -260,9 +260,7 @@ export const CompanyProfile = () => {
       if (
         !isValidESINumber(updatedOrganization.accounts.esiNumber.toUpperCase())
       ) {
-        setESIError(
-          'ESI number must be a 17-digit numeric value, Ex: 31001234560000001'
-        );
+        setESIError(t('ESI_FORMAT_ERROR'));
         hasErrors = true;
       } else {
         setESIError('');
@@ -275,9 +273,7 @@ export const CompanyProfile = () => {
       if (
         !isValidGSTNumber(updatedOrganization.accounts.gstNumber.toUpperCase())
       ) {
-        setGSTError(
-          'GST number must be a 15-character alphanumeric value, e.g., 22AAAAA0000A1Z5'
-        );
+        setGSTError(t('GST_FORMAT_ERROR'));
         hasErrors = true;
       } else {
         setGSTError('');
@@ -290,9 +286,7 @@ export const CompanyProfile = () => {
       if (
         !isValidLINNumber(updatedOrganization.accounts.linNumber.toUpperCase())
       ) {
-        setLINError(
-          'LIN number must be a 10-digit numeric value, Ex: 1234567890'
-        );
+        setLINError(t('LIN_FORMAT_ERROR'));
         hasErrors = true;
       } else {
         setLINError('');
@@ -300,7 +294,7 @@ export const CompanyProfile = () => {
     }
     if (updatedOrganization.website) {
       if (!isValidURL(updatedOrganization.website)) {
-        setWebsiteError('Invalid URL format, Ex: https://example.com');
+        setWebsiteError(t('INVALID_URL_FORMAT_ERROR'));
         hasErrors = true;
       } else {
         setWebsiteError('');
@@ -312,7 +306,7 @@ export const CompanyProfile = () => {
       companyProfile.email == null
     ) {
       if (!isValidEmail(updatedOrganization.email)) {
-        setEmailError('Provide Valid Email');
+        setEmailError(t('INVALID_EMAIL_ERROR'));
         hasErrors = true;
       } else {
         setEmailError('');
@@ -336,7 +330,7 @@ export const CompanyProfile = () => {
     toast.promise(
       updateOrganizationById(user ? user.organizations.id : '', formData),
       {
-        loading: 'Updating Organization...',
+        loading: t('UPDATING_ORGANIZATION'),
         closeButton: true,
         success: () => {
           fetchOrganization();
@@ -345,20 +339,20 @@ export const CompanyProfile = () => {
           setUpdatedOrganization({} as IOrganization);
           fetchOrgFile();
           setFile(undefined);
-          return 'Successfully Updated Organization Profile.';
+          return t('SUCCESSFUL_UPDATE_ORG_PROFILE');
         },
         error: (error) => {
           setIsUpdateResponseLoading(false);
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;
             if (axiosError.code === 'ERR_NETWORK') {
-              return 'Network Error, Please check connection';
+              return t('NETWORK_ERROR');
             }
             if (axiosError.code === 'ECONNABORTED') {
-              return 'Request timeout, Please try again';
+              return t('REQUEST_TIMEOUT');
             }
           }
-          return 'Request Unsuccessful, Please try again';
+          return t('REQUEST_UNSUCCESSFUL');
         },
       }
     );
@@ -485,7 +479,7 @@ export const CompanyProfile = () => {
                       style={{ display: file || imageUrl ? 'none' : 'inline' }}
                     >
                       <UploadReceiptIcon theme={preferences?.theme} />
-                      <span>Upload Company </span> LOGO
+                      <span>{t('UPLOAD_COMPANY_LOGO')}</span>
                       <input
                         type="file"
                         name="File"
@@ -537,7 +531,7 @@ export const CompanyProfile = () => {
             <Label>{t('COMPANY_ADDRESS')}</Label>
             <Input
               name="address.addressOne"
-              placeholder={isEditModeOn ? 'Primary Address' : '-'}
+              placeholder={isEditModeOn ? t('PRIMARY_ADDRESS') : '-'}
               type="text"
               value={
                 companyProfile.address &&
@@ -556,7 +550,7 @@ export const CompanyProfile = () => {
               name="address.addressTwo"
               type="text"
               placeholder={
-                isEditModeOn ? 'Address Two (Secondary Address)' : '-'
+                isEditModeOn ? t('SECONDARY_ADDRESS') : '-'
               }
               value={
                 companyProfile.address &&
@@ -597,7 +591,7 @@ export const CompanyProfile = () => {
                     }
                   }}
                   maxLength={20}
-                  placeholder={isEditModeOn ? 'City' : '-'}
+                  placeholder={isEditModeOn ? t('CITY') : '-'}
                   onChange={handleInputChange}
                   disabled={!isEditModeOn}
                   autoComplete="off"
@@ -625,7 +619,7 @@ export const CompanyProfile = () => {
                 <Input
                   name="address.pinCode"
                   type="number"
-                  placeholder={isEditModeOn ? 'Pin Code' : '-'}
+                  placeholder={isEditModeOn ? t('PIN_CODE') : '-'}
                   value={
                     companyProfile.address &&
                     companyProfile.address.pinCode != null
@@ -684,7 +678,7 @@ export const CompanyProfile = () => {
               name="filingAddress"
               placeholder={
                 isEditModeOn
-                  ? 'Filing Address (Visible in Payslips, Invoices etc)'
+                  ? t('FILING_ADDRESS_PLACEHOLDER')
                   : '-'
               }
               value={
@@ -735,7 +729,7 @@ export const CompanyProfile = () => {
               <Input
                 name="website"
                 type="url"
-                placeholder={isEditModeOn ? 'Ex: https://example.com' : '-'}
+                placeholder={isEditModeOn ? t('WEBSITE_URL_PLACEHOLDER') : '-'}
                 value={companyProfile.website ? companyProfile.website : ''}
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
@@ -750,7 +744,7 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.pfNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter PF Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_PF_NUMBER') : '-'}
                 value={
                   companyProfile.accounts && companyProfile.accounts.pfNumber
                     ? companyProfile.accounts.pfNumber.toUpperCase()
@@ -786,7 +780,7 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.tanNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter TAN Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_TAN_NUMBER') : '-'}
                 value={
                   companyProfile.accounts && companyProfile.accounts.tanNumber
                     ? companyProfile.accounts.tanNumber.toUpperCase()
@@ -823,7 +817,7 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.panNumber"
                 placeholder={
-                  isEditModeOn ? 'Enter PAN Number  (Ex: ABCDR9115L)' : '-'
+                  isEditModeOn ? t('ENTER_PAN_NUMBER') : '-'
                 }
                 type="text"
                 value={
@@ -861,7 +855,7 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.esiNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter ESI Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_ESI_NUMBER') : '-'}
                 value={
                   companyProfile.accounts && companyProfile.accounts.esiNumber
                     ? companyProfile.accounts.esiNumber.toUpperCase()
@@ -891,7 +885,7 @@ export const CompanyProfile = () => {
             <div>
               <Input
                 name="accounts.linNumber"
-                placeholder={isEditModeOn ? 'Enter LIN Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_LIN_NUMBER') : '-'}
                 type="text"
                 value={
                   companyProfile.accounts && companyProfile.accounts.linNumber
@@ -936,7 +930,7 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.gstNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter GST Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_GST_NUMBER') : '-'}
                 value={
                   companyProfile.accounts && companyProfile.accounts.gstNumber
                     ? companyProfile.accounts.gstNumber.toUpperCase()

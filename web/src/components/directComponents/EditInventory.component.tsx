@@ -128,9 +128,9 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
         axios.isAxiosError(error) &&
         error.response?.data.startsWith('Product ID already exists')
       ) {
-        setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
+        setErrorMessage(t('PRODUCT_ID_ALREADY_EXIST'));
       } else {
-        setErrorMessage('INVENTORY_NOT_UPLOADED');
+        setErrorMessage(t('INVENTORY_NOT_UPLOADED'));
       }
       setShowErrorMessage(true);
     } finally {
@@ -182,7 +182,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 <option value="">{t('SELECT_DEVICE')}</option>
                 {deviceTypes?.values?.map((device) => (
                   <option key={device.value} value={device.value}>
-                    {device.description || device.value}
+                    {t(device.description || device.value)}
                   </option>
                 ))}
               </select>

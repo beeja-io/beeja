@@ -144,10 +144,10 @@ const InventoryList = ({
               currentPage;
             }}
           >
-            <option value="">Device</option>{' '}
+            <option value="">{t('DEVICE')}</option>{' '}
             {deviceTypes.values?.map((device) => (
               <option key={device.value} value={device.value}>
-                {capitalizeFirstLetter(device.value)}
+                {t(capitalizeFirstLetter(device.value))}
               </option>
             ))}
           </select>
@@ -160,10 +160,10 @@ const InventoryList = ({
               currentPage;
             }}
           >
-            <option value="availability">Availability</option>{' '}
+            <option value="availability">{t('AVAILABILITY')}</option>{' '}
             {inventoryOptions.availability.map((availability) => (
               <option key={availability} value={availability}>
-                {availability}
+                {t(availability)}
               </option>
             ))}
           </select>
@@ -177,10 +177,10 @@ const InventoryList = ({
                 currentPage;
               }}
             >
-              <option value="">Provider</option>{' '}
+              <option value="">{t('PROVIDER')}</option>{' '}
               {inventoryProviders.values.map((provider) => (
                 <option key={provider.value} value={provider.value}>
-                  {provider.value}
+                  {t(provider.value)}
                 </option>
               ))}
             </select>
@@ -188,7 +188,7 @@ const InventoryList = ({
         </FilterSection>
         <div className="right">
           <DisplayFilters>
-            <label>Filters: </label>
+            <label>{t('FILTERS')}</label>
             {isShowFilters ? (
               <>
                 <span className="filterText">{selectedFiltersText()}</span>
@@ -196,19 +196,23 @@ const InventoryList = ({
                   onClick={() => clearFilters('clearAll')}
                   className="clearFilters"
                 >
-                  Clear Filters
+                  {t('CLEAR_FILTERS')}
                 </span>
               </>
             ) : (
+<<<<<<< Updated upstream
               <span className="noFilters">&nbsp;No filters applied</span>
+=======
+              <span className="noFilters">{t('NO_FILTERS_APPLIED')}</span>
+>>>>>>> Stashed changes
             )}
           </DisplayFilters>
         </div>
         <TableListContainer style={{ marginTop: 0 }}>
           {!isLoading && inventoryList && inventoryList.length === 0 ? (
             <ZeroEntriesFound
-              heading="THERE_IS_NO_INVENTORY_FOUND"
-              message="YOU_DONT_HAVE_ANY_INVENTORY"
+              heading={t('THERE_IS_NO_INVENTORY_FOUND')}
+              message={t('YOU_DONT_HAVE_ANY_INVENTORY')}
             />
           ) : (
             <TableList>
@@ -245,19 +249,19 @@ const InventoryList = ({
                       .map((inventory, index) => (
                         <TableBodyRow key={index}>
                           <td onClick={() => handlePreviewModal(inventory)}>
-                            {inventory.deviceNumber}
+                            {t(inventory.deviceNumber)}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
-                            {removeUnderScore(inventory.device)}
+                            {t(removeUnderScore(inventory.device))}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
-                            {inventory.provider ? inventory.provider : '-'}
+                            {t(inventory.provider ? inventory.provider : '-')}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
-                            {inventory.os ? inventory.os : '-'}
+                            {t(inventory.os ? inventory.os : '-')}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
-                            {inventory.ram ? inventory.ram : '-'}
+                            {t(inventory.ram ? inventory.ram : '-')}
                           </td>
                           <td onClick={() => handlePreviewModal(inventory)}>
                             <span
@@ -308,7 +312,7 @@ const InventoryList = ({
       </StyledDiv>
       {selectedInventory && (
         <CenterModalMain
-          heading="INVENTORY_PREVIEW"
+          heading={t('INVENTORY_PREVIEW')}
           modalClose={handleCloseModal}
           actualContentContainer={
             <PreviewInventoryForm
@@ -321,7 +325,7 @@ const InventoryList = ({
       )}
       {isEditInventoryOpen && selectedInventory && (
         <CenterModalMain
-          heading="EDIT_INVENTORY"
+          heading={t('EDIT_INVENTORY')}
           modalClose={handleCloseModal}
           actualContentContainer={
             <EditInventoryForm
@@ -337,8 +341,8 @@ const InventoryList = ({
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody="THE_INVENTORY_HAS_BEEN_ADDED"
-          messageHeading="SUCCESSFULLY_UPDATED"
+          messageBody={t('THE_INVENTORY_HAS_BEEN_ADDED')}
+          messageHeading={t('SUCCESSFULLY_UPDATED')}
           handleClose={handleShowSuccessMessage}
         />
       )}

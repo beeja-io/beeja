@@ -9,6 +9,7 @@ import { ActionIcon } from '../../svgs/DocumentTabSvgs.svg';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
 import { IApplicant } from '../../entities/ApplicantEntity';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface ApplicantListActionsProps {
   applicant: IApplicant;
@@ -29,6 +30,7 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
     setIsOpen(!isOpen);
   };
 
+  const{ t } = useTranslation();
   const [isDeletedToastMessage, setIsDeleteToastMessage] = useState(false);
   const handleIsDeleteToastMessage = () => {
     setIsDeleteToastMessage(!isDeletedToastMessage);
@@ -40,10 +42,10 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
-    if (option == 'Delete') {
+    if (option == t('DELETE')) {
       handleDeleteModal();
     }
-    if (option == 'Edit') {
+    if (option == t('EDIT')) {
       navigate(`/recruitment/hiring-management/${props.applicant.id}`);
     }
     setIsOpen(false);
@@ -92,8 +94,8 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
       {isDeletedToastMessage && (
         <ToastMessage
           messageType="success"
-          messageHeading="Expense Deleted"
-          messageBody="Expense Deleted Succesfully"
+          messageHeading={t('EXPENSE_DELETED_HEADING')}
+          messageBody={t('EXPENSE_DELETED_BODY')}
           handleClose={handleIsDeleteToastMessage}
         />
       )}
