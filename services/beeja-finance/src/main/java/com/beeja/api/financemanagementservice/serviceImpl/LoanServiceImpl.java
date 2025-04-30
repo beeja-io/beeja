@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -70,7 +71,7 @@ public class LoanServiceImpl implements LoanService {
    * @param loanId The ID of the loan to update.
    * @param status The new status of the loan ("APPROVE", "REJECT", or others).
    * @param message Optional message or reason for status change.
-   * @throws LoanNotFound If the loan with the specified ID is not found.
+   * @throws ResourceNotFoundException If the loan with the specified ID is not found.
    */
   @Override
   public void changeLoanStatus(String loanId, String status, String message) {
@@ -167,17 +168,11 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
   Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
   Pageable pageable = PageRequest.of(validPage, pageSize, sort);
 
-  String orgId;
-  try {
-    orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
-  } catch (Exception e) {
-    e.printStackTrace();
-    throw new RuntimeException("Error fetching paginated loans.");
-  }
+  String orgId=UserContext.getLoggedInUserOrganization().get("id").toString();;
 
   List<LoanDTO> loans;
   long totalCount;
-
+try {
   if (status != null) {
     loans = loanRepository.findAllByOrganizationIdAndStatus(orgId, status, pageable);
     totalCount = loanRepository.countByOrganizationIdAndStatus(orgId, status);
@@ -185,6 +180,11 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
     loans = loanRepository.findAllByOrganizationId(orgId, pageable);
     totalCount = loanRepository.countByOrganizationId(orgId);
   }
+}catch(Exception e){
+  log.error("Error occurred while fetching loans: {}", e.getMessage(),e);
+  loans = Collections.emptyList();
+  totalCount = 0;
+}
 
   LoanResponse response = new LoanResponse();
   response.setLoansList(loans);
