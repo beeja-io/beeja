@@ -277,12 +277,41 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
+  
     if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+      const acceptedTypes = ['application/pdf', 'image/png', 'image/jpeg'];
+      const maxSizeInBytes = 10 * 1024 * 1024; // 10MB
+  
       const droppedFiles = Array.from(event.dataTransfer.files);
-      setSelectedFile((prevFiles) => [...prevFiles, ...droppedFiles]);
+      const validFiles: File[] = [];
+      let hasTypeError = false;
+      let hasSizeError = false;
+  
+      droppedFiles.forEach((file) => {
+        if (!acceptedTypes.includes(file.type)) {
+          hasTypeError = true;
+        } else if (file.size > maxSizeInBytes) {
+          hasSizeError = true;
+        } else {
+          validFiles.push(file);
+        }
+      });
+  
+      if (validFiles.length > 0) {
+        setSelectedFile((prevFiles) => [...prevFiles, ...validFiles]);
+      }
+  
+      if (hasTypeError) {
+        toast("❗ Unsupported file format. Please upload a valid receipt file.");
+      }
+  
+      if (hasSizeError) {
+        toast("❗The Uploaded receipt exceeds the maximum size limit. Please upload a smaller file.");
+      }
     }
   };
-
+  
+  
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       const selectedFiles = Array.from(event.target.files);
