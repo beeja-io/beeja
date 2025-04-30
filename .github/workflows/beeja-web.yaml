@@ -8,7 +8,7 @@ on:
     branches:
       - PS-299
     paths:
-      - 'beeja-web/**'
+      - 'web/**'
 jobs:
   # Image Build and Scanning
   trivy-image-scan:
@@ -29,7 +29,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build Docker Image
-        working-directory: beeja-web
+        working-directory: web
         run: docker build -t web-app:1.0 .
         env:
           DOCKER_BUILDKIT: 1
