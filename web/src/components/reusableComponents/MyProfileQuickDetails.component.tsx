@@ -47,6 +47,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { toast } from 'sonner';
 import { useProfileImage } from '../../context/ProfileImageContext';
 import { LargeSVG, SmallSVG } from '../../svgs/profilePictureSvgs.svg';
+import { useTranslation } from 'react-i18next';
 
 type QuickProfileProps = {
   employee: EmployeeEntity | undefined;
@@ -72,7 +73,7 @@ const MyProfileQuickDetailsComponent = ({
     null
   );
   const [isMonogramModalOpen, setIsMonogramModalOpen] = useState(false);
-  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [scale, setScale] = useState(1.5);
   const [offsetX, setOffsetX] = useState(0);
@@ -85,6 +86,7 @@ const MyProfileQuickDetailsComponent = ({
   const [croppedImage] = useState<string | null>(null);
   const { employeeList, updateEmployeeList } = useContext(ApplicationContext);
   const { profileImageUrl, setProfileImageUrl } = useProfileImage();
+  const { t } = useTranslation();
 
   const fetchRoles = async () => {
     const response = await getAllRolesInOrganization();
@@ -247,8 +249,14 @@ const MyProfileQuickDetailsComponent = ({
   };
 
   const handleSaveAndUpload = async () => {
-    uploadCroppedImage();
-    await handleModalClose();
+    const toastId = toast.loading(t('UPDATING_PROFILE_HAS_PICTURE'));
+    try {
+      await uploadCroppedImage();
+      toast.success(t('PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED'), { id: toastId });
+      handleModalClose();
+    } catch (error) {
+      toast.error(t('FAILED_TO_UPDATE_PROFILE_PICTURE'), { id: toastId });
+    }
   };
 
   const handleMouseDown = (event: React.MouseEvent) => {

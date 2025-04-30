@@ -170,6 +170,7 @@ public class SecurityConfig {
                     authProperties.getUrls().stream()
             ).collect(Collectors.toList())
     );
+    log.info("Allowed URLs: {}", authProperties.getUrls());
     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     corsConfig.setAllowedHeaders(List.of("*"));
     corsConfig.setAllowCredentials(true);

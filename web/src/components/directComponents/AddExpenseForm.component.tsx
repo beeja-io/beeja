@@ -49,6 +49,8 @@ import { hasPermission } from '../../utils/permissionCheck';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
 import { useTranslation } from 'react-i18next';
+import { EXPENSE_RECEIPT_FILE_SIZE, EXPENSE_RECEIPTS_TOTAL_REQUEST_SIZE } from '../../constants/FileSizes';
+import { EXPENSE_RECEIPT_TYPES } from '../../constants/FileTypes';
 
 type AddExpenseFormProps = {
   handleClose: () => void;
@@ -279,38 +281,64 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
     event.stopPropagation();
   
     if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
-      const acceptedTypes = ['application/pdf', 'image/png', 'image/jpeg'];
-      const maxSizeInBytes = 10 * 1024 * 1024; // 10MB
-  
       const droppedFiles = Array.from(event.dataTransfer.files);
       const validFiles: File[] = [];
+  
       let hasTypeError = false;
-      let hasSizeError = false;
+      let hasSingleSizeError = false;
+      let hasCombinedSizeError = false;
+      let hasFileLimitError = false;
+  
+      const currentFileCount = selectedFile.length;
+
+      if (currentFileCount + droppedFiles.length > 3) {
+        hasFileLimitError = true;
+      }
   
       droppedFiles.forEach((file) => {
-        if (!acceptedTypes.includes(file.type)) {
+        if (!EXPENSE_RECEIPT_TYPES.includes(file.type)) {
           hasTypeError = true;
-        } else if (file.size > maxSizeInBytes) {
-          hasSizeError = true;
+        } else if (file.size > EXPENSE_RECEIPT_FILE_SIZE) {
+          hasSingleSizeError = true;
         } else {
           validFiles.push(file);
         }
       });
+
+      const totalSize = validFiles.reduce((acc, file) => acc + file.size, 0) +
+                        selectedFile.reduce((acc, file) => acc + file.size, 0);
   
-      if (validFiles.length > 0) {
+      if (totalSize > EXPENSE_RECEIPTS_TOTAL_REQUEST_SIZE) {
+        hasCombinedSizeError = true;
+      }
+
+      if (
+        validFiles.length > 0 &&
+        !hasTypeError &&
+        !hasSingleSizeError &&
+        !hasCombinedSizeError &&
+        !hasFileLimitError
+      ) {
         setSelectedFile((prevFiles) => [...prevFiles, ...validFiles]);
       }
-  
+ 
       if (hasTypeError) {
-        toast("❗ Unsupported file format. Please upload a valid receipt file.");
+        toast.error(t('errors.unsupported_format'));
       }
   
-      if (hasSizeError) {
-        toast("❗The Uploaded receipt exceeds the maximum size limit. Please upload a smaller file.");
+      if (hasSingleSizeError) {
+        toast.error(t('errors.single_file_exceeds'));
+      }
+  
+      if (hasCombinedSizeError) {
+        toast.error(t('errors.total_file_exceeds'));
+      }
+  
+      if (hasFileLimitError) {
+        toast.error(t('errors.file_limit_exceeded'));
       }
     }
   };
-  
   
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
