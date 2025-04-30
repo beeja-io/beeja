@@ -69,7 +69,6 @@
       "npm run lint",
       "prettier --write",
       "eslint --fix",
-      "npm run build",
       "git add ."
     ]
   }

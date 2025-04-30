@@ -86,7 +86,7 @@ const MyProfileQuickDetailsComponent = ({
   const [croppedImage] = useState<string | null>(null);
   const { employeeList, updateEmployeeList } = useContext(ApplicationContext);
   const { profileImageUrl, setProfileImageUrl } = useProfileImage();
-const {t} = useTranslation();
+  const { t } = useTranslation();
 
   const fetchRoles = async () => {
     const response = await getAllRolesInOrganization();
