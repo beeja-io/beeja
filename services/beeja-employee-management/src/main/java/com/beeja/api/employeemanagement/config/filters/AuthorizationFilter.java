@@ -1,11 +1,11 @@
 package com.beeja.api.employeemanagement.config.filters;
 
+import com.beeja.common.backend_common.utils.JwtUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.beeja.api.employeemanagement.client.AccountClient;
 import com.beeja.api.employeemanagement.model.clients.accounts.OrganizationDTO;
 import com.beeja.api.employeemanagement.model.clients.accounts.RoleDTO;
 import com.beeja.api.employeemanagement.model.clients.accounts.UserDTO;
-import com.beeja.api.employeemanagement.utils.JwtUtils;
 import com.beeja.api.employeemanagement.utils.UserContext;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;

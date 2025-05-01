@@ -8,7 +8,10 @@ plugins {
 bootJar{
     enabled(true)
 }
-
+repositories {
+    mavenLocal()  // Ensure it's present here
+    mavenCentral()
+}
 
 test {
     dependencies {
@@ -26,6 +29,7 @@ test {
         implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
         testImplementation 'junit:junit:4.13.1'
         implementation 'org.springframework.boot:spring-boot-starter-actuator'
+        implementation 'com.beeja.common:backend-common:0.0.1-SNAPSHOT'
 
 
 
