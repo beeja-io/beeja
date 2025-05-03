@@ -13,9 +13,16 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
+import static com.beeja.api.projectmanagement.utils.Constants.BEEJA;
 
 @ControllerAdvice
 @Slf4j
@@ -84,6 +91,24 @@ public class GlobalControllerAdvice {
     );
     errorResponse.setPath(path);
     return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+
+  @ExceptionHandler(NoResourceFoundException.class)
+  public ResponseEntity<ErrorResponse> handleNoResourceFound(
+          NoResourceFoundException ex,
+          HttpServletRequest request) {
+
+    String path = request.getRequestURI();
+
+    ErrorResponse errorResponse = BuildErrorMessage.buildErrorMessage(
+            ErrorType.API_ERROR,
+            ErrorCode.INVALID_API_REQUEST,
+            "Static resource not found: " + ex.getResourcePath()
+    );
+    errorResponse.setPath(path);
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
 
   @ExceptionHandler(Exception.class)

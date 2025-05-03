@@ -19,7 +19,7 @@ public interface ClientRepository extends MongoRepository<Client,String> {
 
     long countByOrganizationId(String organizationId);
 
-    List<ClientDTO> findAllByOrganizationIdOrderByCreatedAtDesc(String organizationId);
+    List<Client> findAllByOrganizationIdOrderByCreatedAtDesc(String organizationId);
 }
 
 

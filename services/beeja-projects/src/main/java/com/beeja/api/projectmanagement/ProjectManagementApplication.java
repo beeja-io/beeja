@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @EnableFeignClients
 @EnableDiscoveryClient
 @EnableMongoRepositories
+@EnableMongoAuditing
 public class ProjectManagementApplication {
 
   public static void main(String[] args) {

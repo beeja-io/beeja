@@ -9,6 +9,8 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,6 +18,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
+import java.util.Date;
 
 
 @Data
@@ -58,7 +61,12 @@ public class Client {
     private Address billingAddress;
 
     @Field("created_at")
-    private Instant createdAt;
+    @CreatedDate
+    private Date createdAt;
+
+    @Field("updated_at")
+    @LastModifiedDate
+    private Date updatedAt;
 
 
     private boolean usePrimaryAsBillingAddress = true;
