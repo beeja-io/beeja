@@ -1,6 +1,5 @@
 package com.beeja.api.projectmanagement.controller;
 
-import com.beeja.api.projectmanagement.controllers.ClientController;
 import com.beeja.api.projectmanagement.enums.ClientType;
 import com.beeja.api.projectmanagement.enums.Industry;
 import com.beeja.api.projectmanagement.enums.TaxCategory;
@@ -21,10 +20,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
