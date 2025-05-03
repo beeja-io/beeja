@@ -28,8 +28,9 @@ const Pagination = ({
 }) => {
   const createPageNumbers = (): (number | string)[] => {
     const pageNumbers: (number | string)[] = [];
+    const maxPageToShow = 6;
 
-    if (totalPages <= 6) {
+    if (totalPages <= maxPageToShow) {
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
       }
