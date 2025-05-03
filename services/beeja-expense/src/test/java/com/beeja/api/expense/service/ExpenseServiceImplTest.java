@@ -201,11 +201,12 @@ class ExpenseServiceImplTest {
   void testGetFilteredTotalAmount_Success() {
     Date startDate = new GregorianCalendar(2023, GregorianCalendar.JANUARY, 1).getTime();
     Date endDate = new GregorianCalendar(2023, GregorianCalendar.JANUARY, 31).getTime();
-    String department = "HR";
+    List<String> department = Arrays.asList("HR");
     String filterBasedOn = "department";
-    String modeOfPayment = "Credit Card";
-    String expenseType = "Office Supplies";
-    String expenseCategory = "Stationery";
+    List<String> modeOfPayment = Arrays.asList("Credit Card");
+    List<String> expenseType = Arrays.asList("Office Supplies");
+    List<String> expenseCategory = Arrays.asList("Stationery");
+    Boolean settlementStatus=true;
     String organizationId = "Org123";
     Map<String, Object> mockResult = Collections.singletonMap("totalAmount", 5000.0);
     AggregationResults<Map> mockAggregationResults = mock(AggregationResults.class);
@@ -222,6 +223,7 @@ class ExpenseServiceImplTest {
             modeOfPayment,
             expenseType,
             expenseCategory,
+            settlementStatus,
             organizationId);
     assertEquals(0.0, totalAmount);
   }
@@ -230,11 +232,12 @@ class ExpenseServiceImplTest {
   void testGetTotalExpensesSize_Success() {
     Date startDate = new GregorianCalendar(2023, Calendar.JANUARY, 1).getTime();
     Date endDate = new GregorianCalendar(2023, Calendar.JANUARY, 31).getTime();
-    String department = "HR";
+    List<String> department = Arrays.asList("HR");
     String filterBasedOn = "date";
-    String modeOfPayment = "Credit Card";
-    String expenseType = "Office Supplies";
-    String expenseCategory = "Stationery";
+    List<String> modeOfPayment = Arrays.asList("Credit Card");
+    List<String> expenseType = Arrays.asList("Office Supplies");
+    List<String> expenseCategory = Arrays.asList("Stationery");
+    Boolean settlementStatus=true;
     String organizationId = "Org123";
     long expectedCount = 10;
     when(mongoTemplate.count(any(Query.class), eq(Expense.class))).thenReturn(expectedCount);
@@ -247,6 +250,7 @@ class ExpenseServiceImplTest {
             modeOfPayment,
             expenseType,
             expenseCategory,
+            settlementStatus,
             organizationId);
     assertEquals(expectedCount, actualCount);
     verify(mongoTemplate).count(any(Query.class), eq(Expense.class));
@@ -256,20 +260,21 @@ class ExpenseServiceImplTest {
   void testGetFilteredExpenses() throws Exception {
     when(mongoTemplate.find(any(Query.class), eq(Expense.class)))
         .thenReturn(List.of(new Expense()));
+    boolean ascending = true;
     List<Expense> result =
         expenseService.getFilteredExpenses(
             new Date(),
             new Date(),
-            "Finance",
+            Arrays.asList("Finance"),
             "createdDate",
-            "Credit Card",
-            "Office",
-            "Stationery",
+            Arrays.asList("Credit Card"),
+            Arrays.asList("Office"),
+            Arrays.asList("Stationery"),
             "org123",
             1,
             10,
             "createdDate",
-            true);
+            true, ascending);
     assertNotNull(result);
     assertEquals(1, result.size());
     verify(mongoTemplate).find(any(Query.class), eq(Expense.class));

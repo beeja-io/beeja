@@ -21,7 +21,6 @@ export const PreferencesProvider: React.FC<{ children: ReactNode }> = ({
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const usePreferences = () => {
   const context = React.useContext(PreferencesContext);
 

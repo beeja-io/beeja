@@ -11,6 +11,7 @@ import com.beeja.api.accounts.enums.FontNames;
 import com.beeja.api.accounts.enums.Theme;
 import com.beeja.api.accounts.enums.TimeZones;
 import com.beeja.api.accounts.exceptions.BadRequestException;
+import com.beeja.api.accounts.exceptions.DuplicateValueException;
 import com.beeja.api.accounts.exceptions.ResourceNotFoundException;
 import com.beeja.api.accounts.model.Organization.Accounts;
 import com.beeja.api.accounts.model.Organization.Address;
@@ -18,6 +19,7 @@ import com.beeja.api.accounts.model.Organization.LoanLimit;
 import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Preferences;
+import com.beeja.api.accounts.model.Organization.employeeSettings.OrgValues;
 import com.beeja.api.accounts.model.User;
 import com.beeja.api.accounts.repository.FeatureToggleRepository;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
@@ -45,12 +47,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
+import java.util.LinkedHashMap;
+import java.util.Objects;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -379,20 +384,30 @@ public class OrganizationServiceImpl implements OrganizationService {
 
   @Override
   public OrgDefaults updateOrganizationValues(OrgDefaults orgDefaults) throws Exception {
-    OrgDefaults orgDefaults1 =
-        orgDefaultsRepository.findByOrganizationIdAndKey(
-            UserContext.getLoggedInUserOrganization().getId(), orgDefaults.getKey());
-    if (orgDefaults1 != null) {
-      orgDefaults1.setValues(orgDefaults.getValues());
+    OrgDefaults existingOrgDefaults =
+            orgDefaultsRepository.findByOrganizationIdAndKey(
+                    UserContext.getLoggedInUserOrganization().getId(), orgDefaults.getKey());
+
+    if (orgDefaults.getValues() == null) {
+      orgDefaults.setValues(new HashSet<>());
+    }
+
+    if (hasDuplicateValues(orgDefaults.getValues())) {
+      log.error(Constants.DUPLICATE_VALUE_EXIST);
+      throw new DuplicateValueException(Constants.DUPLICATE_VALUE_EXIST);
+    }
+
+    if (existingOrgDefaults != null) {
+      existingOrgDefaults.setValues(orgDefaults.getValues());
       try {
-        return orgDefaultsRepository.save(orgDefaults1);
+        return orgDefaultsRepository.save(existingOrgDefaults);
       } catch (Exception e) {
         log.error(Constants.ERROR_IN_UPDATING_ORGANIZATION + "{}", e.getMessage());
         throw new Exception(
-            BuildErrorMessage.buildErrorMessage(
-                ErrorType.DB_ERROR,
-                ErrorCode.CANNOT_SAVE_CHANGES,
-                Constants.ERROR_IN_UPDATING_ORGANIZATION));
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.DB_ERROR,
+                        ErrorCode.CANNOT_SAVE_CHANGES,
+                        Constants.ERROR_IN_UPDATING_ORGANIZATION));
       }
     } else {
       OrgDefaults newOrgDefaults = new OrgDefaults();
@@ -404,12 +419,20 @@ public class OrganizationServiceImpl implements OrganizationService {
       } catch (Exception e) {
         log.error(Constants.ERROR_IN_CREATE_ORGANIZATION + "{}", e.getMessage());
         throw new Exception(
-            BuildErrorMessage.buildErrorMessage(
-                ErrorType.DB_ERROR,
-                ErrorCode.CANNOT_SAVE_CHANGES,
-                Constants.ERROR_IN_CREATE_ORGANIZATION));
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.DB_ERROR,
+                        ErrorCode.CANNOT_SAVE_CHANGES,
+                        Constants.ERROR_IN_CREATE_ORGANIZATION));
       }
     }
+  }
+
+  private boolean hasDuplicateValues(Set<OrgValues> values) {
+    return values.stream()
+            .filter(v -> v.getValue() != null)
+            .map(v -> v.getValue().toLowerCase())
+            .collect(Collectors.toSet())
+            .size() < values.size();
   }
 
   @Override

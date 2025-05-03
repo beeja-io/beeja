@@ -1,10 +1,9 @@
 {
 	"info": {
-		"_postman_id": "822a52aa-0d32-47cf-b59b-b7a9a7e99f7a",
+		"_postman_id": "4bc35ca3-46f2-4650-9900-450a7f169a0a",
 		"name": "Account Service Collection",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "32741508",
-		"_collection_link": "https://beeja-v2.postman.co/workspace/Beeja-Developer-Workspace~030575b9-2bb0-4d3a-9de7-da77fa084a64/collection/32741508-822a52aa-0d32-47cf-b59b-b7a9a7e99f7a?action=share&source=collection_link&creator=32741508"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43003168"
 	},
 	"item": [
 		{
@@ -15,7 +14,17 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8000/accounts/v1/features"
+						"url": {
+							"raw": "{{port}}/accounts/v1/features",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"features"
+							]
+						}
 					},
 					"response": []
 				},
@@ -33,7 +42,18 @@
 								}
 							}
 						},
-						"url": "http://localhost:8000/accounts/v1/features/6622bd1aed44325fe2ca89cf"
+						"url": {
+							"raw": "{{port}}/accounts/v1/features/{{organizationId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"features",
+								"{{organizationId}}"
+							]
+						}
 					},
 					"response": []
 				}
@@ -47,7 +67,18 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8000/accounts/v1/organizations/6622bd1aed44325fe2ca89cf"
+						"url": {
+							"raw": "{{port}}/accounts/v1/organizations/{{organizationId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organizations",
+								"{{organizationId}}"
+							]
+						}
 					},
 					"response": []
 				},
@@ -56,7 +87,19 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8000/accounts/v1/organizations/6622bd1aed44325fe2ca89cf/employees"
+						"url": {
+							"raw": "{{port}}/accounts/v1/organizations/{{organizationId}}/employees",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organizations",
+								"{{organizationId}}",
+								"employees"
+							]
+						}
 					},
 					"response": []
 				},
@@ -65,7 +108,18 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8000/accounts/v1/organizations/6622bd1aed44325fe2ca89cf/employees"
+						"url": {
+							"raw": "{{port}}/accounts/v1/organizations/logo",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organizations",
+								"logo"
+							]
+						}
 					},
 					"response": []
 				},
@@ -74,7 +128,18 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8000/accounts/v1/organizations/6622bd1aed44325fe2ca89cf"
+						"url": {
+							"raw": "{{port}}/accounts/v1/organizations/{{organizationId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organizations",
+								"{{organizationId}}"
+							]
+						}
 					},
 					"response": []
 				},
@@ -92,7 +157,18 @@
 								}
 							}
 						},
-						"url": "http://localhost:8000/accounts/v1/organizations/update-values"
+						"url": {
+							"raw": "{{port}}/accounts/v1/organizations/update-values",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organizations",
+								"update-values"
+							]
+						}
 					},
 					"response": []
 				},
@@ -113,7 +189,77 @@
 								}
 							}
 						},
-						"url": "http://localhost:8000/accounts/v1/organizations/values/employeeTypes"
+						"url": {
+							"raw": "{{port}}/accounts/v1/organizations/values/employeeTypes",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organizations",
+								"values",
+								"employeeTypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update Organization by patch method",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subscriptionId\": \"12345678\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/accounts/v1/organizations/{{organizationId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organizations",
+								"{{organizationId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate Organization Defaults",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/accounts/v1/organizations/generate-defaults",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organizations",
+								"generate-defaults"
+							]
+						}
 					},
 					"response": []
 				}
@@ -127,7 +273,18 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": "http://localhost:8000/accounts/v1/organization/patterns/{patternTypes}"
+						"url": {
+							"raw": "{{port}}/v1/organization/patterns/{{patternType}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"v1",
+								"organization",
+								"patterns",
+								"{{patternType}}"
+							]
+						}
 					},
 					"response": []
 				},
@@ -145,7 +302,18 @@
 								}
 							}
 						},
-						"url": "http://localhost:8000/accounts/v1/organization/patterns"
+						"url": {
+							"raw": "{{port}}/accounts/v1/organization/patterns",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organization",
+								"patterns"
+							]
+						}
 					},
 					"response": []
 				},
@@ -164,12 +332,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8000/accounts/v1/organization/patterns/update-status?patternId=6752c80748a9356d07598552&patternType=EMPLOYEE_ID_PATTERN",
-							"protocol": "http",
+							"raw": "{{port}}/accounts/v1/organization/patterns/update-status?patternId={{patternId}}&patternType={{patternType}}",
 							"host": [
-								"localhost"
+								"{{port}}"
 							],
-							"port": "8000",
 							"path": [
 								"accounts",
 								"v1",
@@ -180,11 +346,11 @@
 							"query": [
 								{
 									"key": "patternId",
-									"value": "6752c80748a9356d07598552"
+									"value": "{{patternId}}"
 								},
 								{
 									"key": "patternType",
-									"value": "EMPLOYEE_ID_PATTERN"
+									"value": "{{patternType}}"
 								}
 							]
 						}
@@ -192,11 +358,51 @@
 					"response": []
 				},
 				{
-					"name": "Delete PAttern",
+					"name": "Delete Pattern",
 					"request": {
 						"method": "DELETE",
 						"header": [],
-						"url": "http://localhost:8000/accounts/v1/organization/patterns/{patternId}/{patternType}"
+						"url": {
+							"raw": "{{port}}/accounts/v1/organization/patterns/{{patternId}}}/{{patternType}}rnType}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organization",
+								"patterns",
+								"{{patternId}}}",
+								"{{patternType}}rnType}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Pattern By Type",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/accounts/v1/organization/patterns/active?patternType={{patternType}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"organization",
+								"patterns",
+								"active"
+							],
+							"query": [
+								{
+									"key": "patternType",
+									"value": "{{patternType}}"
+								}
+							]
+						}
 					},
 					"response": []
 				}
@@ -219,14 +425,24 @@
 								}
 							}
 						},
-						"url": "http://localhost:8000/accounts/v1/roles"
+						"url": {
+							"raw": "{{port}}/accounts/v1/roles",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"roles"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Update Role By Id",
 					"request": {
-						"method": "POST",
+						"method": "PUT",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -237,7 +453,18 @@
 								}
 							}
 						},
-						"url": "http://localhost:8000/accounts/v1/roles/6762a5d4d7404c27b753471c"
+						"url": {
+							"raw": "{{port}}/accounts/v1/roles/{{employeeId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"roles",
+								"{{employeeId}}"
+							]
+						}
 					},
 					"response": []
 				},
@@ -258,7 +485,17 @@
 								}
 							}
 						},
-						"url": "http://localhost:8000/accounts/v1/roles"
+						"url": {
+							"raw": "{{port}}/accounts/v1/roles",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"roles"
+							]
+						}
 					},
 					"response": []
 				},
@@ -276,233 +513,385 @@
 								}
 							}
 						},
-						"url": "http://localhost:8000/accounts/v1/roles/6762a5d4d7404c27b753471c"
+						"url": {
+							"raw": "{{port}}/accounts/v1/roles/{{employeeId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"roles",
+								"{{employeeId}}"
+							]
+						}
 					},
 					"response": []
 				}
 			]
 		},
 		{
-			"name": "New Request",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Post Employee",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"firstName\": \"TEST123\",\n  \"lastName\": \"Chandar\",\n  \"email\": \"poorna123@gmail.com\",\n  \"employmentType\": \"Full-Time Employees\"\n}\n",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Employee",
+			"item": [
+				{
+					"name": "Get All Employees",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{port}}/accounts/v1/users",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": "http://localhost:8000/accounts/v1/users"
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Employees",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "accessToken",
-						"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
-						"type": "text",
-						"disabled": true
-					}
-				],
-				"url": "http://localhost:8000/accounts/v1/users"
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Employees based on Permission",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "accessToken",
-						"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
-						"type": "text",
-						"disabled": true
-					}
-				],
-				"url": "http://localhost:8000/accounts/v1/users/permissions/REMP"
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Employees based on Employee Id List",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "accessToken",
-						"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
-						"type": "text",
-						"disabled": true
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"roles\": [\"TAC0063\"]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "Post Employee",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"TEST123\",\n  \"lastName\": \"Chandar\",\n  \"email\": \"poorna123@gmail.com\",\n  \"employmentType\": \"Full-Time Employees\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/accounts/v1/users",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": "http://localhost:8000/accounts/v1/users/emp-ids"
-			},
-			"response": []
-		},
-		{
-			"name": "Check employee has permission or not",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "accessToken",
-						"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
-						"type": "text",
-						"disabled": true
-					}
-				],
-				"url": "http://localhost:8000/accounts/v1/users/{EMPLOYEE_ID}/exists/{PERMISSION}"
-			},
-			"response": []
-		},
-		{
-			"name": "Get Employee Count",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "accessToken",
-						"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
-						"type": "text",
-						"disabled": true
-					}
-				],
-				"url": "http://localhost:8000/accounts/v1/users/count"
-			},
-			"response": []
-		},
-		{
-			"name": "Get Employee By EmployeeID",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:8000/accounts/v1/users/TAC0063"
-			},
-			"response": []
-		},
-		{
-			"name": "Get Employee By Email",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:8000/accounts/v1/users/email/ravikiranbalemla5@gmail.com"
-			},
-			"response": []
-		},
-		{
-			"name": "Check Employee Exist with Email",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:8000/accounts/v1/users/email/ravikiranbalemla5@gmail.com"
-			},
-			"response": []
-		},
-		{
-			"name": "Get Employee ME",
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:8000/accounts/v1/users/me"
-			},
-			"response": []
-		},
-		{
-			"name": "Change Status of Emp",
-			"request": {
-				"method": "PUT",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Get All Employees by permission",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Change Status of Emp dev",
-			"request": {
-				"method": "PUT",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Update Employee using Emp Id",
-			"request": {
-				"method": "PUT",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Update Employee using Emp Id Copy",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"currentPassword\": \"asasakljsdf\",\n    \"newPassword\": \"qwerty123\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "Get All Employees based on Permission",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/permissions/{{permission }}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"permissions",
+								"{{permission }}"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": "http://localhost:8000/accounts/v1/users/change-email-password"
-			},
-			"response": []
+				{
+					"name": "Check employee has permission or not",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/{{employeeId}}/exists/{{permission }}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"{{employeeId}}",
+								"exists",
+								"{{permission }}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Employees based on Employee Id List",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"TAC0063\"]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/{{emp-ids}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"{{emp-ids}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee Count",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "accessToken",
+								"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/count",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"count"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee By EmployeeID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/{{employeeId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"{{employeeId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee By Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/email/{{email}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"email",
+								"{{email}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Employee Exist with Email",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/email/{{email}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"email",
+								"{{email}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee ME",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/me",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Status of Emp",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/{{employeeId}}/status",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"{{employeeId}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update User Roles By EmployeeId",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/accounts/v1/user//permissions/{{permission }}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"user",
+								"",
+								"permissions",
+								"{{permission }}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Employee using Emp Id Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currentPassword\": \"asasakljsdf\",\n    \"newPassword\": \"qwerty123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/accounts/v1/users/change-email-password",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"accounts",
+								"v1",
+								"users",
+								"change-email-password"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
