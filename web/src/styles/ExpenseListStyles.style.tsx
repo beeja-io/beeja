@@ -22,6 +22,79 @@ export const FilterSection = styled.div`
     background-size: 1em;
     background-color: ${(props) => props.theme.colors.blackColors.white6};
   }
+
+  .largeSelectOption {
+    min-width: 200px;
+  }
+
+  /* Multi-select container styles */
+  .multi-select-container {
+    position: relative;
+    min-width: 200px;
+  }
+
+  .multi-select-header {
+    cursor: pointer;
+    padding: 16px 20px;
+    border-radius: 10px;
+    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+    background-color: ${(props) => props.theme.colors.blackColors.white6};
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    padding-right: 40px;
+    align-items: center;
+    color: ${(props) => props.theme.colors.blackColors.black1};
+  }
+
+  .dropdown-arrow {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23222' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    /* Hide the Unicode arrow */
+    color: transparent;
+    font-size: 0;
+  }
+  
+
+  .multi-select-options {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  body:not(.multi-select-container):active ~ .multi-select-options {
+    display: none;
+  }
+  .multi-select-option {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    &:hover {
+      background-color: grey;
+      color: white;
+    }
+  }
+
+  .multi-select-option input {
+    margin-right: 10px;
+  }
 `;
 export const DatePicker = styled.div`
   width: fit-content;

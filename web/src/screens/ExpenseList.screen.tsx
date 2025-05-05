@@ -68,6 +68,42 @@ export const ExpenseList = (props: ExpenseListProps) => {
     setTotalPages(totalPages);
   };
 
+  const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>([]);
+
+  const [dropdownOpen, setDropdownOpen] = useState({
+    department: false,
+    category: false,
+    type: false,
+    paymentMode: false
+  });
+
+  const toggleDropdown = (dropdownName: keyof typeof dropdownOpen) => {
+    setDropdownOpen(prev => ({
+      ...prev,
+      [dropdownName]: !prev[dropdownName]
+    }));
+  };
+
+  const handleMultiSelectChange = (
+    value: string,
+    selectedItems: string[],
+    setSelectedItems: React.Dispatch<React.SetStateAction<string[]>>,
+    dropdownName?: keyof typeof dropdownOpen
+  ) => {
+    if (selectedItems.includes(value)) {
+      setSelectedItems(selectedItems.filter(item => item !== value));
+    } else {
+      setSelectedItems([...selectedItems, value]);
+    }
+    if (dropdownName) {
+      setDropdownOpen(prev => ({ ...prev, [dropdownName]: false }));
+    }
+    setCurrentPage(1);
+  };
+
   const calendarFromRef = useRef<HTMLDivElement>(null);
   const calendarToRef = useRef<HTMLDivElement>(null);
 
@@ -107,28 +143,13 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const currentDate = useMemo(() => new Date(), []);
 
   const [toDate, setToDate] = useState<Date | null>();
-  const [departmentFilter, setDepartmentFilter] = useState<string>('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('');
-  const [typeFilter, setTypeFilter] = useState<string>('');
-  const [paymentModeFilter, setPaymentModeFilter] = useState<string>('');
+  
   const [settlementStatusFilter, setSettlementStatusFilter] =
     useState<boolean>();
   const [sortBy, setSortBy] = useState<string>('expenseDate');
   const [filterBasedOn, setFilterBasedOn] = useState<string>('expenseDate');
   const [sortOrder, setSortOrder] = useState<string>('false');
   const [expenses, setExpenses] = useState<AllExpensesResponse>();
-
-  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedDepartment = e.target.value;
-    setDepartmentFilter(selectedDepartment !== '' ? selectedDepartment : '');
-    setCategoryFilter('');
-    setTypeFilter('');
-  };
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedCategory = e.target.value;
-    setCategoryFilter(selectedCategory !== '' ? selectedCategory : '');
-    setTypeFilter('');
-  };
 
   const handleSettlementStatusChange = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -156,47 +177,55 @@ export const ExpenseList = (props: ExpenseListProps) => {
     const filters = [
       {
         key: 'date',
-        value:
-          fromDate && toDate
-            ? `${formatDate(fromDate.toString())} - ${formatDate(
-                toDate.toString()
-              )}`
-            : fromDate
-              ? `From ${formatDate(fromDate.toString())}`
-              : toDate
-                ? `Upto ${formatDate(toDate.toString())}`
-                : '',
+        value: fromDate && toDate
+          ? `${formatDate(fromDate.toString())} - ${formatDate(toDate.toString())}`
+          : fromDate
+            ? `From ${formatDate(fromDate.toString())}`
+            : toDate
+              ? `Upto ${formatDate(toDate.toString())}`
+              : ''
       },
-      { key: 'department', value: departmentFilter },
-      { key: 'category', value: categoryFilter },
-      { key: 'type', value: typeFilter },
-      { key: 'paymentMode', value: paymentModeFilter },
+      ...selectedDepartments.map(value => ({ key: `dept-${value}`, value })),
+      ...selectedCategories.map(value => ({ key: `cat-${value}`, value })),
+      ...selectedTypes.map(value => ({ key: `type-${value}`, value })),
+      ...selectedPaymentModes.map(value => ({ key: `mode-${value}`, value })),
       {
         key: 'settlementStatus',
-        value:
-          settlementStatusFilter !== undefined
-            ? settlementStatusFilter
-              ? 'Settled'
-              : 'Pending'
-            : '',
-      },
-    ];
+        value: settlementStatusFilter !== undefined
+          ? settlementStatusFilter ? 'Settled' : 'Pending'
+          : ''
+      }
+    ].filter(filter => filter.value);
+
     return (
       <ExpenseFilterArea>
-        {filters.map(
-          (filter) =>
-            filter.value && (
-              <span className="filterValues" key={filter.key}>
-                {filter.value}
-                <span
-                  className="filterClearBtn"
-                  onClick={() => clearFilters(filter.key)}
-                >
-                  <VectorSVG />
-                </span>
-              </span>
-            )
-        )}
+        {filters.map((filter) => (
+          <span className="filterValues" key={filter.key}>
+            {filter.value}
+            <span
+              className="filterClearBtn"
+              onClick={() => {
+                if (filter.key.startsWith('dept-')) {
+                  setSelectedDepartments(selectedDepartments.filter(d => d !== filter.value));
+                } else if (filter.key.startsWith('cat-')) {
+                  setSelectedCategories(selectedCategories.filter(c => c !== filter.value));
+                } else if (filter.key.startsWith('type-')) {
+                  setSelectedTypes(selectedTypes.filter(t => t !== filter.value));
+                } else if (filter.key.startsWith('mode-')) {
+                  setSelectedPaymentModes(selectedPaymentModes.filter(m => m !== filter.value));
+                } else if (filter.key === 'date') {
+                  setFromDate(null);
+                  setToDate(null);
+                } else if (filter.key === 'settlementStatus') {
+                  setSettlementStatusFilter(undefined);
+                }
+                setCurrentPage(1);
+              }}
+            >
+              <VectorSVG />
+            </span>
+          </span>
+        ))}
       </ExpenseFilterArea>
     );
   };
@@ -206,17 +235,22 @@ export const ExpenseList = (props: ExpenseListProps) => {
     try {
       setFilteredResponseLoading(true);
       const queryParams = [];
-      if (departmentFilter) {
-        const encodedDepartment = encodeURIComponent(departmentFilter);
-        queryParams.push(`department=${encodedDepartment}`);
+      
+      if (selectedDepartments.length > 0) {
+        queryParams.push(`department=${selectedDepartments.join(',')}`);
       }
-      if (categoryFilter) {
-        const encodedCategory = encodeURIComponent(categoryFilter);
-        queryParams.push(`expenseCategory=${encodedCategory}`);
+     
+      if (selectedCategories.length > 0) {
+        queryParams.push(`expenseCategory=${selectedCategories.join(',')}`);
       }
-      if (typeFilter) queryParams.push(`expenseType=${typeFilter}`);
-      if (paymentModeFilter)
-        queryParams.push(`modeOfPayment=${paymentModeFilter}`);
+      
+      if (selectedTypes.length > 0) {
+        queryParams.push(`expenseType=${selectedTypes.join(',')}`);
+      }
+      
+      if (selectedPaymentModes.length > 0) {
+        queryParams.push(`modeOfPayment=${selectedPaymentModes.join(',')}`);
+      }
       if (fromDate) queryParams.push(`startDate=${dateFormat(fromDate)}`);
       if (toDate) {
         const toDateCopy = new Date(toDate);
@@ -264,9 +298,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
       throw new Error('Error fetching expenses:' + error);
     }
   }, [
-    categoryFilter,
-    typeFilter,
-    paymentModeFilter,
+    selectedDepartments,
+    selectedCategories,
+    selectedTypes,
+    selectedPaymentModes,
     fromDate,
     toDate,
     itemsPerPage,
@@ -274,8 +309,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
     sortBy,
     filterBasedOn,
     sortOrder,
-    departmentFilter,
-    settlementStatusFilter,
+    settlementStatusFilter
   ]);
 
   useEffect(() => {
@@ -304,25 +338,25 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const clearFilters = (filterName: string) => {
     setCurrentPage(1);
     if (filterName === 'clearAll') {
-      setDepartmentFilter('');
-      setCategoryFilter('');
-      setTypeFilter('');
-      setPaymentModeFilter('');
+      setSelectedDepartments([]);
+      setSelectedCategories([]);
+      setSelectedTypes([]);
+      setSelectedPaymentModes([]);
       setFromDate(null);
       setToDate(null);
       setSettlementStatusFilter(undefined);
     }
     if (filterName === 'department') {
-      setDepartmentFilter('');
+      setSelectedDepartments([]);
     }
     if (filterName === 'category') {
-      setCategoryFilter('');
+      setSelectedCategories([]);
     }
     if (filterName === 'type') {
-      setTypeFilter('');
+      setSelectedTypes([]);
     }
     if (filterName === 'paymentMode') {
-      setPaymentModeFilter('');
+      setSelectedPaymentModes([]);
     }
     if (filterName === 'date') {
       setFromDate(null);
@@ -424,79 +458,140 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     setCurrentPage(1);
                   }}
                   selectedDate={toDate ? toDate : new Date()}
-                  handleCalenderChange={() => {}}
+                  handleCalenderChange={() => { }}
                 />
               </div>
             )}
           </div>
-          <select
-            className="selectoption"
-            name="Department"
-            value={departmentFilter}
-            onChange={(e) => {
-              handleDepartmentChange(e);
-              setCurrentPage(1);
-            }}
-          >
-            <option value="">{t('DEPARTMENT')}</option>
-            {props.expenseDepartments.values?.map((department) => (
-              <option key={department.value} value={department.value}>
-                {department.value}
-              </option>
-            ))}
-          </select>
+          {/* Department Multi-Select */}
+          <div className="multi-select-container">
+            <div
+              className="multi-select-header"
+              onClick={() => toggleDropdown('department')}
+            >
+              <span>
+                {selectedDepartments.length > 0
+                  ? `${t('DEPARTMENT')} (${selectedDepartments.length})`
+                  : t('DEPARTMENT')}
+              </span>
+              <span className="dropdown-arrow">▼</span>
+            </div>
+            {dropdownOpen.department && (
+              <div className="multi-select-options">
+                {props.expenseDepartments.values?.map((dept) => (
+                  <label key={dept.value} className="multi-select-option">
+                    <input
+                      type="checkbox"
+                      checked={selectedDepartments.includes(dept.value)}
+                      onChange={() => handleMultiSelectChange(
+                        dept.value,
+                        selectedDepartments,
+                        setSelectedDepartments
+                      )}
+                    />
+                    {dept.value}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
 
-          <select
-            className="selectoption"
-            name="Expensetype"
-            value={categoryFilter}
-            onChange={(e) => {
-              handleCategoryChange(e);
-              setCurrentPage(1);
-            }}
-          >
-            <option value="">{t('EXPENSE_CATEGORY')}</option>
-            {props.expenseCategories.values?.map((category) => (
-              <option key={category.value} value={category.value}>
-                {category.value}
-              </option>
-            ))}
-          </select>
-          <select
-            className="selectoption largeSelectOption"
-            name="type"
-            value={typeFilter}
-            onChange={(e) => {
-              setTypeFilter(e.target.value != '' ? e.currentTarget.value : '');
-              setCurrentPage(1);
-            }}
-          >
-            <option value="">{t('EXPENSE_TYPE')}</option>
-            {props.expenseTypes.values?.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.value}
-              </option>
-            ))}
-          </select>
-          <select
-            className="selectoption largeSelectOption"
-            name="modeOfPayment"
-            value={paymentModeFilter}
-            onChange={(e) => {
-              setPaymentModeFilter(
-                e.target.value != '' ? e.currentTarget.value : ''
-              );
-              setCurrentPage(1);
-            }}
-          >
-            <option value="">{t('MODE_OF_PAYMENT')}</option>
-            {/* FIXME - fetch from API Based on Country */}
-            {props.expensePaymentModes.values?.map((type) => (
-              <option key={type.value} value={type.value}>
-                {type.value}
-              </option>
-            ))}
-          </select>
+          {/* Category Multi-Select */}
+          <div className="multi-select-container">
+            <div
+              className="multi-select-header"
+              onClick={() => toggleDropdown('category')}
+            >
+              <span>
+                {selectedCategories.length > 0
+                  ? `${t('EXPENSE_CATEGORY')} (${selectedCategories.length})`
+                  : t('EXPENSE_CATEGORY')}
+              </span>
+              <span className="dropdown-arrow">▼</span>
+            </div>
+            {dropdownOpen.category && (
+              <div className="multi-select-options">
+                {props.expenseCategories.values?.map((cat) => (
+                  <label key={cat.value} className="multi-select-option">
+                    <input
+                      type="checkbox"
+                      checked={selectedCategories.includes(cat.value)}
+                      onChange={() => handleMultiSelectChange(
+                        cat.value,
+                        selectedCategories,
+                        setSelectedCategories
+                      )}
+                    />
+                    {cat.value}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* Expense Type Multi-Select */}
+          <div className="multi-select-container">
+            <div
+              className="multi-select-header"
+              onClick={() => toggleDropdown('type')}
+            >
+              <span>
+                {selectedTypes.length > 0
+                  ? `${t('EXPENSE_TYPE')} (${selectedTypes.length})`
+                  : t('EXPENSE_TYPE')}
+              </span>
+              <span className="dropdown-arrow">▼</span>
+            </div>
+            {dropdownOpen.type && (
+              <div className="multi-select-options">
+                {props.expenseTypes.values?.map((type) => (
+                  <label key={type.value} className="multi-select-option">
+                    <input
+                      type="checkbox"
+                      checked={selectedTypes.includes(type.value)}
+                      onChange={() => handleMultiSelectChange(
+                        type.value,
+                        selectedTypes,
+                        setSelectedTypes
+                      )}
+                    />
+                    {type.value}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+          {/* Payment Mode Multi-Select */}
+          <div className="multi-select-container">
+            <div
+              className="multi-select-header"
+              onClick={() => toggleDropdown('paymentMode')}
+            >
+              <span>
+                {selectedPaymentModes.length > 0
+                  ? `${t('MODE_OF_PAYMENT')} (${selectedPaymentModes.length})`
+                  : t('MODE_OF_PAYMENT')}
+              </span>
+              <span className="dropdown-arrow">▼</span>
+            </div>
+            {dropdownOpen.paymentMode && (
+              <div className="multi-select-options">
+                {props.expensePaymentModes.values?.map((mode) => (
+                  <label key={mode.value} className="multi-select-option">
+                    <input
+                      type="checkbox"
+                      checked={selectedPaymentModes.includes(mode.value)}
+                      onChange={() => handleMultiSelectChange(
+                        mode.value,
+                        selectedPaymentModes,
+                        setSelectedPaymentModes
+                      )}
+                    />
+                    {mode.value}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
           <select
             className="selectoption largeSelectOption"
             name="settlementStatus"
@@ -540,10 +635,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
               ₹{' '}
               {expenses?.metadata.totalAmount !== undefined
                 ? formatToINR(
-                    expenses.metadata.totalAmount.toFixed(
-                      2
-                    ) as unknown as number
-                  )
+                  expenses.metadata.totalAmount.toFixed(
+                    2
+                  ) as unknown as number
+                )
                 : '0.00'}
             </span>
           </span>
@@ -591,15 +686,14 @@ export const ExpenseList = (props: ExpenseListProps) => {
         {fromDate == null && toDate == null && (
           <span className="noFilters noMargin">
             <InfoCircleSVG />
-            {`Showing current month expenses (sorted based on ${
-              sortBy === 'expenseDate'
-                ? t('EXPENSE_DATE')
-                : sortBy === 'requestedDate'
-                  ? t('REQUESTED_DATE')
-                  : sortBy === 'paymentDate'
-                    ? t('PAYMENT_DATE')
-                    : t('CREATED_DATE')
-            })`}
+            {`Showing current month expenses (sorted based on ${sortBy === 'expenseDate'
+              ? t('EXPENSE_DATE')
+              : sortBy === 'requestedDate'
+                ? t('REQUESTED_DATE')
+                : sortBy === 'paymentDate'
+                  ? t('PAYMENT_DATE')
+                  : t('CREATED_DATE')
+              })`}
           </span>
         )}
         <TableListContainer style={{ marginTop: 0 }}>
@@ -689,8 +783,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
                           </span>
                           {exp.paymentSettled
                             ? formatDate(
-                                exp.paymentSettled as unknown as string
-                              )
+                              exp.paymentSettled as unknown as string
+                            )
                             : '-'}
                         </td>
                         {user?.roles.some((role) =>
@@ -700,18 +794,18 @@ export const ExpenseList = (props: ExpenseListProps) => {
                               permission === EXPENSE_MODULE.DELETE_EXPENSE
                           )
                         ) && (
-                          <td>
-                            <ExpenseAction
-                              options={Actions}
-                              fetchExpenses={fetchExpenses}
-                              currentExpense={exp}
-                              expenseCategories={props.expenseCategories}
-                              expenseTypes={props.expenseTypes}
-                              expenseDepartments={props.expenseDepartments}
-                              expensePaymentModes={props.expensePaymentModes}
-                            />
-                          </td>
-                        )}
+                            <td>
+                              <ExpenseAction
+                                options={Actions}
+                                fetchExpenses={fetchExpenses}
+                                currentExpense={exp}
+                                expenseCategories={props.expenseCategories}
+                                expenseTypes={props.expenseTypes}
+                                expenseDepartments={props.expenseDepartments}
+                                expensePaymentModes={props.expensePaymentModes}
+                              />
+                            </td>
+                          )}
                       </TableBodyRow>
                     ))
                   ) : (
