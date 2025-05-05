@@ -1,0 +1,385 @@
+openapi: 3.0.3
+info:
+  title: Beeja Recruitment Service
+  version: 1.0.0
+  description: |-
+    `Product of tech.at.core`
+      API documentation for the Beeja Open API application. It allows users to access
+      data via a APIs secured by cookie and permissions.
+    
+        ## Authentication & Authorization
+        Beeja has a username and password authentication system. 
+        [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
+
+externalDocs:
+  description: Explore Beeja
+  url: https://beeja.io/
+
+servers:
+  - url: http://localhost:8000/recruitment-management
+    description: Beeja Recruitment Service
+
+paths:
+  /v1/applicants:
+    post:
+      summary: Create a new applicant
+      tags: [Applicants Controller]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicantRequest'
+      responses:
+        '200':
+          description: Applicant created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applicant'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Get all applicants in the organization
+      tags: [Applicants Controller]
+      responses:
+        '200':
+          description: List of applicants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Applicant'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applicants/{applicantId}:
+    get:
+      summary: Get applicant by ID
+      tags: [Applicants Controller]
+      parameters:
+        - name: applicantId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Applicant details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applicant'
+        '404':
+          description: Applicant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applicants/resume/{fileId}:
+    get:
+      summary: Download resume file
+      tags: [Applicants Controller]
+      parameters:
+        - name: fileId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File downloaded
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: File not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applicants/{applicantID}/interview/{interviewID}:
+    delete:
+      summary: Delete interview by ID
+      tags: [Applicants Controller]
+      parameters:
+        - name: applicantID
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: interviewID
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Interview deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applicant'
+        '404':
+          description: Interview not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applicants/comments:
+    post:
+      summary: Add comment to applicant
+      tags: [Applicants Controller]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCommentRequest'
+      responses:
+        '200':
+          description: Comment added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applicant'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/applicants/{applicantID}/status/{status}:
+    put:
+      summary: Change status of applicant
+      tags: [Applicants Controller]
+      parameters:
+        - name: applicantID
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: status
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Status changed
+        '400':
+          description: Invalid status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Applicant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/referrals:
+    post:
+      summary: Create a new referral
+      tags: [Referrals Controller]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicantRequest'
+      responses:
+        '200':
+          description: Referral created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Applicant'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Get all referrals by current user
+      tags: [Referrals Controller]
+      responses:
+        '200':
+          description: List of referrals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Applicant'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/referrals/{resumeId}:
+    get:
+      summary: Download resume from referral
+      tags: [Referrals Controller]
+      parameters:
+        - name: resumeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: File downloaded
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Resume not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Applicant:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        status:
+          type: string
+        comments:
+          type: array
+          items:
+            type: string
+
+    ApplicantRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        resume:
+          type: string
+          format: binary
+
+    AssignedInterviewer:
+      type: object
+      properties:
+        interviewerId:
+          type: string
+        interviewDate:
+          type: string
+          format: date-time
+
+    ApplicantFeedbackRequest:
+      type: object
+      properties:
+        feedback:
+          type: string
+        rating:
+          type: integer
+          format: int32
+
+    AddCommentRequest:
+      type: object
+      properties:
+        applicantId:
+          type: string
+        comment:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string

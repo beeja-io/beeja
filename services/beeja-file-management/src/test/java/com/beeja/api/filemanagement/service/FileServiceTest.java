@@ -46,7 +46,7 @@ public class FileServiceTest {
         verify(fileService, times(1)).listofFileByEntityId(entityId, page, size);
     }
 
-    @Test
+   @Test
     void testDownloadFile_Success() throws Exception {
         String fileId = "file123";
         FileDownloadResult mockResult = new FileDownloadResult(
@@ -160,7 +160,7 @@ public class FileServiceTest {
         }
     }
     @Test
-    void testGetFileById_FileNotFound() {
+    void testGetFileById_FileNotFound() throws FileNotFoundException {
         String fileId = "file123";
         try {
             when(fileService.getFileById(fileId)).thenReturn(null);
@@ -202,7 +202,6 @@ public class FileServiceTest {
             verify(fileService, times(1)).uploadOrUpdateFile(request);
         }
     }
-
 
     @Test
     void testUploadOrUpdateFile_Exception() throws Exception {
