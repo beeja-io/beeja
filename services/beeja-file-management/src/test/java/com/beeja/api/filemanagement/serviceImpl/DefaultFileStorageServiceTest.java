@@ -3,11 +3,13 @@ package com.beeja.api.filemanagement.serviceImpl;
 import com.beeja.api.filemanagement.config.properties.DefaultStorageProperties;
 import com.beeja.api.filemanagement.model.File;
 import com.beeja.api.filemanagement.utils.Constants;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,13 +37,29 @@ class DefaultFileStorageServiceTest {
     private DefaultStorageProperties storageDirectory;
 
     private Path tempStoragePath;
+    private MockedStatic<UserContext> mockedUserContext;
 
     @BeforeEach
     void setUp() throws IOException {
         tempStoragePath = Files.createTempDirectory("test-storage");
-        when(storageDirectory.getPath()).thenReturn(tempStoragePath.toString());
+        lenient().when(storageDirectory.getPath()).thenReturn(tempStoragePath.toString());
+
+        mockedUserContext = mockStatic(UserContext.class);
+
+        Map<String, Object> mockOrg = new HashMap<>();
+        mockOrg.put("id", "mockOrgId");
+
+        mockedUserContext.when(UserContext::getLoggedInUserOrganization).thenReturn(mockOrg);
+        mockedUserContext.when(UserContext::getLoggedInEmployeeId).thenReturn("mockEmpId");
+        mockedUserContext.when(UserContext::getLoggedInUserName).thenReturn("Mock User");
     }
 
+    @AfterEach
+    void tearDown() {
+        if (mockedUserContext != null) {
+            mockedUserContext.close();
+        }
+    }
     @Test
     void testUploadFile_Success() throws IOException {
         // Setup UserContext before creating File

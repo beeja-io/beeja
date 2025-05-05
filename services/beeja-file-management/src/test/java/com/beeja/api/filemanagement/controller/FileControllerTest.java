@@ -57,7 +57,7 @@ public class FileControllerTest {
   }
 
   @Test
-  void testUploadFile_FileMissing() {
+  void testUploadFile_FileMissing() throws Exception {
     FileUploadRequest fileInput = new FileUploadRequest();
 
     ResponseEntity<?> response = fileController.uploadFile(fileInput);
@@ -191,7 +191,7 @@ public class FileControllerTest {
   }
 
   @Test
-  void testUploadOrUpdateFile_FileMissing() {
+  void testUploadOrUpdateFile_FileMissing() throws Exception {
     FileUploadRequest fileInput = new FileUploadRequest();
 
     ResponseEntity<?> response = fileController.uploadOrUpdateFile(fileInput);
@@ -268,7 +268,7 @@ public class FileControllerTest {
   }
 
   @Test
-  void testUploadFile_FileMissing_FileIsNull() {
+  void testUploadFile_FileMissing_FileIsNull() throws Exception {
     FileUploadRequest fileInput = new FileUploadRequest();
     fileInput.setFile(null);
 
@@ -279,7 +279,7 @@ public class FileControllerTest {
   }
 
   @Test
-  void testUploadOrUpdateFile_FileMissing_FileIsNull() {
+  void testUploadOrUpdateFile_FileMissing_FileIsNull() throws Exception {
     FileUploadRequest fileInput = new FileUploadRequest();
     fileInput.setFile(null);
 

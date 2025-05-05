@@ -161,7 +161,4 @@ public class ExpenseController {
             UserContext.getLoggedInUserOrganization().get("id").toString());
     return ResponseEntity.ok(expenseDefaultValues);
   }
-
-
-
 }

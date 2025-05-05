@@ -517,13 +517,4 @@ public class EmployeeServiceImpl implements EmployeeService {
     return Constants.UPDATED;
   }
 
-  public void changeEmailAndPassword(User user, ChangeEmailAndPasswordRequest request) {
-    if (request.getNewPassword() != null) {
-      user.setPassword(passwordEncoder.encode(request.getNewPassword()));
-    }
-    if (request.getNewEmail() != null) {
-      user.setEmail(request.getNewEmail());
-    }
-  }
-
 }

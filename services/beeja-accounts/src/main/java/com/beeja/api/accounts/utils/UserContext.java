@@ -37,7 +37,4 @@ public class UserContext {
     loggedInUserPermissions = permissions;
     accessToken = token;
   }
-
-
-
 }
