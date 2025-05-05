@@ -29,9 +29,35 @@ paths:
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ApplicantRequest'
+              type: object
+              required:
+                - firstName
+                - lastName
+                - email
+                - phoneNumber
+                - positionAppliedFor
+                - resume
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                phoneNumber:
+                  type: string
+                positionAppliedFor:
+                  type: string
+                experience:
+                  type: string
+                  nullable: true
+                  description: it is an optional field
+                resume:
+                  type: string
+                  format: binary
       responses:
         '200':
           description: Applicant created successfully
@@ -140,7 +166,7 @@ paths:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/PaginatedApplicantsResponse'
+                  $ref: '#/components/schemas/PaginatedApplicantResponse'
           '403':
             description: Forbidden to view applicants
             content:
