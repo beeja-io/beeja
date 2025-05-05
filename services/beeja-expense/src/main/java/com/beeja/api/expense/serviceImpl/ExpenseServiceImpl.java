@@ -358,11 +358,11 @@ public class ExpenseServiceImpl implements ExpenseService {
   public List<Expense> getFilteredExpenses(
           Date startDate,
           Date endDate,
-          String department,
+          List<String> department,
           String filterBasedOn,
-          String modeOfPayment,
-          String expenseType,
-          String expenseCategory,
+          List<String> modeOfPayment,
+          List<String> expenseType,
+          List<String> expenseCategory,
           String organizationId,
           int pageNumber,
           int pageSize,
@@ -383,31 +383,31 @@ public class ExpenseServiceImpl implements ExpenseService {
       Query query = new Query();
 
       if (startDate != null && endDate != null) {
-        query.addCriteria(Criteria.where(sortBy).gte(startDate).lte(endDate));
+        query.addCriteria(Criteria.where(filterBasedOn).gte(startDate).lte(endDate));
       } else if (endDate != null) {
         query.addCriteria(Criteria.where(filterBasedOn).lte(endDate));
       } else if (startDate != null) {
         query.addCriteria(Criteria.where(filterBasedOn).gte(startDate));
       }
 
-      if (modeOfPayment != null) {
-        query.addCriteria(Criteria.where("modeOfPayment").is(modeOfPayment));
+      if (modeOfPayment != null && !modeOfPayment.isEmpty()) {
+        query.addCriteria(Criteria.where("modeOfPayment").in(modeOfPayment));
       }
 
-      if (expenseType != null) {
-        query.addCriteria(Criteria.where("type").is(expenseType));
+      if (expenseType != null && !expenseType.isEmpty()) {
+        query.addCriteria(Criteria.where("type").in(expenseType));
       }
 
-      if (expenseCategory != null) {
-        query.addCriteria(Criteria.where("category").is(expenseCategory));
+      if (expenseCategory != null && !expenseCategory.isEmpty()) {
+        query.addCriteria(Criteria.where("category").in(expenseCategory));
       }
 
       if (organizationId != null) {
         query.addCriteria(Criteria.where("organizationId").is(organizationId));
       }
 
-      if (department != null) {
-        query.addCriteria(Criteria.where("department").is(department));
+      if (department != null && !department.isEmpty()) {
+        query.addCriteria(Criteria.where("department").in(department));
       }
 
       if (settlementStatus != null) {
@@ -434,21 +434,18 @@ public class ExpenseServiceImpl implements ExpenseService {
               BuildErrorMessage.buildErrorMessage(
                       ErrorType.INTERNAL_SERVER_ERROR,
                       ErrorCode.EXPENSE_FILTERING_FAILED,
-                      ERROR_FILTERING_EXPENSE
-              )
-      );
+                      Constants.ERROR_FILTERING_EXPENSE));
     }
   }
-
   @Override
   public Double getFilteredTotalAmount(
       Date startDate,
       Date endDate,
-      String department,
+      List<String> department,
       String filterBasedOn,
-      String modeOfPayment,
-      String expenseType,
-      String expenseCategory,
+      List<String> modeOfPayment,
+      List<String> expenseType,
+      List<String> expenseCategory,
       Boolean settlementStatus,
       String organizationId) {
 
@@ -476,15 +473,15 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public Long getTotalExpensesSize(
-      Date startDate,
-      Date endDate,
-      String department,
-      String filterBasedOn,
-      String modeOfPayment,
-      String expenseType,
-      String expenseCategory,
-      Boolean settlementStatus,
-      String organizationId) {
+          Date startDate,
+          Date endDate,
+          List<String> department,
+          String filterBasedOn,
+          List<String> modeOfPayment,
+          List<String> expenseType,
+          List<String> expenseCategory,
+          Boolean settlementStatus,
+          String organizationId) {
     Query query = new Query();
     if (startDate != null && endDate != null) {
       query.addCriteria(Criteria.where(filterBasedOn).gte(startDate).lte(endDate));
@@ -494,24 +491,24 @@ public class ExpenseServiceImpl implements ExpenseService {
       query.addCriteria(Criteria.where(filterBasedOn).gte(startDate));
     }
 
-    if (modeOfPayment != null) {
-      query.addCriteria(Criteria.where("modeOfPayment").is(modeOfPayment));
+    if (modeOfPayment != null && !modeOfPayment.isEmpty()) {
+      query.addCriteria(Criteria.where("modeOfPayment").in(modeOfPayment));
     }
 
-    if (expenseType != null) {
-      query.addCriteria(Criteria.where("type").is(expenseType));
+    if (expenseType != null && !expenseType.isEmpty()) {
+      query.addCriteria(Criteria.where("type").in(expenseType));
     }
 
-    if (expenseCategory != null) {
-      query.addCriteria(Criteria.where("category").is(expenseCategory));
+    if (expenseCategory != null && !expenseCategory.isEmpty()) {
+      query.addCriteria(Criteria.where("category").in(expenseCategory));
     }
 
     if (organizationId != null) {
       query.addCriteria(Criteria.where("organizationId").is(organizationId));
     }
 
-    if (department != null) {
-      query.addCriteria(Criteria.where("department").is(department));
+    if (department != null && !department.isEmpty()) {
+      query.addCriteria(Criteria.where("department").in(department));
     }
     if (settlementStatus != null && settlementStatus.equals(true)) {
       query.addCriteria(Criteria.where("paymentSettled").ne(null));
@@ -548,15 +545,15 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   private Criteria getCriteria(
-      Date startDate,
-      Date endDate,
-      String department,
-      String filterBasedOn,
-      String modeOfPayment,
-      String expenseType,
-      String expenseCategory,
-      Boolean settlementStatus,
-      String organizationId) {
+          Date startDate,
+          Date endDate,
+          List<String> department,
+          String filterBasedOn,
+          List<String> modeOfPayment,
+          List<String> expenseType,
+          List<String> expenseCategory,
+          Boolean settlementStatus,
+          String organizationId) {
     Criteria criteria = new Criteria();
 
     if (startDate != null && endDate != null) {
@@ -567,24 +564,24 @@ public class ExpenseServiceImpl implements ExpenseService {
       criteria.and(filterBasedOn).gte(startDate);
     }
 
-    if (modeOfPayment != null) {
-      criteria.and("modeOfPayment").is(modeOfPayment);
+    if (modeOfPayment != null && !modeOfPayment.isEmpty()) {
+      criteria.and("modeOfPayment").in(modeOfPayment);
     }
 
-    if (expenseType != null) {
-      criteria.and("type").is(expenseType);
+    if (expenseType != null && !expenseType.isEmpty()) {
+      criteria.and("type").in(expenseType);
     }
 
-    if (expenseCategory != null) {
-      criteria.and("category").is(expenseCategory);
+    if (expenseCategory != null && !expenseCategory.isEmpty()) {
+      criteria.and("category").in(expenseCategory);
     }
 
     if (organizationId != null) {
       criteria.and("organizationId").is(organizationId);
     }
 
-    if (department != null) {
-      criteria.and("department").is(department);
+    if (department != null && !department.isEmpty()) {
+      criteria.and("department").in(department);
     }
 
     if (settlementStatus != null && settlementStatus.equals(true)) {

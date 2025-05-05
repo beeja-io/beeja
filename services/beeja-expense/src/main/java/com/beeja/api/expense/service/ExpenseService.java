@@ -24,11 +24,11 @@ public interface ExpenseService {
   List<Expense> getFilteredExpenses(
       Date startDate,
       Date endDate,
-      String department,
+      List<String> department,
       String filterBasedOn,
-      String modeOfPayment,
-      String expenseType,
-      String expenseCategory,
+      List<String> modeOfPayment,
+      List<String> expenseType,
+      List<String> expenseCategory,
       String organizationId,
       int pageNumber,
       int pageSize,
@@ -40,22 +40,22 @@ public interface ExpenseService {
   Double getFilteredTotalAmount(
       Date startDate,
       Date endDate,
-      String department,
+      List<String> department,
       String filterBasedOn,
-      String modeOfPayment,
-      String expenseType,
-      String expenseCategory,
+      List<String> modeOfPayment,
+      List<String> expenseType,
+      List<String> expenseCategory,
       Boolean settlementStatus,
       String organizationId);
 
   Long getTotalExpensesSize(
       Date startDate,
       Date endDate,
-      String department,
+      List<String> department,
       String filterBasedOn,
-      String modeOfPayment,
-      String expenseType,
-      String expenseCategory,
+      List<String> modeOfPayment,
+      List<String> expenseType,
+      List<String> expenseCategory,
       Boolean settlementStatus,
       String organizationId);
 

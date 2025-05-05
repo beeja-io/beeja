@@ -219,12 +219,12 @@ class ExpenseServiceImplTest {
   void testGetFilteredTotalAmount_Success() {
     Date startDate = new GregorianCalendar(2023, GregorianCalendar.JANUARY, 1).getTime();
     Date endDate = new GregorianCalendar(2023, GregorianCalendar.JANUARY, 31).getTime();
-    String department = "HR";
+    List<String> department = Arrays.asList("HR");
     String filterBasedOn = "department";
-    String modeOfPayment = "Credit Card";
-    String expenseType = "Office Supplies";
-    String expenseCategory = "Stationery";
-    Boolean settlementStatus = true;
+    List<String> modeOfPayment = Arrays.asList("Credit Card");
+    List<String> expenseType = Arrays.asList("Office Supplies");
+    List<String> expenseCategory = Arrays.asList("Stationery");
+    Boolean settlementStatus=true;
     String organizationId = "Org123";
 
     Map<String, Object> mockResult = Collections.singletonMap("totalAmount", 5000.0);
@@ -255,12 +255,12 @@ class ExpenseServiceImplTest {
   void testGetTotalExpensesSize_Success() {
     Date startDate = new GregorianCalendar(2023, Calendar.JANUARY, 1).getTime();
     Date endDate = new GregorianCalendar(2023, Calendar.JANUARY, 31).getTime();
-    String department = "HR";
+    List<String> department = Arrays.asList("HR");
     String filterBasedOn = "date";
-    String modeOfPayment = "Credit Card";
-    String expenseType = "Office Supplies";
-    String expenseCategory = "Stationery";
-    Boolean settlementStatus = true;
+    List<String> modeOfPayment = Arrays.asList("Credit Card");
+    List<String> expenseType = Arrays.asList("Office Supplies");
+    List<String> expenseCategory = Arrays.asList("Stationery");
+    Boolean settlementStatus=true;
     String organizationId = "Org123";
     long expectedCount = 10;
 
@@ -292,11 +292,11 @@ class ExpenseServiceImplTest {
         expenseService.getFilteredExpenses(
             new Date(),
             new Date(),
-            "Finance",
+            Arrays.asList("Finance"),
             "createdDate",
-            "Credit Card",
-            "Office",
-            "Stationery",
+            Arrays.asList("Credit Card"),
+            Arrays.asList("Office"),
+            Arrays.asList("Stationery"),
             "org123",
             1,
             10,

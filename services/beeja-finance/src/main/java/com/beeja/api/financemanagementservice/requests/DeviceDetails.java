@@ -15,7 +15,7 @@ public class DeviceDetails {
 
   private String deviceNumber;
 
-  @NotNull private Device device;
+  @NotNull private String device;
 
   @NotNull private String provider;
 
