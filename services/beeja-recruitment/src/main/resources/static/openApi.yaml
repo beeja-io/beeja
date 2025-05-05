@@ -34,24 +34,53 @@ paths:
               $ref: '#/components/schemas/ApplicantRequest'
       responses:
         '200':
-          description: Successfully created
+          description: Applicant created successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Applicant'
-
+          '400':
+            description: Invalid applicant input
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/BadRequest'
+          '403':
+            description: Forbidden to create applicant
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Forbidden'
+          '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
     get:
       summary: Get all applicants in the organization
       tags: [Applicants]
       responses:
-        '200':
-          description: List of applicants
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Applicant'
+          '200':
+            description: List of applicants fetched
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Applicant'
+          '403':
+            description: Access denied to view applicants
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Forbidden'
+          '500':
+            description: Server error while fetching applicants
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
 
   /v1/applicants/combinedApplicants:
     get:
@@ -106,12 +135,25 @@ paths:
             type: string
             enum: [asc, desc]
       responses:
-        '200':
-          description: Paginated applicant response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/PaginatedApplicantResponse'
+          '200':
+            description: Paginated applicant list fetched
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/PaginatedApplicantsResponse'
+          '403':
+            description: Forbidden to view applicants
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Forbidden'
+          '500':
+            description: Server error while fetching paginated list
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+
 
   /v1/applicants/{applicantID}:
     get:
@@ -124,12 +166,25 @@ paths:
           schema:
             type: string
       responses:
-        '200':
-          description: Applicant object
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Applicant'
+          '200':
+            description: Applicant found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Applicant'
+          '404':
+            description: Applicant not found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/NotFound'
+          '500':
+            description: Error while fetching applicant
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/InternalServerError'
+
 
     patch:
       summary: Update applicant partially
@@ -147,11 +202,30 @@ paths:
             type: string
       responses:
         '200':
-          description: Updated applicant
+          description: Applicant updated successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Applicant'
+        '400':
+          description: Invalid input for update
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Applicant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Server error while updating
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
 
   /v1/applicants/{applicantID}/assign-interviewer:
     patch:
@@ -170,11 +244,19 @@ paths:
             type: string
       responses:
         '200':
-          description: Assigned successfully
+          description: Interviewer assigned
+        '400':
+          description: Invalid interviewer details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Applicant'
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Applicant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
 
   /v1/applicants/feedback/{applicantID}:
     patch:
@@ -194,10 +276,19 @@ paths:
       responses:
         '200':
           description: Feedback submitted
+        '400':
+          description: Feedback input invalid
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Applicant'
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Applicant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+
 
   /v1/applicants/resume/{fileId}:
     get:
@@ -211,12 +302,25 @@ paths:
             type: string
       responses:
         '200':
-          description: Resume file
+          description: Resume file downloaded
           content:
             application/octet-stream:
               schema:
                 type: string
                 format: binary
+        '404':
+          description: Resume not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Download error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
 
   /v1/applicants/{applicantID}/status/{status}:
     put:
@@ -235,7 +339,20 @@ paths:
             $ref: '#/components/schemas/ApplicantStatus'
       responses:
         '200':
-          description: Status changed
+          description: Status updated
+        '400':
+          description: Invalid status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '404':
+          description: Applicant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+
 
   /v1/applicants/comments:
     post:
@@ -249,6 +366,13 @@ paths:
       responses:
         '200':
           description: Comment added
+        '400':
+          description: Invalid comment data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+
 
   /v1/applicants/{applicantID}/interview/{interviewID}:
     delete:
@@ -267,7 +391,14 @@ paths:
             type: string
       responses:
         '200':
-          description: Interview deleted
+          description: Interviewer removed
+        '404':
+          description: Interview record not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+
 
   /v1/referrals:
     post:
@@ -280,24 +411,56 @@ paths:
               $ref: '#/components/schemas/ApplicantRequest'
       responses:
         '200':
-          description: Referral created
+          description: Referral created successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Applicant'
+        '400':
+          description: Invalid referral request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequest'
+        '401':
+          description: Unauthorized to create referral
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '500':
+          description: Internal server error while creating referral
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
 
     get:
       summary: Get all my referrals
       tags: [Referrals]
       responses:
         '200':
-          description: List of referrals
+          description: Fetched all referrals successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Applicant'
+        '401':
+          description: Unauthorized to view referrals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '500':
+          description: Internal server error while fetching referrals
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
 
   /v1/referrals/{resumeId}:
     get:
@@ -311,12 +474,31 @@ paths:
             type: string
       responses:
         '200':
-          description: Resume file
+          description: Resume downloaded successfully
           content:
             application/octet-stream:
               schema:
                 type: string
                 format: binary
+        '401':
+          description: Unauthorized access to resume
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Unauthorized'
+        '404':
+          description: Resume not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFound'
+        '500':
+          description: Error occurred while downloading resume
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerError'
+
 
 components:
   schemas:
@@ -335,8 +517,10 @@ components:
           type: string
         status:
           $ref: '#/components/schemas/ApplicantStatus'
+
     ApplicantRequest:
       type: object
+      required: [firstName, lastName, email, phoneNumber, positionAppliedFor]
       properties:
         firstName:
           type: string
@@ -344,29 +528,43 @@ components:
           type: string
         email:
           type: string
-        phone:
+        phoneNumber:
           type: string
+        positionAppliedFor:
+          type: string
+        resume:
+          type: string
+          format: binary
+        experience:
+          type: string
+
     AssignedInterviewer:
       type: object
+      required: [name, email]
       properties:
         name:
           type: string
         email:
           type: string
+
     ApplicantFeedbackRequest:
       type: object
+      required: [feedback, rating]
       properties:
         feedback:
           type: string
         rating:
           type: number
+
     AddCommentRequest:
       type: object
+      required: [applicantId, comment]
       properties:
         applicantId:
           type: string
         comment:
           type: string
+
     PaginatedApplicantResponse:
       type: object
       properties:
@@ -376,10 +574,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Applicant'
+
     ApplicantStatus:
       type: string
-      enum: [APPLIED,
-             SHORTLISTED,
-             INTERVIEW_SCHEDULED,
-             HIRED,
-             REJECTED]
+      enum: [APPLIED, SHORTLISTED, INTERVIEW_SCHEDULED, HIRED, REJECTED]
+
+    BadRequest:
+      type: object
+      properties:
+        message:
+          type: string
+    Unauthorized:
+        type: object
+        properties:
+          message:
+            type: string
+    NotFound:
+        type: object
+        properties:
+          message:
+            type: string
+    Forbidden:
+      type: object
+      properties:
+        message:
+          type: string
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          type: string
