@@ -1,4 +1,4 @@
-import { useTheme } from "styled-components";
+import { useTheme } from 'styled-components';
 
 export const DeleteIcon = () => {
   return (
@@ -215,8 +215,8 @@ export const CalenderIcon = () => {
   );
 };
 
-export const UploadReceiptIcon = () => { 
-const theme = useTheme();
+export const UploadReceiptIcon = () => {
+  const theme = useTheme();
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

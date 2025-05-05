@@ -188,7 +188,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
               </select>
             </InputLabelContainer>
 
-            {formData.device === "Accessories" && (
+            {formData.device === 'Accessories' && (
               <InputLabelContainer>
                 <label>
                   {t('ACCESSORY_TYPE')}
@@ -297,7 +297,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                       }}
                       selectedDate={dateOfPurchase}
                       maxDate={new Date()}
-                      handleCalenderChange={() => { }}
+                      handleCalenderChange={() => {}}
                     />
                   )}
                 </div>
@@ -392,7 +392,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                     formData.device === 'Tablet'
                   )
                 }
-
                 required={
                   ![
                     'PRINTER',

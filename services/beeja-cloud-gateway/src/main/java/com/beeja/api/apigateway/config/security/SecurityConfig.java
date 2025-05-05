@@ -6,6 +6,8 @@ import com.beeja.api.apigateway.config.security.properties.AuthProperties;
 import java.time.Duration;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.beeja.api.apigateway.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
@@ -158,12 +160,17 @@ public class SecurityConfig {
 
   @Bean
   public CorsWebFilter corsWebFilter() throws Exception {
-    if(authProperties.getFrontEndUrl() == null || authProperties.getLocalFrontEndUrl() == null){
+    if(authProperties.getFrontEndUrl() == null || authProperties.getUrls() == null){
       throw new Exception(Constants.ERROR_MISSING_FE_URLS);
     }
     CorsConfiguration corsConfig = new CorsConfiguration();
-    corsConfig.setAllowedOriginPatterns(List.of(authProperties.getFrontEndUrl(),
-            authProperties.getLocalFrontEndUrl()));
+    corsConfig.setAllowedOriginPatterns(
+            Stream.concat(
+                    Stream.of(authProperties.getFrontEndUrl()),
+                    authProperties.getUrls().stream()
+            ).collect(Collectors.toList())
+    );
+    log.info("Allowed URLs: {}", authProperties.getUrls());
     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     corsConfig.setAllowedHeaders(List.of("*"));
     corsConfig.setAllowCredentials(true);

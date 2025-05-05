@@ -95,7 +95,7 @@ export const TableListContainer = styled.section`
   &.overFlowScroll {
     overflow: scroll;
   }
-  
+
   &.bgTable {
     background-color: white;
   }
@@ -386,7 +386,7 @@ export const ActionMenuContent = styled.div`
   right: 100%;
   transform: translateY(-70%);
   background-color: ${(props) => props.theme.colors.blackColors.white};
-  box-shadow: 0 8px 16px rgba(12, 175, 96, 0.2);
+  // box-shadow: 0 8px 16px rgba(12, 175, 96, 0.2);
 `;
 
 export const ActionMenuOption = styled.div`
@@ -424,6 +424,12 @@ export const FileUploadForm = styled.div`
   justify-content: space-between;
   width: 100%;
 
+  form {
+    min-height: 80vh;
+    max-height: 100svh;
+    overflow-y: scroll;
+    padding-right: 10px;
+  }
   .infoText {
     color: ${(props) => props.theme.colors.grayColors.gray7};
     font-size: 12px;
@@ -451,7 +457,7 @@ export const FileUploadField = styled.div`
     color: #a0aec0;
   }
 
-  .file-info-text{
+  .file-info-text {
     font-size: 12px;
   }
 

@@ -87,8 +87,8 @@ export const CenterModelMainContainer = styled.section<{
     font-style: normal;
     font-weight: 500;
     //line-height: 125%; /* 35px */
-    font-family:Nunito;
-    margin-top:10px;
+    font-family: Nunito;
+    margin-top: 10px;
   }
 
   @media screen and (max-width: 500px) {

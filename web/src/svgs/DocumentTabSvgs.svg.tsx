@@ -183,7 +183,6 @@ export const CalenderIcon = () => {
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const DownloadIcon = (props: any) => {
   return (
     <svg

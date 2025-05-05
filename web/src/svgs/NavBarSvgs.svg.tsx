@@ -46,7 +46,7 @@ export const NavCloseArrow = ({ isOpen }: { isOpen: boolean }) => {
           fill-rule="evenodd"
           clip-rule="evenodd"
           d="M10.4713 3.52876C10.7317 3.78911 10.7317 4.21122 10.4713 4.47157L6.94273 8.00016L10.4713 11.5288C10.7317 11.7891 10.7317 12.2112 10.4713 12.4716C10.211 12.7319 9.78886 12.7319 9.52851 12.4716L5.52851 8.47157C5.26816 8.21122 5.26816 7.78911 5.52851 7.52876L9.52851 3.52876C9.78886 3.26841 10.211 3.26841 10.4713 3.52876Z"
-          fill= {theme.colors.blackColors.black1}
+          fill={theme.colors.blackColors.black1}
         />
       </Svg>
       <Svg
