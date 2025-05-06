@@ -104,7 +104,7 @@ public class GlobalControllerAdvice {
     ErrorResponse errorResponse = BuildErrorMessage.buildErrorMessage(
             ErrorType.API_ERROR,
             ErrorCode.INVALID_API_REQUEST,
-            "Static resource not found: " + ex.getResourcePath()
+            Constants.RESOURCE_NOT_FOUND + ex.getResourcePath()
     );
     errorResponse.setPath(path);
 
@@ -114,7 +114,7 @@ public class GlobalControllerAdvice {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<String> handleException(
           Exception ex) {
-    log.error("Exception: {}", ex.getMessage());
+    log.error(Constants.INTERNAL_SERVER_ERROR, ex.getMessage());
     return new ResponseEntity<>(Constants.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 

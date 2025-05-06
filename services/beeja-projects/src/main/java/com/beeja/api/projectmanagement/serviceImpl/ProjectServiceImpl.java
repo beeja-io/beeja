@@ -10,6 +10,7 @@ import com.beeja.api.projectmanagement.repository.ProjectRepository;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.service.ProjectService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
+import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,13 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public Project createProjectForClient(ProjectRequest project) {
-        Client client = clientRepository.findByClientIdAndOrganizationId(project.getClientId(), UserContext.getLoggedInUserOrganization().get("id").toString());
+        Client client = clientRepository.findByClientIdAndOrganizationId(project.getClientId(), UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
         if(client == null) {
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.CLIENT_NOT_FOUND,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Client Not Found with provided clientId"
+                            Constants.CLIENT_NOT_FOUND
                     )
             );
         }
@@ -59,19 +60,19 @@ public class ProjectServiceImpl implements ProjectService {
         if(project.getClientId() != null){
             newProject.setClientId(project.getClientId());
         }
-        newProject.setOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+        newProject.setOrganizationId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
 //        FIXME:  PROJECT ID GENERATION
         newProject.setProjectId(UUID.randomUUID().toString().toUpperCase().substring(0,6));
         try{
             newProject = projectRepository.save(newProject);
         } catch (Exception e) {
-           log.error("Unable to add project to DB: {}", e.getMessage());
+           log.error(Constants.ERROR_SAVING_PROJECT, e.getMessage());
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_CREATION_ERROR,
-                            "Project Not Saved with provided projectId"
+                            Constants.ERROR_SAVING_PROJECT
                     )
             );
         }
@@ -82,14 +83,14 @@ public class ProjectServiceImpl implements ProjectService {
     public Project getProjectByIdAndClientId(String projectId, String clientId) {
         Project project;
         try{
-            project = projectRepository.findByProjectIdAndClientIdAndOrganizationId(projectId, clientId,  UserContext.getLoggedInUserOrganization().get("id").toString());
+            project = projectRepository.findByProjectIdAndClientIdAndOrganizationId(projectId, clientId,  UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
         } catch (Exception e) {
-            log.error("Error while fetching project: {}", e.getMessage());
+            log.error(Constants.PROJECT_NOT_FOUND_WITH_CLIENT, e.getMessage());
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Project Not Found with provided projectId & corresponding clientId"
+                            Constants.PROJECT_NOT_FOUND_WITH_CLIENT
                     )
             );
         }
@@ -98,7 +99,7 @@ public class ProjectServiceImpl implements ProjectService {
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Project Not Found with provided projectId"
+                            Constants.PROJECT_NOT_FOUND
                     )
             );
         }
@@ -109,14 +110,14 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Project> getProjectsByClientIdInOrganization(String clientId) {
         List<Project> projects;
         try{
-            projects = projectRepository.findByClientIdAndOrganizationId(clientId, UserContext.getLoggedInUserOrganization().get("id").toString());
+            projects = projectRepository.findByClientIdAndOrganizationId(clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
         } catch (Exception e) {
-            log.error("Error while fetching projects: {}", e.getMessage());
+            log.error(Constants.ERROR_FETCHING_PROJECTS_WITH_CLIENT, e.getMessage());
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Error while fetching projects with provided clientId"
+                            Constants.ERROR_FETCHING_PROJECTS_WITH_CLIENT
                     )
             );
         }
@@ -130,14 +131,14 @@ public class ProjectServiceImpl implements ProjectService {
     public List<Project> getAllProjectsInOrganization() {
         List<Project> projects;
         try{
-            projects = projectRepository.findByOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+            projects = projectRepository.findByOrganizationId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
         } catch (Exception e) {
-            log.error("Error while fetching projects: {}", e.getMessage());
+            log.error(Constants.ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION, e.getMessage());
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Error while fetching projects with provided organizationId"
+                            Constants.ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION
                     )
             );
         }
@@ -151,14 +152,14 @@ public class ProjectServiceImpl implements ProjectService {
     public Project updateProjectByProjectId(ProjectRequest project, String projectId) {
         Project existingProject;
         try{
-            existingProject = projectRepository.findByProjectIdAndOrganizationId(projectId, UserContext.getLoggedInUserOrganization().get("id").toString());
+            existingProject = projectRepository.findByProjectIdAndOrganizationId(projectId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
         } catch (Exception e) {
-            log.error("Error while fetching project: {}", e.getMessage());
+            log.error(Constants.ERROR_FETCHING_PROJECT, e.getMessage());
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Error While Fetching project with provided projectId"
+                            Constants.ERROR_FETCHING_PROJECT
                     )
             );
         }
@@ -167,7 +168,7 @@ public class ProjectServiceImpl implements ProjectService {
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Project Not Found with provided projectId"
+                            Constants.PROJECT_NOT_FOUND
                     )
             );
         }
@@ -189,12 +190,12 @@ public class ProjectServiceImpl implements ProjectService {
         try{
             existingProject = projectRepository.save(existingProject);
         } catch (Exception e) {
-            log.error("Unable to update project in DB: {}", e.getMessage());
+            log.error(Constants.ERROR_UPDATING_PROJECT, e.getMessage());
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_CREATION_ERROR,
-                            "Project Not Updated with provided projectId"
+                            Constants.ERROR_UPDATING_PROJECT
                     )
             );
         }
