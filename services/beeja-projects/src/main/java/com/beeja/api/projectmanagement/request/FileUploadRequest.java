@@ -7,7 +7,12 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class FileUploadRequest {
   private MultipartFile file;
-  private String fileType= "project";
+  private String name;
+  private String fileType;
   private String entityId;
-  private String entityType= "client";
+
+  @Pattern(regexp = "^(employee|project|organization|client)$", message = "Invalid entity type")
+  private String entityType;
+
+  private String description;
 }
