@@ -772,6 +772,7 @@ const MyProfileQuickDetailsComponent = ({
           modalContent={`Are you sure to want to ${
             !employee.account.active ? 'active' : 'inactive'
           } '${employee.account.firstName}'`}
+          handleModalLeftButtonClick={handleIsActiveModalOpen}
           handleModalClose={handleIsActiveModalOpen}
           handleModalSubmit={handleStatusChange}
           isResponseLoading={isLoadingResponseINTERNAL || isLoadingResponse}

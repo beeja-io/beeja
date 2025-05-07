@@ -127,6 +127,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
       {confirmDeleteModal && (
         <span style={{ cursor: 'default' }}>
           <CenterModal
+            handleModalLeftButtonClick={handleDeleteModal}
             handleModalClose={handleDeleteModal}
             handleModalSubmit={() => deleteSelectedExpense(currentExpense.id)}
             modalHeading="Delete"
