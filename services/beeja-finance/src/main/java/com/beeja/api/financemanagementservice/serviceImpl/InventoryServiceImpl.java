@@ -17,6 +17,7 @@ import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import com.beeja.api.financemanagementservice.service.InventoryService;
 import com.mongodb.DuplicateKeyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -86,6 +87,8 @@ public class InventoryServiceImpl implements InventoryService {
     device.setAccessoryType(deviceDetails.getAccessoryType());
     device.setDeviceNumber(generateDeviceId());
     device.setCreatedBy(UserContext.getLoggedInUserEmail());
+    device.setOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+    device.setCreatedAt(new java.util.Date());
     try {
       return inventoryRepository.save(device);
     } catch (DuplicateKeyException e) {
@@ -100,26 +103,29 @@ public class InventoryServiceImpl implements InventoryService {
               Constants.ERROR_SAVING_DEVICE_DETAILS));
     }
   }
+
+  /*
+    * Generates a unique device ID based on the organization's pattern and the current count of
+    * devices.
+   */
   private String generateDeviceId() {
-    OrganizationPattern devicePattern = accountClient.getActivePatternByType("DEVICE_ID_PATTERN").getBody();
-    String prefix = devicePattern.getPrefix();
+    OrganizationPattern devicePattern = accountClient
+            .getActivePatternByType("DEVICE_ID_PATTERN")
+            .getBody();
+
+    String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+    long sizeOfDevices = inventoryRepository.countByOrganizationId(orgId);
+    if (devicePattern == null) {
+      return String.valueOf(sizeOfDevices + 1);
+    }
+
+    String prefix = devicePattern.getPrefix() != null ? devicePattern.getPrefix() : "";
     int dIDLength = devicePattern.getPatternLength();
-    List<Inventory> devices = inventoryRepository.findLastAddedDeviceByPrefix("^" + prefix);
-    int newSequence = devices.stream()
-            .findFirst()
-            .map(device -> {
-              String lastDeviceNumber = device.getDeviceNumber();
-              String lastSequenceStr = lastDeviceNumber.substring(prefix.length());
-              if (lastSequenceStr.isEmpty() || !lastSequenceStr.matches("\\d+")) {
-                return devicePattern.getInitialSequence();
-              }
-              return Integer.parseInt(lastSequenceStr) + 1;
-            })
-            .orElse(devicePattern.getInitialSequence());
     int numberLength = dIDLength - prefix.length();
-    String formattedSeq = String.format("%0" + numberLength + "d", newSequence);
-    return prefix + formattedSeq;
+    String formattedSeq = String.format("%0" + numberLength + "d", sizeOfDevices + 1);
+    return prefix.toUpperCase() + formattedSeq;
   }
+
   /**
      * Retrieves all devices from the inventory.
      *
@@ -162,7 +168,7 @@ public class InventoryServiceImpl implements InventoryService {
 
       int skip = (pageNumber - 1) * pageSize;
       query.skip(skip).limit(pageSize);
-
+      query.with(Sort.by(Sort.Direction.DESC, "created_at"));
       return mongoTemplate.find(query, Inventory.class);
 
     } catch (Exception e) {

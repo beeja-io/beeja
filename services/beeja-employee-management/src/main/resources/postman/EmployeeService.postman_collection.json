@@ -1,72 +1,308 @@
 {
 	"info": {
-		"_postman_id": "f218b62d-b717-4edd-a404-784a616e7257",
+		"_postman_id": "d0a6938e-e936-4b94-bd70-91b96bdef4d0",
 		"name": "EmployeeService",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "30821906"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43003168"
 	},
 	"item": [
 		{
-			"name": "HelloWorld",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:8000/employees/v1"
-			},
-			"response": []
-		},
-		{
-			"name": "GetAllEmployees",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:8000/employees/v1/users"
-			},
-			"response": []
-		},
-		{
-			"name": "GetEmployeeByEmpId",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "CreateEmployee",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Files",
+			"item": [
+				{
+					"name": "Get All Files Of EntityId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/files/{{entityId}}?page=2&size=5",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"files",
+								"{{entityId}}"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								}
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": "http://localhost:8000/employees/v1/users"
-			},
-			"response": []
+				{
+					"name": "Upload File",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/files",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"files"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download File",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/files/download/{{fileId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"files",
+								"download",
+								"{{fileId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete File Of Employee",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/files/{{fileId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"files",
+								"{{fileId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update File By FileId",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated File Name\",\n  \"fileType\": \"document\",\n  \"fileFormat\": \"pdf\",\n  \"fileSize\": \"2MB\",\n  \"entityId\": \"entity789\",\n  \"entityType\": \"invoice\",\n  \"description\": \"Updated file description\",\n  \"organizationId\": \"org456\",\n  \"createdBy\": \"user123\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/employees/v1/files/{{fileId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"files",
+								"{{fileId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Or Update Profile Pic",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/files/profile-pic",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"files",
+								"profile-pic"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "UpdateEmployee",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"url": "http://localhost:8000/employees/v1/users/TAC0063"
-			},
-			"response": []
-		},
-		{
-			"name": "DeleteAllEmployeesByOrgId",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"url": "http://localhost:8000/employees/v1/users/organizations/654b0d9d355b9f0029b7733c"
-			},
-			"response": []
+			"name": "Employee",
+			"item": [
+				{
+					"name": "GetAllEmployees",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/users",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateEmployee",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{port}}/employees/v1/users",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateEmployee",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/users/{{employeeId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"users",
+								"{{employeeId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetEmployeeByEmpId",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/users/{{employeeId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"users",
+								"{{employeeId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteAllEmployeesByOrgId",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/users/organizations/{{organizationId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"users",
+								"organizations",
+								"{{organizationId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update Kyc Details",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/users/{{employeeId}}/kyc",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"users",
+								"{{employeeId}}",
+								"kyc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Employee Values",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/users/employee-values",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"users",
+								"employee-values"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }

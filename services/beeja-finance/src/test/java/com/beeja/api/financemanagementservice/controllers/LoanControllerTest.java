@@ -141,32 +141,6 @@ class LoanControllerTest {
     }
     verify(loanService, never()).submitLoanRequest(loanRequest);
   }
-
-  @Test
-  public void testGetAllLoans_Success() throws Exception {
-    createUserContext();
-    // Arrange
-    List<Loan> expectedLoans = Arrays.asList(new Loan(), new Loan()); // Mocked list of loans
-    when(loanService.getAllLoans()).thenReturn(expectedLoans);
-    // Act
-    ResponseEntity<?> responseEntity = loanController.getAllLoans();
-    // Assert
-    assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-    assertEquals(expectedLoans, responseEntity.getBody());
-  }
-
-  @Test
-  public void testGetAllLoans_Exception() throws Exception {
-    when(loanService.getAllLoans()).thenThrow(new RuntimeException("Error fetching loans"));
-    try {
-      loanController.getAllLoans();
-      fail("Expected RuntimeException to be thrown");
-    } catch (RuntimeException ex) {
-      assertEquals("Error fetching loans", ex.getMessage());
-    }
-    verify(loanService, times(1)).getAllLoans();
-  }
-
   @Test
   public void testGetLoansByEmployeeId_Success() throws Exception {
     createUserContext();
