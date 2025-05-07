@@ -10,6 +10,7 @@ import com.beeja.api.projectmanagement.repository.ProjectRepository;
 import com.beeja.api.projectmanagement.request.ContractRequest;
 import com.beeja.api.projectmanagement.service.ContractService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
+import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +32,14 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public Contract createContract(ContractRequest request) {
         Project project = projectRepository.findByProjectIdAndClientIdAndOrganizationId(
-                request.getProjectId(), request.getClientId(), UserContext.getLoggedInUserOrganization().get("id").toString());
+                request.getProjectId(), request.getClientId(), UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
         if (project == null) {
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.NOT_FOUND,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Project not found with given projectId"
+                            Constants.PROJECT_NOT_FOUND
                     )
             );
         }
@@ -58,12 +59,12 @@ public class ContractServiceImpl implements ContractService {
         try {
             return contractRepository.save(contract);
         } catch (Exception e) {
-            log.error("Failed to create contract: {}", e.getMessage());
+            log.error(Constants.ERROR_SAVING_CONTRACT, e.getMessage());
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_CREATION_ERROR,
-                            "Failed to save contract"
+                            Constants.ERROR_SAVING_CONTRACT
                     )
             );
         }
@@ -72,14 +73,14 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public Contract getContractById(String contractId) {
         Contract contract = contractRepository.findByContractIdAndOrganizationId(
-                contractId, UserContext.getLoggedInUserOrganization().get("id").toString());
+                contractId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
         if (contract == null) {
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.NOT_FOUND,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Contract not found with given contractId"
+                            Constants.CONTRACT_NOT_FOUND
                     )
             );
         }
@@ -89,7 +90,7 @@ public class ContractServiceImpl implements ContractService {
     @Override
     public List<Contract> getContractsByProjectId(String projectId) {
         List<Contract> contracts = contractRepository.findByProjectIdAndOrganizationId(
-                projectId, UserContext.getLoggedInUserOrganization().get("id").toString());
+                projectId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
         return (contracts == null) ? List.of() : contracts;
     }
@@ -108,12 +109,12 @@ public class ContractServiceImpl implements ContractService {
         try {
             return contractRepository.save(contract);
         } catch (Exception e) {
-            log.error("Failed to update contract: {}", e.getMessage());
+            log.error(Constants.ERROR_UPDATING_CONTRACT, e.getMessage());
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.RESOURCE_CREATION_ERROR,
-                            "Failed to update contract"
+                            Constants.ERROR_UPDATING_CONTRACT
                     )
             );
         }

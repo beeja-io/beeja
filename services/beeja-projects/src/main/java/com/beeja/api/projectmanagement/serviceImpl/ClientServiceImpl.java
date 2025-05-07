@@ -9,6 +9,7 @@ import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
+import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,13 @@ public class ClientServiceImpl implements ClientService {
 
     @Override
     public Client addClientToOrganization(ClientRequest client) throws Exception {
-        Client existingClient = clientRepository.findByEmailAndOrganizationId(client.getEmail(), UserContext.getLoggedInUserOrganization().get("id").toString());
+        Client existingClient = clientRepository.findByEmailAndOrganizationId(client.getEmail(), UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
         if (existingClient != null) {
             throw new ResourceAlreadyFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.CLIENT_ALREADY_FOUND,
                             ErrorCode.RESOURCE_ALREADY_EXISTS,
-                            "Client Found with provided email"
+                            Constants.CLIENT_FOUND_EMAIL
                     )
             );
         }
@@ -66,26 +67,26 @@ public class ClientServiceImpl implements ClientService {
         if(client.getLogo() != null) {
             // TODO: Implement logo upload
         }
-        newClient.setOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+        newClient.setOrganizationId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
         try{
             newClient = clientRepository.save(newClient);
         } catch (Exception e){
-            log.error("Error while saving client: {}", e.getMessage());
-            throw new Exception("Error while saving new client to database");
+            log.error(Constants.ERROR_SAVING_CLIENT, e.getMessage());
+            throw new Exception(Constants.ERROR_SAVING_CLIENT);
         }
         return newClient;
     }
 
     @Override
     public Client updateClientOfOrganization(ClientRequest clientRequest, String clientId) throws Exception {
-        Client existingClient = clientRepository.findByClientIdAndOrganizationId(clientId, UserContext.getLoggedInUserOrganization().get("id").toString());
+        Client existingClient = clientRepository.findByClientIdAndOrganizationId(clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
         if (existingClient == null) {
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.CLIENT_NOT_FOUND,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Client Not Found with provided clientId"
+                            Constants.CLIENT_NOT_FOUND
                     )
             );
         }
@@ -122,8 +123,8 @@ public class ClientServiceImpl implements ClientService {
         try {
             existingClient = clientRepository.save(existingClient);
         } catch (Exception e) {
-            log.error("Error while updating client: {}", e.getMessage());
-            throw new Exception("Error while updating client in database");
+            log.error(Constants.ERROR_UPDATING_CLIENT, e.getMessage());
+            throw new Exception(Constants.ERROR_UPDATING_CLIENT);
         }
         return existingClient;
     }
@@ -132,17 +133,17 @@ public class ClientServiceImpl implements ClientService {
     public Client getClientById(String clientId) throws Exception {
         Client client;
         try{
-            client = clientRepository.findByClientIdAndOrganizationId(clientId, UserContext.getLoggedInUserOrganization().get("id").toString());
+            client = clientRepository.findByClientIdAndOrganizationId(clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
         } catch (Exception e) {
-            log.error("Error while fetching client: {}", e.getMessage());
-            throw new Exception("Error while fetching client from database");
+            log.error(Constants.ERROR_IN_FETCHING_CLIENTS, e.getMessage());
+            throw new Exception(Constants.ERROR_IN_FETCHING_CLIENTS);
         }
         if (client == null) {
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.CLIENT_NOT_FOUND,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Client Not Found with provided clientId"
+                            Constants.CLIENT_NOT_FOUND
                     )
             );
         }
@@ -152,7 +153,7 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public List<Client> getAllClientsOfOrganization() {
         // TODO: Implement pagination
-        List<Client> clientsInOrganization = clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(UserContext.getLoggedInUserOrganization().get("id").toString());
+        List<Client> clientsInOrganization = clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
         if(clientsInOrganization == null || clientsInOrganization.isEmpty()){
             return List.of();
         }

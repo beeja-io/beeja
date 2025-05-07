@@ -1,5 +1,6 @@
 package com.beeja.api.projectmanagement.request;
 
+import com.beeja.api.projectmanagement.utils.Constants;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -8,11 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileUploadRequest {
   private MultipartFile file;
   private String name;
-  private String fileType;
-  private String entityId;
-
-  @Pattern(regexp = "^(employee|project|organization|client)$", message = "Invalid entity type")
-  private String entityType;
-
   private String description;
+  private String fileType= Constants.FILE_TYPE_PROJECT;
+  private String entityId;
+  private String entityType= Constants.ENTITY_TYPE_CLIENT;
 }

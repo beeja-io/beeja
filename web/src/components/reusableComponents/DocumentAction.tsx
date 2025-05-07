@@ -243,6 +243,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
       </ActionContainer>
       {confirmDeleteModal && (
         <CenterModal
+          handleModalLeftButtonClick={deleteModalClose}
           handleModalClose={deleteModalClose}
           handleModalSubmit={handleConfirmDelete}
           modalHeading="Delete"
