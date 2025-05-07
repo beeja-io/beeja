@@ -65,7 +65,7 @@ updates:
       timezone: "Asia/Kolkata"
 
   - package-ecosystem: "npm"
-    directory: "/beeja-web"
+    directory: "/web"
     schedule:
       interval: "daily"
       time: "12:30"
