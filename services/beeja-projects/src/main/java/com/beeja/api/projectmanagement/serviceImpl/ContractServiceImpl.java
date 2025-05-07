@@ -18,6 +18,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Implementation of the {@link ContractService} interface.
+ *
+ * This service handles the business logic for managing contracts related to projects,
+ * including creation, retrieval, and updates of contracts.
+ */
 @Slf4j
 @Service
 public class ContractServiceImpl implements ContractService {
@@ -28,6 +34,13 @@ public class ContractServiceImpl implements ContractService {
     @Autowired
     private ProjectRepository projectRepository;
 
+    /**
+     * Creates a new {@link Contract} for a given {@link Project} and {@link ContractRequest}.
+     *
+     * @param request the {@link ContractRequest} containing details to create the {@link Contract}
+     * @return the newly created {@link Contract}
+     * @throws ResourceNotFoundException if no {@link Project} exists for the provided {@link ContractRequest#getProjectId()}
+     */
     @Override
     public Contract createContract(ContractRequest request) {
         Project project = projectRepository.findByProjectIdAndClientIdAndOrganizationId(
@@ -69,6 +82,13 @@ public class ContractServiceImpl implements ContractService {
         }
     }
 
+    /**
+     * Retrieves a {@link Contract} by its unique identifier.
+     *
+     * @param contractId the unique identifier of the {@link Contract}
+     * @return the {@link Contract} entity
+     * @throws ResourceNotFoundException if no {@link Contract} is found with the provided contractId
+     */
     @Override
     public Contract getContractById(String contractId) {
         Contract contract = contractRepository.findByContractIdAndOrganizationId(
@@ -86,6 +106,12 @@ public class ContractServiceImpl implements ContractService {
         return contract;
     }
 
+    /**
+     * Retrieves a list of {@link Contract} entities associated with a specific {@link Project}.
+     *
+     * @param projectId the unique identifier of the {@link Project}
+     * @return a list of {@link Contract} entities
+     */
     @Override
     public List<Contract> getContractsByProjectId(String projectId) {
         List<Contract> contracts = contractRepository.findByProjectIdAndOrganizationId(
@@ -94,6 +120,14 @@ public class ContractServiceImpl implements ContractService {
         return (contracts == null) ? List.of() : contracts;
     }
 
+    /**
+     * Updates an existing {@link Contract} based on the provided {@link ContractRequest}.
+     *
+     * @param contractId the unique identifier of the {@link Contract} to update
+     * @param request the {@link ContractRequest} containing updated contract details
+     * @return the updated {@link Contract}
+     * @throws ResourceNotFoundException if no {@link Contract} is found with the provided contractId
+     */
     @Override
     public Contract updateContract(String contractId, ContractRequest request) {
         Contract contract = getContractById(contractId);
