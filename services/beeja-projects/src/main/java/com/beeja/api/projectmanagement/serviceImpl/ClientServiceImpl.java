@@ -17,6 +17,12 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Implementation of the {@link ClientService} interface.
+ *
+ * Provides business logic for managing {@link Client} entities within an organization,
+ * including adding, updating, retrieving a single client, and retrieving all clients.
+ */
 @Slf4j
 @Service
 public class ClientServiceImpl implements ClientService {
@@ -24,6 +30,14 @@ public class ClientServiceImpl implements ClientService {
     @Autowired
     ClientRepository clientRepository;
 
+    /**
+     * Adds a new {@link Client} to the currently logged-in user's organization.
+     *
+     * @param client the {@link ClientRequest} containing client details to be added
+     * @return the newly created {@link Client} entity
+     * @throws ResourceAlreadyFoundException if a {@link Client} with the same email already exists in the organization
+     * @throws Exception if an error occurs while saving the {@link Client} to the database
+     */
     @Override
     public Client addClientToOrganization(ClientRequest client) throws Exception {
         Client existingClient = clientRepository.findByEmailAndOrganizationId(client.getEmail(), UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
@@ -78,6 +92,15 @@ public class ClientServiceImpl implements ClientService {
         return newClient;
     }
 
+    /**
+     * Updates an existing {@link Client} within the currently logged-in user's organization.
+     *
+     * @param clientRequest the {@link ClientRequest} containing updated client details
+     * @param clientId the unique identifier of the {@link Client} to be updated
+     * @return the updated {@link Client} entity
+     * @throws ResourceNotFoundException if no {@link Client} is found with the provided clientId in the organization
+     * @throws Exception if an error occurs while updating the {@link Client} in the database
+     */
     @Override
     public Client updateClientOfOrganization(ClientRequest clientRequest, String clientId) throws Exception {
         Client existingClient = clientRepository.findByClientIdAndOrganizationId(clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
@@ -129,6 +152,14 @@ public class ClientServiceImpl implements ClientService {
         return existingClient;
     }
 
+    /**
+     * Retrieves a {@link Client} by its unique identifier within the currently logged-in user's organization.
+     *
+     * @param clientId the unique identifier of the {@link Client}
+     * @return the {@link Client} entity
+     * @throws ResourceNotFoundException if no {@link Client} is found with the provided clientId in the organization
+     * @throws Exception if an error occurs while fetching the {@link Client} from the database
+     */
     @Override
     public Client getClientById(String clientId) throws Exception {
         Client client;
@@ -150,6 +181,11 @@ public class ClientServiceImpl implements ClientService {
         return client;
     }
 
+    /**
+     * Retrieves all {@link Client} entities belonging to the currently logged-in user's organization.
+     *
+     * @return a list of {@link Client} entities; returns an empty list if no clients are found
+     */
     @Override
     public List<Client> getAllClientsOfOrganization() {
         // TODO: Implement pagination

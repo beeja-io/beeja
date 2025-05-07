@@ -19,6 +19,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Implementation of the {@link ProjectService} interface.
+ *
+ * This service handles the business logic for managing {@link Project} entities within an organization,
+ * including creation, retrieval, and updating of projects associated with clients.
+ */
 @Slf4j
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -29,6 +35,13 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     ProjectRepository projectRepository;
 
+    /**
+     * Creates a new {@link Project} for a given {@link Client} based on the provided {@link ProjectRequest}.
+     *
+     * @param project the {@link ProjectRequest} containing the details to create the {@link Project}
+     * @return the newly created {@link Project}
+     * @throws ResourceNotFoundException if the {@link Client} is not found with the provided clientId
+     */
     @Override
     public Project createProjectForClient(ProjectRequest project) {
         Client client = clientRepository.findByClientIdAndOrganizationId(project.getClientId(), UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
@@ -79,6 +92,14 @@ public class ProjectServiceImpl implements ProjectService {
         return newProject;
     }
 
+    /**
+     * Retrieves a {@link Project} by its unique identifier and associated {@link Client} ID.
+     *
+     * @param projectId the unique identifier of the {@link Project}
+     * @param clientId  the unique identifier of the {@link Client}
+     * @return the {@link Project} entity
+     * @throws ResourceNotFoundException if no {@link Project} is found with the provided projectId and clientId
+     */
     @Override
     public Project getProjectByIdAndClientId(String projectId, String clientId) {
         Project project;
@@ -106,6 +127,13 @@ public class ProjectServiceImpl implements ProjectService {
         return project;
     }
 
+    /**
+     * Retrieves a list of {@link Project} entities associated with a specific {@link Client} in the organization.
+     *
+     * @param clientId the unique identifier of the {@link Client}
+     * @return a list of {@link Project} entities
+     * @throws ResourceNotFoundException if no {@link Project} is found for the provided clientId
+     */
     @Override
     public List<Project> getProjectsByClientIdInOrganization(String clientId) {
         List<Project> projects;
@@ -127,6 +155,12 @@ public class ProjectServiceImpl implements ProjectService {
         return projects;
     }
 
+    /**
+     * Retrieves a list of all {@link Project} entities in the current organization.
+     *
+     * @return a list of all {@link Project} entities
+     * @throws ResourceNotFoundException if no {@link Project} entities are found for the organization
+     */
     @Override
     public List<Project> getAllProjectsInOrganization() {
         List<Project> projects;
@@ -148,6 +182,14 @@ public class ProjectServiceImpl implements ProjectService {
         return projects;
     }
 
+    /**
+     * Updates an existing {@link Project} based on the provided {@link ProjectRequest}.
+     *
+     * @param project the {@link ProjectRequest} containing updated details for the {@link Project}
+     * @param projectId the unique identifier of the {@link Project} to update
+     * @return the updated {@link Project}
+     * @throws ResourceNotFoundException if the {@link Project} is not found with the provided projectId
+     */
     @Override
     public Project updateProjectByProjectId(ProjectRequest project, String projectId) {
         Project existingProject;
