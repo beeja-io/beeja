@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "http://checkstyle.sourceforge.net/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+
+    <property name="charset" value="UTF-8"/>
+
+    <module name="FileLength">
+        <property name="max" value="3000"/>
+        <property name="severity" value="warning"/>
+    </module>
+
+    <!-- Use 'crlf' for Windows or 'lf' for Mac/Linux -->
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="${lineSeparator}" />
+    </module>
+
+    <module name="RegexpSingleline">
+        <property name="format" value="\bFIXME\b"/>
+        <property name="message" value="Avoid using 'FIXME' in comments, instead make use of 'TODO'"/>
+        <property name="fileExtensions" value="java,xml"/>
+    </module>
+
+    <module name="LineLength">
+        <property name="ignorePattern" value="^ *\* *@see.+$"/>
+        <property name="max" value="130"/>
+    </module>
+
+    <!-- Single consolidated TreeWalker -->
+    <module name="TreeWalker">
+
+        <!-- General code style -->
+        <module name="SuppressionCommentFilter"/>
+        <module name="IllegalImport"/>
+        <module name="RedundantImport"/>
+        <module name="AvoidStarImport"/>
+        <module name="UnusedImports">
+            <property name="processJavadoc" value="true"/>
+        </module>
+
+        <!-- Naming conventions -->
+        <module name="PackageName">
+            <property name="format" value="^[a-z]+(\.[a-zA-Z_][a-zA-Z0-9_]*)*$"/>
+        </module>
+        <module name="ConstantName">
+            <property name="format" value="^[A-Z][A-Z0-9]*(_[A-Z0-9]+)*$"/>
+        </module>
+        <module name="StaticVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="MemberName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="MethodName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*(_[a-zA-Z0-9]+)*$"/>
+        </module>
+        <module name="ParameterName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="LocalFinalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+        <module name="LocalVariableName">
+            <property name="format" value="^[a-z][a-zA-Z0-9]*$"/>
+        </module>
+
+        <!-- Braces and control structures -->
+        <module name="LeftCurly"/>
+        <module name="RightCurly"/>
+        <module name="FallThrough"/>
+        <module name="ModifierOrder"/>
+
+        <!-- Whitespace rules -->
+        <module name="GenericWhitespace"/>
+        <module name="WhitespaceAround"/>
+        <module name="WhitespaceAfter">
+            <property name="tokens" value="COMMA, SEMI, TYPECAST"/>
+        </module>
+        <module name="NoWhitespaceAfter">
+            <property name="tokens" value="INC, DEC, UNARY_MINUS, UNARY_PLUS"/>
+        </module>
+        <module name="NoWhitespaceBefore">
+            <property name="tokens" value="POST_INC, POST_DEC"/>
+        </module>
+        <module name="ParenPad"/>
+
+        <!-- Optional: Indentation (currently commented) -->
+        <!--
+        <module name="Indentation">
+            <property name="basicOffset" value="2"/>
+            <property name="caseIndent" value="2"/>
+            <property name="throwsIndent" value="2"/>
+            <property name="arrayInitIndent" value="2"/>
+            <property name="lineWrappingIndentation" value="2"/>
+        </module>
+        -->
+
+    </module>
+
+    <!-- Regexp checks -->
+    <module name="RegexpSingleline">
+        <property name="format" value="System.out.print"/>
+    </module>
+
+    <module name="RegexpSingleline">
+        <property name="format" value="System.err"/>
+    </module>
+
+    <module name="RegexpSingleline">
+        <property name="format" value="printStackTrace"/>
+    </module>
+
+</module>
