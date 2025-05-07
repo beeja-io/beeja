@@ -29,11 +29,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: checking current directory
-        run: pwd
-
       - name: Lint code
-        run: npm run lint
+        run: |
+          cd web
+          pwd
+          npm run lint
       
       - name: Build frontend
         run: npm run build
