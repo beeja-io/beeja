@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'web/**'
   push:
     branches:
       - PS-299
