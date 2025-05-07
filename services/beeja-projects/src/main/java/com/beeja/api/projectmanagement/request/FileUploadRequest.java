@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class FileUploadRequest {
   private MultipartFile file;
+  private String name;
+  private String description;
   private String fileType= Constants.FILE_TYPE_PROJECT;
   private String entityId;
   private String entityType= Constants.ENTITY_TYPE_CLIENT;
