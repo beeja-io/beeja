@@ -14,6 +14,8 @@ import com.beeja.api.financemanagementservice.repository.LoanRepository;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
 import com.beeja.api.financemanagementservice.requests.PdfMultipartFile;
 import com.beeja.api.financemanagementservice.requests.SubmitLoanRequest;
+import com.beeja.api.financemanagementservice.response.LoanDTO;
+import com.beeja.api.financemanagementservice.response.LoanResponse;
 import com.beeja.api.financemanagementservice.service.LoanService;
 import com.beeja.api.financemanagementservice.requests.FileUploadRequest;
 import com.beeja.api.financemanagementservice.client.FileClient;
@@ -22,6 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,7 +71,7 @@ public class LoanServiceImpl implements LoanService {
    * @param loanId The ID of the loan to update.
    * @param status The new status of the loan ("APPROVE", "REJECT", or others).
    * @param message Optional message or reason for status change.
-   * @throws LoanNotFound If the loan with the specified ID is not found.
+   * @throws ResourceNotFoundException If the loan with the specified ID is not found.
    */
   @Override
   public void changeLoanStatus(String loanId, String status, String message) {
@@ -157,17 +162,37 @@ public class LoanServiceImpl implements LoanService {
    * @return List of Loan entities.
    * @throws Exception If an error occurs while retrieving loans.
    */
-  @Override
-  public List<Loan> getAllLoans() throws Exception {
-    try {
-      return loanRepository.findAllByOrganizationId(
-          UserContext.getLoggedInUserOrganization().get("id").toString());
-    } catch (Exception e) {
-      throw new RuntimeException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.SERVICE_ERROR, ErrorCode.SERVER_ERROR, Constants.SERVICE_DOWN_ERROR));
-    }
+@Override
+public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortBy, String sortDirection, LoanStatus status) {
+  int validPage = pageNumber > 0 ? pageNumber - 1 : 0;
+  Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+  Pageable pageable = PageRequest.of(validPage, pageSize, sort);
+
+  String orgId=UserContext.getLoggedInUserOrganization().get("id").toString();;
+
+  List<LoanDTO> loans;
+  long totalCount;
+try {
+  if (status != null) {
+    loans = loanRepository.findAllByOrganizationIdAndStatus(orgId, status, pageable);
+    totalCount = loanRepository.countByOrganizationIdAndStatus(orgId, status);
+  } else {
+    loans = loanRepository.findAllByOrganizationId(orgId, pageable);
+    totalCount = loanRepository.countByOrganizationId(orgId);
   }
+}catch(Exception e){
+  log.error("Error occurred while fetching loans: {}", e.getMessage(),e);
+  loans = Collections.emptyList();
+  totalCount = 0;
+}
+
+  LoanResponse response = new LoanResponse();
+  response.setLoansList(loans);
+  response.setPageSize(pageSize);
+  response.setPageNumber(pageNumber);
+  response.setTotalRecords(totalCount);
+  return response;
+}
 
   /**
    * Retrieves all loans associated with a specific employee ID within the logged-in user's

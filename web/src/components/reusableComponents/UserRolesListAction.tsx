@@ -103,6 +103,7 @@ const UserRoleListAction: React.FC<UserRoleListActionProps> = ({
           <>
             <span style={{ cursor: 'default' }}>
               <CenterModal
+                handleModalLeftButtonClick={() => setDeleteConfirmModal(false)}
                 handleModalClose={() => setDeleteConfirmModal(false)}
                 handleModalSubmit={onDelete}
                 modalHeading="DELETE"

@@ -43,6 +43,7 @@ import { capitalizeFirstLetter } from '../utils/stringUtils';
 import { useFeatureToggles } from '../context/FeatureToggleContext';
 import { EFeatureToggles } from '../entities/FeatureToggle';
 import { useTranslation } from 'react-i18next';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 
 interface IThemeOptions {
   label: string;
@@ -110,26 +111,59 @@ function ThemesAndTypography() {
   const [activeFontStyle, setActiveFontStyle] = useState(
     fontSizeOptions[0].label
   );
-  const [updatedOrganization, setUpdatedOrganization] = useState<IOrganization>(
-    {} as IOrganization
-  );
+  const [updatedOrganization, setUpdatedOrganization] = useState<
+    IOrganization | undefined
+  >();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    user &&
-      setActiveFontName(
-        capitalizeFirstLetter(
-          user?.organizations.preferences.fontName.toUpperCase()
-        )
-      );
+    const fetchUse = async () => {
+      if (user?.organizations?.id) {
+        try {
+          const response = await getOrganizationById(user.organizations.id);
+          const prefs = response.data.preferences;
+          if (prefs?.fontName) {
+            const fontNameCapitalized = capitalizeFirstLetter(
+              prefs.fontName.toUpperCase()
+            );
+            setActiveFontName(fontNameCapitalized);
+            document.documentElement.style.setProperty(
+              '--font-family-primary',
+              prefs.fontName
+            );
+          }
+          if (prefs?.fontSize) {
+            const fontSizePx = `${prefs.fontSize}px`;
+            const matchedOption = fontSizeOptions.find(
+              (option) => option.size === fontSizePx
+            );
+            if (matchedOption) {
+              setActiveFontStyle(matchedOption.label);
+              document.documentElement.style.setProperty(
+                '--font-size-primary',
+                matchedOption.size
+              );
+            }
+          }
+          setUpdatedOrganization(response.data);
+        } catch (e) {
+          toast.error('Failed to fetch organization preferences');
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setIsLoading(false);
+      }
+    };
+    fetchUse();
   }, [user]);
-
   const fetchOrganization = async () => {
     try {
       const response = await getOrganizationById(
         user ? user.organizations.id : ''
       );
       setUpdatedOrganization(response.data);
-    } catch {
+    } catch (error) {
       alert('error');
     }
   };
@@ -222,143 +256,191 @@ function ThemesAndTypography() {
     setActiveFontStyle(fontSize);
     const selectedFontSize = fontSizeOptions.find(
       (option) => option.label === fontSize
-    )?.size;
+    );
+    if (!selectedFontSize) return;
 
-    if (selectedFontSize) {
-      document.documentElement.style.setProperty(
-        '--font-size-primary',
-        selectedFontSize
-      );
+    const formdata = new FormData();
+    const fontUpdated = {
+      preferences: {
+        fontSize: parseInt(selectedFontSize.size.replace('px', '')),
+      } as IPreferences,
+    } as IOrganization;
+
+    if (updatedOrganization) {
+      const updatedFontJSON = JSON.stringify(fontUpdated);
+      formdata.append('organizationFields', updatedFontJSON);
     }
+
+    toast.promise(
+      updateOrganizationById(user ? user.organizations.id : '', formdata),
+      {
+        loading: 'Updating Font Size',
+        success: (Response) => {
+          fetchOrganization();
+          if (Response?.data?.preferences) {
+            setPreferences(Response.data.preferences);
+          }
+          setUpdatedOrganization({} as IOrganization);
+          document.documentElement.style.setProperty(
+            '--font-size-primary',
+            selectedFontSize.size
+          );
+          setActiveFontStyle(fontSize);
+          return `Successfully Updated Font Size to ${fontSize}`;
+        },
+        error: (error) => {
+          if (axios.isAxiosError(error)) {
+            const axiosError = error as AxiosError;
+            if (axiosError.code === 'ERR_NETWORK') {
+              return 'Network Error, Please check connection';
+            }
+            if (axiosError.code === 'ECONNABORTED') {
+              return 'Request timeout, Please try again';
+            }
+          }
+          return 'Request Unsuccessful, Please try again';
+        },
+      }
+    );
   };
   return (
     <>
-      <ThemeTypographyHead>
-        <ProfileHeading>{t('THEMES_AND_TYPOGRAPHY')}</ProfileHeading>
-      </ThemeTypographyHead>
-      <BorderDivLine width="100%" />
+      {isLoading ? (
+        <SpinAnimation />
+      ) : (
+        <>
+          <ThemeTypographyHead>
+            <ProfileHeading>{t('THEMES_AND_TYPOGRAPHY')}</ProfileHeading>
+          </ThemeTypographyHead>
+          <BorderDivLine width="100%" />
 
-      <ThemeSection>
-        <SectionTitle>{t('THEME')}</SectionTitle>
-        <SectionDivider />
-        <ThemeOptions>
-          {themeOptions.map((option) => (
-            <ThemeOption
-              key={option.label}
-              onClick={() => handleThemeClick(option.label.toUpperCase())}
-            >
-              <ThemePreview>
-                <ThemeImage>
-                  <option.icon />
-                </ThemeImage>
-                <ThemeDetails>
-                  <ThemeLabel>
-                    {preferences?.theme === option.label.toUpperCase()
-                      ? `${option.label + ' Mode'} (Active)`
-                      : option.label + ' Mode'}
-                  </ThemeLabel>
-                  {preferences?.theme === option.label.toUpperCase() ? (
-                    <ActiveIndicator>
-                      <ActiveIconSVG />
-                    </ActiveIndicator>
-                  ) : (
-                    <InActiveIndicator />
-                  )}
-                </ThemeDetails>
-              </ThemePreview>
-            </ThemeOption>
-          ))}
-        </ThemeOptions>
-      </ThemeSection>
-
-      {featureToggles &&
-        (hasFeature(
-          featureToggles.featureToggles,
-          EFeatureToggles.ORGANIZATION_SETTINGS_FONT_NAME
-        ) ||
-          hasFeature(
-            featureToggles.featureToggles,
-            EFeatureToggles.ORGANIZATION_SETTINGS_FONT_SIZE
-          )) && (
-          <TypographyContainer>
-            <SectionTitle>{t('TYPOGRAPHY')}</SectionTitle>
+          <ThemeSection>
+            <SectionTitle>{t('THEME')}</SectionTitle>
             <SectionDivider />
-            {featureToggles &&
-              hasFeature(
-                featureToggles.featureToggles,
-                EFeatureToggles.ORGANIZATION_SETTINGS_FONT_NAME
-              ) && (
-                <Wrapper>
-                  <WrapperContainer>
-                    <FontName fontNameProps={{ fontFamily: '', fontSize: '' }}>
-                      {t('FONT_STYLE')}
-                    </FontName>
-                  </WrapperContainer>
-                  <WrapperInnerContainer>
-                    {fontOptions.map((option) => (
-                      <OptionElement
-                        key={option.name}
-                        onClick={() => handleFontName(option.name)}
-                      >
-                        {activeFontName ===
-                        capitalizeFirstLetter(option.name) ? (
-                          <ActiveIndicator style={{ marginRight: '20px' }}>
-                            <ActiveIconSVG />
-                          </ActiveIndicator>
-                        ) : (
-                          <InActiveIndicator
-                            style={{
-                              marginRight: '20px',
-                              backgroundColor: '#ededed',
-                            }}
-                          />
-                        )}
-                        <FontName fontNameProps={{ fontFamily: option.name }}>
-                          {capitalizeFirstLetter(option.name)}
-                        </FontName>
-                      </OptionElement>
-                    ))}
-                  </WrapperInnerContainer>
-                </Wrapper>
-              )}
-            {featureToggles &&
+            <ThemeOptions>
+              {themeOptions.map((option) => (
+                <ThemeOption
+                  key={option.label}
+                  onClick={() => handleThemeClick(option.label.toUpperCase())}
+                >
+                  <ThemePreview>
+                    <ThemeImage>
+                      <option.icon />
+                    </ThemeImage>
+                    <ThemeDetails>
+                      <ThemeLabel>
+                        {preferences?.theme === option.label.toUpperCase()
+                          ? `${option.label + ' Mode'} (Active)`
+                          : option.label + ' Mode'}
+                      </ThemeLabel>
+                      {preferences?.theme === option.label.toUpperCase() ? (
+                        <ActiveIndicator>
+                          <ActiveIconSVG />
+                        </ActiveIndicator>
+                      ) : (
+                        <InActiveIndicator />
+                      )}
+                    </ThemeDetails>
+                  </ThemePreview>
+                </ThemeOption>
+              ))}
+            </ThemeOptions>
+          </ThemeSection>
+
+          {featureToggles &&
+            (hasFeature(
+              featureToggles.featureToggles,
+              EFeatureToggles.ORGANIZATION_SETTINGS_FONT_NAME
+            ) ||
               hasFeature(
                 featureToggles.featureToggles,
                 EFeatureToggles.ORGANIZATION_SETTINGS_FONT_SIZE
-              ) && (
-                <FontStyleWrapper>
-                  <WrapperContainer>
-                    <FontName fontNameProps={{}}>{t('FONT_SIZE')}</FontName>
-                  </WrapperContainer>
-                  <WrapperFontInnerContainer>
-                    {fontSizeOptions.map((option) => (
-                      <OptionElement
-                        style={{ marginBottom: '20px' }}
-                        key={option.label}
-                        onClick={() => handleFontSizeChange(option.label)}
-                      >
-                        {activeFontStyle === option.label ? (
-                          <ActiveIndicator style={{ marginRight: '20px' }}>
-                            <ActiveIconSVG />
-                          </ActiveIndicator>
-                        ) : (
-                          <InActiveIndicator
-                            style={{
-                              marginRight: '20px',
-                              backgroundColor: '#ededed',
-                            }}
-                          />
-                        )}
-                        <FontName fontNameProps={{ fontSize: option.size }}>
-                          {option.label}
+              )) && (
+              <TypographyContainer>
+                <SectionTitle>{t('TYPOGRAPHY')}</SectionTitle>
+                <SectionDivider />
+                {featureToggles &&
+                  hasFeature(
+                    featureToggles.featureToggles,
+                    EFeatureToggles.ORGANIZATION_SETTINGS_FONT_NAME
+                  ) && (
+                    <Wrapper>
+                      <WrapperContainer>
+                        <FontName
+                          fontNameProps={{ fontFamily: '', fontSize: '' }}
+                        >
+                          {t('FONT_STYLE')}
                         </FontName>
-                      </OptionElement>
-                    ))}
-                  </WrapperFontInnerContainer>
-                </FontStyleWrapper>
-              )}
-          </TypographyContainer>
-        )}
+                      </WrapperContainer>
+                      <WrapperInnerContainer>
+                        {fontOptions.map((option) => (
+                          <OptionElement
+                            key={option.name}
+                            onClick={() => handleFontName(option.name)}
+                          >
+                            {activeFontName ===
+                            capitalizeFirstLetter(option.name) ? (
+                              <ActiveIndicator style={{ marginRight: '20px' }}>
+                                <ActiveIconSVG />
+                              </ActiveIndicator>
+                            ) : (
+                              <InActiveIndicator
+                                style={{
+                                  marginRight: '20px',
+                                  backgroundColor: '#ededed',
+                                }}
+                              />
+                            )}
+                            <FontName
+                              fontNameProps={{ fontFamily: option.name }}
+                            >
+                              {capitalizeFirstLetter(option.name)}
+                            </FontName>
+                          </OptionElement>
+                        ))}
+                      </WrapperInnerContainer>
+                    </Wrapper>
+                  )}
+                {featureToggles &&
+                  hasFeature(
+                    featureToggles.featureToggles,
+                    EFeatureToggles.ORGANIZATION_SETTINGS_FONT_SIZE
+                  ) && (
+                    <FontStyleWrapper>
+                      <WrapperContainer>
+                        <FontName fontNameProps={{}}>{t('FONT_SIZE')}</FontName>
+                      </WrapperContainer>
+                      <WrapperFontInnerContainer>
+                        {fontSizeOptions.map((option) => (
+                          <OptionElement
+                            style={{ marginBottom: '20px' }}
+                            key={option.label}
+                            onClick={() => handleFontSizeChange(option.label)}
+                          >
+                            {activeFontStyle === option.label ? (
+                              <ActiveIndicator style={{ marginRight: '20px' }}>
+                                <ActiveIconSVG />
+                              </ActiveIndicator>
+                            ) : (
+                              <InActiveIndicator
+                                style={{
+                                  marginRight: '20px',
+                                  backgroundColor: '#ededed',
+                                }}
+                              />
+                            )}
+                            <FontName fontNameProps={{ fontSize: option.size }}>
+                              {option.label}
+                            </FontName>
+                          </OptionElement>
+                        ))}
+                      </WrapperFontInnerContainer>
+                    </FontStyleWrapper>
+                  )}
+              </TypographyContainer>
+            )}
+        </>
+      )}
     </>
   );
 }

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { hasPermission } from '../utils/permissionCheck';
 import { RECRUITMENT_MODULE } from '../constants/PermissionConstants';
 import { useUser } from '../context/UserContext';
-import { Button } from 'web-kit-components';
+import { Button } from '../styles/CommonStyles.style';
 import {
   ExpenseManagementMainContainer,
   ExpenseHeadingSection,
