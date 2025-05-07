@@ -71,19 +71,21 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>([]);
+  const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>(
+    []
+  );
 
   const [dropdownOpen, setDropdownOpen] = useState({
     department: false,
     category: false,
     type: false,
-    paymentMode: false
+    paymentMode: false,
   });
 
   const toggleDropdown = (dropdownName: keyof typeof dropdownOpen) => {
-    setDropdownOpen(prev => ({
+    setDropdownOpen((prev) => ({
       ...prev,
-      [dropdownName]: !prev[dropdownName]
+      [dropdownName]: !prev[dropdownName],
     }));
   };
 
@@ -94,12 +96,12 @@ export const ExpenseList = (props: ExpenseListProps) => {
     dropdownName?: keyof typeof dropdownOpen
   ) => {
     if (selectedItems.includes(value)) {
-      setSelectedItems(selectedItems.filter(item => item !== value));
+      setSelectedItems(selectedItems.filter((item) => item !== value));
     } else {
       setSelectedItems([...selectedItems, value]);
     }
     if (dropdownName) {
-      setDropdownOpen(prev => ({ ...prev, [dropdownName]: false }));
+      setDropdownOpen((prev) => ({ ...prev, [dropdownName]: false }));
     }
     setCurrentPage(1);
   };
@@ -129,25 +131,22 @@ export const ExpenseList = (props: ExpenseListProps) => {
       departmentRef.current &&
       !departmentRef.current.contains(event.target as Node)
     ) {
-      setDropdownOpen(prev => ({ ...prev, department: false }));
+      setDropdownOpen((prev) => ({ ...prev, department: false }));
     }
     if (
       categoryRef.current &&
       !categoryRef.current.contains(event.target as Node)
     ) {
-      setDropdownOpen(prev => ({ ...prev, category: false }));
+      setDropdownOpen((prev) => ({ ...prev, category: false }));
     }
-    if (
-      typeRef.current &&
-      !typeRef.current.contains(event.target as Node)
-    ) {
-      setDropdownOpen(prev => ({ ...prev, type: false }));
+    if (typeRef.current && !typeRef.current.contains(event.target as Node)) {
+      setDropdownOpen((prev) => ({ ...prev, type: false }));
     }
     if (
       paymentModeRef.current &&
       !paymentModeRef.current.contains(event.target as Node)
     ) {
-      setDropdownOpen(prev => ({ ...prev, paymentMode: false }));
+      setDropdownOpen((prev) => ({ ...prev, paymentMode: false }));
     }
   };
 
@@ -172,7 +171,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const currentDate = useMemo(() => new Date(), []);
 
   const [toDate, setToDate] = useState<Date | null>();
-  
+
   const [settlementStatusFilter, setSettlementStatusFilter] =
     useState<boolean>();
   const [sortBy, setSortBy] = useState<string>('expenseDate');
@@ -206,25 +205,29 @@ export const ExpenseList = (props: ExpenseListProps) => {
     const filters = [
       {
         key: 'date',
-        value: fromDate && toDate
-          ? `${formatDate(fromDate.toString())} - ${formatDate(toDate.toString())}`
-          : fromDate
-            ? `From ${formatDate(fromDate.toString())}`
-            : toDate
-              ? `Upto ${formatDate(toDate.toString())}`
-              : ''
+        value:
+          fromDate && toDate
+            ? `${formatDate(fromDate.toString())} - ${formatDate(toDate.toString())}`
+            : fromDate
+              ? `From ${formatDate(fromDate.toString())}`
+              : toDate
+                ? `Upto ${formatDate(toDate.toString())}`
+                : '',
       },
-      ...selectedDepartments.map(value => ({ key: `dept-${value}`, value })),
-      ...selectedCategories.map(value => ({ key: `cat-${value}`, value })),
-      ...selectedTypes.map(value => ({ key: `type-${value}`, value })),
-      ...selectedPaymentModes.map(value => ({ key: `mode-${value}`, value })),
+      ...selectedDepartments.map((value) => ({ key: `dept-${value}`, value })),
+      ...selectedCategories.map((value) => ({ key: `cat-${value}`, value })),
+      ...selectedTypes.map((value) => ({ key: `type-${value}`, value })),
+      ...selectedPaymentModes.map((value) => ({ key: `mode-${value}`, value })),
       {
         key: 'settlementStatus',
-        value: settlementStatusFilter !== undefined
-          ? settlementStatusFilter ? 'Settled' : 'Pending'
-          : ''
-      }
-    ].filter(filter => filter.value);
+        value:
+          settlementStatusFilter !== undefined
+            ? settlementStatusFilter
+              ? 'Settled'
+              : 'Pending'
+            : '',
+      },
+    ].filter((filter) => filter.value);
 
     return (
       <ExpenseFilterArea>
@@ -235,13 +238,21 @@ export const ExpenseList = (props: ExpenseListProps) => {
               className="filterClearBtn"
               onClick={() => {
                 if (filter.key.startsWith('dept-')) {
-                  setSelectedDepartments(selectedDepartments.filter(d => d !== filter.value));
+                  setSelectedDepartments(
+                    selectedDepartments.filter((d) => d !== filter.value)
+                  );
                 } else if (filter.key.startsWith('cat-')) {
-                  setSelectedCategories(selectedCategories.filter(c => c !== filter.value));
+                  setSelectedCategories(
+                    selectedCategories.filter((c) => c !== filter.value)
+                  );
                 } else if (filter.key.startsWith('type-')) {
-                  setSelectedTypes(selectedTypes.filter(t => t !== filter.value));
+                  setSelectedTypes(
+                    selectedTypes.filter((t) => t !== filter.value)
+                  );
                 } else if (filter.key.startsWith('mode-')) {
-                  setSelectedPaymentModes(selectedPaymentModes.filter(m => m !== filter.value));
+                  setSelectedPaymentModes(
+                    selectedPaymentModes.filter((m) => m !== filter.value)
+                  );
                 } else if (filter.key === 'date') {
                   setFromDate(null);
                   setToDate(null);
@@ -264,19 +275,19 @@ export const ExpenseList = (props: ExpenseListProps) => {
     try {
       setFilteredResponseLoading(true);
       const queryParams = [];
-      
+
       if (selectedDepartments.length > 0) {
         queryParams.push(`department=${selectedDepartments.join(',')}`);
       }
-     
+
       if (selectedCategories.length > 0) {
         queryParams.push(`expenseCategory=${selectedCategories.join(',')}`);
       }
-      
+
       if (selectedTypes.length > 0) {
         queryParams.push(`expenseType=${selectedTypes.join(',')}`);
       }
-      
+
       if (selectedPaymentModes.length > 0) {
         queryParams.push(`modeOfPayment=${selectedPaymentModes.join(',')}`);
       }
@@ -338,7 +349,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
     sortBy,
     filterBasedOn,
     sortOrder,
-    settlementStatusFilter
+    settlementStatusFilter,
   ]);
 
   useEffect(() => {
@@ -487,7 +498,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     setCurrentPage(1);
                   }}
                   selectedDate={toDate ? toDate : new Date()}
-                  handleCalenderChange={() => { }}
+                  handleCalenderChange={() => {}}
                 />
               </div>
             )}
@@ -512,11 +523,13 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     <input
                       type="checkbox"
                       checked={selectedDepartments.includes(dept.value)}
-                      onChange={() => handleMultiSelectChange(
-                        dept.value,
-                        selectedDepartments,
-                        setSelectedDepartments
-                      )}
+                      onChange={() =>
+                        handleMultiSelectChange(
+                          dept.value,
+                          selectedDepartments,
+                          setSelectedDepartments
+                        )
+                      }
                     />
                     {dept.value}
                   </label>
@@ -545,11 +558,13 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     <input
                       type="checkbox"
                       checked={selectedCategories.includes(cat.value)}
-                      onChange={() => handleMultiSelectChange(
-                        cat.value,
-                        selectedCategories,
-                        setSelectedCategories
-                      )}
+                      onChange={() =>
+                        handleMultiSelectChange(
+                          cat.value,
+                          selectedCategories,
+                          setSelectedCategories
+                        )
+                      }
                     />
                     {cat.value}
                   </label>
@@ -577,11 +592,13 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     <input
                       type="checkbox"
                       checked={selectedTypes.includes(type.value)}
-                      onChange={() => handleMultiSelectChange(
-                        type.value,
-                        selectedTypes,
-                        setSelectedTypes
-                      )}
+                      onChange={() =>
+                        handleMultiSelectChange(
+                          type.value,
+                          selectedTypes,
+                          setSelectedTypes
+                        )
+                      }
                     />
                     {type.value}
                   </label>
@@ -609,11 +626,13 @@ export const ExpenseList = (props: ExpenseListProps) => {
                     <input
                       type="checkbox"
                       checked={selectedPaymentModes.includes(mode.value)}
-                      onChange={() => handleMultiSelectChange(
-                        mode.value,
-                        selectedPaymentModes,
-                        setSelectedPaymentModes
-                      )}
+                      onChange={() =>
+                        handleMultiSelectChange(
+                          mode.value,
+                          selectedPaymentModes,
+                          setSelectedPaymentModes
+                        )
+                      }
                     />
                     {mode.value}
                   </label>
@@ -664,10 +683,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
               ₹{' '}
               {expenses?.metadata.totalAmount !== undefined
                 ? formatToINR(
-                  expenses.metadata.totalAmount.toFixed(
-                    2
-                  ) as unknown as number
-                )
+                    expenses.metadata.totalAmount.toFixed(
+                      2
+                    ) as unknown as number
+                  )
                 : '0.00'}
             </span>
           </span>
@@ -715,14 +734,15 @@ export const ExpenseList = (props: ExpenseListProps) => {
         {fromDate == null && toDate == null && (
           <span className="noFilters noMargin">
             <InfoCircleSVG />
-            {`Showing current month expenses (sorted based on ${sortBy === 'expenseDate'
-              ? t('EXPENSE_DATE')
-              : sortBy === 'requestedDate'
-                ? t('REQUESTED_DATE')
-                : sortBy === 'paymentDate'
-                  ? t('PAYMENT_DATE')
-                  : t('CREATED_DATE')
-              })`}
+            {`Showing current month expenses (sorted based on ${
+              sortBy === 'expenseDate'
+                ? t('EXPENSE_DATE')
+                : sortBy === 'requestedDate'
+                  ? t('REQUESTED_DATE')
+                  : sortBy === 'paymentDate'
+                    ? t('PAYMENT_DATE')
+                    : t('CREATED_DATE')
+            })`}
           </span>
         )}
         <TableListContainer style={{ marginTop: 0 }}>
@@ -812,8 +832,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
                           </span>
                           {exp.paymentSettled
                             ? formatDate(
-                              exp.paymentSettled as unknown as string
-                            )
+                                exp.paymentSettled as unknown as string
+                              )
                             : '-'}
                         </td>
                         {user?.roles.some((role) =>
@@ -823,18 +843,18 @@ export const ExpenseList = (props: ExpenseListProps) => {
                               permission === EXPENSE_MODULE.DELETE_EXPENSE
                           )
                         ) && (
-                            <td>
-                              <ExpenseAction
-                                options={Actions}
-                                fetchExpenses={fetchExpenses}
-                                currentExpense={exp}
-                                expenseCategories={props.expenseCategories}
-                                expenseTypes={props.expenseTypes}
-                                expenseDepartments={props.expenseDepartments}
-                                expensePaymentModes={props.expensePaymentModes}
-                              />
-                            </td>
-                          )}
+                          <td>
+                            <ExpenseAction
+                              options={Actions}
+                              fetchExpenses={fetchExpenses}
+                              currentExpense={exp}
+                              expenseCategories={props.expenseCategories}
+                              expenseTypes={props.expenseTypes}
+                              expenseDepartments={props.expenseDepartments}
+                              expensePaymentModes={props.expensePaymentModes}
+                            />
+                          </td>
+                        )}
                       </TableBodyRow>
                     ))
                   ) : (

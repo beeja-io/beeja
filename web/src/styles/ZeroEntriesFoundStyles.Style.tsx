@@ -23,7 +23,7 @@ export const ZeroEntriesFoundMainContainer = styled.section`
   }
 
   .heading {
-    color: var(--Greyscale-900, #111827);
+    color: ${(props) => props.theme.colors.blackColors.black4};
     text-align: center;
     font-family: Nunito;
     font-size: 30px;
