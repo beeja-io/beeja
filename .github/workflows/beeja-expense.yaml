@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - 'services/beeja-expense/**'
+
+permissions:
+  contents: read
 jobs:
   #CODE LINTING
   #linux

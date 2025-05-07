@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - 'services/beeja-exceptions/**'
+
+permissions:
+  contents: read
 jobs:
 
   #CODE LINTING

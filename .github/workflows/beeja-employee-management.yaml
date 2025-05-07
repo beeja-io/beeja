@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'services/beeja-employee-management/**'
+permissions:
+  contents: read
 jobs:
 
   #CODE LINTING

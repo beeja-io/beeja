@@ -6,6 +6,8 @@ on:
       - main
     paths:
       - 'services/beeja-service-registry/**'
+permissions:
+  contents: read
 jobs:
 
   #CODE LINTING

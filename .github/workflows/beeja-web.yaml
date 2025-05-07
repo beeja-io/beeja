@@ -9,6 +9,8 @@ on:
       - PS-299
     paths:
       - 'web/**'
+permissions:
+  contents: read
 jobs:
   Web:
     runs-on: ubuntu-latest
