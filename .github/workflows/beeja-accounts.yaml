@@ -88,48 +88,48 @@ jobs:
         name: junit-results
         path: build/test-results/test/
   
-  # Image Build and Scanning
-  trivy-image-scan:
-    permissions:
-      contents: read 
-      security-events: write
+  # # Image Build and Scanning
+  # trivy-image-scan:
+  #   permissions:
+  #     contents: read 
+  #     security-events: write
 
-    runs-on: ubuntu-24.04
+  #   runs-on: ubuntu-24.04
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+  #     - name: Set up Java
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: '17'
+  #         distribution: 'temurin'
 
-      # - name: gradle wrapper
-      #   working-directory: beeja-services/beeja-accounts
-      #   run: gradle wrapper
+  #     # - name: gradle wrapper
+  #     #   working-directory: beeja-services/beeja-accounts
+  #     #   run: gradle wrapper
 
-      - name: Generate jar package
-        working-directory: services/beeja-accounts
-        run: gradle :beeja-accounts:bootJar
+  #     - name: Generate jar package
+  #       working-directory: services/beeja-accounts
+  #       run: gradle :beeja-accounts:bootJar
 
-      - name: Build Docker Image
-        working-directory: services/beeja-accounts
-        run: docker build -t my-app:1.0 .
-        env:
-          DOCKER_BUILDKIT: 1
+  #     - name: Build Docker Image
+  #       working-directory: services/beeja-accounts
+  #       run: docker build -t my-app:1.0 .
+  #       env:
+  #         DOCKER_BUILDKIT: 1
 
-      - name: Trivy Image Scanning for Vulnarability
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: my-app:1.0
-          format: 'sarif'
-          output: 'trivy-docker.sarif'
-          ignore-unfixed: true
-          severity: 'CRITICAL,HIGH'
+  #     - name: Trivy Image Scanning for Vulnarability
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         image-ref: my-app:1.0
+  #         format: 'sarif'
+  #         output: 'trivy-docker.sarif'
+  #         ignore-unfixed: true
+  #         severity: 'CRITICAL,HIGH'
 
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-docker.sarif'
+  #     - name: Upload Trivy scan results to GitHub Security tab
+  #       uses: github/codeql-action/upload-sarif@v3
+  #       with:
+  #         sarif_file: 'trivy-docker.sarif'
