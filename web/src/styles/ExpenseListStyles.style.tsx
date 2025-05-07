@@ -87,7 +87,7 @@ export const FilterSection = styled.div`
     cursor: pointer;
     color: ${(props) => props.theme.colors.blackColors.black1};
     &:hover {
-      background-color:rgb(24, 127, 237);
+      background-color: rgb(24, 127, 237);
       color: ${(props) => props.theme.colors.blackColors.white};
     }
   }
@@ -371,12 +371,12 @@ export const ExpenseListSection = styled.section`
 
   .filterCalender {
     position: absolute;
-  display: flex;
-  border-radius: 16px;
-  background: ${(props) => props.theme.colors.backgroundColors.primary};
-  box-shadow: 0px 5px 40px 0px rgba(0, 0, 0, 0.1);
-  z-index: 1000; // Add this to ensure it appears above other elements
-  top: 100%; // Position it right below the date picker
-  left: 0;
+    display: flex;
+    border-radius: 16px;
+    background: ${(props) => props.theme.colors.backgroundColors.primary};
+    box-shadow: 0px 5px 40px 0px rgba(0, 0, 0, 0.1);
+    z-index: 1000; // Add this to ensure it appears above other elements
+    top: 100%; // Position it right below the date picker
+    left: 0;
   }
 `;

@@ -131,25 +131,22 @@ export const ExpenseList = (props: ExpenseListProps) => {
       departmentRef.current &&
       !departmentRef.current.contains(event.target as Node)
     ) {
-      setDropdownOpen(prev => ({ ...prev, department: false }));
+      setDropdownOpen((prev) => ({ ...prev, department: false }));
     }
     if (
       categoryRef.current &&
       !categoryRef.current.contains(event.target as Node)
     ) {
-      setDropdownOpen(prev => ({ ...prev, category: false }));
+      setDropdownOpen((prev) => ({ ...prev, category: false }));
     }
-    if (
-      typeRef.current &&
-      !typeRef.current.contains(event.target as Node)
-    ) {
-      setDropdownOpen(prev => ({ ...prev, type: false }));
+    if (typeRef.current && !typeRef.current.contains(event.target as Node)) {
+      setDropdownOpen((prev) => ({ ...prev, type: false }));
     }
     if (
       paymentModeRef.current &&
       !paymentModeRef.current.contains(event.target as Node)
     ) {
-      setDropdownOpen(prev => ({ ...prev, paymentMode: false }));
+      setDropdownOpen((prev) => ({ ...prev, paymentMode: false }));
     }
   };
 
