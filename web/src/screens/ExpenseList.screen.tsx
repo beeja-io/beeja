@@ -104,6 +104,11 @@ export const ExpenseList = (props: ExpenseListProps) => {
     setCurrentPage(1);
   };
 
+  const departmentRef = useRef<HTMLDivElement>(null);
+  const categoryRef = useRef<HTMLDivElement>(null);
+  const typeRef = useRef<HTMLDivElement>(null);
+  const paymentModeRef = useRef<HTMLDivElement>(null);
+
   const calendarFromRef = useRef<HTMLDivElement>(null);
   const calendarToRef = useRef<HTMLDivElement>(null);
 
@@ -119,6 +124,30 @@ export const ExpenseList = (props: ExpenseListProps) => {
       !calendarToRef.current.contains(event.target as Node)
     ) {
       setShowToCalendar(false);
+    }
+    if (
+      departmentRef.current &&
+      !departmentRef.current.contains(event.target as Node)
+    ) {
+      setDropdownOpen(prev => ({ ...prev, department: false }));
+    }
+    if (
+      categoryRef.current &&
+      !categoryRef.current.contains(event.target as Node)
+    ) {
+      setDropdownOpen(prev => ({ ...prev, category: false }));
+    }
+    if (
+      typeRef.current &&
+      !typeRef.current.contains(event.target as Node)
+    ) {
+      setDropdownOpen(prev => ({ ...prev, type: false }));
+    }
+    if (
+      paymentModeRef.current &&
+      !paymentModeRef.current.contains(event.target as Node)
+    ) {
+      setDropdownOpen(prev => ({ ...prev, paymentMode: false }));
     }
   };
 
@@ -464,7 +493,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
             )}
           </div>
           {/* Department Multi-Select */}
-          <div className="multi-select-container">
+          <div className="multi-select-container" ref={departmentRef}>
             <div
               className="multi-select-header"
               onClick={() => toggleDropdown('department')}
@@ -497,7 +526,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
           </div>
 
           {/* Category Multi-Select */}
-          <div className="multi-select-container">
+          <div className="multi-select-container" ref={categoryRef}>
             <div
               className="multi-select-header"
               onClick={() => toggleDropdown('category')}
@@ -529,7 +558,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
             )}
           </div>
           {/* Expense Type Multi-Select */}
-          <div className="multi-select-container">
+          <div className="multi-select-container" ref={typeRef}>
             <div
               className="multi-select-header"
               onClick={() => toggleDropdown('type')}
@@ -561,7 +590,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
             )}
           </div>
           {/* Payment Mode Multi-Select */}
-          <div className="multi-select-container">
+          <div className="multi-select-container" ref={paymentModeRef}>
             <div
               className="multi-select-header"
               onClick={() => toggleDropdown('paymentMode')}
