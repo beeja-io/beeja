@@ -24,7 +24,6 @@ Beeja is a highly interactive, self-customizable platform designed to simplify a
 
 ---
 
-[![Watch the video](https://img.youtube.com/vi/y9GFpM_7tjM/maxresdefault.jpg)](https://youtu.be/y9GFpM_7tjM)
 
 ## **License**
 Beeja is licensed under the [Apache 2.0 License](./LICENSE).
@@ -51,12 +50,8 @@ Beeja is an open-source project, and we welcome contributions! Check out our [Co
 Here’s a quick look at what Beeja offers:
 - **Employee Records Management** – Manage employee data, roles, and organizational structures.
 - **Employee Document Management** – Manage employee documents.
-- **Payroll & Benefits** – Customize payroll, reimbursements, and deductions.
 - **Inventory Management** – Monitor and manage organizational assets.
 - **Finance Module** – Handle invoicing, expenses features.
-
-Watch Beeja in action!  
-[Watch Beeja Demo]
 
 ---
 
@@ -72,28 +67,76 @@ Before starting, ensure you have the following installed:
 
 ---
 
-### **Beeja Backend - Local Setup**
+##  Beeja Backend - Run Options (Docker & Manual)
 
-#### **Clone the Repository**
-```bash
-git clone https://github.com/beeja-io/beeja.git
-cd beeja/services
-```
+You can run the Beeja backend services in two different ways:
 
-#### **Build the Backend Services**
-```bash
-./gradlew build
-```
+---
 
-#### **Run Beeja Services**
-```bash
-docker compose up --build
-```
+###  Option 1: Run with Docker 
 
-#### **Verify Services**
-Once the services are running, verify:
-- **Service Registry (Eureka)**: `http://localhost:8761` – View all registered microservices.
-- **Open API Documentation**: `http://localhost:<ms-specific-port>/swagger-ui` – Explore Beeja's API endpoints.
+
+####  Steps:
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/beeja-io/beeja.git
+   ```
+
+2. **Build and Run the Services**
+   ```bash
+   docker compose up --build
+   ```
+
+3. **Verify Running Services**
+   -  Eureka Service Registry: [http://localhost:8761]
+   -  Swagger API Documentation for each service:
+     ```
+     http://localhost:<microservice-port>/swagger-ui
+     ```
+
+ Tip: Make sure Docker is installed and running on your system before executing these commands.
+
+---
+
+###  Option 2: Run Manually (Without Docker)
+
+Use this method if you prefer running services directly on your machine.
+
+#### Prerequisites:
+- Java 17  
+- Gradle (or use the included Gradle wrapper)
+- Set any required environment variables or configuration files as needed
+
+####  Steps:
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/beeja-io/beeja.git
+   ```
+
+2. **Build All Backend Services**
+   ```bash
+   ./gradlew build
+   ```
+
+3. **Configure Environment Files**
+   - Before running the services, ensure all necessary environment variables are properly set.
+   - You can configure them in `.env` files or directly in the `application.yml`of each microservice as   required.
+
+4. **Run Microservices Individually**  
+   Navigate into each microservice folder:
+   ```bash
+   ./gradlew bootRun
+   ```
+
+5. **Verify Services**
+   - Access each service on its configured port (check `application.yml` or `.env` files).
+   - Swagger UI will be available at:
+     ```
+     http://localhost:<microservice-port>/swagger-ui
+     ```
+
 
 
 ### **Beeja Web - Local Setup**
@@ -101,7 +144,6 @@ Once the services are running, verify:
 #### **Clone the Repository**
 ```bash
 git clone https://github.com/beeja-io/beeja.git
-cd beeja/web
 ```
 
 #### **Install Dependencies**
@@ -163,10 +205,3 @@ Join the Beeja community to connect with other contributors and get support:
 ---
 
 Thank you for choosing Beeja! We can’t wait to see how you use and contribute to the platform. Let’s build the future of organizational operations—together! 🚀
-
- 
-
-
-
-
-

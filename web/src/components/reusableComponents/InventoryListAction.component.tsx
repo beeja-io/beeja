@@ -157,6 +157,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
       {confirmDeleteModal && (
         <span style={{ cursor: 'default' }}>
           <CenterModal
+            handleModalLeftButtonClick={handleDeleteModal}
             handleModalClose={handleDeleteModal}
             handleModalSubmit={deleteSelectedDevice}
             modalHeading="Delete"

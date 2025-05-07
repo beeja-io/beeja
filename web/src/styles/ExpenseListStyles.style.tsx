@@ -70,7 +70,7 @@ export const FilterSection = styled.div`
     left: 0;
     right: 0;
     z-index: 1000;
-    background-color: white;
+    background-color: ${(props) => props.theme.colors.backgroundColors.primary};
     border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
     border-radius: 0 0 10px 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -85,9 +85,10 @@ export const FilterSection = styled.div`
     align-items: center;
     padding: 10px 20px;
     cursor: pointer;
+    color: ${(props) => props.theme.colors.blackColors.black1};
     &:hover {
-      background-color: grey;
-      color: white;
+      background-color:rgb(24, 127, 237);
+      color: ${(props) => props.theme.colors.blackColors.white};
     }
   }
 
@@ -370,9 +371,12 @@ export const ExpenseListSection = styled.section`
 
   .filterCalender {
     position: absolute;
-    display: flex;
-    border-radius: 16px;
-    background: ${(props) => props.theme.colors.backgroundColors.primary};
-    box-shadow: 0px 5px 40px 0px rgba(0, 0, 0, 0.1);
+  display: flex;
+  border-radius: 16px;
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
+  box-shadow: 0px 5px 40px 0px rgba(0, 0, 0, 0.1);
+  z-index: 1000; // Add this to ensure it appears above other elements
+  top: 100%; // Position it right below the date picker
+  left: 0;
   }
 `;
