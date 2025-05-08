@@ -2,6 +2,7 @@ package com.beeja.api.apigateway.config.security;
 
 import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
+import com.beeja.api.apigateway.config.security.authenticationProviders.UsernamePasswordAuthProvider;
 import com.beeja.api.apigateway.config.security.properties.AuthProperties;
 import java.time.Duration;
 import java.util.List;
@@ -39,7 +40,7 @@ public class SecurityConfig {
   @Autowired private SkipGatewayFilterRoutesProperty skipGatewayFilterRoutesProperty;
 
 
-  @Autowired private ServerAuthenticationFailureHandler authenticationFailureHandler;
+  @Autowired private UsernamePasswordAuthProvider usernamePasswordAuthProvider;
 
   private static final ServerWebExchangeMatcher ACCOUNTS_MATCHERS =
       pathMatchers(
@@ -156,12 +157,16 @@ public class SecurityConfig {
                               exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                               return Mono.empty();
                             })));
-    ServiceLoader<AuthenticationProvider> loader = ServiceLoader.load(AuthenticationProvider.class);
 
-    for (AuthenticationProvider provider : loader) {
-      provider.configure(serverHttpSecurity);
-      log.info("Loaded Authentication Provider: {}", provider.getClass().getName());
-    }
+    usernamePasswordAuthProvider.configure(serverHttpSecurity);
+    log.info("Loaded Authentication Provider: {}", usernamePasswordAuthProvider.getClass().getName());
+
+
+//    ServiceLoader<AuthenticationProvider> loader = ServiceLoader.load(AuthenticationProvider.class);
+//    for (AuthenticationProvider provider : loader) {
+//      provider.configure(serverHttpSecurity);
+//      log.info("Loaded Authentication Provider: {}", provider.getClass().getName());
+//    }
 
     return serverHttpSecurity.build();
   }
