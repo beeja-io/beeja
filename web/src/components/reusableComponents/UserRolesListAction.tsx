@@ -13,6 +13,7 @@ import { PERMISSION_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
 import { useUser } from '../../context/UserContext';
 import { useTranslation } from 'react-i18next';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 
 interface UserRoleListActionProps {
   onEdit: () => void;
@@ -57,6 +58,9 @@ const UserRoleListAction: React.FC<UserRoleListActionProps> = ({
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
+  useKeyPress(27, () => {
+    setDeleteConfirmModal(false);
+   });
 
   return (
     <>

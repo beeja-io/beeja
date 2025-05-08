@@ -29,6 +29,7 @@ import { DOCUMENT_MODULE } from '../../constants/PermissionConstants';
 import { FileEntity } from '../../entities/FileEntity';
 import { hasPermission } from '../../utils/permissionCheck';
 import { t } from 'i18next';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.js',
@@ -207,6 +208,9 @@ export const DocumentAction: React.FC<ActionProps> = ({
       }
     }
   };
+  useKeyPress(27, () => {
+    setConfirmDeleteModal(false);
+  });
 
   return (
     <>
