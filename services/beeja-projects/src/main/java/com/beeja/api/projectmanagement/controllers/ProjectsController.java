@@ -1,5 +1,7 @@
 package com.beeja.api.projectmanagement.controllers;
 
+import com.beeja.api.projectmanagement.annotations.HasPermission;
+import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.service.ProjectService;
@@ -26,6 +28,7 @@ public class ProjectsController {
      * @return a {@link ResponseEntity} containing the created project and HTTP status {@code 201 Created}
      */
     @PostMapping
+    @HasPermission(PermissionConstants.CREATE_PROJECT)
     public ResponseEntity<Project> createProject(@RequestBody ProjectRequest projectRequest) {
         Project createdProject = projectService.createProjectForClient(projectRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
@@ -38,6 +41,7 @@ public class ProjectsController {
      * @return a {@link ResponseEntity} containing the project and HTTP status {@code 200 OK}
      */
     @GetMapping("/{projectId}/{clientId}")
+    @HasPermission(PermissionConstants.GET_PROJECT)
     public ResponseEntity<Project> getProjectById(@PathVariable String projectId, @PathVariable String clientId) {
         Project project = projectService.getProjectByIdAndClientId(projectId, clientId);
         return ResponseEntity.ok(project);
@@ -49,6 +53,7 @@ public class ProjectsController {
      * @return a {@link ResponseEntity} containing the list of projects and HTTP status {@code 200 OK}
      */
     @GetMapping("/client/{clientId}")
+    @HasPermission(PermissionConstants.GET_PROJECT)
     public ResponseEntity<List<Project>> getProjectsByClientId(@PathVariable String clientId) {
         List<Project> projects = projectService.getProjectsByClientIdInOrganization(clientId);
         return ResponseEntity.ok(projects);
@@ -59,6 +64,7 @@ public class ProjectsController {
      * @return a {@link ResponseEntity} containing the list of all projects and HTTP status {@code 200 OK}
      */
     @GetMapping
+    @HasPermission(PermissionConstants.GET_PROJECT)
     public ResponseEntity<List<Project>> getAllProjects() {
         List<Project> projects = projectService.getAllProjectsInOrganization();
         return ResponseEntity.ok(projects);
@@ -71,6 +77,7 @@ public class ProjectsController {
      * @return a {@link ResponseEntity} containing the updated project and HTTP status {@code 200 OK}
      */
     @PutMapping("/{projectId}")
+    @HasPermission(PermissionConstants.UPDATE_PROJECT)
     public ResponseEntity<Project> updateProject(@PathVariable String projectId, @RequestBody ProjectRequest projectRequest) {
         Project updatedProject = projectService.updateProjectByProjectId(projectRequest, projectId);
         return ResponseEntity.ok(updatedProject);

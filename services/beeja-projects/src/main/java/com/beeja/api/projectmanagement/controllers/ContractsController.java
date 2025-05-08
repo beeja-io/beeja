@@ -1,5 +1,7 @@
 package com.beeja.api.projectmanagement.controllers;
 
+import com.beeja.api.projectmanagement.annotations.HasPermission;
+import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.request.ContractRequest;
 import com.beeja.api.projectmanagement.service.ContractService;
@@ -27,6 +29,7 @@ public class ContractsController {
      * @return a {@link ResponseEntity} containing the created contract and HTTP status {@code 201 Created}
      */
     @PostMapping
+    @HasPermission(PermissionConstants.CREATE_CONTRACT)
     public ResponseEntity<Contract> createContract(@RequestBody ContractRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(contractService.createContract(request));
     }
@@ -37,6 +40,7 @@ public class ContractsController {
      * @return a {@link ResponseEntity} containing the contract and HTTP status {@code 200 OK}
      */
     @GetMapping("/{contractId}")
+    @HasPermission(PermissionConstants.GET_CONTRACT)
     public ResponseEntity<Contract> getContractById(@PathVariable String contractId) {
         return ResponseEntity.ok(contractService.getContractById(contractId));
     }
@@ -47,6 +51,7 @@ public class ContractsController {
      * @return a {@link ResponseEntity} containing the list of contracts and HTTP status {@code 200 OK}
      */
     @GetMapping("/project/{projectId}")
+    @HasPermission(PermissionConstants.GET_CONTRACT)
     public ResponseEntity<List<Contract>> getContractsByProject(@PathVariable String projectId) {
         return ResponseEntity.ok(contractService.getContractsByProjectId(projectId));
     }
@@ -58,6 +63,7 @@ public class ContractsController {
      * @return a {@link ResponseEntity} containing the updated contract and HTTP status {@code 200 OK}
      */
     @PutMapping("/{contractId}")
+    @HasPermission(PermissionConstants.UPDATE_CONTRACT)
     public ResponseEntity<Contract> updateContract(@PathVariable String contractId,
                                                    @RequestBody ContractRequest request) {
         return ResponseEntity.ok(contractService.updateContract(contractId, request));

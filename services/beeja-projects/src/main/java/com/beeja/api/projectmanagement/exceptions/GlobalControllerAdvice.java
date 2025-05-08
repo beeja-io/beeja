@@ -118,4 +118,19 @@ public class GlobalControllerAdvice {
     return new ResponseEntity<>(Constants.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  @ExceptionHandler(CustomAccessDeniedException.class)
+  public ResponseEntity<ErrorResponse> handleCustomAccessDeniedException(
+          CustomAccessDeniedException ex,
+          HttpServletRequest request){
+    String path = request.getRequestURI();
+
+    ErrorResponse errorResponse = BuildErrorMessage.buildErrorMessage(
+            ErrorType.ACCESS_DENIED,
+            ErrorCode. PERM_403,
+            Constants.NO_PERMISSION
+    );
+    errorResponse.setPath(path);
+    return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+  }
+
 }

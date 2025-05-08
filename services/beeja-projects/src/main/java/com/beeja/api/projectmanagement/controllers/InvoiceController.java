@@ -1,5 +1,7 @@
 package com.beeja.api.projectmanagement.controllers;
 
+import com.beeja.api.projectmanagement.annotations.HasPermission;
+import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Invoice;
 import com.beeja.api.projectmanagement.request.InvoiceRequest;
@@ -21,6 +23,7 @@ public class InvoiceController {
     private InvoiceService invoiceService;
 
     @PostMapping
+    @HasPermission(PermissionConstants.CREATE_INVOICE)
     public ResponseEntity<Invoice> createInvoice(@RequestBody InvoiceRequest invoiceRequest) {
         try {
             Invoice invoice = invoiceService.generateInvoiceForContract(invoiceRequest.getContractId(), invoiceRequest);
@@ -32,6 +35,7 @@ public class InvoiceController {
     }
 
     @GetMapping("/{invoiceId}")
+    @HasPermission(PermissionConstants.GET_INVOICE)
     public ResponseEntity<Invoice> getInvoiceById(@PathVariable String invoiceId) {
         try {
             Invoice invoice = invoiceService.getInvoiceById(invoiceId);
@@ -43,12 +47,14 @@ public class InvoiceController {
     }
 
     @GetMapping("/contract/{contractId}")
+    @HasPermission(PermissionConstants.GET_INVOICE)
     public ResponseEntity<List<Invoice>> getInvoicesByContractId(@PathVariable String contractId) {
         List<Invoice> invoices = invoiceService.getInvoicesByContractId(contractId);
         return ResponseEntity.ok(invoices);
     }
 
     @PutMapping("/{invoiceId}/mark-paid")
+    @HasPermission(PermissionConstants.UPDATE_STATUS_INVOICE)
     public ResponseEntity<Invoice> markInvoiceAsPaid(@PathVariable String invoiceId) {
         try {
             Invoice updatedInvoice = invoiceService.markInvoiceAsPaid(invoiceId);
