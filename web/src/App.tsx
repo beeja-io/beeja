@@ -41,10 +41,19 @@ function App() {
         }
         setIsLoaded(true);
         setIsErrorCode(200);
-        document.documentElement.style.setProperty(
-          '--font-family-primary',
-          response.data.organizations.preferences.fontName
-        );
+        if (response.data.organizations.preferences) {
+          document.documentElement.style.setProperty(
+            '--font-family-primary',
+            response.data.organizations.preferences.fontName
+          );
+        }
+        if (response.data.organizations?.preferences) {
+          const sizeValue = `${response.data.organizations.preferences.fontSize}px`;
+          document.documentElement.style.setProperty(
+            '--font-size-primary',
+            sizeValue
+          );
+        }
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (

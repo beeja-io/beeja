@@ -1,19 +1,11 @@
 {
 	"info": {
-		"_postman_id": "20c211a5-f2c4-4d4c-bf9f-0bf12ff79ccc",
+		"_postman_id": "34f56194-052b-4500-b68f-a34520571df1",
 		"name": "FileService",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "30821906"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43003168"
 	},
 	"item": [
-		{
-			"name": "HelloWorld",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
 		{
 			"name": "UploadFile",
 			"request": {
@@ -54,7 +46,17 @@
 						}
 					]
 				},
-				"url": "http://localhost:8000/files/v1/files"
+				"url": {
+					"raw": "{{port}}/files/v1/files",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"files",
+						"v1",
+						"files"
+					]
+				}
 			},
 			"response": []
 		},
@@ -63,7 +65,18 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://localhost:8000/files/v1/files/TAC0063"
+				"url": {
+					"raw": "{{port}}/files/v1/files/{{employeeId}}",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"files",
+						"v1",
+						"files",
+						"{{employeeId}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -72,7 +85,19 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://localhost:8000/files/v1/files/download/65d574ca305b365944350464"
+				"url": {
+					"raw": "{{port}}/files/v1/files/download/{{fileId}}",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"files",
+						"v1",
+						"files",
+						"download",
+						"{{fileId}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -81,7 +106,18 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": "http://localhost:8000/files/v1/files/65d574ca305b365944350464"
+				"url": {
+					"raw": "{{port}}/files/v1/files/{{fileId}}",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"files",
+						"v1",
+						"files",
+						"{{fileId}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -125,7 +161,68 @@
 						}
 					]
 				},
-				"url": "http://localhost:8000/files/v1/files/65d574ca305b365944350464"
+				"url": {
+					"raw": "{{port}}/files/v1/files/{{fileId}}",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"files",
+						"v1",
+						"files",
+						"{{fileId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Files By EntityId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{port}}/files/v1/files/{{fileId}}?page=1&size=5",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"files",
+						"v1",
+						"files",
+						"{{fileId}}"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "size",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload Or UpdateFile",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{port}}/files/v1/files/dynamic",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"files",
+						"v1",
+						"files",
+						"dynamic"
+					]
+				}
 			},
 			"response": []
 		},
@@ -155,12 +252,10 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8000/finance/v1/payslips",
-					"protocol": "http",
+					"raw": "{{port}}/finance/v1/payslips",
 					"host": [
-						"localhost"
+						"{{port}}"
 					],
-					"port": "8000",
 					"path": [
 						"finance",
 						"v1",
