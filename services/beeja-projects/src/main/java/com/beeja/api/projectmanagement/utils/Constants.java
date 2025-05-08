@@ -59,8 +59,9 @@ public class Constants {
   // ========== System Errors ==========
   public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
   public static final String DB_ERROR_IN_SAVING_DETAILS = "Failed to update client details: %s";
+  public static final String NO_PERMISSION = " You do not have permission to access this resource ";
 
-  // ========== Utility ==========
+    // ========== Utility ==========
   public static String format(String message, Object... args) {
     return String.format(message, args);
   }
