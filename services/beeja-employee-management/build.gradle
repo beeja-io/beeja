@@ -9,7 +9,10 @@ plugins {
 bootJar{
     enabled(true)
 }
-
+repositories {
+    mavenLocal()  // Ensure it's present here
+    mavenCentral()
+}
 dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -23,6 +26,7 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'com.beeja.common:backend-common:0.0.1-SNAPSHOT'
 }
 
 test {
