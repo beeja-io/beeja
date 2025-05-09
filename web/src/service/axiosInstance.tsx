@@ -72,7 +72,7 @@ export const updateEmployeeRole = (
   return axiosInstance.put(`/accounts/v1/users/roles/${employeeId}`, {
     roles,
   });
-}
+};
 
 export const createEmployee = (data: any): Promise<AxiosResponse> => {
   return axiosInstance.post('/accounts/v1/users', data);
@@ -241,7 +241,10 @@ export const updateHealthInsuranceDetails = (
   employeeId: string,
   data: any
 ): Promise<AxiosResponse> => {
-  return axiosInstance.put(`/finance/v1/health-insurances/employee/${employeeId}`, data);
+  return axiosInstance.put(
+    `/finance/v1/health-insurances/employee/${employeeId}`,
+    data
+  );
 };
 
 export const postHealthInsuranceDetails = (
@@ -331,7 +334,7 @@ export const changeApplicationStatus = (
   return axiosInstance.put(
     `/recruitments/v1/applicants/${applicantId}/status/${status}`
   );
-}
+};
 export const referApplicant = (data: FormData): Promise<AxiosResponse> => {
   return axiosInstance.post('/recruitments/v1/referrals', data);
 };

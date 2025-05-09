@@ -130,14 +130,14 @@ export const StatusIndicator = styled.div<{ status: string }>`
   color: ${({ status }) => {
     switch (status) {
       case 'WAITING':
-        case 'APPLIED':
+      case 'APPLIED':
         return '#CE9900';
       case 'REJECTED':
         return '#EB4335';
       case 'APPROVED':
-        case 'HIRED':
+      case 'HIRED':
         return '#005792';
-        case 'INTERVIEW_SCHEDULED':
+      case 'INTERVIEW_SCHEDULED':
         return '#000000';
       case 'SHORTLISTED':
         return '#96d39d';
@@ -148,13 +148,13 @@ export const StatusIndicator = styled.div<{ status: string }>`
   background-color: ${({ status }) => {
     switch (status) {
       case 'WAITING':
-        case 'APPLIED':
+      case 'APPLIED':
         return '#FFF4D8';
       case 'REJECTED':
         return '#F1C6C6';
       case 'APPROVED':
         return '#A8CFEA';
-        case 'INTERVIEW_SCHEDULED':
+      case 'INTERVIEW_SCHEDULED':
         return '#8ed2eb93';
       default:
         return 'rgba(0, 0, 0, 0.1)';
@@ -166,5 +166,4 @@ export const StatusIndicator = styled.div<{ status: string }>`
     width: 90px;
     height: 28px;
   }
-  
 `;

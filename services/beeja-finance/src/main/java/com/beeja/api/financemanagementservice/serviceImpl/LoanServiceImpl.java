@@ -3,30 +3,40 @@ package com.beeja.api.financemanagementservice.serviceImpl;
 import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
-import com.beeja.api.financemanagementservice.Utils.helpers.FileExtensionHelpers;
 import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.enums.LoanStatus;
 import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
-import com.beeja.api.financemanagementservice.modals.File;
 import com.beeja.api.financemanagementservice.modals.Loan;
 import com.beeja.api.financemanagementservice.modals.clients.finance.OrganizationPattern;
 import com.beeja.api.financemanagementservice.repository.LoanRepository;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
 import com.beeja.api.financemanagementservice.requests.PdfMultipartFile;
 import com.beeja.api.financemanagementservice.requests.SubmitLoanRequest;
+import com.beeja.api.financemanagementservice.response.LoanDTO;
+import com.beeja.api.financemanagementservice.response.LoanResponse;
 import com.beeja.api.financemanagementservice.service.LoanService;
+import com.beeja.api.financemanagementservice.requests.FileUploadRequest;
+import com.beeja.api.financemanagementservice.client.FileClient;
 import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -53,13 +63,15 @@ public class LoanServiceImpl implements LoanService {
   @Autowired
   AccountClient accountClient;
 
+  @Autowired FileClient fileClient;
+
   /**
    * Changes the status of a loan based on the provided loan ID.
    *
    * @param loanId The ID of the loan to update.
    * @param status The new status of the loan ("APPROVE", "REJECT", or others).
    * @param message Optional message or reason for status change.
-   * @throws LoanNotFound If the loan with the specified ID is not found.
+   * @throws ResourceNotFoundException If the loan with the specified ID is not found.
    */
   @Override
   public void changeLoanStatus(String loanId, String status, String message) {
@@ -150,17 +162,37 @@ public class LoanServiceImpl implements LoanService {
    * @return List of Loan entities.
    * @throws Exception If an error occurs while retrieving loans.
    */
-  @Override
-  public List<Loan> getAllLoans() throws Exception {
-    try {
-      return loanRepository.findAllByOrganizationId(
-          UserContext.getLoggedInUserOrganization().get("id").toString());
-    } catch (Exception e) {
-      throw new RuntimeException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.SERVICE_ERROR, ErrorCode.SERVER_ERROR, Constants.SERVICE_DOWN_ERROR));
-    }
+@Override
+public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortBy, String sortDirection, LoanStatus status) {
+  int validPage = pageNumber > 0 ? pageNumber - 1 : 0;
+  Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+  Pageable pageable = PageRequest.of(validPage, pageSize, sort);
+
+  String orgId=UserContext.getLoggedInUserOrganization().get("id").toString();;
+
+  List<LoanDTO> loans;
+  long totalCount;
+try {
+  if (status != null) {
+    loans = loanRepository.findAllByOrganizationIdAndStatus(orgId, status, pageable);
+    totalCount = loanRepository.countByOrganizationIdAndStatus(orgId, status);
+  } else {
+    loans = loanRepository.findAllByOrganizationId(orgId, pageable);
+    totalCount = loanRepository.countByOrganizationId(orgId);
   }
+}catch(Exception e){
+  log.error("Error occurred while fetching loans: {}", e.getMessage(),e);
+  loans = Collections.emptyList();
+  totalCount = 0;
+}
+
+  LoanResponse response = new LoanResponse();
+  response.setLoansList(loans);
+  response.setPageSize(pageSize);
+  response.setPageNumber(pageNumber);
+  response.setTotalRecords(totalCount);
+  return response;
+}
 
   /**
    * Retrieves all loans associated with a specific employee ID within the logged-in user's
@@ -190,32 +222,82 @@ public class LoanServiceImpl implements LoanService {
   /**
    * Uploads bulk payslips in a zip file asynchronously.
    *
-   * @param bulkPayslipRequest The request object containing bulk payslip details.
+   * @param bulkPayslipRequest  The request object containing bulk payslip details.
    * @param authorizationHeader Authorization header for API calls.
    * @throws Exception If an error occurs during bulk payslip upload.
    */
   @Override
-  public void uploadBulkPaySlips(BulkPayslipRequest bulkPayslipRequest, String authorizationHeader)
-      throws Exception {
-    MultipartFile file = bulkPayslipRequest.getZipFile();
-    List<MultipartFile> pdfFiles = new ArrayList<>();
-    File fileEntity = new File();
-    fileEntity.setFileSize(String.valueOf(file.getSize()));
-    fileEntity.setName(file.getName());
-    fileEntity.setFileFormat(
-        FileExtensionHelpers.getExtension(Objects.requireNonNull(file.getOriginalFilename())));
-    fileEntity.setEntityType(zipFile);
-    // Unzipping file
-    try (ZipInputStream zipInputStream = new ZipInputStream(file.getInputStream())) {
-      for (ZipEntry entry = zipInputStream.getNextEntry();
-          entry != null;
-          entry = zipInputStream.getNextEntry()) {
-        if (entry.getName().toLowerCase().endsWith(PDF)) {
-          pdfFiles.add(
-              new PdfMultipartFile(
-                  entry.getName(), entry.getName(), zipInputStream.readAllBytes()));
+  public void uploadBulkPaySlips(BulkPayslipRequest bulkPayslipRequest, String authorizationHeader) {
+    MultipartFile zipFile = bulkPayslipRequest.getZipFile();
+    List<String> successList = new ArrayList<>();
+    List<String> failureList = new ArrayList<>();
+
+    try (ZipInputStream zipInputStream = new ZipInputStream(zipFile.getInputStream())) {
+
+      for (ZipEntry entry = zipInputStream.getNextEntry(); entry != null; entry = zipInputStream.getNextEntry()) {
+        String fileName = entry.getName();
+
+        if (fileName == null || fileName.trim().isEmpty()) {
+          failureList.add("Unknown file with missing name.");
+          continue;
+        }
+
+        if (!fileName.toLowerCase().endsWith(".pdf")) {
+          failureList.add(fileName + " - Unsupported file type.");
+          continue;
+        }
+
+        try {
+          byte[] pdfBytes = zipInputStream.readAllBytes();
+          String employeeId = extractEmployeeIdFromPdf(pdfBytes);
+
+          if (employeeId == null || employeeId.isEmpty()) {
+            failureList.add(fileName + " - Employee ID not found.");
+            continue;
+          }
+
+          String finalFileName = employeeId + "_" + bulkPayslipRequest.getMonth() + "_" + bulkPayslipRequest.getYear() + ".pdf";
+
+          MultipartFile payslipFile = new PdfMultipartFile(finalFileName, finalFileName, pdfBytes);
+
+          FileUploadRequest fileUploadRequest = new FileUploadRequest();
+          fileUploadRequest.setFile(payslipFile);
+          fileUploadRequest.setName(finalFileName);
+          fileUploadRequest.setFileType("pdf");
+          fileUploadRequest.setEntityType("employee");
+          fileUploadRequest.setEntityId(employeeId);
+          fileUploadRequest.setDescription("Payslip for employee " + employeeId);
+
+          ResponseEntity<?> response = fileClient.uploadFile(fileUploadRequest, authorizationHeader);
+
+          successList.add(finalFileName + " - uploaded successfully.");
+        } catch (Exception e) {
+          failureList.add(fileName + " - Upload failed: " + e.getMessage());
+          log.warn("Failed to upload {}: {}", fileName, e.getMessage(), e);
         }
       }
+    } catch (IOException e) {
+      failureList.add("ZIP file could not be processed: " + e.getMessage());
+      log.warn("Failed to process zip file: {}", e.getMessage(), e);
     }
+
+    log.info("Payslip upload complete. Success: {}, Failures: {}", successList.size(), failureList.size());
+    successList.forEach(msg -> log.info("SUCCESS: " + msg));
+    failureList.forEach(msg -> log.warn("FAILURE: " + msg));
+  }
+
+
+  private String extractEmployeeIdFromPdf(byte[] pdfBytes) throws IOException {
+    try (PDDocument document = PDDocument.load(pdfBytes)) {
+      PDFTextStripper stripper = new PDFTextStripper();
+      String text = stripper.getText(document);
+
+      Pattern pattern = Pattern.compile("Employee ID\\s*[:\\-]?\\s*([A-Z]+\\d+)", Pattern.CASE_INSENSITIVE);
+      Matcher matcher = pattern.matcher(text);
+      if (matcher.find()) {
+        return matcher.group(1);
+      }
+    }
+    throw new RuntimeException("Employee ID not found in PDF");
   }
 }

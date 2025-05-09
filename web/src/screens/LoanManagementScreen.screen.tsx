@@ -61,9 +61,8 @@ const LoanManagementScreen = () => {
       const loans = res.data.loansList;
       setLoansList(res.data.loansList);
       setTotalApplicants(res.data.totalSize || loans.length);
-      console.log(loansList);
     } catch (error) {
-      console.error('Error fetching loan data:', error);
+      // console.error('Error fetching loan data:', error);
     } finally {
       setLoading(false);
     }
@@ -72,7 +71,6 @@ const LoanManagementScreen = () => {
   useEffect(() => {
     fetchLoanData();
   }, [fetchLoanData]);
-  
 
   return (
     <ExpenseManagementMainContainer>
@@ -86,7 +84,9 @@ const LoanManagementScreen = () => {
       </ExpenseHeadingSection>
 
       {isApplyLoanScreen ? (
-        <LoanApplicationScreen handleIsApplyLoanScreen={handleIsApplyLoanScreen} />
+        <LoanApplicationScreen
+          handleIsApplyLoanScreen={handleIsApplyLoanScreen}
+        />
       ) : (
         <>
           <LoanListView

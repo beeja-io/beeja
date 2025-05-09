@@ -13,6 +13,7 @@ import { PERMISSION_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
 import { useUser } from '../../context/UserContext';
 import { useTranslation } from 'react-i18next';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 
 interface UserRoleListActionProps {
   onEdit: () => void;
@@ -44,7 +45,6 @@ const UserRoleListAction: React.FC<UserRoleListActionProps> = ({
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDocumentClick = (e: any) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
       setIsOpen(false);
@@ -58,6 +58,9 @@ const UserRoleListAction: React.FC<UserRoleListActionProps> = ({
       document.removeEventListener('click', handleClickOutside);
     };
   }, []);
+  useKeyPress(27, () => {
+    setDeleteConfirmModal(false);
+  });
 
   return (
     <>
@@ -104,6 +107,7 @@ const UserRoleListAction: React.FC<UserRoleListActionProps> = ({
           <>
             <span style={{ cursor: 'default' }}>
               <CenterModal
+                handleModalLeftButtonClick={() => setDeleteConfirmModal(false)}
                 handleModalClose={() => setDeleteConfirmModal(false)}
                 handleModalSubmit={onDelete}
                 modalHeading="DELETE"
