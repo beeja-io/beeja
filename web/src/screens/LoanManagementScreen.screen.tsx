@@ -22,9 +22,10 @@ const LoanManagementScreen = () => {
 
   const [isApplyLoanScreen, setIsApplyLoanScreen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
   const [totalApplicants, setTotalApplicants] = useState(0);
-  const [loanList, setLoanList] = useState([]);
+  const [loansList, setLoansList] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const goToPreviousPage = () => {
@@ -41,30 +42,37 @@ const LoanManagementScreen = () => {
       setIsApplyLoanScreen(true);
   });
 
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setItemsPerPage(newPageSize);
+    setCurrentPage(1);
+  };
+
   const fetchLoanData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getAllLoans();
-      const loans = res.data.loans || [];
-      const total = loans.length;
+      const queryString = `?pageNumber=${currentPage}&pageSize=${itemsPerPage}`;
+      const res = await getAllLoans(queryString);
 
-      const startIndex = (currentPage - 1) * pageSize;
-      const paginatedLoans = loans
-        .slice(startIndex, startIndex + pageSize)
-        .reverse();
-
-      setLoanList(paginatedLoans);
-      setTotalApplicants(total);
-      setLoading(false);
+      setTotalItems(Number(res.data.totalRecords || 0));
+      const loans = res.data.loansList;
+      setLoansList(res.data.loansList);
+      setTotalApplicants(res.data.totalSize || loans.length);
+      console.log(loansList);
     } catch (error) {
       console.error('Error fetching loan data:', error);
+    } finally {
       setLoading(false);
     }
-  }, [currentPage, pageSize]);
+  }, [currentPage, itemsPerPage]);
 
   useEffect(() => {
     fetchLoanData();
   }, [fetchLoanData]);
+  
 
   return (
     <ExpenseManagementMainContainer>
@@ -78,29 +86,25 @@ const LoanManagementScreen = () => {
       </ExpenseHeadingSection>
 
       {isApplyLoanScreen ? (
-        <LoanApplicationScreen
-          handleIsApplyLoanScreen={handleIsApplyLoanScreen}
-        />
+        <LoanApplicationScreen handleIsApplyLoanScreen={handleIsApplyLoanScreen} />
       ) : (
         <>
           <LoanListView
             handleIsApplyLoanScreen={handleIsApplyLoanScreen}
             currentPage={currentPage}
             totalApplicants={totalApplicants}
-            pageSize={pageSize}
             setCurrentPage={setCurrentPage}
-            setPageSize={setPageSize}
             setTotalApplicants={setTotalApplicants}
-            loanList={loanList}
+            loansList={loansList}
             loading={loading}
           />
           <Pagination
             currentPage={currentPage}
-            totalPages={Math.ceil(totalApplicants / pageSize)}
-            handlePageChange={setCurrentPage}
-            totalItems={totalApplicants}
-            handleItemsPerPage={setPageSize}
-            itemsPerPage={pageSize}
+            totalPages={Math.ceil(totalItems / itemsPerPage)}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            handleItemsPerPage={handlePageSizeChange}
+            totalItems={totalItems}
           />
         </>
       )}
