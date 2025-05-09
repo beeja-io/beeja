@@ -131,7 +131,8 @@ export const NavBarContainer = styled.section`
   }
   .nav_Link {
     color: ${(props) => props.theme.colors.blackColors.black1};
-    font-size: 14px;
+    // font-size: 14px;
+    font-size: var(--font-size-primary);
   }
   /* Width for right side container/space */
   &.sidebar.open ~ .home-section {
@@ -470,6 +471,8 @@ export const TopNavRightIcons = styled.span`
   .language select {
     border: none;
     outline: none;
+    color: ${(props) => props.theme.colors.blackColors.black1};
+    background-color: ${(props) => props.theme.colors.blackColors.white6};
   }
 `;
 export const ThemeContainer = styled.div`

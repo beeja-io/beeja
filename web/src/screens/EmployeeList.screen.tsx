@@ -41,6 +41,7 @@ import {
   getEmployeesCount,
   downloadEmployeeFile,
   getOrganizationValuesByKey,
+  fetchEmployeeDetailsByEmployeeId,
 } from '../service/axiosInstance';
 import { ApplicationContext } from '../context/ApplicationContext';
 import { EMPLOYEE_MODULE } from '../constants/PermissionConstants';
@@ -114,42 +115,33 @@ const EmployeeList = () => {
   const [employeeImages, setEmployeeImages] = useState<Map<string, string>>(
     new Map()
   );
-
+  const [employeesWithProfilePictures, setEmployeesWithProfilePictures] = useState<Set<string>>(new Set());
   const fetchEmployeeImages = async () => {
     const imageUrls = new Map<string, string>();
+    const hasProfilePicture = new Set<string>();
 
     if (finalEmpList) {
       const promises = finalEmpList.map(async (emp) => {
-        const profilePictureId = emp.employee.profilePictureId;
-
+        const employeeId = emp.employee.employeeId;
+        const response = await fetchEmployeeDetailsByEmployeeId(employeeId);
+        const profilePictureId = response.data.employee.profilePictureId;
         if (profilePictureId) {
           try {
-            const response = await downloadEmployeeFile(profilePictureId);
-
-            if (!response.data || response.data.size === 0) {
-              throw new Error('Received empty or invalid blob data');
-            }
-
-            return new Promise<void>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const imageUrl = reader.result as string;
-                imageUrls.set(emp.employee.employeeId, imageUrl);
-                resolve();
-              };
-              reader.onerror = () => {
-                reject(new Error('Error converting blob to base64'));
-              };
-              reader.readAsDataURL(response.data);
-            });
+            const fileResponse = await downloadEmployeeFile(profilePictureId);
+            const imageUrl = URL.createObjectURL(fileResponse.data);
+            imageUrls.set(employeeId, imageUrl);
+            hasProfilePicture.add(employeeId);
           } catch (error) {
-            throw new Error('Error fetching profile image:');
+            console.error(`Error fetching profile image for employee ${employeeId}:`, error);
+            imageUrls.set(employeeId, '');
           }
+        } else {
+          imageUrls.set(employeeId, '');
         }
       });
       await Promise.all(promises);
-
       setEmployeeImages(new Map(imageUrls));
+      setEmployeesWithProfilePictures(hasProfilePicture);
     }
   };
 
@@ -170,7 +162,7 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('employmentTypes');
       setEmployeeTypes(response.data);
-    } catch (error) {
+    } catch {
       setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES'));
     }
   };
@@ -179,7 +171,7 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('departments');
       setDepartmentOptions(response.data);
-    } catch (error) {
+    } catch {
       setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
     }
   };
@@ -188,7 +180,7 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('jobTitles');
       setJobTitles(response.data);
-    } catch (error) {
+    } catch {
       setError(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
     }
   };
@@ -218,11 +210,11 @@ const EmployeeList = () => {
       setTotalItems(response.data.totalSize);
       updateEmployeeList(allEmployees);
       if (!allEmployees || allEmployees.length === 0) {
-        setError(t("NO_EMPLYEES_FOUND"));
+        setError(t('NO_EMPLYEES_FOUND'));
       } else {
         setError(null);
       }
-    } catch (error) {
+    } catch {
       setError(t('ERROR_WHILE_FETCHING_EMPLOYEES'));
     } finally {
       setLoadingData(false);
@@ -235,6 +227,7 @@ const EmployeeList = () => {
     JobTitleFilter,
     EmployeeStatusFilter,
     updateEmployeeList,
+    t,
   ]);
 
   const fetchEmployeeCount = async () => {
@@ -248,6 +241,7 @@ const EmployeeList = () => {
 
   useEffect(() => {
     fetchEmployeeCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -279,7 +273,17 @@ const EmployeeList = () => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
   };
+  useEffect(() => {
+    if (isCreateEmployeeModelOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
 
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCreateEmployeeModelOpen]);
   return (
     <DynamicSpace>
       <EmployeeListContainer>
@@ -356,7 +360,7 @@ const EmployeeList = () => {
           </EmployeeListFilterSection> */}
 
           <FilterSection>
-            {departmentOptions &&
+            {departmentOptions && (
               <select
                 className="selectoption"
                 name="EmployeeDepartment"
@@ -372,8 +376,9 @@ const EmployeeList = () => {
                     {t(department.value)}
                   </option>
                 ))}
-              </select>}
-            {jobTitles &&
+              </select>
+            )}
+            {jobTitles && (
               <select
                 className="selectoption"
                 name="JobTitle"
@@ -389,9 +394,10 @@ const EmployeeList = () => {
                     {t(jobTitle.value)}
                   </option>
                 ))}
-              </select>}
+              </select>
+            )}
 
-            {employeeTypes &&
+            {employeeTypes && (
               <select
                 className="selectoption"
                 name="EmployementType"
@@ -403,12 +409,15 @@ const EmployeeList = () => {
               >
                 <option value="">Employement Type</option>
                 {employeeTypes?.values.map((employementType) => (
-                  <option key={employementType.value} value={employementType.value}>
+                  <option
+                    key={employementType.value}
+                    value={employementType.value}
+                  >
                     {t(employementType.value)}
                   </option>
                 ))}
               </select>
-            }
+            )}
 
             {user &&
               (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
@@ -428,9 +437,9 @@ const EmployeeList = () => {
                     setCurrentPage(1);
                   }}
                 >
-                  <option value="">Status</option>{" "}
-                  <option value="Active">{t("ACTIVE")}</option>
-                  <option value="Inactive">{t("INACTIVE")}</option>
+                  <option value="">Status</option>{' '}
+                  <option value="Active">{t('ACTIVE')}</option>
+                  <option value="Inactive">{t('INACTIVE')}</option>
                 </select>
               )}
           </FilterSection>
@@ -479,7 +488,7 @@ const EmployeeList = () => {
                         }
                       >
                         <td className="profilePicArea">
-                          {employeeImages.has(emp.employee.employeeId) ? (
+                          {employeesWithProfilePictures.has(emp.employee.employeeId) ? (
                             <Monogram
                               className="initials"
                               style={{
@@ -503,12 +512,12 @@ const EmployeeList = () => {
                           <span className="nameAndMail">
                             <span>
                               {emp.account.firstName === null &&
-                                emp.account.lastName === null
+                              emp.account.lastName === null
                                 ? // FIXME
-                                't.a.cer'
+                                  't.a.cer'
                                 : emp.account.firstName +
-                                ' ' +
-                                emp.account.lastName}
+                                  ' ' +
+                                  emp.account.lastName}
                             </span>
                             <span className="employeeMail">
                               {emp.account.email}
@@ -522,7 +531,7 @@ const EmployeeList = () => {
                         </td>
                         <td>
                           {emp.employee.jobDetails &&
-                            emp.employee.jobDetails.employementType
+                          emp.employee.jobDetails.employementType
                             ? emp.employee.jobDetails.employementType
                             : '-'}
                         </td>
@@ -555,7 +564,7 @@ const EmployeeList = () => {
         {isCreateEmployeeModelOpen && departmentOptions && (
           <SideModal
             handleClose={
-              isResponseLoading ? () => { } : handleIsCreateEmployeeModal
+              isResponseLoading ? () => {} : handleIsCreateEmployeeModal
             }
             isModalOpen={isCreateEmployeeModelOpen}
             innerContainerContent={
@@ -638,7 +647,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCreateEmployee = async (e: any) => {
     e.preventDefault();
     const newErrors = {

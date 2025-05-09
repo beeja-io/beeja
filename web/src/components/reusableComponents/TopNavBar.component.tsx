@@ -1,14 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import {
-  SearchBox,
-  SearchInput,
-  TopNavBar,
-  TopNavRightIcons,
-} from '../../styles/NavBarStyles.style';
+import { TopNavBar, TopNavRightIcons } from '../../styles/NavBarStyles.style';
 import {
   NotificationSVG,
   LogoutSVG,
-  SearchSVG,
   LanguageIcon,
 } from '../../svgs/NavBarSvgs.svg';
 import {
@@ -101,12 +95,12 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
         {isMenuExpanded && <MobileNavbar handleIsOpen={handleIsMenuExpanded} />}
       </span>
       <span className="mainTopNav">
-        <SearchBox className="search">
+        {/*} <SearchBox className="search">
           <span className="span">
             <SearchSVG />
             <SearchInput placeholder={t('Search anything...')} />
           </span>
-        </SearchBox>
+        </SearchBox>*/}
         <span className="topNavLinks">
           <span>{t('DOCUMENTS')}</span>
           <span>{t('PAYSLIPS')}</span>
@@ -150,6 +144,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
       </TopNavRightIcons>
       {isLogoutModalOpen && (
         <CenterModal
+          handleModalLeftButtonClick={handleIsLogoutModalOpen}
           handleModalClose={handleIsLogoutModalOpen}
           handleModalSubmit={handleLogout}
           modalHeading="LOGOUT"
