@@ -37,14 +37,27 @@ const Pagination = ({
       return pageNumbers;
     }
 
-    pageNumbers.push(1); 
+    pageNumbers.push(1);
 
     if (currentPage <= 3) {
       pageNumbers.push(2, 3, 4, '...', totalPages);
     } else if (currentPage >= totalPages - 2) {
-      pageNumbers.push('...', totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+      pageNumbers.push(
+        '...',
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages
+      );
     } else {
-      pageNumbers.push('...', currentPage - 1, currentPage, currentPage + 1, '...', totalPages);
+      pageNumbers.push(
+        '...',
+        currentPage - 1,
+        currentPage,
+        currentPage + 1,
+        '...',
+        totalPages
+      );
     }
 
     return pageNumbers;
@@ -89,14 +102,18 @@ const Pagination = ({
               key={index}
               className={currentPage === page ? 'active' : ''}
             >
-              <PaginationButton onClick={() => handlePageChange(page as number)}>
+              <PaginationButton
+                onClick={() => handlePageChange(page as number)}
+              >
                 {page}
               </PaginationButton>
             </PaginationItem>
           );
         })}
 
-        <PaginationItem className={currentPage === totalPages ? 'disabled' : ''}>
+        <PaginationItem
+          className={currentPage === totalPages ? 'disabled' : ''}
+        >
           <PaginationButton
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}

@@ -7,15 +7,15 @@ interface AppContextType {
   updateEmployeeList: (
     employeeList: EmployeeEntity[] | null | undefined
   ) => void;
-  loanList: Loan[] | null | undefined;
-  updateLoanList: (loanList: Loan[] | null | undefined) => void;
+  loansList: Loan[] | null | undefined;
+  updateLoansList: (loansList: Loan[] | null | undefined) => void;
 }
 
 export const ApplicationContext = createContext<AppContextType>({
   employeeList: null,
   updateEmployeeList: () => {},
-  loanList: null,
-  updateLoanList: () => {},
+  loansList: null,
+  updateLoansList: () => {},
 });
 
 export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({
@@ -31,15 +31,15 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({
     },
     []
   );
-  const [loanList, setLoanList] = useState<Loan[] | null | undefined>(null);
+  const [loansList, setLoanList] = useState<Loan[] | null | undefined>(null);
 
-  const updateLoanList = (loanList: Loan[] | null | undefined) => {
+  const updateLoansList = (loanList: Loan[] | null | undefined) => {
     setLoanList(loanList);
   };
 
   return (
     <ApplicationContext.Provider
-      value={{ employeeList, updateEmployeeList, loanList, updateLoanList }}
+      value={{ employeeList, updateEmployeeList, loansList, updateLoansList }}
     >
       {children}
     </ApplicationContext.Provider>

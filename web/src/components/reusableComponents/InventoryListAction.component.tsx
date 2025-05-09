@@ -105,9 +105,9 @@ export const InventoryListAction: React.FC<ActionProps> = ({
     user &&
     (hasPermission(user, INVENTORY_MODULE.DELETE_DEVICE) ||
       hasPermission(user, INVENTORY_MODULE.UPDATE_DEVICE));
-      useKeyPress(27, () => {
-        setConfirmDeleteModal(false);
-       });
+  useKeyPress(27, () => {
+    setConfirmDeleteModal(false);
+  });
   return (
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
