@@ -44,7 +44,7 @@ public class ClientController {
      * @throws Exception If an error occurs while updating the client.
      */
     @PutMapping("/{clientId}")
-    public ResponseEntity<Client> updateClientOfOrganization(@RequestBody ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
+    public ResponseEntity<Client> updateClientOfOrganization(ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
         Client client = clientService.updateClientOfOrganization(clientRequest, clientId);
         return new ResponseEntity<>(client, HttpStatus.OK);
     }

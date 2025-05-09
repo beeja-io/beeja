@@ -112,10 +112,17 @@ public class GlobalControllerAdvice {
   }
 
   @ExceptionHandler(Exception.class)
-  public ResponseEntity<String> handleException(
-          Exception ex) {
-    log.error(Constants.INTERNAL_SERVER_ERROR, ex.getMessage());
-    return new ResponseEntity<>(Constants.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+  public ResponseEntity<ErrorResponse> handleException(
+          Exception ex, HttpServletRequest request) {
+    String path = request.getRequestURI();
 
+    ErrorResponse errorResponse = BuildErrorMessage.buildErrorMessage(
+            ErrorType.INTERNAL_ERROR,
+            ErrorCode.INTERNAL_SERVER_ERROR,
+            ex.getMessage()
+    );
+    errorResponse.setPath(path);
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 }

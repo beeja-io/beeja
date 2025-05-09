@@ -2,20 +2,30 @@ package com.beeja.api.projectmanagement.serviceImpl;
 
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
+import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
+import com.beeja.api.projectmanagement.exceptions.ValidationException;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.request.ClientRequest;
+import com.beeja.api.projectmanagement.request.FileUploadRequest;
+import com.beeja.api.projectmanagement.responses.ErrorResponse;
 import com.beeja.api.projectmanagement.service.ClientService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
+import com.beeja.api.projectmanagement.config.LogoValidator;
+import com.beeja.api.projectmanagement.client.FileClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+
+import static com.beeja.api.projectmanagement.utils.Constants.ERROR_IN_LOGO_UPLOAD;
 
 /**
  * Implementation of the {@link ClientService} interface.
@@ -29,6 +39,13 @@ public class ClientServiceImpl implements ClientService {
 
     @Autowired
     ClientRepository clientRepository;
+
+    @Autowired
+    LogoValidator logoValidator;
+
+    @Autowired
+    FileClient fileClient;
+
 
     /**
      * Adds a new {@link Client} to the currently logged-in user's organization.
@@ -49,6 +66,14 @@ public class ClientServiceImpl implements ClientService {
                             Constants.CLIENT_FOUND_EMAIL
                     )
             );
+        }
+        if (client.getLogo() != null && !client.getLogo().isEmpty()) {
+            String contentType = client.getLogo().getContentType();
+            if (!logoValidator.getAllowedTypes().contains(contentType)) {
+                throw new ValidationException(
+                        new ErrorResponse(ErrorType.VALIDATION_ERROR, ErrorCode.VALIDATION_ERROR, Constants.FILE_NOT_ALLOWED, ""));
+
+            }
         }
         Client newClient = new Client();
         if(client.getClientName() != null) {
@@ -80,6 +105,16 @@ public class ClientServiceImpl implements ClientService {
         }
         if(client.getLogo() != null) {
             // TODO: Implement logo upload
+            FileUploadRequest fileUploadRequest = new FileUploadRequest(client.getLogo(), client.getLogo().getName(), client.getDescription(), Constants.FILE_TYPE_PROJECT, Constants.ENTITY_TYPE_CLIENT, Constants.ENTITY_TYPE_CLIENT);
+            try {
+                ResponseEntity<?> response = fileClient.uploadFile(fileUploadRequest);
+                Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+                String logId = responseBody.get(Constants.ID).toString();
+                newClient.setLogoId(logId);
+            } catch (Exception e) {
+                log.error(ERROR_IN_LOGO_UPLOAD);
+                throw new FeignClientException(ERROR_IN_LOGO_UPLOAD);
+            }
         }
         newClient.setOrganizationId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
@@ -142,6 +177,31 @@ public class ClientServiceImpl implements ClientService {
         }
         if(clientRequest.getLogo() != null) {
 //            TODO: Implement logo upload
+            String contentType = clientRequest.getLogo().getContentType();
+            if (!logoValidator.getAllowedTypes().contains(contentType)) {
+                throw new ValidationException(
+                        new ErrorResponse(ErrorType.VALIDATION_ERROR,ErrorCode.VALIDATION_ERROR, Constants.FILE_NOT_ALLOWED,""));
+            }
+            if(clientRequest.getLogo() != null) {
+                String logoId = existingClient.getLogoId();
+                FileUploadRequest fileUploadRequest = new FileUploadRequest(clientRequest.getLogo(), clientRequest.getLogo().getName(), clientRequest.getDescription(), Constants.FILE_TYPE_PROJECT, Constants.ENTITY_TYPE_CLIENT, Constants.ENTITY_TYPE_CLIENT);
+                try {
+                    ResponseEntity<?> response;
+                    if (logoId != null && !logoId.isEmpty()) {
+                        response = fileClient.updateFile(logoId, fileUploadRequest);
+                    } else {
+                        response = fileClient.uploadFile(fileUploadRequest);
+                    }
+
+                    Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+                    String newLogoId = responseBody.get(Constants.ID).toString();
+                    existingClient.setLogoId(newLogoId);
+
+                } catch (Exception e) {
+                    log.error(ERROR_IN_LOGO_UPLOAD, e);
+                    throw new FeignClientException(ERROR_IN_LOGO_UPLOAD);
+                }
+            }
         }
         try {
             existingClient = clientRepository.save(existingClient);
