@@ -3,20 +3,31 @@ package com.beeja.api.apigateway.config.security.authenticationProviders;
 import com.beeja.api.apigateway.config.security.AuthenticationProvider;
 import com.beeja.api.apigateway.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler;
+import org.springframework.security.web.server.authentication.ServerAuthenticationSuccessHandler;
 
 @Configuration
 @Slf4j
 public class UsernamePasswordAuthProvider implements AuthenticationProvider {
 
-    @Autowired
-    private ServerAuthenticationFailureHandler authenticationFailureHandler;
+    private final ServerAuthenticationFailureHandler authenticationFailureHandler;
+    private final ServerAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    public UsernamePasswordAuthProvider(
+            ServerAuthenticationFailureHandler authenticationFailureHandler,
+            ServerAuthenticationSuccessHandler authenticationSuccessHandler) {
+        this.authenticationFailureHandler = authenticationFailureHandler;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        log.info("UsernamePasswordAuthProvider initialized with successHandler: {}, failureHandler: {}",
+                authenticationSuccessHandler, authenticationFailureHandler);
+    }
+
+
 
     @Override
     public void configure(ServerHttpSecurity serverHttpSecurity) {
@@ -41,7 +52,8 @@ public class UsernamePasswordAuthProvider implements AuthenticationProvider {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .formLogin(
                         formLoginSpec ->
-                                formLoginSpec.authenticationFailureHandler(authenticationFailureHandler));
+                                formLoginSpec.authenticationFailureHandler(authenticationFailureHandler)
+                                        .authenticationSuccessHandler(authenticationSuccessHandler));
     }
 
     public PasswordEncoder passwordEncoder() {
