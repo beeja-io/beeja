@@ -2,9 +2,6 @@ server:
   servlet:
     context-path: /projects
   port: ${PROJECTS_SERVICE_PORT}
-  multipart:
-    max-file-size: 10MB
-    max-request-size: 10MB
 spring:
   application:
     name: project-management
@@ -12,7 +9,10 @@ spring:
     mongodb:
       uri: ${MONGODB_URI}
       database: ${PROJECT_MONGODB_DATABASE}
-
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 10MB
 
 eureka:
   instance:
@@ -38,6 +38,12 @@ client-urls:
   accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
   fileService: ${FILE_SERVICE_BASE_URL}/files
 
+file:
+  allowed-types:
+    - image/jpeg
+    - image/jpg
+    - image/png
+    - image/webp
 
 jwt:
   secret: ${JWT_SECRET}

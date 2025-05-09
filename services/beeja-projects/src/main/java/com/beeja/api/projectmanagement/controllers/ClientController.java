@@ -48,7 +48,7 @@ public class ClientController {
      */
     @PutMapping("/{clientId}")
     @HasPermission(PermissionConstants.UPDATE_CLIENT)
-    public ResponseEntity<Client> updateClientOfOrganization(@RequestBody ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
+    public ResponseEntity<Client> updateClientOfOrganization(ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
         Client client = clientService.updateClientOfOrganization(clientRequest, clientId);
         return new ResponseEntity<>(client, HttpStatus.OK);
     }
