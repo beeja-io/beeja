@@ -38,6 +38,7 @@ public class Constants {
   public static final String ERROR_UPDATING_CLIENT = "Error while updating client in database";
   public static final String ERROR_IN_FETCHING_CLIENTS = "Error while fetching client from database";
   public static final String ERROR_FETCHING_CLIENTS = "%s with ID '%s' encountered a DB error.";
+    public static final String ERROR_IN_GENERATING_CLIENT_ID = "Error in generating clientId";
 
   // ========== Project Errors ==========
   public static final String PROJECT_NOT_FOUND = "Project not found with given projectId";
@@ -59,8 +60,9 @@ public class Constants {
   // ========== System Errors ==========
   public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
   public static final String DB_ERROR_IN_SAVING_DETAILS = "Failed to update client details: %s";
+  public static final String NO_PERMISSION = " You do not have permission to access this resource ";
 
-  // ========== Utility ==========
+    // ========== Utility ==========
   public static String format(String message, Object... args) {
     return String.format(message, args);
   }

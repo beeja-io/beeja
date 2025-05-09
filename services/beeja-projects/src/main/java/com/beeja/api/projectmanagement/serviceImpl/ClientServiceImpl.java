@@ -12,6 +12,7 @@ import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -80,6 +81,18 @@ public class ClientServiceImpl implements ClientService {
         }
         if(client.getLogo() != null) {
             // TODO: Implement logo upload
+        }
+
+        try {
+            long existingClientsCount = clientRepository.countByOrganizationId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+            if(existingClientsCount == 0){
+                newClient.setClientId(UserContext.getLoggedInUserOrganization().get("name").toString().substring(0,3).toUpperCase() + "1");
+            } else {
+                newClient.setClientId(UserContext.getLoggedInUserOrganization().get("name").toString().substring(0,3).toUpperCase() + (existingClientsCount + 1));
+            }
+        } catch (Exception e){
+            log.error(Constants.ERROR_IN_GENERATING_CLIENT_ID, e.getMessage());
+            throw new Exception(Constants.ERROR_IN_GENERATING_CLIENT_ID);
         }
         newClient.setOrganizationId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 

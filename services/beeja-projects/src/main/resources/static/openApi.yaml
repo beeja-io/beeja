@@ -1,0 +1,749 @@
+openapi: 3.0.1
+
+info:
+  title: Beeja Projects Management API
+  version: v1.0
+  description: |-
+    `Product of tech.at.core`
+    API documentation for the Beeja Projects Management Service. It allows users to manage
+    projects, clients, and contracts via APIs secured by JWT authentication.
+    
+    ## Workflow Notes:
+    1. First create Clients
+    2. Then create Projects (requires clientId)
+    3. Finally create Contracts (requires projectId)
+
+    ## Authentication & Authorization
+    Beeja uses JWT bearer token authentication.
+    [Login to Beeja](https://app.beeja.io/login) to obtain your access token.
+
+  contact:
+    name: Beeja API Support
+    email: api-support@beeja.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+
+servers:
+  - url: http://localhost:8000/projects/v1
+    description: Local development server
+  - url: /projects/v1
+    description: Relative path (works behind proxies)
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Clients
+    description: Manage organization clients
+  - name: Contracts
+    description: Manage project contracts
+  - name: Projects
+    description: Manage organization projects
+  - name: HelloWorld
+    description: Simple greeting endpoint
+
+paths:
+  /clients:
+    get:
+      tags:
+        - Clients
+      summary: Get all clients
+      operationId: getAllClients
+      responses:
+        200:
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [Clients]
+      summary: Add a new client
+      operationId: addClientToOrganization
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+      responses:
+        201:
+          description: Client created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        409:
+          description: Client with this name already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                duplicateName:
+                  value:
+                    failureReason: CONFLICT
+                    message: Client name must be unique
+                    details:
+                      field: clientName
+                      rejectedValue: "Acme Corp"
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /clients/{clientId}:
+    get:
+      tags:
+        - Clients
+      summary: Get client by ID
+      operationId: getClientById
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Client found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Clients
+      summary: Update client details
+      operationId: updateClient
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientRequest'
+      responses:
+        200:
+          description: Client updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /contracts:
+    post:
+      tags: [Contracts]
+      summary: Create a new contract (requires existing project)
+      description: |-
+        ### Important:
+        1. First create a project via `/projects` endpoint
+        2. Use the returned `projectId` here
+        3. `clientId` will be auto-filled from the project
+      operationId: createContract
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRequest'
+      responses:
+        201:
+          description: Contract created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              examples:
+                invalidProject:
+                  value:
+                    failureReason: BAD_REQUEST
+                    message: The specified project does not exist
+                    details:
+                      field: projectId
+                      rejectedValue: "invalid-project-id"
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /contracts/{contractId}:
+    get:
+      tags:
+        - Contracts
+      summary: Get contract by ID
+      operationId: getContractById
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Contract found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    put:
+      tags:
+        - Contracts
+      summary: Update contract
+      operationId: updateContract
+      parameters:
+        - name: contractId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRequest'
+      responses:
+        200:
+          description: Contract updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /contracts/project/{projectId}:
+    get:
+      tags:
+        - Contracts
+      summary: Get contracts by project
+      operationId: getContractsByProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: List of contracts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contract'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects:
+    get:
+      tags:
+        - Projects
+      summary: Get all projects
+      operationId: getAllProjects
+      responses:
+        200:
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      tags: [Projects]
+      summary: Create a new project (must be done before creating contracts)
+      description: |-
+        ### Prerequisites:
+        - Must have an existing client
+        - clientId must be valid
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        201:
+          description: Project created successfully
+          headers:
+            Location:
+              description: URL of the created project
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        400:
+          description: Invalid client reference
+          content:
+            application/json:
+              examples:
+                invalidClient:
+                  value:
+                    failureReason: BAD_REQUEST
+                    message: The specified client does not exist
+                    details:
+                      field: clientId
+                      rejectedValue: "invalid-client-id"
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}/{clientId}:
+    get:
+      tags:
+        - Projects
+      summary: Get project by ID and client ID
+      operationId: getProjectByIdAndClientId
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Project found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/client/{clientId}:
+    get:
+      tags:
+        - Projects
+      summary: Get projects by client ID
+      operationId: getProjectsByClientId
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /projects/{projectId}:
+    put:
+      tags:
+        - Projects
+      summary: Update project
+      operationId: updateProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+      responses:
+        200:
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /:
+    get:
+      tags:
+        - HelloWorld
+      summary: Get greeting
+      operationId: helloWorld
+      responses:
+        200:
+          description: Successful response
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Hello, John Doe"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  schemas:
+    Client:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "5f8d0d55b54764421b7156c3"
+        name:
+          type: string
+          example: "Acme Corporation"
+          minLength: 1
+          maxLength: 100
+          description: Must be unique across all clients
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-30T14:21:54.316Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-01-30T14:21:54.316Z"
+
+    ClientRequest:
+      type: object
+      required:
+        - clientName
+        - clientType
+      properties:
+        clientName:
+          type: string
+          minLength: 2
+          maxLength: 100
+          example: "Acme Corporation"
+          description: Must be unique across all clients
+        clientType:
+          type: string
+          enum: [ INDIVIDUAL, BUSINESS, GOVERNMENT ]
+          example: "BUSINESS"
+
+    Contract:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "5f8d0d55b54764421b7156c4"
+        projectId:
+          type: string
+          example: "5f8d0d55b54764421b7156c5"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-30T14:21:54.316Z"
+
+    ContractRequest:
+      type: object
+      required:
+        - projectId
+        - contractTitle
+        - contractValue
+      properties:
+        projectId:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+          description: Must reference an existing project
+        contractTitle:
+          type: string
+          minLength: 5
+          maxLength: 100
+          example: "Website Development Agreement"
+        contractValue:
+          type: number
+          minimum: 0
+          example: 15000.00
+
+
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          description: MongoDB generated ID
+          example: "5f8d0d55b54764421b7156c5"
+        projectId:
+          type: string
+          description: Business identifier for the project
+          example: "PROJ-2023-001"
+        clientId:
+          type: string
+          description: Required reference to existing client
+          example: "5f8d0d55b54764421b7156c3"
+        name:
+          type: string
+          example: "Website Redesign"
+        description:
+          type: string
+          nullable: true
+          example: "Complete website overhaul"
+        status:
+          type: string
+          enum: [ DRAFT, ACTIVE, COMPLETED, CANCELLED ]
+          example: "DRAFT"
+        startDate:
+          type: string
+          format: date
+          nullable: true
+          example: "2023-06-01"
+        endDate:
+          type: string
+          format: date
+          nullable: true
+          example: "2023-12-31"
+        organizationId:
+          type: string
+          description: Auto-populated from user context
+          example: "org_123"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-30T14:21:54.316Z"
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+
+    ProjectRequest:
+      type: object
+      required:
+        - name
+        - clientId
+      properties:
+        name:
+          type: string
+          example: "Website Redesign"
+          minLength: 1
+        clientId:
+          type: string
+          example: "5f8d0d55b54764421b7156c3"
+          description: Must reference an existing client
+
+    Error:
+      type: object
+      properties:
+        failureReason:
+          type: string
+          enum: [ CONFLICT, BAD_REQUEST, NOT_FOUND ]
+        type:
+          type: string
+          example: "validation_error"
+        code:
+          type: string
+          example: "BAD_REQUEST"
+        message:
+          type: string
+          example: "Invalid request parameters"
+        details:
+          type: object
+          example:
+            field: "name"
+            message: "must not be blank"
+
+  responses:
+    Unauthorized:
+      description: Missing or invalid authentication
+      content:
+        application/json:
+          example:
+            failureReason: UNAUTHORIZED
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Resource already exists
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            duplicateClient:
+              value:
+                failureReason: CONFLICT
+                message: "Client with name 'Acme' already exists"
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          example:
+            failureReason: FORBIDDEN
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          example:
+            failureReason: NOT_FOUND
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Server error
+      content:
+        application/json:
+          example:
+            failureReason: INTERNAL_SERVER_ERROR
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

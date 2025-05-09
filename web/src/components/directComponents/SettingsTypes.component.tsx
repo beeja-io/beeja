@@ -27,6 +27,7 @@ import { OrgValues } from '../../entities/OrgDefaultsEntity';
 import { useUser } from '../../context/UserContext';
 import { useTranslation } from 'react-i18next';
 import { AlertISVG } from '../../svgs/CommonSvgs.svs';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 
 export const SettingsTypes = ({
   keyvalue,
@@ -189,6 +190,9 @@ export const SettingsTypes = ({
       });
     }
   };
+    useKeyPress(27, () => {
+     setConfirmDeleteModal(false);
+    });
 
   return (
     <TabContentMainContainer>

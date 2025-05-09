@@ -17,6 +17,7 @@ import { useUser } from '../../context/UserContext';
 import { INVENTORY_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 
 interface ActionProps {
   options: {
@@ -104,7 +105,9 @@ export const InventoryListAction: React.FC<ActionProps> = ({
     user &&
     (hasPermission(user, INVENTORY_MODULE.DELETE_DEVICE) ||
       hasPermission(user, INVENTORY_MODULE.UPDATE_DEVICE));
-
+      useKeyPress(27, () => {
+        setConfirmDeleteModal(false);
+       });
   return (
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>

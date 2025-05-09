@@ -15,6 +15,7 @@ import CenterModalMain from './CenterModalMain.component';
 import AddExpenseForm from '../directComponents/AddExpenseForm.component';
 import CenterModal from './CenterModal.component';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 
 interface ActionProps {
   options: {
@@ -102,7 +103,9 @@ export const ExpenseAction: React.FC<ActionProps> = ({
   };
 
   window.addEventListener('click', handleDocumentClick);
-
+  useKeyPress(27, () => {
+   setConfirmDeleteModal(false);
+  });
   return (
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
