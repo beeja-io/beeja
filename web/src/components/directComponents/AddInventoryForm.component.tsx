@@ -15,9 +15,7 @@ import SpinAnimation from '../loaders/SprinAnimation.loader';
 import axios from 'axios';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
-import {
-  Availability
-} from '../reusableComponents/InventoryEnums.component';
+import { Availability } from '../reusableComponents/InventoryEnums.component';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
 import { useTranslation } from 'react-i18next';
 
@@ -158,12 +156,12 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="">{t("SELECT_ACCESSORY_TYPE")}</option>
-                  <option value="Keyboard">{t("KEYBOARD")}</option>
-                  <option value="Cable">{t("CABLE")}</option>
-                  <option value="Headset">{t("HEADSET")}</option>
-                  <option value="Mouse">{t("MOUSE")}</option>
-                  <option value="USB_sticks">{t("USB_STICKS")}</option>
+                  <option value="">{t('SELECT_ACCESSORY_TYPE')}</option>
+                  <option value="Keyboard">{t('KEYBOARD')}</option>
+                  <option value="Cable">{t('CABLE')}</option>
+                  <option value="Headset">{t('HEADSET')}</option>
+                  <option value="Mouse">{t('MOUSE')}</option>
+                  <option value="USB_sticks">{t('USB_STICKS')}</option>
                 </select>
               </InputLabelContainer>
             )}
@@ -253,7 +251,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                       }}
                       selectedDate={dateOfPurchase}
                       maxDate={new Date()}
-                      handleCalenderChange={() => { }}
+                      handleCalenderChange={() => {}}
                     />
                   )}
                 </div>
@@ -304,7 +302,10 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
               >
                 <option value="">{t('SELECT_INVENTORY_PROVIDER')}</option>
                 {props.inventoryProviders.values?.map((inventoryProvider) => (
-                  <option key={inventoryProvider.value} value={inventoryProvider.value}>
+                  <option
+                    key={inventoryProvider.value}
+                    value={inventoryProvider.value}
+                  >
                     {inventoryProvider.value}
                   </option>
                 ))}
@@ -353,7 +354,6 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                     formData.device === 'Tablet'
                   )
                 }
-
                 required={
                   ![
                     'Printer',

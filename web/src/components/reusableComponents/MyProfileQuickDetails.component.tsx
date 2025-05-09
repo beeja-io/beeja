@@ -47,6 +47,8 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { toast } from 'sonner';
 import { useProfileImage } from '../../context/ProfileImageContext';
 import { LargeSVG, SmallSVG } from '../../svgs/profilePictureSvgs.svg';
+import { useTranslation } from 'react-i18next';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 
 type QuickProfileProps = {
   employee: EmployeeEntity | undefined;
@@ -72,7 +74,7 @@ const MyProfileQuickDetailsComponent = ({
     null
   );
   const [isMonogramModalOpen, setIsMonogramModalOpen] = useState(false);
-  const [isUploadOpen, setIsUploadOpen] = useState(false);
+  const [isUploadOpen, setIsUploadOpen] = useState<boolean>(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [scale, setScale] = useState(1.5);
   const [offsetX, setOffsetX] = useState(0);
@@ -85,6 +87,7 @@ const MyProfileQuickDetailsComponent = ({
   const [croppedImage] = useState<string | null>(null);
   const { employeeList, updateEmployeeList } = useContext(ApplicationContext);
   const { profileImageUrl, setProfileImageUrl } = useProfileImage();
+  const { t } = useTranslation();
 
   const fetchRoles = async () => {
     const response = await getAllRolesInOrganization();
@@ -103,7 +106,7 @@ const MyProfileQuickDetailsComponent = ({
         (await updateEmployeeStatusByEmployeeId(employee.account.employeeId));
       fetchEmployeeAgain();
       handleIsActiveModalOpen();
-    } catch (error) {
+    } catch {
       setIsLoadingResponse(false);
     } finally {
       setIsLoadingResponse(false);
@@ -113,10 +116,7 @@ const MyProfileQuickDetailsComponent = ({
     setIsLoadingResponse(true);
     try {
       employee &&
-        (await updateEmployeeRole(
-          employee.account.employeeId,
-          roles
-        ));
+        (await updateEmployeeRole(employee.account.employeeId, roles));
 
       setAddRoleButtonText('Add Role');
       setDeleteRoleButtonText('Delete Role');
@@ -250,8 +250,14 @@ const MyProfileQuickDetailsComponent = ({
   };
 
   const handleSaveAndUpload = async () => {
-    uploadCroppedImage();
-    await handleModalClose();
+    const toastId = toast.loading(t('UPDATING_PROFILE_HAS_PICTURE'));
+    try {
+      await uploadCroppedImage();
+      toast.success(t('PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED'), { id: toastId });
+      handleModalClose();
+    } catch (error) {
+      toast.error(t('FAILED_TO_UPDATE_PROFILE_PICTURE'), { id: toastId });
+    }
   };
 
   const handleMouseDown = (event: React.MouseEvent) => {
@@ -402,6 +408,9 @@ const MyProfileQuickDetailsComponent = ({
     };
   }, [employee && employee.employee.id]);
   /* eslint-enable react-hooks/exhaustive-deps */
+  useKeyPress(27, () => {
+    setIsActiveModalOpen(false);
+  });
 
   return (
     <>
@@ -682,12 +691,12 @@ const MyProfileQuickDetailsComponent = ({
                     : '-'}
                 </span>
               </div>
-              <div title="Feature Not Available">
+              {/*<div title="Feature Not Available">
                 {user &&
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES)
                   ? '>'
                   : null}
-              </div>
+              </div> */}
             </QuickInfoDepartmentContainer>
 
             {employee &&
@@ -767,6 +776,7 @@ const MyProfileQuickDetailsComponent = ({
           modalContent={`Are you sure to want to ${
             !employee.account.active ? 'active' : 'inactive'
           } '${employee.account.firstName}'`}
+          handleModalLeftButtonClick={handleIsActiveModalOpen}
           handleModalClose={handleIsActiveModalOpen}
           handleModalSubmit={handleStatusChange}
           isResponseLoading={isLoadingResponseINTERNAL || isLoadingResponse}

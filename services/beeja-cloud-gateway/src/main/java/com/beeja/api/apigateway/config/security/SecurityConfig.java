@@ -6,7 +6,10 @@ import com.beeja.api.apigateway.config.security.properties.AuthProperties;
 import java.time.Duration;
 import java.util.List;
 import java.util.ServiceLoader;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import com.beeja.api.apigateway.config.security.properties.SkipGatewayFilterRoutesProperty;
 import com.beeja.api.apigateway.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,8 @@ import reactor.core.publisher.Mono;
 public class SecurityConfig {
 
   @Autowired AuthProperties authProperties;
+
+  @Autowired private SkipGatewayFilterRoutesProperty skipGatewayFilterRoutesProperty;
 
 
   @Autowired private ServerAuthenticationFailureHandler authenticationFailureHandler;
@@ -132,6 +137,17 @@ public class SecurityConfig {
   }
 
   @Bean
+  @Order(1)
+  public SecurityWebFilterChain publicPostSecurity(ServerHttpSecurity httpSecurity) {
+    httpSecurity
+            .securityMatcher(pathMatchers(HttpMethod.POST, skipGatewayFilterRoutesProperty.getRoutes()))
+            .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.anyExchange().permitAll())
+            .csrf(ServerHttpSecurity.CsrfSpec::disable);
+    return httpSecurity.build();
+  }
+
+  @Bean
+  @Order(2)
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
     serverHttpSecurity.exceptionHandling(
             exceptionHandlingSpec ->
@@ -158,12 +174,17 @@ public class SecurityConfig {
 
   @Bean
   public CorsWebFilter corsWebFilter() throws Exception {
-    if(authProperties.getFrontEndUrl() == null || authProperties.getLocalFrontEndUrl() == null){
+    if(authProperties.getFrontEndUrl() == null || authProperties.getUrls() == null){
       throw new Exception(Constants.ERROR_MISSING_FE_URLS);
     }
     CorsConfiguration corsConfig = new CorsConfiguration();
-    corsConfig.setAllowedOriginPatterns(List.of(authProperties.getFrontEndUrl(),
-            authProperties.getLocalFrontEndUrl()));
+    corsConfig.setAllowedOriginPatterns(
+            Stream.concat(
+                    Stream.of(authProperties.getFrontEndUrl()),
+                    authProperties.getUrls().stream()
+            ).collect(Collectors.toList())
+    );
+    log.info("Allowed URLs: {}", authProperties.getUrls());
     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     corsConfig.setAllowedHeaders(List.of("*"));
     corsConfig.setAllowCredentials(true);

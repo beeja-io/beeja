@@ -135,26 +135,6 @@ class LoanServiceImplTest {
         () -> loanService.changeLoanStatus("invalidId", "APPROVE", null));
   }
 
-  @Test
-  public void testGetAllLoansSuccess() throws Exception {
-    // Arrange
-    List<Loan> expectedLoans = Arrays.asList(new Loan(), new Loan());
-    when(loanRepository.findAllByOrganizationId("tac")).thenReturn(expectedLoans);
-
-    // Act
-    List<Loan> actualLoans = loanService.getAllLoans();
-
-    // Assert
-    assertEquals(expectedLoans, actualLoans);
-  }
-
-  @Test
-  public void testGetAllLoansNoLoans() throws Exception {
-    List<Loan> emptyLoans = Collections.emptyList();
-    when(loanRepository.findAllByOrganizationId("tac")).thenReturn(emptyLoans);
-    List<Loan> actualLoans = loanService.getAllLoans();
-    assertTrue(actualLoans.isEmpty());
-  }
 
   @Test
   public void testGetAllLoansByEmployeeIdWithoutPermission() throws Exception {

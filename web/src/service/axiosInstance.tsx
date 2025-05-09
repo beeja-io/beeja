@@ -72,7 +72,7 @@ export const updateEmployeeRole = (
   return axiosInstance.put(`/accounts/v1/users/roles/${employeeId}`, {
     roles,
   });
-}
+};
 
 export const createEmployee = (data: any): Promise<AxiosResponse> => {
   return axiosInstance.post('/accounts/v1/users', data);
@@ -237,20 +237,23 @@ export const statusChange = (
 export const getHealthInsuranceDetails = (
   employeeId: string
 ): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/finance/v1/health-insurance/${employeeId}`);
+  return axiosInstance.get(`/finance/v1/health-insurances/${employeeId}`);
 };
 
 export const updateHealthInsuranceDetails = (
   employeeId: string,
   data: any
 ): Promise<AxiosResponse> => {
-  return axiosInstance.put(`/finance/v1/health-insurance/${employeeId}`, data);
+  return axiosInstance.put(
+    `/finance/v1/health-insurances/employee/${employeeId}`,
+    data
+  );
 };
 
 export const postHealthInsuranceDetails = (
   data: any
 ): Promise<AxiosResponse> => {
-  return axiosInstance.post(`/finance/v1/health-insurance`, data);
+  return axiosInstance.post(`/finance/v1/health-insurances`, data);
 };
 
 export const postInventory = (data: any): Promise<AxiosResponse> => {
@@ -334,7 +337,7 @@ export const changeApplicationStatus = (
   return axiosInstance.put(
     `/recruitments/v1/applicants/${applicantId}/status/${status}`
   );
-}
+};
 export const referApplicant = (data: FormData): Promise<AxiosResponse> => {
   return axiosInstance.post('/recruitments/v1/referrals', data);
 };

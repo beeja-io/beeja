@@ -33,7 +33,7 @@ type ApplicantsListProps = {
 };
 const ApplicantsList = (props: ApplicantsListProps) => {
   const { user } = useUser();
-   const { t } = useTranslation();
+  const { t } = useTranslation();
   const Actions = [
     ...(user?.roles.some((role) =>
       role.permissions.some(
@@ -59,18 +59,21 @@ const ApplicantsList = (props: ApplicantsListProps) => {
       toast.promise(
         async () => {
           const response = await downloadApplicantResume(resumeId);
-          const contentDisposition = response.headers["content-disposition"];
-          let fileName = "resume_beeja.pdf";
+          const contentDisposition = response.headers['content-disposition'];
+          let fileName = 'resume_beeja.pdf';
 
           if (contentDisposition) {
-            const match = contentDisposition.match(/filename\*?=['"]?(?:UTF-8'')?([^;'\"]+)/);
+            const match = contentDisposition.match(
+              // eslint-disable-next-line no-useless-escape
+              /filename\*?=['"]?(?:UTF-8'')?([^;'\"]+)/
+            );
             if (match && match[1]) {
               fileName = decodeURIComponent(match[1]);
             }
           }
           const url = window.URL.createObjectURL(new Blob([response.data]));
 
-          const link = document.createElement("a");
+          const link = document.createElement('a');
           link.href = url;
           link.download = fileName;
           document.body.appendChild(link);
@@ -79,36 +82,34 @@ const ApplicantsList = (props: ApplicantsListProps) => {
           window.URL.revokeObjectURL(url);
         },
         {
-          loading: "Downloading...",
-          success: "Downloaded successfully",
-          error: "Failed to download file",
+          loading: 'Downloading...',
+          success: 'Downloaded successfully',
+          error: 'Failed to download file',
         }
-      )
+      );
     } catch (error) {
-      console.error("Download failed:", error);
-      toast.error("Failed to download file.");
+      toast.error('Failed to download file.');
     }
   };
-
 
   return (
     <ExpenseListSection>
       {props.isLoading ? (
         <div className="mainDiv">
           <div className="Expense_Heading">
-            <p className="expenseListTitle">{t("LIST_OF_APPLICANTS")}</p>
+            <p className="expenseListTitle">{t('LIST_OF_APPLICANTS')}</p>
           </div>
           <TableList>
             <TableHead>
               <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                <th>{t("ID")}</th>
-                <th>{t("NAME_OF_THE_APPLICANT")}</th>
-                <th>{t("POSITION")}</th>
-                <th>{t("Phone_Number")}</th>
-                <th>{t("REFERRED_BY")}</th>
-                <th>{t("STATUS")}</th>
-                <th>{t("REQUESTED_DATE")}</th>
-                <th>{t("ACTION")}</th>
+                <th>{t('ID')}</th>
+                <th>{t('NAME_OF_THE_APPLICANT')}</th>
+                <th>{t('POSITION')}</th>
+                <th>{t('Phone_Number')}</th>
+                <th>{t('REFERRED_BY')}</th>
+                <th>{t('STATUS')}</th>
+                <th>{t('REQUESTED_DATE')}</th>
+                <th>{t('ACTION')}</th>
               </tr>
             </TableHead>
             <tbody>
@@ -129,20 +130,24 @@ const ApplicantsList = (props: ApplicantsListProps) => {
       ) : props.allApplicants.length > 0 ? (
         <div className="mainDiv">
           <div className="Expense_Heading">
-            <p className="expenseListTitle">{props.isReferral ?  t("LIST_OF_REFERRALS"): t("LIST_OF_APPLICANTS")}</p>
+            <p className="expenseListTitle">
+              {props.isReferral
+                ? t('LIST_OF_REFERRALS')
+                : t('LIST_OF_APPLICANTS')}
+            </p>
           </div>
           <TableList>
             <TableHead>
               <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                <th>{t("ID")}</th>
-                <th>{t("NAME_OF_THE_APPLICANT")}</th>
-                <th>{t("POSITION")}</th>
-                <th>{t("Phone_Number")}</th>
-                {!props.isReferral && <th>{t("REFERRED_BY")}</th>}
-                <th style={{ textAlign: 'center' }}>{t("STATUS")}</th>
-                <th>{t("REQUESTED_DATE")}</th>
-                <th>{t("RESUME/CV")}</th>
-                {!props.isReferral && <th>{t("ACTION")}</th>}
+                <th>{t('ID')}</th>
+                <th>{t('NAME_OF_THE_APPLICANT')}</th>
+                <th>{t('POSITION')}</th>
+                <th>{t('Phone_Number')}</th>
+                {!props.isReferral && <th>{t('REFERRED_BY')}</th>}
+                <th style={{ textAlign: 'center' }}>{t('STATUS')}</th>
+                <th>{t('REQUESTED_DATE')}</th>
+                <th>{t('RESUME/CV')}</th>
+                {!props.isReferral && <th>{t('ACTION')}</th>}
               </tr>
             </TableHead>
             <tbody>
@@ -157,7 +162,11 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                       <td>{applicant.positionAppliedFor}</td>
                       <td>{applicant.phoneNumber}</td>
                       {!props.isReferral && (
-                        <td>{applicant.referredByEmployeeName ? applicant.referredByEmployeeName : '-'}</td>
+                        <td>
+                          {applicant.referredByEmployeeName
+                            ? applicant.referredByEmployeeName
+                            : '-'}
+                        </td>
                       )}
                       <td>
                         <StatusIndicator
@@ -190,12 +199,12 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                         </span>
                       </td>
                       {!props.isReferral &&
-                        user?.roles.some((role) =>
-                          role.permissions.some(
-                            (permission) =>
-                              permission === RECRUITMENT_MODULE.UPDATE_APPLICANT
-                          )
-                        ) ? (
+                      user?.roles.some((role) =>
+                        role.permissions.some(
+                          (permission) =>
+                            permission === RECRUITMENT_MODULE.UPDATE_APPLICANT
+                        )
+                      ) ? (
                         <td>
                           <ApplicantListActions
                             options={Actions}

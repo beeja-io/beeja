@@ -1,0 +1,8 @@
+{
+  "account_permissions": ["CEMP", "UEMP", "IEM", "REMP", "URAP", "GALEMP", "CORG","RORG","DORG","UORG","UALORG","RALORG","URORG","DRORG","CRORG", "RALFTG","UALFTG","RKYC","CLON","UPPS","UPPA","RDEV","UDEV","CDEV","DDEV","CHIN","RHIN","UHIN","DHIN","RLON"],
+  "employee_permissions" : ["CEMP", "REMP", "DELETE_ORGANIZATIONS","RCEMP", "UALEMP", "CDM", "RDM", "DDM", "UDM", "CALDOC", "RALDOC", "UALDOC", "DALDOC", "UF", "UPPS", "UPPA"],
+  "expense_permissions" : ["CEX", "REX", "UEX", "DEX"],
+  "finance_permissions" : ["CLON", "RLON", "ULON", "DLON", "SCLON", "CBPS", "REMP", "GALON", "CPAY","UPAY","RPAY","RDEV","UDEV","CDEV","DDEV","CHIN","RHIN","UHIN","DHIN"],
+  "recruitment_permissions" : ["CAPT", "GAAPT", "GENAPT", "RRSM", "UENTAP", "UAPL", "TINT", "DINT", "ACREF"],
+  "projects_permissions" : ["CCL", "UCL", "GCL", "DCL", "CCON", "UCON", "GCON", "DCON", "CPT", "UPT", "GPT", "DPT","CIN", "UIN", "GIN", "DIN", "USIN"]
+}
