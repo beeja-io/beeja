@@ -18,6 +18,7 @@ import com.beeja.api.projectmanagement.utils.UserContext;
 import com.beeja.api.projectmanagement.config.LogoValidator;
 import com.beeja.api.projectmanagement.client.FileClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -115,6 +116,18 @@ public class ClientServiceImpl implements ClientService {
                 log.error(ERROR_IN_LOGO_UPLOAD);
                 throw new FeignClientException(ERROR_IN_LOGO_UPLOAD);
             }
+        }
+
+        try {
+            long existingClientsCount = clientRepository.countByOrganizationId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+            if(existingClientsCount == 0){
+                newClient.setClientId(UserContext.getLoggedInUserOrganization().get("name").toString().substring(0,3).toUpperCase() + "1");
+            } else {
+                newClient.setClientId(UserContext.getLoggedInUserOrganization().get("name").toString().substring(0,3).toUpperCase() + (existingClientsCount + 1));
+            }
+        } catch (Exception e){
+            log.error(Constants.ERROR_IN_GENERATING_CLIENT_ID, e.getMessage());
+            throw new Exception(Constants.ERROR_IN_GENERATING_CLIENT_ID);
         }
         newClient.setOrganizationId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 

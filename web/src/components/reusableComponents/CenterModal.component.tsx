@@ -60,6 +60,9 @@ const CenterModal = (props: CenterModalProps) => {
         Width={props.modalWidth}
         isExpanded={props.isExpanded}
       >
+        <CloseButton onClick={props.handleModalClose}>
+              <CloseButtonSVG />
+        </CloseButton>
         {(props.isMonogramView ||
           props.isImageSelected ||
           props.isDashedBox) && (
@@ -67,10 +70,6 @@ const CenterModal = (props: CenterModalProps) => {
             <EditProfileText>
               {props.editText ? t(props.editText) : ''}
             </EditProfileText>
-
-            <CloseButton onClick={props.handleModalClose}>
-              <CloseButtonSVG />
-            </CloseButton>
           </>
         )}
         {!props.isMonogramView &&
