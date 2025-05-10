@@ -5,7 +5,7 @@ import {
 } from '../../styles/MyProfile.style';
 import { EmployeeEntity } from '../../entities/EmployeeEntity';
 import { useUser } from '../../context/UserContext';
-import { GeneralDetailsTab } from './MyProfileGeneralTabContent.component';
+import { GeneralDetailsTab } from './MyProfileGeneralTabContent2.component';
 import KycTabContent from './MyProfileKYCTabContent.component';
 import { DocumentTabContent } from './MyProfileDocumentTabContent.component';
 import DeductionsTab from '../directComponents/DeductionsTab.component';
