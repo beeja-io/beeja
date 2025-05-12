@@ -61,7 +61,7 @@ const CenterModal = (props: CenterModalProps) => {
         isExpanded={props.isExpanded}
       >
         <CloseButton onClick={props.handleModalClose}>
-              <CloseButtonSVG />
+          <CloseButtonSVG />
         </CloseButton>
         {(props.isMonogramView ||
           props.isImageSelected ||
