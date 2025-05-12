@@ -58,12 +58,11 @@ export const FilterSection = styled.div`
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23222' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: center;
-    
+
     /* Hide the Unicode arrow */
     color: transparent;
     font-size: 0;
   }
-  
 
   .multi-select-options {
     position: absolute;
@@ -71,7 +70,7 @@ export const FilterSection = styled.div`
     left: 0;
     right: 0;
     z-index: 1000;
-    background-color: white;
+    background-color: ${(props) => props.theme.colors.backgroundColors.primary};
     border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
     border-radius: 0 0 10px 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -86,9 +85,10 @@ export const FilterSection = styled.div`
     align-items: center;
     padding: 10px 20px;
     cursor: pointer;
+    color: ${(props) => props.theme.colors.blackColors.black1};
     &:hover {
-      background-color: grey;
-      color: white;
+      background-color: rgb(24, 127, 237);
+      color: ${(props) => props.theme.colors.blackColors.white};
     }
   }
 
@@ -147,6 +147,12 @@ export const DisplayFilters = styled.div`
     cursor: pointer;
     font-weight: 600;
     text-decoration-line: underline;
+  }
+  .noFilters {
+    font-size: 12px;
+    color: #687588;
+    font-weight: 600;
+    margin-left: 10px;
   }
 `;
 export const FilterStyle = styled.div`
@@ -369,5 +375,8 @@ export const ExpenseListSection = styled.section`
     border-radius: 16px;
     background: ${(props) => props.theme.colors.backgroundColors.primary};
     box-shadow: 0px 5px 40px 0px rgba(0, 0, 0, 0.1);
+    z-index: 1000; // Add this to ensure it appears above other elements
+    top: 100%; // Position it right below the date picker
+    left: 0;
   }
 `;
