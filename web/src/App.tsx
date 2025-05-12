@@ -17,6 +17,7 @@ import axios from 'axios';
 import UnAuthorisedScreen from './screens/UnAuthorisedScreen.screen';
 import ServiceUnavailable from './screens/ServiceUnavailable.screen';
 import { ProfileImageProvider } from './context/ProfileImageContext';
+import { API_BASE_URL } from '../config';
 
 function App() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -75,7 +76,8 @@ function App() {
           window.location.origin === OriginURL ||
           window.location.origin === ProdOriginURL
             ? `${window.location.origin}/login`
-            : `${import.meta.env.VITE_API_BASE_URL}/login`;
+            : `${API_BASE_URL}/login`;
+
         setIsLoaded(true);
       }
     };
