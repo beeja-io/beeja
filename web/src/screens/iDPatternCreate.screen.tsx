@@ -96,10 +96,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
           <input
             type="text"
             name="idLength"
-            placeholder={
-              t('SPECIFY_ID_LENGTH')
-            }
-            
+            placeholder={t('SPECIFY_ID_LENGTH')}
             onChange={handleInputChange}
           />
         </FormGroup>
@@ -108,9 +105,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
           <input
             type="text"
             name="prefix"
-            placeholder={
-              t('SPECIFY_ID_PREFIX')
-            }
+            placeholder={t('SPECIFY_ID_PREFIX')}
             onChange={handleInputChange}
           />
         </FormGroup>
@@ -128,9 +123,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
             <input
               type="text"
               name="initialSequence"
-              placeholder={
-                t('SPECIFY_INITIAL_SEQUENCE')
-              }
+              placeholder={t('SPECIFY_INITIAL_SEQUENCE')}
               onChange={handleInputChange}
             />
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>

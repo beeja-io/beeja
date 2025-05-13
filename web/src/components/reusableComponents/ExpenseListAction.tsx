@@ -137,7 +137,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
             handleModalClose={handleDeleteModal}
             handleModalSubmit={() => deleteSelectedExpense(currentExpense.id)}
             modalHeading={t('DELETE')}
-            modalContent={`${t("DELETE_EXPENSE_CONFIRMATION")} ${currentExpense.amount}`}
+            modalContent={`${t('DELETE_EXPENSE_CONFIRMATION')} ${currentExpense.amount}`}
           />
         </span>
       )}

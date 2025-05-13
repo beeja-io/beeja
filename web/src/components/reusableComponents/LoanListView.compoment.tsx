@@ -134,8 +134,8 @@ const LoanListView = (props: LoanListViewProps) => {
         <TableListContainer style={{ marginTop: 0 }}>
           {loansList && loansList.length === 0 ? (
             <ZeroEntriesFound
-            heading={t('NO_LOAN_HISTORY_FOUND')}
-            message={t('NO_PREVIOUS_LOAN_REQUESTS')}
+              heading={t('NO_LOAN_HISTORY_FOUND')}
+              message={t('NO_PREVIOUS_LOAN_REQUESTS')}
             />
           ) : (
             <TableList>

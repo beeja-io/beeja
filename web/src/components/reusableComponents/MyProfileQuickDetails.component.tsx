@@ -195,8 +195,9 @@ const MyProfileQuickDetailsComponent = ({
     setAddRoleButtonText(role);
   };
 
-  const [deleteRoleButtonText, setDeleteRoleButtonText] =
-    useState(t('DELETE_ROLE'));
+  const [deleteRoleButtonText, setDeleteRoleButtonText] = useState(
+    t('DELETE_ROLE')
+  );
   const HandleDeleteRoleButtonText = (role: string) => {
     setDeleteRoleButtonText(role);
   };

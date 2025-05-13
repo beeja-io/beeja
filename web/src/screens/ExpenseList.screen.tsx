@@ -800,7 +800,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                           {/* FIXME - Currency */}
                           {exp.amount === 0
                             ? '-'
-                            : formatToINR(exp.amount)+ ' ' + t('CURRENCY')}
+                            : formatToINR(exp.amount) + ' ' + t('CURRENCY')}
                         </td>
                         <td onClick={() => handleExpenseToBePreviewed(exp)}>
                           {exp.paymentMadeBy}

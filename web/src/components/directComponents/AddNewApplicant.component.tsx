@@ -174,7 +174,9 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
               <span onClick={goToPreviousPage}>
                 <ArrowDownSVG />
               </span>
-              {props.isReferScreen ? t('REFER_AN_EMPLOYEE') : t('ADD_NEW_APPLICANT')}
+              {props.isReferScreen
+                ? t('REFER_AN_EMPLOYEE')
+                : t('ADD_NEW_APPLICANT')}
             </span>
           </ExpenseHeadingSection>
           <BulkPayslipContainer className="addNewApplicant">
@@ -182,7 +184,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
               <div>
                 <InputLabelContainer>
                   <label>
-                  {t('FIRST_NAME')}{' '}
+                    {t('FIRST_NAME')}{' '}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
@@ -208,7 +210,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                 </InputLabelContainer>
                 <InputLabelContainer>
                   <label>
-                  {t('LAST_NAME')}{' '}
+                    {t('LAST_NAME')}{' '}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
@@ -236,7 +238,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
               <div>
                 <InputLabelContainer>
                   <label>
-                  {t('PHONE_NUMBER')}{' '}
+                    {t('PHONE_NUMBER')}{' '}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput

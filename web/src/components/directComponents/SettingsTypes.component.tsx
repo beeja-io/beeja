@@ -137,17 +137,17 @@ export const SettingsTypes = ({
         ? settingTypes?.filter((category) => category.index !== indexvalue)
         : actionType === t('EDIT')
           ? settingTypes?.map((category) =>
-            category.index === indexvalue
-              ? { orgValues: newSettingType, index: category.index }
-              : category
-          )
+              category.index === indexvalue
+                ? { orgValues: newSettingType, index: category.index }
+                : category
+            )
           : [
-            ...(settingTypes || []),
-            {
-              orgValues: newSettingType,
-              index: settingTypes?.length || 0,
-            },
-          ];
+              ...(settingTypes || []),
+              {
+                orgValues: newSettingType,
+                index: settingTypes?.length || 0,
+              },
+            ];
 
     if (actionType === t('DELETE')) {
       handleDeleteModal();
@@ -186,7 +186,7 @@ export const SettingsTypes = ({
       setToastMessage({
         type: 'error',
         heading: t('CREATE_TYPE_FAILED_HEADING'),
-        body: t('CREATE_TYPE_FAILED_BODY')
+        body: t('CREATE_TYPE_FAILED_BODY'),
       });
     }
   };
@@ -197,10 +197,10 @@ export const SettingsTypes = ({
   return (
     <TabContentMainContainer>
       <TabContentMainContainerHeading>
-        <h4>{t(type.toUpperCase().replace(/ /g, "_"))}</h4>
+        <h4>{t(type.toUpperCase().replace(/ /g, '_'))}</h4>
         <Button className="submit shadow buttonstyle" onClick={handleOpenModal}>
           <AddNewPlusSVG />
-          {t('ADD')} {t(type.toUpperCase().replace(/ /g, "_"))}
+          {t('ADD')} {t(type.toUpperCase().replace(/ /g, '_'))}
         </Button>
       </TabContentMainContainerHeading>
 
@@ -210,7 +210,9 @@ export const SettingsTypes = ({
         <Table>
           <TableHead>
             <tr className="table-row">
-              <th className="th-type">{t(type.toUpperCase().replace(/ /g, "_"))}</th>
+              <th className="th-type">
+                {t(type.toUpperCase().replace(/ /g, '_'))}
+              </th>
               <th className="th-description">{t('DESCRIPTION')}</th>
               <th className="th-action">{t('ACTION')}</th>
             </tr>
@@ -255,17 +257,20 @@ export const SettingsTypes = ({
           handleModalSubmit={handleSubmitButton}
           modalHeading={
             actionType === 'Edit'
-              ? `${t('EDIT')} ${t(type.toUpperCase().replace(/ /g, "_"))}`
-              : `${t('CREATE_NEW')} ${t(type.toUpperCase().replace(/ /g, "_"))}`
+              ? `${t('EDIT')} ${t(type.toUpperCase().replace(/ /g, '_'))}`
+              : `${t('CREATE_NEW')} ${t(type.toUpperCase().replace(/ /g, '_'))}`
           }
           modalLeftButtonText={t('CANCEL')}
-          modalRightButtonText={actionType === 'Edit' ? t('UPDATE') : t('CREATE')}
+          modalRightButtonText={
+            actionType === 'Edit' ? t('UPDATE') : t('CREATE')
+          }
           onChange={handleInputChange}
         >
           <div>
             <InputContainer isValueInvalid={isValueInvalid}>
               <label>
-              {t(type.toUpperCase().replace(/ /g, "_"))}:<ValidationText className="star">*</ValidationText>
+                {t(type.toUpperCase().replace(/ /g, '_'))}:
+                <ValidationText className="star">*</ValidationText>
               </label>
               <input
                 type="text"

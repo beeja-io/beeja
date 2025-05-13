@@ -82,7 +82,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
         }
       );
     } catch (error) {
-      toast.error(t('DOWNLOAD_FAILED'))
+      toast.error(t('DOWNLOAD_FAILED'));
     }
   };
 
@@ -164,7 +164,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                       )}
                       <td>
                         <StatusIndicator
-                          status={(applicant.status)}
+                          status={applicant.status}
                           className="applicantStatus"
                         >
                           {t(applicant.status)}

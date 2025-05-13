@@ -168,7 +168,9 @@ export const InventoryListAction: React.FC<ActionProps> = ({
             handleModalClose={handleDeleteModal}
             handleModalSubmit={deleteSelectedDevice}
             modalHeading={t('DELETE')}
-            modalContent={t('CONFIRM_DELETE_INVENTORY', { deviceNumber: currentDevice.deviceNumber })}
+            modalContent={t('CONFIRM_DELETE_INVENTORY', {
+              deviceNumber: currentDevice.deviceNumber,
+            })}
           />
         </span>
       )}

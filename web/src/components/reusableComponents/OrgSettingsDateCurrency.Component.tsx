@@ -164,7 +164,7 @@ export const OrganizationSettingsDateCurrency = ({
             </Select>
           </Row>
           <Row>
-          <Label>{t('TIME_ZONE')}</Label>
+            <Label>{t('TIME_ZONE')}</Label>
             <Select
               name="preferences.timeZone"
               onChange={handleInputChange}

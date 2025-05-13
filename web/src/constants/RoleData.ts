@@ -46,13 +46,7 @@ const roleData = [
   },
   {
     heading: 'KYC',
-    labels: [
-      'FULL_ACCESS',
-      'SELF_READ',
-      'READ',
-      'SELF_EDIT',
-      'EDIT',
-    ],
+    labels: ['FULL_ACCESS', 'SELF_READ', 'READ', 'SELF_EDIT', 'EDIT'],
     subsections: [
       {
         moduleName: 'MANAGE_KYC',
@@ -68,13 +62,7 @@ const roleData = [
   },
   {
     heading: 'DOCUMENTS',
-    labels: [
-      'FULL_ACCESS',
-      'VIEW',
-      'UPLOAD',
-      'DELETE',
-      'UPDATE',
-    ],
+    labels: ['FULL_ACCESS', 'VIEW', 'UPLOAD', 'DELETE', 'UPDATE'],
     subsections: [
       {
         moduleName: 'MANAGE_OWN_DOCUMENTS',
@@ -99,12 +87,7 @@ const roleData = [
   },
   {
     heading: 'ROLES_PERMISSIONS',
-    labels: [
-      'FULL_ACCESS',
-      'CREATE',
-      'EDIT',
-      'DELETE',
-    ],
+    labels: ['FULL_ACCESS', 'CREATE', 'EDIT', 'DELETE'],
     subsections: [
       {
         moduleName: 'MANAGE_ROLES',
@@ -133,14 +116,7 @@ const roleData = [
   },
   {
     heading: 'ACCOUNTS',
-    labels: [
-      'FULL_ACCESS',
-      'VIEW',
-      'CREATE',
-      'EXPORT',
-      'EDIT',
-      'DELETE',
-    ],
+    labels: ['FULL_ACCESS', 'VIEW', 'CREATE', 'EXPORT', 'EDIT', 'DELETE'],
     subsections: [
       {
         moduleName: 'BULK_PAYSLIPS',
@@ -201,13 +177,7 @@ const roleData = [
   },
   {
     heading: 'HEALTH_INSURANCE',
-    labels: [
-      'FULL_ACCESS',
-      'VIEW',
-      'CREATE',
-      'EDIT',
-      'DELETE'
-    ],
+    labels: ['FULL_ACCESS', 'VIEW', 'CREATE', 'EDIT', 'DELETE'],
     subsections: [
       {
         moduleName: 'MANAGE_HEALTH_INSURANCE',
@@ -215,7 +185,7 @@ const roleData = [
           { value: 'RHIN', label: 'VIEW', default: 'true' },
           { value: 'CHI', label: 'CREATE' },
           { value: 'UHI', label: 'EDIT' },
-          { value: 'DHI', label: 'DELETE' }
+          { value: 'DHI', label: 'DELETE' },
         ],
       },
       // Add more subsections as needed
@@ -233,33 +203,28 @@ const roleData = [
       'UPDATE_APPLICANT',
       'TAKE_INTERVIEW',
       'DELETE_INTERVIEW',
-      'ACCESS_REFERRALS'
+      'ACCESS_REFERRALS',
     ],
     subsections: [
       {
         moduleName: 'RECRUITMENT_MANAGEMENT',
         permissions: [
           { value: 'CRA', label: 'CREATE_APPLICANT' },
-        { value: 'RRA', label: 'READ_APPLICANTS' },
-        { value: 'RALRA', label: 'READ_ALL_APPLICANTS' },
-        { value: 'DRA', label: 'DOWNLOAD_RESUME' },
-        { value: 'URRA', label: 'UPDATE_ENTIRE_APPLICANT' },
-        { value: 'URA', label: 'UPDATE_APPLICANT' },
-        { value: 'TIA', label: 'TAKE_INTERVIEW' },
-        { value: 'DIA', label: 'DELETE_INTERVIEW' },
-        { value: 'AR', label: 'ACCESS_REFERRALS' }
+          { value: 'RRA', label: 'READ_APPLICANTS' },
+          { value: 'RALRA', label: 'READ_ALL_APPLICANTS' },
+          { value: 'DRA', label: 'DOWNLOAD_RESUME' },
+          { value: 'URRA', label: 'UPDATE_ENTIRE_APPLICANT' },
+          { value: 'URA', label: 'UPDATE_APPLICANT' },
+          { value: 'TIA', label: 'TAKE_INTERVIEW' },
+          { value: 'DIA', label: 'DELETE_INTERVIEW' },
+          { value: 'AR', label: 'ACCESS_REFERRALS' },
         ],
       },
     ],
   },
   {
     heading: 'PROFILE_PICTURE',
-    labels: [
-      'FULL_ACCESS',
-      'EDIT_PROFILE_PICTURE',
-      'EDIT_OWN',
-      'EDIT_OTHERS'
-    ],
+    labels: ['FULL_ACCESS', 'EDIT_PROFILE_PICTURE', 'EDIT_OWN', 'EDIT_OTHERS'],
     subsections: [
       {
         moduleName: 'PROFILE_PICTURE',

@@ -155,7 +155,7 @@ const AddRoleComponent: React.FC<Props> = ({
       <form onSubmit={handleSubmit}>
         <TabContentMainContainer>
           <TabContentMainContainerHeading>
-          <h4>{editingRole ? t('EDIT_ROLE') : t('ADD_ROLE')}</h4>
+            <h4>{editingRole ? t('EDIT_ROLE') : t('ADD_ROLE')}</h4>
           </TabContentMainContainerHeading>
           <BorderDivLine width="100%" />
           <br />

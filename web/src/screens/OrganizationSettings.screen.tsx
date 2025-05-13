@@ -178,7 +178,6 @@ const OrganizationSettings = () => {
     );
   };
 
-
   return (
     <>
       <SettingsMainContainer>

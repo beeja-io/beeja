@@ -30,7 +30,7 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
     setIsOpen(!isOpen);
   };
 
-  const{ t } = useTranslation();
+  const { t } = useTranslation();
   const [isDeletedToastMessage, setIsDeleteToastMessage] = useState(false);
   const handleIsDeleteToastMessage = () => {
     setIsDeleteToastMessage(!isDeletedToastMessage);

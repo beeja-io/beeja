@@ -549,9 +549,7 @@ export const CompanyProfile = () => {
             <Input
               name="address.addressTwo"
               type="text"
-              placeholder={
-                isEditModeOn ? t('SECONDARY_ADDRESS') : '-'
-              }
+              placeholder={isEditModeOn ? t('SECONDARY_ADDRESS') : '-'}
               value={
                 companyProfile.address &&
                 companyProfile.address.addressTwo != null
@@ -676,11 +674,7 @@ export const CompanyProfile = () => {
             <Label>{t('FILLING_ADDRESS')}</Label>
             <textarea
               name="filingAddress"
-              placeholder={
-                isEditModeOn
-                  ? t('FILING_ADDRESS_PLACEHOLDER')
-                  : '-'
-              }
+              placeholder={isEditModeOn ? t('FILING_ADDRESS_PLACEHOLDER') : '-'}
               value={
                 companyProfile.filingAddress &&
                 companyProfile.filingAddress != null
@@ -816,9 +810,7 @@ export const CompanyProfile = () => {
             <div>
               <Input
                 name="accounts.panNumber"
-                placeholder={
-                  isEditModeOn ? t('ENTER_PAN_NUMBER') : '-'
-                }
+                placeholder={isEditModeOn ? t('ENTER_PAN_NUMBER') : '-'}
                 type="text"
                 value={
                   companyProfile.accounts && companyProfile.accounts.panNumber

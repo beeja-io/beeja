@@ -1,8 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import {
-  LOAN_TYPE_BE,
-  LoanStatusBE,
-} from '../../constants/LoanStatus';
+import { LOAN_TYPE_BE, LoanStatusBE } from '../../constants/LoanStatus';
 import { LOAN_MODULE } from '../../constants/PermissionConstants';
 import { useUser } from '../../context/UserContext';
 import { Loan } from '../../entities/LoanEntity';
