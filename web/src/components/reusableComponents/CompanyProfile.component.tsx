@@ -478,7 +478,7 @@ export const CompanyProfile = () => {
                     <span
                       style={{ display: file || imageUrl ? 'none' : 'inline' }}
                     >
-                      <UploadReceiptIcon theme={preferences?.theme} />
+                      <UploadReceiptIcon/>
                       <span>{t('UPLOAD_COMPANY_LOGO')}</span>
                       <input
                         type="file"
