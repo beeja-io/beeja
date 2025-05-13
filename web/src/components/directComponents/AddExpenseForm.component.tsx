@@ -49,6 +49,11 @@ import { hasPermission } from '../../utils/permissionCheck';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
 import { useTranslation } from 'react-i18next';
+import {
+  EXPENSE_RECEIPT_FILE_SIZE,
+  EXPENSE_RECEIPTS_TOTAL_REQUEST_SIZE,
+} from '../../constants/FileSizes';
+import { EXPENSE_RECEIPT_TYPES } from '../../constants/FileTypes';
 
 type AddExpenseFormProps = {
   handleClose: () => void;
@@ -215,7 +220,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
       if (paymentDate != null) {
         formData.append(
-          'paymentDate',
+          'paymentSettled',
           formatDateYYYYMMDD(paymentDate.toString())
         );
       }
@@ -277,9 +282,65 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     event.stopPropagation();
+
     if (event.dataTransfer.files && event.dataTransfer.files.length > 0) {
       const droppedFiles = Array.from(event.dataTransfer.files);
-      setSelectedFile((prevFiles) => [...prevFiles, ...droppedFiles]);
+      const validFiles: File[] = [];
+
+      let hasTypeError = false;
+      let hasSingleSizeError = false;
+      let hasCombinedSizeError = false;
+      let hasFileLimitError = false;
+
+      const currentFileCount = selectedFile.length;
+
+      if (currentFileCount + droppedFiles.length > 3) {
+        hasFileLimitError = true;
+      }
+
+      droppedFiles.forEach((file) => {
+        if (!EXPENSE_RECEIPT_TYPES.includes(file.type)) {
+          hasTypeError = true;
+        } else if (file.size > EXPENSE_RECEIPT_FILE_SIZE) {
+          hasSingleSizeError = true;
+        } else {
+          validFiles.push(file);
+        }
+      });
+
+      const totalSize =
+        validFiles.reduce((acc, file) => acc + file.size, 0) +
+        selectedFile.reduce((acc, file) => acc + file.size, 0);
+
+      if (totalSize > EXPENSE_RECEIPTS_TOTAL_REQUEST_SIZE) {
+        hasCombinedSizeError = true;
+      }
+
+      if (
+        validFiles.length > 0 &&
+        !hasTypeError &&
+        !hasSingleSizeError &&
+        !hasCombinedSizeError &&
+        !hasFileLimitError
+      ) {
+        setSelectedFile((prevFiles) => [...prevFiles, ...validFiles]);
+      }
+
+      if (hasTypeError) {
+        toast.error(t('errors.unsupported_format'));
+      }
+
+      if (hasSingleSizeError) {
+        toast.error(t('errors.single_file_exceeds'));
+      }
+
+      if (hasCombinedSizeError) {
+        toast.error(t('errors.total_file_exceeds'));
+      }
+
+      if (hasFileLimitError) {
+        toast.error(t('errors.file_limit_exceeded'));
+      }
     }
   };
 
@@ -758,6 +819,12 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   useKeyPress(27, () => {
     props.handleClose();
   });
+  const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
+
+  const handleIsExpenseFormOpen = () => {
+    setIsExpenseFormOpen(!isExpenseFormOpen);
+  };
+
   return (
     <ExpenseAddFormMainContainer
       onSubmit={
@@ -767,7 +834,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
     >
       <div className="formInputs">
-        <div>
+        <div onClick={handleIsExpenseFormOpen}>
           <InputLabelContainer>
             <label>
               {t('DEPARTMENT')}{' '}
@@ -956,7 +1023,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 }}
                 min={
                   modeOfModal === 'edit'
-                    ? expenseToBeUpdated?.expenseDate.slice(0, 10)
+                    ? expenseToBeUpdated?.expenseDate?.slice?.(0, 10)
                     : newExpense?.expenseDate
                 }
                 max={getCurrentDate()}
@@ -1270,7 +1337,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 }}
                 min={
                   modeOfModal === 'edit'
-                    ? expenseToBeUpdated?.requestedDate.slice(0, 10)
+                    ? expenseToBeUpdated?.requestedDate?.slice?.(0, 10)
                     : newExpense?.requestedDate
                 }
                 max={getCurrentDate()}
@@ -1280,9 +1347,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                     ? formatDate(paymentDate.toString())
                     : modeOfModal === 'preview' &&
                         props.expense &&
-                        props.expense.paymentDate
-                      ? formatDate(props.expense.paymentDate.toString())
-                      : ''
+                        props.expense.paymentSettled
+                      ? formatDate(props.expense.paymentSettled.toString())
+                      : modeOfModal === 'edit' &&
+                          expenseToBeUpdated?.paymentSettled
+                        ? formatDate(
+                            expenseToBeUpdated.paymentSettled.toString()
+                          )
+                        : ''
                 }
                 onFocus={() => handleCalenderOpen(true, 'payment')}
                 disabled={requestedDate == null}

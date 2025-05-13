@@ -55,8 +55,8 @@ const InventoryManagement = () => {
     }, 2000);
   };
 
-  const [deviceFilter, setDeviceFilter] = useState<string>();
-  const [availabilityFilter, setAvailabilityFilter] = useState<string>();
+  const [deviceFilter, setDeviceFilter] = useState<string>('');
+  const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
   const [providerFilter, setProviderFilter] = useState<string>('');
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // const value = event.target.value;
@@ -110,7 +110,11 @@ const InventoryManagement = () => {
         queryParams.push(
           `device=${encodeURIComponent(deviceFilter.toUpperCase())}`
         );
-      if (availabilityFilter != null && availabilityFilter != '-' && availabilityFilter != 'availability')
+      if (
+        availabilityFilter != null &&
+        availabilityFilter != '-' &&
+        availabilityFilter != 'availability'
+      )
         queryParams.push(
           `availability=${encodeURIComponent(availabilityFilter.toUpperCase())}`
         );
@@ -135,6 +139,9 @@ const InventoryManagement = () => {
         inventory: res.data.inventory,
         metadata: metadata,
       };
+      if (!deviceFilter && !availabilityFilter && !providerFilter) {
+        setIsShowFilters(false);
+      } //update
       const totalPages = Math.ceil(res.data.metadata.totalSize / itemsPerPage);
       setTotalSize(metadata.totalSize);
       handleTotalPages(totalPages ?? 1);
@@ -219,6 +226,7 @@ const InventoryManagement = () => {
       setDeviceFilter('');
       setAvailabilityFilter('');
       setProviderFilter('');
+      setIsShowFilters(false); //update
     }
     if (filterName === 'device') {
       setDeviceFilter('');
@@ -236,6 +244,16 @@ const InventoryManagement = () => {
       setIsCreateModalOpen(true);
   });
   const { t } = useTranslation();
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCreateModalOpen]);
   return (
     <>
       <ExpenseManagementMainContainer>

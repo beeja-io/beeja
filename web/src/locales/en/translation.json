@@ -29,6 +29,8 @@
   "INACTIVE": "Inactive",
   "PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED": "Profile has been successfully added.",
   "PROFILE_ADDED": "Profile Added",
+  "UPDATING_PROFILE_HAS_PICTURE": "Updating profile picture...",
+  "FAILED_TO_UPDATE_PROFILE_PICTURE": "Failed to update profile picture",
   "FIRST_NAME_CANNOT_CONTAIN_NuMBERS": "First Name cannot contain numbers",
   "LAST_NAME_CANNOT_CONTAIN_NuMBERS": "Last Name cannot contain numbers",
   "INVALID_EMAIL_FORMAT": "Invalid Email Format",

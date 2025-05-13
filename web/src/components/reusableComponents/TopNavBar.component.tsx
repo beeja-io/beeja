@@ -144,6 +144,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
       </TopNavRightIcons>
       {isLogoutModalOpen && (
         <CenterModal
+          handleModalLeftButtonClick={handleIsLogoutModalOpen}
           handleModalClose={handleIsLogoutModalOpen}
           handleModalSubmit={handleLogout}
           modalHeading="LOGOUT"

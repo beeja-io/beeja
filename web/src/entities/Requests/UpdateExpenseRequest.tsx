@@ -14,5 +14,6 @@ export interface UpdateExpenseRequest {
   description: string;
   expenseDate: string;
   requestedDate: string;
+  paymentSettled: string;
   paymentDate: string | null;
 }

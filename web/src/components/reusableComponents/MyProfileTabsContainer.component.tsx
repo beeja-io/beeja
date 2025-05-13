@@ -474,6 +474,7 @@ const MyProfileTabsContainerComponent = ({
                 onClick={() => {
                   handleTabChange('kyc');
                   handleIsActiveTab('kyc');
+                  chooseTab('KYC');
                 }}
               >
                 {t('KYC')}

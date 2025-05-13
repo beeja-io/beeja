@@ -59,6 +59,7 @@ const DeductionsTab = ({
           resolve(data);
         })
         .catch((error) => {
+          setHealthInsurance(null);
           reject(error);
         });
     });
@@ -73,7 +74,7 @@ const DeductionsTab = ({
       fetchHealthInsurance();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [employee]);
 
   const healthInsuranceDetails = useMemo(
     () => [
