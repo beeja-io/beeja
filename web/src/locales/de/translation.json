@@ -29,6 +29,8 @@
   "INACTIVE": "Inaktiv",
   "PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED": "Profil wurde erfolgreich hinzugefügt.",
   "PROFILE_ADDED": "Profil hinzugefügt",
+  "UPDATING_PROFILE_HAS_PICTURE": "Profilbild wird aktualisiert…",
+  "FAILED_TO_UPDATE_PROFILE_PICTURE": "Profilbild konnte nicht aktualisiert werden.",
   "FIRST_NAME_CANNOT_CONTAIN_NuMBERS": "Der Vorname darf keine Zahlen enthalten",
   "LAST_NAME_CANNOT_CONTAIN_NuMBERS": "Der Nachname darf keine Zahlen enthalten",
   "INVALID_EMAIL_FORMAT": "Ungültiges E-Mail-Format",
@@ -168,12 +170,12 @@
   "LIGHT": "Hell",
   "DARK": "Dunkel",
   "BETA": "BETA",
-<<<<<<< Updated upstream
-  "ENTER_YOUR_COMMENTS_HERE": "Enter your comment here...",
-  "LEAVE_A_COMMENT": "Leave a Comment",
-  "COMMENTS": "Comments",
-  "COMMENT": "Comment"
-=======
+  "errors": {
+    "unsupported_format": "Nicht unterstütztes Dateiformat. Bitte laden Sie eine gültige Belegdatei hoch.",
+    "single_file_exceeds": "Dateigröße überschreitet 5 MB. Bitte laden Sie eine kleinere Datei hoch.",
+    "total_file_exceeds": "Die kombinierten Dateien überschreiten 20 MB. Bitte laden Sie kleinere Dateien hoch.",
+    "file_limit_exceeded": "Sie können maximal 3 Dateien hochladen."
+  },
   "DATE_OF_BIRTH": "Geburtsdatum",
   "PERSONAL_INFO": "Persönliche Informationen",
   "ADDRESS": "Adresse",
@@ -546,5 +548,4 @@
   "DEVICETYPE": "Gerätetyp",
   "DEVICE_ID-PATTERN": "Geräte-ID-Muster",
   "DEVICE ID PATTERN": "Geräte-ID-Muster"
->>>>>>> Stashed changes
 }

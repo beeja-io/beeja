@@ -16,19 +16,6 @@ spring:
 
   cloud:
     gateway:
-      globalcors:
-        default-filters:
-          - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
-          - AddResponseHeader=Access-Control-Allow-Origin, *
-        cors-configurations:
-          '[/**]':
-            allowed-origins:
-              - "http://localhost:3000"
-              - ${FRONT_END_URL}
-            allowedMethods:
-              - "*"
-            allowed-headers: "*"
-            allow-credentials: true
       routes:
         - id: ACCOUNTS-SERVICE
           uri: lb://ACCOUNTS-SERVICE
@@ -97,6 +84,11 @@ auth.cors.allowed-origins:
   localFrontEndUrl: http://localhost:3000
   urls:
     - ${FRONTEND_URL}
+    - http://localhost:3000
+    - http://localhost:3001
+
+skip-gateway-filter-routes:
+  routes: ${SKIP_GATEWAY_FILTER_ROUTES}
 
 management:
   metrics:

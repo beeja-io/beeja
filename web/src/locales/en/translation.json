@@ -29,6 +29,8 @@
   "INACTIVE": "Inactive",
   "PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED": "Profile has been successfully added.",
   "PROFILE_ADDED": "Profile Added",
+  "UPDATING_PROFILE_HAS_PICTURE": "Updating profile picture...",
+  "FAILED_TO_UPDATE_PROFILE_PICTURE": "Failed to update profile picture",
   "FIRST_NAME_CANNOT_CONTAIN_NuMBERS": "First Name cannot contain numbers",
   "LAST_NAME_CANNOT_CONTAIN_NuMBERS": "Last Name cannot contain numbers",
   "INVALID_EMAIL_FORMAT": "Invalid Email Format",
@@ -357,10 +359,13 @@
   "SETTLEMENT_STATUS": "Settlement Status",
   "SETTLED": "Settled",
   "PENDING": "Pending",
-<<<<<<< Updated upstream
-  "LIST_OF_REFERRALS": "List of Referrals"
-=======
   "LIST_OF_REFERRALS": "List of Referrals",
+  "errors": {
+    "unsupported_format": "Unsupported file format. Please upload a valid receipt file(jpeg, png, pdf).",
+    "single_file_exceeds": "File size exceeded 5MB, please upload a file below 5MB.",
+    "total_file_exceeds": "Combining three files exceeds 20MB. Please upload smaller files.",
+    "file_limit_exceeded": "You can only upload up to 3 files only."
+  },
   "PERSONAL_INFO": "Personal Info",
   "ADDRESS": "Address",
   "EMERGENCY_CONTACT": "Emergency Contact",
@@ -615,5 +620,4 @@
   "EMPLOYMENTTYPE": "Employment Type",
   "DEVICETYPE": "Device Type",
   "DEVICE_ID-PATTERN": "Device ID Pattern"
->>>>>>> Stashed changes
 }

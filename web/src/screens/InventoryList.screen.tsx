@@ -200,11 +200,7 @@ const InventoryList = ({
                 </span>
               </>
             ) : (
-<<<<<<< Updated upstream
-              <span className="noFilters">&nbsp;No filters applied</span>
-=======
-              <span className="noFilters">{t('NO_FILTERS_APPLIED')}</span>
->>>>>>> Stashed changes
+              <span className="noFilters">&nbsp;{t('NO_FILTERS_APPLIED')}</span>
             )}
           </DisplayFilters>
         </div>

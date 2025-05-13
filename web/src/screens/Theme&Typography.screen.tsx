@@ -43,6 +43,7 @@ import { capitalizeFirstLetter } from '../utils/stringUtils';
 import { useFeatureToggles } from '../context/FeatureToggleContext';
 import { EFeatureToggles } from '../entities/FeatureToggle';
 import { useTranslation } from 'react-i18next';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 
 interface IThemeOptions {
   label: string;
@@ -110,34 +111,51 @@ function ThemesAndTypography() {
   const [activeFontStyle, setActiveFontStyle] = useState(
     fontSizeOptions[0].label
   );
-  const [updatedOrganization, setUpdatedOrganization] = useState<IOrganization>(
-    {} as IOrganization
-  );
+  const [updatedOrganization, setUpdatedOrganization] = useState<
+    IOrganization | undefined
+  >();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user?.organizations?.preferences) {
-      const { fontName, fontSize } = user.organizations.preferences;
-      if (fontName) {
-        setActiveFontName(capitalizeFirstLetter(fontName.toUpperCase()));
-        document.documentElement.style.setProperty(
-          '--font-family-primary',
-          fontName
-        );
-      }
-      if (fontSize) {
-        const fontSizePx = `${fontSize}px`;
-        const matchedOption = fontSizeOptions.find(
-          (option) => option.size === fontSizePx
-        );
-        if (matchedOption) {
-          setActiveFontStyle(matchedOption.label);
-          document.documentElement.style.setProperty(
-            '--font-size-primary',
-            matchedOption.size
-          );
+    const fetchUse = async () => {
+      if (user?.organizations?.id) {
+        try {
+          const response = await getOrganizationById(user.organizations.id);
+          const prefs = response.data.preferences;
+          if (prefs?.fontName) {
+            const fontNameCapitalized = capitalizeFirstLetter(
+              prefs.fontName.toUpperCase()
+            );
+            setActiveFontName(fontNameCapitalized);
+            document.documentElement.style.setProperty(
+              '--font-family-primary',
+              prefs.fontName
+            );
+          }
+          if (prefs?.fontSize) {
+            const fontSizePx = `${prefs.fontSize}px`;
+            const matchedOption = fontSizeOptions.find(
+              (option) => option.size === fontSizePx
+            );
+            if (matchedOption) {
+              setActiveFontStyle(matchedOption.label);
+              document.documentElement.style.setProperty(
+                '--font-size-primary',
+                matchedOption.size
+              );
+            }
+          }
+          setUpdatedOrganization(response.data);
+        } catch (e) {
+          toast.error('Failed to fetch organization preferences');
+        } finally {
+          setIsLoading(false);
         }
+      } else {
+        setIsLoading(false);
       }
-    }
+    };
+    fetchUse();
   }, [user]);
   const fetchOrganization = async () => {
     try {
@@ -283,10 +301,14 @@ function ThemesAndTypography() {
   };
   return (
     <>
-      <ThemeTypographyHead>
-        <ProfileHeading>{t('THEMES_AND_TYPOGRAPHY')}</ProfileHeading>
-      </ThemeTypographyHead>
-      <BorderDivLine width="100%" />
+      {isLoading ? (
+        <SpinAnimation />
+      ) : (
+        <>
+          <ThemeTypographyHead>
+            <ProfileHeading>{t('THEMES_AND_TYPOGRAPHY')}</ProfileHeading>
+          </ThemeTypographyHead>
+          <BorderDivLine width="100%" />
 
       <ThemeSection>
         <SectionTitle>{t('THEME')}</SectionTitle>
@@ -408,7 +430,9 @@ function ThemesAndTypography() {
                 </FontStyleWrapper>
               )}
           </TypographyContainer>
-        )}
+        )} 
+        </>
+      )}
     </>
   );
 }

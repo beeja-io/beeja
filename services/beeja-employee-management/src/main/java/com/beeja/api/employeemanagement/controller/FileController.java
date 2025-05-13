@@ -56,7 +56,8 @@ public class FileController {
   @GetMapping("/download/{fileId}")
   @HasPermission({
     PermissionConstants.READ_EMPLOYEE_DOCUMENT,
-    PermissionConstants.READ_ALL_EMPLOYEE_DOCUMENT
+    PermissionConstants.READ_ALL_EMPLOYEE_DOCUMENT,
+    PermissionConstants.UPDATE_PROFILE_PIC_SELF
   })
   public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileId)
       throws Exception {

@@ -25,13 +25,21 @@ import { LOAN_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
 type LoanListViewProps = {
   handleIsApplyLoanScreen: () => void;
+  currentPage: number;
+  totalApplicants: number;
+  // pageSize: number;
+  setCurrentPage: (page: number) => void;
+  // setPageSize: (size: number) => void;
+  setTotalApplicants: (total: number) => void;
+  loansList: any[];
+  loading: boolean;
 };
 const LoanListView = (props: LoanListViewProps) => {
   const { user } = useUser();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
-  const { loanList, updateLoanList } = useContext(ApplicationContext);
+  const { loansList, updateLoansList } = useContext(ApplicationContext);
 
   const fetchLoans = async () => {
     try {
@@ -43,22 +51,22 @@ const LoanListView = (props: LoanListViewProps) => {
         const res = await getAllLoans();
 
         if (res?.data) {
-          const sortedLoans = res.data.sort(
+          const sortedLoans = res.data.loansList.sort(
             (firstLoan: Loan, secondLoan: Loan) =>
               new Date(secondLoan.createdAt).getTime() -
               new Date(firstLoan.createdAt).getTime()
           );
-          updateLoanList(sortedLoans);
+          updateLoansList(sortedLoans);
         }
       } else {
         if (user && user.employeeId) {
           const res = await getAllLoans(user.employeeId);
-          const sortedLoans = res.data.sort(
+          const sortedLoans = res.data.loansList.sort(
             (a: Loan, b: Loan) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
 
-          updateLoanList(sortedLoans);
+          updateLoansList(sortedLoans);
         }
       }
     } catch {
@@ -69,7 +77,7 @@ const LoanListView = (props: LoanListViewProps) => {
   };
 
   useEffect(() => {
-    if (loanList === null || loanList === undefined) {
+    if (loansList === null || loansList === undefined) {
       setLoading(true);
     }
     fetchLoans();
@@ -124,7 +132,7 @@ const LoanListView = (props: LoanListViewProps) => {
           )}
         </section>
         <TableListContainer style={{ marginTop: 0 }}>
-          {loanList && loanList.length === 0 ? (
+          {loansList && loansList.length === 0 ? (
             <ZeroEntriesFound
             heading={t('NO_LOAN_HISTORY_FOUND')}
             message={t('NO_PREVIOUS_LOAN_REQUESTS')}
@@ -152,8 +160,8 @@ const LoanListView = (props: LoanListViewProps) => {
                 </tr>
               </TableHead>
               <tbody>
-                {loanList &&
-                  loanList.map((loan, index) => (
+                {loansList &&
+                  loansList.map((loan: any, index: any) => (
                     <TableBodyRow key={index}>
                       <td
                         onClick={() => {
