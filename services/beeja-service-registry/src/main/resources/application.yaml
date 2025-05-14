@@ -1,0 +1,37 @@
+
+server:
+  port: ${SERVICE_REGISTRY_PORT}
+
+spring:
+  application:
+    name: service-registry
+
+management:
+  metrics:
+    enable:
+      system: false
+    binders:
+      jvm:
+        enabled: false
+      system:
+        enabled: false
+  endpoint:
+    health:
+      show-details: always
+    web:
+      exposure:
+        include: health
+  health:
+    defaults:
+      enabled: true
+
+
+eureka:
+  instance:
+    preferIpAddress: false
+    hostname: ${EUREKA_HOST_NAME}
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    serviceUrl:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/

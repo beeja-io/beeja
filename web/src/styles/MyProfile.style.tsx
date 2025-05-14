@@ -272,7 +272,7 @@ export const QuickInfoDepartmentContainer = styled.div`
   }
 
   div span:last-child {
-    color: var(--greyscale-900, #111827);
+    color: ${(props) => props.theme.colors.blackColors.black1};
     font-family: Nunito;
     font-size: 14px;
     font-style: normal;
@@ -471,6 +471,8 @@ export const TabContentTableTd = styled.td`
   .validation-error {
     color: #ff0000;
     margin-left: 10px;
+    overflow-wrap: break-word;
+    white-space: normal;
   }
 `;
 

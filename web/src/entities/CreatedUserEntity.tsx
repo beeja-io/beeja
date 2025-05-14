@@ -1,4 +1,4 @@
-import { User } from "./UserEntity";
+import { User } from './UserEntity';
 
 export interface CreatedUserEntity {
   user: User;

@@ -47,17 +47,16 @@ interface Props {
   deviceFilter: string | undefined;
   availabilityFilter: string | undefined;
   providerFilter: string | undefined;
-  osFilter: string | undefined;
   isShowFilters: boolean;
   handlePageChange: (page: number) => void;
   handleItemsPerPage: (page: number) => void;
   onDeviceChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   onAvailabilityChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   onProviderChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
-  onOsChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   clearFilters: (filterName: string) => void;
   selectedFiltersText: () => React.ReactNode;
   deviceTypes: OrganizationValues;
+  inventoryProviders: OrganizationValues;
 }
 
 const InventoryList = ({
@@ -71,17 +70,16 @@ const InventoryList = ({
   deviceFilter,
   availabilityFilter,
   providerFilter,
-  osFilter,
   onDeviceChange,
   onAvailabilityChange,
   onProviderChange,
-  onOsChange,
   handleItemsPerPage,
   handlePageChange,
   clearFilters,
   isShowFilters,
   selectedFiltersText,
   deviceTypes,
+  inventoryProviders,
 }: Props) => {
   const { user } = useUser();
   const Actions = [
@@ -169,38 +167,24 @@ const InventoryList = ({
               </option>
             ))}
           </select>
-          <select
-            className="selectoption"
-            name="provider"
-            value={providerFilter}
-            onChange={(e) => {
-              onProviderChange(e);
-              currentPage;
-            }}
-          >
-            <option value="">Provider</option>{' '}
-            {inventoryOptions.provider.map((provider) => (
-              <option key={provider} value={provider}>
-                {provider}
-              </option>
-            ))}
-          </select>
-          <select
-            className="selectoption"
-            name="os"
-            value={osFilter}
-            onChange={(e) => {
-              onOsChange(e);
-              currentPage;
-            }}
-          >
-            <option value="">OS</option>{' '}
-            {inventoryOptions.os.map((os) => (
-              <option key={os} value={os}>
-                {os}
-              </option>
-            ))}
-          </select>
+          {inventoryProviders && inventoryProviders.values && (
+            <select
+              className="selectoption"
+              name="provider"
+              value={providerFilter}
+              onChange={(e) => {
+                onProviderChange(e);
+                currentPage;
+              }}
+            >
+              <option value="">Provider</option>{' '}
+              {inventoryProviders.values.map((provider) => (
+                <option key={provider.value} value={provider.value}>
+                  {provider.value}
+                </option>
+              ))}
+            </select>
+          )}
         </FilterSection>
         <div className="right">
           <DisplayFilters>
@@ -216,7 +200,7 @@ const InventoryList = ({
                 </span>
               </>
             ) : (
-              <span className="noFilters">No filters applied</span>
+              <span className="noFilters">&nbsp;No filters applied</span>
             )}
           </DisplayFilters>
         </div>

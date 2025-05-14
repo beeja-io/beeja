@@ -19,6 +19,7 @@ import {
   UncheckedSVG,
   AlertIDPatternSVG,
 } from '../svgs/CreateIDPatternSvgs.svg';
+import { t } from 'i18next';
 
 interface EmployeeIDCreateProps {
   onClose: () => void;
@@ -54,6 +55,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
       active: false,
     });
     setIsChecked(false);
+    onClose();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -79,18 +81,18 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
     <MyProfileInnerContainer className="settings-tab" style={{ width: '100%' }}>
       <MyProfileTabsDiv className="under-line emp">
         <UnderLineEmp>
-          Create{' '}
+          {t('CREATE')}{' '}
           {patternType === 'LOAN_ID_PATTERN'
             ? 'Loan ID'
             : patternType === 'EMPLOYEE_ID_PATTERN'
               ? 'Employee ID'
               : 'Device ID'}{' '}
-          Pattern
+          {t('PATTERN')}
         </UnderLineEmp>
       </MyProfileTabsDiv>
       <FormContainer onSubmit={handleSubmit}>
         <FormGroup>
-          <label>ID Length</label>
+          <label>{t('ID_LENGTH')}</label>
           <input
             type="text"
             name="idLength"
@@ -99,7 +101,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
           />
         </FormGroup>
         <FormGroup>
-          <label>ID Prefix</label>
+          <label>{t('ID_PREFIX')}</label>
           <input
             type="text"
             name="prefix"
@@ -108,7 +110,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
           />
         </FormGroup>
         <FormGroup>
-          <label>Initial Sequence</label>
+          <label>{t('INTIAL_SEQUENCE')}</label>
 
           <div
             style={{
@@ -127,15 +129,16 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
               <AlertIDPatternSVG></AlertIDPatternSVG>
               <span className="custom-text-style">
-                Auto Sequence Id will start from the specified initial sequence
-                number
+                {t(
+                  'AUTO_SEQUENCE_ID_WILL_START_FROM_THE_SPECIFIED_INTIAL_SEQUENCE_NUMBER'
+                )}
               </span>
             </div>
           </div>
         </FormGroup>
 
         <ToggleSwitchContainer isChecked={isChecked}>
-          <label>Status</label>
+          <label>{t('STATUS')}</label>
           <div className="toggle-switch-container">
             <div className="toggle-switch" onClick={handleToggleChange}>
               <input
@@ -152,15 +155,15 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
         <ToggleInfoContainer>
           <AlertIDPatternSVG></AlertIDPatternSVG>
           <ToggleInfoText>
-            Enabling this pattern will disable others.
+            {t('ENABLING_THIS_PATTERN_WILL_DISABLE_OTHERS')}
           </ToggleInfoText>
         </ToggleInfoContainer>
         <ButtonGroup>
           <Button className="reset-btn" type="button" onClick={handleReset}>
-            Reset
+            {t('CANCEL')}
           </Button>
           <Button className="submit-btn" type="submit">
-            Create Pattern
+            {t('CREATE_PATTERN')}
           </Button>
         </ButtonGroup>
       </FormContainer>

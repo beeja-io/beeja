@@ -98,7 +98,7 @@ public class OrganizationPatternServiceImpl implements OrganizationPatternServic
     organizationPattern.setPatternType(organizationPatternRequest.getPatternType());
     organizationPattern.setPatternLength(organizationPatternRequest.getPatternLength());
     organizationPattern.setActive(organizationPatternRequest.isActive());
-    organizationPattern.setPrefix(organizationPatternRequest.getPrefix());
+    organizationPattern.setPrefix(organizationPatternRequest.getPrefix().toUpperCase());
     organizationPattern.setInitialSequence(organizationPatternRequest.getInitialSequence());
     String prefix = organizationPatternRequest.getPrefix();
     String zeros =
@@ -127,6 +127,17 @@ public class OrganizationPatternServiceImpl implements OrganizationPatternServic
               ErrorType.DB_ERROR,
               ErrorCode.UNABLE_TO_FETCH_DETAILS,
               Constants.UNABLE_TO_FETCH_DETAILS_FROM_DATABASE));
+    }
+  }
+
+  @Override
+  public OrganizationPattern getActivePatternByPatternType(String patternType) throws Exception {
+    try{
+      return organizationPatternsRepository.findByOrganizationIdAndPatternTypeAndActive(
+              UserContext.getLoggedInUserOrganization().getId(), patternType, true);
+    }catch (Exception e){
+      log.error("Error: " + e.getMessage());
+      throw new Exception(Constants.UNABLE_TO_FETCH_DETAILS_FROM_DATABASE);
     }
   }
 }

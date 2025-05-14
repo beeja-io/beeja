@@ -55,10 +55,9 @@ const InventoryManagement = () => {
     }, 2000);
   };
 
-  const [deviceFilter, setDeviceFilter] = useState<string>();
-  const [availabilityFilter, setAvailabilityFilter] = useState<string>();
+  const [deviceFilter, setDeviceFilter] = useState<string>('');
+  const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
   const [providerFilter, setProviderFilter] = useState<string>('');
-  const [osFilter, setOsFilter] = useState<string>('');
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // const value = event.target.value;
     setDeviceFilter(event.target.value);
@@ -67,18 +66,17 @@ const InventoryManagement = () => {
   const handleAvailabilityChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    // const value = event.target.value;
-    setAvailabilityFilter(event.target.value);
+    if (event.target.value === 'availability') {
+      setAvailabilityFilter('');
+    } else {
+      setAvailabilityFilter(event.target.value);
+    }
   };
 
   const handleProviderChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setProviderFilter(event.target.value);
-  };
-
-  const handleOsChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setOsFilter(event.target.value);
   };
 
   const [inventoryList, setInventoryList] = useState<DeviceDetails[]>([]);
@@ -112,14 +110,16 @@ const InventoryManagement = () => {
         queryParams.push(
           `device=${encodeURIComponent(deviceFilter.toUpperCase())}`
         );
-      if (availabilityFilter != null && availabilityFilter != '-')
+      if (
+        availabilityFilter != null &&
+        availabilityFilter != '-' &&
+        availabilityFilter != 'availability'
+      )
         queryParams.push(
           `availability=${encodeURIComponent(availabilityFilter.toUpperCase())}`
         );
       if (providerFilter != null && providerFilter != '-')
         queryParams.push(`provider=${encodeURIComponent(providerFilter)}`);
-      if (osFilter != null && osFilter != '-')
-        queryParams.push(`os=${encodeURIComponent(osFilter)}`);
       if (currentPage) {
         queryParams.push(`pageNumber=${currentPage}`);
       }
@@ -139,10 +139,14 @@ const InventoryManagement = () => {
         inventory: res.data.inventory,
         metadata: metadata,
       };
+      if (!deviceFilter && !availabilityFilter && !providerFilter) {
+        setIsShowFilters(false);
+      } //update
       const totalPages = Math.ceil(res.data.metadata.totalSize / itemsPerPage);
       setTotalSize(metadata.totalSize);
       handleTotalPages(totalPages ?? 1);
-      setInventoryList(finalResponse.inventory);
+      const sortedInventory = finalResponse.inventory.slice().reverse();
+      setInventoryList([...sortedInventory]);
       setLoading(false);
     } catch (error) {
       throw new Error('Error fetching data:' + error);
@@ -153,7 +157,6 @@ const InventoryManagement = () => {
     deviceFilter,
     availabilityFilter,
     providerFilter,
-    osFilter,
   ]);
 
   useEffect(() => {
@@ -166,13 +169,22 @@ const InventoryManagement = () => {
   const [deviceTypes, setDeviceTypes] = useState<OrganizationValues>(
     {} as OrganizationValues
   );
+  const [inventoryProviders, setInventoryProviders] =
+    useState<OrganizationValues>({} as OrganizationValues);
 
   const fetchOrganizationValues = async () => {
     const deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
+    const inventoryProvidersFetched =
+      await getOrganizationValuesByKey('inventoryProviders');
     if (!deviceTypesFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS'));
     } else {
       setDeviceTypes(deviceTypesFetched.data);
+    }
+    if (!inventoryProvidersFetched?.data?.values?.length) {
+      toast.error(t('PLEASE_ADD_INVENTORY_PROVIDERS_IN_ORG_SETTINGS'));
+    } else {
+      setInventoryProviders(inventoryProvidersFetched.data);
     }
     setDeviceTypes(deviceTypesFetched.data);
   };
@@ -187,7 +199,6 @@ const InventoryManagement = () => {
       { key: 'device', value: deviceFilter },
       { key: 'availability', value: availabilityFilter },
       { key: 'provider', value: providerFilter },
-      { key: 'os', value: osFilter },
     ];
 
     return (
@@ -214,8 +225,8 @@ const InventoryManagement = () => {
     if (filterName === 'clearAll') {
       setDeviceFilter('');
       setAvailabilityFilter('');
-      setOsFilter('');
       setProviderFilter('');
+      setIsShowFilters(false); //update
     }
     if (filterName === 'device') {
       setDeviceFilter('');
@@ -225,9 +236,6 @@ const InventoryManagement = () => {
     }
     if (filterName === 'provider') {
       setProviderFilter('');
-    }
-    if (filterName === 'os') {
-      setOsFilter('');
     }
   };
   useKeyPress(78, () => {
@@ -271,15 +279,14 @@ const InventoryManagement = () => {
             onDeviceChange={handleDeviceChange}
             onAvailabilityChange={handleAvailabilityChange}
             onProviderChange={handleProviderChange}
-            onOsChange={handleOsChange}
             deviceFilter={deviceFilter}
             availabilityFilter={availabilityFilter}
             providerFilter={providerFilter}
-            osFilter={osFilter}
             clearFilters={clearFilters}
             isShowFilters={isShowFilters}
             selectedFiltersText={selectedFiltersText}
             deviceTypes={deviceTypes}
+            inventoryProviders={inventoryProviders}
           />
         )}
       </ExpenseManagementMainContainer>
@@ -292,6 +299,7 @@ const InventoryManagement = () => {
               handleClose={handleIsCreateModalOpen}
               handleSuccessMessage={handleSuccessMessage}
               deviceTypes={deviceTypes}
+              inventoryProviders={inventoryProviders}
             />
           }
         />

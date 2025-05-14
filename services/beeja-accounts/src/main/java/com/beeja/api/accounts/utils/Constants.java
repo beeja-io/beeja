@@ -2,7 +2,7 @@ package com.beeja.api.accounts.utils;
 
 public class Constants {
   public static final String BEEJA = "BEEJA";
-  public static final String USE_BUSINESS_EMAIL = "Please use a business email";
+  public static final String USE_BUSINESS_EMAIL = "Please use a business or domain email";
   public static final String ORGANIZATION_ALREADY_EXIST =
       "Organization already registered at Beeja";
   public static final String REGISTER_BEFORE_LOGIN = "Please Register with Beeja to authenticate";
@@ -29,6 +29,10 @@ public class Constants {
 
   //    Errors
   public static final String USER_NOT_FOUND = "User Not Found ";
+  public static final String DEPARTMENT_ALREADY_EXISTS = "Department Already Exists";
+  public static final String JOB_TITLE_ALREADY_EXISTS = "Job Title Already Exists";
+  public static final String EMPLOYEE_TYPE_ALREADY_EXISTS = "Employee Type Already Exists";
+  public static final String EXPENSE_CATEGORY_ALREADY_EXISTS = "Expense Category Type Already Exists";
   public static final String USER_ALREADY_FOUND = "User Already Found ";
   public static final String CANNOT_CREATE_ORGANIZATION_USER =
       "Cannot Create Organization User or Admin as it is already registered - please use different email";
@@ -178,4 +182,21 @@ public class Constants {
   public static final String NEW_PASSWORD_MUST_MATCH_CONFIRMATION_PASSWORD =
       "New Password Must Match Confirmation Password";
   public static final String UPDATED = "Updated";
+
+  public static final String GENERATING_DEFAULT_VALUES = "Generating Values for organization :  {} ";
+  public static final String ERROR_GENERATING_DEFAULT_VALUES = "Error in generating {} values for organization : {} ,";
+  public static final String SUCCESSFULLY_GENERATED_DEFAULTS = "Successfully generated values for organization : {} ,";
+
+
+  public static final String DUPLICATE_VALUE_EXIST = "Duplicate values found within the same document.";
+  public static final String UPDATING_PERMISSIONS_FOR_ALL_SUPER_ADMINS= "Updating permissions for All Super Admins";
+  public static final String GETTING_ALL_PERMISSIONS_FROM_JSON = "Getting All Permissions From JSON";
+  public static final String ADDING_NEW_PERMISSIONS_TO_DB = "Adding NEW Permissions To DB";
+    public static final String ADDING_NEW_PERMISSIONS_TO_SUPER_ADMINS = "Adding NEW Permissions To Super Admins of All Organizations";
+    public static final String PERMISSIONS_UPDATED_SUCCESSFULLY = "Permissions Updated Successfully for All Super Admins";
+    public static final String ERROR_READING_PERMISSIONS_JSON = "Error Reading Permissions JSON";
+    public static final String CREATING_NEW_PERMISSIONS_ENTRY = "No permissions found for '{}'. Creating a new Permissions entry.";
+    public static final String SUCCESSFULLY_CREATED_NEW_PERMISSION_ENTRY = "New Permissions entry created and saved for '{}'.";
+  public static final String SUCCESSFULLY_UPDATED_PERMISSIONS_ENTRY = "Successfully Updated PErmissions Entry" ;
+
 }

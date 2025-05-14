@@ -18,7 +18,7 @@ type CenterModalProps = {
   handleModalSubmit: () => void;
   handleModalLeftButtonClick?: () => void;
   modalHeading?: string;
-  modalContent?: React.ReactNode;
+  modalContent?: string | React.ReactNode;
   modalSVG?: React.ReactNode;
   modalLeftButtonText?: string;
   modalRightButtonText?: string;
@@ -60,19 +60,20 @@ const CenterModal = (props: CenterModalProps) => {
         Width={props.modalWidth}
         isExpanded={props.isExpanded}
       >
+        <CloseButton onClick={props.handleModalClose}>
+              <CloseButtonSVG />
+        </CloseButton>
         {(props.isMonogramView ||
           props.isImageSelected ||
           props.isDashedBox) && (
           <>
-            <EditProfileText>{props.editText}</EditProfileText>
-
-            <CloseButton onClick={props.handleModalClose}>
-              <CloseButtonSVG />
-            </CloseButton>
+            <EditProfileText>
+              {props.editText ? t(props.editText) : ''}
+            </EditProfileText>
           </>
         )}
         {!props.isMonogramView &&
-          !props.modalContent &&
+          //!props.modalContent &&
           !props.isImageSelected && (
             <div className="iconArea">
               {props.modalSVG ? props.modalSVG : <LogoutModalSVG />}
@@ -97,7 +98,11 @@ const CenterModal = (props: CenterModalProps) => {
                 <div className="modalHeading">
                   {t(props.modalHeading ? props.modalHeading : '')}
                 </div>
-                <div className="modalContent">{props.modalContent}</div>
+                <div className="modalContent">
+                  {typeof props.modalContent === 'string'
+                    ? t(props.modalContent)
+                    : props.modalContent}
+                </div>
               </>
             )}
           </div>

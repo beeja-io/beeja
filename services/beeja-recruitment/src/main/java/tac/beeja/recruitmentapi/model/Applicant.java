@@ -1,5 +1,6 @@
 package tac.beeja.recruitmentapi.model;
 
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,8 @@ public class Applicant {
   private List<ApplicantComment> applicantComments;
   private String referredByEmployeeId;
   private String referredByEmployeeName;
+
+  private String applicantId;
 
   @Field("created_at")
   @CreatedDate

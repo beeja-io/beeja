@@ -4,6 +4,14 @@ import static org.springframework.security.web.server.util.matcher.ServerWebExch
 
 import com.beeja.api.apigateway.config.security.properties.AuthProperties;
 import java.time.Duration;
+import java.util.List;
+import java.util.ServiceLoader;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.beeja.api.apigateway.config.security.properties.SkipGatewayFilterRoutesProperty;
+import com.beeja.api.apigateway.utils.Constants;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,13 +24,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.authentication.ServerAuthenticationFailureHandler;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsWebFilter;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Configuration
 public class SecurityConfig {
 
   @Autowired AuthProperties authProperties;
+
+  @Autowired private SkipGatewayFilterRoutesProperty skipGatewayFilterRoutesProperty;
 
 
   @Autowired private ServerAuthenticationFailureHandler authenticationFailureHandler;
@@ -123,36 +137,32 @@ public class SecurityConfig {
   }
 
   @Bean
+  @Order(1)
+  public SecurityWebFilterChain publicPostSecurity(ServerHttpSecurity httpSecurity) {
+    httpSecurity
+            .securityMatcher(pathMatchers(HttpMethod.POST, skipGatewayFilterRoutesProperty.getRoutes()))
+            .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.anyExchange().permitAll())
+            .csrf(ServerHttpSecurity.CsrfSpec::disable);
+    return httpSecurity.build();
+  }
+
+  @Bean
+  @Order(2)
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
     serverHttpSecurity.exceptionHandling(
-        exceptionHandlingSpec ->
-            exceptionHandlingSpec.authenticationEntryPoint(
-                ((exchange, ex) -> {
-                  exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                  return Mono.empty();
-                })));
-    serverHttpSecurity
-        .authorizeExchange(
-            authorizeExchangeSpec ->
-                authorizeExchangeSpec
-                    .pathMatchers(HttpMethod.OPTIONS)
-                    .permitAll()
-                    .pathMatchers(
-                        "/login",
-                        "/auth/login/**",
-                        "/actuator/**",
-                        "/static/favicon.ico",
-                        "/favicon.ico",
-                        "/auth/login/google",
-                        "/auth/login/error",
-                        "/auth/logout")
-                    .permitAll()
-                    .anyExchange()
-                    .authenticated())
-        .csrf(ServerHttpSecurity.CsrfSpec::disable)
-        .formLogin(
-            formLoginSpec ->
-                formLoginSpec.authenticationFailureHandler(authenticationFailureHandler));
+            exceptionHandlingSpec ->
+                    exceptionHandlingSpec.authenticationEntryPoint(
+                            ((exchange, ex) -> {
+                              exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                              return Mono.empty();
+                            })));
+    ServiceLoader<AuthenticationProvider> loader = ServiceLoader.load(AuthenticationProvider.class);
+
+    for (AuthenticationProvider provider : loader) {
+      provider.configure(serverHttpSecurity);
+      log.info("Loaded Authentication Provider: {}", provider.getClass().getName());
+    }
+
     return serverHttpSecurity.build();
   }
 
@@ -160,6 +170,31 @@ public class SecurityConfig {
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
+
+
+  @Bean
+  public CorsWebFilter corsWebFilter() throws Exception {
+    if(authProperties.getFrontEndUrl() == null || authProperties.getUrls() == null){
+      throw new Exception(Constants.ERROR_MISSING_FE_URLS);
+    }
+    CorsConfiguration corsConfig = new CorsConfiguration();
+    corsConfig.setAllowedOriginPatterns(
+            Stream.concat(
+                    Stream.of(authProperties.getFrontEndUrl()),
+                    authProperties.getUrls().stream()
+            ).collect(Collectors.toList())
+    );
+    log.info("Allowed URLs: {}", authProperties.getUrls());
+    corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+    corsConfig.setAllowedHeaders(List.of("*"));
+    corsConfig.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", corsConfig);
+
+    return new CorsWebFilter(source);
+  }
+
 
   @Bean
   public CookieWebSessionIdResolver cookieSessionIdResolverWithoutSameSite() {

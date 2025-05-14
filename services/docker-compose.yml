@@ -1,34 +1,35 @@
 version: "3.8"
 services:
   beeja-service-registry:
+    container_name: beeja-api-service-registry-service
     build: ./beeja-service-registry
     ports:
       - "8761:8761"
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
+    env_file:
+      - .env
   beeja-cloud-gateway:
     build: ./beeja-cloud-gateway
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     depends_on:
       - beeja-service-registry
       - beeja-db-1
   beeja-accounts:
     build: ./beeja-accounts
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     depends_on:
       - beeja-service-registry
       - beeja-cloud-gateway
       - beeja-db-1
   beeja-employee-management:
     build: ./beeja-employee-management
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
+    env_file:
+      - .env
     ports:
       - "8089:8089"
     depends_on:
@@ -37,8 +38,8 @@ services:
       - beeja-db-1
   beeja-expense:
     build: ./beeja-expense
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
+    env_file:
+      - .env
     ports:
       - "8091:8091"
     depends_on:
@@ -47,8 +48,8 @@ services:
       - beeja-db-1
   beeja-file-management:
     build: ./beeja-file-management
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
+    env_file:
+      - .env
     ports:
       - "8090:8090"
     depends_on:
@@ -58,8 +59,8 @@ services:
 
   beeja-finance:
     build: ./beeja-finance
-    environment:
-      - "SPRING_PROFILES_ACTIVE=docker"
+    env_file:
+      - .env
     ports:
       - "8092:8092"
     depends_on:
@@ -69,10 +70,20 @@ services:
 
   beeja-recruitment:
     build: ./beeja-recruitment
+    env_file:
+      - .env
+    ports:
+      - "8095:8095"
+    depends_on:
+      - beeja-service-registry
+      - beeja-cloud-gateway
+      - beeja-db-1
+  beeja-projects:
+    build: ./beeja-projects
     environment:
       - "SPRING_PROFILES_ACTIVE=docker"
     ports:
-      - "8095:8095"
+      - "8097:8097"
     depends_on:
       - beeja-service-registry
       - beeja-cloud-gateway

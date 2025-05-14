@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { OriginURL, ProdOriginURL } from '../constants/UrlConstants';
 import { IFeatureToggle } from '../entities/FeatureToggle';
+import { IAssignedInterviewer } from '../entities/ApplicantEntity';
 import { OrganizationValues } from '../entities/OrgValueEntity';
 /* eslint-disable */
 const axiosInstance = axios.create({
@@ -58,11 +59,17 @@ export const getEmployeesCount = (): Promise<AxiosResponse> => {
   return axiosInstance.get('/accounts/v1/users/count');
 };
 
-export const updateEmployeeRolesByEmployeeId = (
+export const getAllEmployeesByPermission = (
+  permission: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/accounts/v1/users/permissions/${permission}`);
+};
+
+export const updateEmployeeRole = (
   employeeId: string,
   roles: string[]
 ): Promise<AxiosResponse> => {
-  return axiosInstance.patch(`/accounts/v1/users/${employeeId}/roles`, {
+  return axiosInstance.put(`/accounts/v1/users/roles/${employeeId}`, {
     roles,
   });
 };
@@ -230,20 +237,23 @@ export const statusChange = (
 export const getHealthInsuranceDetails = (
   employeeId: string
 ): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/finance/v1/health-insurance/${employeeId}`);
+  return axiosInstance.get(`/finance/v1/health-insurances/${employeeId}`);
 };
 
 export const updateHealthInsuranceDetails = (
   employeeId: string,
   data: any
 ): Promise<AxiosResponse> => {
-  return axiosInstance.put(`/finance/v1/health-insurance/${employeeId}`, data);
+  return axiosInstance.put(
+    `/finance/v1/health-insurances/employee/${employeeId}`,
+    data
+  );
 };
 
 export const postHealthInsuranceDetails = (
   data: any
 ): Promise<AxiosResponse> => {
-  return axiosInstance.post(`/finance/v1/health-insurance`, data);
+  return axiosInstance.post(`/finance/v1/health-insurances`, data);
 };
 
 export const postInventory = (data: any): Promise<AxiosResponse> => {
@@ -318,6 +328,66 @@ export const putRole = (id: string, data: any): Promise<AxiosResponse> => {
 
 export const deleteRole = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/accounts/v1/roles/${id}`);
+};
+
+export const getAllApplicantList = (): Promise<AxiosResponse> => {
+  return axiosInstance.get('/recruitments/v1/applicants');
+};
+
+export const postApplicant = (data: FormData): Promise<AxiosResponse> => {
+  return axiosInstance.post('/recruitments/v1/applicants', data);
+};
+
+export const downloadApplicantResume = (
+  fileId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/recruitments/v1/applicants/resume/${fileId}`, {
+    responseType: 'blob',
+  });
+};
+
+export const changeApplicationStatus = (
+  applicantId: string,
+  status: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(
+    `/recruitments/v1/applicants/${applicantId}/status/${status}`
+  );
+};
+export const referApplicant = (data: FormData): Promise<AxiosResponse> => {
+  return axiosInstance.post('/recruitments/v1/referrals', data);
+};
+
+export const getMyReferrals = (): Promise<AxiosResponse> => {
+  return axiosInstance.get('/recruitments/v1/referrals');
+};
+
+export const downloadReferralResume = (
+  fileId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/recruitments/v1/referrals/${fileId}`, {
+    responseType: 'blob',
+  });
+};
+
+export const postComment = (data: any) => {
+  return axiosInstance.post('/recruitments/v1/applicants/comments', data);
+};
+
+export const assignInterviewer = (
+  applicantId: string,
+  interviewer: IAssignedInterviewer
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(
+    `/recruitments/v1/applicants/${applicantId}/assign-interviewer`,
+    interviewer
+  );
+};
+
+export const getApplicantById = (
+  applicantId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/recruitments/v1/applicants/${applicantId}`);
 };
 
 export const updateKycDetails = (

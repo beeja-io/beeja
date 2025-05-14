@@ -3,7 +3,7 @@ package com.beeja.api.financemanagementservice.serviceImpl;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.Availability;
 import com.beeja.api.financemanagementservice.enums.Device;
-import com.beeja.api.financemanagementservice.exceptions.DuplicateProductIdException;
+import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.repository.InventoryRepository;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
@@ -93,7 +93,7 @@ public class InventoryServiceImplTest {
     deviceDetails.setProductId("P001");
     when(inventoryRepository.findByProductId("P001")).thenReturn(Optional.of(new Inventory()));
     assertThrows(
-        DuplicateProductIdException.class, () -> inventoryService.addDevice(deviceDetails));
+            DuplicateDataException.class, () -> inventoryService.addDevice(deviceDetails));
   }
 
   @Test
@@ -103,6 +103,7 @@ public class InventoryServiceImplTest {
     inventory.setProvider("Google");
     inventory.setAvailability(Availability.NO);
     inventory.setOs("NA");
+    inventory.setRAM("NA");
     List<Inventory> expectedInventories = new ArrayList<>();
     expectedInventories.add(inventory);
 
@@ -111,12 +112,13 @@ public class InventoryServiceImplTest {
     query.addCriteria(Criteria.where("provider").regex("Google", "i"));
     query.addCriteria(Criteria.where("availability").is("NO"));
     query.addCriteria(Criteria.where("os").regex("NA", "i"));
+    query.addCriteria(Criteria.where("RAM").regex("NA", "i"));
     query.skip(0).limit(10);
 
     when(mongoTemplate.find(any(Query.class), eq(Inventory.class))).thenReturn(expectedInventories);
     List<Inventory> result =
         inventoryService.filterInventory(
-            1, 10, Device.MOBILE, "Google", Availability.NO, "NA", "NA");
+            1, 10, Device.MOBILE, "Google", Availability.NO, "NA","NA", "NA");
     verify(mongoTemplate).find(any(Query.class), eq(Inventory.class));
     assertNotNull(result);
     assertEquals(1, result.size());
@@ -150,7 +152,7 @@ public class InventoryServiceImplTest {
     updatedDeviceDetails.setProductId("P001");
     when(inventoryRepository.findByProductId("P001")).thenReturn(Optional.of(new Inventory()));
     assertThrows(
-        DuplicateProductIdException.class,
+            DuplicateDataException.class,
         () -> inventoryService.updateDeviceDetails(updatedDeviceDetails, "1"));
   }
 
@@ -187,7 +189,7 @@ public class InventoryServiceImplTest {
 
   @Test
   void testGetTotalInventorySize_NoFilters() {
-    long totalSize = inventoryService.getTotalInventorySize(null, null, null, null, null, null);
+    long totalSize = inventoryService.getTotalInventorySize(null, null, null, null, null, null,null);
     assertEquals(0, totalSize, "Total inventory size should be zero when no filters are applied.");
   }
 
@@ -198,16 +200,18 @@ public class InventoryServiceImplTest {
     String os = "Android";
     String organizationId = "org123";
     String provider = "Amazon";
+    String RAM = "12GB";
     Query query = new Query();
     query.addCriteria(Criteria.where("device").is(device));
     query.addCriteria(Criteria.where("availability").is(availability));
     query.addCriteria(Criteria.where("os").is(os));
+    query.addCriteria(Criteria.where("RAM").is(RAM));
     query.addCriteria(Criteria.where("organizationId").is(organizationId));
     query.addCriteria(Criteria.where("provider").is(provider));
     when(mongoTemplate.count(query, Inventory.class)).thenReturn(40L);
     Long result =
         inventoryService.getTotalInventorySize(
-            device, provider, availability, os, organizationId, "");
+            device, provider, availability, os, RAM ,organizationId, "");
     assertEquals(40L, result);
     verify(mongoTemplate).count(query, Inventory.class);
   }

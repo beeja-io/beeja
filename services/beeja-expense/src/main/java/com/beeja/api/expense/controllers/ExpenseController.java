@@ -6,6 +6,8 @@ import com.beeja.api.expense.exceptions.OrganizationMismatchException;
 import com.beeja.api.expense.modal.Expense;
 import com.beeja.api.expense.requests.CreateExpense;
 import com.beeja.api.expense.requests.ExpenseUpdateRequest;
+import com.beeja.api.expense.response.ExpenseDefaultValues;
+import com.beeja.api.expense.response.ExpenseValues;
 import com.beeja.api.expense.service.ExpenseService;
 import com.beeja.api.expense.utils.Constants;
 import com.beeja.api.expense.utils.UserContext;
@@ -42,28 +44,14 @@ public class ExpenseController {
   @DeleteMapping("/{expenseId}")
   @HasPermission(Constants.DELETE_EXPENSE)
   public ResponseEntity<?> deleteExpense(@PathVariable String expenseId) throws Exception {
-    try {
-      Expense deletedExpense = expenseService.deleteExpense(expenseId);
-      return ResponseEntity.ok(deletedExpense);
-    } catch (ExpenseNotFound e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+    return ResponseEntity.ok(expenseService.deleteExpense(expenseId));
   }
 
   @PutMapping(value = "/{expenseId}", consumes = "multipart/form-data")
   @HasPermission(Constants.UPDATE_EXPENSE)
   public ResponseEntity<Object> updateExpense(
-      @PathVariable String expenseId, ExpenseUpdateRequest updatedExpense) {
-    try {
-      Expense expense = expenseService.updateExpense(expenseId, updatedExpense);
-      return new ResponseEntity<>(expense, HttpStatus.OK);
-    } catch (OrganizationMismatchException e) {
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.FORBIDDEN);
-    } catch (Exception e) {
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+      @PathVariable String expenseId, ExpenseUpdateRequest updatedExpense) throws Exception {
+    return ResponseEntity.ok(expenseService.updateExpense(expenseId,updatedExpense));
   }
 
   @GetMapping("/expenses/{expenseId}/status")
@@ -83,16 +71,17 @@ public class ExpenseController {
   public ResponseEntity<?> filterExpenses(
       @RequestParam(name = "startDate", required = false) Date startDate,
       @RequestParam(name = "endDate", required = false) Date endDate,
-      @RequestParam(name = "department", required = false) String department,
+      @RequestParam(name = "department", required = false) List<String> department,
       @RequestParam(name = "filterBasedOn", defaultValue = "expenseDate") String filterBasedOn,
-      @RequestParam(name = "modeOfPayment", required = false) String modeOfPayment,
-      @RequestParam(name = "expenseType", required = false) String expenseType,
-      @RequestParam(name = "expenseCategory", required = false) String expenseCategory,
+      @RequestParam(name = "modeOfPayment", required = false) List<String> modeOfPayment,
+      @RequestParam(name = "expenseType", required = false) List<String> expenseType,
+      @RequestParam(name = "expenseCategory", required = false) List<String> expenseCategory,
       @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
       @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
       @RequestParam(name = "sortBy", required = false) String sortBy,
-      @RequestParam(name = "ascending", defaultValue = "true") boolean ascending) {
-    try {
+      @RequestParam(name = "settlementStatus", required = false) Boolean settlementStatus,
+      @RequestParam(name = "ascending", defaultValue = "true") boolean ascending) throws Exception {
+
       Calendar calendar = Calendar.getInstance();
 
       calendar.set(Calendar.DAY_OF_MONTH, 1);
@@ -131,6 +120,7 @@ public class ExpenseController {
               modeOfPayment,
               expenseType,
               expenseCategory,
+              settlementStatus,
               UserContext.getLoggedInUserOrganization().get("id").toString()));
       metadata.put(
           "totalSize",
@@ -142,6 +132,7 @@ public class ExpenseController {
               modeOfPayment,
               expenseType,
               expenseCategory,
+              settlementStatus,
               UserContext.getLoggedInUserOrganization().get("id").toString()));
       List<Expense> filteredExpenses =
           expenseService.getFilteredExpenses(
@@ -156,12 +147,18 @@ public class ExpenseController {
               pageNumber,
               pageSize,
               sortBy,
+              settlementStatus,
               ascending);
       expenses.put("metadata", metadata);
       expenses.put("expenses", filteredExpenses);
       return new ResponseEntity<>(expenses, HttpStatus.OK);
-    } catch (Exception e) {
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  }
+
+  @GetMapping("/expense-values")
+  public ResponseEntity<ExpenseValues> getExpenseDefaultValues() {
+    ExpenseValues expenseDefaultValues =
+        expenseService.getExpenseDefaultValues(
+            UserContext.getLoggedInUserOrganization().get("id").toString());
+    return ResponseEntity.ok(expenseDefaultValues);
   }
 }

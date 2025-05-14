@@ -1,0 +1,37 @@
+server:
+  servlet:
+    context-path: /employees
+  port: ${EMPLOYEES_SERVICE_PORT}
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
+  application:
+    name: employee-service
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+      database: ${EMPLOYEES_MONGODB_DB_NAME}
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}
+
+# actuator
+management:
+  endpoints.web.exposure.include: health,info
+  info.env.enabled: true
+info:
+  application.name: ${spring.application.name}
+
+client-urls:
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
+  fileService: ${FILE_SERVICE_BASE_URL}/files
+
+
+jwt:
+  secret: ${JWT_SECRET_KEY}

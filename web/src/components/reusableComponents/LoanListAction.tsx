@@ -58,7 +58,7 @@ export const LoanAction: React.FC<ActionProps> = ({
       fetchLoans();
       setIsResponseLoading(false);
       handleApproveMessage();
-    } catch (error) {
+    } catch {
       setIsResponseLoading(false);
     }
   };
@@ -74,7 +74,7 @@ export const LoanAction: React.FC<ActionProps> = ({
       fetchLoans();
       setIsResponseLoading(false);
       handleRejectMessage();
-    } catch (error) {
+    } catch {
       setIsResponseLoading(false);
     }
   };

@@ -15,4 +15,6 @@ public interface OrganizationPatternService {
   void deletePatternByPatternIdAndPatternType(String patternId, String patternType);
 
   List<OrganizationPattern> getPatternsByPatternType(String patternType) throws Exception;
+
+  OrganizationPattern getActivePatternByPatternType(String patternType) throws Exception;
 }

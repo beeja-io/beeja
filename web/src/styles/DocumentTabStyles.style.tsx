@@ -95,6 +95,10 @@ export const TableListContainer = styled.section`
   &.overFlowScroll {
     overflow: scroll;
   }
+
+  &.bgTable {
+    background-color: white;
+  }
 `;
 export const TableList = styled.table`
   border: 0;
@@ -185,6 +189,9 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
 
   label {
     font-size: 14px;
+  }
+  input {
+    cursor: text;
   }
   .selectoption {
     outline: none;
@@ -330,7 +337,8 @@ export const DropdownOption = styled.div`
   position: relative;
   width: 200px;
   text-decoration: none;
-  color: #111827; //not in theme but in figma
+  //color: #111827; //not in theme but in figma
+  color: ${(props) => props.theme.colors.blackColors.black4};
   cursor: pointer;
   font-size: 14px;
   font-style: normal;
@@ -378,7 +386,7 @@ export const ActionMenuContent = styled.div`
   right: 100%;
   transform: translateY(-70%);
   background-color: ${(props) => props.theme.colors.blackColors.white};
-  box-shadow: 0 8px 16px rgba(12, 175, 96, 0.2);
+  // box-shadow: 0 8px 16px rgba(12, 175, 96, 0.2);
 `;
 
 export const ActionMenuOption = styled.div`
@@ -416,6 +424,12 @@ export const FileUploadForm = styled.div`
   justify-content: space-between;
   width: 100%;
 
+  form {
+    min-height: 80vh;
+    max-height: 100svh;
+    overflow-y: scroll;
+    padding-right: 10px;
+  }
   .infoText {
     color: ${(props) => props.theme.colors.grayColors.gray7};
     font-size: 12px;
@@ -424,7 +438,7 @@ export const FileUploadForm = styled.div`
 
 export const FileUploadField = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 16px 20px;
   border: 2px dashed ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 10px;
@@ -441,6 +455,10 @@ export const FileUploadField = styled.div`
 
   .textInInput {
     color: #a0aec0;
+  }
+
+  .file-info-text {
+    font-size: 12px;
   }
 
   &.expenseReceiptUpload {
@@ -538,7 +556,7 @@ export const NoDocsContainer = styled.div`
   margin: 68px 0px 130px 0px;
 
   .heading {
-    color: 68px 0px 130px 0px;
+    color: ${(props) => props.theme.colors.blackColors.black4};
     text-align: center;
     font-family: Nunito;
     font-size: 32px;

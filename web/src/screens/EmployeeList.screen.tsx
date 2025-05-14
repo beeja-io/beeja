@@ -5,7 +5,6 @@ import {
   HighlightedBoxes,
 } from '../styles/CommonStyles.style';
 
-import { departmentOptions } from '../utils/departmentOptions';
 import { FilterSection } from '../styles/ExpenseListStyles.style';
 import {
   EmployeeListContainer,
@@ -42,6 +41,7 @@ import {
   getEmployeesCount,
   downloadEmployeeFile,
   getOrganizationValuesByKey,
+  fetchEmployeeDetailsByEmployeeId,
 } from '../service/axiosInstance';
 import { ApplicationContext } from '../context/ApplicationContext';
 import { EMPLOYEE_MODULE } from '../constants/PermissionConstants';
@@ -57,6 +57,7 @@ import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { toast } from 'sonner';
 import CopyPasswordPopup from '../components/directComponents/CopyPasswordPopup.component';
 import { CreatedUserEntity } from '../entities/CreatedUserEntity';
+import { OrgDefaults } from '../entities/OrgDefaultsEntity';
 
 const EmployeeList = () => {
   const { t } = useTranslation();
@@ -76,6 +77,10 @@ const EmployeeList = () => {
   const [EmployeementTypeFilter, setEmployeementTypeFilter] = useState('');
   const [JobTitleFilter, setJobTitleFilter] = useState<string>('');
   const [EmployeeStatusFilter, setEmployeeStatusFilter] = useState<string>('');
+
+  const [employeeTypes, setEmployeeTypes] = useState<OrgDefaults>();
+  const [departmentOptions, setDepartmentOptions] = useState<OrgDefaults>();
+  const [jobTitles, setJobTitles] = useState<OrgDefaults>();
 
   const handleDepartmentChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -110,42 +115,33 @@ const EmployeeList = () => {
   const [employeeImages, setEmployeeImages] = useState<Map<string, string>>(
     new Map()
   );
-
+  const [employeesWithProfilePictures, setEmployeesWithProfilePictures] = useState<Set<string>>(new Set());
   const fetchEmployeeImages = async () => {
     const imageUrls = new Map<string, string>();
+    const hasProfilePicture = new Set<string>();
 
     if (finalEmpList) {
       const promises = finalEmpList.map(async (emp) => {
-        const profilePictureId = emp.employee.profilePictureId;
-
+        const employeeId = emp.employee.employeeId;
+        const response = await fetchEmployeeDetailsByEmployeeId(employeeId);
+        const profilePictureId = response.data.employee.profilePictureId;
         if (profilePictureId) {
           try {
-            const response = await downloadEmployeeFile(profilePictureId);
-
-            if (!response.data || response.data.size === 0) {
-              throw new Error('Received empty or invalid blob data');
-            }
-
-            return new Promise<void>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const imageUrl = reader.result as string;
-                imageUrls.set(emp.employee.employeeId, imageUrl);
-                resolve();
-              };
-              reader.onerror = () => {
-                reject(new Error('Error converting blob to base64'));
-              };
-              reader.readAsDataURL(response.data);
-            });
+            const fileResponse = await downloadEmployeeFile(profilePictureId);
+            const imageUrl = URL.createObjectURL(fileResponse.data);
+            imageUrls.set(employeeId, imageUrl);
+            hasProfilePicture.add(employeeId);
           } catch (error) {
-            throw new Error('Error fetching profile image:');
+            console.error(`Error fetching profile image for employee ${employeeId}:`, error);
+            imageUrls.set(employeeId, '');
           }
+        } else {
+          imageUrls.set(employeeId, '');
         }
       });
       await Promise.all(promises);
-
       setEmployeeImages(new Map(imageUrls));
+      setEmployeesWithProfilePictures(hasProfilePicture);
     }
   };
 
@@ -153,11 +149,41 @@ const EmployeeList = () => {
   useEffect(() => {
     if (finalEmpList) {
       setLoadingData(true);
+      fetchEmployeeTypes();
+      fetchDepartmentOptions();
+      fetchJobTitles();
       fetchEmployeeImages();
       setLoadingData(false);
     }
   }, [finalEmpList]);
   /* eslint-enable react-hooks/exhaustive-deps */
+
+  const fetchEmployeeTypes = async () => {
+    try {
+      const response = await getOrganizationValuesByKey('employmentTypes');
+      setEmployeeTypes(response.data);
+    } catch {
+      setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES'));
+    }
+  };
+
+  const fetchDepartmentOptions = async () => {
+    try {
+      const response = await getOrganizationValuesByKey('departments');
+      setDepartmentOptions(response.data);
+    } catch {
+      setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
+    }
+  };
+
+  const fetchJobTitles = async () => {
+    try {
+      const response = await getOrganizationValuesByKey('jobTitles');
+      setJobTitles(response.data);
+    } catch {
+      setError(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
+    }
+  };
 
   const fetchEmployees = useCallback(async () => {
     setLoadingData(true);
@@ -184,12 +210,12 @@ const EmployeeList = () => {
       setTotalItems(response.data.totalSize);
       updateEmployeeList(allEmployees);
       if (!allEmployees || allEmployees.length === 0) {
-        setError('No employees found.');
+        setError(t('NO_EMPLYEES_FOUND'));
       } else {
         setError(null);
       }
-    } catch (error) {
-      setError('ERROR_WHILE_FETCHING_EMPLOYEES');
+    } catch {
+      setError(t('ERROR_WHILE_FETCHING_EMPLOYEES'));
     } finally {
       setLoadingData(false);
     }
@@ -201,6 +227,7 @@ const EmployeeList = () => {
     JobTitleFilter,
     EmployeeStatusFilter,
     updateEmployeeList,
+    t,
   ]);
 
   const fetchEmployeeCount = async () => {
@@ -208,12 +235,13 @@ const EmployeeList = () => {
       const response = await getEmployeesCount();
       setEmployeeCount(response.data);
     } catch (error) {
-      setError('ERROR_WHILE_FETCHING_EMPLOYEE_COUNT');
+      setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_COUNT'));
     }
   };
 
   useEffect(() => {
     fetchEmployeeCount();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -245,7 +273,17 @@ const EmployeeList = () => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
   };
+  useEffect(() => {
+    if (isCreateEmployeeModelOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
 
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCreateEmployeeModelOpen]);
   return (
     <DynamicSpace>
       <EmployeeListContainer>
@@ -322,72 +360,88 @@ const EmployeeList = () => {
           </EmployeeListFilterSection> */}
 
           <FilterSection>
-            <select
-              className="selectoption"
-              name="EmployeeDepartment"
-              value={departmentFilter}
-              onChange={(e) => {
-                handleDepartmentChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Department</option>{' '}
-              {departmentOptions.employeeDepartments.map((department) => (
-                <option key={department} value={department}>
-                  {department}
-                </option>
-              ))}
-            </select>
-            <select
-              className="selectoption"
-              name="JobTitle"
-              value={JobTitleFilter}
-              onChange={(e) => {
-                handleJobTitleChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">JobTitle</option>{' '}
-              {departmentOptions.jobTitles.map((jobTitle) => (
-                <option key={jobTitle} value={jobTitle}>
-                  {jobTitle}
-                </option>
-              ))}
-            </select>
+            {departmentOptions && (
+              <select
+                className="selectoption"
+                name="EmployeeDepartment"
+                value={departmentFilter}
+                onChange={(e) => {
+                  handleDepartmentChange(e);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Department</option>{' '}
+                {departmentOptions?.values.map((department) => (
+                  <option key={department.value} value={department.value}>
+                    {t(department.value)}
+                  </option>
+                ))}
+              </select>
+            )}
+            {jobTitles && (
+              <select
+                className="selectoption"
+                name="JobTitle"
+                value={JobTitleFilter}
+                onChange={(e) => {
+                  handleJobTitleChange(e);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Job Title</option>{' '}
+                {jobTitles?.values.map((jobTitle) => (
+                  <option key={jobTitle.value} value={jobTitle.value}>
+                    {t(jobTitle.value)}
+                  </option>
+                ))}
+              </select>
+            )}
 
-            <select
-              className="selectoption"
-              name="EmployementType"
-              value={EmployeementTypeFilter}
-              onChange={(e) => {
-                handleEmploymentTypeChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">EmployementType</option>
-              {departmentOptions.employmentTypes.map((employementType) => (
-                <option key={employementType} value={employementType}>
-                  {employementType}
-                </option>
-              ))}
-            </select>
+            {employeeTypes && (
+              <select
+                className="selectoption"
+                name="EmployementType"
+                value={EmployeementTypeFilter}
+                onChange={(e) => {
+                  handleEmploymentTypeChange(e);
+                  setCurrentPage(1);
+                }}
+              >
+                <option value="">Employement Type</option>
+                {employeeTypes?.values.map((employementType) => (
+                  <option
+                    key={employementType.value}
+                    value={employementType.value}
+                  >
+                    {t(employementType.value)}
+                  </option>
+                ))}
+              </select>
+            )}
 
-            <select
-              className="selectoption"
-              name="employeeStatus"
-              value={EmployeeStatusFilter}
-              onChange={(e) => {
-                handleEmployeeStatusChange(e);
-                setCurrentPage(1);
-              }}
-            >
-              <option value="">Status</option>{' '}
-              {departmentOptions.status.map((employeStatus) => (
-                <option key={employeStatus} value={employeStatus}>
-                  {employeStatus}
-                </option>
-              ))}
-            </select>
+            {user &&
+              (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
+                hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) ||
+                hasPermission(
+                  user,
+                  EMPLOYEE_MODULE.UPDATE_ROLES_AND_PERMISSIONS
+                ) ||
+                hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES) ||
+                hasPermission(user, EMPLOYEE_MODULE.UPDATE_EMPLOYEE)) && (
+                <select
+                  className="selectoption"
+                  name="employeeStatus"
+                  value={EmployeeStatusFilter}
+                  onChange={(e) => {
+                    handleEmployeeStatusChange(e);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="">Status</option>{' '}
+                  <option value="Active">{t('ACTIVE')}</option>
+                  <option value="Inactive">{t('INACTIVE')}</option>
+                </select>
+              )}
           </FilterSection>
           <br />
           <TableContainer>
@@ -434,7 +488,7 @@ const EmployeeList = () => {
                         }
                       >
                         <td className="profilePicArea">
-                          {employeeImages.has(emp.employee.employeeId) ? (
+                          {employeesWithProfilePictures.has(emp.employee.employeeId) ? (
                             <Monogram
                               className="initials"
                               style={{
@@ -507,7 +561,7 @@ const EmployeeList = () => {
           {error && <div className="error-message">{error}</div>}
         </DynamicSpaceMainContainer>
 
-        {isCreateEmployeeModelOpen && (
+        {isCreateEmployeeModelOpen && departmentOptions && (
           <SideModal
             handleClose={
               isResponseLoading ? () => {} : handleIsCreateEmployeeModal
@@ -520,6 +574,7 @@ const EmployeeList = () => {
                 handleClose={handleIsCreateEmployeeModal}
                 reloadEmployeeList={fetchEmployees}
                 refetchEmployeeCount={fetchEmployeeCount}
+                departmentOptions={departmentOptions}
               />
             }
           />
@@ -537,6 +592,7 @@ type CreateAccountProps = {
   refetchEmployeeCount: () => void;
   setIsResponseLoading: (param: boolean) => void;
   isResponseLoading: boolean;
+  departmentOptions: OrgDefaults;
 };
 
 const CreateAccount: React.FC<CreateAccountProps> = (props) => {
@@ -546,6 +602,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     lastName: '',
     email: '',
     employmentType: '',
+    department: '',
   });
   const [organizationValues, setOrganizationValues] =
     useState<OrganizationValues | null>(null);
@@ -590,7 +647,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleCreateEmployee = async (e: any) => {
     e.preventDefault();
     const newErrors = {
@@ -614,6 +670,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             : '',
       employmentType:
         formData.employmentType === '' ? EMPLOYMENT_TYPRE_REQUIRED : '',
+      department: formData.department === '' ? 'DEPARTMENT_REQUIRED' : '',
     };
 
     setErrors(newErrors);
@@ -781,6 +838,39 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             </ValidationText>
           )}
         </SelectOption>
+
+        <SelectOption>
+          <label>
+            {t('SELECT_DEPARTMENT')}{' '}
+            <ValidationText className="star">*</ValidationText>
+          </label>
+          <select
+            className="selectoption"
+            name="department"
+            id="department"
+            onKeyPress={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault();
+              }
+            }}
+            onChange={handleChange}
+          >
+            <option value="">{t('SELECT_DEPARTMENT')}</option>
+            {props.departmentOptions &&
+              props.departmentOptions.values &&
+              props.departmentOptions.values.map((department, index) => (
+                <option key={index} value={department.value}>
+                  {t(department.value)}
+                </option>
+              ))}
+          </select>
+          {errors.employmentType && (
+            <ValidationText>
+              <AlertISVG /> {errors.employmentType}
+            </ValidationText>
+          )}
+        </SelectOption>
+
         <span>
           <ValidationText className="info">
             {t('EMPLOYEE_ID_WILL_BE_GENERATED_BASED_ON_PATTERN')}

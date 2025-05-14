@@ -38,6 +38,7 @@ import {
   INVENTORY_MODULE,
   LOAN_MODULE,
   ORGANIZATION_MODULE,
+  RECRUITMENT_MODULE,
 } from '../../constants/PermissionConstants';
 import ServiceUnavailable from '../../screens/ServiceUnavailable.screen';
 import { usePreferences } from '../../context/PreferencesContext';
@@ -45,6 +46,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { hasFeature } from '../../utils/featureCheck';
 import { useFeatureToggles } from '../../context/FeatureToggleContext';
 import { EFeatureToggles } from '../../entities/FeatureToggle';
+import { UserBoxWithLinkSVG } from '../../svgs/CommonSvgs.svs';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import { t } from 'i18next';
 
@@ -107,8 +109,8 @@ const CompleteNavBar = () => {
                   <BeejaIconSvg />
                   <div className="logo_name" style={{ fontFamily: 'Rubik' }}>
                     {' '}
-                    &nbsp; BEE
-                    <span className="logo_name logo_name_blue">JA</span>
+                    &nbsp; {t('BEE')}
+                    <span className="logo_name logo_name_blue">{t('JA')}</span>
                   </div>
                   <span className="btn" onClick={toggleSidebar}>
                     <NavCloseArrow isOpen={sidebarOpen ? false : true} />
@@ -334,6 +336,63 @@ const CompleteNavBar = () => {
                       />
                     )}
 
+                  {hasFeature(
+                    featureToggles.featureToggles,
+                    EFeatureToggles.RECRUITMENT_MANAGEMENT
+                  ) && (
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="#"
+                      tooltipName="Recruitment"
+                      linkName="Recruitment"
+                      svgIcon={
+                        <UserBoxWithLinkSVG
+                          props={{
+                            isActive:
+                              openDropdown === 'recruitment' ||
+                              currentPath === '/recruitment',
+                          }}
+                        />
+                      }
+                      additionalSvgIcon={<ChevronDownSVG />}
+                      dropdownItems={[
+                        ...(hasPermission(
+                          user,
+                          RECRUITMENT_MODULE.GET_APPLICATIONS
+                        ) ||
+                        hasPermission(
+                          user,
+                          RECRUITMENT_MODULE.GET_ALL_APPLICANTS
+                        ) ||
+                        hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
+                          ? [
+                              {
+                                name: 'Hiring',
+                                link: '/recruitment/hiring-management',
+                              },
+                            ]
+                          : []),
+                        ...(hasPermission(
+                          user,
+                          RECRUITMENT_MODULE.ACCESS_REFFERRAlS
+                        )
+                          ? [
+                              {
+                                name: 'Referrals',
+                                link: '/recruitment/my-referrals',
+                              },
+                            ]
+                          : []),
+                      ]}
+                      isDropdownOpen={openDropdown === 'services'}
+                      setDropdownOpen={() => {
+                        setOpenDropdown((prev) =>
+                          prev === 'services' ? null : 'services'
+                        );
+                      }}
+                      hasAdditionalSvg
+                    />
+                  )}
                   <ListItem
                     isSideBarOpen={sidebarOpen}
                     linkTo="#"
@@ -348,7 +407,7 @@ const CompleteNavBar = () => {
                     dropdownItems={[
                       {
                         name: 'HOLIDAY_LIST',
-                        link: 'https://docs.google.com/spreadsheets/d/1eqcs0PtE7R4sN69BLBur8JoKXSbmYnTpNQygnolQ37o/edit#gid=387637465',
+                        link: 'https://docs.google.com/spreadsheets/d/1bdXKR23gAemnA7vKfg_2OUmGm-alFE3v6Devo6b5nxM/edit?gid=387637465#gid=387637465',
                       },
                     ]}
                     isDropdownOpen={openDropdown === 'general'}

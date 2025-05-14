@@ -1,5 +1,6 @@
 import { SetStateAction, useState } from 'react';
 import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { ChevronleftSVG, ChevronRightSVG } from '../../svgs/CommonSvgs.svs';
 import {
   Weekday,
@@ -263,7 +264,6 @@ export const InlineCalendar = ({
       (value: SetStateAction<number>): void;
       (value: SetStateAction<number>): void;
       (value: SetStateAction<number>): void;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (arg0: (prevMonth: any) => number): void;
     },
     setYear: {
@@ -271,7 +271,6 @@ export const InlineCalendar = ({
       (value: SetStateAction<number>): void;
       (value: SetStateAction<number>): void;
       (value: SetStateAction<number>): void;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (arg0: (prevYear: any) => any): void;
     },
     currentMonth: number,
@@ -307,7 +306,7 @@ export const InlineCalendar = ({
   ) => {
     return () => handleMonthChange(setMonth, setYear, month, isIncrement);
   };
-
+  const { t } = useTranslation();
   const handlePrevFirstMonth = createMonthHandlers(
     setFirstMonth,
     setFirstMonthYear,
@@ -335,7 +334,7 @@ export const InlineCalendar = ({
   return (
     <CalendarContainer>
       <CalendarHeader>
-        Set Date
+        {t('SET_DATE')}
         <HeaderLine />
       </CalendarHeader>
 

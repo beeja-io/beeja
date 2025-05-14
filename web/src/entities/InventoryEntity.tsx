@@ -1,11 +1,8 @@
-import {
-  Availability,
-  Device,
-} from '../components/reusableComponents/InventoryEnums.component';
+import { Availability } from '../components/reusableComponents/InventoryEnums.component';
 
 export interface DeviceDetails {
   id: string;
-  device: Device;
+  device: string;
   provider: string;
   model: string;
   type: string;
@@ -22,7 +19,7 @@ export interface DeviceDetails {
 }
 
 export interface IUpdateDeviceDetails {
-  device: Device | null;
+  device: string | null;
   provider: string | null;
   model: string | null;
   type: string | null;

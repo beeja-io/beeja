@@ -1,0 +1,53 @@
+server:
+  servlet:
+    session:
+      cookie:
+        path: /
+    context-path: /accounts
+  port: ${ACCOUNTS_SERVICE_PORT}
+spring:
+  application:
+    name: accounts-service
+  data:
+    mongodb:
+      auto-index-creation: true
+      uri: ${MONGODB_URI}
+      database: ${ACCOUNTS_MONGODB_DB_NAME}
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}
+
+
+client-urls:
+  employeeService: ${EMPLOYEE_SERVICE_BASE_URL}/employees
+  fileService: ${FILE_SERVICE_BASE_URL}/files
+  expenseService: ${EXPENSE_SERVICE_BASE_URL}/expenses
+
+# actuator
+management:
+  metrics:
+    enable:
+      system: false
+    binders:
+      jvm:
+        enabled: false
+      system:
+        enabled: false
+  endpoint:
+    health:
+      show-details: always
+info:
+  application.name: ${spring.application.name}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    url: /openApi.yaml
+
+jwt:
+  secret: ${JWT_SECRET_KEY}

@@ -1,0 +1,44 @@
+server:
+  servlet:
+    context-path: /recruitments
+  port: ${RECRUITMENT_SERVICE_PORT}
+spring:
+  application:
+    name: recruitment-service
+  data:
+    mongodb:
+      uri: ${RECRUITMENT_MONGO_URI}
+      database: ${RECRUITMENT_MONGODB_DB_NAME}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}
+
+# actuator
+management:
+  endpoints.web.exposure.include: health,info
+  info.env.enabled: true
+info:
+  application.name: ${spring.application.name}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    url: /openApi.yaml
+
+
+client-urls:
+  accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
+  fileService: ${FILE_SERVICE_BASE_URL}/files
+
+
+jwt:
+  secret: ${JWT_SECRET_KEY}
