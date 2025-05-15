@@ -60,7 +60,7 @@ const UserRoleListAction: React.FC<UserRoleListActionProps> = ({
   }, []);
   useKeyPress(27, () => {
     setDeleteConfirmModal(false);
-   });
+  });
 
   return (
     <>

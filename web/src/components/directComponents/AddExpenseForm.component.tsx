@@ -820,11 +820,11 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
     props.handleClose();
   });
   const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
-   
+
   const handleIsExpenseFormOpen = () => {
     setIsExpenseFormOpen(!isExpenseFormOpen);
   };
- 
+
   return (
     <ExpenseAddFormMainContainer
       onSubmit={

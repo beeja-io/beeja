@@ -8,6 +8,7 @@ public class Constants {
   public static final String ID = "id";
   public static final String NAME = "name";
   public static final String EMAIL = "email";
+    public static final String ADDRESS = "address";
   public static final String DOC_URL = "https://docs.beeja.io/";
   public static final String BEEJA = "BEEJA";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -60,10 +61,16 @@ public class Constants {
   // ========== System Errors ==========
   public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
   public static final String DB_ERROR_IN_SAVING_DETAILS = "Failed to update client details: %s";
+  public static final String FILE_SIZE_EXCEED = "The logo exceeds its maximum permitted size";
   public static final String NO_PERMISSION = " You do not have permission to access this resource ";
 
     // ========== Utility ==========
   public static String format(String message, Object... args) {
     return String.format(message, args);
   }
+
+  public static final String ERROR_IN_LOGO_UPLOAD = "Error in uploading Logo";
+  public static final String FILE_NOT_ALLOWED = "File type not allowed. Allowed types: image/jpeg, image/jpg, image/png, image/webp";
+
+
 }
