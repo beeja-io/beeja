@@ -45,6 +45,8 @@ import tac.beeja.recruitmentapi.utils.UserContext;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,9 +66,29 @@ public class ApplicantServiceImpl implements ApplicantService {
 
   @Override
   public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
+    Query query = new Query();
+    query.addCriteria(Criteria.where("email").is(applicant.getEmail())
+            .and("positionAppliedFor").is(applicant.getPositionAppliedFor())
+            .and("organizationId").is(UserContext.getLoggedInUserOrganization().get("id").toString()));
+    List<Applicant> existingApplicants = mongoTemplate.find(query, Applicant.class);
+    for (Applicant existingApplicant : existingApplicants) {
+      Date createdAt = existingApplicant.getCreatedAt();
+      if (createdAt != null) {
+        LocalDate createdLocalDate = createdAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate sixMonthAgo = LocalDate.now().minusMonths(6);
+        if (createdLocalDate.isAfter(sixMonthAgo)) {
 
-
-    //    accept only pdf, doc and docx for applicant.getResume()
+            log.error("Duplicate application within 6 months detected for email: {} and position: {}",
+                    applicant.getEmail(), applicant.getPositionAppliedFor());
+            throw new BadRequestException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.BAD_REQUEST,
+                            ErrorCode.DUPLICATE_APPLICANT,
+                            "Applicant already applied for this position in the last 6 months."));
+        }
+      }
+    }
+        //    accept only pdf, doc and docx for applicant.getResume()
     if (!applicant.getResume().getContentType().equals("application/pdf")
             && !applicant.getResume().getContentType().equals("application/msword")
             && !applicant.getResume().getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {

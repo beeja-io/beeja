@@ -1,36 +1,36 @@
+import { t } from 'i18next';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ExpenseHeadingSection,
-  ExpenseManagementMainContainer,
-} from '../../styles/ExpenseManagementStyles.style';
-import { useUser } from '../../context/UserContext';
-import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
-import { hasPermission } from '../../utils/permissionCheck';
-import { RECRUITMENT_MODULE } from '../../constants/PermissionConstants';
+import { toast } from 'sonner';
 import { TextInput } from 'web-kit-components';
+import { RECRUITMENT_MODULE } from '../../constants/PermissionConstants';
+import { useUser } from '../../context/UserContext';
+import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
+import {
+  getOrganizationValuesByKey,
+  postApplicant,
+  referApplicant,
+} from '../../service/axiosInstance';
 import { BulkPayslipContainer } from '../../styles/BulkPayslipStyles.style';
+import { Button } from '../../styles/CommonStyles.style';
 import {
   FileUploadField,
   FormFileSelected,
   InputLabelContainer,
   ValidationText,
 } from '../../styles/DocumentTabStyles.style';
-import { noOfYearsExperience } from '../../utils/selectOptions';
-import { useEffect, useState } from 'react';
+import {
+  ExpenseHeadingSection,
+  ExpenseManagementMainContainer,
+} from '../../styles/ExpenseManagementStyles.style';
+import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
+import { FormFileCloseIcon } from '../../svgs/DocumentTabSvgs.svg';
 import {
   FileTextIcon,
   UploadReceiptIcon,
 } from '../../svgs/ExpenseListSvgs.svg';
-import { FormFileCloseIcon } from '../../svgs/DocumentTabSvgs.svg';
-import {
-  getOrganizationValuesByKey,
-  postApplicant,
-  referApplicant,
-} from '../../service/axiosInstance';
-import { toast } from 'sonner';
-import { Button } from '../../styles/CommonStyles.style';
-import { t } from 'i18next';
-import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
+import { hasPermission } from '../../utils/permissionCheck';
+import { noOfYearsExperience } from '../../utils/selectOptions';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 
 type AddNewApplicantProps = {
@@ -139,8 +139,17 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       } else {
         toast.error('Failed to save applicant');
       }
-    } catch {
-      toast.error('An error occurred while saving the applicant');
+    } catch (error: any) {
+      setIsLoading(false);
+      if (error.response?.data?.code === 'DUPLICATE_APPLICANT') {
+        toast.error(
+          props.isReferScreen
+            ? 'A referral has already applied for this position within the past six months.'
+            : 'An application has already applied for this position within the past six month.'
+        );
+      } else {
+        toast.error('An error occurred while saving the applicant');
+      }
     } finally {
       setIsLoading(false);
     }

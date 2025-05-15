@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tac.beeja.recruitmentapi.client.FileClient;
+import tac.beeja.recruitmentapi.exceptions.BadRequestException;
 import tac.beeja.recruitmentapi.exceptions.FeignClientException;
 import tac.beeja.recruitmentapi.exceptions.UnAuthorisedException;
 import tac.beeja.recruitmentapi.model.Applicant;
@@ -49,7 +50,19 @@ public class ReferralServiceImpl implements ReferralService {
     Applicant applicant = null;
     try {
       applicant = applicantService.postApplicant(newApplicant, true);
-    } catch (Exception e) {
+    }  catch (BadRequestException bre) {
+      String errorMessage = "Bad request while creating referral for applicant: " + newApplicant.getEmail();
+      log.error(errorMessage, bre);
+
+      throw new BadRequestException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.BAD_REQUEST,
+                      ErrorCode.DUPLICATE_APPLICANT,
+                      errorMessage
+              )
+      );
+    }
+    catch (Exception e) {
       log.error(Constants.REFERRAL_CREATION_FAILED + newApplicant.getEmail(), e.getMessage());
       throw new Exception(
               BuildErrorMessage.buildErrorMessage(
