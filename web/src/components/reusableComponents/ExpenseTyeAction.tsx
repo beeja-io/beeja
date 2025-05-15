@@ -8,6 +8,7 @@ import {
   ActionMenu,
 } from '../../styles/ExpenseListStyles.style';
 import { OrgValues } from '../../entities/OrgDefaultsEntity';
+import { useTranslation } from 'react-i18next';
 
 interface ActionOption {
   title: string;
@@ -34,6 +35,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
     onActionClick(action, currentExpense);
     setIsOpen(false);
   };
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const openDropdown = () => {
@@ -71,7 +73,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
               onClick={() => handleActionClick(option.title)}
             >
               {option.svg}
-              {option.title}
+              {t(option.title.toUpperCase())}
             </ActionMenuOption>
           ))}
         </ActionMenuContent>

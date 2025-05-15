@@ -82,7 +82,7 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
           .replace(/0/g, '')
           .trim() === '')
     ) {
-      toast.error('Please enter Monitor loan limit (must greater than 0)');
+      toast.error(t('MONITOR_LOAN_LIMIT_ERROR'));
       return;
     }
     props.handleUpdateOrganization(updatedOrganization);
@@ -104,7 +104,7 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
           .replace(/0/g, '')
           .trim() === '')
     ) {
-      toast.error('Please enter Personal loan limit (must greater than 0)');
+      toast.error(t('PERSONAL_LOAN_LIMIT_ERROR'));
       return;
     }
     props.handleUpdateOrganization(updatedOrganization);

@@ -55,8 +55,8 @@ export const SettingsTypes = ({
   } | null>(null);
   const [isCreatedToastMessage, setIsCreatedToastMessage] = useState(false);
   const Actions = [
-    { title: 'Edit', svg: <EditIcon /> },
-    { title: 'Delete', svg: <DeleteIcon /> },
+    { title: t('EDIT'), svg: <EditIcon /> },
+    { title: t('DELETE'), svg: <DeleteIcon /> },
   ];
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const handleOpenModal = () => setIsCreateModalOpen(true);
@@ -84,9 +84,9 @@ export const SettingsTypes = ({
     setActionType(action);
     setNewSettingType(expense.orgValues);
     setIndexvalue(expense.index);
-    if (action === 'Edit') {
+    if (action === t('EDIT')) {
       handleOpenModal();
-    } else if (action === 'Delete') {
+    } else if (action === t('DELETE')) {
       handleDeleteModal();
     }
   };
@@ -119,8 +119,8 @@ export const SettingsTypes = ({
       setIsCreatedToastMessage(true);
       setToastMessage({
         type: 'error',
-        heading: 'Failed To Fetch Type',
-        body: 'Unsuccessfull Fetch Type',
+        heading: t('FAILED_TO_FETCH_TYPE'),
+        body: t('UNSUCCESSFUL_FETCH_TYPE'),
       });
     }
   };
@@ -133,9 +133,9 @@ export const SettingsTypes = ({
       return;
     }
     updatedSettingTypes =
-      actionType === 'Delete'
+      actionType === t('DELETE')
         ? settingTypes?.filter((category) => category.index !== indexvalue)
-        : actionType === 'Edit'
+        : actionType === t('EDIT')
           ? settingTypes?.map((category) =>
               category.index === indexvalue
                 ? { orgValues: newSettingType, index: category.index }
@@ -149,7 +149,7 @@ export const SettingsTypes = ({
               },
             ];
 
-    if (actionType === 'Delete') {
+    if (actionType === t('DELETE')) {
       handleDeleteModal();
     }
     const data = {
@@ -168,25 +168,25 @@ export const SettingsTypes = ({
       setToastMessage({
         type: 'success',
         heading:
-          actionType === 'Delete'
+          actionType === t('DELETE')
             ? `${type} Deleted`
-            : actionType === 'Edit'
+            : actionType === t('EDIT')
               ? `${type} Updated`
               : `${type} Created`,
         body:
-          actionType === 'Delete'
-            ? `${type} has been deleted successfully.`
+          actionType === t('DELETE')
+            ? t('DELETE_SUCCESS', { type })
             : actionType === 'Edit'
-              ? `${type} has been updated successfully.`
-              : `${type} has been created successfully.`,
+              ? t('UPDATE_SUCCESS', { type })
+              : t('CREATE_SUCCESS', { type }),
       });
       setActionType(null);
     } catch (error) {
       setIsCreatedToastMessage(true);
       setToastMessage({
         type: 'error',
-        heading: 'Failed To Create Type',
-        body: 'Unsuccessfull create Type',
+        heading: t('CREATE_TYPE_FAILED_HEADING'),
+        body: t('CREATE_TYPE_FAILED_BODY'),
       });
     }
   };
@@ -197,21 +197,24 @@ export const SettingsTypes = ({
   return (
     <TabContentMainContainer>
       <TabContentMainContainerHeading>
-        <h4>{type}</h4>
+        <h4>{t(type.toUpperCase().replace(/ /g, '_'))}</h4>
         <Button className="submit shadow buttonstyle" onClick={handleOpenModal}>
           <AddNewPlusSVG />
-          {t('ADD')} {type}
+          {t('ADD')} {t(type.toUpperCase().replace(/ /g, '_'))}
         </Button>
       </TabContentMainContainerHeading>
+
       <Hr />
       {/* Table Section */}
       <TableContainer>
         <Table>
           <TableHead>
             <tr className="table-row">
-              <th className="th-type">{type}</th>
-              <th className="th-description">Description</th>
-              <th className="th-action">Action</th>
+              <th className="th-type">
+                {t(type.toUpperCase().replace(/ /g, '_'))}
+              </th>
+              <th className="th-description">{t('DESCRIPTION')}</th>
+              <th className="th-action">{t('ACTION')}</th>
             </tr>
           </TableHead>
           <tbody>
@@ -222,7 +225,7 @@ export const SettingsTypes = ({
               )
               .map((settingTypes) => (
                 <TableBodyRow key={settingTypes.index}>
-                  <td>{settingTypes.orgValues.value}</td>
+                  <td>{t(settingTypes.orgValues.value)}</td>
                   <td>{settingTypes.orgValues.description}</td>
                   <td>
                     <ExpenseTypeAction
@@ -253,16 +256,21 @@ export const SettingsTypes = ({
           handleModalClose={handleCloseModal}
           handleModalSubmit={handleSubmitButton}
           modalHeading={
-            actionType === 'Edit' ? `Edit ${type}` : `Create New ${type}`
+            actionType === 'Edit'
+              ? `${t('EDIT')} ${t(type.toUpperCase().replace(/ /g, '_'))}`
+              : `${t('CREATE_NEW')} ${t(type.toUpperCase().replace(/ /g, '_'))}`
           }
-          modalLeftButtonText="Cancel"
-          modalRightButtonText={actionType === 'Edit' ? 'Update' : 'Create'}
+          modalLeftButtonText={t('CANCEL')}
+          modalRightButtonText={
+            actionType === 'Edit' ? t('UPDATE') : t('CREATE')
+          }
           onChange={handleInputChange}
         >
           <div>
             <InputContainer isValueInvalid={isValueInvalid}>
               <label>
-                {type}:<ValidationText className="star">*</ValidationText>
+                {t(type.toUpperCase().replace(/ /g, '_'))}:
+                <ValidationText className="star">*</ValidationText>
               </label>
               <input
                 type="text"
@@ -300,8 +308,8 @@ export const SettingsTypes = ({
             handleModalClose={handleDeleteModal}
             handleModalLeftButtonClick={handleDeleteModal}
             handleModalSubmit={handleSubmitButton}
-            modalHeading="Delete"
-            modalContent={`Are you sure want to Delete this ${type}`}
+            modalHeading={t('DELETE')}
+            modalContent={t('ARE_YOU_SURE_DELETE', { type })}
           />
         </span>
       )}

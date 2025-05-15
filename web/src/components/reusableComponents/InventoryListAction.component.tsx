@@ -18,6 +18,7 @@ import { INVENTORY_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import { useTranslation } from 'react-i18next';
 
 interface ActionProps {
   options: {
@@ -55,6 +56,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
     setIsDeleteToastMessage(!isDeletedToastMessage);
   };
 
+  const { t } = useTranslation();
   const handleDeleteModal = () => {
     setConfirmDeleteModal(!confirmDeleteModal);
   };
@@ -130,6 +132,8 @@ export const InventoryListAction: React.FC<ActionProps> = ({
         {isOpen && (
           <ActionMenuContent>
             {options.map((option, index) => {
+              const translatedTitle = t(option.title.toUpperCase());
+
               const hasDeletePermission =
                 option.title === 'Delete' &&
                 user &&
@@ -150,7 +154,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
                   onClick={() => handleOptionClick(option.title)}
                 >
                   {option.svg}
-                  {option.title}
+                  {translatedTitle}
                 </ActionMenuOption>
               );
             })}
@@ -163,8 +167,10 @@ export const InventoryListAction: React.FC<ActionProps> = ({
             handleModalLeftButtonClick={handleDeleteModal}
             handleModalClose={handleDeleteModal}
             handleModalSubmit={deleteSelectedDevice}
-            modalHeading="Delete"
-            modalContent={`Are you sure want to Delete the Inventory of ${currentDevice.deviceNumber}`}
+            modalHeading={t('DELETE')}
+            modalContent={t('CONFIRM_DELETE_INVENTORY', {
+              deviceNumber: currentDevice.deviceNumber,
+            })}
           />
         </span>
       )}
@@ -172,15 +178,15 @@ export const InventoryListAction: React.FC<ActionProps> = ({
       {isDeletedToastMessage && (
         <ToastMessage
           messageType="success"
-          messageHeading="Inventory Deleted"
-          messageBody="Inventory Deleted Successfully"
+          messageHeading={t('INVENTORY_DELETED')}
+          messageBody={t('INVENTORY_DELETED_SUCCESSFULLY')}
           handleClose={handleIsDeleteToastMessage}
         />
       )}
       {isEditModalOpen && (
         <span style={{ cursor: 'default' }}>
           <CenterModalMain
-            heading="Edit Inventory"
+            heading={t('EDIT_INVENTORY')}
             modalClose={handleOpenEditModal}
             actualContentContainer={
               <EditInventoryForm

@@ -1,10 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import {
-  LOAN_TYPE,
-  LOAN_TYPE_BE,
-  LoanStatus,
-  LoanStatusBE,
-} from '../../constants/LoanStatus';
+import { LOAN_TYPE_BE, LoanStatusBE } from '../../constants/LoanStatus';
 import { LOAN_MODULE } from '../../constants/PermissionConstants';
 import { useUser } from '../../context/UserContext';
 import { Loan } from '../../entities/LoanEntity';
@@ -45,8 +40,8 @@ const LoanPreview = (props: LoanPreviewProps) => {
             className={'disabledBgWhite'}
             value={
               props.loan.loanType === LOAN_TYPE_BE.MONITOR_LOAN
-                ? LOAN_TYPE.MONITOR_LOAN
-                : LOAN_TYPE.PERSONAL_LOAN
+                ? t('MONITOR_LOAN')
+                : t('PERSONAL_LOAN')
             }
             disabled={true}
           />
@@ -74,7 +69,7 @@ const LoanPreview = (props: LoanPreviewProps) => {
           <label>{t('LOAN_AMOUNT')} </label>
           <TextInput
             className={'disabledBgWhite'}
-            value={`₹ ${props.loan.amount}`}
+            value={`${t('CURRENCY')} ${props.loan.amount}`}
             disabled={true}
           />
         </InputLabelContainer>
@@ -99,7 +94,7 @@ const LoanPreview = (props: LoanPreviewProps) => {
           <label>{t('EMI_AMOUNT')}</label>
           <TextInput
             className={'disabledBgWhite'}
-            value={`₹ ${props.loan.monthlyEMI}`}
+            value={`${t('CURRENCY')} ${props.loan.monthlyEMI}`}
             disabled={true}
           />
         </InputLabelContainer>
@@ -109,10 +104,10 @@ const LoanPreview = (props: LoanPreviewProps) => {
             className={'disabledBgWhite'}
             value={
               props.loan.status === LoanStatusBE.WAITING
-                ? LoanStatus.WAITING
+                ? t('WAITING')
                 : props.loan.status === LoanStatusBE.REJECTED
-                  ? LoanStatus.REJECTED
-                  : LoanStatus.APPROVED
+                  ? t('REJECTED')
+                  : t('APPROVED')
             }
             disabled={true}
           />

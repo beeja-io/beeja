@@ -371,7 +371,7 @@ const EmployeeList = () => {
                   setCurrentPage(1);
                 }}
               >
-                <option value="">Department</option>{' '}
+                <option value="">{t('Department')}</option>{' '}
                 {departmentOptions?.values.map((department) => (
                   <option key={department.value} value={department.value}>
                     {t(department.value)}
@@ -389,7 +389,7 @@ const EmployeeList = () => {
                   setCurrentPage(1);
                 }}
               >
-                <option value="">Job Title</option>{' '}
+                <option value="">{t('JOB_TITLE')}</option>{' '}
                 {jobTitles?.values.map((jobTitle) => (
                   <option key={jobTitle.value} value={jobTitle.value}>
                     {t(jobTitle.value)}
@@ -408,7 +408,7 @@ const EmployeeList = () => {
                   setCurrentPage(1);
                 }}
               >
-                <option value="">Employement Type</option>
+                <option value="">{t('EMPLOYMENT_TYPE')}</option>
                 {employeeTypes?.values.map((employementType) => (
                   <option
                     key={employementType.value}
@@ -529,18 +529,17 @@ const EmployeeList = () => {
                         </td>
                         <td>
                           {emp.employee.jobDetails
-                            ? emp.employee.jobDetails.designation
+                            ? t(emp.employee.jobDetails.designation)
                             : '-'}
                         </td>
                         <td>
-                          {emp.employee.jobDetails &&
-                          emp.employee.jobDetails.employementType
-                            ? emp.employee.jobDetails.employementType
+                          {emp.employee.jobDetails.employementType
+                            ? t(emp.employee.jobDetails.employementType)
                             : '-'}
                         </td>
                         <td>
                           {emp.employee.jobDetails
-                            ? emp.employee.jobDetails.department
+                            ? t(emp.employee.jobDetails.department)
                             : '-'}
                         </td>
                         <td>
@@ -697,7 +696,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             responseData &&
             responseData.startsWith('Employee With Given Id Is Already Found')
           ) {
-            setResponseMessage('EMPLOYEE_ID_ALREADY_FOUND');
+            setResponseMessage(t('EMPLOYEE_ID_ALREADY_FOUND'));
           } else if (
             responseData &&
             responseData.startsWith('User Already Found')
@@ -739,7 +738,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           <TextInput
             type="text"
             name="firstName"
-            placeholder="Ex: John"
+            placeholder={t('EXAMPLE_NAME')}
             value={formData.firstName}
             onChange={handleChange}
             onKeyDown={(e) => {
@@ -763,7 +762,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           <TextInput
             type="text"
             name="lastName"
-            placeholder="Ex: Mark"
+            placeholder={t('EXAMPLE_MARK')}
             value={formData.lastName}
             onChange={handleChange}
             className={`${errors.lastName}` ? 'errorEnabledInput' : ''}
@@ -788,7 +787,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           <TextInput
             type="email"
             name="email"
-            placeholder="Ex: john@techatcore.com"
+            placeholder={t('EXAMPLE_EMAIL')}
             value={formData.email}
             onChange={handleChange}
             className={`${errors.email}` ? 'errorEnabledInput' : ''}

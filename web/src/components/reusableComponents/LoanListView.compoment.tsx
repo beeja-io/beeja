@@ -83,7 +83,7 @@ const LoanListView = (props: LoanListViewProps) => {
     fetchLoans();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const Actions = [{ title: 'Approve' }, { title: 'Reject' }];
+  const Actions = [{ title: t('APPROVE') }, { title: t('REJECT') }];
   const formatDate = (dateString: string | number | Date) =>
     new Intl.DateTimeFormat('en-US', {
       month: 'short',
@@ -134,8 +134,8 @@ const LoanListView = (props: LoanListViewProps) => {
         <TableListContainer style={{ marginTop: 0 }}>
           {loansList && loansList.length === 0 ? (
             <ZeroEntriesFound
-              heading="There's no Loan history found"
-              message="You have never involved in any previous loan requests"
+              heading={t('NO_LOAN_HISTORY_FOUND')}
+              message={t('NO_PREVIOUS_LOAN_REQUESTS')}
             />
           ) : (
             <TableList>
@@ -144,7 +144,7 @@ const LoanListView = (props: LoanListViewProps) => {
                   <th>{t('LOAN_NUMBER')}</th>
                   <th>{t('LOAN_TYPE')}</th>
                   {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
-                    <th>Employee ID</th>
+                    <th>{t('EMPLOYEE_ID')}</th>
                   ) : (
                     ''
                   )}
@@ -177,7 +177,7 @@ const LoanListView = (props: LoanListViewProps) => {
                           handleIsLoanPreviewModalOpen();
                         }}
                       >
-                        {formatLoanType(loan.loanType)}
+                        {formatLoanType(t(loan.loanType))}
                       </td>
                       {user &&
                       hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
@@ -218,7 +218,7 @@ const LoanListView = (props: LoanListViewProps) => {
                           handleIsLoanPreviewModalOpen();
                         }}
                       >
-                        {loan.amount === 0 ? '-' : loan.amount + ' INR'}
+                        {loan.amount === 0 ? '-' : loan.amount + t('CURRENCY')}
                       </td>
                       <td
                         onClick={() => {
@@ -227,7 +227,7 @@ const LoanListView = (props: LoanListViewProps) => {
                         }}
                       >
                         <StatusIndicator status={loan.status}>
-                          {formatStatus(loan.status)}
+                          {formatStatus(t(loan.status))}
                         </StatusIndicator>
                       </td>
                       {user &&
@@ -252,7 +252,7 @@ const LoanListView = (props: LoanListViewProps) => {
       {loading && <SpinAnimation />}
       {loanToBePreviewed && isLoanPreviewModalOpen && (
         <CenterModalMain
-          heading="Loan Preview"
+          heading={t('LOAN_PREVIEW')}
           modalClose={handleIsLoanPreviewModalOpen}
           actualContentContainer={
             <LoanPreview

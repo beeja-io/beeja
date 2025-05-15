@@ -92,13 +92,13 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
     setIsEmiTenureEnabled(newLoanType !== '');
     setEmiTenure('');
     switch (newLoanType) {
-      case 'MONITOR_LOAN':
+      case t('MONITOR_LOAN'):
         setEmiTenure('');
         break;
-      case 'PERSONAL_LOAN':
+      case t('PERSONAL_LOAN'):
         setEmiTenure('');
         break;
-      case 'ADVANCE_SALARY':
+      case t('ADVANCE_SALARY'):
         setEmiTenure('');
         break;
       default:
@@ -120,19 +120,19 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
 
   const renderEmiTenureOptions = () => {
     switch (loanType) {
-      case 'MONITOR_LOAN':
+      case t('MONITOR_LOAN'):
         return Array.from({ length: 6 }, (_, i) => i + 1).map((month) => (
           <option key={month} value={month}>
             {month}
           </option>
         ));
-      case 'PERSONAL_LOAN':
+      case t('PERSONAL_LOAN'):
         return Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
           <option key={month} value={month}>
             {month}
           </option>
         ));
-      case 'ADVANCE_SALARY':
+      case t('ADVANCE_SALARY'):
         return Array.from({ length: 1 }, (_, i) => i + 1).map((month) => (
           <option key={month} value={month}>
             {month}
@@ -185,31 +185,31 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
         purpose: data.loanPurpose,
         monthlyEMI: parseFloat(data.monthlyEMI),
         emiStartDate:
-          data.emiStartDate === 'CURRENT_MONTH'
+          data.emiStartDate === t('CURRENT_MONTH')
             ? currentDate.toISOString()
             : nextMonthDate.toISOString(),
         emiTenure: parseInt(data.emiTenure),
       }),
       {
-        loading: 'Applying new loan...',
+        loading: t('APPLYING_NEW_LOAN'),
         closeButton: true,
         success: () => {
           setIsSubmitting(false);
           props.handleIsApplyLoanScreen();
-          return 'Your loan request has been reached our team.';
+          return t('LOAN_REQUEST_RECEIVED');
         },
         error: (error) => {
           setIsSubmitting(false);
           if (axios.isAxiosError(error)) {
             const axiosError = error as AxiosError;
             if (axiosError.code === 'ERR_NETWORK') {
-              return 'Network Error, Please check connection';
+              return t('NETWORK_ERROR_CHECK_CONNECTION');
             }
             if (axiosError.code === 'ECONNABORTED') {
-              return 'Request timeout, Please try again';
+              return t('REQUEST_TIMEOUT_TRY_AGAIN');
             }
           }
-          return 'Request Unsuccessful, Please try again';
+          return t('REQUEST_UNSUCCESSFUL_TRY_AGAIN');
         },
       }
     );
@@ -226,10 +226,10 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
     e.preventDefault();
 
     if (
-      (loanType === 'MONITOR_LOAN' &&
+      (loanType === t('MONITOR_LOAN') &&
         user &&
         parseFloat(amount) > user.organizations.loanLimit.monitorLoan) ||
-      (loanType === 'PERSONAL_LOAN' &&
+      (loanType === t('PERSONAL_LOAN') &&
         user &&
         parseFloat(amount) > user.organizations.loanLimit.personalLoan)
     ) {
@@ -442,8 +442,8 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
         {showSuccessMessage && (
           <ToastMessage
             messageType="success"
-            messageBody="YOUR_LOAN_REQUEST_REACHED_TO_OUR_TEAM"
-            messageHeading="REQUEST_SUCCESSFUL"
+            messageBody={t('YOUR_LOAN_REQUEST_REACHED_TO_OUR_TEAM')}
+            messageHeading={t('REQUEST_SUCCESSFUL')}
             handleClose={() => handleShowSuccessMessage()}
           />
         )}
@@ -452,7 +452,7 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
           <ToastMessage
             messageType="error"
             messageBody={errorMessage}
-            messageHeading="REQUEST_UNSUCCESSFUL"
+            messageHeading={t('REQUEST_UNSUCCESSFUL')}
             handleClose={() => setErrorMessage(null)}
           />
         )}
@@ -461,12 +461,12 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
         <CenterModal
           handleModalClose={handleModalClose}
           handleModalSubmit={handleModalSubmit}
-          modalHeading="MAXIMUM_LOAN_LIMIT_REACHED"
+          modalHeading={t('MAXIMUM_LOAN_LIMIT_REACHED')}
           modalContent=""
           modalLeftButtonClass="changeAmountButton"
           modalRightButtonClass="continueAnywayButton"
-          modalLeftButtonText="CHANGE_AMOUNT"
-          modalRightButtonText="CONTINUE_ANYWAY"
+          modalLeftButtonText={t('CHANGE_AMOUNT')}
+          modalRightButtonText={t('CONTINUE_ANYWAY')}
           modalSVG={<RedcircleExclamatory />}
           modalWidth="550px"
         />

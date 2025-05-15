@@ -267,7 +267,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         setIsResponseLoading(false);
       }
     } else {
-      setResponseErrorMessage('PLEASE_FILL_ALL_FIELDS');
+      setResponseErrorMessage(t('PLEASE_FILL_ALL_FIELDS'));
       handleShowErrorMessage();
     }
   };
@@ -645,7 +645,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         setIsResponseLoading(false);
       }
     } else {
-      setResponseErrorMessage('PLEASE_FILL_ALL_FIELDS');
+      setResponseErrorMessage(t('PLEASE_FILL_ALL_FIELDS'));
       handleShowErrorMessage();
     }
   };
@@ -874,7 +874,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                         props.expense?.department === internalValue.value
                       }
                     >
-                      {internalValue.value}
+                      {t(internalValue.value)}
                     </option>
                   ))}
                 </>
@@ -919,7 +919,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                         props.expense?.type === type.value
                       }
                     >
-                      {type.value}
+                      {t(type.value)}
                     </option>
                   ))}
                 </>
@@ -960,7 +960,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                     props.expense?.modeOfPayment === mode.value
                   }
                 >
-                  {mode.value}
+                  {t(mode.value)}
                 </option>
               ))}
             </select>
@@ -1011,7 +1011,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
             <span ref={calendarRequestedRef} className="calendarField">
               <TextInput
                 type="text"
-                placeholder="Enter Date"
+                placeholder={t('ENTER_DATE')}
                 name="requestedDate"
                 onChange={
                   modeOfModal === 'create' ? handleChange : handleUpdateChange
@@ -1171,7 +1171,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                         props.expense?.category === category.value
                       }
                     >
-                      {category.value}
+                      {t(category.value)}
                     </option>
                   ))}
                 </>
@@ -1212,7 +1212,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                   ? expenseToBeUpdated.amount
                   : newExpense?.amount
               }
-              placeholder={'Enter Amount (₹)'}
+              placeholder={t('ENTER_AMOUNT')}
               disabled={modeOfModal === 'preview' && true}
             />
           </InputLabelContainer>
@@ -1409,7 +1409,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 {selectedFile.length < 3 ? (
                   <input
                     type="file"
-                    accept="application/pdf,image/png,image/jpeg"
+                    accept={t('FILE_TYPES')}
                     id="fileInput"
                     style={{ display: 'none' }}
                     onChange={handleFileChange}
@@ -1467,7 +1467,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 {selectedFile.length < 3 ? (
                   <input
                     type="file"
-                    accept="application/pdf,image/png,image/jpeg"
+                    accept={t('FILE_TYPES')}
                     id="fileInput"
                     style={{ display: 'none' }}
                     onChange={handleFileChange}
@@ -1631,15 +1631,15 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         <ToastMessage
           messageType="error"
           messageBody={responseErrorMessage}
-          messageHeading="EXPENSE_IS_UNSUCCESFUL"
+          messageHeading={t('EXPENSE_IS_UNSUCCESFUL')}
           handleClose={handleShowErrorMessage}
         />
       )}
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody={'THE_EXPENSE_HAS_BEEN_ADDED'}
-          messageHeading={'SUCCESSFULLY_ADDED'}
+          messageBody={t('THE_EXPENSE_HAS_BEEN_ADDED')}
+          messageHeading={t('SUCCESSFULLY_ADDED')}
           handleClose={handleShowSuccessMessage}
         />
       )}
