@@ -17,3 +17,10 @@
     '15+',
   ];
   
+  export const osTypes = [
+    'Windows',
+    'Linux',
+    'Mac OS',
+  ];
+
+  export const ramSizes = ['4','8','16','32','64'];

@@ -25,6 +25,7 @@ import { ExpenseFilterArea } from '../styles/ExpenseListStyles.style';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { OrganizationValues } from '../entities/OrgValueEntity';
+import { osTypes,ramSizes } from '../utils/selectOptions';
 
 const InventoryManagement = () => {
   const navigate = useNavigate();
@@ -184,16 +185,10 @@ const InventoryManagement = () => {
   const [inventoryProviders, setInventoryProviders] = useState<OrganizationValues>(
     {} as OrganizationValues
   )
-  const [osTypes, setOsTypes] = useState<OrganizationValues>(
-    {} as OrganizationValues
-  )
-
-  const ramSizes = ["4","8","16","32","64"]
 
   const fetchOrganizationValues = async () => {
     const deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
     const inventoryProvidersFetched = await getOrganizationValuesByKey('inventoryProviders');
-    const osTypesFetched = await getOrganizationValuesByKey('operatingSystems');
 
     if (!deviceTypesFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS'));
@@ -205,12 +200,6 @@ const InventoryManagement = () => {
     }
     else {
       setInventoryProviders(inventoryProvidersFetched.data);
-    }
-    if (!osTypesFetched?.data?.values?.length){
-      toast.error(t('PLEASE_ADD_OS_TYPES_IN_ORG_SETTINGS'));
-    }
-    else{
-      setOsTypes(osTypesFetched.data);
     }
   };
   useEffect(() => {

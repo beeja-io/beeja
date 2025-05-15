@@ -61,7 +61,7 @@ interface Props {
   selectedFiltersText: () => React.ReactNode;
   deviceTypes: OrganizationValues;
   inventoryProviders: OrganizationValues;
-  osTypes:OrganizationValues;
+  osTypes:string[];
   ramSizes : string[] 
 }
 
@@ -197,7 +197,7 @@ const InventoryList = ({
               ))}
             </select>
           }
-          {osTypes && osTypes.values &&
+          {osTypes &&
             <select
               className="selectoption"
               name="os"
@@ -208,9 +208,9 @@ const InventoryList = ({
               }}
             >
               <option value="">OS</option>{' '}
-              {osTypes.values.map((os) => (
-                <option key={os.value} value={os.value}>
-                  {os.value}
+              {osTypes.map((os) => (
+                <option key={os} value={os}>
+                  {os}
                 </option>
               ))}
             </select>
