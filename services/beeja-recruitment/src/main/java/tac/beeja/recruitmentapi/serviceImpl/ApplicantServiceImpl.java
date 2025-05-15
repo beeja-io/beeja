@@ -21,11 +21,7 @@ import tac.beeja.recruitmentapi.client.FileClient;
 import tac.beeja.recruitmentapi.enums.ApplicantStatus;
 import tac.beeja.recruitmentapi.enums.ErrorCode;
 import tac.beeja.recruitmentapi.enums.ErrorType;
-import tac.beeja.recruitmentapi.exceptions.BadRequestException;
-import tac.beeja.recruitmentapi.exceptions.FeignClientException;
-import tac.beeja.recruitmentapi.exceptions.InterviewerException;
-import tac.beeja.recruitmentapi.exceptions.ResourceNotFoundException;
-import tac.beeja.recruitmentapi.exceptions.UnAuthorisedException;
+import tac.beeja.recruitmentapi.exceptions.*;
 import tac.beeja.recruitmentapi.model.Applicant;
 import tac.beeja.recruitmentapi.model.ApplicantComment;
 import tac.beeja.recruitmentapi.model.AssignedInterviewer;
@@ -71,21 +67,18 @@ public class ApplicantServiceImpl implements ApplicantService {
             .and("positionAppliedFor").is(applicant.getPositionAppliedFor())
             .and("organizationId").is(UserContext.getLoggedInUserOrganization().get("id").toString()));
     List<Applicant> existingApplicants = mongoTemplate.find(query, Applicant.class);
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MONTH, -6);
+    Date sixMonthsAgo = calendar.getTime();
     for (Applicant existingApplicant : existingApplicants) {
       Date createdAt = existingApplicant.getCreatedAt();
-      if (createdAt != null) {
-        LocalDate createdLocalDate = createdAt.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate sixMonthAgo = LocalDate.now().minusMonths(6);
-        if (createdLocalDate.isAfter(sixMonthAgo)) {
-
-            log.error("Duplicate application within 6 months detected for email: {} and position: {}",
-                    applicant.getEmail(), applicant.getPositionAppliedFor());
-            throw new BadRequestException(
+      if (createdAt != null && createdAt.after(sixMonthsAgo)) {
+          log.error(DUPLICATE_APPLICATION_LOG, applicant.getEmail(), applicant.getPositionAppliedFor());
+            throw new ConflictException(
                     BuildErrorMessage.buildErrorMessage(
-                            ErrorType.BAD_REQUEST,
+                            ErrorType.CONFLICT,
                             ErrorCode.DUPLICATE_APPLICANT,
-                            "Applicant already applied for this position in the last 6 months."));
-        }
+                            DUPLICATE_APPLICANT));
       }
     }
         //    accept only pdf, doc and docx for applicant.getResume()

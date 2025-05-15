@@ -145,7 +145,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
         toast.error(
           props.isReferScreen
             ? 'A referral has already applied for this position within the past six months.'
-            : 'An application has already applied for this position within the past six month.'
+            : 'An application has already applied for this position within the past six months.'
         );
       } else {
         toast.error('An error occurred while saving the applicant');
