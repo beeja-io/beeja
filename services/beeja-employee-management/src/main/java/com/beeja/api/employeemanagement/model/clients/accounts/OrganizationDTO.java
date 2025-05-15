@@ -20,6 +20,7 @@ public class OrganizationDTO {
   private String website;
   private HashMap<String, Object> preferences;
   private HashMap<String, Object> address;
+  private HashMap<String, Object> bankDetails;
   private String filingAddress;
   private HashMap<String, Object> accounts;
   private HashMap<String, Object> loanLimit;
