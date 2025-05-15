@@ -114,7 +114,22 @@ public class ExceptionAdvice {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .body(errorResponse);
   }
+
   public String[] convertStringToArray(String commaSeparatedString) {
     return commaSeparatedString.split(",");
+  }
+  @ExceptionHandler(ConflictException.class)
+  public ResponseEntity<ErrorResponse> handleConflictException(ConflictException ex, WebRequest request) {
+    String[] errorMessage = convertStringToArray(ex.getMessage());
+    ErrorResponse errorResponse = new ErrorResponse(
+            ErrorType.valueOf(errorMessage[0]),
+            ErrorCode.valueOf(errorMessage[1]),
+            errorMessage[2],
+            Constants.DOC_URL_RESOURCE_NOT_FOUND,
+            request.getDescription(false),
+            Constants.BEEJA + "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    );
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 }
