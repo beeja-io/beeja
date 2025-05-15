@@ -56,8 +56,8 @@ const InventoryManagement = () => {
     }, 2000);
   };
 
-  const [deviceFilter, setDeviceFilter] = useState<string>();
-  const [availabilityFilter, setAvailabilityFilter] = useState<string>();
+  const [deviceFilter, setDeviceFilter] = useState<string>('');
+  const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
   const [providerFilter, setProviderFilter] = useState<string>('');
   const [osFilter, setOsFilter] = useState<string>('');
   const [ramFilter,setRamFilter] = useState<string>('');
@@ -69,8 +69,11 @@ const InventoryManagement = () => {
   const handleAvailabilityChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    // const value = event.target.value;
-    setAvailabilityFilter(event.target.value);
+    if (event.target.value === 'availability') {
+      setAvailabilityFilter('');
+    } else {
+      setAvailabilityFilter(event.target.value);
+    }
   };
 
   const handleProviderChange = (
@@ -122,7 +125,11 @@ const InventoryManagement = () => {
         queryParams.push(
           `device=${encodeURIComponent(deviceFilter.toUpperCase())}`
         );
-      if (availabilityFilter != null && availabilityFilter != '-')
+      if (
+        availabilityFilter != null &&
+        availabilityFilter != '-' &&
+        availabilityFilter != 'availability'
+      )
         queryParams.push(
           `availability=${encodeURIComponent(availabilityFilter.toUpperCase())}`
         );
@@ -151,8 +158,9 @@ const InventoryManagement = () => {
         inventory: res.data.inventory,
         metadata: metadata,
       };
-
-      console.log(url);
+      if (!deviceFilter && !availabilityFilter && !providerFilter) {
+        setIsShowFilters(false);
+      } //update
       const totalPages = Math.ceil(res.data.metadata.totalSize / itemsPerPage);
       setTotalSize(metadata.totalSize);
       handleTotalPages(totalPages ?? 1);
@@ -182,14 +190,13 @@ const InventoryManagement = () => {
   const [deviceTypes, setDeviceTypes] = useState<OrganizationValues>(
     {} as OrganizationValues
   );
-  const [inventoryProviders, setInventoryProviders] = useState<OrganizationValues>(
-    {} as OrganizationValues
-  )
+  const [inventoryProviders, setInventoryProviders] =
+    useState<OrganizationValues>({} as OrganizationValues);
 
   const fetchOrganizationValues = async () => {
     const deviceTypesFetched = await getOrganizationValuesByKey('deviceTypes');
-    const inventoryProvidersFetched = await getOrganizationValuesByKey('inventoryProviders');
-
+    const inventoryProvidersFetched =
+      await getOrganizationValuesByKey('inventoryProviders');
     if (!deviceTypesFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_DEVICE_TYPES_IN_ORG_SETTINGS'));
     } else {
@@ -197,8 +204,7 @@ const InventoryManagement = () => {
     }
     if (!inventoryProvidersFetched?.data?.values?.length) {
       toast.error(t('PLEASE_ADD_INVENTORY_PROVIDERS_IN_ORG_SETTINGS'));
-    }
-    else {
+    } else {
       setInventoryProviders(inventoryProvidersFetched.data);
     }
   };
@@ -244,6 +250,7 @@ const InventoryManagement = () => {
       setProviderFilter('');
       setOsFilter('');
       setRamFilter('');
+      setIsShowFilters(false); //update
     }
     if (filterName === 'device') {
       setDeviceFilter('');
@@ -267,6 +274,16 @@ const InventoryManagement = () => {
       setIsCreateModalOpen(true);
   });
   const { t } = useTranslation();
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCreateModalOpen]);
   return (
     <>
       <ExpenseManagementMainContainer>
