@@ -29,6 +29,8 @@ const RecruitmentManagementScreen = (
   const [allApplicants, setAllApplicants] = useState<IApplicant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+   const [totalItems, setTotalItems] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [totalApplicants, setTotalApplicants] = useState(0);
 
@@ -36,32 +38,54 @@ const RecruitmentManagementScreen = (
   const handleIsLoading = () => {
     setIsLoading(!isLoading)
   }
-  const fetchApplicants = useCallback(async () => {
-    try {
-      setIsLoading(true);
-  
-      const url = props.isReferral
-        ? '/recruitments/v1/referrals'
-        : '/recruitments/v1/applicants';
-  
-      const response = props.isReferral
-        ? await getMyReferrals(url)
-        : await getAllApplicantList(url);
-  
-      setTotalApplicants(response.data.length);
-      const startIndex = (currentPage - 1) * pageSize;
-      setAllApplicants(response.data.slice(startIndex, startIndex + pageSize));
-    } catch (error) {
-      alert('Failed to fetch applicants');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [currentPage, pageSize, props.isReferral]);
+const fetchApplicants = useCallback(async () => {
+  try {
+    setIsLoading(true);
+
+    const url = props.isReferral
+      ? '/recruitments/v1/referrals'
+      : '/recruitments/v1/applicants/combinedApplicants';
+
+    const response = props.isReferral
+      ? await getMyReferrals(url)
+      : await getAllApplicantList(url);
+
+    const applicantData = Array.isArray(response?.data)
+      ? response.data
+      : response?.data?.applicants || [];
+
+    const totalCount = response?.data?.totalSize ?? applicantData.length ?? 0;
+
+    setTotalApplicants(totalCount);
+    setTotalItems(totalCount);
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const paginated = applicantData.slice(startIndex, startIndex + itemsPerPage);
+    setAllApplicants(paginated);
+  } catch (error) {
+    alert('Failed to fetch applicants');
+    setTotalApplicants(0);
+    setTotalItems(0);
+  } finally {
+    setIsLoading(false);
+  }
+}, [currentPage, itemsPerPage, props.isReferral]);
+
   
 
   useEffect(() => {
     fetchApplicants();
   }, [fetchApplicants]);
+  
+    const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setItemsPerPage(newPageSize);
+  setPageSize(newPageSize); // <-- Add this line
+  setCurrentPage(1);
+  }
 
   return (
     <>
@@ -101,12 +125,12 @@ const RecruitmentManagementScreen = (
           setPageSize={setPageSize}
         />
         <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(totalApplicants / pageSize)} 
-            handlePageChange={setCurrentPage}
-            totalItems={totalApplicants}
-            handleItemsPerPage={setPageSize} 
-            itemsPerPage={pageSize} 
+          currentPage={currentPage}
+          totalPages={Math.max(1, Math.ceil((totalItems) / (itemsPerPage)))}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          handleItemsPerPage={handlePageSizeChange}
+          totalItems={totalItems}
          />
 
       </ExpenseManagementMainContainer>
