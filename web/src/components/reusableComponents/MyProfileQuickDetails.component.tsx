@@ -61,6 +61,8 @@ const MyProfileQuickDetailsComponent = ({
   isLoadingResponse,
 }: QuickProfileProps) => {
   const [roles, setRoles] = useState<string[]>([]);
+  const { t } = useTranslation();
+
 
   useEffect(() => {
     if (employee?.account.roles) {
@@ -87,7 +89,6 @@ const MyProfileQuickDetailsComponent = ({
   const [croppedImage] = useState<string | null>(null);
   const { employeeList, updateEmployeeList } = useContext(ApplicationContext);
   const { profileImageUrl, setProfileImageUrl } = useProfileImage();
-  const { t } = useTranslation();
 
   const fetchRoles = async () => {
     const response = await getAllRolesInOrganization();
@@ -484,7 +485,7 @@ const MyProfileQuickDetailsComponent = ({
               <BorderDivLine />
               <QuickInfoDepartmentContainer>
                 <div>
-                  <span>Department</span>
+                <span>{t('Department')}</span>
                   <span className="skeleton skeleton-text">&nbsp;</span>{' '}
                 </div>
               </QuickInfoDepartmentContainer>
@@ -558,7 +559,7 @@ const MyProfileQuickDetailsComponent = ({
                   employee && !employee.account.active ? 'inactiveButton' : ''
                 }
               >
-                {employee?.account.active ? 'ACTIVE' : 'INACTIVE'} &nbsp;{' '}
+                {employee?.account.active ? t('ACTIVE') : t('INACTIVE')} &nbsp;{' '}
               </MyProfileButton>
               {user &&
                 hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) &&
@@ -682,7 +683,7 @@ const MyProfileQuickDetailsComponent = ({
             <BorderDivLine />
             <QuickInfoDepartmentContainer>
               <div>
-                <span>Department</span>
+                <span>{t('Department')}</span>
                 <span>
                   {employee &&
                   employee.employee.jobDetails &&
