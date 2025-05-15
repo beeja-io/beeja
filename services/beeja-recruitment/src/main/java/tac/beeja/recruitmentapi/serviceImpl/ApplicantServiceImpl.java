@@ -66,6 +66,7 @@ public class ApplicantServiceImpl implements ApplicantService {
   public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
 
 
+
     //    accept only pdf, doc and docx for applicant.getResume()
     if (!applicant.getResume().getContentType().equals("application/pdf")
             && !applicant.getResume().getContentType().equals("application/msword")
@@ -203,6 +204,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     return ORG_Prefix + datePart + sequencePart;
 
   }
+
 
   @Override
   public List<Applicant> getAllApplicantsInOrganization() throws Exception {
@@ -595,4 +597,6 @@ public class ApplicantServiceImpl implements ApplicantService {
     String filename = headers.getFirst("fileName");
     return new FileDownloadResultMetaData(filename, createdBy, entityId, organizationId);
   }
+
+
 }

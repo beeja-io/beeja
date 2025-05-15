@@ -76,7 +76,7 @@ class ExpenseControllerTest {
     ExpenseUpdateRequest updatedExpense = new ExpenseUpdateRequest();
     Expense expense = new Expense();
     when(expenseService.updateExpense("123", updatedExpense))
-        .thenThrow(new Exception("Some internal error"));
+            .thenThrow(new Exception("Some internal error"));
     ResponseEntity<?> responseEntity = expenseController.updateExpense("123", updatedExpense);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
   }
@@ -86,7 +86,7 @@ class ExpenseControllerTest {
     ExpenseUpdateRequest updatedExpense = new ExpenseUpdateRequest();
     Expense expense = new Expense();
     when(expenseService.updateExpense("123", updatedExpense))
-        .thenThrow(new OrganizationMismatchException("Some internal error"));
+            .thenThrow(new OrganizationMismatchException("Some internal error"));
     ResponseEntity<?> responseEntity = expenseController.updateExpense("123", updatedExpense);
     assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
   }
@@ -122,20 +122,20 @@ class ExpenseControllerTest {
             eq(10),
             isNull(),
             eq(true)))
-        .thenReturn(filteredExpenses);
+            .thenReturn(filteredExpenses);
     ResponseEntity<?> responseEntity =
-        expenseController.filterExpenses(
-            startDate,
-            endDate,
-            department,
-            filterBasedOn,
-            modeOfPayment,
-            expenseType,
-            expenseCategory,
-            pageNumber,
-            pageSize,
-            sortBy,
-            ascending);
+            expenseController.filterExpenses(
+                    startDate,
+                    endDate,
+                    department,
+                    filterBasedOn,
+                    modeOfPayment,
+                    expenseType,
+                    expenseCategory,
+                    pageNumber,
+                    pageSize,
+                    sortBy,
+                    ascending);
     assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
   }
 
@@ -170,20 +170,20 @@ class ExpenseControllerTest {
             eq(pageSize),
             isNull(),
             eq(ascending)))
-        .thenThrow(new Exception());
+            .thenThrow(new Exception());
     ResponseEntity<?> responseEntity =
-        expenseController.filterExpenses(
-            startDate,
-            endDate,
-            department,
-            filterBasedOn,
-            modeOfPayment,
-            expenseType,
-            expenseCategory,
-            pageNumber,
-            pageSize,
-            sortBy,
-            ascending);
+            expenseController.filterExpenses(
+                    startDate,
+                    endDate,
+                    department,
+                    filterBasedOn,
+                    modeOfPayment,
+                    expenseType,
+                    expenseCategory,
+                    pageNumber,
+                    pageSize,
+                    sortBy,
+                    ascending);
     assertEquals(responseEntity.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
@@ -200,7 +200,7 @@ class ExpenseControllerTest {
   public void testDeleteExpenseExpenseNotFound() throws Exception {
     String expenseId = "1";
     when(expenseService.deleteExpense(expenseId))
-        .thenThrow(new ExpenseNotFound("Expense not found with ID: " + expenseId));
+            .thenThrow(new ExpenseNotFound("Expense not found with ID: " + expenseId));
     ResponseEntity<?> responseEntity = expenseController.deleteExpense(expenseId);
     assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
   }
@@ -209,7 +209,7 @@ class ExpenseControllerTest {
   public void testDeleteExpenseInternalServerError() throws Exception {
     String expenseId = "1";
     when(expenseService.deleteExpense(expenseId))
-        .thenThrow(new RuntimeException("Internal Server Error"));
+            .thenThrow(new RuntimeException("Internal Server Error"));
     ResponseEntity<?> responseEntity = expenseController.deleteExpense(expenseId);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
   }
@@ -221,12 +221,12 @@ class ExpenseControllerTest {
     mockExpense.setStatus("Approved");
     when(expenseService.getExpenseById(expenseId)).thenReturn(mockExpense);
     ResponseEntity<String> responseEntity =
-        (ResponseEntity<String>) expenseController.getExpenseStatus(expenseId);
+            (ResponseEntity<String>) expenseController.getExpenseStatus(expenseId);
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertTrue(
-        responseEntity
-            .getBody()
-            .contains("Approved")); // Check if the response body contains the expected status
+            responseEntity
+                    .getBody()
+                    .contains("Approved")); // Check if the response body contains the expected status
   }
 
   @Test

@@ -48,4 +48,7 @@ public class Applicant {
   private Date modifiedAt;
 
   private String modifiedBy;
+
+
+
 }
