@@ -13,23 +13,37 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
+/**
+ * Aspect that enforces permission-based access control on methods
+ * annotated with {@link HasPermission}.
+ */
 @Aspect
 @Component
 public class PermissionAspect {
 
+  /**
+   * Checks if the logged-in user has at least one of the required permissions
+   * before proceeding with the method execution.
+   * @param hasPermission the {@link HasPermission} annotation containing required permissions
+   * @throws CustomAccessDeniedException if the user lacks all required permissions
+   */
   @Before("@annotation(hasPermission)")
   public void checkPermission(HasPermission hasPermission) throws CustomAccessDeniedException {
     String[] requiredPermissions = hasPermission.value();
     List<String> userPermissions = getUserPermissions();
 
     boolean hasRequiredPermission =
-        Arrays.stream(requiredPermissions).anyMatch(userPermissions::contains);
+            Arrays.stream(requiredPermissions).anyMatch(userPermissions::contains);
 
     if (!hasRequiredPermission) {
       throw new CustomAccessDeniedException(NO_REQUIRED_PERMISSIONS);
     }
   }
 
+  /**
+   * Retrieves the permissions of the currently logged-in user from {@link UserContext}.
+   * @return a list of permission strings assigned to the user
+   */
   private List<String> getUserPermissions() {
     Set<String> loggedInUserPermissions = UserContext.getLoggedInUserPermissions();
     return new ArrayList<>(loggedInUserPermissions);

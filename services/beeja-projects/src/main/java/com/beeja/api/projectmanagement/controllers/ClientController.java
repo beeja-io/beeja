@@ -1,5 +1,7 @@
 package com.beeja.api.projectmanagement.controllers;
 
+import com.beeja.api.projectmanagement.annotations.HasPermission;
+import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
@@ -30,6 +32,7 @@ public class ClientController {
      * @throws Exception If an error occurs while adding the client.
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @HasPermission(PermissionConstants.CREATE_CLIENT)
     public ResponseEntity<Client> addClientToOrganization(@ModelAttribute ClientRequest clientRequest) throws Exception {
         Client client = clientService.addClientToOrganization(clientRequest);
         return new ResponseEntity<>(client, HttpStatus.CREATED);
@@ -44,7 +47,8 @@ public class ClientController {
      * @throws Exception If an error occurs while updating the client.
      */
     @PutMapping("/{clientId}")
-    public ResponseEntity<Client> updateClientOfOrganization(@RequestBody ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
+    @HasPermission(PermissionConstants.UPDATE_CLIENT)
+    public ResponseEntity<Client> updateClientOfOrganization(ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
         Client client = clientService.updateClientOfOrganization(clientRequest, clientId);
         return new ResponseEntity<>(client, HttpStatus.OK);
     }
@@ -57,6 +61,7 @@ public class ClientController {
      * @throws Exception If the client is not found or an error occurs.
      */
     @GetMapping("/{clientId}")
+    @HasPermission(PermissionConstants.GET_CLIENT)
     public ResponseEntity<Client> getClientById(@PathVariable String clientId) throws Exception {
         Client client = clientService.getClientById(clientId);
         return new ResponseEntity<>(client, HttpStatus.OK);
@@ -69,6 +74,7 @@ public class ClientController {
      * @throws Exception If an error occurs while retrieving the clients.
      */
     @GetMapping
+    @HasPermission(PermissionConstants.GET_CLIENT)
     public ResponseEntity<List<Client>> getAllClientsOfOrganization() throws Exception {
         List<Client> clients = clientService.getAllClientsOfOrganization();
         return new ResponseEntity<>(clients, HttpStatus.OK);

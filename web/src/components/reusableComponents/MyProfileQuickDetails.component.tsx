@@ -48,6 +48,7 @@ import { toast } from 'sonner';
 import { useProfileImage } from '../../context/ProfileImageContext';
 import { LargeSVG, SmallSVG } from '../../svgs/profilePictureSvgs.svg';
 import { useTranslation } from 'react-i18next';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 
 type QuickProfileProps = {
   employee: EmployeeEntity | undefined;
@@ -407,6 +408,9 @@ const MyProfileQuickDetailsComponent = ({
     };
   }, [employee && employee.employee.id]);
   /* eslint-enable react-hooks/exhaustive-deps */
+  useKeyPress(27, () => {
+    setIsActiveModalOpen(false);
+  });
 
   return (
     <>
@@ -772,6 +776,7 @@ const MyProfileQuickDetailsComponent = ({
           modalContent={`Are you sure to want to ${
             !employee.account.active ? 'active' : 'inactive'
           } '${employee.account.firstName}'`}
+          handleModalLeftButtonClick={handleIsActiveModalOpen}
           handleModalClose={handleIsActiveModalOpen}
           handleModalSubmit={handleStatusChange}
           isResponseLoading={isLoadingResponseINTERNAL || isLoadingResponse}
