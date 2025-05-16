@@ -44,6 +44,5 @@ application-local.yaml
 .idea
 dot.env
 DotEnv.env
-*.log
 .env
-
+*.log

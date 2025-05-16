@@ -190,9 +190,9 @@ export const SettingsTypes = ({
       });
     }
   };
-    useKeyPress(27, () => {
-     setConfirmDeleteModal(false);
-    });
+  useKeyPress(27, () => {
+    setConfirmDeleteModal(false);
+  });
 
   return (
     <TabContentMainContainer>

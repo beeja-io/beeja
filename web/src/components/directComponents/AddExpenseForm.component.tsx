@@ -819,6 +819,12 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   useKeyPress(27, () => {
     props.handleClose();
   });
+  const [isExpenseFormOpen, setIsExpenseFormOpen] = useState(false);
+
+  const handleIsExpenseFormOpen = () => {
+    setIsExpenseFormOpen(!isExpenseFormOpen);
+  };
+
   return (
     <ExpenseAddFormMainContainer
       onSubmit={
@@ -828,7 +834,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
     >
       <div className="formInputs">
-        <div>
+        <div onClick={handleIsExpenseFormOpen}>
           <InputLabelContainer>
             <label>
               {t('DEPARTMENT')}{' '}

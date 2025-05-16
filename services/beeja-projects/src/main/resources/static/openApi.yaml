@@ -561,17 +561,28 @@ components:
       required:
         - clientName
         - clientType
+        - taxDetails
+        - primaryAddress
       properties:
         clientName:
           type: string
-          minLength: 2
-          maxLength: 100
           example: "Acme Corporation"
-          description: Must be unique across all clients
         clientType:
           type: string
-          enum: [ INDIVIDUAL, BUSINESS, GOVERNMENT ]
-          example: "BUSINESS"
+          enum: [ INTERNAL, INDIVIDUAL, COMPANY, ORGANIZATION ]
+          example: "COMPANY"
+
+        # Serialize nested objects as strings (JSON format)
+        taxDetails:
+          type: string
+          example: '{ "taxCategory": "VAT", "taxNumber": "GB123456789" }'
+          description: Tax details of the client.
+
+        primaryAddress:
+          type: string
+          example: '{ "street": "123 Tech Park", "city": "San Francisco", "state": "CA", "postalCode": "94105", "country": "USA" }'
+          description: The primary address of the client
+
 
     Contract:
       type: object
