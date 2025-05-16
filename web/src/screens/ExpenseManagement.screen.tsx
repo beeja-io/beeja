@@ -17,8 +17,8 @@ import { hasPermission } from '../utils/permissionCheck';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { getOrganizationValuesByKey } from '../service/axiosInstance';
-import { OrganizationValues } from '../entities/OrgValueEntity';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import { OrganizationDefaultValuesDetails } from '../context/OrganizationDefaultValuesContext';
 
 const ExpenseManagement = () => {
   const navigate = useNavigate();
@@ -45,51 +45,37 @@ const ExpenseManagement = () => {
     toast.success('Expense added successfully');
     setKey((prevKey) => prevKey + 1);
   };
-  const [expenseCategories, setExpenseCategories] =
-    useState<OrganizationValues>({} as OrganizationValues);
-  const [expenseTypes, setExpenseTypes] = useState<OrganizationValues>(
-    {} as OrganizationValues
-  );
-  const [expenseDepartments, setExpenseDepartments] =
-    useState<OrganizationValues>({} as OrganizationValues);
-  const [expensePaymentModes, setExpensePaymentModes] =
-    useState<OrganizationValues>({} as OrganizationValues);
+  const {expenseCategories, updateExpenseCategories} = OrganizationDefaultValuesDetails();
+  const {expenseTypes, updateExpenseTypes} = OrganizationDefaultValuesDetails();
+  const {expenseDepartments, updateExpenseDepartments} = OrganizationDefaultValuesDetails();
+  const {expensePaymentModes, updateExpensePaymentModes} = OrganizationDefaultValuesDetails();
+
   const fetchOrganizationValues = async () => {
     setIsLoading(true);
     try {
-      const expenseCategories =
-        await getOrganizationValuesByKey('expenseCategories');
-      const expenseTypes = await getOrganizationValuesByKey('expenseTypes');
-      const expenseDepartments =
-        await getOrganizationValuesByKey('departments');
-      const expensePaymentModes =
-        await getOrganizationValuesByKey('paymentModes');
-      setExpenseCategories(expenseCategories.data);
-      setExpenseTypes(expenseTypes.data);
-      setExpenseDepartments(expenseDepartments.data);
-      setExpensePaymentModes(expensePaymentModes.data);
-      setIsLoading(false);
-      if (expenseDepartments.status === 204) {
-        toast.error(
-          'Please add departments in organization values (Settings) to add expenses'
-        );
-      }
-      if (expenseCategories.status === 204) {
-        toast.error(
-          'Please add expense categories in organization values (Settings) to add expenses'
-        );
-      }
-      if (expenseTypes.status === 204) {
-        toast.error(
-          'Please add expense types in organization values (Settings) to add expenses'
-        );
-      }
-      if (expensePaymentModes.status === 204) {
-        toast.error(
-          'Please add expense payment modes in organization (Settings) values to add expenses'
-        );
-      }
-    } catch (error) {
+    const expenseCategories = await getOrganizationValuesByKey('expenseCategories');
+    const expenseTypes = await getOrganizationValuesByKey('expenseTypes');
+    const expenseDepartments = await getOrganizationValuesByKey('departments');
+    const expensePaymentModes = await getOrganizationValuesByKey('paymentModes');
+
+    updateExpenseCategories(expenseCategories.data);
+    updateExpenseTypes(expenseTypes.data);
+    updateExpenseDepartments(expenseDepartments.data);
+    updateExpensePaymentModes(expensePaymentModes.data);
+    setIsLoading(false);
+    if (expenseDepartments.status === 204) {
+      toast.error('Please add departments in organization values (Settings) to add expenses');
+    }
+    if (expenseCategories.status === 204) {
+      toast.error('Please add expense categories in organization values (Settings) to add expenses');
+    }
+    if (expenseTypes.status === 204) {
+      toast.error('Please add expense types in organization values (Settings) to add expenses');
+    }
+    if (expensePaymentModes.status === 204) {
+      toast.error('Please add expense payment modes in organization (Settings) values to add expenses'  
+    } 
+      catch (error) {
       setIsLoading(false);
       throw new Error('Error fetching expenses:' + error);
     }
