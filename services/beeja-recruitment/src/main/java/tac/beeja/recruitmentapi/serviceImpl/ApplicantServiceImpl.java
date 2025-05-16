@@ -21,11 +21,7 @@ import tac.beeja.recruitmentapi.client.FileClient;
 import tac.beeja.recruitmentapi.enums.ApplicantStatus;
 import tac.beeja.recruitmentapi.enums.ErrorCode;
 import tac.beeja.recruitmentapi.enums.ErrorType;
-import tac.beeja.recruitmentapi.exceptions.BadRequestException;
-import tac.beeja.recruitmentapi.exceptions.FeignClientException;
-import tac.beeja.recruitmentapi.exceptions.InterviewerException;
-import tac.beeja.recruitmentapi.exceptions.ResourceNotFoundException;
-import tac.beeja.recruitmentapi.exceptions.UnAuthorisedException;
+import tac.beeja.recruitmentapi.exceptions.*;
 import tac.beeja.recruitmentapi.model.Applicant;
 import tac.beeja.recruitmentapi.model.ApplicantComment;
 import tac.beeja.recruitmentapi.model.AssignedInterviewer;
@@ -45,6 +41,8 @@ import tac.beeja.recruitmentapi.utils.UserContext;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,9 +62,26 @@ public class ApplicantServiceImpl implements ApplicantService {
 
   @Override
   public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
-
-
-    //    accept only pdf, doc and docx for applicant.getResume()
+    Query query = new Query();
+    query.addCriteria(Criteria.where("email").is(applicant.getEmail())
+            .and("positionAppliedFor").is(applicant.getPositionAppliedFor())
+            .and("organizationId").is(UserContext.getLoggedInUserOrganization().get("id").toString()));
+    List<Applicant> existingApplicants = mongoTemplate.find(query, Applicant.class);
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MONTH, -6);
+    Date sixMonthsAgo = calendar.getTime();
+    for (Applicant existingApplicant : existingApplicants) {
+      Date createdAt = existingApplicant.getCreatedAt();
+      if (createdAt != null && createdAt.after(sixMonthsAgo)) {
+          log.error(DUPLICATE_APPLICATION_LOG, applicant.getEmail(), applicant.getPositionAppliedFor());
+            throw new ConflictException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.CONFLICT,
+                            ErrorCode.DUPLICATE_APPLICANT,
+                            DUPLICATE_APPLICANT));
+      }
+    }
+        //    accept only pdf, doc and docx for applicant.getResume()
     if (!applicant.getResume().getContentType().equals("application/pdf")
             && !applicant.getResume().getContentType().equals("application/msword")
             && !applicant.getResume().getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
