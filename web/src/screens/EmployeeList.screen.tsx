@@ -606,6 +606,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     email: '',
     employmentType: '',
     department: '',
+    employeeId: ''.toUpperCase()
   });
   const [organizationValues, setOrganizationValues] =
     useState<OrganizationValues | null>(null);
@@ -646,7 +647,8 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
+    const updatedValue = name === 'employeeId' ? value.toUpperCase() : value;
+    setFormData((prevData) => ({ ...prevData, [name]: updatedValue }));
     setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
 
@@ -810,6 +812,24 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           )}
         </InputLabelContainer>
 
+        <InputLabelContainer>
+          <label>
+            {t('EMPLOYEE_ID')} <ValidationText className="star">*</ValidationText>
+          </label>
+          <TextInput
+            type="text"
+            name="employeeId"
+            placeholder="Ex: TAC0001"
+            value={formData.employeeId}
+            onChange={handleChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
+          />
+        </InputLabelContainer>
+
         <SelectOption>
           <label>
             {t('EMPLOYMENT_TYPE')}{' '}
@@ -873,12 +893,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             </ValidationText>
           )}
         </SelectOption>
-
-        <span>
-          <ValidationText className="info">
-            {t('EMPLOYEE_ID_WILL_BE_GENERATED_BASED_ON_PATTERN')}
-          </ValidationText>
-        </span>
       </div>
 
       <div>
