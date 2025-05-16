@@ -183,7 +183,6 @@ export const CalenderIcon = () => {
   );
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const DownloadIcon = (props: any) => {
   return (
     <svg
@@ -214,7 +213,7 @@ export const DeleteIcon = () => {
     >
       <path
         d="M5 8V18C5 20.2091 6.79086 22 9 22H15C17.2091 22 19 20.2091 19 18V8M14 11V17M10 11L10 17M16 5L14.5937 2.8906C14.2228 2.3342 13.5983 2 12.9296 2H11.0704C10.4017 2 9.7772 2.3342 9.40627 2.8906L8 5M16 5H8M16 5H21M8 5H3"
-        stroke="#28303F"
+        stroke="#A0AEC0"
         stroke-width="1.5"
         stroke-linecap="round"
         stroke-linejoin="round"

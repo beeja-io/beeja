@@ -87,7 +87,7 @@ const OrganizationSettings = () => {
       setCompanyProfile(response.data);
       setTempOrganization(response.data);
       setIsUpdateResponseLoading(false);
-    } catch (error) {
+    } catch {
       setIsUpdateResponseLoading(false);
     }
   };
@@ -408,6 +408,12 @@ const OrganizationSettings = () => {
                       >
                         Device ID pattern
                       </li>
+                      <li
+                        className={`dropdown-item-thread ${activeTab === 'Providers' ? 'active' : ''}`}
+                        onClick={() => handleTabClick('Providers')}
+                      >
+                        Providers
+                      </li>
                     </ul>
                   )}
                 </>
@@ -476,6 +482,9 @@ const OrganizationSettings = () => {
             )}
             {activeTab === 'DeviceIDPattern' && (
               <OrgSettingsIDPatterns patternType="DEVICE_ID_PATTERN" />
+            )}
+            {activeTab === 'Providers' && (
+              <SettingsTypes keyvalue="inventoryProviders" type="Providers" />
             )}
           </SelectedTabSection>
         </SectionsContainer>

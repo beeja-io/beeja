@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { ActionIcon } from '../../svgs/ExpenseListSvgs.svg';
-/* eslint-disable */
+
 import {
   ActionContainer,
   ActionMenuContent,

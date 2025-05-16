@@ -1,19 +1,35 @@
 {
 	"info": {
-		"_postman_id": "174a2127-e699-42a9-9d20-5eaf6d039392",
+		"_postman_id": "fa3a8a25-a4e6-4916-9745-ea5f47be7954",
 		"name": "ExpenseService",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "30821906"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43003168"
 	},
 	"item": [
 		{
-			"name": "HelloWorld",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": "http://localhost:8000/expenses/v1/helloworld"
-			},
-			"response": []
+			"name": "Receipt",
+			"item": [
+				{
+					"name": "Download File",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{port}}/employees/v1/receipts/{{fileId}}",
+							"host": [
+								"{{port}}"
+							],
+							"path": [
+								"employees",
+								"v1",
+								"receipts",
+								"{{fileId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "CreateExpense",
@@ -80,7 +96,16 @@
 						}
 					]
 				},
-				"url": "http://localhost:8000/expenses/v1"
+				"url": {
+					"raw": "{{port}}/expenses/v1",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"expenses",
+						"v1"
+					]
+				}
 			},
 			"response": []
 		},
@@ -89,7 +114,17 @@
 			"request": {
 				"method": "DELETE",
 				"header": [],
-				"url": "http://localhost:8000/expenses/v1/65d8897f31ddc0266415323a"
+				"url": {
+					"raw": "{{port}}/expenses/v1/{{expenseId}}",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"expenses",
+						"v1",
+						"{{expenseId}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -99,12 +134,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8000/expenses/v1?startDate=23-02-2024&endDate=28-02-2024&modeOfPayment=UPI&expenseType=Food&expenseCategory=Admin",
-					"protocol": "http",
+					"raw": "{{port}}/expenses/v1?startDate={{startDate}}&endDate={{endDate}}&modeOfPayment={{modeOfPayment}}&expenseType={{expenseType}}&expenseCategory={{categogy}}",
 					"host": [
-						"localhost"
+						"{{port}}"
 					],
-					"port": "8000",
 					"path": [
 						"expenses",
 						"v1"
@@ -112,23 +145,23 @@
 					"query": [
 						{
 							"key": "startDate",
-							"value": "23-02-2024"
+							"value": "{{startDate}}"
 						},
 						{
 							"key": "endDate",
-							"value": "28-02-2024"
+							"value": "{{endDate}}"
 						},
 						{
 							"key": "modeOfPayment",
-							"value": "UPI"
+							"value": "{{modeOfPayment}}"
 						},
 						{
 							"key": "expenseType",
-							"value": "Food"
+							"value": "{{expenseType}}"
 						},
 						{
 							"key": "expenseCategory",
-							"value": "Admin"
+							"value": "{{categogy}}"
 						}
 					]
 				}
@@ -200,7 +233,17 @@
 						}
 					]
 				},
-				"url": "http://localhost:8000/expenses/v1/65d8897f31ddc0266415323a"
+				"url": {
+					"raw": "{{port}}/expenses/v1/{{expenseId}}",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"expenses",
+						"v1",
+						"{{expenseId}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -209,7 +252,19 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": "http://localhost:8000/expenses/v1/expenses/673df2617779da548409a0d8/status"
+				"url": {
+					"raw": "{{port}}/expenses/v1/expenses/{{expenseId}}/status",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"expenses",
+						"v1",
+						"expenses",
+						"{{expenseId}}",
+						"status"
+					]
+				}
 			},
 			"response": []
 		},
@@ -218,7 +273,37 @@
 			"request": {
 				"method": "PUT",
 				"header": [],
-				"url": "http://localhost:8000/expenses/v1/673df2617779da548409a0d8/settle"
+				"url": {
+					"raw": "{{port}}/expenses/v1/{{expenseId}}/settle",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"expenses",
+						"v1",
+						"{{expenseId}}",
+						"settle"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Expense Default Values",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{port}}/expenses/v1/expense-values",
+					"host": [
+						"{{port}}"
+					],
+					"path": [
+						"expenses",
+						"v1",
+						"expense-values"
+					]
+				}
 			},
 			"response": []
 		}

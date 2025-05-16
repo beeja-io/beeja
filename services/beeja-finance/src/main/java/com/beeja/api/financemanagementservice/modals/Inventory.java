@@ -29,11 +29,11 @@ public class Inventory {
   @Id private String id;
 
   @NotBlank(message = Constants.ORG_ID_NOT_NULL)
-  private String organizationId = UserContext.getLoggedInUserOrganization().get("id").toString();
+  private String organizationId;
 
   private String deviceNumber;
 
-  @NotNull private Device device;
+  @NotNull private String device;
 
   @NotNull private String provider;
 

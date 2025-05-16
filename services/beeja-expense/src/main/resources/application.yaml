@@ -1,9 +1,6 @@
 server:
   servlet:
     context-path: /expenses
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
   port: ${EXPENSE_SERVICE_PORT}
 spring:
   output:
@@ -15,6 +12,10 @@ spring:
     mongodb:
       uri: ${MONGODB_URI}
       database: ${EXPENSES_MONGODB_DB_NAME}
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 20MB
 
 eureka:
   instance:
