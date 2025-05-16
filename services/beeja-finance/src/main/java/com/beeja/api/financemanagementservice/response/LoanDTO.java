@@ -12,6 +12,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class LoanDTO {
     private String id;
+    private String employeeName;
     private String employeeId;
     private String organizationId;
     private String purpose;

@@ -97,6 +97,7 @@ public class Constants {
   public static final String EMI_TENURE_MUST_GREATER_THAN_ZERO =
       "EMI Tenure must be greater than 0";
   public static final String EMPID_MUST_NOT_NULL = "employeeId must not be null";
+  public static final String EMPNAME_MUST_NOT_NULL = "employeeName must not be null";
   public static final String AMT_GREATER_THAN_ZERO = "Amount must be greater than 0";
   public static final String ORG_ID_NOT_NULL = "organizationId must not be null";
   public static final String VALUE_MUST_GREATER_THAN_ZERO = "value must be greater than 0";
