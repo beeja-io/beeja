@@ -71,11 +71,12 @@ function App() {
             return;
           }
         }
+        const queryUrl = window.location.href 
         window.location.href =
           window.location.origin === OriginURL ||
           window.location.origin === ProdOriginURL
-            ? `${window.location.origin}/login`
-            : `${import.meta.env.VITE_API_BASE_URL}/login`;
+            ? `${window.location.origin}/login?redirectUrl=${queryUrl}`
+            : `${import.meta.env.VITE_API_BASE_URL}/login?redirectUrl=${queryUrl}`;
         setIsLoaded(true);
       }
     };
