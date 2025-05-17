@@ -112,6 +112,7 @@ public class LoanServiceImpl implements LoanService {
   @Override
   public Loan submitLoanRequest(SubmitLoanRequest loanRequest) throws Exception {
     Loan loan = new Loan();
+    loan.setEmployeeName(UserContext.getLoggedInUserName());
     loan.setEmployeeId(UserContext.getLoggedInEmployeeId());
     loan.setLoanType(loanRequest.getLoanType());
     loan.setAmount(loanRequest.getAmount());
