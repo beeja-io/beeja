@@ -62,7 +62,7 @@ const MyProfileTabsContainerComponent = ({
       label: 'Date of Birth',
       value:
         employee.employee.personalInformation &&
-          employee.employee.personalInformation.dateOfBirth
+        employee.employee.personalInformation.dateOfBirth
           ? employee.employee.personalInformation.dateOfBirth
           : '-',
     },
@@ -70,7 +70,7 @@ const MyProfileTabsContainerComponent = ({
       label: 'Nationality',
       value:
         employee.employee.personalInformation &&
-          employee.employee.personalInformation.nationality
+        employee.employee.personalInformation.nationality
           ? employee.employee.personalInformation.nationality
           : '-',
     },
@@ -86,7 +86,7 @@ const MyProfileTabsContainerComponent = ({
       label: 'Gender',
       value:
         employee.employee.personalInformation &&
-          employee.employee.personalInformation.gender
+        employee.employee.personalInformation.gender
           ? employee.employee.personalInformation.gender
           : '-',
     },
@@ -94,7 +94,7 @@ const MyProfileTabsContainerComponent = ({
       label: 'Marital Status',
       value:
         employee.employee.personalInformation &&
-          employee.employee.personalInformation.maritalStatus
+        employee.employee.personalInformation.maritalStatus
           ? employee.employee.personalInformation.maritalStatus
           : '-',
     },
@@ -173,8 +173,8 @@ const MyProfileTabsContainerComponent = ({
       label: 'Department',
       value:
         employee &&
-          employee.employee.jobDetails &&
-          employee.employee.jobDetails.department
+        employee.employee.jobDetails &&
+        employee.employee.jobDetails.department
           ? employee.employee.jobDetails.department
           : '-',
     },
@@ -182,8 +182,8 @@ const MyProfileTabsContainerComponent = ({
       label: 'Employment Type',
       value:
         employee &&
-          employee.employee.jobDetails &&
-          employee.employee.jobDetails.employementType
+        employee.employee.jobDetails &&
+        employee.employee.jobDetails.employementType
           ? employee.employee.jobDetails.employementType
           : '-',
     },
@@ -191,8 +191,8 @@ const MyProfileTabsContainerComponent = ({
       label: 'Joining Date',
       value:
         employee &&
-          employee.employee.jobDetails &&
-          employee.employee.jobDetails.joiningDate
+        employee.employee.jobDetails &&
+        employee.employee.jobDetails.joiningDate
           ? employee.employee.jobDetails.joiningDate
           : '-',
     },
@@ -203,10 +203,10 @@ const MyProfileTabsContainerComponent = ({
       label: 'Name',
       value:
         employee &&
-          employee.employee &&
-          employee.employee.personalInformation &&
-          employee.employee.personalInformation.nomineeDetails &&
-          employee.employee.personalInformation.nomineeDetails.name
+        employee.employee &&
+        employee.employee.personalInformation &&
+        employee.employee.personalInformation.nomineeDetails &&
+        employee.employee.personalInformation.nomineeDetails.name
           ? employee.employee.personalInformation.nomineeDetails.name
           : '-',
     },
@@ -214,10 +214,10 @@ const MyProfileTabsContainerComponent = ({
       label: 'Email',
       value:
         employee &&
-          employee.employee &&
-          employee.employee.personalInformation &&
-          employee.employee.personalInformation.nomineeDetails &&
-          employee.employee.personalInformation.nomineeDetails.email
+        employee.employee &&
+        employee.employee.personalInformation &&
+        employee.employee.personalInformation.nomineeDetails &&
+        employee.employee.personalInformation.nomineeDetails.email
           ? employee.employee.personalInformation.nomineeDetails.email
           : '-',
     },
@@ -225,10 +225,10 @@ const MyProfileTabsContainerComponent = ({
       label: 'Phone',
       value:
         employee &&
-          employee.employee &&
-          employee.employee.personalInformation &&
-          employee.employee.personalInformation.nomineeDetails &&
-          employee.employee.personalInformation.nomineeDetails.phone
+        employee.employee &&
+        employee.employee.personalInformation &&
+        employee.employee.personalInformation.nomineeDetails &&
+        employee.employee.personalInformation.nomineeDetails.phone
           ? employee.employee.personalInformation.nomineeDetails.phone
           : '-',
     },
@@ -236,10 +236,10 @@ const MyProfileTabsContainerComponent = ({
       label: 'Relation Type',
       value:
         employee &&
-          employee.employee &&
-          employee.employee.personalInformation &&
-          employee.employee.personalInformation.nomineeDetails &&
-          employee.employee.personalInformation.nomineeDetails.relationType
+        employee.employee &&
+        employee.employee.personalInformation &&
+        employee.employee.personalInformation.nomineeDetails &&
+        employee.employee.personalInformation.nomineeDetails.relationType
           ? employee.employee.personalInformation.nomineeDetails.relationType
           : '-',
     },
@@ -405,17 +405,17 @@ const MyProfileTabsContainerComponent = ({
                 user,
                 EMPLOYEE_MODULE.READ_COMPLETE_EMPLOYEE_DETAILS
               ))) && (
-              <li
-                className={isActiveTab === 'job' ? 'active' : ''}
-                onClick={() => {
-                  handleTabChange('job');
-                  handleIsActiveTab('job');
-                  chooseTab('Job');
-                }}
-              >
-                {t('JOB')}
-              </li>
-            )}
+            <li
+              className={isActiveTab === 'job' ? 'active' : ''}
+              onClick={() => {
+                handleTabChange('job');
+                handleIsActiveTab('job');
+                chooseTab('Job');
+              }}
+            >
+              {t('JOB')}
+            </li>
+          )}
 
           {/* FIXME - Update below when available */}
           {/* <li
@@ -435,34 +435,34 @@ const MyProfileTabsContainerComponent = ({
             )) ||
             (user &&
               hasPermission(user, EMPLOYEE_MODULE.READ_ENTIRE_DOCUMENTS))) && (
-              <li
-                className={isActiveTab === 'documents' ? 'active' : ''}
-                onClick={() => {
-                  handleTabChange('documents');
-                  handleIsActiveTab('documents');
-                  chooseTab('Documents');
-                }}
-              >
-                {t('DOCUMENTS')}
-              </li>
-            )}
+            <li
+              className={isActiveTab === 'documents' ? 'active' : ''}
+              onClick={() => {
+                handleTabChange('documents');
+                handleIsActiveTab('documents');
+                chooseTab('Documents');
+              }}
+            >
+              {t('DOCUMENTS')}
+            </li>
+          )}
           {(employee.account.employeeId === user?.employeeId ||
             (user &&
               hasPermission(
                 user,
                 HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE
               ))) && (
-              <li
-                className={isActiveTab === 'deductions' ? 'active' : ''}
-                onClick={() => {
-                  handleTabChange('deductions');
-                  handleIsActiveTab('deductions');
-                  chooseTab('Deductions');
-                }}
-              >
-                {t('DEDUCTIONS')}
-              </li>
-            )}
+            <li
+              className={isActiveTab === 'deductions' ? 'active' : ''}
+              onClick={() => {
+                handleTabChange('deductions');
+                handleIsActiveTab('deductions');
+                chooseTab('Deductions');
+              }}
+            >
+              {t('DEDUCTIONS')}
+            </li>
+          )}
           {user &&
             featureToggles &&
             hasFeature(
