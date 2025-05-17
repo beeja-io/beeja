@@ -1,5 +1,8 @@
 package com.beeja.api.projectmanagement.request;
 
+import com.beeja.api.projectmanagement.model.InvoicePeriod;
+import com.beeja.api.projectmanagement.model.PaymentDetails;
+import com.beeja.api.projectmanagement.model.Task;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,4 +20,11 @@ public class InvoiceRequest {
     private Double amount;
     private String currency;
     private List<String> notes;
+    private List<Task> tasks;
+    private String clientId;
+    private String projectId;
+    private String remittanceRef;
+    private int vat;
+    private String daysLeftForPayment;
+    private InvoicePeriod invoicePeriod;
 }

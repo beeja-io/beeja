@@ -35,6 +35,14 @@ public class Invoice {
     private InvoiceStatus status;
     private List<String> notes;
     private String invoiceFileId;
+    private PaymentDetails paymentDetails;
+    private String remittanceRef;
+    private String taxId;
+    private String amountInWords;
+    private List<Task> tasks;
+    private int vat;
+    private String daysLeftForPayment;
+    private InvoicePeriod invoicePeriod;
 
     @CreatedDate
     private Date createdAt;
