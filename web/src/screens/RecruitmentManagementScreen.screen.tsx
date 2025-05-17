@@ -13,6 +13,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { IApplicant } from '../entities/ApplicantEntity';
 import { getAllApplicantList, getMyReferrals } from '../service/axiosInstance';
 import ApplicantsList from '../components/directComponents/ApplicantsList.component';
+import Pagination from '../components/directComponents/Pagination.component';
 
 type RecruitmentManagementScreenProps = {
   isReferral: boolean;
@@ -27,6 +28,11 @@ const RecruitmentManagementScreen = (
   };
   const [allApplicants, setAllApplicants] = useState<IApplicant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalApplicants, setTotalApplicants] = useState(0);
 
   const handleIsLoading = () => {
     setIsLoading(!isLoading);
@@ -34,21 +40,52 @@ const RecruitmentManagementScreen = (
   const fetchApplicants = useCallback(async () => {
     try {
       setIsLoading(true);
+
+      const url = props.isReferral
+        ? '/recruitments/v1/referrals'
+        : '/recruitments/v1/applicants/combinedApplicants';
+
       const response = props.isReferral
-        ? await getMyReferrals()
-        : await getAllApplicantList();
-      setAllApplicants(response.data.reverse());
+        ? await getMyReferrals(url)
+        : await getAllApplicantList(url);
+
+      const applicantData = Array.isArray(response?.data)
+        ? response.data
+        : response?.data?.applicants || [];
+
+      const totalCount = response?.data?.totalSize ?? applicantData.length ?? 0;
+
+      setTotalApplicants(totalCount);
+      setTotalItems(totalCount);
+
+      const startIndex = (currentPage - 1) * itemsPerPage;
+      const paginated = applicantData.slice(
+        startIndex,
+        startIndex + itemsPerPage
+      );
+      setAllApplicants(paginated);
     } catch (error) {
-      // FIXME
-      alert(error);
+      alert('Failed to fetch applicants');
+      setTotalApplicants(0);
+      setTotalItems(0);
     } finally {
       setIsLoading(false);
     }
-  }, [props.isReferral]);
+  }, [currentPage, itemsPerPage, props.isReferral]);
 
   useEffect(() => {
     fetchApplicants();
   }, [fetchApplicants]);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setItemsPerPage(newPageSize);
+    setPageSize(newPageSize); // <-- Add this line
+    setCurrentPage(1);
+  };
 
   return (
     <>
@@ -84,6 +121,19 @@ const RecruitmentManagementScreen = (
           isLoading={isLoading}
           handleIsLoading={handleIsLoading}
           isReferral={props.isReferral}
+          currentPage={currentPage}
+          totalApplicants={totalApplicants}
+          pageSize={pageSize}
+          setCurrentPage={setCurrentPage}
+          setPageSize={setPageSize}
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.max(1, Math.ceil(totalItems / itemsPerPage))}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          handleItemsPerPage={handlePageSizeChange}
+          totalItems={totalItems}
         />
       </ExpenseManagementMainContainer>
     </>
