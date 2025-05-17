@@ -170,6 +170,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     emptyDocumentType: '',
     emptyFile: '',
   });
+
   const entityId = props.employee.account.employeeId;
   useEffect(() => {
     fetchData();

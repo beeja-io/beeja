@@ -41,4 +41,6 @@ public class Constants {
   public static final String FILE_DOWNLOAD_FAILED = "Error while downloading file with ID: ";
   public static final String ERROR_FETCH_FILE_METADATA = "Error while fetching file metadata for fileId: ";
   public static final String ERROR_IN_DOWNLOAD_FILE = "Error while downloading file for fileId : ";
+  public static final String DUPLICATE_APPLICANT = "Applicant already applied for this position in the last 6 months.";
+  public static final String DUPLICATE_APPLICATION_LOG = "Duplicate application within 6 months detected for email: {} and position: {}";
 }
