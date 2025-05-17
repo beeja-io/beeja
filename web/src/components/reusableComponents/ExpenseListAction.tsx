@@ -104,7 +104,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
 
   window.addEventListener('click', handleDocumentClick);
   useKeyPress(27, () => {
-   setConfirmDeleteModal(false);
+    setConfirmDeleteModal(false);
   });
   return (
     <>
