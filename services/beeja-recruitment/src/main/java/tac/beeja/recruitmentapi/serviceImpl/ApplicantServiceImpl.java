@@ -143,22 +143,22 @@ public class ApplicantServiceImpl implements ApplicantService {
             ? PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC, sortBy))
             : PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, sortBy != null ? sortBy : "createdAt"));
 
-    Query query = new Query().with(pageable);
+    List<Criteria> criteriaList = new ArrayList<>();
 
     if (applicantId != null && !applicantId.isEmpty()) {
-      query.addCriteria(Criteria.where("applicantId").is(applicantId));
+      criteriaList.add(Criteria.where("applicantId").is(applicantId));
     }
     if (firstName != null && !firstName.isEmpty()) {
-      query.addCriteria(Criteria.where("firstName").regex("^" + firstName + "$", "i"));
+      criteriaList.add(Criteria.where("firstName").regex("^" + firstName + "$", "i"));
     }
     if (positionAppliedFor != null && !positionAppliedFor.isEmpty()) {
-      query.addCriteria(Criteria.where("positionAppliedFor").regex("^" + positionAppliedFor + "$", "i"));
+      criteriaList.add(Criteria.where("positionAppliedFor").regex("^" + positionAppliedFor + "$", "i"));
     }
     if (status != null) {
-      query.addCriteria(Criteria.where("status").is(status));
+      criteriaList.add(Criteria.where("status").is(status));
     }
     if (experience != null && !experience.isEmpty()) {
-      query.addCriteria(Criteria.where("experience").regex("^" + experience + "$", "i"));
+      criteriaList.add(Criteria.where("experience").regex("^" + experience + "$", "i"));
     }
     if (fromDate != null && toDate != null) {
       Calendar cal = Calendar.getInstance();
@@ -168,9 +168,9 @@ public class ApplicantServiceImpl implements ApplicantService {
       cal.set(Calendar.SECOND, 59);
       cal.set(Calendar.MILLISECOND, 999);
       toDate = cal.getTime();
-      query.addCriteria(Criteria.where("createdAt").gte(fromDate).lte(toDate));
+      criteriaList.add(Criteria.where("createdAt").gte(fromDate).lte(toDate));
     } else if (fromDate != null) {
-      query.addCriteria(Criteria.where("createdAt").gte(fromDate));
+      criteriaList.add(Criteria.where("createdAt").gte(fromDate));
     } else if (toDate != null) {
       Calendar cal = Calendar.getInstance();
       cal.setTime(toDate);
@@ -179,18 +179,22 @@ public class ApplicantServiceImpl implements ApplicantService {
       cal.set(Calendar.SECOND, 59);
       cal.set(Calendar.MILLISECOND, 999);
       toDate = cal.getTime();
-      query.addCriteria(Criteria.where("createdAt").lte(toDate));
+      criteriaList.add(Criteria.where("createdAt").lte(toDate));
     }
 
-    List<Applicant> applicants = mongoTemplate.find(query, Applicant.class);
-    long totalRecords = mongoTemplate.count(query, Applicant.class);
-
-    if (applicants.isEmpty()) {
-      return new PaginatedApplicantResponse(Collections.emptyList(), pageNumber + 1, pageSize, 0, 0);
+    Criteria finalCriteria = new Criteria();
+    if (!criteriaList.isEmpty()) {
+      finalCriteria.andOperator(criteriaList.toArray(new Criteria[0]));
     }
+
+    Query countQuery = new Query(finalCriteria);
+    long totalRecords = mongoTemplate.count(countQuery, Applicant.class);
+
+    Query paginatedQuery = new Query(finalCriteria).with(pageable);
+    List<Applicant> applicants = mongoTemplate.find(paginatedQuery, Applicant.class);
 
     List<ApplicantDTO> applicantDTOs = applicants.stream().map(applicant -> new ApplicantDTO(
-            applicant.getId(),applicant.getApplicantId(), applicant.getFirstName(), applicant.getLastName(),
+            applicant.getId(), applicant.getApplicantId(), applicant.getFirstName(), applicant.getLastName(),
             applicant.getEmail(), applicant.getPhoneNumber(), applicant.getPositionAppliedFor(),
             applicant.getStatus(), applicant.getExperience(), applicant.getReferredByEmployeeName(),
             applicant.getCreatedAt()
