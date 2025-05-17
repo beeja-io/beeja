@@ -25,6 +25,7 @@ import { ExpenseFilterArea } from '../styles/ExpenseListStyles.style';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { OrganizationValues } from '../entities/OrgValueEntity';
+import { osTypes,ramSizes } from '../utils/selectOptions';
 
 const InventoryManagement = () => {
   const navigate = useNavigate();
@@ -58,6 +59,8 @@ const InventoryManagement = () => {
   const [deviceFilter, setDeviceFilter] = useState<string>('');
   const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
   const [providerFilter, setProviderFilter] = useState<string>('');
+  const [osFilter, setOsFilter] = useState<string>('');
+  const [ramFilter,setRamFilter] = useState<string>('');
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // const value = event.target.value;
     setDeviceFilter(event.target.value);
@@ -77,6 +80,18 @@ const InventoryManagement = () => {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setProviderFilter(event.target.value);
+  };
+
+  const handleOsChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setOsFilter(event.target.value);
+  };
+
+  const handleRamChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setRamFilter(event.target.value);
   };
 
   const [inventoryList, setInventoryList] = useState<DeviceDetails[]>([]);
@@ -120,6 +135,10 @@ const InventoryManagement = () => {
         );
       if (providerFilter != null && providerFilter != '-')
         queryParams.push(`provider=${encodeURIComponent(providerFilter)}`);
+      if (osFilter != null && osFilter != '-')
+        queryParams.push(`os=${encodeURIComponent(osFilter)}`);
+      if (ramFilter != null && ramFilter != '-')
+        queryParams.push(`RAM=${encodeURIComponent(ramFilter)}`);
       if (currentPage) {
         queryParams.push(`pageNumber=${currentPage}`);
       }
@@ -157,6 +176,8 @@ const InventoryManagement = () => {
     deviceFilter,
     availabilityFilter,
     providerFilter,
+    osFilter,
+    ramFilter
   ]);
 
   useEffect(() => {
@@ -186,7 +207,6 @@ const InventoryManagement = () => {
     } else {
       setInventoryProviders(inventoryProvidersFetched.data);
     }
-    setDeviceTypes(deviceTypesFetched.data);
   };
   useEffect(() => {
     fetchOrganizationValues();
@@ -199,6 +219,8 @@ const InventoryManagement = () => {
       { key: 'device', value: deviceFilter },
       { key: 'availability', value: availabilityFilter },
       { key: 'provider', value: providerFilter },
+      { key: 'os' , value: osFilter},
+      { key: 'ram' , value: ramFilter}
     ];
 
     return (
@@ -226,6 +248,8 @@ const InventoryManagement = () => {
       setDeviceFilter('');
       setAvailabilityFilter('');
       setProviderFilter('');
+      setOsFilter('');
+      setRamFilter('');
       setIsShowFilters(false); //update
     }
     if (filterName === 'device') {
@@ -236,6 +260,12 @@ const InventoryManagement = () => {
     }
     if (filterName === 'provider') {
       setProviderFilter('');
+    }
+    if(filterName === 'os'){
+      setOsFilter('');
+    }
+    if(filterName === 'ram'){
+      setRamFilter('');
     }
   };
   useKeyPress(78, () => {
@@ -289,14 +319,20 @@ const InventoryManagement = () => {
             onDeviceChange={handleDeviceChange}
             onAvailabilityChange={handleAvailabilityChange}
             onProviderChange={handleProviderChange}
+            onOsChange={handleOsChange}
+            onRamChange={handleRamChange}
             deviceFilter={deviceFilter}
             availabilityFilter={availabilityFilter}
+            osFilter={osFilter}
+            ramFilter={ramFilter}
             providerFilter={providerFilter}
             clearFilters={clearFilters}
             isShowFilters={isShowFilters}
             selectedFiltersText={selectedFiltersText}
             deviceTypes={deviceTypes}
             inventoryProviders={inventoryProviders}
+            osTypes={osTypes}
+            ramSizes={ramSizes}
           />
         )}
       </ExpenseManagementMainContainer>
