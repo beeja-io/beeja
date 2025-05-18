@@ -40,8 +40,13 @@ const MyProfileTabsContainerComponent = ({
   const [selectedTab, setSelectedTab] = useState('general');
   const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
+    setSelectedTab('general');
+    setIsActiveTab('general');
+  }, [employee]);
+
+  useEffect(() => {
     setSelectedTab(isActiveTab);
-  }, [employee, isActiveTab]);
+  }, [isActiveTab]);
 
   const handleTabChange = (selectedTab: string) => {
     setSelectedTab(selectedTab);

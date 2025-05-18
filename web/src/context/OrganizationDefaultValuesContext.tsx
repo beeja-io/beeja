@@ -1,82 +1,106 @@
-import React, { ReactNode, createContext, useState ,useContext } from 'react';
+import React, { ReactNode, createContext, useState, useContext } from 'react';
 import { OrganizationValues } from '../entities/OrgValueEntity';
 
 interface OrganizationDefaultValuesContextType {
-  deviceTypes: OrganizationValues ;
+  deviceTypes: OrganizationValues;
   updateDeviceTypes: (deviceTypes: OrganizationValues) => void;
-  inventoryProviders: OrganizationValues ;
+  inventoryProviders: OrganizationValues;
   updateInventoryProviders: (inventoryProviders: OrganizationValues) => void;
-  expenseCategories: OrganizationValues ;
+  expenseCategories: OrganizationValues;
   updateExpenseCategories: (expenseCategories: OrganizationValues) => void;
-  expenseTypes: OrganizationValues ;
+  expenseTypes: OrganizationValues;
   updateExpenseTypes: (expenseTypes: OrganizationValues) => void;
-  expenseDepartments: OrganizationValues ;
+  expenseDepartments: OrganizationValues;
   updateExpenseDepartments: (expenseDepartments: OrganizationValues) => void;
-  expensePaymentModes: OrganizationValues ;
+  expensePaymentModes: OrganizationValues;
   updateExpensePaymentModes: (expensePaymentModes: OrganizationValues) => void;
 }
 
-export const OrganizationDefaultValuesContext = createContext<OrganizationDefaultValuesContextType>({
-  deviceTypes: {} as OrganizationValues,
-  updateDeviceTypes: () => {},
-  inventoryProviders: {} as OrganizationValues,
-  updateInventoryProviders: () => {},
-  expenseCategories: {} as OrganizationValues,
-  updateExpenseCategories: () => {},
-  expenseTypes: {} as OrganizationValues,
-  updateExpenseTypes: () => {},
-  expenseDepartments: {} as OrganizationValues,
-  updateExpenseDepartments: () => {},
-  expensePaymentModes: {} as OrganizationValues,
-  updateExpensePaymentModes: () => {}
-});
+export const OrganizationDefaultValuesContext =
+  createContext<OrganizationDefaultValuesContextType>({
+    deviceTypes: {} as OrganizationValues,
+    updateDeviceTypes: () => {},
+    inventoryProviders: {} as OrganizationValues,
+    updateInventoryProviders: () => {},
+    expenseCategories: {} as OrganizationValues,
+    updateExpenseCategories: () => {},
+    expenseTypes: {} as OrganizationValues,
+    updateExpenseTypes: () => {},
+    expenseDepartments: {} as OrganizationValues,
+    updateExpenseDepartments: () => {},
+    expensePaymentModes: {} as OrganizationValues,
+    updateExpensePaymentModes: () => {},
+  });
 
-export const OrganizationDefaultValuesProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-    const [deviceTypes, setDeviceTypes] = useState<OrganizationValues>({} as OrganizationValues);
-  
-    const updateDeviceTypes = (deviceTypes: OrganizationValues) => {
-      setDeviceTypes(deviceTypes);
-    };
+export const OrganizationDefaultValuesProvider: React.FC<{
+  children: ReactNode;
+}> = ({ children }) => {
+  const [deviceTypes, setDeviceTypes] = useState<OrganizationValues>(
+    {} as OrganizationValues
+  );
 
-    const [inventoryProviders, setInventoryProviders] = useState<OrganizationValues>({} as OrganizationValues);
-  
-    const updateInventoryProviders = (inventoryProviders: OrganizationValues) => {
-      setInventoryProviders(inventoryProviders);
-    };
+  const updateDeviceTypes = (deviceTypes: OrganizationValues) => {
+    setDeviceTypes(deviceTypes);
+  };
 
-    const [expenseCategories, setExpenseCategories] = useState<OrganizationValues>({} as OrganizationValues);
+  const [inventoryProviders, setInventoryProviders] =
+    useState<OrganizationValues>({} as OrganizationValues);
 
-    const updateExpenseCategories = (expenseCategories: OrganizationValues) => {
-      setExpenseCategories(expenseCategories);
-    };
-  
-    const [expenseTypes, setExpenseTypes] = useState<OrganizationValues>({} as OrganizationValues);
+  const updateInventoryProviders = (inventoryProviders: OrganizationValues) => {
+    setInventoryProviders(inventoryProviders);
+  };
 
-    const updateExpenseTypes = (expenseTypes: OrganizationValues) => {
-      setExpenseTypes(expenseTypes);
-    };
-  
-    const [expenseDepartments, setExpenseDepartments] = useState<OrganizationValues>({} as OrganizationValues);
+  const [expenseCategories, setExpenseCategories] =
+    useState<OrganizationValues>({} as OrganizationValues);
 
-    const updateExpenseDepartments = (expenseDepartments: OrganizationValues) => {
-      setExpenseDepartments(expenseDepartments);
-    };
+  const updateExpenseCategories = (expenseCategories: OrganizationValues) => {
+    setExpenseCategories(expenseCategories);
+  };
 
-    const [expensePaymentModes, setExpensePaymentModes] = useState<OrganizationValues>({} as OrganizationValues);
+  const [expenseTypes, setExpenseTypes] = useState<OrganizationValues>(
+    {} as OrganizationValues
+  );
 
-    const updateExpensePaymentModes = (expensePaymentModes: OrganizationValues) => {
-      setExpensePaymentModes(expensePaymentModes);
-    };
-  
-    return (
-      <OrganizationDefaultValuesContext.Provider value={{ deviceTypes, updateDeviceTypes, inventoryProviders, 
-          updateInventoryProviders, expenseCategories , updateExpenseCategories, expenseTypes, updateExpenseTypes,
-          expenseDepartments, updateExpenseDepartments, expensePaymentModes, updateExpensePaymentModes}}>
-        {children}
-      </OrganizationDefaultValuesContext.Provider>
-    );
+  const updateExpenseTypes = (expenseTypes: OrganizationValues) => {
+    setExpenseTypes(expenseTypes);
+  };
+
+  const [expenseDepartments, setExpenseDepartments] =
+    useState<OrganizationValues>({} as OrganizationValues);
+
+  const updateExpenseDepartments = (expenseDepartments: OrganizationValues) => {
+    setExpenseDepartments(expenseDepartments);
+  };
+
+  const [expensePaymentModes, setExpensePaymentModes] =
+    useState<OrganizationValues>({} as OrganizationValues);
+
+  const updateExpensePaymentModes = (
+    expensePaymentModes: OrganizationValues
+  ) => {
+    setExpensePaymentModes(expensePaymentModes);
+  };
+
+  return (
+    <OrganizationDefaultValuesContext.Provider
+      value={{
+        deviceTypes,
+        updateDeviceTypes,
+        inventoryProviders,
+        updateInventoryProviders,
+        expenseCategories,
+        updateExpenseCategories,
+        expenseTypes,
+        updateExpenseTypes,
+        expenseDepartments,
+        updateExpenseDepartments,
+        expensePaymentModes,
+        updateExpensePaymentModes,
+      }}
+    >
+      {children}
+    </OrganizationDefaultValuesContext.Provider>
+  );
 };
 
 export const OrganizationDefaultValuesDetails = () => {

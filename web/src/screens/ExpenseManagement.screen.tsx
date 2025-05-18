@@ -45,37 +45,52 @@ const ExpenseManagement = () => {
     toast.success('Expense added successfully');
     setKey((prevKey) => prevKey + 1);
   };
-  const {expenseCategories, updateExpenseCategories} = OrganizationDefaultValuesDetails();
-  const {expenseTypes, updateExpenseTypes} = OrganizationDefaultValuesDetails();
-  const {expenseDepartments, updateExpenseDepartments} = OrganizationDefaultValuesDetails();
-  const {expensePaymentModes, updateExpensePaymentModes} = OrganizationDefaultValuesDetails();
+  const { expenseCategories, updateExpenseCategories } =
+    OrganizationDefaultValuesDetails();
+  const { expenseTypes, updateExpenseTypes } =
+    OrganizationDefaultValuesDetails();
+  const { expenseDepartments, updateExpenseDepartments } =
+    OrganizationDefaultValuesDetails();
+  const { expensePaymentModes, updateExpensePaymentModes } =
+    OrganizationDefaultValuesDetails();
 
   const fetchOrganizationValues = async () => {
     setIsLoading(true);
     try {
-    const expenseCategories = await getOrganizationValuesByKey('expenseCategories');
-    const expenseTypes = await getOrganizationValuesByKey('expenseTypes');
-    const expenseDepartments = await getOrganizationValuesByKey('departments');
-    const expensePaymentModes = await getOrganizationValuesByKey('paymentModes');
+      const expenseCategories =
+        await getOrganizationValuesByKey('expenseCategories');
+      const expenseTypes = await getOrganizationValuesByKey('expenseTypes');
+      const expenseDepartments =
+        await getOrganizationValuesByKey('departments');
+      const expensePaymentModes =
+        await getOrganizationValuesByKey('paymentModes');
 
-    updateExpenseCategories(expenseCategories.data);
-    updateExpenseTypes(expenseTypes.data);
-    updateExpenseDepartments(expenseDepartments.data);
-    updateExpensePaymentModes(expensePaymentModes.data);
-    setIsLoading(false);
-    if (expenseDepartments.status === 204) {
-      toast.error('Please add departments in organization values (Settings) to add expenses');
-    }
-    if (expenseCategories.status === 204) {
-      toast.error('Please add expense categories in organization values (Settings) to add expenses');
-    }
-    if (expenseTypes.status === 204) {
-      toast.error('Please add expense types in organization values (Settings) to add expenses');
-    }
-    if (expensePaymentModes.status === 204) {
-      toast.error('Please add expense payment modes in organization (Settings) values to add expenses'  
-    } 
-      catch (error) {
+      updateExpenseCategories(expenseCategories.data);
+      updateExpenseTypes(expenseTypes.data);
+      updateExpenseDepartments(expenseDepartments.data);
+      updateExpensePaymentModes(expensePaymentModes.data);
+      setIsLoading(false);
+      if (expenseDepartments.status === 204) {
+        toast.error(
+          'Please add departments in organization values (Settings) to add expenses'
+        );
+      }
+      if (expenseCategories.status === 204) {
+        toast.error(
+          'Please add expense categories in organization values (Settings) to add expenses'
+        );
+      }
+      if (expenseTypes.status === 204) {
+        toast.error(
+          'Please add expense types in organization values (Settings) to add expenses'
+        );
+      }
+      if (expensePaymentModes.status === 204) {
+        toast.error(
+          'Please add expense payment modes in organization (Settings) values to add expenses'
+        );
+      }
+    } catch (error) {
       setIsLoading(false);
       throw new Error('Error fetching expenses:' + error);
     }
