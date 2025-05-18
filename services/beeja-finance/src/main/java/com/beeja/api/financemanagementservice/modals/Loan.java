@@ -28,8 +28,7 @@ public class Loan {
 
   @NotBlank(message = Constants.EMPID_MUST_NOT_NULL)
   private String employeeId;
-  @NotBlank(message = Constants.EMPNAME_MUST_NOT_NULL)
-  private String employeeName;
+
   @NotBlank(message = Constants.ORG_ID_NOT_NULL)
   private String organizationId = UserContext.getLoggedInUserOrganization().get("id").toString();
 

@@ -37,6 +37,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -112,7 +113,6 @@ public class LoanServiceImpl implements LoanService {
   @Override
   public Loan submitLoanRequest(SubmitLoanRequest loanRequest) throws Exception {
     Loan loan = new Loan();
-    loan.setEmployeeName(UserContext.getLoggedInUserName());
     loan.setEmployeeId(UserContext.getLoggedInEmployeeId());
     loan.setLoanType(loanRequest.getLoanType());
     loan.setAmount(loanRequest.getAmount());
@@ -169,23 +169,38 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
   Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
   Pageable pageable = PageRequest.of(validPage, pageSize, sort);
 
-  String orgId=UserContext.getLoggedInUserOrganization().get("id").toString();;
+  String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
 
   List<LoanDTO> loans;
   long totalCount;
-try {
-  if (status != null) {
-    loans = loanRepository.findAllByOrganizationIdAndStatus(orgId, status, pageable);
-    totalCount = loanRepository.countByOrganizationIdAndStatus(orgId, status);
-  } else {
-    loans = loanRepository.findAllByOrganizationId(orgId, pageable);
-    totalCount = loanRepository.countByOrganizationId(orgId);
+  try {
+    if (status != null) {
+      loans = loanRepository.findAllByOrganizationIdAndStatus(orgId, status, pageable);
+      totalCount = loanRepository.countByOrganizationIdAndStatus(orgId, status);
+    } else {
+      loans = loanRepository.findAllByOrganizationId(orgId, pageable);
+      totalCount = loanRepository.countByOrganizationId(orgId);
+    }
+    List<Map<String, Object>> employees=null;
+   try {
+    employees = accountClient.getAllEmployees();
+   }
+   catch (Exception e){
+     log.warn("Failed to retrieve employeeNames");
+   }
+    Map<String, String> employeeNames = employees.stream()
+            .filter(emp -> emp.containsKey("employeeId") && emp.containsKey("firstName") && emp.containsKey("lastName"))
+            .collect(Collectors.toMap(
+                    emp -> emp.get("employeeId").toString(),
+                    emp -> emp.get("firstName") + " " + emp.get("lastName")
+            ));
+    loans.forEach(loan -> loan.setEmployeeName(employeeNames.getOrDefault(loan.getEmployeeId(), "Unknown")));
+
+  } catch (Exception e) {
+    log.error("Error occurred while fetching loans: {}", e.getMessage(), e);
+    loans = Collections.emptyList();
+    totalCount = 0;
   }
-}catch(Exception e){
-  log.error("Error occurred while fetching loans: {}", e.getMessage(),e);
-  loans = Collections.emptyList();
-  totalCount = 0;
-}
 
   LoanResponse response = new LoanResponse();
   response.setLoansList(loans);
@@ -194,7 +209,6 @@ try {
   response.setTotalRecords(totalCount);
   return response;
 }
-
   /**
    * Retrieves all loans associated with a specific employee ID within the logged-in user's
    * organization.
