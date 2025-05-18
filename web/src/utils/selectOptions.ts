@@ -1,29 +1,3 @@
-  export const noOfYearsExperience = [
-    '0-1',
-    '1-2',
-    '2-3',
-    '3-4',
-    '4-5',
-    '5-6',
-    '6-7',
-    '7-8',
-    '8-9',
-    '9-10',
-    '10-11',
-    '11-12',
-    '12-13',
-    '13-14',
-    '14-15',
-    '15+',
-  ];
-  
-  export const osTypes = [
-    'Windows',
-    'Linux',
-    'Mac OS',
-  ];
-
-  export const ramSizes = ['4','8','16','32','64'];
 export const noOfYearsExperience = [
   '0-1',
   '1-2',
@@ -41,4 +15,39 @@ export const noOfYearsExperience = [
   '13-14',
   '14-15',
   '15+',
+];
+
+export const osTypes = [
+  'Alpine Linux',
+  'Android',
+  'Arch Linux',
+  'CentOS',
+  'Chrome OS',
+  'Debian',
+  'Fedora',
+  'FreeBSD',
+  'iOS',
+  'Kali Linux',
+  'Linux',
+  'macOS',
+  'Manjaro',
+  'openSUSE',
+  'Red Hat Enterprise Linux',
+  'Solaris',
+  'Ubuntu',
+  'Windows',
+  'Zorin OS',
+];
+
+export const ramSizes = [
+  '2',
+  '4',
+  '6',
+  '8',
+  '12',
+  '16',
+  '24',
+  '32',
+  '64',
+  '128',
 ];

@@ -25,7 +25,7 @@ import { ExpenseFilterArea } from '../styles/ExpenseListStyles.style';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { OrganizationValues } from '../entities/OrgValueEntity';
-import { osTypes,ramSizes } from '../utils/selectOptions';
+import { osTypes, ramSizes } from '../utils/selectOptions';
 
 const InventoryManagement = () => {
   const navigate = useNavigate();
@@ -60,7 +60,7 @@ const InventoryManagement = () => {
   const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
   const [providerFilter, setProviderFilter] = useState<string>('');
   const [osFilter, setOsFilter] = useState<string>('');
-  const [ramFilter,setRamFilter] = useState<string>('');
+  const [ramFilter, setRamFilter] = useState<string>('');
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // const value = event.target.value;
     setDeviceFilter(event.target.value);
@@ -82,15 +82,11 @@ const InventoryManagement = () => {
     setProviderFilter(event.target.value);
   };
 
-  const handleOsChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleOsChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setOsFilter(event.target.value);
   };
 
-  const handleRamChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
+  const handleRamChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setRamFilter(event.target.value);
   };
 
@@ -177,7 +173,7 @@ const InventoryManagement = () => {
     availabilityFilter,
     providerFilter,
     osFilter,
-    ramFilter
+    ramFilter,
   ]);
 
   useEffect(() => {
@@ -219,8 +215,8 @@ const InventoryManagement = () => {
       { key: 'device', value: deviceFilter },
       { key: 'availability', value: availabilityFilter },
       { key: 'provider', value: providerFilter },
-      { key: 'os' , value: osFilter},
-      { key: 'ram' , value: ramFilter}
+      { key: 'os', value: osFilter },
+      { key: 'ram', value: ramFilter },
     ];
 
     return (
@@ -261,10 +257,10 @@ const InventoryManagement = () => {
     if (filterName === 'provider') {
       setProviderFilter('');
     }
-    if(filterName === 'os'){
+    if (filterName === 'os') {
       setOsFilter('');
     }
-    if(filterName === 'ram'){
+    if (filterName === 'ram') {
       setRamFilter('');
     }
   };

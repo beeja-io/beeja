@@ -47,8 +47,8 @@ interface Props {
   deviceFilter: string | undefined;
   availabilityFilter: string | undefined;
   providerFilter: string | undefined;
-  osFilter:string | undefined;
-  ramFilter:string | undefined;
+  osFilter: string | undefined;
+  ramFilter: string | undefined;
   isShowFilters: boolean;
   handlePageChange: (page: number) => void;
   handleItemsPerPage: (page: number) => void;
@@ -61,8 +61,8 @@ interface Props {
   selectedFiltersText: () => React.ReactNode;
   deviceTypes: OrganizationValues;
   inventoryProviders: OrganizationValues;
-  osTypes:string[];
-  ramSizes : string[] 
+  osTypes: string[];
+  ramSizes: string[];
 }
 
 const InventoryList = ({
@@ -91,7 +91,7 @@ const InventoryList = ({
   deviceTypes,
   inventoryProviders,
   osTypes,
-  ramSizes
+  ramSizes,
 }: Props) => {
   const { user } = useUser();
   const Actions = [
@@ -196,8 +196,8 @@ const InventoryList = ({
                 </option>
               ))}
             </select>
-          }
-          {osTypes &&
+          )}
+          {osTypes && (
             <select
               className="selectoption"
               name="os"
@@ -214,8 +214,8 @@ const InventoryList = ({
                 </option>
               ))}
             </select>
-          }
-          {ramSizes &&
+          )}
+          {ramSizes && (
             <select
               className="selectoption"
               name="ram"
@@ -232,7 +232,7 @@ const InventoryList = ({
                 </option>
               ))}
             </select>
-          }
+          )}
         </FilterSection>
         <div className="right">
           <DisplayFilters>
