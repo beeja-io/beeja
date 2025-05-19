@@ -1,27 +1,27 @@
+import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import { TextInput } from 'web-kit-components';
+import { IApplicant } from '../../entities/ApplicantEntity';
+import {
+  changeApplicationStatus,
+  getApplicantById,
+  postComment,
+} from '../../service/axiosInstance';
 import { BulkPayslipContainer } from '../../styles/BulkPayslipStyles.style';
 import {
   InputLabelContainer,
   ValidationText,
 } from '../../styles/DocumentTabStyles.style';
 import {
-  ExpenseManagementMainContainer,
   ExpenseHeadingSection,
+  ExpenseManagementMainContainer,
 } from '../../styles/ExpenseManagementStyles.style';
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
-import { useNavigate, useParams } from 'react-router-dom';
-import {
-  changeApplicationStatus,
-  getApplicantById,
-  postComment,
-} from '../../service/axiosInstance';
-import { IApplicant } from '../../entities/ApplicantEntity';
-import { AxiosError } from 'axios';
-import CommentsSection from '../reusableComponents/CommentsSection.component';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
-import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
+import CommentsSection from '../reusableComponents/CommentsSection.component';
 
 const EditApplicant = () => {
   const navigate = useNavigate();
@@ -45,6 +45,7 @@ const EditApplicant = () => {
       getApplicantById(id)
         .then((res) => {
           setApplicant(res.data);
+          setIsLoading(true);
         })
         .catch((error) => {
           if (error instanceof AxiosError) {
@@ -58,7 +59,6 @@ const EditApplicant = () => {
         });
   };
   useEffect(() => {
-    setIsLoading(true);
     fetchApplicantById();
     setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,7 +99,7 @@ const EditApplicant = () => {
 
   return (
     <>
-      {isLoading ? (
+      {!isLoading ? (
         <SpinAnimation />
       ) : (
         <ExpenseManagementMainContainer>

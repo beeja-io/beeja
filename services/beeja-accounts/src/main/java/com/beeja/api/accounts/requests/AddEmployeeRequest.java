@@ -9,4 +9,5 @@ public class AddEmployeeRequest {
   private String email;
   private String employmentType;
   private String department;
+  private String employeeId;
 }

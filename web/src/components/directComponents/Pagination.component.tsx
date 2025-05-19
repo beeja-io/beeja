@@ -10,6 +10,7 @@ import {
 /**
  * @example https://www.freecodecamp.org/news/build-a-custom-pagination-component-in-react/
  */
+
 const Pagination = ({
   totalPages,
   currentPage,
@@ -25,40 +26,38 @@ const Pagination = ({
   handleItemsPerPage: (page: number) => void;
   itemsPerPage: number;
 }) => {
-  const createPageNumbers = () => {
-    const pageNumbers: (string | number)[] = [];
-    const maxPageToShow = 5;
-    const halfMaxPageToShow = Math.floor(maxPageToShow / 2);
+  const createPageNumbers = (): (number | string)[] => {
+    const pageNumbers: (number | string)[] = [];
+    const maxPageToShow = 6;
 
     if (totalPages <= maxPageToShow) {
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
       }
+      return pageNumbers;
+    }
+
+    pageNumbers.push(1);
+
+    if (currentPage <= 3) {
+      pageNumbers.push(2, 3, 4, '...', totalPages);
+    } else if (currentPage >= totalPages - 2) {
+      pageNumbers.push(
+        '...',
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages
+      );
     } else {
-      const leftOffset = Math.min(currentPage - 1, halfMaxPageToShow);
-      const rightOffset = Math.min(totalPages - currentPage, halfMaxPageToShow);
-      let startPage = currentPage - leftOffset;
-      let endPage = currentPage + rightOffset;
-
-      if (startPage === 1) {
-        endPage = maxPageToShow;
-      } else if (endPage === totalPages) {
-        startPage = totalPages - maxPageToShow + 1;
-      }
-
-      for (let i = startPage; i <= endPage; i++) {
-        pageNumbers.push(i);
-      }
-
-      if (startPage > 1) {
-        pageNumbers.unshift('...');
-        pageNumbers.unshift(1);
-      }
-
-      if (endPage < totalPages) {
-        pageNumbers.push('...');
-        pageNumbers.push(totalPages);
-      }
+      pageNumbers.push(
+        '...',
+        currentPage - 1,
+        currentPage,
+        currentPage + 1,
+        '...',
+        totalPages
+      );
     }
 
     return pageNumbers;
@@ -78,18 +77,40 @@ const Pagination = ({
             &laquo;
           </PaginationButton>
         </PaginationItem>
-        {pageNumbers.map((number, index) => (
-          <PaginationItem
-            key={index}
-            className={currentPage === number ? 'active' : ''}
-          >
-            <PaginationButton
-              onClick={() => handlePageChange(number as number)}
+
+        {pageNumbers.map((page, index) => {
+          if (page === '...') {
+            const prev = pageNumbers[index - 1];
+            const next = pageNumbers[index + 1];
+            let jumpToPage = 1;
+
+            if (typeof prev === 'number' && typeof next === 'number') {
+              jumpToPage = Math.floor((prev + next) / 2);
+            }
+
+            return (
+              <PaginationItem key={`ellipsis-${index}`}>
+                <PaginationButton onClick={() => handlePageChange(jumpToPage)}>
+                  ...
+                </PaginationButton>
+              </PaginationItem>
+            );
+          }
+
+          return (
+            <PaginationItem
+              key={index}
+              className={currentPage === page ? 'active' : ''}
             >
-              {number}
-            </PaginationButton>
-          </PaginationItem>
-        ))}
+              <PaginationButton
+                onClick={() => handlePageChange(page as number)}
+              >
+                {page}
+              </PaginationButton>
+            </PaginationItem>
+          );
+        })}
+
         <PaginationItem
           className={currentPage === totalPages ? 'disabled' : ''}
         >
@@ -102,17 +123,18 @@ const Pagination = ({
           </PaginationButton>
         </PaginationItem>
       </PaginationList>
+
       <PaginationActionArea>
         <span>
           {t('SHOWING')}{' '}
           {Math.min((currentPage - 1) * itemsPerPage + 1, totalItems)} {t('TO')}{' '}
-          {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}{' '}
-          {t('ENTRIES')}
+          {Math.min(currentPage * itemsPerPage, totalItems)} {t('OF')}{' '}
+          {totalItems} {t('ENTRIES')}
         </span>
 
         <select
           onChange={(e) => handleItemsPerPage(parseInt(e.target.value))}
-          defaultValue="10"
+          defaultValue={itemsPerPage.toString()}
         >
           <option value="10">{t('SHOW 10')}</option>
           <option value="25">{t('SHOW 25')}</option>

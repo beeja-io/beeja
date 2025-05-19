@@ -60,6 +60,9 @@ const CenterModal = (props: CenterModalProps) => {
         Width={props.modalWidth}
         isExpanded={props.isExpanded}
       >
+        <CloseButton onClick={props.handleModalClose}>
+          <CloseButtonSVG />
+        </CloseButton>
         {(props.isMonogramView ||
           props.isImageSelected ||
           props.isDashedBox) && (
@@ -67,10 +70,6 @@ const CenterModal = (props: CenterModalProps) => {
             <EditProfileText>
               {props.editText ? t(props.editText) : ''}
             </EditProfileText>
-
-            <CloseButton onClick={props.handleModalClose}>
-              <CloseButtonSVG />
-            </CloseButton>
           </>
         )}
         {!props.isMonogramView &&
@@ -113,7 +112,7 @@ const CenterModal = (props: CenterModalProps) => {
         <div className={`controlButtonArea ${buttonContainerClass}`}>
           <button
             className={props.modalLeftButtonClass || 'closeButton'}
-            onClick={props.handleModalClose}
+            onClick={props.handleModalLeftButtonClick}
           >
             {t(props.modalLeftButtonText || t('NO'))}
           </button>

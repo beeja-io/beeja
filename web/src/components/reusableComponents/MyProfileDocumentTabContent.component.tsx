@@ -171,10 +171,10 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     emptyFile: '',
   });
 
+  const entityId = props.employee.account.employeeId;
   useEffect(() => {
     fetchData();
-  }, [currentPage, itemsPerPage]);
-  const entityId = props.employee.account.employeeId;
+  }, [currentPage, itemsPerPage, entityId]);
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
