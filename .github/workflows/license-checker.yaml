@@ -5,6 +5,9 @@ on:
     branches: 
       - main
 
+permissions:
+  contents: read
+
 jobs:
   check-licenses:
     runs-on: ubuntu-latest
