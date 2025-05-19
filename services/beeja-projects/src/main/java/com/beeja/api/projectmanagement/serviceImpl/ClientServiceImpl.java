@@ -6,25 +6,33 @@ import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.exceptions.ValidationException;
+import com.beeja.api.projectmanagement.exceptions.UnAuthorisedException;
 import com.beeja.api.projectmanagement.model.Client;
+import com.beeja.api.projectmanagement.model.dto.File;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.request.FileUploadRequest;
 import com.beeja.api.projectmanagement.responses.ErrorResponse;
+import com.beeja.api.projectmanagement.responses.FileDownloadResultMetaData;
 import com.beeja.api.projectmanagement.service.ClientService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import com.beeja.api.projectmanagement.config.LogoValidator;
 import com.beeja.api.projectmanagement.client.FileClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.beeja.api.projectmanagement.utils.Constants.ERROR_IN_LOGO_UPLOAD;
 
@@ -267,5 +275,71 @@ public class ClientServiceImpl implements ClientService {
             return List.of();
         }
         return clientsInOrganization;
+    }
+
+    @Override
+    public ByteArrayResource downloadFile(String fileId) throws Exception{
+
+        String fileFormat;
+        try {
+            ResponseEntity<?> response = fileClient.getFileById(fileId);
+            LinkedHashMap<String,Object> responseBody = (LinkedHashMap<String, Object>) response.getBody();
+            ObjectMapper objectMapper = new ObjectMapper();
+            File file = objectMapper.convertValue(responseBody, File.class);
+            fileFormat = file.getFileFormat();
+            if(!Objects.equals(file.getEntityType(),"client")){
+                log.error(Constants.UNAUTHORISED_ACCESS);
+                throw new UnAuthorisedException(
+                        Constants.UNAUTHORISED_ACCESS
+                );
+            }
+        } catch (Exception e) {
+            log.error(Constants.ERROR_IN_FETCHING_FILE_FROM_FILE_SERVICE
+                            + " file Id: {}, error: {}",
+                    fileId,
+                    e.getMessage());
+            throw new FeignClientException(
+                    Constants.FILE_NOT_FOUND + fileId);
+        }
+
+        try {
+            ResponseEntity<byte[]> fileResponse = fileClient.downloadFile(fileId);
+
+            byte[] fileData = fileResponse.getBody();
+            FileDownloadResultMetaData fileDownloadResultMetaData = getMetaData(fileResponse,fileFormat);
+
+            return  new ByteArrayResource(Objects.requireNonNull(fileData)){
+                @Override
+                public String getFilename(){
+                    return fileDownloadResultMetaData.getFileName() != null
+                            ? fileDownloadResultMetaData.getFileName()
+                            : "project_Beeja";
+                }
+            };
+        } catch (Exception e){
+            log.error(
+                    Constants.ERROR_IN_DOWNLOADING_FILE_FROM_FILE_SERVICE + "File Id : {}, error: {}",
+                    fileId,
+                    e.getMessage());
+            throw new FeignClientException(Constants.ERROR_IN_DOWNLOADING_FILE_FROM_FILE_SERVICE);
+        }
+    }
+
+    private static FileDownloadResultMetaData getMetaData(ResponseEntity<byte[]> fileResponse,String fileFormat) {
+        HttpHeaders headers = fileResponse.getHeaders();
+        String contentDisposition = headers.getFirst(HttpHeaders.CONTENT_DISPOSITION);
+        String createdBy = headers.getFirst("createdby");
+        String organizationId = headers.getFirst("organizationid");
+        String entityId = headers.getFirst("entityId");
+        String filename = headers.getFirst("filename");
+
+        if ((filename == null || filename.isBlank()) && contentDisposition != null && !contentDisposition.isEmpty()) {
+            int startIndex = contentDisposition.indexOf("filename=\"") + 10;
+            int endIndex = contentDisposition.lastIndexOf("\"");
+            if (endIndex != -1) {
+                filename = contentDisposition.substring(startIndex, endIndex);
+            }
+        }
+        return new FileDownloadResultMetaData(filename+"."+fileFormat, createdBy, entityId, organizationId);
     }
 }

@@ -2,6 +2,7 @@ package com.beeja.api.projectmanagement.service;
 
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.request.ClientRequest;
+import org.springframework.core.io.ByteArrayResource;
 
 import java.util.List;
 
@@ -40,4 +41,6 @@ public interface ClientService {
      * @return a list of {@link Client} objects for the organization
      */
     List<Client> getAllClientsOfOrganization();
+
+    ByteArrayResource downloadFile(String fileId) throws Exception;
 }

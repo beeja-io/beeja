@@ -6,6 +6,8 @@ import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -78,5 +80,21 @@ public class ClientController {
     public ResponseEntity<List<Client>> getAllClientsOfOrganization() throws Exception {
         List<Client> clients = clientService.getAllClientsOfOrganization();
         return new ResponseEntity<>(clients, HttpStatus.OK);
+    }
+
+    @GetMapping("logo/{fileId}")
+    @HasPermission(PermissionConstants.READ_CLIENT_LOGO)
+    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable  String fileId) throws Exception{
+        ByteArrayResource byteArrayResource = clientService.downloadFile(fileId);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(
+                HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + byteArrayResource.getFilename() + "\"");
+        headers.add("Access-Control-Expose-Headers", "Content-Disposition");
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .headers(headers)
+                .body(byteArrayResource);
     }
 }

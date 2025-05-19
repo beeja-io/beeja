@@ -57,12 +57,17 @@ public class Constants {
 
   // ========== File Service Errors ==========
   public static final String ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE = "Error in uploading file to file service";
+  public static final String ERROR_IN_FETCHING_FILE_FROM_FILE_SERVICE =
+          "Error in Fetching Data from File Service";
 
   // ========== System Errors ==========
   public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
   public static final String DB_ERROR_IN_SAVING_DETAILS = "Failed to update client details: %s";
   public static final String FILE_SIZE_EXCEED = "The logo exceeds its maximum permitted size";
   public static final String NO_PERMISSION = " You do not have permission to access this resource ";
+  public static final String UNAUTHORISED_ACCESS = "NO REQUIRED PERMISSIONS";
+  public static final String ERROR_IN_DOWNLOADING_FILE_FROM_FILE_SERVICE =  "Error in Downloading File from File Service" ;
+  public static final String FILE_NOT_FOUND = " No file found with given Id : ";
 
     // ========== Utility ==========
   public static String format(String message, Object... args) {

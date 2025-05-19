@@ -27,4 +27,7 @@ public class PermissionConstants {
     public static final String DELETE_INVOICE = "DIN";
     public static final String UPDATE_STATUS_INVOICE = "USIN";
 
+    //Files-related permissions
+    public static final String READ_CLIENT_LOGO = "RCLL";
+
 }
