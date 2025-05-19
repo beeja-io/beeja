@@ -90,11 +90,20 @@ const LoanListView = (props: LoanListViewProps) => {
       day: 'numeric',
       year: 'numeric',
     }).format(new Date(dateString));
-  const formatLoanType = (loanType: string): string =>
-    loanType
+  const formatLoanType = (loanType: any): string => {
+  try {
+    if (typeof loanType !== 'string' || !loanType) {
+      return 'Unknown Loan Type';
+    }
+    return loanType
       .split('_')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join(' ');
+  } catch {
+    return 'Unknown Loan Type';
+  }
+};
+
   const formatStatus = (status: string) => {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
   };
@@ -142,13 +151,12 @@ const LoanListView = (props: LoanListViewProps) => {
               <TableHead>
                 <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
                   <th>{t('LOAN_NUMBER')}</th>
+                  <th>
+                    {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS)
+                      ? t('EMPLOYEE')
+                      : t('EMPLOYEE_NAME')}
+                  </th>
                   <th>{t('LOAN_TYPE')}</th>
-                  {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
-                    <th>Employee ID</th>
-                  ) : (
-                    ''
-                  )}
-
                   <th>{t('REQUESTED_DATE')}</th>
                   <th>{t('LOAN_AMOUNT')}</th>
                   <th className="statusHeader">{t('STATUS')}</th>
@@ -171,6 +179,22 @@ const LoanListView = (props: LoanListViewProps) => {
                       >
                         {loan.loanNumber}
                       </td>
+                     <td
+                        onClick={() => {
+                          handleLoanToBePreviewed(loan);
+                          handleIsLoanPreviewModalOpen();
+                        }}
+                      >
+                        
+                        <div>
+                          {loan.employeeName || 'Unknown'}
+                          {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) && (
+                            <div style={{ color: '#666', fontSize: '0.8em' }}>
+                              {loan.employeeId}
+                            </div>
+                          )}
+                        </div>
+                      </td>
                       <td
                         onClick={() => {
                           handleLoanToBePreviewed(loan);
@@ -179,20 +203,6 @@ const LoanListView = (props: LoanListViewProps) => {
                       >
                         {formatLoanType(loan.loanType)}
                       </td>
-                      {user &&
-                      hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
-                        <td
-                          onClick={() => {
-                            handleLoanToBePreviewed(loan);
-                            handleIsLoanPreviewModalOpen();
-                          }}
-                        >
-                          {loan.employeeId}
-                        </td>
-                      ) : (
-                        ''
-                      )}
-
                       <td
                         onClick={() => {
                           handleLoanToBePreviewed(loan);
