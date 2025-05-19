@@ -12,6 +12,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { fetchEmployeeDetailsByEmployeeId } from '../service/axiosInstance';
+import { useTranslation } from 'react-i18next';
 
 const MyProfileScreen = () => {
   const [employee, setEmployee] = useState<EmployeeEntity>();
@@ -45,12 +46,13 @@ const MyProfileScreen = () => {
   const [isUpdateResponseLoading, setIsUpdateResponseLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const goToPreviousPage = () => {
     navigate(-1);
   };
 
-  const [tabName, setTabName] = useState('General');
+  const [tabName, setTabName] = useState(t('GENERAL'));
   const chooseTab = (tab: string) => {
     setTabName(tab);
   };
@@ -63,7 +65,7 @@ const MyProfileScreen = () => {
           <span onClick={goToPreviousPage}>
             <ArrowDownSVG />
           </span>
-          {tabName}
+          {t(`${tabName.toUpperCase()}`)}
         </MyProfileHeadingSection>
         <MyProfileInformationContainer>
           <MyProfileQuickDetailsComponent
