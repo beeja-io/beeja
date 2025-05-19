@@ -55,6 +55,7 @@ const EmployeeIDCreate: React.FC<EmployeeIDCreateProps> = ({
       active: false,
     });
     setIsChecked(false);
+    onClose();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

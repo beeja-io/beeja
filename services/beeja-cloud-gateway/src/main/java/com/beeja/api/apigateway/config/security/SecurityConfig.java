@@ -9,6 +9,7 @@ import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.beeja.api.apigateway.config.security.properties.SkipGatewayFilterRoutesProperty;
 import com.beeja.api.apigateway.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,8 @@ import reactor.core.publisher.Mono;
 public class SecurityConfig {
 
   @Autowired AuthProperties authProperties;
+
+  @Autowired private SkipGatewayFilterRoutesProperty skipGatewayFilterRoutesProperty;
 
 
   @Autowired private ServerAuthenticationFailureHandler authenticationFailureHandler;
@@ -134,6 +137,17 @@ public class SecurityConfig {
   }
 
   @Bean
+  @Order(1)
+  public SecurityWebFilterChain publicPostSecurity(ServerHttpSecurity httpSecurity) {
+    httpSecurity
+            .securityMatcher(pathMatchers(HttpMethod.POST, skipGatewayFilterRoutesProperty.getRoutes()))
+            .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.anyExchange().permitAll())
+            .csrf(ServerHttpSecurity.CsrfSpec::disable);
+    return httpSecurity.build();
+  }
+
+  @Bean
+  @Order(2)
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
     serverHttpSecurity.exceptionHandling(
             exceptionHandlingSpec ->
@@ -170,6 +184,7 @@ public class SecurityConfig {
                     authProperties.getUrls().stream()
             ).collect(Collectors.toList())
     );
+    log.info("Allowed URLs: {}", authProperties.getUrls());
     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     corsConfig.setAllowedHeaders(List.of("*"));
     corsConfig.setAllowCredentials(true);

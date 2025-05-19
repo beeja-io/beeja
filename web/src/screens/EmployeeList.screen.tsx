@@ -41,6 +41,7 @@ import {
   getEmployeesCount,
   downloadEmployeeFile,
   getOrganizationValuesByKey,
+  fetchEmployeeDetailsByEmployeeId,
 } from '../service/axiosInstance';
 import { ApplicationContext } from '../context/ApplicationContext';
 import { EMPLOYEE_MODULE } from '../constants/PermissionConstants';
@@ -114,42 +115,34 @@ const EmployeeList = () => {
   const [employeeImages, setEmployeeImages] = useState<Map<string, string>>(
     new Map()
   );
-
+  const [employeesWithProfilePictures, setEmployeesWithProfilePictures] =
+    useState<Set<string>>(new Set());
   const fetchEmployeeImages = async () => {
     const imageUrls = new Map<string, string>();
+    const hasProfilePicture = new Set<string>();
 
     if (finalEmpList) {
       const promises = finalEmpList.map(async (emp) => {
-        const profilePictureId = emp.employee.profilePictureId;
-
+        const employeeId = emp.employee.employeeId;
+        const response = await fetchEmployeeDetailsByEmployeeId(employeeId);
+        const profilePictureId = response.data.employee.profilePictureId;
         if (profilePictureId) {
           try {
-            const response = await downloadEmployeeFile(profilePictureId);
-
-            if (!response.data || response.data.size === 0) {
-              throw new Error('Received empty or invalid blob data');
-            }
-
-            return new Promise<void>((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onloadend = () => {
-                const imageUrl = reader.result as string;
-                imageUrls.set(emp.employee.employeeId, imageUrl);
-                resolve();
-              };
-              reader.onerror = () => {
-                reject(new Error('Error converting blob to base64'));
-              };
-              reader.readAsDataURL(response.data);
-            });
-          } catch {
-            throw new Error('Error fetching profile image:');
+            const fileResponse = await downloadEmployeeFile(profilePictureId);
+            const imageUrl = URL.createObjectURL(fileResponse.data);
+            imageUrls.set(employeeId, imageUrl);
+            hasProfilePicture.add(employeeId);
+          } catch (error) {
+            imageUrls.set(employeeId, '');
+            throw new Error('Error fetching data:' + error);
           }
+        } else {
+          imageUrls.set(employeeId, '');
         }
       });
       await Promise.all(promises);
-
       setEmployeeImages(new Map(imageUrls));
+      setEmployeesWithProfilePictures(hasProfilePicture);
     }
   };
 
@@ -496,7 +489,9 @@ const EmployeeList = () => {
                         }
                       >
                         <td className="profilePicArea">
-                          {employeeImages.has(emp.employee.employeeId) ? (
+                          {employeesWithProfilePictures.has(
+                            emp.employee.employeeId
+                          ) ? (
                             <Monogram
                               className="initials"
                               style={{
@@ -611,6 +606,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     email: '',
     employmentType: '',
     department: '',
+    employeeId: '',
   });
   const [organizationValues, setOrganizationValues] =
     useState<OrganizationValues | null>(null);
@@ -626,6 +622,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     lastName: '',
     email: '',
     employmentType: '',
+    employeeId: '',
   });
   const [emailMessage, setEmailMessage] = useState('');
 
@@ -679,6 +676,12 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
       employmentType:
         formData.employmentType === '' ? EMPLOYMENT_TYPRE_REQUIRED : '',
       department: formData.department === '' ? 'DEPARTMENT_REQUIRED' : '',
+      employeeId:
+        formData.employeeId === ''
+          ? 'EMPLOYEE_ID_REQUIRED'
+          : formData.employeeId.length < 4
+            ? 'EMPLOYEE_ID_LENGTH'
+            : '',
     };
 
     setErrors(newErrors);
@@ -772,6 +775,31 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             value={formData.lastName}
             onChange={handleChange}
             className={`${errors.lastName}` ? 'errorEnabledInput' : ''}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
+          />
+          {errors.lastName && (
+            <ValidationText>
+              <AlertISVG /> {errors.lastName}
+            </ValidationText>
+          )}
+        </InputLabelContainer>
+
+        <InputLabelContainer>
+          <label>
+            {t('EMPLOYEE_ID')}{' '}
+            <ValidationText className="star">*</ValidationText>
+          </label>
+          <TextInput
+            type="text"
+            name="employeeId"
+            placeholder="Ex: ORG1234"
+            value={formData.employeeId}
+            onChange={handleChange}
+            className={`${errors.employeeId}` ? 'errorEnabledInput' : ''}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
