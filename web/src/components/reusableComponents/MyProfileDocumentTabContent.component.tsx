@@ -171,10 +171,10 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     emptyFile: '',
   });
 
+  const entityId = props.employee.account.employeeId;
   useEffect(() => {
     fetchData();
-  }, [currentPage, itemsPerPage]);
-  const entityId = props.employee.account.employeeId;
+  }, [currentPage, itemsPerPage, entityId]);
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -282,6 +282,17 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
   useKeyPress(27, () => {
     handleClose();
   });
+  useEffect(() => {
+    if (isCreateDocumentModelOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isCreateDocumentModelOpen]);
   return (
     <>
       <DocumentContainer>
@@ -437,11 +448,11 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
               <form onSubmit={handleFormSubmit}>
                 <div>
                   <p style={{ fontSize: '24px', fontWeight: 700 }}>
-                    {t("ADD_NEW_DOCUMENT")}
+                    {t('ADD_NEW_DOCUMENT')}
                   </p>
                   <InputLabelContainer>
                     <label>
-                      {t("DOCUMENT_TYPE")}{' '}
+                      {t('DOCUMENT_TYPE')}{' '}
                       <ValidationText className="star">*</ValidationText>
                     </label>
                     <select
@@ -466,7 +477,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                   </InputLabelContainer>
 
                   <InputLabelContainer>
-                    <label>{t("DOCUMENT_NAME")}</label>
+                    <label>{t('DOCUMENT_NAME')}</label>
                     <TextInput
                       type="text"
                       value={documentName}
@@ -476,7 +487,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                   </InputLabelContainer>
 
                   <InputLabelContainer>
-                    <label>{t("DESCRIPTION")}</label>
+                    <label>{t('DESCRIPTION')}</label>
                     <TextInput
                       type="text"
                       value={description}
@@ -487,7 +498,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
 
                   <InputLabelContainer>
                     <label>
-                      {t("CHOOSE/DARG_FILE")}{' '}
+                      {t('CHOOSE/DARG_FILE')}{' '}
                       <ValidationText className="star">*</ValidationText>
                     </label>
 
@@ -498,7 +509,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     >
                       <label htmlFor="fileInput">
                         <FormFileUploadIcon />
-                        {t("CHOOSE/DARG_FILE")}
+                        {t('CHOOSE/DARG_FILE')}
                       </label>
                       <input
                         type="file"

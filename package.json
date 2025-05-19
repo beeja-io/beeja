@@ -1,4 +1,5 @@
 {
+
   "name": "beeja",
   "version": "1.0.0",
   "description": "**Beeja**",
@@ -9,4 +10,19 @@
   "keywords": [],
   "author": "",
   "license": "ISC"
+
+    "scripts": {
+        "prepare": "husky install",
+        "postinstall": "cd web && npm install"
+    },
+    "name": "beeja",
+    "version": "1.0.0",
+    "description": "**Beeja**",
+    "main": "index.js",
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "husky": "^9.1.7"
+    }
 }

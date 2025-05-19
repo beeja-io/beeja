@@ -5,43 +5,131 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.WebRequest;
+import tac.beeja.recruitmentapi.enums.ErrorCode;
+import tac.beeja.recruitmentapi.enums.ErrorType;
+import tac.beeja.recruitmentapi.response.ErrorResponse;
+import tac.beeja.recruitmentapi.utils.Constants;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+import static tac.beeja.recruitmentapi.utils.Constants.BEEJA;
 
 @ControllerAdvice
 public class ExceptionAdvice {
   @ExceptionHandler(CustomAccessDeniedException.class)
   @ResponseStatus(HttpStatus.FORBIDDEN)
-  public ResponseEntity<String> handleCustomAccessDeniedException(CustomAccessDeniedException ex) {
-    return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied: " + ex.getMessage());
+  public ResponseEntity<?> handleCustomAccessDeniedException(CustomAccessDeniedException ex,WebRequest request) {
+    String[] errorMessage = convertStringToArray(ex.getMessage());
+    ErrorResponse errorResponse =
+            new ErrorResponse(
+                    ErrorType.valueOf(errorMessage[0]),
+                    ErrorCode.valueOf(errorMessage[1]),
+                    errorMessage[2],
+                    Constants.DOC_URL_RESOURCE_NOT_FOUND,
+                    request.getDescription(false),
+                    BEEJA+ "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+                    LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
   }
 
   @ExceptionHandler(FeignClientException.class)
-  public ResponseEntity<String> handleFeignClientException(FeignClientException ex) {
+  public ResponseEntity<?> handleFeignClientException(FeignClientException ex,WebRequest request) {
+    String[] errorMessage = convertStringToArray(ex.getMessage());
+    ErrorResponse errorResponse =
+            new ErrorResponse(
+                    ErrorType.valueOf(errorMessage[0]),
+                    ErrorCode.valueOf(errorMessage[1]),
+                    errorMessage[2],
+                    Constants.DOC_URL_RESOURCE_NOT_FOUND,
+                    request.getDescription(false),
+                    BEEJA+ "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+                    LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body("An unexpected error occurred: " + ex.getMessage());
+        .body(errorResponse);
   }
 
   @ExceptionHandler(ResourceNotFoundException.class)
-  public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+  public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex,WebRequest request) {
+    String[] errorMessage = convertStringToArray(ex.getMessage());
+    ErrorResponse errorResponse =
+            new ErrorResponse(
+                    ErrorType.valueOf(errorMessage[0]),
+                    ErrorCode.valueOf(errorMessage[1]),
+                    errorMessage[2],
+                    Constants.DOC_URL_RESOURCE_NOT_FOUND,
+                    request.getDescription(false),
+                    BEEJA+ "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+                    LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
-        .body("An unexpected error occurred: " + ex.getMessage());
+        .body(errorResponse);
   }
 
   @ExceptionHandler(InterviewerException.class)
-  public ResponseEntity<String> handleInterviewerException(InterviewerException ex) {
+  public ResponseEntity<?> handleInterviewerException(InterviewerException ex,WebRequest request) {
+    String[] errorMessage = convertStringToArray(ex.getMessage());
+    ErrorResponse errorResponse =
+            new ErrorResponse(
+                    ErrorType.valueOf(errorMessage[0]),
+                    ErrorCode.valueOf(errorMessage[1]),
+                    errorMessage[2],
+                    Constants.DOC_URL_RESOURCE_NOT_FOUND,
+                    request.getDescription(false),
+                    BEEJA+ "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+                    LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body("An unexpected error occurred: " + ex.getMessage());
+        .body(errorResponse);
   }
 
   @ExceptionHandler(BadRequestException.class)
-  public ResponseEntity<String> handleBadRequestException(BadRequestException ex) {
+  public ResponseEntity<?> handleBadRequestException(BadRequestException ex,WebRequest request) {
+    String[] errorMessage = convertStringToArray(ex.getMessage());
+    ErrorResponse errorResponse =
+            new ErrorResponse(
+                    ErrorType.valueOf(errorMessage[0]),
+                    ErrorCode.valueOf(errorMessage[1]),
+                    errorMessage[2],
+                    Constants.DOC_URL_RESOURCE_NOT_FOUND,
+                    request.getDescription(false),
+                    BEEJA+ "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+                    LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-        .body("An unexpected error occurred: " + ex.getMessage());
+        .body(errorResponse);
   }
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public ResponseEntity<String> handleException(Exception ex) {
+  public ResponseEntity<?> handleException(Exception ex, WebRequest request) {
+    String[] errorMessage = convertStringToArray(ex.getMessage());
+    ErrorResponse errorResponse =
+            new ErrorResponse(
+                    ErrorType.valueOf(errorMessage[0]),
+                    ErrorCode.valueOf(errorMessage[1]),
+                    errorMessage[2],
+                    Constants.DOC_URL_RESOURCE_NOT_FOUND,
+                    request.getDescription(false),
+                    BEEJA+ "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+                    LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body("An unexpected error occurred: " + ex.getMessage());
+        .body(errorResponse);
+  }
+
+  public String[] convertStringToArray(String commaSeparatedString) {
+    return commaSeparatedString.split(",");
+  }
+  @ExceptionHandler(ConflictException.class)
+  public ResponseEntity<ErrorResponse> handleConflictException(ConflictException ex, WebRequest request) {
+    String[] errorMessage = convertStringToArray(ex.getMessage());
+    ErrorResponse errorResponse = new ErrorResponse(
+            ErrorType.valueOf(errorMessage[0]),
+            ErrorCode.valueOf(errorMessage[1]),
+            errorMessage[2],
+            Constants.DOC_URL_RESOURCE_NOT_FOUND,
+            request.getDescription(false),
+            Constants.BEEJA + "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+    );
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
 }

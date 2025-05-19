@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { hasPermission } from '../utils/permissionCheck';
 import { RECRUITMENT_MODULE } from '../constants/PermissionConstants';
 import { useUser } from '../context/UserContext';
-import { Button } from 'web-kit-components';
+import { Button } from '../styles/CommonStyles.style';
 import {
   ExpenseManagementMainContainer,
   ExpenseHeadingSection,
@@ -29,8 +29,8 @@ const RecruitmentManagementScreen = (
   const [isLoading, setIsLoading] = useState(false);
 
   const handleIsLoading = () => {
-    setIsLoading(!isLoading)
-  }
+    setIsLoading(!isLoading);
+  };
   const fetchApplicants = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -60,14 +60,17 @@ const RecruitmentManagementScreen = (
             </span>
             {props.isReferral ? 'Referrals' : 'Hiring'}
           </span>
-          {user && (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
-            || hasPermission(user, RECRUITMENT_MODULE.ACCESS_REFFERRAlS)) && (
+          {user &&
+            (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT) ||
+              hasPermission(user, RECRUITMENT_MODULE.ACCESS_REFFERRAlS)) && (
               <Button
                 className="submit shadow"
                 width="216px"
                 onClick={() =>
                   navigate(
-                    !props.isReferral ? '/recruitment/hiring-management/new' : '/recruitment/my-referrals/refer'
+                    !props.isReferral
+                      ? '/recruitment/hiring-management/new'
+                      : '/recruitment/my-referrals/refer'
                   )
                 }
               >

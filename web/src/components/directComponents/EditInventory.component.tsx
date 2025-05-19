@@ -1,4 +1,12 @@
+import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import {
+  DeviceDetails,
+  IUpdateDeviceDetails,
+} from '../../entities/InventoryEntity';
+import { OrganizationValues } from '../../entities/OrgValueEntity';
+import { putInventory } from '../../service/axiosInstance';
 import { Button } from '../../styles/CommonStyles.style';
 import {
   InputLabelContainer,
@@ -7,17 +15,9 @@ import {
 } from '../../styles/DocumentTabStyles.style';
 import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
-import Calendar from '../reusableComponents/Calendar.component';
-import { putInventory } from '../../service/axiosInstance';
-import ToastMessage from '../reusableComponents/ToastMessage.component';
-import {
-  DeviceDetails,
-  IUpdateDeviceDetails,
-} from '../../entities/InventoryEntity';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
-import axios from 'axios';
-import { OrganizationValues } from '../../entities/OrgValueEntity';
-import { useTranslation } from 'react-i18next';
+import Calendar from '../reusableComponents/Calendar.component';
+import ToastMessage from '../reusableComponents/ToastMessage.component';
 
 type EditInventoryFormProps = {
   initialFormData: DeviceDetails; // Initial data to populate the form
@@ -154,7 +154,8 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
   }, []);
 
   useEffect(() => {
-    setFormData(initialFormData);
+    const fixedDevice = initialFormData.device?.toUpperCase?.() || '';
+    setFormData({ ...initialFormData, device: fixedDevice });
     setDateOfPurchase(
       initialFormData.dateOfPurchase
         ? new Date(initialFormData.dateOfPurchase)
@@ -181,14 +182,14 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
               >
                 <option value="">{t('SELECT_DEVICE')}</option>
                 {deviceTypes?.values?.map((device) => (
-                  <option key={device.value} value={device.value}>
+                  <option key={device.value} value={device.value.toUpperCase()}>
                     {device.description || device.value}
                   </option>
                 ))}
               </select>
             </InputLabelContainer>
 
-            {formData.device === "Accessories" && (
+            {formData.device === 'Accessories' && (
               <InputLabelContainer>
                 <label>
                   {t('ACCESSORY_TYPE')}
@@ -297,7 +298,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                       }}
                       selectedDate={dateOfPurchase}
                       maxDate={new Date()}
-                      handleCalenderChange={() => { }}
+                      handleCalenderChange={() => {}}
                     />
                   )}
                 </div>
@@ -392,7 +393,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                     formData.device === 'Tablet'
                   )
                 }
-
                 required={
                   ![
                     'PRINTER',

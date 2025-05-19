@@ -42,4 +42,7 @@ secrets.yml
 .git-hooks/
 application-local.yaml
 .idea
+dot.env
 DotEnv.env
+.env
+*.log
