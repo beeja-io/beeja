@@ -292,12 +292,12 @@ try {
       PDFTextStripper stripper = new PDFTextStripper();
       String text = stripper.getText(document);
 
-      Pattern pattern = Pattern.compile("Employee ID\\s*[:\\-]?\\s*([A-Z]+\\d+)", Pattern.CASE_INSENSITIVE);
+      Pattern pattern = Pattern.compile("Employee Code\\s*[:\\-]?\\s*([A-Z]+\\d+)", Pattern.CASE_INSENSITIVE);
       Matcher matcher = pattern.matcher(text);
       if (matcher.find()) {
         return matcher.group(1);
       }
     }
-    throw new RuntimeException("Employee ID not found in PDF");
+    throw new RuntimeException("Employee Code not found in PDF");
   }
 }
