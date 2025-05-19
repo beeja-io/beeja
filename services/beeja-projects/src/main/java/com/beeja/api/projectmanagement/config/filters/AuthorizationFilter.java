@@ -148,6 +148,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
       userOrganization.put(Constants.ID, organizations.get("id"));
       userOrganization.put(Constants.NAME, organizations.get("name"));
       userOrganization.put(Constants.EMAIL, organizations.get("email"));
+      userOrganization.put(Constants.ADDRESS, organizations.get("address"));
     }
     return userOrganization;
   }

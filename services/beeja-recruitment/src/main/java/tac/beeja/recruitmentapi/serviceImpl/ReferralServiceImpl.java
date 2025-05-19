@@ -8,6 +8,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tac.beeja.recruitmentapi.client.FileClient;
+import tac.beeja.recruitmentapi.exceptions.BadRequestException;
+import tac.beeja.recruitmentapi.exceptions.ConflictException;
 import tac.beeja.recruitmentapi.exceptions.FeignClientException;
 import tac.beeja.recruitmentapi.exceptions.UnAuthorisedException;
 import tac.beeja.recruitmentapi.model.Applicant;
@@ -26,6 +28,8 @@ import tac.beeja.recruitmentapi.utils.UserContext;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
+
+import static tac.beeja.recruitmentapi.utils.Constants.DUPLICATE_APPLICANT;
 
 @Slf4j
 @Service
@@ -53,7 +57,18 @@ public class ReferralServiceImpl implements ReferralService {
     Applicant applicant = null;
     try {
       applicant = applicantService.postApplicant(newApplicant, true);
-    } catch (Exception e) {
+    }  catch (ConflictException c) {
+      log.error(DUPLICATE_APPLICANT + newApplicant.getEmail());
+
+      throw new ConflictException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.CONFLICT,
+                      ErrorCode.DUPLICATE_APPLICANT,
+                      DUPLICATE_APPLICANT
+              )
+      );
+    }
+    catch (Exception e) {
       log.error(Constants.REFERRAL_CREATION_FAILED + newApplicant.getEmail(), e.getMessage());
       throw new Exception(
               BuildErrorMessage.buildErrorMessage(
