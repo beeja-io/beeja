@@ -151,11 +151,7 @@ const LoanListView = (props: LoanListViewProps) => {
               <TableHead>
                 <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
                   <th>{t('LOAN_NUMBER')}</th>
-                  <th>
-                    {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS)
-                      ? t('EMPLOYEE')
-                      : t('EMPLOYEE_NAME')}
-                  </th>
+                  <th>{t('EMPLOYEE_NAME')}</th>
                   <th>{t('LOAN_TYPE')}</th>
                   <th>{t('REQUESTED_DATE')}</th>
                   <th>{t('LOAN_AMOUNT')}</th>
