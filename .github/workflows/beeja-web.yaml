@@ -6,11 +6,6 @@ on:
       - main
     paths:
       - 'web/**'
-  push:
-    branches:
-      - PS-299
-    paths:
-      - 'web/**'
 permissions:
   contents: read
 jobs:
