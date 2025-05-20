@@ -1,6 +1,7 @@
 package com.beeja.api.employeemanagement.service;
 
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.EmployeeDTO;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
@@ -40,4 +41,7 @@ public interface EmployeeService {
   Employee uploadOrUpdateProfilePic(MultipartFile file, String employeeId) throws Exception;
 
   EmployeeValues getEmployeeValues() throws Exception;
+
+  List<EmployeeDTO> getAll(String orgId) throws Exception;
+
 }

@@ -98,4 +98,14 @@ public class OrganizationController {
     organizationService.generateOrganizationDefaults();
     return ResponseEntity.status(HttpStatus.CREATED).build();
   }
+
+  @PutMapping("/{id}/birthday-preferences")
+  public ResponseEntity<Void> updateBirthdayPreference(
+          @PathVariable String id,
+          @RequestParam boolean enabled,
+          @RequestParam(required = false) String webhookUrl) throws Exception {
+
+    organizationService.updateBirthdayPreference(id, enabled, webhookUrl);
+    return ResponseEntity.ok().build();
+  }
 }
