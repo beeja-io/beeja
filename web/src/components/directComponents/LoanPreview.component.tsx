@@ -28,6 +28,15 @@ const LoanPreview = (props: LoanPreviewProps) => {
     props.handleClose();
   });
   const { t } = useTranslation();
+
+  const safeFormatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return '-';
+    try {
+      return formatDate(dateString);
+    } catch {
+      return '-';
+    }
+  };
   return (
     <LoanPreviewModal>
       <div>
@@ -65,7 +74,7 @@ const LoanPreview = (props: LoanPreviewProps) => {
           <label>{t('REQUESTED_DATE')} </label>
           <TextInput
             className={'disabledBgWhite'}
-            value={formatDate(props.loan.createdAt.toString())}
+            value={safeFormatDate(props.loan.createdAt?.toString())}
             disabled={true}
           />
         </InputLabelContainer>
