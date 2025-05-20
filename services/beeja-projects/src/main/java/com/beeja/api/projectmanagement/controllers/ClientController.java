@@ -81,20 +81,4 @@ public class ClientController {
         List<Client> clients = clientService.getAllClientsOfOrganization();
         return new ResponseEntity<>(clients, HttpStatus.OK);
     }
-
-    @GetMapping("logo/{fileId}")
-    @HasPermission(PermissionConstants.READ_CLIENT_LOGO)
-    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable  String fileId) throws Exception{
-        ByteArrayResource byteArrayResource = clientService.downloadFile(fileId);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(
-                HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + byteArrayResource.getFilename() + "\"");
-        headers.add("Access-Control-Expose-Headers", "Content-Disposition");
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .headers(headers)
-                .body(byteArrayResource);
-    }
 }

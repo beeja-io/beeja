@@ -41,6 +41,4 @@ public interface ClientService {
      * @return a list of {@link Client} objects for the organization
      */
     List<Client> getAllClientsOfOrganization();
-
-    ByteArrayResource downloadFile(String fileId) throws Exception;
 }

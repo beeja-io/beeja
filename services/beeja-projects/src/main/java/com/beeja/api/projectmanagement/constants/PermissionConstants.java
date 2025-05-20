@@ -27,7 +27,15 @@ public class PermissionConstants {
     public static final String DELETE_INVOICE = "DIN";
     public static final String UPDATE_STATUS_INVOICE = "USIN";
 
-    //Files-related permissions
-    public static final String READ_CLIENT_LOGO = "RCLL";
+    //Documents
+    public static final String READ_DOCUMENT = "RDCMT";
+    public static final String CREATE_DOCUMENT = "CDCMT";
+    public static final String DELETE_DOCUMENT = "DDCMT";
+    public static final String UPDATE_DOCUMENT = "UDCMT";
+
+    public static final String READ_ALL_DOCUMENTS = "RALDCMT";
+    public static final String CREATE_ALL_DOCUMENT = "CALDCMT";
+    public static final String DELETE_ALL_DOCUMENT = "DALDCMT";
+    public static final String UPDATE_ALL_DOCUMENT = "UALDCMT";
 
 }
