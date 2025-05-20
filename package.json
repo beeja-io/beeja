@@ -1,4 +1,16 @@
 {
+
+  "name": "beeja",
+  "version": "1.0.0",
+  "description": "**Beeja**",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+
     "scripts": {
         "prepare": "husky install",
         "postinstall": "cd web && npm install"
