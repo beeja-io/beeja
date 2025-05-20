@@ -612,6 +612,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     email: '',
     employmentType: '',
     department: '',
+    employeeId: '',
   });
   const [organizationValues, setOrganizationValues] =
     useState<OrganizationValues | null>(null);
@@ -627,6 +628,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     lastName: '',
     email: '',
     employmentType: '',
+    employeeId: '',
   });
   const [emailMessage, setEmailMessage] = useState('');
 
@@ -680,6 +682,12 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
       employmentType:
         formData.employmentType === '' ? EMPLOYMENT_TYPRE_REQUIRED : '',
       department: formData.department === '' ? 'DEPARTMENT_REQUIRED' : '',
+      employeeId:
+        formData.employeeId === ''
+          ? 'EMPLOYEE_ID_REQUIRED'
+          : formData.employeeId.length < 4
+            ? 'EMPLOYEE_ID_LENGTH'
+            : '',
     };
 
     setErrors(newErrors);
@@ -773,6 +781,31 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             value={formData.lastName}
             onChange={handleChange}
             className={`${errors.lastName}` ? 'errorEnabledInput' : ''}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
+          />
+          {errors.lastName && (
+            <ValidationText>
+              <AlertISVG /> {errors.lastName}
+            </ValidationText>
+          )}
+        </InputLabelContainer>
+
+        <InputLabelContainer>
+          <label>
+            {t('EMPLOYEE_ID')}{' '}
+            <ValidationText className="star">*</ValidationText>
+          </label>
+          <TextInput
+            type="text"
+            name="employeeId"
+            placeholder="Ex: ORG1234"
+            value={formData.employeeId}
+            onChange={handleChange}
+            className={`${errors.employeeId}` ? 'errorEnabledInput' : ''}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
