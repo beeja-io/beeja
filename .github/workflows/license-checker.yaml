@@ -28,4 +28,4 @@ jobs:
         run: npm install -g license-checker
 
       - name: Run license checker
-        run: license-checker --failOn MIT
+        run: license-checker --failOn UNKNOWN
