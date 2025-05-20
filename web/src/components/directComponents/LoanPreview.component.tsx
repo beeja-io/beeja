@@ -14,7 +14,7 @@ import {
   TextInput,
 } from '../../styles/DocumentTabStyles.style';
 import { LoanPreviewModal } from '../../styles/LoanPreviewStyles.style';
-import { formatDate, monthsDiff } from '../../utils/dateFormatter';
+import {  monthsDiff, safeFormatDate } from '../../utils/dateFormatter';
 import { hasPermission } from '../../utils/permissionCheck';
 
 type LoanPreviewProps = {
@@ -29,14 +29,6 @@ const LoanPreview = (props: LoanPreviewProps) => {
   });
   const { t } = useTranslation();
 
-  const safeFormatDate = (dateString: string | null | undefined) => {
-    if (!dateString) return '-';
-    try {
-      return formatDate(dateString);
-    } catch {
-      return '-';
-    }
-  };
   return (
     <LoanPreviewModal>
       <div>

@@ -79,3 +79,13 @@ export function formatDateDDMMYYYYHHMM(dateString: string): string {
 
   return `${day}-${month}-${year} ${hours}:${minutes}`;
 }
+export const safeFormatDate = (dateString: string | null | undefined): string => {
+  if (!dateString) return '-';
+  
+  try {
+    return formatDate(dateString);
+  } catch (error) {
+    console.error('Failed to format date:', error);
+    return '-';
+  }
+};
