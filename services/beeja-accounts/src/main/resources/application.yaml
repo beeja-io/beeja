@@ -6,6 +6,10 @@ server:
     context-path: /accounts
   port: ${ACCOUNTS_SERVICE_PORT}
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 15MB
   application:
     name: accounts-service
   data:
