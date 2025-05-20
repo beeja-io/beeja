@@ -450,6 +450,7 @@ const EmployeeList = () => {
               <TableHead>
                 <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
                   <th style={{ width: '250px' }}>{t('NAME')}</th>
+                  <th style={{ width: '120px' }}>{t('EMPLOYEE_ID')}</th>
                   <th style={{ width: '120px' }}>{t('JOB_TITLE')}</th>
                   <th style={{ width: '140px' }}>{t('TYPE')}</th>
                   <th style={{ width: '140px' }}>{t('DEPARTMENT')}</th>
@@ -526,6 +527,11 @@ const EmployeeList = () => {
                               {emp.account.email}
                             </span>
                           </span>
+                        </td>
+                        <td>
+                          {emp.employee.employeeId
+                            ? emp.employee.employeeId
+                            : '-'}
                         </td>
                         <td>
                           {emp.employee.jobDetails
