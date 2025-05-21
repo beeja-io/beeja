@@ -312,7 +312,9 @@ export const deleteRole = (id: string): Promise<AxiosResponse> => {
 };
 
 export const getAllApplicantList = (url: string): Promise<AxiosResponse> => {
-  return axiosInstance.get(url || '/recruitments/v1/applicants/combinedApplicants');
+  return axiosInstance.get(
+    url || '/recruitments/v1/applicants/combinedApplicants'
+  );
 };
 
 export const postApplicant = (data: FormData): Promise<AxiosResponse> => {

@@ -219,7 +219,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
               </>
             </tbody>
           </TableList>
-       </div>
+        </div>
       ) : (
         <BulkPayslipContainer>
           <ZeroEntriesFound
