@@ -43,6 +43,10 @@ export const ExpenseHeadingSection = styled.section`
 
 export const ExpenseAddFormMainContainer = styled.form`
   width: 100%;
+  min-height: 80vh;
+  max-height: 50svh;
+  overflow-y: scroll;
+  padding-right: 10px;
 
   @media screen and (max-width: 1150px) {
     width: 70vw;

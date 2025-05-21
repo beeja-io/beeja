@@ -20,6 +20,7 @@ public class LoanDTO {
     private Integer emiTenure;
     private Double monthlyEMI;
     private Date emiStartDate;
+    private Date createdAt;
     private LoanStatus status;
     private LoanType loanType;
 }

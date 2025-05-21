@@ -21,11 +21,7 @@ import tac.beeja.recruitmentapi.client.FileClient;
 import tac.beeja.recruitmentapi.enums.ApplicantStatus;
 import tac.beeja.recruitmentapi.enums.ErrorCode;
 import tac.beeja.recruitmentapi.enums.ErrorType;
-import tac.beeja.recruitmentapi.exceptions.BadRequestException;
-import tac.beeja.recruitmentapi.exceptions.FeignClientException;
-import tac.beeja.recruitmentapi.exceptions.InterviewerException;
-import tac.beeja.recruitmentapi.exceptions.ResourceNotFoundException;
-import tac.beeja.recruitmentapi.exceptions.UnAuthorisedException;
+import tac.beeja.recruitmentapi.exceptions.*;
 import tac.beeja.recruitmentapi.model.Applicant;
 import tac.beeja.recruitmentapi.model.ApplicantComment;
 import tac.beeja.recruitmentapi.model.AssignedInterviewer;
@@ -45,6 +41,8 @@ import tac.beeja.recruitmentapi.utils.UserContext;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,9 +62,26 @@ public class ApplicantServiceImpl implements ApplicantService {
 
   @Override
   public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
-
-
-    //    accept only pdf, doc and docx for applicant.getResume()
+    Query query = new Query();
+    query.addCriteria(Criteria.where("email").is(applicant.getEmail())
+            .and("positionAppliedFor").is(applicant.getPositionAppliedFor())
+            .and("organizationId").is(UserContext.getLoggedInUserOrganization().get("id").toString()));
+    List<Applicant> existingApplicants = mongoTemplate.find(query, Applicant.class);
+    Calendar calendar = Calendar.getInstance();
+    calendar.add(Calendar.MONTH, -6);
+    Date sixMonthsAgo = calendar.getTime();
+    for (Applicant existingApplicant : existingApplicants) {
+      Date createdAt = existingApplicant.getCreatedAt();
+      if (createdAt != null && createdAt.after(sixMonthsAgo)) {
+          log.error(DUPLICATE_APPLICATION_LOG, applicant.getEmail(), applicant.getPositionAppliedFor());
+            throw new ConflictException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.CONFLICT,
+                            ErrorCode.DUPLICATE_APPLICANT,
+                            DUPLICATE_APPLICANT));
+      }
+    }
+        //    accept only pdf, doc and docx for applicant.getResume()
     if (!applicant.getResume().getContentType().equals("application/pdf")
             && !applicant.getResume().getContentType().equals("application/msword")
             && !applicant.getResume().getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
@@ -128,22 +143,22 @@ public class ApplicantServiceImpl implements ApplicantService {
             ? PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC, sortBy))
             : PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, sortBy != null ? sortBy : "createdAt"));
 
-    Query query = new Query().with(pageable);
+    List<Criteria> criteriaList = new ArrayList<>();
 
     if (applicantId != null && !applicantId.isEmpty()) {
-      query.addCriteria(Criteria.where("applicantId").is(applicantId));
+      criteriaList.add(Criteria.where("applicantId").is(applicantId));
     }
     if (firstName != null && !firstName.isEmpty()) {
-      query.addCriteria(Criteria.where("firstName").regex("^" + firstName + "$", "i"));
+      criteriaList.add(Criteria.where("firstName").regex("^" + firstName + "$", "i"));
     }
     if (positionAppliedFor != null && !positionAppliedFor.isEmpty()) {
-      query.addCriteria(Criteria.where("positionAppliedFor").regex("^" + positionAppliedFor + "$", "i"));
+      criteriaList.add(Criteria.where("positionAppliedFor").regex("^" + positionAppliedFor + "$", "i"));
     }
     if (status != null) {
-      query.addCriteria(Criteria.where("status").is(status));
+      criteriaList.add(Criteria.where("status").is(status));
     }
     if (experience != null && !experience.isEmpty()) {
-      query.addCriteria(Criteria.where("experience").regex("^" + experience + "$", "i"));
+      criteriaList.add(Criteria.where("experience").regex("^" + experience + "$", "i"));
     }
     if (fromDate != null && toDate != null) {
       Calendar cal = Calendar.getInstance();
@@ -153,9 +168,9 @@ public class ApplicantServiceImpl implements ApplicantService {
       cal.set(Calendar.SECOND, 59);
       cal.set(Calendar.MILLISECOND, 999);
       toDate = cal.getTime();
-      query.addCriteria(Criteria.where("createdAt").gte(fromDate).lte(toDate));
+      criteriaList.add(Criteria.where("createdAt").gte(fromDate).lte(toDate));
     } else if (fromDate != null) {
-      query.addCriteria(Criteria.where("createdAt").gte(fromDate));
+      criteriaList.add(Criteria.where("createdAt").gte(fromDate));
     } else if (toDate != null) {
       Calendar cal = Calendar.getInstance();
       cal.setTime(toDate);
@@ -164,18 +179,22 @@ public class ApplicantServiceImpl implements ApplicantService {
       cal.set(Calendar.SECOND, 59);
       cal.set(Calendar.MILLISECOND, 999);
       toDate = cal.getTime();
-      query.addCriteria(Criteria.where("createdAt").lte(toDate));
+      criteriaList.add(Criteria.where("createdAt").lte(toDate));
     }
 
-    List<Applicant> applicants = mongoTemplate.find(query, Applicant.class);
-    long totalRecords = mongoTemplate.count(query, Applicant.class);
-
-    if (applicants.isEmpty()) {
-      return new PaginatedApplicantResponse(Collections.emptyList(), pageNumber + 1, pageSize, 0, 0);
+    Criteria finalCriteria = new Criteria();
+    if (!criteriaList.isEmpty()) {
+      finalCriteria.andOperator(criteriaList.toArray(new Criteria[0]));
     }
+
+    Query countQuery = new Query(finalCriteria);
+    long totalRecords = mongoTemplate.count(countQuery, Applicant.class);
+
+    Query paginatedQuery = new Query(finalCriteria).with(pageable);
+    List<Applicant> applicants = mongoTemplate.find(paginatedQuery, Applicant.class);
 
     List<ApplicantDTO> applicantDTOs = applicants.stream().map(applicant -> new ApplicantDTO(
-            applicant.getId(),applicant.getApplicantId(), applicant.getFirstName(), applicant.getLastName(),
+            applicant.getId(), applicant.getApplicantId(), applicant.getFirstName(), applicant.getLastName(),
             applicant.getEmail(), applicant.getPhoneNumber(), applicant.getPositionAppliedFor(),
             applicant.getStatus(), applicant.getExperience(), applicant.getReferredByEmployeeName(),
             applicant.getCreatedAt()
