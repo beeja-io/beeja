@@ -8,14 +8,14 @@ import {
   TableList,
   TableListContainer,
 } from '../styles/ExpenseListStyles.style';
-import { ClientResponse} from '../entities/ClientEntity';
+import { ClientResponse } from '../entities/ClientEntity';
 import ClientDetailsScreen from './ClientDetailsScreen.screen';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { capitalizeFirstLetter, removeUnderScore } from '../utils/stringUtils';
 import { keyPressFind } from '../service/keyboardShortcuts/shortcutValidator';
 import { useTranslation } from 'react-i18next';
-import { ActionSVG } from '../svgs/ClientSvgs.svs';
+import { EditSVG } from '../svgs/ClientSvgs.svs';
 import { getClient } from '../service/axiosInstance';
 
 interface Client {
@@ -29,30 +29,32 @@ interface Props {
   clientList: Client[];
   updateClientList: () => void;
   isLoading: boolean;
+  onEditClient: (client: Client) => void;
 }
 
 const ClientList = ({
   clientList,
   updateClientList,
-  isLoading
+  isLoading,
+  onEditClient,
 }: Props) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [selectedClient, setSelectedClient] = useState<ClientResponse | null>(null);
-  const [isDetailsScreenOpen,setIsDetailsScreenOpen] =useState(false);
-  const handleDetailsScreen =()=>{
+  const [selectedClient, setSelectedClient] = useState<ClientResponse | null>(
+    null
+  );
+  const [isDetailsScreenOpen, setIsDetailsScreenOpen] = useState(false);
+  const handleDetailsScreen = () => {
     setIsDetailsScreenOpen(!isDetailsScreenOpen);
-    console.log(isDetailsScreenOpen);
-  }
+  };
 
-  const fetchData = useCallback(async ( id : string) => {
-     try {
-       const res = await getClient(id); 
-       setSelectedClient(res.data);
-       
-     } catch (error) {
-       
-     }
-   }, []);
+  const fetchData = useCallback(async (id: string) => {
+    try {
+      const res = await getClient(id);
+      setSelectedClient(res.data);
+    } catch (error) {
+      throw new Error('Error fetching getClient:' + error);
+    }
+  }, []);
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const handleShowSuccessMessage = () => {
@@ -67,11 +69,7 @@ const ClientList = ({
   }, []);
   const { t } = useTranslation();
   if (isDetailsScreenOpen) {
-    return (
-      <ClientDetailsScreen
-        client={selectedClient}
-      />
-    );
+    return <ClientDetailsScreen client={selectedClient} />;
   }
   return (
     <>
@@ -79,7 +77,7 @@ const ClientList = ({
         <ExpenseHeading>
           <ExpenseTitle>{t('All Clients')}</ExpenseTitle>
         </ExpenseHeading>
-       
+
         <TableListContainer style={{ marginTop: 0 }}>
           {!isLoading && clientList.length === 0 ? (
             <ZeroEntriesFound
@@ -90,7 +88,7 @@ const ClientList = ({
             <TableList>
               <TableHead>
                 <tr>
-                <th style={{ textAlign: 'left' }}>{t('Client ID')}</th>
+                  <th style={{ textAlign: 'left' }}>{t('Client ID')}</th>
                   <th style={{ textAlign: 'left' }}>{t('Client Name')}</th>
                   <th style={{ textAlign: 'left' }}>{t('Client Type')}</th>
                   <th style={{ textAlign: 'left' }}>{t('ACTION')}</th>
@@ -111,16 +109,42 @@ const ClientList = ({
                   </>
                 ) : (
                   clientList.map((client, index) => (
-                    <TableBodyRow key={index}
-                    onClick={() => {
-                      fetchData(client.id);
-                      handleDetailsScreen();
-                    }}>
-                      <td>{client.clientId}</td>
-                      <td>{capitalizeFirstLetter(client.clientName)}</td>
-                      <td>{removeUnderScore(client.clientType)}</td>
+                    <TableBodyRow key={index}>
+                      <td
+                        onClick={() => {
+                          fetchData(client.clientId);
+                          handleDetailsScreen();
+                        }}
+                      >
+                        {client.clientId ?? '-'}
+                      </td>
+                      <td
+                        onClick={() => {
+                          fetchData(client.clientId);
+                          handleDetailsScreen();
+                        }}
+                      >
+                        {client.clientName
+                          ? capitalizeFirstLetter(client.clientName)
+                          : '-'}
+                      </td>
+                      <td
+                        onClick={() => {
+                          fetchData(client.clientId);
+                          handleDetailsScreen();
+                        }}
+                      >
+                        {client.clientType
+                          ? removeUnderScore(client.clientType)
+                          : '-'}
+                      </td>
+
                       <td>
-                      <ActionSVG/>
+                        <EditSVG
+                          onClick={() => {
+                            onEditClient(client);
+                          }}
+                        />
                       </td>
                     </TableBodyRow>
                   ))
@@ -128,7 +152,6 @@ const ClientList = ({
               </tbody>
             </TableList>
           )}
-        
         </TableListContainer>
       </StyledDiv>
       {showSuccessMessage && (
@@ -144,4 +167,3 @@ const ClientList = ({
 };
 
 export default ClientList;
- 

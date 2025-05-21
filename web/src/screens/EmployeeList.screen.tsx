@@ -115,7 +115,8 @@ const EmployeeList = () => {
   const [employeeImages, setEmployeeImages] = useState<Map<string, string>>(
     new Map()
   );
-  const [employeesWithProfilePictures, setEmployeesWithProfilePictures] = useState<Set<string>>(new Set());
+  const [employeesWithProfilePictures, setEmployeesWithProfilePictures] =
+    useState<Set<string>>(new Set());
   const fetchEmployeeImages = async () => {
     const imageUrls = new Map<string, string>();
     const hasProfilePicture = new Set<string>();
@@ -132,8 +133,10 @@ const EmployeeList = () => {
             imageUrls.set(employeeId, imageUrl);
             hasProfilePicture.add(employeeId);
           } catch (error) {
-            console.error(`Error fetching profile image for employee ${employeeId}:`, error);
             imageUrls.set(employeeId, '');
+            throw new Error(
+              `Error fetching profile image for employee ${employeeId}:` + error
+            );
           }
         } else {
           imageUrls.set(employeeId, '');
@@ -488,7 +491,9 @@ const EmployeeList = () => {
                         }
                       >
                         <td className="profilePicArea">
-                          {employeesWithProfilePictures.has(emp.employee.employeeId) ? (
+                          {employeesWithProfilePictures.has(
+                            emp.employee.employeeId
+                          ) ? (
                             <Monogram
                               className="initials"
                               style={{
