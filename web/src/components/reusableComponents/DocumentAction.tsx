@@ -140,10 +140,8 @@ export const DocumentAction: React.FC<ActionProps> = ({
   };
 
   const documentPreview = async (fileName: any, fileId: string) => {
-    console.log('FilePreview', fileName);
     try {
       const response = await downloadEmployeeFile(fileId);
-      console.log(response.data);
       const imageUrl: any = window.URL.createObjectURL(
         new Blob([response.data])
       );

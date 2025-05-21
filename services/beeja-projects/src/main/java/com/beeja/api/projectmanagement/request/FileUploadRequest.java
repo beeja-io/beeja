@@ -15,6 +15,6 @@ public class FileUploadRequest {
   private String name;
   private String description;
   private String fileType= Constants.FILE_TYPE_PROJECT;
-  private String entityId;
+  private String entityId= Constants.ENTITY_TYPE_CLIENT;
   private String entityType= Constants.ENTITY_TYPE_CLIENT;
 }
