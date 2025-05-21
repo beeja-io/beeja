@@ -24,4 +24,8 @@ public interface AccountClient {
 
   @GetMapping("v1/users/email/{email}")
   ResponseEntity<?> getEmployeeByEmail(@PathVariable String email);
+
+  @GetMapping("/v1/organizations/{organizationId}")
+  ResponseEntity<Object> getOrganizationById(@PathVariable("organizationId") String organizationId);
+
 }
