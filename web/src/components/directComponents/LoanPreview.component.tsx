@@ -14,7 +14,7 @@ import {
   TextInput,
 } from '../../styles/DocumentTabStyles.style';
 import { LoanPreviewModal } from '../../styles/LoanPreviewStyles.style';
-import {  monthsDiff, safeFormatDate } from '../../utils/dateFormatter';
+import { monthsDiff, safeFormatDate } from '../../utils/dateFormatter';
 import { hasPermission } from '../../utils/permissionCheck';
 
 type LoanPreviewProps = {
