@@ -913,11 +913,12 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           )}
         </SelectOption>
 
-        <span>
+        {/* TODO: Revert this back when using automatic employee id generation */}
+        {/* <span>
           <ValidationText className="info">
             {t('EMPLOYEE_ID_WILL_BE_GENERATED_BASED_ON_PATTERN')}
           </ValidationText>
-        </span>
+        </span> */}
       </div>
 
       <div>
