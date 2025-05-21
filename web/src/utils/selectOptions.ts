@@ -16,3 +16,38 @@ export const noOfYearsExperience = [
   '14-15',
   '15+',
 ];
+
+export const osTypes = [
+  'Alpine Linux',
+  'Android',
+  'Arch Linux',
+  'CentOS',
+  'Chrome OS',
+  'Debian',
+  'Fedora',
+  'FreeBSD',
+  'iOS',
+  'Kali Linux',
+  'Linux',
+  'macOS',
+  'Manjaro',
+  'openSUSE',
+  'Red Hat Enterprise Linux',
+  'Solaris',
+  'Ubuntu',
+  'Windows',
+  'Zorin OS',
+];
+
+export const ramSizes = [
+  '2',
+  '4',
+  '6',
+  '8',
+  '12',
+  '16',
+  '24',
+  '32',
+  '64',
+  '128',
+];
