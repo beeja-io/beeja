@@ -7,7 +7,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileService {
-    public ByteArrayResource downloadFile(String fileId) throws Exception;
+    ByteArrayResource downloadFile(String fileId) throws Exception;
 
     FileResponse listOfFileByEntityId(String entityId, int page, int size) throws Exception;
 
