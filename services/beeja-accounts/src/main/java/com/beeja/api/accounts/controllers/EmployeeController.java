@@ -4,6 +4,7 @@ import com.beeja.api.accounts.annotations.HasPermission;
 import com.beeja.api.accounts.constants.PermissionConstants;
 import com.beeja.api.accounts.exceptions.BadRequestException;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import com.beeja.api.accounts.repository.UserRepository;
 import com.beeja.api.accounts.requests.AddEmployeeRequest;
 import com.beeja.api.accounts.requests.ChangeEmailAndPasswordRequest;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +53,16 @@ public class EmployeeController {
       return ResponseEntity.ok(loggedInUser);
     } else {
       return ResponseEntity.notFound().build();
+    }
+  }
+  @PostMapping("/names")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public ResponseEntity<List<EmployeeNameDTO>> getEmployeeNames(@RequestBody List<String> employeeIds) {
+    try {
+      List<EmployeeNameDTO> employeeNames = employeeService.getEmployeeNamesByIds(employeeIds);
+      return ResponseEntity.ok(employeeNames);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Collections.emptyList());
     }
   }
 

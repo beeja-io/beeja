@@ -9,6 +9,7 @@ import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.enums.LoanStatus;
 import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
 import com.beeja.api.financemanagementservice.modals.Loan;
+import com.beeja.api.financemanagementservice.modals.clients.finance.EmployeeNameDTO;
 import com.beeja.api.financemanagementservice.modals.clients.finance.OrganizationPattern;
 import com.beeja.api.financemanagementservice.repository.LoanRepository;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
@@ -181,23 +182,30 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
       loans = loanRepository.findAllByOrganizationId(orgId, pageable);
       totalCount = loanRepository.countByOrganizationId(orgId);
     }
-    List<Map<String, Object>> employees=null;
-   try {
-    employees = accountClient.getAllEmployees();
-   }
-   catch (Exception e){
-     log.warn("Failed to retrieve employeeNames");
-   }
-    Map<String, String> employeeNames = employees.stream()
-            .filter(emp -> emp.containsKey("employeeId") && emp.containsKey("firstName") && emp.containsKey("lastName"))
-            .collect(Collectors.toMap(
-                    emp -> emp.get("employeeId").toString(),
-                    emp -> emp.get("firstName") + " " + emp.get("lastName")
-            ));
-    loans.forEach(loan -> loan.setEmployeeName(employeeNames.getOrDefault(loan.getEmployeeId(), "Unknown")));
+    Set<String> employeeIds = loans.stream()
+            .map(LoanDTO::getEmployeeId)
+            .collect(Collectors.toSet());
+    
+    List<EmployeeNameDTO> employeeNamesList=null;
+
+    try{
+      employeeNamesList = accountClient.getEmployeeNamesByIds(new ArrayList<>(employeeIds));
+    }
+    catch (Exception e){
+      log.warn("failed to fetch employeeNames");
+    }
+    Map<String, String> employeeNamesMap = employeeNamesList.stream()
+            .collect(Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
+
+    for (LoanDTO loan : loans) {
+      String empId = loan.getEmployeeId();
+      if (empId != null && employeeNamesMap.containsKey(empId)) {
+        loan.setEmployeeName(employeeNamesMap.get(empId));
+      }
+    }
 
   } catch (Exception e) {
-    log.error("Error occurred while fetching loans: {}", e.getMessage(), e);
+    log.error("Error occurred while fetching loans or employee names: {}", e.getMessage(), e);
     loans = Collections.emptyList();
     totalCount = 0;
   }

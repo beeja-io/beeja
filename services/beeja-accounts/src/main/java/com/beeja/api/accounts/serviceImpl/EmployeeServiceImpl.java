@@ -16,6 +16,7 @@ import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.OrganizationPattern;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
 import com.beeja.api.accounts.repository.OrganizationPatternsRepository;
 import com.beeja.api.accounts.repository.RolesRepository;
@@ -50,6 +51,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import static com.beeja.api.accounts.utils.SecretsGenerator.hashWithBcrypt;
 
@@ -222,6 +224,15 @@ public class EmployeeServiceImpl implements EmployeeService {
           BuildErrorMessage.buildErrorMessage(
               ErrorType.DB_ERROR, ErrorCode.CANNOT_SAVE_CHANGES, Constants.USER_UPDATE_ERROR));
     }
+  }
+  @Override
+  public List<EmployeeNameDTO> getEmployeeNamesByIds(List<String> employeeIds) {
+    return userRepository.findByEmployeeIdIn(employeeIds).stream()
+            .filter(user -> user.getEmployeeId() != null)
+            .map(user -> new EmployeeNameDTO(
+                    user.getEmployeeId(),
+                    user.getFirstName() + " " + user.getLastName()))
+            .collect(Collectors.toList());
   }
 
   @Override
