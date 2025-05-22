@@ -5,6 +5,7 @@ export interface Loan {
   createdBy: string | null;
   emiStartDate: Date;
   emiTenure: number;
+  employeeName?: string;
   employeeId: string;
   loanNumber: string;
   loanType: string;

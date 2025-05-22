@@ -52,14 +52,24 @@ const LoanPreview = (props: LoanPreviewProps) => {
           />
         </InputLabelContainer>
         {user && hasPermission(user, LOAN_MODULE.UPDATE_LOAN) && (
-          <InputLabelContainer>
-            <label>{t('EMPLOYEE_ID')} </label>
-            <TextInput
-              className={'disabledBgWhite'}
-              value={props.loan.employeeId}
-              disabled={true}
-            />
-          </InputLabelContainer>
+          <>
+            <InputLabelContainer>
+              <label>{t('EMPLOYEE_NAME')} </label>
+              <TextInput
+                className={'disabledBgWhite'}
+                value={props.loan.employeeName || 'Unknown'}
+                disabled={true}
+              />
+            </InputLabelContainer>
+            <InputLabelContainer>
+              <label>{t('EMPLOYEE_ID')} </label>
+              <TextInput
+                className={'disabledBgWhite'}
+                value={props.loan.employeeId}
+                disabled={true}
+              />
+            </InputLabelContainer>
+          </>
         )}
         <InputLabelContainer>
           <label>{t('REQUESTED_DATE')} </label>
