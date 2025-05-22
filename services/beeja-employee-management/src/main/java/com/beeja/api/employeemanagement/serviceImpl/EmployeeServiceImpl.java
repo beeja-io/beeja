@@ -37,6 +37,7 @@ import com.beeja.api.employeemanagement.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -300,7 +301,8 @@ public class EmployeeServiceImpl implements EmployeeService {
       Aggregation aggregation =
           Aggregation.newAggregation(
               Aggregation.match(criteria),
-              Aggregation.project("id", "employeeId", "jobDetails"),
+              Aggregation.project("id", "employeeId", "jobDetails", "employeeNumber"),
+              Aggregation.sort(Sort.by(Sort.Direction.ASC, "employeeNumber")),
               Aggregation.skip((pageNumber - 1) * pageSize),
               Aggregation.limit(pageSize));
       AggregationResults<GetLimitedEmployee> results =
