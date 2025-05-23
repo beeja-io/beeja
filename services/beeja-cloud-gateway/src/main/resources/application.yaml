@@ -67,6 +67,13 @@ spring:
             - Path= /recruitments/**
           filters:
             - CustomTokenRelay=true
+
+        - id: PERFORMANCE-SERVICE
+          uri: lb://PERFORMANCE-SERVICE
+          predicates:
+            - Path= /performance/**
+          filters:
+            - CustomTokenRelay=true
   mvc:
     favicon:
       location: classpath:/resources/static/favicon.ico
@@ -112,6 +119,7 @@ resource-server-urls:
   file-service: ${FILE_SERVICE_BASE_URL}
   expense-service: ${EXPENSE_SERVICE_BASE_URL}
   finance-service: ${FINANCE_SERVICE_BASE_URL}
+  performance-service: ${PERFORMANCE_SERVICE_BASE_URL}
 
 jwt:
   secret: ${JWT_SECRET_KEY}
