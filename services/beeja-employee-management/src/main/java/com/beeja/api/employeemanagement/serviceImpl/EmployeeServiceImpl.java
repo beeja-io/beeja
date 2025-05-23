@@ -34,9 +34,11 @@ import com.beeja.api.employeemanagement.service.FileService;
 import com.beeja.api.employeemanagement.utils.BuildErrorMessage;
 import com.beeja.api.employeemanagement.utils.Constants;
 import com.beeja.api.employeemanagement.utils.UserContext;
+import com.beeja.api.employeemanagement.utils.ExtractEmpNumUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
@@ -92,6 +94,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     Employee emp = new Employee();
     emp.setBeejaAccountId(((String) employee.get("id")));
     emp.setEmployeeId(((String) employee.get("employeeId")));
+    emp.setEmployeeNumber(ExtractEmpNumUtil.extractEmpNumber(emp.getEmployeeId()));
     Object organizationsObject = employee.get("organizations");
     if (organizationsObject instanceof Map) {
       Map<String, Object> organizationsMap = (Map<String, Object>) organizationsObject;
@@ -300,7 +303,8 @@ public class EmployeeServiceImpl implements EmployeeService {
       Aggregation aggregation =
           Aggregation.newAggregation(
               Aggregation.match(criteria),
-              Aggregation.project("id", "employeeId", "jobDetails"),
+              Aggregation.project("id", "employeeId", "jobDetails", "employeeNumber"),
+              Aggregation.sort(Sort.by(Sort.Direction.ASC, "employeeNumber")),
               Aggregation.skip((pageNumber - 1) * pageSize),
               Aggregation.limit(pageSize));
       AggregationResults<GetLimitedEmployee> results =
