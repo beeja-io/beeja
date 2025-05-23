@@ -1,5 +1,6 @@
 package com.beeja.api.employeemanagement.serviceImpl;
 
+import com.beeja.api.employeemanagement.model.*;
 import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
 import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -787,4 +788,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     return "Duplicate entry found.";
   }
+    @Override
+    public List<EmployeeDTO> getAll(String orgId) {
+        return employeeRepository.findAllByOrganizationId(orgId);
+    }
+
 }

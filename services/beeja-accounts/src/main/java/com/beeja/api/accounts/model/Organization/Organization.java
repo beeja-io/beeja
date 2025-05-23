@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
 @AllArgsConstructor
@@ -27,6 +28,11 @@ public class Organization {
 
   private String subscriptionId;
   private String emailDomain;
+  @Field("is_birthday_notification_enabled")
+  private boolean isBirthDayNotificationEnabled = false;
+
+  @Field("birthday_webhook_url")
+  private String birthdayWebhookUrl;
 
   @NotBlank(message = Constants.VALIDATION_ORGANIZATION_OWNER_CONTACT_EMAIL_IS_REQUIRED)
   @Email(message = Constants.VALIDATION_ORGANIZATION_OWNER_CONTACT_EMAIL_IS_INVALID_FORMAT)
