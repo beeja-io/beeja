@@ -68,10 +68,16 @@ spring:
           filters:
             - CustomTokenRelay=true
 
+        - id: PERFORMANCE-SERVICE
+          uri: lb://PERFORMANCE-SERVICE
+          predicates:
+            - Path= /performance/**
+
         - id: REPORTS-SERVICE
           uri: lb://REPORTS-SERVICE
           predicates:
             - Path= /reports/**
+
           filters:
             - CustomTokenRelay=true
   mvc:
@@ -119,6 +125,7 @@ resource-server-urls:
   file-service: ${FILE_SERVICE_BASE_URL}
   expense-service: ${EXPENSE_SERVICE_BASE_URL}
   finance-service: ${FINANCE_SERVICE_BASE_URL}
+  performance-service: ${PERFORMANCE_SERVICE_BASE_URL}
 
 jwt:
   secret: ${JWT_SECRET_KEY}
