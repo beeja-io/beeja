@@ -13,6 +13,8 @@ import java.util.List;
 public interface UserRepository extends MongoRepository<User, String> {
   List<User> findByEmployeeIdInAndOrganizations_Id(List<String> employeeIds, String organizationId);
 
+  List<User> findByEmployeeIdIn(List<String> employeeIds);
+
   User findByEmail(String email);
 
   User findByEmailAndOrganizations(String email, Organization organizations);
