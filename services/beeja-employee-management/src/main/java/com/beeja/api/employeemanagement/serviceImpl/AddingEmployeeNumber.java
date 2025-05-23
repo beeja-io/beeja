@@ -2,11 +2,10 @@ package com.beeja.api.employeemanagement.serviceImpl;
 
 import com.beeja.api.employeemanagement.model.Employee;
 import com.beeja.api.employeemanagement.repository.EmployeeRepository;
-import com.beeja.api.employeemanagement.utils.UserContext;
+import com.beeja.api.employeemanagement.utils.Constants;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,7 +35,7 @@ public class AddingEmployeeNumber {
                     employeeRepository.save(emp);
                 } catch (NumberFormatException e) {
 
-                    log.warn("Failed to extract numeric employee number from empId: {}", empId, e);
+                    log.warn(Constants.ERROR_IN_EXTRACTING_EMP_NUMBER, empId, e);
                 }
             }
         }
@@ -47,7 +46,7 @@ public class AddingEmployeeNumber {
         String empNumber = empId.replaceAll("\\D", "");
 
         if (empNumber.isEmpty()) {
-            throw new NumberFormatException("No numeric part found in empId: " + empId);
+            throw new NumberFormatException(Constants.NO_NUMERIC_FOUND + empId);
         }
 
         return Integer.parseInt(empNumber);
