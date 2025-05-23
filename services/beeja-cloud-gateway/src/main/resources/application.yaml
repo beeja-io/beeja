@@ -72,6 +72,12 @@ spring:
           uri: lb://PERFORMANCE-SERVICE
           predicates:
             - Path= /performance/**
+
+        - id: REPORTS-SERVICE
+          uri: lb://REPORTS-SERVICE
+          predicates:
+            - Path= /reports/**
+
           filters:
             - CustomTokenRelay=true
   mvc:

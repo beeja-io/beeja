@@ -141,4 +141,17 @@ public class GlobalControllerAdvice {
     return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
   }
 
+  @ExceptionHandler(UnAuthorisedException.class)
+  public ResponseEntity<ErrorResponse> handleUnAuthorisedException(
+          UnAuthorisedException ex,
+          HttpServletRequest request){
+    String path = request.getRequestURI();
+    ErrorResponse errorResponse = BuildErrorMessage.buildErrorMessage(
+            ErrorType.AUTHORIZATION_ERROR,
+            ErrorCode.PERMISSION_MISSING,
+            ex.getMessage());
+    errorResponse.setPath(path);
+    return new ResponseEntity<>(errorResponse,HttpStatus.FORBIDDEN);
+  }
+
 }

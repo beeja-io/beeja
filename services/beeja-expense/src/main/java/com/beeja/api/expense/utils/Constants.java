@@ -42,5 +42,6 @@ public class Constants {
   public static final String EXPENSE_NOT_FOUND_ORGANIZATION = "No Expense Found in your organization with id: ";
   public static final String ERROR_FILTERING_EXPENSE = "Error occurred while filtering expenses";
   public static final String ERROR_FETCH_EXPENSE_DEFAULTS = "Failed to fetch default expense values for organizationId: ";
+  public static final String FILE_SIZE_EXCEEDED = "The uploaded file exceeds the maximum allowed size of ";
   public static String INVALID_PAGINATION_PARAM = "Invalid pagination parameters(pageNumber and pageSize)";
 }

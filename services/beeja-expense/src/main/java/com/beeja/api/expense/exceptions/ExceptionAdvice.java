@@ -1,9 +1,11 @@
 package com.beeja.api.expense.exceptions;
 
+import com.beeja.api.expense.config.properties.FileSizeConfig;
 import com.beeja.api.expense.utils.Constants;
 import com.beeja.api.expense.enums.ErrorCode;
 import com.beeja.api.expense.enums.ErrorType;
 import com.beeja.api.expense.response.ErrorResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -20,6 +22,9 @@ import static com.beeja.api.expense.utils.Constants.BEEJA;
 
 @ControllerAdvice
 public class ExceptionAdvice {
+
+  @Autowired FileSizeConfig fileSizeConfig;
+
   @ExceptionHandler(CustomAccessDeniedException.class)
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public ResponseEntity<?> handleCustomAccessDeniedException(CustomAccessDeniedException ex,WebRequest request) {
@@ -53,12 +58,12 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(MaxUploadSizeExceededException.class)
   public ResponseEntity<?> handleMaxSizeException(MaxUploadSizeExceededException ex,WebRequest request) {
-    String[] errorMessage = convertStringToArray(ex.getMessage());
+    String message = Constants.FILE_SIZE_EXCEEDED + fileSizeConfig.getMaxFileSize();
     ErrorResponse errorResponse =
             new ErrorResponse(
-                    ErrorType.valueOf(errorMessage[0]),
-                    ErrorCode.valueOf(errorMessage[1]),
-                    errorMessage[2],
+                    ErrorType.FILE_SIZE_EXCEED,
+                    ErrorCode.MAX_FILE_SIZE_EXCEEDED,
+                    message,
                     Constants.DOC_URL_RESOURCE_NOT_FOUND,
                     request.getDescription(false),
                     BEEJA + "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),

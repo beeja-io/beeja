@@ -6,25 +6,33 @@ import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.exceptions.ValidationException;
+import com.beeja.api.projectmanagement.exceptions.UnAuthorisedException;
 import com.beeja.api.projectmanagement.model.Client;
+import com.beeja.api.projectmanagement.model.dto.File;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.request.FileUploadRequest;
 import com.beeja.api.projectmanagement.responses.ErrorResponse;
+import com.beeja.api.projectmanagement.responses.FileDownloadResultMetaData;
 import com.beeja.api.projectmanagement.service.ClientService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import com.beeja.api.projectmanagement.config.LogoValidator;
 import com.beeja.api.projectmanagement.client.FileClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.beeja.api.projectmanagement.utils.Constants.ERROR_IN_LOGO_UPLOAD;
 
