@@ -73,28 +73,28 @@ class EmployeeControllerTest {
   @Test
   void testGetAllEmployees_withAllParams() throws Exception {
     List<Map<String, Object>> employeeList =
-        List.of(Map.of("id", "1", "name", "John Doe"), Map.of("id", "2", "name", "Jane Doe"));
+            List.of(Map.of("id", "1", "name", "John Doe"), Map.of("id", "2", "name", "Jane Doe"));
     EmployeeResponse mockResponse = new EmployeeResponse(employeeList, 2L);
     Mockito.when(
-            employeeService.getCombinedLimitedDataOfEmployees(
-                "IT", "Developer", "Full-Time", 1, 10, "active"))
-        .thenReturn(mockResponse);
+                    employeeService.getCombinedLimitedDataOfEmployees(
+                            "IT", "Developer", "Full-Time", 1, 10, "active"))
+            .thenReturn(mockResponse);
     mockMvc
-        .perform(
-            get(BASE_URL)
-                .param("department", "IT")
-                .param("designation", "Developer")
-                .param("employmentType", "Full-Time")
-                .param("status", "active")
-                .param("pageNumber", "1")
-                .param("pageSize", "10"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.employeeList.size()").value(2))
-        .andExpect(jsonPath("$.employeeList[0].name").value("John Doe"))
-        .andExpect(jsonPath("$.employeeList[1].name").value("Jane Doe"))
-        .andExpect(jsonPath("$.totalSize").value(2));
+            .perform(
+                    get(BASE_URL)
+                            .param("department", "IT")
+                            .param("designation", "Developer")
+                            .param("employmentType", "Full-Time")
+                            .param("status", "active")
+                            .param("pageNumber", "1")
+                            .param("pageSize", "10"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.employeeList.size()").value(2))
+            .andExpect(jsonPath("$.employeeList[0].name").value("John Doe"))
+            .andExpect(jsonPath("$.employeeList[1].name").value("Jane Doe"))
+            .andExpect(jsonPath("$.totalSize").value(2));
     Mockito.verify(employeeService)
-        .getCombinedLimitedDataOfEmployees("IT", "Developer", "Full-Time", 1, 10, "active");
+            .getCombinedLimitedDataOfEmployees("IT", "Developer", "Full-Time", 1, 10, "active");
   }
 
   @Test
@@ -104,35 +104,35 @@ class EmployeeControllerTest {
     EmployeeResponse mockResponse = new EmployeeResponse(mockEmployeeList, 1L);
 
     Mockito.when(
-            employeeService.getCombinedLimitedDataOfEmployees(null, null, null, 1, 10, "active"))
-        .thenReturn(mockResponse);
+                    employeeService.getCombinedLimitedDataOfEmployees(null, null, null, 1, 10, "active"))
+            .thenReturn(mockResponse);
 
     mockMvc
-        .perform(get(BASE_URL))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.employeeList.size()").value(1))
-        .andExpect(jsonPath("$.employeeList[0].name").value("Sam Smith"))
-        .andExpect(jsonPath("$.totalSize").value(1));
+            .perform(get(BASE_URL))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.employeeList.size()").value(1))
+            .andExpect(jsonPath("$.employeeList[0].name").value("Sam Smith"))
+            .andExpect(jsonPath("$.totalSize").value(1));
 
     Mockito.verify(employeeService)
-        .getCombinedLimitedDataOfEmployees(null, null, null, 1, 10, "active");
+            .getCombinedLimitedDataOfEmployees(null, null, null, 1, 10, "active");
   }
 
   @Test
   void testGetAllEmployees_withEmptyResponse() throws Exception {
     EmployeeResponse mockResponse = new EmployeeResponse(Collections.emptyList(), 0L);
     Mockito.when(
-            employeeService.getCombinedLimitedDataOfEmployees(null, null, null, 1, 10, "inactive"))
-        .thenReturn((mockResponse));
+                    employeeService.getCombinedLimitedDataOfEmployees(null, null, null, 1, 10, "inactive"))
+            .thenReturn((mockResponse));
 
     mockMvc
-        .perform(get(BASE_URL).param("status", "inactive"))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.employeeList.size()").value(0))
-        .andExpect(jsonPath("$.totalSize").value(0));
+            .perform(get(BASE_URL).param("status", "inactive"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.employeeList.size()").value(0))
+            .andExpect(jsonPath("$.totalSize").value(0));
 
     Mockito.verify(employeeService)
-        .getCombinedLimitedDataOfEmployees(null, null, null, 1, 10, "inactive");
+            .getCombinedLimitedDataOfEmployees(null, null, null, 1, 10, "inactive");
   }
 
   @Test
@@ -149,11 +149,11 @@ class EmployeeControllerTest {
     String userJson = objectMapper.writeValueAsString(user);
 
     mockMvc
-        .perform(
-            MockMvcRequestBuilders.post("/v1/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(userJson))
-        .andExpect(status().isCreated());
+            .perform(
+                    MockMvcRequestBuilders.post("/v1/users")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(userJson))
+            .andExpect(status().isCreated());
   }
 
   @Test
@@ -171,13 +171,13 @@ class EmployeeControllerTest {
     String employeeUpdateJson = objectMapper.writeValueAsString(employeeUpdateRequest);
 
     mockMvc
-        .perform(
-            MockMvcRequestBuilders.put("/v1/users/{employeeId}", employeeId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(employeeUpdateJson))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.employeeId").value("12345"))
-        .andExpect(jsonPath("$.position").value("developer"));
+            .perform(
+                    MockMvcRequestBuilders.put("/v1/users/{employeeId}", employeeId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(employeeUpdateJson))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.employeeId").value("12345"))
+            .andExpect(jsonPath("$.position").value("developer"));
   }
 
   @Test
@@ -188,19 +188,19 @@ class EmployeeControllerTest {
     employeeUpdateRequest.setPosition("developer");
 
     when(employeeService.updateEmployee(employeeId, employeeUpdateRequest))
-        .thenThrow(new NoSuchElementException("Employee not found"));
+            .thenThrow(new NoSuchElementException("Employee not found"));
 
     String employeeUpdateJson = objectMapper.writeValueAsString(employeeUpdateRequest);
 
     mockMvc
-        .perform(
-            MockMvcRequestBuilders.put("/v1/users/{employeeId}", employeeId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(employeeUpdateJson))
-        .andExpect(status().isNotFound())
-        .andExpect(jsonPath("$.type").value(ErrorType.RESOURCE_NOT_FOUND_ERROR.toString()))
-        .andExpect(jsonPath("$.code").value(ErrorCode.RESOURCE_NOT_FOUND.toString()))
-        .andExpect(jsonPath("$.message").value(Constants.EMPLOYEE_NOT_FOUND));
+            .perform(
+                    MockMvcRequestBuilders.put("/v1/users/{employeeId}", employeeId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(employeeUpdateJson))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.type").value(ErrorType.RESOURCE_NOT_FOUND_ERROR.toString()))
+            .andExpect(jsonPath("$.code").value(ErrorCode.RESOURCE_NOT_FOUND.toString()))
+            .andExpect(jsonPath("$.message").value(Constants.EMPLOYEE_NOT_FOUND));
   }
 
   @Test
@@ -217,12 +217,12 @@ class EmployeeControllerTest {
     when(employeeService.getEmployeeByEmployeeId(anyString())).thenReturn(employeeData);
 
     mockMvc
-        .perform(
-            MockMvcRequestBuilders.get("/v1/users/{employeeId}", employeeId)
-                .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.position").value("manager"))
-        .andExpect(jsonPath("$.jobDetails").exists());
+            .perform(
+                    MockMvcRequestBuilders.get("/v1/users/{employeeId}", employeeId)
+                            .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.position").value("manager"))
+            .andExpect(jsonPath("$.jobDetails").exists());
   }
 
 
@@ -249,16 +249,16 @@ class EmployeeControllerTest {
     updatedEmployee.setId(employeeId);
 
     Mockito.when(employeeService.updateKYCRequest(eq(employeeId), any(UpdateKYCRequest.class)))
-        .thenReturn(updatedEmployee);
+            .thenReturn(updatedEmployee);
 
     ObjectMapper objectMapper = new ObjectMapper();
 
     mockMvc
-        .perform(
-            patch("/v1/users/{employeeId}/kyc", employeeId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateKYCRequest)))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(employeeId));
+            .perform(
+                    patch("/v1/users/{employeeId}/kyc", employeeId)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updateKYCRequest)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id").value(employeeId));
   }
 }

@@ -20,4 +20,8 @@ public class OrganizationPattern {
   private int initialSequence;
   private String examplePattern;
   private boolean active;
+
+
+  public void setPatternId(String patternId) {
+  }
 }
