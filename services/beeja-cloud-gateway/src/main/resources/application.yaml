@@ -16,6 +16,9 @@ spring:
 
   cloud:
     gateway:
+      default-filters:
+        - AddRequestHeader=X-Forwarded-Proto, https
+        - AddRequestHeader=X-Forwarded-Port, 443
       routes:
         - id: ACCOUNTS-SERVICE
           uri: lb://ACCOUNTS-SERVICE
