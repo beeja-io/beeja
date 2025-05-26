@@ -79,6 +79,7 @@ export function formatDateDDMMYYYYHHMM(dateString: string): string {
 
   return `${day}-${month}-${year} ${hours}:${minutes}`;
 }
+
 export const safeFormatDate = (
   dateString: string | null | undefined
 ): string => {
@@ -87,9 +88,6 @@ export const safeFormatDate = (
   try {
     return formatDate(dateString);
   } catch (error) {
-    throw new Error(
-      'Error fetching data: ' +
-        (error instanceof Error ? error.message : String(error))
-    );
+    return '-';
   }
 };
