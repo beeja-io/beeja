@@ -293,6 +293,17 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
       document.body.style.overflow = '';
     };
   }, [isCreateDocumentModelOpen]);
+
+  const [hasDecrementedPage, setHasDecrementedPage] = useState(false);
+  useEffect(() => {
+    if (allFilesList.length === 0 && currentPage > 1 && !hasDecrementedPage) {
+      setCurrentPage((prev) => prev - 1);
+      setHasDecrementedPage(true);
+    } else if (allFilesList.length > 0) {
+      setHasDecrementedPage(false);
+    }
+  }, [allFilesList, currentPage]);
+
   return (
     <>
       <DocumentContainer>

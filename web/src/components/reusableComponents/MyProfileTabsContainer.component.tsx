@@ -41,7 +41,6 @@ const MyProfileTabsContainerComponent = ({
   const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
     setSelectedTab('general');
-    setIsActiveTab('general');
   }, [employee]);
 
   useEffect(() => {

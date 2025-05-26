@@ -173,6 +173,7 @@
   "LEAVE_A_COMMENT": "Leave a Comment",
   "COMMENTS": "Comments",
   "COMMENT": "Comment",
+  "EMPLOYEE_NAME": "Mitarbeitername",
   "errors": {
     "unsupported_format": "Nicht unterstütztes Dateiformat. Bitte laden Sie eine gültige Belegdatei hoch.",
     "single_file_exceeds": "Dateigröße überschreitet 5 MB. Bitte laden Sie eine kleinere Datei hoch.",

@@ -60,12 +60,21 @@ const LoanListView = (props: LoanListViewProps) => {
       day: 'numeric',
       year: 'numeric',
     }).format(new Date(dateString));
-
-  const formatLoanType = (loanType: string): string =>
-    loanType
-      .split('_')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
+  const formatLoanType = (loanType: any): string => {
+    try {
+      if (typeof loanType !== 'string' || !loanType) {
+        return 'Unknown Loan Type';
+      }
+      return loanType
+        .split('_')
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(' ');
+    } catch {
+      return 'Unknown Loan Type';
+    }
+  };
 
   const formatStatus = (status: string) =>
     status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
@@ -106,10 +115,8 @@ const LoanListView = (props: LoanListViewProps) => {
               <TableHead>
                 <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
                   <th>{t('LOAN_NUMBER')}</th>
+                  <th>{t('EMPLOYEE_NAME')}</th>
                   <th>{t('LOAN_TYPE')}</th>
-                  {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) && (
-                    <th>Employee ID</th>
-                  )}
                   <th>{t('REQUESTED_DATE')}</th>
                   <th>{t('LOAN_AMOUNT')}</th>
                   <th className="statusHeader">{t('STATUS')}</th>
@@ -119,76 +126,92 @@ const LoanListView = (props: LoanListViewProps) => {
                 </tr>
               </TableHead>
               <tbody>
-                {loansList.map((loan, index) => (
-                  <TableBodyRow key={index}>
-                    <td
-                      onClick={() => {
-                        handleLoanToBePreviewed(loan);
-                        handleIsLoanPreviewModalOpen();
-                      }}
-                    >
-                      {loan.loanNumber}
-                    </td>
-                    <td
-                      onClick={() => {
-                        handleLoanToBePreviewed(loan);
-                        handleIsLoanPreviewModalOpen();
-                      }}
-                    >
-                      {formatLoanType(loan.loanType)}
-                    </td>
-                    {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) && (
+                {loansList &&
+                  loansList.map((loan: any, index: any) => (
+                    <TableBodyRow key={index}>
                       <td
                         onClick={() => {
                           handleLoanToBePreviewed(loan);
                           handleIsLoanPreviewModalOpen();
                         }}
                       >
-                        {loan.employeeId}
+                        {loan.loanNumber}
                       </td>
-                    )}
-                    <td
-                      onClick={() => {
-                        handleLoanToBePreviewed(loan);
-                        handleIsLoanPreviewModalOpen();
-                      }}
-                    >
-                      <span
-                        style={{ verticalAlign: 'middle', marginRight: '6px' }}
+                      <td
+                        onClick={() => {
+                          handleLoanToBePreviewed(loan);
+                          handleIsLoanPreviewModalOpen();
+                        }}
                       >
-                        <CalenderIcon />
-                      </span>
-                      {loan.createdAt ? formatDate(loan.createdAt) : '-'}
-                    </td>
-                    <td
-                      onClick={() => {
-                        handleLoanToBePreviewed(loan);
-                        handleIsLoanPreviewModalOpen();
-                      }}
-                    >
-                      {loan.amount === 0 ? '-' : `${loan.amount} INR`}
-                    </td>
-                    <td
-                      onClick={() => {
-                        handleLoanToBePreviewed(loan);
-                        handleIsLoanPreviewModalOpen();
-                      }}
-                    >
-                      <StatusIndicator status={loan.status}>
-                        {formatStatus(loan.status)}
-                      </StatusIndicator>
-                    </td>
-                    {user && hasPermission(user, LOAN_MODULE.STATUS_CHANGE) && (
-                      <td>
-                        <LoanAction
-                          options={Actions}
-                          currentLoan={loan}
-                          fetchLoans={fetchLoans}
-                        />
+                        <div>
+                          {loan.employeeName || 'Unknown'}
+                          {user &&
+                            hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) && (
+                              <div style={{ color: '#666', fontSize: '0.8em' }}>
+                                {loan.employeeId}
+                              </div>
+                            )}
+                        </div>
                       </td>
-                    )}
-                  </TableBodyRow>
-                ))}
+                      <td
+                        onClick={() => {
+                          handleLoanToBePreviewed(loan);
+                          handleIsLoanPreviewModalOpen();
+                        }}
+                      >
+                        {formatLoanType(loan.loanType)}
+                      </td>
+                      <td
+                        onClick={() => {
+                          handleLoanToBePreviewed(loan);
+                          handleIsLoanPreviewModalOpen();
+                        }}
+                      >
+                        <span
+                          style={{
+                            verticalAlign: 'middle',
+                            marginRight: '6px',
+                          }}
+                        >
+                          <CalenderIcon />
+                        </span>
+
+                        {loan.createdAt != null
+                          ? formatDate(loan.createdAt)
+                          : '-'}
+                      </td>
+                      <td
+                        onClick={() => {
+                          handleLoanToBePreviewed(loan);
+                          handleIsLoanPreviewModalOpen();
+                        }}
+                      >
+                        {loan.amount === 0 ? '-' : loan.amount + ' INR'}
+                      </td>
+                      <td
+                        onClick={() => {
+                          handleLoanToBePreviewed(loan);
+                          handleIsLoanPreviewModalOpen();
+                        }}
+                      >
+                        <StatusIndicator status={loan.status}>
+                          {formatStatus(loan.status)}
+                        </StatusIndicator>
+                      </td>
+                      {user &&
+                      hasPermission(user, LOAN_MODULE.STATUS_CHANGE) ? (
+                        <td>
+                          <LoanAction
+                            options={Actions}
+                            currentLoan={loan}
+                            fetchLoans={fetchLoans}
+                          />
+                        </td>
+                      ) : (
+                        ''
+                      )}
+                    </TableBodyRow>
+                  ))}
               </tbody>
             </TableList>
           )}

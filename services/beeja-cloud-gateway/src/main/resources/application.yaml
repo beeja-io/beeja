@@ -67,6 +67,13 @@ spring:
             - Path= /recruitments/**
           filters:
             - CustomTokenRelay=true
+
+        - id: REPORTS-SERVICE
+          uri: lb://REPORTS-SERVICE
+          predicates:
+            - Path= /reports/**
+          filters:
+            - CustomTokenRelay=true
   mvc:
     favicon:
       location: classpath:/resources/static/favicon.ico
