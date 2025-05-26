@@ -25,6 +25,7 @@ import tac.beeja.recruitmentapi.exceptions.*;
 import tac.beeja.recruitmentapi.model.Applicant;
 import tac.beeja.recruitmentapi.model.ApplicantComment;
 import tac.beeja.recruitmentapi.model.AssignedInterviewer;
+import tac.beeja.recruitmentapi.properties.OrganizationTest;
 import tac.beeja.recruitmentapi.repository.ApplicantRepository;
 import tac.beeja.recruitmentapi.request.AddCommentRequest;
 import tac.beeja.recruitmentapi.request.ApplicantFeedbackRequest;
@@ -37,6 +38,7 @@ import tac.beeja.recruitmentapi.response.PaginatedApplicantResponse;
 import tac.beeja.recruitmentapi.service.ApplicantService;
 import tac.beeja.recruitmentapi.utils.BuildErrorMessage;
 import tac.beeja.recruitmentapi.utils.Constants;
+import tac.beeja.recruitmentapi.utils.OrganizationCheck;
 import tac.beeja.recruitmentapi.utils.UserContext;
 
 import java.lang.reflect.Field;
@@ -59,6 +61,9 @@ public class ApplicantServiceImpl implements ApplicantService {
   @Autowired MongoTemplate mongoTemplate;
 
   @Autowired AccountClient accountClient;
+
+  @Autowired
+  OrganizationTest organizationTest;
 
   @Override
   public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
@@ -189,6 +194,9 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     Query countQuery = new Query(finalCriteria);
     long totalRecords = mongoTemplate.count(countQuery, Applicant.class);
+    if(OrganizationCheck.isValidOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString(), organizationTest.getOrganizationId())){
+      log.info("Total records in organization: {}", totalRecords);
+    }
 
     Query paginatedQuery = new Query(finalCriteria).with(pageable);
     List<Applicant> applicants = mongoTemplate.find(paginatedQuery, Applicant.class);
