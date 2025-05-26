@@ -153,12 +153,6 @@ const LoanListView = (props: LoanListViewProps) => {
                   <th>{t('LOAN_NUMBER')}</th>
                   <th>{t('EMPLOYEE_NAME')}</th>
                   <th>{t('LOAN_TYPE')}</th>
-                  {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
-                    <th>Employee ID</th>
-                  ) : (
-                    ''
-                  )}
-
                   <th>{t('REQUESTED_DATE')}</th>
                   <th>{t('LOAN_AMOUNT')}</th>
                   <th className="statusHeader">{t('STATUS')}</th>
@@ -187,8 +181,14 @@ const LoanListView = (props: LoanListViewProps) => {
                           handleIsLoanPreviewModalOpen();
                         }}
                       >
-                        
-                        {(loan.employeeName)|| 'Unknown'}
+                        <div>
+                          {loan.employeeName || 'Unknown'}
+                          {user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) && (
+                            <div style={{ color: '#666', fontSize: '0.8em' }}>
+                              {loan.employeeId}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td
                         onClick={() => {
@@ -198,20 +198,6 @@ const LoanListView = (props: LoanListViewProps) => {
                       >
                         {formatLoanType(loan.loanType)}
                       </td>
-                      {user &&
-                      hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ? (
-                        <td
-                          onClick={() => {
-                            handleLoanToBePreviewed(loan);
-                            handleIsLoanPreviewModalOpen();
-                          }}
-                        >
-                          {loan.employeeId}
-                        </td>
-                      ) : (
-                        ''
-                      )}
-
                       <td
                         onClick={() => {
                           handleLoanToBePreviewed(loan);
