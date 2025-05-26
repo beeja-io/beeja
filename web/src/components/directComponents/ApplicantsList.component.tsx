@@ -25,11 +25,6 @@ type ApplicantsListProps = {
   isLoading: boolean;
   handleIsLoading: () => void;
   isReferral: boolean;
-  currentPage: number;
-  totalApplicants: number;
-  pageSize: number;
-  setCurrentPage: (page: number) => void;
-  setPageSize: React.Dispatch<React.SetStateAction<number>>;
 };
 const ApplicantsList = (props: ApplicantsListProps) => {
   const { user } = useUser();
