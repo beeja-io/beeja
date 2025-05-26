@@ -2,6 +2,7 @@ package com.beeja.api.projectmanagement.service;
 
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.request.ClientRequest;
+import org.springframework.core.io.ByteArrayResource;
 
 import java.util.List;
 
