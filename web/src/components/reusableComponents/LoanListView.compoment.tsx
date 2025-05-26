@@ -91,18 +91,20 @@ const LoanListView = (props: LoanListViewProps) => {
       year: 'numeric',
     }).format(new Date(dateString));
   const formatLoanType = (loanType: any): string => {
-  try {
-    if (typeof loanType !== 'string' || !loanType) {
+    try {
+      if (typeof loanType !== 'string' || !loanType) {
+        return 'Unknown Loan Type';
+      }
+      return loanType
+        .split('_')
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(' ');
+    } catch {
       return 'Unknown Loan Type';
     }
-    return loanType
-      .split('_')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      .join(' ');
-  } catch {
-    return 'Unknown Loan Type';
-  }
-};
+  };
 
   const formatStatus = (status: string) => {
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
@@ -181,14 +183,13 @@ const LoanListView = (props: LoanListViewProps) => {
                       >
                         {loan.loanNumber}
                       </td>
-                     <td
+                      <td
                         onClick={() => {
                           handleLoanToBePreviewed(loan);
                           handleIsLoanPreviewModalOpen();
                         }}
                       >
-                        
-                        {(loan.employeeName)|| 'Unknown'}
+                        {loan.employeeName || 'Unknown'}
                       </td>
                       <td
                         onClick={() => {

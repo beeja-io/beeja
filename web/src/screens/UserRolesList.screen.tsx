@@ -54,12 +54,15 @@ const UserRoleList: React.FC<UserRoleListProps> = ({
     } catch (error) {
       if (error instanceof AxiosError) {
         if (
-          error.response?.data.startsWith(
-            'Error Occurred in Deleting Role because it is in use and assigned'
+          typeof error.response?.data === 'object' &&
+          error.response.data !== null &&
+          typeof error.response.data.message === 'string' &&
+          error.response.data.message.startsWith(
+            'Error Occurred in Deleting Role because it is in use and assigned users is/are: '
           )
         ) {
           toast.error(
-            'Role is in use and assigned to users. Cannot delete role'
+            'This role is currently assigned and cannot be deleted. Please unassign it before proceeding'
           );
           return;
         }
