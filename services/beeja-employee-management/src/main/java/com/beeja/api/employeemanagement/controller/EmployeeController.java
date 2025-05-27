@@ -3,6 +3,7 @@ package com.beeja.api.employeemanagement.controller;
 import com.beeja.api.employeemanagement.annotations.HasPermission;
 import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.EmployeeDTO;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
@@ -92,5 +93,10 @@ public class EmployeeController {
   @GetMapping("/employee-values")
   ResponseEntity<EmployeeValues> getEmployeeValues() throws Exception {
     return ResponseEntity.ok(employeeService.getEmployeeValues());
+  }
+
+  @GetMapping("/all-employees/{orgId}")
+  ResponseEntity<List<EmployeeDTO>> getAll(@PathVariable String orgId)throws Exception{
+    return ResponseEntity.ok(employeeService.getAll(orgId));
   }
 }
