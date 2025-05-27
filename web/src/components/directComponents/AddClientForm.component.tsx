@@ -35,6 +35,7 @@ import {
   LogoPreview,
   FileName,
   RemoveButton,
+  LogoNameWrapper,
 } from '../../styles/ClientStyles.style';
 import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
 import { postClient, putClient } from '../../service/axiosInstance';
@@ -777,17 +778,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                 </InfoRow>
               </BasicOrganizationDetailsContainer>
               {logoPreviewUrl && (
-                <LogoPreview>
-                  <img
-                    src={logoPreviewUrl}
-                    alt="Logo Preview"
-                    style={{
-                      marginTop: '15px',
-                      maxHeight: '64px',
-                      objectFit: 'contain',
-                    }}
-                  />
-                </LogoPreview>
+                <LogoNameWrapper>
+                  <LogoPreview>
+                    <img src={logoPreviewUrl} alt="Logo Preview" />
+                  </LogoPreview>
+                </LogoNameWrapper>
               )}
             </InputLabelLogoContainer>
             <HeadingContainer>

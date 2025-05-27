@@ -268,9 +268,9 @@ export const deleteInventory = (id: string): Promise<AxiosResponse> => {
 };
 
 export const downloadClientLogo = (
-  logoId: string
+  fileId: string
 ): Promise<AxiosResponse<Blob>> => {
-  return axiosInstance.get(`/projects/v1/clients${logoId}`, {
+  return axiosInstance.get(`/projects/v1/files/download/${fileId}`, {
     responseType: 'blob',
   });
 };

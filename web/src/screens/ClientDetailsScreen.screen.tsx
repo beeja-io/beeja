@@ -11,6 +11,7 @@ import {
   RightSectionDiv,
   AddressDiv,
   LogoPreview,
+  LogoNameWrapper,
 } from '../styles/ClientStyles.style';
 
 import {
@@ -23,66 +24,84 @@ import {
 
 import { ClientResponse } from '../entities/ClientEntity';
 import { t } from 'i18next';
-// import { downloadClientLogo } from '../service/axiosInstance';
+import { downloadClientLogo, getClient } from '../service/axiosInstance';
+import { useParams } from 'react-router-dom';
+import AddProjectForm from '../components/directComponents/AddProjectForm.component';
+import CenterModalMain from '../components/reusableComponents/CenterModalMain.component';
 
 interface Props {
   client: ClientResponse | null;
 }
 
-const ClientDetailsScreen: React.FC<Props> = ({ client }) => {
-  // const [logoUrl, setLogoUrl] = useState<string | null>(null);
+const ClientDetailsScreen: React.FC = () => {
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
+  const { id } = useParams();
+  const [client, setClient] = useState<ClientResponse | null>(null);
+  const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
 
-  // useEffect(() => {
-  //   const fetchLogoImage = async () => {
-  //     if (client?.logoId) {
-  //       try {
-  //         const response = await downloadClientLogo(client.logoId);
+  const handleAddProjectModalToggle = () => {
+    setIsAddProjectModalOpen((prev) => !prev);
+  };
 
-  //         if (!response.data || response.data.size === 0) {
-  //           throw new Error('Received empty or invalid blob data');
-  //         }
+  useEffect(() => {
+    const fetchLogoImage = async () => {
+      if (client?.logoId) {
+        try {
+          const response = await downloadClientLogo(client.logoId);
 
-  //         const reader = new FileReader();
-  //         reader.onloadend = () => {
-  //           const imageUrl = reader.result as string;
-  //           setLogoUrl(imageUrl);
-  //         };
-  //         reader.onerror = () => {
-  //           throw new Error('Error converting blob to base64');
-  //         };
+          if (!response.data || response.data.size === 0) {
+            throw new Error('Received empty or invalid blob data');
+          }
 
-  //         reader.readAsDataURL(response.data);
-  //       } catch (error) {
-  //         console.error('Error fetching logo:', error);
-  //       }
-  //     }
-  //   };
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const imageUrl = reader.result as string;
+            setLogoUrl(imageUrl);
+          };
+          reader.onerror = () => {
+            throw new Error('Error converting blob to base64');
+          };
 
-  //   fetchLogoImage();
+          reader.readAsDataURL(response.data);
+        } catch (error) {
+          throw new Error('Error fetching logo:' + error);
+        }
+      }
+    };
 
-  //   return () => {
-  //     setLogoUrl(null);
-  //   };
-  // }, [client?.logoId]);
+    fetchLogoImage();
+
+    return () => {
+      setLogoUrl(null);
+    };
+  }, [client?.logoId]);
+
+  useEffect(() => {
+    const fetchClient = async () => {
+      if (!id) return;
+      try {
+        const res = await getClient(id);
+        setClient(res.data);
+      } catch (error) {
+        throw new Error('Failed to fetch client:' + error);
+      }
+    };
+
+    fetchClient();
+  }, [id]);
+
   return (
     <Container>
       <LeftSection>
         <ClientInfo>
-          {client?.logoId && (
-            <LogoPreview>
-              <img
-                src={client?.logoId}
-                // src={logoUrl}
-                alt="Logo Preview"
-                style={{
-                  marginTop: '15px',
-                  maxHeight: '64px',
-                  objectFit: 'contain',
-                }}
-              />
-            </LogoPreview>
-          )}
-          <ClientTitle> {client?.clientName}</ClientTitle>
+          <LogoNameWrapper>
+            {client?.logoId && (
+              <LogoPreview>
+                <img src={logoUrl || undefined} alt="Logo Preview" />
+              </LogoPreview>
+            )}
+            <ClientTitle> {client?.clientName}</ClientTitle>
+          </LogoNameWrapper>
           <div style={{ display: 'flex', marginBottom: '30px' }}>
             <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
               ID: {client?.clientId}
@@ -111,10 +130,14 @@ const ClientDetailsScreen: React.FC<Props> = ({ client }) => {
             </ClientInfoDiv>
           </div>
           <div style={{ display: 'flex' }}>
-            <div>
+            <div
+              style={{ display: 'flex', cursor: 'pointer' }}
+              onClick={handleAddProjectModalToggle}
+            >
               <AddSVG />
+              <ProjectInfo>{t(' Add Project')}</ProjectInfo>
             </div>
-            <ProjectInfo>{t(' Add Project')}</ProjectInfo>
+
             <div>
               <AddSVG />
             </div>
@@ -161,6 +184,22 @@ const ClientDetailsScreen: React.FC<Props> = ({ client }) => {
           </div>
         </RightSectionDiv>
       </RightSection>
+      {isAddProjectModalOpen && client?.clientId && (
+        <CenterModalMain
+          heading="ADD_NEW_PROJECT"
+          modalClose={handleAddProjectModalToggle}
+          actualContentContainer={
+            <AddProjectForm
+              handleClose={handleAddProjectModalToggle}
+              onCancel={handleAddProjectModalToggle}
+              onSubmit={() => {
+                handleAddProjectModalToggle();
+              }}
+              clientId={client.clientId}
+            />
+          }
+        />
+      )}
     </Container>
   );
 };
