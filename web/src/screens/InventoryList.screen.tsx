@@ -47,16 +47,22 @@ interface Props {
   deviceFilter: string | undefined;
   availabilityFilter: string | undefined;
   providerFilter: string | undefined;
+  osFilter: string | undefined;
+  ramFilter: string | undefined;
   isShowFilters: boolean;
   handlePageChange: (page: number) => void;
   handleItemsPerPage: (page: number) => void;
   onDeviceChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   onAvailabilityChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  onOsChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  onRamChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   onProviderChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   clearFilters: (filterName: string) => void;
   selectedFiltersText: () => React.ReactNode;
   deviceTypes: OrganizationValues;
   inventoryProviders: OrganizationValues;
+  osTypes: string[];
+  ramSizes: string[];
 }
 
 const InventoryList = ({
@@ -70,9 +76,13 @@ const InventoryList = ({
   deviceFilter,
   availabilityFilter,
   providerFilter,
+  osFilter,
+  ramFilter,
   onDeviceChange,
   onAvailabilityChange,
   onProviderChange,
+  onOsChange,
+  onRamChange,
   handleItemsPerPage,
   handlePageChange,
   clearFilters,
@@ -80,6 +90,8 @@ const InventoryList = ({
   selectedFiltersText,
   deviceTypes,
   inventoryProviders,
+  osTypes,
+  ramSizes,
 }: Props) => {
   const { user } = useUser();
   const Actions = [
@@ -181,6 +193,42 @@ const InventoryList = ({
               {inventoryProviders.values.map((provider) => (
                 <option key={provider.value} value={provider.value}>
                   {provider.value}
+                </option>
+              ))}
+            </select>
+          )}
+          {osTypes && (
+            <select
+              className="selectoption"
+              name="os"
+              value={osFilter}
+              onChange={(e) => {
+                onOsChange(e);
+                currentPage;
+              }}
+            >
+              <option value="">OS</option>{' '}
+              {osTypes.map((os) => (
+                <option key={os} value={os}>
+                  {os}
+                </option>
+              ))}
+            </select>
+          )}
+          {ramSizes && (
+            <select
+              className="selectoption"
+              name="ram"
+              value={ramFilter}
+              onChange={(e) => {
+                onRamChange(e);
+                currentPage;
+              }}
+            >
+              <option value="">RAM</option>{' '}
+              {ramSizes.map((ram) => (
+                <option key={ram} value={ram}>
+                  {ram}
                 </option>
               ))}
             </select>
