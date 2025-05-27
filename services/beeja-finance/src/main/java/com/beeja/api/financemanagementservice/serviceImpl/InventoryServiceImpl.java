@@ -165,6 +165,8 @@ public class InventoryServiceImpl implements InventoryService {
         query.addCriteria(
             Criteria.where("deviceNumber").regex(".*" + Pattern.quote(searchTerm) + ".*", "i"));
       }
+      query.addCriteria(Criteria.where("organizationId").is(
+              UserContext.getLoggedInUserOrganization().get("id").toString()));
 
       int skip = (pageNumber - 1) * pageSize;
       query.skip(skip).limit(pageSize);
