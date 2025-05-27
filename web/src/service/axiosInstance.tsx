@@ -311,8 +311,8 @@ export const deleteRole = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/accounts/v1/roles/${id}`);
 };
 
-export const getAllApplicantList = (): Promise<AxiosResponse> => {
-  return axiosInstance.get('/recruitments/v1/applicants');
+export const getAllApplicantList = (queryString = ''): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/recruitments/v1/applicants/combinedApplicants${queryString}`);
 };
 
 export const postApplicant = (data: FormData): Promise<AxiosResponse> => {
@@ -339,8 +339,8 @@ export const referApplicant = (data: FormData): Promise<AxiosResponse> => {
   return axiosInstance.post('/recruitments/v1/referrals', data);
 };
 
-export const getMyReferrals = (): Promise<AxiosResponse> => {
-  return axiosInstance.get('/recruitments/v1/referrals');
+export const getMyReferrals = (queryString = ''): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/recruitments/v1/referrals${queryString}`);
 };
 
 export const downloadReferralResume = (
