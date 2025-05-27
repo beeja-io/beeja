@@ -150,7 +150,7 @@ public class InventoryControllerTest {
   @Test
   public void testFilterInventory_Success() throws Exception {
     Inventory inventory = new Inventory();
-    inventory.setDevice(Device.MOBILE);
+    inventory.setDevice(String.valueOf(Device.MOBILE));
     inventory.setProvider("Google");
     inventory.setAvailability(Availability.NO);
     inventory.setOs("NA");
@@ -179,7 +179,7 @@ public class InventoryControllerTest {
     assertEquals(1L, responseBody.getMetadata().get("totalSize"));
     assertEquals(1, responseBody.getInventory().size());
     Inventory returnedInventory = responseBody.getInventory().get(0);
-    assertEquals(Device.MOBILE, returnedInventory.getDevice());
+    assertEquals("MOBILE", returnedInventory.getDevice());
     assertEquals("Google", returnedInventory.getProvider());
     assertEquals(Availability.NO, returnedInventory.getAvailability());
     assertEquals("NA", returnedInventory.getOs());
