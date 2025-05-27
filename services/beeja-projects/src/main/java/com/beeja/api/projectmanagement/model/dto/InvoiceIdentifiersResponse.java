@@ -1,0 +1,13 @@
+package com.beeja.api.projectmanagement.model.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class InvoiceIdentifiersResponse {
+    private String invoiceId;
+    private String remittanceReferenceNumber;
+}
