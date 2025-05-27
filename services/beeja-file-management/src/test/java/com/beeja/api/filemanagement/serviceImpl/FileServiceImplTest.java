@@ -106,10 +106,21 @@ class FileServiceImplTest {
         request.setFile(multipartFile);
 
         when(allowedContentTypes.getAllowedTypes()).thenReturn(new String[]{"text/plain"});
-        when(fileRepository.save(any(File.class))).thenReturn(new File());
-        doThrow(new IOException()).when(fileStorage).uploadFile(any(MultipartFile.class), any(File.class)); // Corrected line
 
-        assertThrows(FileAccessException.class, () -> fileService.uploadFile(request));
+        File expectedFileOnFailure = new File();
+        expectedFileOnFailure.setOrganizationId("org123");
+
+        when(fileRepository.save(any(File.class))).thenReturn(expectedFileOnFailure);
+
+        doThrow(new IOException()).when(fileStorage).uploadFile(any(MultipartFile.class), any(File.class));
+
+        File actualResultFile = fileService.uploadFile(request);
+
+        assertEquals(expectedFileOnFailure, actualResultFile);
+
+        verify(allowedContentTypes, times(1)).getAllowedTypes();
+        verify(fileRepository, times(1)).save(any(File.class));
+        verify(fileStorage, times(1)).uploadFile(any(MultipartFile.class), any(File.class));
     }
 
     @Test

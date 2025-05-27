@@ -28,6 +28,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.eq;
@@ -74,21 +75,26 @@ class ExpenseControllerTest {
   @Test
   void testUpdateExpenseInternalServerError() throws Exception {
     ExpenseUpdateRequest updatedExpense = new ExpenseUpdateRequest();
-    Expense expense = new Expense();
     when(expenseService.updateExpense("123", updatedExpense))
             .thenThrow(new Exception("Some internal error"));
-    ResponseEntity<?> responseEntity = expenseController.updateExpense("123", updatedExpense);
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+
+    Exception thrown = assertThrows(Exception.class, () -> {
+      expenseController.updateExpense("123", updatedExpense);
+    });
+    assertEquals("Some internal error", thrown.getMessage());
   }
 
   @Test
   void testUpdateExpenseForbidden() throws Exception {
     ExpenseUpdateRequest updatedExpense = new ExpenseUpdateRequest();
-    Expense expense = new Expense();
+
     when(expenseService.updateExpense("123", updatedExpense))
-            .thenThrow(new OrganizationMismatchException("Some internal error"));
-    ResponseEntity<?> responseEntity = expenseController.updateExpense("123", updatedExpense);
-    assertEquals(HttpStatus.FORBIDDEN, responseEntity.getStatusCode());
+            .thenThrow(new OrganizationMismatchException("Organization mismatch detected"));
+
+    OrganizationMismatchException thrownException = assertThrows(OrganizationMismatchException.class, () -> {
+      expenseController.updateExpense("123", updatedExpense);
+    });
+     assertEquals("Organization mismatch detected", thrownException.getMessage());
   }
 
   @Test
@@ -108,6 +114,7 @@ class ExpenseControllerTest {
     int pageSize = 10;
     String sortBy = null;
     boolean ascending = true;
+    boolean  booleanParamFromControllerFalse = false;
     List<Expense> filteredExpenses = Collections.singletonList(expense);
     when(expenseService.getFilteredExpenses(
             any(Date.class),
@@ -121,6 +128,7 @@ class ExpenseControllerTest {
             eq(1),
             eq(10),
             isNull(),
+            eq(booleanParamFromControllerFalse),
             eq(true)))
             .thenReturn(filteredExpenses);
     ResponseEntity<?> responseEntity =
@@ -135,6 +143,7 @@ class ExpenseControllerTest {
                     pageNumber,
                     pageSize,
                     sortBy,
+                    booleanParamFromControllerFalse,
                     ascending);
     assertEquals(responseEntity.getStatusCode(), HttpStatus.OK);
   }
@@ -156,7 +165,9 @@ class ExpenseControllerTest {
     int pageSize = 10;
     String sortBy = null;
     boolean ascending = true;
+    boolean  booleanParamFromControllerFalse = false;
     List<Expense> filteredExpenses = Collections.singletonList(expense);
+
     when(expenseService.getFilteredExpenses(
             any(Date.class),
             any(Date.class),
@@ -169,22 +180,26 @@ class ExpenseControllerTest {
             eq(pageNumber),
             eq(pageSize),
             isNull(),
+            eq( booleanParamFromControllerFalse),
             eq(ascending)))
-            .thenThrow(new Exception());
-    ResponseEntity<?> responseEntity =
-            expenseController.filterExpenses(
-                    startDate,
-                    endDate,
-                    department,
-                    filterBasedOn,
-                    modeOfPayment,
-                    expenseType,
-                    expenseCategory,
-                    pageNumber,
-                    pageSize,
-                    sortBy,
-                    ascending);
-    assertEquals(responseEntity.getStatusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+            .thenThrow(new Exception("Simulated internal error"));
+
+    Exception thrownException = assertThrows(Exception.class, () -> {
+      expenseController.filterExpenses(
+              startDate,
+              endDate,
+              department,
+              filterBasedOn,
+              modeOfPayment,
+              expenseType,
+              expenseCategory,
+              pageNumber,
+              pageSize,
+              sortBy,
+              booleanParamFromControllerFalse,
+              ascending);
+    });
+    assertEquals("Simulated internal error", thrownException.getMessage());
   }
 
   @Test
@@ -201,8 +216,11 @@ class ExpenseControllerTest {
     String expenseId = "1";
     when(expenseService.deleteExpense(expenseId))
             .thenThrow(new ExpenseNotFound("Expense not found with ID: " + expenseId));
-    ResponseEntity<?> responseEntity = expenseController.deleteExpense(expenseId);
-    assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+
+    ExpenseNotFound thrown = assertThrows(ExpenseNotFound.class, () -> {
+      expenseController.deleteExpense(expenseId);
+    });
+    assertEquals("Expense not found with ID: 1", thrown.getMessage());
   }
 
   @Test
@@ -210,8 +228,11 @@ class ExpenseControllerTest {
     String expenseId = "1";
     when(expenseService.deleteExpense(expenseId))
             .thenThrow(new RuntimeException("Internal Server Error"));
-    ResponseEntity<?> responseEntity = expenseController.deleteExpense(expenseId);
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+
+    RuntimeException thrown = assertThrows(RuntimeException.class, () -> {
+      expenseController.deleteExpense(expenseId);
+    });
+    assertEquals("Internal Server Error", thrown.getMessage());
   }
 
   @Test

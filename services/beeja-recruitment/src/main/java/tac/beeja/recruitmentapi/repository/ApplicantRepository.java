@@ -16,5 +16,4 @@ public interface ApplicantRepository extends MongoRepository<Applicant, String> 
 
   long countByOrganizationId(String organizationId);
 
-
 }

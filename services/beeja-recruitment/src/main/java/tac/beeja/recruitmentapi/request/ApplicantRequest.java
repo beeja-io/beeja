@@ -14,7 +14,4 @@ public class ApplicantRequest {
   private MultipartFile resume;
   private ApplicantStatus status;
   private String experience;
-
-
-
 }

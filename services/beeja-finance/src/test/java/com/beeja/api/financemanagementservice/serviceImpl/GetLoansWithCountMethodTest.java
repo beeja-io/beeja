@@ -33,11 +33,6 @@ class GetLoansWithCountMethodTest {
     @Mock
     private MongoOperations mongoOperations;
 
-    @BeforeEach
-    void setup() {
-       loanService = new LoanServiceImpl(mongoOperations, loanRepository);
-    }
-
     @Test
     void testGetLoansWithStatus() {
         int pageNumber = 1;

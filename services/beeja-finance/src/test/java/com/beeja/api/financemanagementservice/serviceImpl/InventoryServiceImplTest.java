@@ -1,10 +1,12 @@
 package com.beeja.api.financemanagementservice.serviceImpl;
 
 import com.beeja.api.financemanagementservice.Utils.UserContext;
+import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.enums.Availability;
 import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
+import com.beeja.api.financemanagementservice.modals.clients.finance.OrganizationPattern;
 import com.beeja.api.financemanagementservice.repository.InventoryRepository;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
@@ -26,21 +29,20 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class InventoryServiceImplTest {
 
-  @InjectMocks
+  @Mock private InventoryRepository inventoryRepository;
+  @Mock private MongoTemplate mongoTemplate;
+  @Mock private AccountClient accountClient;
+
   private InventoryServiceImpl inventoryService;
-
-  @Mock
-  private InventoryRepository inventoryRepository;
-
-  @Mock
-  private MongoTemplate mongoTemplate;
-
   private DeviceDetails deviceDetails;
+  private MongoOperations mongoOperations;
 
   @BeforeEach
   void setUp() {
+    inventoryService =
+            new InventoryServiceImpl(mongoOperations, mongoTemplate, inventoryRepository, accountClient);
     deviceDetails = new DeviceDetails();
-    deviceDetails.setDevice(Device.MOBILE);
+    deviceDetails.setDevice(String.valueOf(Device.MOBILE));
     deviceDetails.setProvider("Google");
     deviceDetails.setAvailability(Availability.NO);
     deviceDetails.setOs("Android");
@@ -54,8 +56,18 @@ class InventoryServiceImplTest {
   void testAddDevice_Success() throws Exception {
     when(inventoryRepository.findByProductId("P001")).thenReturn(Optional.empty());
 
+    OrganizationPattern mockPattern = new OrganizationPattern();
+    mockPattern.setPrefix("DEV");
+    mockPattern.setInitialSequence(0); // Starting sequence for the test
+    mockPattern.setPatternLength(5);
+
+    ResponseEntity<OrganizationPattern> mockResponseEntity = ResponseEntity.ok(mockPattern);
+
+    when(accountClient.getActivePatternByType(anyString())).thenReturn(mockResponseEntity);
+
     Inventory savedInventory = new Inventory();
     savedInventory.setProductId("P001");
+    savedInventory.setDeviceNumber("DEV-00101-XYZ");
 
     when(inventoryRepository.save(any(Inventory.class))).thenReturn(savedInventory);
 
@@ -63,7 +75,10 @@ class InventoryServiceImplTest {
 
     assertNotNull(result);
     assertEquals("P001", result.getProductId());
-    verify(inventoryRepository).save(any(Inventory.class));
+    assertEquals("DEV-00101-XYZ", result.getDeviceNumber());
+
+    verify(inventoryRepository, times(1)).save(any(Inventory.class));
+    verify(accountClient, times(1)).getActivePatternByType(anyString());
   }
 
   @Test
@@ -77,7 +92,7 @@ class InventoryServiceImplTest {
   @Test
   void testFilterInventory_Success() {
     Inventory inventory = new Inventory();
-    inventory.setDevice(Device.MOBILE);
+    inventory.setDevice(String.valueOf(Device.MOBILE));
     inventory.setProvider("Google");
     inventory.setAvailability(Availability.NO);
     inventory.setOs("Android");
@@ -86,7 +101,7 @@ class InventoryServiceImplTest {
 
     when(mongoTemplate.find(any(Query.class), eq(Inventory.class))).thenReturn(expectedList);
 
-    List<Inventory> result = inventoryService.filterInventory(1, 10, Device.MOBILE, "Google", Availability.NO, "Android", "Android");
+    List<Inventory> result = inventoryService.filterInventory(1, 10, Device.MOBILE, "Google", Availability.NO, "Android", "Android","");
 
     assertNotNull(result);
     assertEquals(1, result.size());
@@ -154,7 +169,7 @@ class InventoryServiceImplTest {
   void testGetTotalInventorySize_NoFilters() {
     when(mongoTemplate.count(any(Query.class), eq(Inventory.class))).thenReturn(0L);
 
-    long size = inventoryService.getTotalInventorySize(null, null, null, null, null, null);
+    long size = inventoryService.getTotalInventorySize(null, null, null, null, null, null,null);
 
     assertEquals(0, size);
   }
@@ -164,7 +179,7 @@ class InventoryServiceImplTest {
     when(mongoTemplate.count(any(Query.class), eq(Inventory.class))).thenReturn(40L);
 
     long size = inventoryService.getTotalInventorySize(
-        Device.MOBILE, "Amazon", Availability.YES, "Android", "org123", "");
+        Device.MOBILE, "Amazon", Availability.YES, "Android", "","org123", "");
 
     assertEquals(40L, size);
   }

@@ -10,6 +10,4 @@ public class LoanLimit {
   private boolean isPersonalLoanEnabled = true;
   private int salaryMultiplier = 1;
   private boolean isSalaryMultiplierEnabled = false;
-
-
 }

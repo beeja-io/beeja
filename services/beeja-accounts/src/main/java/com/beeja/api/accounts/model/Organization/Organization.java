@@ -46,9 +46,6 @@ public class Organization {
 
   private LoanLimit loanLimit = new LoanLimit();
 
-  public Organization(String org123) {
-  }
-
   public String get(String id) {
     return id;
   }

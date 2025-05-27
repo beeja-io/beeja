@@ -37,7 +37,4 @@ public class FileResponse {
   @Field("modified_at")
   @LastModifiedDate
   private Date modifiedAt;
-
-  public FileResponse(String file123, String s, String contentType, String number, Object o, String resumeFileEntity, Object o1, String org123, String emp001, String aliceSmith, Object o2, Object o3, Object o4) {
-  }
 }

@@ -81,13 +81,6 @@ class ApplicantServiceImplTest {
         applicant.setAssignedInterviewers(Collections.singletonList(new AssignedInterviewer()));
     }
 
-
-    @AfterEach
-    void tearDown() {
-        UserContext.clear(); // Make sure this exists in your UserContext class
-    }
-
-
     @Test
     void testPostApplicant_SuccessfulCreationWithResumeUpload() throws Exception {
         // Arrange
@@ -298,7 +291,7 @@ class ApplicantServiceImplTest {
         BadRequestException exception = assertThrows(BadRequestException.class,
                 () -> applicantService.changeStatusOfApplicant("APP001", "UNKNOWN"));
 
-        assertEquals("Invalid status provided", exception.getMessage());
+        assertEquals("BAD_REQUEST,INVALID_APPLICANT_STATUS,Invalid applicant status provided: UNKNOWN", exception.getMessage());
         verify(applicantRepository, never()).save(any());
     }
 

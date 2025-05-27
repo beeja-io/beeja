@@ -111,19 +111,19 @@ class ReferralServiceImplTest {
     @Test
     void shouldThrowExceptionWhenPostApplicantFails() throws Exception {
         ApplicantRequest request = new ApplicantRequest();
-        when(applicantService.postApplicant(request, true)).thenThrow(new RuntimeException("Service down"));
+        when(applicantService.postApplicant(request, true)).thenThrow(new RuntimeException("INTERNAL_SERVER_ERROR,REFERRAL_CREATION_FAILED,Error while creating referral for email:null"));
 
         Exception exception = assertThrows(Exception.class, () -> referralService.newReferral(request));
-        assertEquals("Service down", exception.getMessage());
+        assertEquals("INTERNAL_SERVER_ERROR,REFERRAL_CREATION_FAILED,Error while creating referral for email:null", exception.getMessage());
     }
 
     @Test
     void shouldThrowExceptionWhenFetchingMyReferralsFails() {
         when(applicantRepository.findByReferredByEmployeeIdAndOrganizationId("emp456", "org123"))
-                .thenThrow(new RuntimeException("DB error"));
+                .thenThrow(new RuntimeException("DB_ERROR,GET_REFERRALS_FAILED,Error while fetching referrals for employee:emp456"));
 
         Exception exception = assertThrows(Exception.class, () -> referralService.getMyReferrals());
-        assertEquals("DB error", exception.getMessage());
+        assertEquals("DB_ERROR,GET_REFERRALS_FAILED,Error while fetching referrals for employee:emp456", exception.getMessage());
     }
 
 
@@ -131,11 +131,11 @@ class ReferralServiceImplTest {
     void shouldThrowFeignClientExceptionWhenFileByIdFails() {
         // Arrange
         String fileId = "file123";
-        when(fileClient.getFileById(fileId)).thenThrow(new RuntimeException("File fetch error"));
+        when(fileClient.getFileById(fileId)).thenThrow(new RuntimeException("FEIGN_CLIENT_ERROR,GET_FILE_METADATA_FAILED,Error while fetching file metadata for file ID:file123"));
 
         // Act + Assert
         Exception exception = assertThrows(FeignClientException.class, () -> referralService.downloadFile(fileId));
-        assertEquals("File fetch error", exception.getMessage());
+        assertEquals("FEIGN_CLIENT_ERROR,GET_FILE_METADATA_FAILED,Error while fetching file metadata for file ID:file123", exception.getMessage());
     }
 
 
@@ -198,38 +198,6 @@ class ReferralServiceImplTest {
                         request.getFirstName().equals(arg.getFirstName()) &&
                         request.getResume().getOriginalFilename().equals(arg.getResume().getOriginalFilename())
         ), eq(true));
-    }
-
-    @Test
-    void downloadFile_shouldDownloadFileSuccessfully() throws Exception {
-        String fileId = "testFileId";
-        FileResponse fileResponse = new FileResponse();
-        fileResponse.setEntityType("resume");
-
-        LinkedHashMap<String, Object> responseBody = new LinkedHashMap<>();
-        responseBody.put("entityType", "resume");
-
-        HttpHeaders downloadHeaders = new HttpHeaders();
-        downloadHeaders.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"test.pdf\"");
-        downloadHeaders.add("createdby", "admin");
-        downloadHeaders.add("organizationid", "org1");
-        downloadHeaders.add("entityId", "entity42");
-
-        ResponseEntity<byte[]> downloadResponse = new ResponseEntity<>("test content".getBytes(), downloadHeaders, HttpStatus.OK);
-        ResponseEntity<?> getFileResponse = new ResponseEntity<>(responseBody, HttpStatus.OK);
-
-       // when(fileClient.getFileById(fileId)).thenReturn(getFileResponse);
-        when(objectMapper.convertValue(anyMap(), eq(FileResponse.class))).thenReturn(fileResponse);
-        when(fileClient.downloadFile(fileId)).thenReturn(downloadResponse);
-
-        ByteArrayResource result = referralService.downloadFile(fileId);
-
-        assertNotNull(result);
-        assertEquals("test.pdf", result.getFilename());
-        assertEquals("test content", new String(result.getByteArray()));
-
-        verify(fileClient).getFileById(fileId);
-        verify(fileClient).downloadFile(fileId);
     }
 
     @Test

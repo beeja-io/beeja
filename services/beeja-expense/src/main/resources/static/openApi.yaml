@@ -4,37 +4,153 @@ info:
   title: Beeja - Expense Service
   version: v1
   description: |-
-    Product of tech.at.core  
-    API documentation for the Beeja Open API application. It allows users to access
-    data via APIs secured by cookie and permissions.
+    `Product of tech.at.core`
+      API documentation for the Beeja Open API application. It allows users to access
+      data via a APIs secured by cookie and permissions.
 
-    ## Authentication & Authorization
-    Beeja uses a username-password authentication system.  
-    [Login to Beeja](http://localhost:8000/login) to access secured endpoints in Swagger.
-
-    ## Authorization Levels
-    Most endpoints require functional-specific scopes depending on which endpoint is accessed.
+        ## Authentication & Authorization
+        Beeja has a username and password authentication system. 
+        [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
+    
+        ## Authorization Levels
+  
+        Most of the API's endpoints require certain functional specific scopes depending on which endpoint
+        is triggered. Supported scopes 
 
 externalDocs:
   description: Explore Beeja
   url: https://beeja.io/
 
 servers:
-  - url: http://localhost:8000/expense-management
-    description: Beeja Expense Service
+  - url: http://localhost:8000/expense management
+    description: Beeja Expenses
 
 tags:
-  - name: Expenses Controller
-    description: Apply for, update, delete, or filter expense-related records.
-  - name: Receipts Controller
-    description: Manage expense receipt files (download and preview receipts).
+  - name: Expense-Management
+    description: Apply for new loans and to view the status of loans(related to finance).
 
 paths:
+  /v1/{expenseId}:
+    put:
+      operationId: updateExpense
+      tags:
+        - "Expenses"
+      summary: Update an expense
+      description: Updates the details of an expense based on the provided ID.
+      parameters:
+        - name: expenseId
+          in: path
+          description: ID of the expense to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Expense details to be updated
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/requests/ExpenseUpdateRequest'
+      responses:
+        '200':
+          description: Expense updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: Delete an expense by ID
+      operationId: deleteExpense
+      tags:
+        - Expenses
+      parameters:
+        - name: expenseId
+          in: path
+          required: true
+          description: ID of the expense to be deleted
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The deleted expense
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        400':
+          description: Invalid parameter
+          content:
+            application/json:
+              example:
+                failureReason: BAD_REQUEST
+                details:
+                  message: invalid parameter
+              schema:
+                $ref: "#/components/schemas/Error"
+        '401':
+          description: unauthorized content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/responses/Unauthorized'
+        '500':
+           description: internal server error
+           content:
+             application/json:
+               schema:
+                $ref: '#/components/responses/InternalServerError'
   /v1:
+    get:
+      summary: Filter Expenses
+      operationId: filterExpenses
+      tags:
+        - Expenses
+      parameters:
+        - name: startDate
+          in: query
+          description: Start date for filtering expenses (YYYY/MM/DD)
+          schema:
+            type: string
+            format: date
+        - name: endDate
+          in: query
+          description: End date for filtering expenses (YYYY/MM/DD)
+          schema:
+            type: string
+            format: date
+        - name: modeOfPayment
+          in: query
+          description: Mode of payment for filtering expenses
+          schema:
+            type: string
+        - name: expenseType
+          in: query
+          description: Type of expense for filtering
+          schema:
+            type: string
+        - name: expenseCategory
+          in: query
+          description: Category of expense for filtering
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FilterApiResponse'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     post:
       summary: Create an expense
       operationId: createExpense
-      tags: [Expenses Controller]
+      tags:
+        - Expenses
       requestBody:
         required: true
         content:
@@ -49,148 +165,69 @@ paths:
               schema:
                 $ref: '#/components/schemas/Expense'
         '500':
-          $ref: '#/components/responses/InternalServerError'
-
-    get:
-      summary: Filter Expenses
-      operationId: filterExpenses
-      tags: [Expenses Controller]
-      parameters:
-        - name: startDate
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: modeOfPayment
-          in: query
-          schema:
-            type: string
-        - name: expenseType
-          in: query
-          schema:
-            type: string
-        - name: expenseCategory
-          in: query
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Filtered expenses list
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/FilterApiResponse'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /v1/{expenseId}:
-    put:
-      operationId: updateExpense
-      summary: Update an expense
-      tags: [Expenses Controller]
-      parameters:
-        - name: expenseId
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
+           description: Internal Server Error
+           content:
+             application/json:
+               schema:
+                 $ref: '#/components/responses/InternalServerError'
+/v1/{expenseId}/status:
+  get:
+    operationId: getExpenseStatus
+    tags:
+      - Expenses
+    summary: Get the status of an expense
+    description: Retrieves the status of an expense by its ID.
+    parameters:
+      - name: expenseId
+        in: path
+        description: The ID of the expense whose status is to be retrieved
         required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Expense status retrieved successfully
         content:
-          multipart/form-data:
-            schema:
-              $ref: '#/components/schemas/requests/ExpenseUpdateRequest'
-      responses:
-        '200':
-          description: Expense updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Expense'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+          application/json:
+            example:
+              status: "APPROVED"
+      '500':
+        $ref: '#/components/responses/InternalServerError'
 
-    delete:
-      operationId: deleteExpense
-      summary: Delete an expense by ID
-      tags: [Expenses Controller]
-      parameters:
-        - name: expenseId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Expense deleted
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Expense'
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /v1/{expenseId}/status:
-    get:
-      operationId: getExpenseStatus
-      summary: Get the status of an expense
-      tags: [Expenses Controller]
-      parameters:
-        - name: expenseId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Expense status retrieved
-          content:
-            application/json:
-              example:
-                status: "APPROVED"
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-
-  /v1/{expenseId}/settle:
-    put:
-      operationId: settleExpense
-      summary: Settle an expense
-      tags: [Expenses Controller]
-      parameters:
-        - name: expenseId
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Expense settled successfully
-          content:
-            application/json:
-              example:
-                status: "SETTLED"
-        '500':
-          $ref: '#/components/responses/InternalServerError'
+/v1/{expenseId}/settle:
+  put:
+    operationId: settleExpense
+    tags:
+      - Expenses
+    summary: Settle an expense
+    description: Settles an expense by its ID and updates its status.
+    parameters:
+      - name: expenseId
+        in: path
+        description: The ID of the expense to be settled
+        required: true
+        schema:
+          type: string
+    responses:
+      '200':
+        description: Expense settled successfully
+        content:
+          application/json:
+            example:
+              status: "SETTLED"
+      '500':
+        $ref: '#/components/responses/InternalServerError'
 
   /v1/receipts/{fileId}:
     get:
       summary: Download receipt file
       operationId: downloadReceipt
-      tags: [Receipts Controller]
+      tags:
+        - Receipts
       parameters:
         - name: fileId
           in: path
+          description: ID of the receipt file to download.
           required: true
           schema:
             type: string
@@ -204,14 +241,12 @@ paths:
                 format: binary
           headers:
             Content-Disposition:
-              description: File attachment header
+              description: Content disposition for the downloaded file.
               schema:
                 type: string
                 example: attachment; filename="receipt.pdf"
         '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          description: Receipt not found
+          description: Permission denied.
           content:
             application/json:
               schema:
@@ -219,111 +254,241 @@ paths:
                 properties:
                   message:
                     type: string
-                    example: The requested receipt file could not be found.
+                    example: You do not have permission to access this resource.
         '500':
           $ref: '#/components/responses/InternalServerError'
 
 components:
-  responses:
-    InternalServerError:
-      description: Internal server error
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: Something went wrong. Please try again later.
-
-    Forbidden:
-      description: Access forbidden
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: You are not authorized to perform this action.
-
-    BadRequest:
-      description: Bad request
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: Invalid input provided.
-
-    Unauthorized:
-      description: Unauthorized
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: Authentication is required to access this resource.
-
   schemas:
-    # Define your component schemas below (like CreateExpense, ExpenseUpdateRequest, Expense, FilterApiResponse)
-    requests:
-      CreateExpense:
-        type: object
-        properties:
-          amount:
-            type: number
-          category:
-            type: string
-          description:
-            type: string
-          modeOfPayment:
-            type: string
-          date:
-            type: string
-            format: date
-        required: [amount, category, modeOfPayment, date]
-
-      ExpenseUpdateRequest:
-        type: object
-        properties:
-          amount:
-            type: number
-          category:
-            type: string
-          description:
-            type: string
-          receipt:
-            type: string
-            format: binary
-
-    Expense:
-      type: object
-      properties:
-        id:
-          type: string
-        amount:
-          type: number
-        category:
-          type: string
-        description:
-          type: string
-        status:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-
     FilterApiResponse:
       type: object
       properties:
+        metadata:
+          $ref: '#/components/schemas/Metadata'
         expenses:
           type: array
           items:
             $ref: '#/components/schemas/Expense'
-        total:
-          type: integer
+      example:
+        metadata:
+          totalAmount: 1000.5
+        expenses:
+          - id: "EXP12345"
+            category: "Travel"
+            type: "Business"
+            amount: 250.0
+            currencyCode: "USD"
+            isClaimed: true
+            organizationId: "ORG123"
+            createdBy: "USER123"
+            fileId: "FILE56789"
+    Metadata:
+      type: object
+      properties:
+        totalAmount:
+          type: number
+          format: double
+          example: 1000.5
+    Expense:
+      type: object
+      required:
+        - id
+        - category
+        - type
+        - amount
+        - currencyCode
+        - isClaimed
+        - organizationId
+        - createdBy
+        - fileId
+      properties:
+        id:
+          type: string
+          example: "1"
+          description: the uniquely generated id
+        category:
+          type: string
+          example: "Travel"
+          description: the category to which the expense belongs
+        type:
+          type: string
+          example: "Business"
+          description: the type of expense
+        amount:
+          type: number
+          example: "50000"
+          description: the amount spent for expense
+        currencyCode:
+          type: string
+          example: "INR"
+          description: the type of currency
+        isClaimed:
+          type: boolean
+          example: "false"
+          description: whether the bill related to expense is claimed or not
+        organizationId:
+          type: string
+          example: "123"
+          description: the ID of the organization
+        createdBy:
+          type: string
+          example: "john.doe@beeja.io"
+          description: the mail id of the user who created the expense
+        fileId:
+          type: string
+          example: "file123"
+          description: the id of file for identification
+
+    requests:
+      ExpenseUpdateRequest:
+        type: object
+        properties:
+          category:
+            type: string
+          type:
+            type: string
+          amount:
+            type: number
+          currencyCode:
+            type: string
+          claimed:
+            type: boolean
+          deleteFileId:
+            type: array
+            items:
+              type: string
+          files:
+            type: array
+            items:
+              type: string
+              format: binary
+          modeOfPayment:
+            type: string
+          paymentMadeBy:
+            type: string
+        required:
+          - claimed
+          - amount
+      CreateExpense:
+        type: object
+        properties:
+          category:
+            type: string
+          type:
+            type: string
+          amount:
+            type: number
+          currencyCode:
+            type: string
+          merchant:
+            type: string
+          claimed:
+            type: boolean
+          modeOfPayment:
+            type: string
+          paymentMadeBy:
+            type: string
+          expenseDate:
+            type: string
+          requestedDate:
+            type: string
+          paymentDate:
+            type: string
+          description:
+            type: string
+        File:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Unique identifier for the file.
+              example: "file12345"
+            name:
+              type: string
+              description: Name of the file.
+              example: "receipt.pdf"
+
+          FileResponse:
+            type: object
+            properties:
+              file:
+                $ref: '#/components/schemas/File'
+              downloadUrl:
+                type: string
+                description: URL to download the file.
+                example: "http://localhost:8000/expenses/v1/receipts/file12345"
+
+
+    Error:
+      type: object
+      description: An error response.
+      required:
+        - code
+      properties:
+        type:
+          type: string
+          example: authentication_error
+          description: An error type identifying the category of error.
+        code:
+          type: string
+          example: USER_NOT_FOUND
+          description: An error code to indicate a short version of the error.
+        message:
+          type: string
+          example: The beeja user has not been configured to use APIs yet
+          description: A detailed error description.
+        details:
+          type: object
+          description: Further details about the error. The set of properties in this object depends on the type of error.
+          additionalProperties: true
+          example:
+            field: firstName
+            message: must not be empty
+  responses:
+    Unauthorized:
+      description: Missing authentication.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            failureReason: UNAUTHORIZED
+            details: "Please sign-in into Beeja"
+      NotFound:
+        description: Not Found
+        content:
+          application/json:
+            example:
+              message: "Expense not found"
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          example:
+            failureReason: INTERNAL_SERVER_ERROR
+            details:
+              message: An unexpected error occurred
+          schema:
+            $ref: "#/components/schemas/Error"
+
+    Forbidden:
+        description: Valid credentials but not enough privileges
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            example:
+              failureReason: USER_NOT_WHITELISTED
+              details: "Access Denied- You have no required permissions to do this operation"
+
+    BadRequest:
+        description: Something wrong with request parameters
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Error'
+            example:
+              failureReason: BAD_REQUEST
+              details: "Internal Server Error"
+
+

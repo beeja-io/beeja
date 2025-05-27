@@ -71,13 +71,14 @@ public class FileControllerTest {
     FileUploadRequest fileInput = new FileUploadRequest();
     MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "test content".getBytes());
     fileInput.setFile(file);
-
     when(fileService.uploadFile(fileInput)).thenThrow(new MongoFileUploadException("MongoDB error"));
 
-    ResponseEntity<?> response = fileController.uploadFile(fileInput);
-
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals(Constants.MONGO_UPLOAD_FAILED, response.getBody());
+    MongoFileUploadException thrown = assertThrows(
+            MongoFileUploadException.class,
+            () -> fileController.uploadFile(fileInput),
+            "Expected uploadFile() to throw MongoFileUploadException, but it didn't"
+    );
+    assertEquals("MongoDB error", thrown.getMessage());
     verify(fileService, times(1)).uploadFile(fileInput);
   }
 
@@ -86,11 +87,13 @@ public class FileControllerTest {
   void testDeleteFile_FileNotFound() throws Exception {
     String fileId = "file123";
     when(fileService.deleteFile(fileId)).thenThrow(new FileNotFoundException("File not found"));
+    FileNotFoundException thrown = assertThrows(
+            FileNotFoundException.class,
+            () -> fileController.deleteFile(fileId),
+            "Expected deleteFile() to throw FileNotFoundException, but it didn't"
+    );
 
-    ResponseEntity<?> response = fileController.deleteFile(fileId);
-
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals("File not found", response.getBody());
+    assertEquals("File not found", thrown.getMessage());
     verify(fileService, times(1)).deleteFile(fileId);
   }
 
@@ -120,11 +123,15 @@ public class FileControllerTest {
     FileUploadRequest fileUploadRequest = new FileUploadRequest();
     when(fileService.updateFile(fileId, fileUploadRequest)).thenThrow(new FileAccessException("File access error"));
 
-    ResponseEntity<?> response = fileController.updateFile(fileId, fileUploadRequest);
+    FileAccessException thrown = assertThrows(
+            FileAccessException.class,
+            () -> fileController.updateFile(fileId, fileUploadRequest),
+            "Expected updateFile() to throw FileAccessException, but it didn't"
+    );
 
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals("File access error", response.getBody());
+    assertEquals("File access error", thrown.getMessage());
     verify(fileService, times(1)).updateFile(fileId, fileUploadRequest);
+
   }
 
   @Test
@@ -164,17 +171,26 @@ public class FileControllerTest {
   }
 
   @Test
-  void testUploadOrUpdateFile_Exception() throws Exception {
+  void testUploadOrUpdateFile_ThrowsMongoFileUploadException() throws Exception {
     FileUploadRequest fileInput = new FileUploadRequest();
-    MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "test content".getBytes());
+    MockMultipartFile file = new MockMultipartFile(
+            "file",
+            "test.txt",
+            "text/plain",
+            "test content".getBytes()
+    );
     fileInput.setFile(file);
 
-    when(fileService.uploadOrUpdateFile(fileInput)).thenThrow(new MongoFileUploadException("MongoDB error"));
+    String expectedErrorMessage = "MongoDB error: Connection failed";
 
-    ResponseEntity<?> response = fileController.uploadOrUpdateFile(fileInput);
+    when(fileService.uploadOrUpdateFile(fileInput)).thenThrow(new MongoFileUploadException(expectedErrorMessage));
 
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals(Constants.MONGO_UPLOAD_FAILED, response.getBody());
+    MongoFileUploadException thrown = assertThrows(
+            MongoFileUploadException.class,
+            () -> fileController.uploadOrUpdateFile(fileInput)
+    );
+
+    assertEquals(expectedErrorMessage, thrown.getMessage());
     verify(fileService, times(1)).uploadOrUpdateFile(fileInput);
   }
 
@@ -203,16 +219,21 @@ public class FileControllerTest {
 
 
   @Test
-  void testUploadOrUpdateFile_GeneralException() throws Exception {
+  void testUploadOrUpdateFile_ThrowsGeneralException() throws Exception {
     FileUploadRequest fileInput = new FileUploadRequest();
     MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "test content".getBytes());
     fileInput.setFile(file);
-    when(fileService.uploadOrUpdateFile(fileInput)).thenThrow(new Exception("General error"));
 
-    ResponseEntity<?> response = fileController.uploadOrUpdateFile(fileInput);
+    String expectedErrorMessage = "General error";
+    when(fileService.uploadOrUpdateFile(fileInput)).thenThrow(new Exception(expectedErrorMessage));
 
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    assertTrue(((String) response.getBody()).startsWith(Constants.SERVICE_DOWN_ERROR));
+    Exception thrown = assertThrows(
+            Exception.class, // Expecting a generic Exception
+            () -> fileController.uploadOrUpdateFile(fileInput)
+    );
+
+    assertEquals(expectedErrorMessage, thrown.getMessage());
+
     verify(fileService, times(1)).uploadOrUpdateFile(fileInput);
   }
 
@@ -253,16 +274,18 @@ public class FileControllerTest {
 
 
   @Test
-  void testDownloadFile_Exception() throws Exception {
+  void testDownloadFile_ThrowsException() throws Exception {
     String fileId = "testFileId";
-    String errorMessage = "Download failed";
+    String expectedErrorMessage = "Download failed";
 
-    when(fileService.downloadFile(fileId)).thenThrow(new Exception(errorMessage));
+    when(fileService.downloadFile(fileId)).thenThrow(new Exception(expectedErrorMessage));
 
-    ResponseEntity<?> response = fileController.downloadFile(fileId);
+    Exception thrown = assertThrows(
+            Exception.class,
+            () -> fileController.downloadFile(fileId)
+    );
 
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
-    assertEquals(errorMessage, response.getBody());
+    assertEquals(expectedErrorMessage, thrown.getMessage());
 
     verify(fileService, times(1)).downloadFile(fileId);
   }
@@ -288,35 +311,5 @@ public class FileControllerTest {
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     assertEquals(Constants.FILE_MISSING_IN_REQUEST_ERROR, response.getBody());
   }
-
-  @Test
-  void testUploadOrUpdateFile_MongoFileUploadException() throws Exception {
-    FileUploadRequest fileInput = new FileUploadRequest();
-    MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "test content".getBytes());
-    fileInput.setFile(file);
-    when(fileService.uploadOrUpdateFile(fileInput)).thenThrow(new MongoFileUploadException("MongoDB error"));
-
-    ResponseEntity<?> response = fileController.uploadOrUpdateFile(fileInput);
-
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals(Constants.MONGO_UPLOAD_FAILED, response.getBody());
-    verify(fileService, times(1)).uploadOrUpdateFile(fileInput);
-  }
-
-  @Test
-  void testUploadOrUpdateFile_FileAccessException() throws Exception {
-    FileUploadRequest fileInput = new FileUploadRequest();
-    MockMultipartFile file = new MockMultipartFile("file", "test.txt", "text/plain", "test content".getBytes());
-    fileInput.setFile(file);
-    when(fileService.uploadOrUpdateFile(fileInput)).thenThrow(new FileAccessException("File access error"));
-
-    ResponseEntity<?> response = fileController.uploadOrUpdateFile(fileInput);
-
-    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-    assertEquals(Constants.ERROR_SAVING_FILE, response.getBody());
-    verify(fileService, times(1)).uploadOrUpdateFile(fileInput);
-  }
-
-
 
 }

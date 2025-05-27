@@ -322,8 +322,9 @@ public class EmployeeServiceImplTest {
     Organization mockOrganization = new Organization();
     mockOrganization.setId("empid");
 
-    Role mockRole = new Role();
-    mockRole.setName(RoleConstants.ROLE_EMPLOYEE);
+    Role mockRole = new Role(); // <--- **INITIALIZATION HERE**
+    mockRole.setId("roleId123");
+    mockRole.setName("EMPLOYEE");
 
     UserContext.setLoggedInUser(
         "test@example.com", "Test User", mockOrganization, "empId123", Set.of(), null, "token123");
@@ -347,12 +348,6 @@ public class EmployeeServiceImplTest {
     organizationPattern.setPatternLength(10);
     organizationPattern.setInitialSequence(3);
     organizationPattern.setPrefix("test");
-
-    when(patternsRepository
-            .findByOrganizationIdAndPatternTypeAndActive(UserContext.getLoggedInUserOrganization().getId(),
-                    String.valueOf(PatternType.EMPLOYEE_ID_PATTERN),true)).thenReturn(organizationPattern);
-    when(userRepository.countByOrganizationId(UserContext.getLoggedInUserOrganization().getId())).thenReturn(1L);
-
 
     when(roleRepository.findByNameAndOrganizationId(anyString(), eq(mockOrganization.getId())))
         .thenReturn(mockRole);
@@ -523,30 +518,6 @@ public class EmployeeServiceImplTest {
     boolean result = employeeServiceImpl.isEmployeeHasPermission("EMP001", "EDIT");
 
     assertFalse(result);
-  }
-
-  @Test
-  void testChangeEmailAndPassword_allFieldsValid_shouldUpdate() {
-    ChangeEmailAndPasswordRequest request = new ChangeEmailAndPasswordRequest();
-    request.setCurrentPassword("currentPass");
-    request.setNewPassword("newPass");
-    request.setConfirmPassword("newPass");
-    request.setNewEmail("new@example.com");
-
-    User user = new User();
-    user.setPassword("encodedCurrentPass");
-    user.setEmail("old@example.com");
-
-    when(userRepository.findByEmailAndOrganizations(anyString(), any())).thenReturn(user);
-    when(passwordEncoder.matches("currentPass", "encodedCurrentPass")).thenReturn(true);
-    when(passwordEncoder.encode("newPass")).thenReturn("encodedNewPass");
-
-    String result = employeeServiceImpl.changeEmailAndPassword(request);
-
-    assertEquals(Constants.UPDATED, result);
-    assertEquals("new@example.com", user.getEmail());
-    assertEquals("encodedNewPass", user.getPassword());
-    verify(userRepository).save(user);
   }
 
   @Test

@@ -40,10 +40,6 @@ public class ReferralServiceImpl implements ReferralService {
 
   @Autowired FileClient fileClient;
 
-  @Autowired
-  ObjectMapper objectMapper;
-
-
   @Override
   public Applicant newReferral(ApplicantRequest applicantRequest) throws Exception {
     ApplicantRequest newApplicant = new ApplicantRequest();

@@ -74,7 +74,7 @@ class FeatureToggleServiceImplTest {
     @Test
     void shouldUpdateFeatureToggleSuccessfully() throws Exception {
         // Create an updated feature toggle with a Set of FeatureToggles
-        Set<FeatureToggles> updatedToggles = Set.of(FeatureToggles.SOME_TOGGLE); // Use appropriate enums here
+        Set<FeatureToggles> updatedToggles = Set.of(FeatureToggles.ORGANIZATION_SETTINGS_PROFILE); // Use appropriate enums here
         FeatureToggle updatedFeatureToggle = new FeatureToggle();
         updatedFeatureToggle.setFeatureToggles(updatedToggles);
 
@@ -96,7 +96,7 @@ class FeatureToggleServiceImplTest {
     @Test
     void shouldThrowResourceNotFoundExceptionWhenFeatureToggleToUpdateNotFound() throws Exception {
         // Create an updated feature toggle with a Set of FeatureToggles (correcting the data type)
-        Set<FeatureToggles> updatedToggles = Set.of(FeatureToggles.SOME_TOGGLE); // Use your actual toggle values
+        Set<FeatureToggles> updatedToggles = Set.of(FeatureToggles.ORGANIZATION_SETTINGS_PROFILE); // Use your actual toggle values
         FeatureToggle updatedFeatureToggle = new FeatureToggle();
         updatedFeatureToggle.setFeatureToggles(updatedToggles);
 
@@ -118,7 +118,7 @@ class FeatureToggleServiceImplTest {
     @Test
     void shouldThrowExceptionWhenUpdateFails() throws Exception {
         // Create an updated feature toggle with a Set of FeatureToggles (correcting the data type)
-        Set<FeatureToggles> updatedToggles = Set.of(FeatureToggles.SOME_TOGGLE); // Use your actual toggle values
+        Set<FeatureToggles> updatedToggles = Set.of(FeatureToggles.ORGANIZATION_SETTINGS_PROFILE); // Use your actual toggle values
         FeatureToggle updatedFeatureToggle = new FeatureToggle();
         updatedFeatureToggle.setFeatureToggles(updatedToggles);
 

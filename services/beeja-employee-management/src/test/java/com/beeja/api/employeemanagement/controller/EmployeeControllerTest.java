@@ -45,7 +45,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
-@WebMvcTest(EmployeeController.class)
+@WebMvcTest(
+        controllers = EmployeeController.class, // Specify the controller you are testing
+        properties = "server.port=0" // Assign a random available port for the test
+)
 @AutoConfigureMockMvc(addFilters = false)
 class EmployeeControllerTest {
 

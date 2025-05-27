@@ -3,7 +3,6 @@ package tac.beeja.recruitmentapi.utils;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,11 +29,4 @@ public class UserContext {
     loggedInUserOrganization = organization;
     loggedInUserPermissions = permissions;
   }
-
-
-  public static void clear() {
-
-  }
-
-
 }

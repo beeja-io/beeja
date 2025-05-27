@@ -170,15 +170,17 @@ export const GeneralDetailsTab = ({
       'Joining Date': joiningDate,
     }));
     const mobileNumbersLabels = ['Phone Number', 'Alt Phone Number', 'Phone'];
-    for (let i = 0; i <= mobileNumbersLabels.length - 1; i++) {
-      if (
-        mobileNumbersLabels[i] in modifiedFields &&
-        formData[mobileNumbersLabels[i]].length < 10
-      ) {
-        setFormErrorToastHead('Error in updating profile');
-        setFormErrorToastMessage(`${mobileNumbersLabels[i]} must be 10 digits`);
-        handleIsFormEmailValid();
-        return;
+    for (let i = 0; i < mobileNumbersLabels.length; i++) {
+      const label = mobileNumbersLabels[i];
+      const value = formData[label];
+
+      if (label in modifiedFields) {
+        if (value.trim() !== '' && value.length < 10) {
+          setFormErrorToastHead('Error in Updating Profile');
+          setFormErrorToastMessage(`${label} must be 10 digits`);
+          handleIsFormEmailValid();
+          return;
+        }
       }
     }
 

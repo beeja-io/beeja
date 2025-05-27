@@ -464,7 +464,7 @@ public class EmployeecontrollerTest {
             .thenReturn(updatedUser);
 
     // Act
-    ResponseEntity<?> responseEntity = employeeController.updateUserRoles(employeeId, newRoles);
+    ResponseEntity<?> responseEntity = employeeController.updateUserRolesByEmployeeId(employeeId, newRoles);
 
     // Assert
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
