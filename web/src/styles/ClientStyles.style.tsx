@@ -180,12 +180,29 @@ export const InputLabelLogoContainer = styled.div<{ Width?: string }>`
 `;
 
 export const LogoPreview = styled.div`
-  width: 41.67088317871094;
-  height: 40.000030517578125;
-  top: 12px;
-  left: 11px;
+  width: 62px;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-right: 16px;
 
   background-color: rgba(248, 249, 251, 1);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+`;
+export const LogoNameWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
 `;
 export const LogoContainer = styled.div`
   display: flex;
@@ -415,12 +432,6 @@ export const BasicOrganizationDetailsContainer = styled.div`
   background-color: rgba(248, 249, 251, 1);
 `;
 
-export const LeftSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 750px;
-`;
-
 export const ClientInfo = styled.div`
   display: flex;
   flex-direction: column;
@@ -441,18 +452,25 @@ export const TableContainer = styled.div`
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 `;
 
-export const RightSection = styled.div`
-  width: 350px;
-  /* height: 550px; */
-  background-color: #ffffff;
-  border-radius: 8px;
+export const LeftSection = styled.div`
+  flex: 3;
+  background-color: white;
+  border-radius: 10px;
   padding: 20px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 `;
+
+export const RightSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
+
 export const Container = styled.div`
   display: flex;
   width: 100%;
   gap: 20px;
+  padding: 20px;
 `;
 
 export const ClientInfoDiv = styled.div`

@@ -8,11 +8,13 @@ import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
 import { useEffect, useState, useCallback } from 'react';
 import AddClientForm from '../components/directComponents/AddClientForm.component';
-import ClientList from './ClientList.Screen';
+
 import { getAllClient, getClient } from '../service/axiosInstance';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { useTranslation } from 'react-i18next';
 import { ClientDetails } from '../entities/ClientEntity';
+import { Outlet } from 'react-router-dom';
+import { useLocation, matchPath } from 'react-router-dom';
 
 interface Client {
   clientId: string;
@@ -86,6 +88,13 @@ const ClientManagement = () => {
     await fetchData();
   };
 
+  const location = useLocation();
+
+  const isClientDetailsRoute = matchPath(
+    '/clients/client-management/:id',
+    location.pathname
+  );
+
   const { t } = useTranslation();
   return (
     <>
@@ -100,6 +109,12 @@ const ClientManagement = () => {
               <>
                 <span className="separator"> {`>`} </span>
                 <span className="nav_AddClient">{t('Add Client')}</span>
+              </>
+            )}
+            {!isCreateModalOpen && isClientDetailsRoute && (
+              <>
+                <span className="separator"> {`>`} </span>
+                <span className="nav_AddClient">{t('Client Details')}</span>
               </>
             )}
           </span>
@@ -123,11 +138,13 @@ const ClientManagement = () => {
             updateClientList={updateClientList}
           />
         ) : (
-          <ClientList
-            clientList={allClients}
-            updateClientList={updateClientList}
-            isLoading={loading}
-            onEditClient={onEditClient}
+          <Outlet
+            context={{
+              clientList: allClients,
+              updateClientList,
+              isLoading: loading,
+              onEditClient,
+            }}
           />
         )}
       </ExpenseManagementMainContainer>

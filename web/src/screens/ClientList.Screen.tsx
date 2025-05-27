@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   ExpenseHeading,
   ExpenseTitle,
@@ -8,15 +8,13 @@ import {
   TableList,
   TableListContainer,
 } from '../styles/ExpenseListStyles.style';
-import { ClientResponse } from '../entities/ClientEntity';
-import ClientDetailsScreen from './ClientDetailsScreen.screen';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { capitalizeFirstLetter, removeUnderScore } from '../utils/stringUtils';
 import { keyPressFind } from '../service/keyboardShortcuts/shortcutValidator';
 import { useTranslation } from 'react-i18next';
 import { EditSVG } from '../svgs/ClientSvgs.svs';
-import { getClient } from '../service/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 interface Client {
   clientId: string;
@@ -39,22 +37,6 @@ const ClientList = ({
   onEditClient,
 }: Props) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const [selectedClient, setSelectedClient] = useState<ClientResponse | null>(
-    null
-  );
-  const [isDetailsScreenOpen, setIsDetailsScreenOpen] = useState(false);
-  const handleDetailsScreen = () => {
-    setIsDetailsScreenOpen(!isDetailsScreenOpen);
-  };
-
-  const fetchData = useCallback(async (id: string) => {
-    try {
-      const res = await getClient(id);
-      setSelectedClient(res.data);
-    } catch (error) {
-      throw new Error('Error fetching getClient:' + error);
-    }
-  }, []);
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const handleShowSuccessMessage = () => {
@@ -68,9 +50,12 @@ const ClientList = ({
     keyPressFind(searchInputRef);
   }, []);
   const { t } = useTranslation();
-  if (isDetailsScreenOpen) {
-    return <ClientDetailsScreen client={selectedClient} />;
-  }
+
+  const navigate = useNavigate();
+  const handleClientClick = (id: string) => {
+    navigate(`/clients/client-management/${id}`);
+  };
+
   return (
     <>
       <StyledDiv>
@@ -110,30 +95,15 @@ const ClientList = ({
                 ) : (
                   clientList.map((client, index) => (
                     <TableBodyRow key={index}>
-                      <td
-                        onClick={() => {
-                          fetchData(client.clientId);
-                          handleDetailsScreen();
-                        }}
-                      >
+                      <td onClick={() => handleClientClick(client.clientId)}>
                         {client.clientId ?? '-'}
                       </td>
-                      <td
-                        onClick={() => {
-                          fetchData(client.clientId);
-                          handleDetailsScreen();
-                        }}
-                      >
+                      <td onClick={() => handleClientClick(client.clientId)}>
                         {client.clientName
                           ? capitalizeFirstLetter(client.clientName)
                           : '-'}
                       </td>
-                      <td
-                        onClick={() => {
-                          fetchData(client.clientId);
-                          handleDetailsScreen();
-                        }}
-                      >
+                      <td onClick={() => handleClientClick(client.clientId)}>
                         {client.clientType
                           ? removeUnderScore(client.clientType)
                           : '-'}
