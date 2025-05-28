@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +22,6 @@ public class TimesheetServiceImpl implements TimesheetService {
     public Timesheet saveTimesheet(TimesheetRequestDto requestDto) {
         String employeeId = UserContext.getLoggedInEmployeeId();
         String organizationId = (String) UserContext.getLoggedInUserOrganization().get("id");
-
         Timesheet timesheet = Timesheet.builder()
                 .employeeId(employeeId)
                 .organizationId(organizationId)
@@ -34,7 +34,16 @@ public class TimesheetServiceImpl implements TimesheetService {
                 .createdAt(new Date())
                 .createdBy(employeeId)
                 .build();
-
         return timesheetRepository.save(timesheet);
     }
+    @Override
+    public Timesheet updateLog(TimesheetRequestDto dto,String Id) {
+        Optional<Timesheet> existing = timesheetRepository.findById(Id);
+        Timesheet existingTimesheet=existing.get();
+        existingTimesheet.setTimeInMinutes(dto.getTimeInMinutes());
+        existingTimesheet.setDescription(dto.getDescription());
+        existingTimesheet.setModifiedAt(new Date());
+        return timesheetRepository.save(existingTimesheet);
+    }
+    
 }

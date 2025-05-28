@@ -5,4 +5,5 @@ import com.beeja.api.projectmanagement.model.dto.TimesheetRequestDto;
 
 public interface TimesheetService {
     Timesheet saveTimesheet(TimesheetRequestDto requestDto);
+    Timesheet updateLog(TimesheetRequestDto dto,String Id);
 }
