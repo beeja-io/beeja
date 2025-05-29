@@ -12,7 +12,6 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 public class Timesheet {
-
     @Id
     private String id;
 
