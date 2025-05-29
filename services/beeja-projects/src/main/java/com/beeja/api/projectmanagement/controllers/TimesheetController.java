@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/timesheets")
@@ -35,29 +37,19 @@ public class TimesheetController {
     }
 
     @GetMapping
-    public ResponseEntity<CustomPageResponse<Timesheet>> getTimesheets(
+    public ResponseEntity<List<Timesheet>> getTimesheets(
             @RequestParam(required = false) String day,
             @RequestParam(required = false) Integer week,
-            @RequestParam(required = false) String month,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(required = false) String month
     ) {
-        Page<Timesheet> timesheetPage = timesheetService.getTimesheets(day, week, month, page, size);
-
-        CustomPageResponse<Timesheet> customResponse = new CustomPageResponse<>(
-                timesheetPage.getContent(),
-                timesheetPage.getNumber(),
-                timesheetPage.getSize(),
-                timesheetPage.getTotalElements(),
-                timesheetPage.getTotalPages()
-        );
-
-        return ResponseEntity.ok(customResponse);
+        List<Timesheet> timesheets = timesheetService.getTimesheets(day, week, month);
+        return ResponseEntity.ok(timesheets);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteTimesheet(@PathVariable String id) {
         timesheetService.deleteTimesheet(id);
         return ResponseEntity.ok("Timesheet deleted successfully");
+
     }
 }

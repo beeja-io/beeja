@@ -7,7 +7,6 @@ import com.beeja.api.projectmanagement.repository.TimesheetRepository;
 import com.beeja.api.projectmanagement.service.TimesheetService;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -53,6 +52,9 @@ public class TimesheetServiceImpl implements TimesheetService {
     public Timesheet updateLog(TimesheetRequestDto dto,String Id) {
         Optional<Timesheet> existing = timesheetRepository.findById(Id);
         Timesheet existingTimesheet=existing.get();
+        existingTimesheet.setClientId(dto.getClientId());
+        existingTimesheet.setProjectId(dto.getProjectId());
+        existingTimesheet.setContractId(dto.getContractId());
         existingTimesheet.setTimeInMinutes(dto.getTimeInMinutes());
         existingTimesheet.setDescription(dto.getDescription());
         existingTimesheet.setModifiedAt(new Date());
@@ -60,11 +62,10 @@ public class TimesheetServiceImpl implements TimesheetService {
     }
 
     @Override
-    public Page<Timesheet> getTimesheets(String day, Integer week, String month, int page, int size) {
+    public List<Timesheet> getTimesheets(String day, Integer week, String month) {
         String employeeId = UserContext.getLoggedInEmployeeId();
         String organizationId = (String) UserContext.getLoggedInUserOrganization().get("id");
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startDate"));
         Criteria criteria = Criteria.where("employeeId").is(employeeId)
                 .and("organizationId").is(organizationId);
 
@@ -93,11 +94,8 @@ public class TimesheetServiceImpl implements TimesheetService {
             criteria.and("startDate").gte(start).lt(end);
         }
 
-        Query query = new Query(criteria).with(pageable);
-        List<Timesheet> results = mongoTemplate.find(query, Timesheet.class);
-        long total = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Timesheet.class);
-
-        return new PageImpl<>(results, pageable, total);
+        Query query = new Query(criteria);
+        return mongoTemplate.find(query, Timesheet.class);
     }
 
     @Override
