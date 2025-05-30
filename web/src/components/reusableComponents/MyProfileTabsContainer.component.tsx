@@ -42,10 +42,12 @@ const MyProfileTabsContainerComponent = ({
   useEffect(() => {
     setSelectedTab('general');
   }, [employee]);
-
-  useEffect(() => {
+  
+useEffect(() => {
+  if (selectedTab !== isActiveTab) {
     setSelectedTab(isActiveTab);
-  }, [isActiveTab]);
+  }
+}, [isActiveTab, selectedTab]);
 
   const handleTabChange = (selectedTab: string) => {
     setSelectedTab(selectedTab);
@@ -476,6 +478,7 @@ const MyProfileTabsContainerComponent = ({
                 onClick={() => {
                   handleTabChange('kyc');
                   handleIsActiveTab('kyc');
+                  setIsActiveTab('kyc');
                   chooseTab('KYC');
                 }}
               >
