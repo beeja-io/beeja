@@ -39,10 +39,15 @@ const MyProfileTabsContainerComponent = ({
   const { featureToggles } = useFeatureToggles();
   const [selectedTab, setSelectedTab] = useState('general');
   const [isActiveTab, setIsActiveTab] = useState('general');
-
   useEffect(() => {
+    setSelectedTab('general');
+  }, [employee]);
+  
+useEffect(() => {
+  if (selectedTab !== isActiveTab) {
     setSelectedTab(isActiveTab);
-  }, [isActiveTab]);
+  }
+}, [isActiveTab, selectedTab]);
 
   const handleTabChange = (selectedTab: string) => {
     setSelectedTab(selectedTab);
@@ -473,6 +478,7 @@ const MyProfileTabsContainerComponent = ({
                 onClick={() => {
                   handleTabChange('kyc');
                   handleIsActiveTab('kyc');
+                  setIsActiveTab('kyc');
                   chooseTab('KYC');
                 }}
               >
