@@ -1,5 +1,7 @@
 package com.beeja.api.employeemanagement.serviceImpl;
 
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeNameDTO;
 import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
 import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -777,6 +779,52 @@ public class EmployeeServiceImpl implements EmployeeService {
     employeeValues.setDesignations(designations);
     employeeValues.setEmploymentTypes(employmentTypes);
     return employeeValues;
+  }
+
+  @Override
+  public List<EmployeeBasicInfo> getAllEmpInfo(List<String> designations) {
+
+    List<Employee> allEmployees;
+
+    if (designations != null && !designations.isEmpty()) {
+      allEmployees = employeeRepository.findAllByOrganizationIdAndJobDetailsDesignationIn(
+              UserContext.getLoggedInUserOrganization().getId(),
+              designations
+      );
+    } else {
+      allEmployees = employeeRepository.findAllByOrganizationId(
+              UserContext.getLoggedInUserOrganization().getId()
+      );
+    }
+
+    Set<String> allEmpIds = allEmployees.stream()
+            .map(Employee::getEmployeeId)
+            .collect(Collectors.toSet());
+
+    List<EmployeeNameDTO> employeeNamesList= Collections.emptyList();
+
+    try{
+      employeeNamesList = accountClient.getEmployeeNamesByIds(new ArrayList<>(allEmpIds));
+    }
+    catch (Exception e){
+      log.warn("failed to fetch employeeNames");
+    }
+
+    Map<String, String> idToNameMap = employeeNamesList.stream()
+            .collect(Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
+
+    List<EmployeeBasicInfo> result = allEmployees.stream()
+            .map(emp -> {
+              EmployeeBasicInfo dto = new EmployeeBasicInfo();
+              dto.setEmployeeId(emp.getEmployeeId());
+              dto.setJobDetails(emp.getJobDetails());
+              dto.setFullName(idToNameMap.getOrDefault(emp.getEmployeeId(), "Unknown"));
+              return dto;
+            })
+            .collect(Collectors.toList());
+
+    return result;
+
   }
 
   private String extractDuplicateKeyError(DuplicateKeyException e) {

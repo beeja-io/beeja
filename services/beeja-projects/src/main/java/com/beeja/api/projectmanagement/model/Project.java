@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Document(collection = "projects")
 @Data
@@ -33,4 +34,6 @@ public class Project {
 
     @LastModifiedDate
     private Date updatedAt;
+    List<String> projectManagers;
+    List<String> projectResources;
 }

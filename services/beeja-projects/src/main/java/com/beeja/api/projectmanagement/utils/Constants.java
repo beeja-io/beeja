@@ -75,6 +75,8 @@ public class Constants {
   public static final String SOMETHING_WENT_WRONG = "Something went wrong !!!";
   public static final String NULL_RESPONSE_FROM_FILE_CLIENT = "Received null response from file service for fileId: ";
   public static final String ERROR_IN_UPDATING_FILE_FROM_FILE_SERVICE = "Error in Updating File in File Service";
+    public static final String ERROR_IN_VALIDATE_PROJECT_MANAGERS = "Error while validating project managers via account service" ;
+  public static final String ERROR_IN_VALIDATE_PROJECT_RESOURCES = "Error while validating project resources via account service";
 
   // ========== Utility ==========
   public static String format(String message, Object... args) {
