@@ -4,7 +4,7 @@ import com.beeja.api.projectmanagement.model.Timesheet;
 import com.beeja.api.projectmanagement.model.dto.TimesheetRequestDto;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import java.util.Map;
 
 public interface TimesheetService {
 
@@ -12,7 +12,10 @@ public interface TimesheetService {
 
     Timesheet updateLog(TimesheetRequestDto dto,String Id);
 
-    List<Timesheet> getTimesheets(String day, Integer week, String month);
+    Page<Timesheet> getTimesheets(String day, Integer week, String month, String employeeId,int page, int size);
+
+
+    Map<String, Object> getTimesheetsGroupedByWeek(String month);
 
     void deleteTimesheet(String id);
 }

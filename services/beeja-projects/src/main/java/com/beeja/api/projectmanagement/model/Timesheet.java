@@ -1,7 +1,9 @@
 package com.beeja.api.projectmanagement.model;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
@@ -26,9 +28,11 @@ public class Timesheet {
     private int timeInMinutes;
     private String description;
 
+    @CreatedDate
     private Date createdAt;
     private String createdBy;
 
+    @LastModifiedDate
     private Date modifiedAt;
     private String modifiedBy;
 }

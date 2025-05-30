@@ -38,4 +38,12 @@ public class PermissionConstants {
     public static final String DELETE_ALL_DOCUMENT = "DALDCMT";
     public static final String UPDATE_ALL_DOCUMENT = "UALDCMT";
 
+    // Timesheet-related permissions
+    public static final String CREATE_TIMESHEET = "CTS";
+    public static final String UPDATE_TIMESHEET = "UTS";
+    public static final String GET_TIMESHEET    = "GTS";
+    public static final String DELETE_TIMESHEET = "DTS";
+
+    // New permission for Superadmin to read all timesheets
+    public static final String READ_ALL_TIMESHEETS = "RATS";
 }
