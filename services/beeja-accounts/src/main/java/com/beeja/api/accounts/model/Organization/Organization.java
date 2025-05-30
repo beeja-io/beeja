@@ -40,6 +40,8 @@ public class Organization {
   private Address address;
   private String filingAddress;
 
+  private BankDetails bankDetails;
+
   @JsonIgnore private Accounts accounts;
 
   private String logoFileId;

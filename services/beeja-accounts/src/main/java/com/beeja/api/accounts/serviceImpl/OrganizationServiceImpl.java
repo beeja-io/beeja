@@ -21,6 +21,7 @@ import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Preferences;
 import com.beeja.api.accounts.model.Organization.employeeSettings.OrgValues;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.Organization.BankDetails;
 import com.beeja.api.accounts.repository.FeatureToggleRepository;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
 import com.beeja.api.accounts.repository.OrganizationRepository;
@@ -224,7 +225,25 @@ public class OrganizationServiceImpl implements OrganizationService {
                 }
               }
               field.set(organization, address);
-            } else if (key.equals("accounts")) {
+            }else if (key.equals("bankDetails")) {
+              Map<String, Object> bankDetailsMap = (Map<String, Object>) value;
+              BankDetails bankDetails;
+              if (organization.getBankDetails() == null) {
+                bankDetails = new BankDetails();
+              } else {
+                bankDetails = organization.getBankDetails();
+              }
+              for (Map.Entry<String, Object> bankEntry : bankDetailsMap.entrySet()) {
+                String bankKey = bankEntry.getKey();
+                Object bankValue = bankEntry.getValue();
+                if (bankValue != null) {
+                  Field bankField = BankDetails.class.getDeclaredField(bankKey);
+                  bankField.setAccessible(true);
+                  bankField.set(bankDetails, bankValue);
+                }
+              }
+              field.set(organization, bankDetails);
+            }else if (key.equals("accounts")) {
               Map<String, Object> accountsMap = (Map<String, Object>) value;
               Accounts accounts;
               if (organization.getAccounts() == null) {
