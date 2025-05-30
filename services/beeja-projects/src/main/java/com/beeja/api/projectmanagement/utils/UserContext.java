@@ -42,7 +42,10 @@ public class UserContext {
     loggedInEmployeeId = employeeId;
     loggedInUserOrganization = organization;
     loggedInUserPermissions = permissions;
-    loggedInUserToken = token
-    ;
+    loggedInUserToken = token;
+  }
+
+  public static boolean hasPermission(String permission) {
+    return loggedInUserPermissions != null && loggedInUserPermissions.contains(permission);
   }
 }

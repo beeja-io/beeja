@@ -44,4 +44,6 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
      * @return the matching {@link Project}, or {@code null} if not found
      */
     Project findByProjectIdAndClientIdAndOrganizationId(String projectId, String clientId, String organizationId);
+
+    boolean existsByProjectId(String projectId);
 }
