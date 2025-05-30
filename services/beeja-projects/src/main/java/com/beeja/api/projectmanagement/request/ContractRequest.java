@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -18,4 +19,6 @@ public class ContractRequest {
     private Date startDate;
     private Date endDate;
     private String signedBy;
+    List<String> projectManagers;
+    List<String> projectResources;
 }

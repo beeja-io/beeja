@@ -39,4 +39,6 @@ public interface EmployeeService {
   List<User> getUsersByEmployeeIds(List<String> employeeIds) throws Exception;
 
   String changeEmailAndPassword(ChangeEmailAndPasswordRequest changeEmailAndPasswordRequest);
+
+  List<String> checkEmployees(List<String> employeeIds);
 }

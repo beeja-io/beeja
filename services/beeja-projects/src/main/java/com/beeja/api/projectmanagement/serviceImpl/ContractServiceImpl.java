@@ -1,7 +1,9 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
+import com.beeja.api.projectmanagement.client.AccountClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
+import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Project;
@@ -34,6 +36,9 @@ public class ContractServiceImpl implements ContractService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    AccountClient accountClient;
 
     /**
      * Creates a new {@link Contract} for a given {@link Project} and {@link ContractRequest}.
@@ -68,6 +73,25 @@ public class ContractServiceImpl implements ContractService {
         contract.setEndDate(request.getEndDate());
         contract.setSignedBy(request.getSignedBy());
         contract.setOrganizationId(project.getOrganizationId());
+
+        if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
+            try{
+                List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(request.getProjectManagers());
+                contract.setProjectManagers(validProjectManagers);
+            } catch (FeignClientException e){
+                log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
+                throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
+            }
+        }
+        if(request.getProjectResources() !=null && !request.getProjectResources().isEmpty()){
+            try {
+                List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(request.getProjectResources());
+                contract.setProjectResources(validProjectResources);
+            } catch (FeignClientException e){
+                log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
+                throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
+            }
+        }
 
         try {
             return contractRepository.save(contract);
@@ -139,6 +163,25 @@ public class ContractServiceImpl implements ContractService {
         if (request.getStartDate() != null) contract.setStartDate(request.getStartDate());
         if (request.getEndDate() != null) contract.setEndDate(request.getEndDate());
         if (request.getSignedBy() != null) contract.setSignedBy(request.getSignedBy());
+
+        if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
+            try{
+                List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(request.getProjectManagers());
+                contract.setProjectManagers(validProjectManagers);
+            } catch (FeignClientException e){
+                log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
+                throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
+            }
+        }
+        if(request.getProjectResources() !=null && !request.getProjectResources().isEmpty()){
+            try {
+                List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(request.getProjectResources());
+                contract.setProjectResources(validProjectResources);
+            } catch (FeignClientException e){
+                log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
+                throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
+            }
+        }
 
         try {
             return contractRepository.save(contract);

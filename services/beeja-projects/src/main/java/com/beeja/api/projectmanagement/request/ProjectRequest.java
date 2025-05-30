@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -29,5 +30,8 @@ public class ProjectRequest {
 
     @NotBlank(message = "Client ID is required")
     private String clientId;
+
+    List<String> projectManagers;
+    List<String> projectResources;
 
 }
