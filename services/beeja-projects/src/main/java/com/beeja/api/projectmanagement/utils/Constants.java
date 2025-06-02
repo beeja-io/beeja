@@ -9,6 +9,7 @@ public class Constants {
   public static final String NAME = "name";
   public static final String EMAIL = "email";
     public static final String ADDRESS = "address";
+  public static final String BANK_DETAILS = "bankDetails";
   public static final String DOC_URL = "https://docs.beeja.io/";
   public static final String BEEJA = "BEEJA";
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -57,14 +58,25 @@ public class Constants {
 
   // ========== File Service Errors ==========
   public static final String ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE = "Error in uploading file to file service";
+  public static final String ERROR_IN_FETCHING_FILE_FROM_FILE_SERVICE =
+          "Error in Fetching Data from File Service";
 
   // ========== System Errors ==========
   public static final String INTERNAL_SERVER_ERROR = "Internal Server Error";
   public static final String DB_ERROR_IN_SAVING_DETAILS = "Failed to update client details: %s";
   public static final String FILE_SIZE_EXCEED = "The logo exceeds its maximum permitted size";
   public static final String NO_PERMISSION = " You do not have permission to access this resource ";
+  public static final String UNAUTHORISED_ACCESS = "NO REQUIRED PERMISSIONS";
+  public static final String ERROR_IN_DOWNLOADING_FILE_FROM_FILE_SERVICE =  "Error in Downloading File from File Service" ;
+  public static final String FILE_NOT_FOUND = " No file found with given Id : ";
+  public static final String UNAUTHORISED_TO_READ_OTHERS_DOCUMENTS = "UNAUTHORISED TO READ OTHERS DOCUMENTS" ;
+  public static final String UNAUTHORISED_TO_CREATE_DOCUMENTS = "UNAUTHORISED TO CREATE OTHERS DOCUMENTS";
+  public static final String ERROR_IN_DELETING_FILE_FROM_FILE_SERVICE = "Error in Deleting File from File Service";
+  public static final String SOMETHING_WENT_WRONG = "Something went wrong !!!";
+  public static final String NULL_RESPONSE_FROM_FILE_CLIENT = "Received null response from file service for fileId: ";
+  public static final String ERROR_IN_UPDATING_FILE_FROM_FILE_SERVICE = "Error in Updating File in File Service";
 
-    // ========== Utility ==========
+  // ========== Utility ==========
   public static String format(String message, Object... args) {
     return String.format(message, args);
   }

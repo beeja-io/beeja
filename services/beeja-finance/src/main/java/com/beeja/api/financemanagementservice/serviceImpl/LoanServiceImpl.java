@@ -9,6 +9,7 @@ import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.enums.LoanStatus;
 import com.beeja.api.financemanagementservice.exceptions.ResourceNotFoundException;
 import com.beeja.api.financemanagementservice.modals.Loan;
+import com.beeja.api.financemanagementservice.modals.clients.finance.EmployeeNameDTO;
 import com.beeja.api.financemanagementservice.modals.clients.finance.OrganizationPattern;
 import com.beeja.api.financemanagementservice.repository.LoanRepository;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
@@ -37,6 +38,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -168,23 +170,45 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
   Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
   Pageable pageable = PageRequest.of(validPage, pageSize, sort);
 
-  String orgId=UserContext.getLoggedInUserOrganization().get("id").toString();;
+  String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
 
   List<LoanDTO> loans;
   long totalCount;
-try {
-  if (status != null) {
-    loans = loanRepository.findAllByOrganizationIdAndStatus(orgId, status, pageable);
-    totalCount = loanRepository.countByOrganizationIdAndStatus(orgId, status);
-  } else {
-    loans = loanRepository.findAllByOrganizationId(orgId, pageable);
-    totalCount = loanRepository.countByOrganizationId(orgId);
+  try {
+    if (status != null) {
+      loans = loanRepository.findAllByOrganizationIdAndStatus(orgId, status, pageable);
+      totalCount = loanRepository.countByOrganizationIdAndStatus(orgId, status);
+    } else {
+      loans = loanRepository.findAllByOrganizationId(orgId, pageable);
+      totalCount = loanRepository.countByOrganizationId(orgId);
+    }
+    Set<String> employeeIds = loans.stream()
+            .map(LoanDTO::getEmployeeId)
+            .collect(Collectors.toSet());
+    
+    List<EmployeeNameDTO> employeeNamesList=null;
+
+    try{
+      employeeNamesList = accountClient.getEmployeeNamesByIds(new ArrayList<>(employeeIds));
+    }
+    catch (Exception e){
+      log.warn("failed to fetch employeeNames");
+    }
+    Map<String, String> employeeNamesMap = employeeNamesList.stream()
+            .collect(Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
+
+    for (LoanDTO loan : loans) {
+      String empId = loan.getEmployeeId();
+      if (empId != null && employeeNamesMap.containsKey(empId)) {
+        loan.setEmployeeName(employeeNamesMap.get(empId));
+      }
+    }
+
+  } catch (Exception e) {
+    log.error("Error occurred while fetching loans or employee names: {}", e.getMessage(), e);
+    loans = Collections.emptyList();
+    totalCount = 0;
   }
-}catch(Exception e){
-  log.error("Error occurred while fetching loans: {}", e.getMessage(),e);
-  loans = Collections.emptyList();
-  totalCount = 0;
-}
 
   LoanResponse response = new LoanResponse();
   response.setLoansList(loans);
@@ -193,7 +217,6 @@ try {
   response.setTotalRecords(totalCount);
   return response;
 }
-
   /**
    * Retrieves all loans associated with a specific employee ID within the logged-in user's
    * organization.
@@ -292,12 +315,12 @@ try {
       PDFTextStripper stripper = new PDFTextStripper();
       String text = stripper.getText(document);
 
-      Pattern pattern = Pattern.compile("Employee ID\\s*[:\\-]?\\s*([A-Z]+\\d+)", Pattern.CASE_INSENSITIVE);
+      Pattern pattern = Pattern.compile("Employee Code\\s*[:\\-]?\\s*([A-Z]+\\d+)", Pattern.CASE_INSENSITIVE);
       Matcher matcher = pattern.matcher(text);
       if (matcher.find()) {
         return matcher.group(1);
       }
     }
-    throw new RuntimeException("Employee ID not found in PDF");
+    throw new RuntimeException("Employee Code not found in PDF");
   }
 }

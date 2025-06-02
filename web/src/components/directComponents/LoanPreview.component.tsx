@@ -14,7 +14,7 @@ import {
   TextInput,
 } from '../../styles/DocumentTabStyles.style';
 import { LoanPreviewModal } from '../../styles/LoanPreviewStyles.style';
-import { formatDate, monthsDiff } from '../../utils/dateFormatter';
+import { monthsDiff, safeFormatDate } from '../../utils/dateFormatter';
 import { hasPermission } from '../../utils/permissionCheck';
 
 type LoanPreviewProps = {
@@ -28,6 +28,7 @@ const LoanPreview = (props: LoanPreviewProps) => {
     props.handleClose();
   });
   const { t } = useTranslation();
+
   return (
     <LoanPreviewModal>
       <div>
@@ -65,7 +66,7 @@ const LoanPreview = (props: LoanPreviewProps) => {
           <label>{t('REQUESTED_DATE')} </label>
           <TextInput
             className={'disabledBgWhite'}
-            value={formatDate(props.loan.createdAt.toString())}
+            value={safeFormatDate(props.loan.createdAt?.toString())}
             disabled={true}
           />
         </InputLabelContainer>

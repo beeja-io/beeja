@@ -16,4 +16,5 @@ public class Accounts {
   private String esiNumber;
   private String linNumber;
   private String gstNumber;
+  private String taxId;
 }
