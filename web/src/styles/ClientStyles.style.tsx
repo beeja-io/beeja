@@ -4,6 +4,8 @@ export const FormContainer = styled.div`
   background-color: white;
   border-radius: 10px;
   border: 1px solid #f1f2f4;
+  max-width: 100%;
+  overflow: hidden;
 `;
 
 export const StepsContainer = styled.div`
@@ -70,9 +72,16 @@ export const Line = styled.div`
 export const FormInputsContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
-  gap: 10px;
-  width: 1160px;
-  margin-left: 80px;
+  gap: 40px;x
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 0 20px;
+  margin: 0 auto;
+
+  @media screen and (max-width: 1150px) {
+    flex-direction: column;
+    gap: 20px;
+  }
 `;
 
 export const InputLabelContainer = styled.div<{ Width?: string }>`
@@ -80,6 +89,11 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: ${(props) => props.Width || 'clamp(200px, 50%, 400px)'};
+
+  @media screen and (max-width: 1150px) {
+    width: 100%;
+  }
 
   label {
     font-size: 14px;
@@ -280,8 +294,11 @@ export const FormButtons = styled.div`
 `;
 export const AddFormMainContainer = styled.form`
   width: 100%;
+  max-width: 100%;
+  overflow: hidden;
   @media screen and (max-width: 1150px) {
-    width: 70vw;
+    width: 100%;
+    padding: 0 16px;
   }
 
   .formInputs {
@@ -391,6 +408,23 @@ export const SubHeadingDiv = styled.div`
   width: 90px;
 `;
 
+export const ActionButton = styled.div`
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
+export const ButtonGroup = styled.div`
+  display: flex;
+  gap: 20px;
+`;
 export const HeadingContainer = styled.div`
   width: 850px;
   margin-left: 80px;
@@ -444,7 +478,7 @@ export const ClientInfo = styled.div`
 `;
 
 export const TableContainer = styled.div`
-  width: 700px;
+  maxWidth: 1200px
   background-color: #ffffff;
   border-radius: 8px;
   margin-top: 10px;

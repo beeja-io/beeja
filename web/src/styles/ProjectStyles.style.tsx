@@ -1,10 +1,20 @@
 import styled from 'styled-components';
 
 export const FormContainer = styled.div`
-  width: 100%;
-
+  width: 95vw;
+  max-width: 1050px;
+  padding: 2.5rem 3rem;
+  background-color: #fff;
+  border-radius: 12px;
+  margin: 0 auto;
   @media screen and (max-width: 1150px) {
-    width: 70vw;
+    width: 90vw;
+    padding: 2rem;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 95vw;
+    padding: 1.5rem;
   }
 
   max-width: 750px;
@@ -81,23 +91,25 @@ export const TextArea = styled.textarea`
 
 export const ButtonContainer = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 1rem;
   margin-top: 2rem;
 `;
 
 export const SubmitButton = styled.button`
   padding: 0.6rem 1.5rem;
-  background-color: #007bff;
+  background-color: rgba(0, 87, 146, 1);
+
   color: white;
   font-weight: 500;
   font-size: 0.95rem;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  width: 100px;
 
   &:hover {
-    background-color: #0069d9;
+    background-color: rgb(3, 74, 121);
   }
 `;
 
@@ -109,6 +121,7 @@ export const CancelButton = styled.button`
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  width: 100px;
 
   &:hover {
     background-color: #e0e0e0;
