@@ -1,20 +1,25 @@
+import { t } from 'i18next';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 import {
-  BeejaIconSvg,
-  CardSendSVG,
-  TimeOffSVG,
-  ChevronDownSVG,
-  DashBoardSVG,
-  EmployeesSVG,
-  FeatureToggleSVG,
-  MoonSVG,
-  MyProfileSVG,
-  NavCloseArrow,
-  SettingsSVG,
-  SunSVG,
-  TrendingUpSVG,
-  ProjectsAndContractsSVG
-} from '../../svgs/NavBarSvgs.svg';
+  BULK_PAYSLIP_MODULE,
+  EXPENSE_MODULE,
+  FEATURE_TOGGLES_MODULE,
+  INVENTORY_MODULE,
+  LOAN_MODULE,
+  ORGANIZATION_MODULE,
+  RECRUITMENT_MODULE,
+} from '../../constants/PermissionConstants';
+import { useFeatureToggles } from '../../context/FeatureToggleContext';
+import { usePreferences } from '../../context/PreferencesContext';
+import { useUser } from '../../context/UserContext';
+import { EFeatureToggles } from '../../entities/FeatureToggle';
+import AllRoutes from '../../routes/allRoutes';
+import Error404Screen from '../../screens/Error404Screen.screen';
+import ServiceUnavailable from '../../screens/ServiceUnavailable.screen';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import { StyledNavLink } from '../../styles/CommonStyles.style';
 import {
   DarkTheme,
   DashBoardButton,
@@ -25,31 +30,26 @@ import {
   RightSection,
   ThemeToggler,
 } from '../../styles/NavBarStyles.style';
-import TopNavBarComponent from './TopNavBar.component';
-import { useTranslation } from 'react-i18next';
-import AllRoutes from '../../routes/allRoutes';
-import { StyledNavLink } from '../../styles/CommonStyles.style';
-import { useLocation } from 'react-router-dom';
-import Error404Screen from '../../screens/Error404Screen.screen';
-import { useUser } from '../../context/UserContext';
-import {
-  BULK_PAYSLIP_MODULE,
-  EXPENSE_MODULE,
-  FEATURE_TOGGLES_MODULE,
-  INVENTORY_MODULE,
-  LOAN_MODULE,
-  ORGANIZATION_MODULE,
-  RECRUITMENT_MODULE,
-} from '../../constants/PermissionConstants';
-import ServiceUnavailable from '../../screens/ServiceUnavailable.screen';
-import { usePreferences } from '../../context/PreferencesContext';
-import { hasPermission } from '../../utils/permissionCheck';
-import { hasFeature } from '../../utils/featureCheck';
-import { useFeatureToggles } from '../../context/FeatureToggleContext';
-import { EFeatureToggles } from '../../entities/FeatureToggle';
 import { UserBoxWithLinkSVG } from '../../svgs/CommonSvgs.svs';
-import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
-import { t } from 'i18next';
+import {
+  BeejaIconSvg,
+  CardSendSVG,
+  ChevronDownSVG,
+  DashBoardSVG,
+  EmployeesSVG,
+  FeatureToggleSVG,
+  MoonSVG,
+  MyProfileSVG,
+  NavCloseArrow,
+  ProjectsAndContractsSVG,
+  SettingsSVG,
+  SunSVG,
+  TimeOffSVG,
+  TrendingUpSVG,
+} from '../../svgs/NavBarSvgs.svg';
+import { hasFeature } from '../../utils/featureCheck';
+import { hasPermission } from '../../utils/permissionCheck';
+import TopNavBarComponent from './TopNavBar.component';
 
 const CompleteNavBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -310,41 +310,46 @@ const CompleteNavBar = () => {
                     hasFeature(
                       featureToggles.featureToggles,
                       EFeatureToggles.LOAN_MANAGEMENT
-                    ) &&
-                    <ListItem
-                      isSideBarOpen={sidebarOpen}
-                      linkTo="#"
-                      tooltipName="Timeoff"
-                      linkName="Time Off"
-                      svgIcon={
-                        <TimeOffSVG isActive={openDropdown === 'timeoff' || currentPath.startsWith('/timeoff')} />
-                        // props={{
-                        //   isActive:
-                        //     openDropdown === 'timeoff' ||
-                        //     currentPath.startsWith('/timeoff'),
-                        // }}
-                        // />
-                      }
-                      additionalSvgIcon={<ChevronDownSVG />}
-                      dropdownItems={[
-                        {
-                          name: 'Time Sheet',
-                          link: '/timeoff/timesheet',
-                        },
-                        {
-                          name: 'Performance & Feedback',
-                          link: '/timeoff/performance',
-                        },
-                      ]}
-                      isDropdownOpen={openDropdown === 'timeoff'}
-                      setDropdownOpen={() => {
-                        setOpenDropdown((prev) =>
-                          prev === 'timeoff' ? null : 'timeoff'
-                        );
-                      }}
-                      hasAdditionalSvg
-                    />
-                  }
+                    ) && (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="#"
+                        tooltipName="Timeoff"
+                        linkName="Time Off"
+                        svgIcon={
+                          <TimeOffSVG
+                            isActive={
+                              openDropdown === 'timeoff' ||
+                              currentPath.startsWith('/timeoff')
+                            }
+                          />
+                          // props={{
+                          //   isActive:
+                          //     openDropdown === 'timeoff' ||
+                          //     currentPath.startsWith('/timeoff'),
+                          // }}
+                          // />
+                        }
+                        additionalSvgIcon={<ChevronDownSVG />}
+                        dropdownItems={[
+                          {
+                            name: 'Time Sheet',
+                            link: '/timeoff/timesheet',
+                          },
+                          {
+                            name: 'Performance & Feedback',
+                            link: '/timeoff/performance',
+                          },
+                        ]}
+                        isDropdownOpen={openDropdown === 'timeoff'}
+                        setDropdownOpen={() => {
+                          setOpenDropdown((prev) =>
+                            prev === 'timeoff' ? null : 'timeoff'
+                          );
+                        }}
+                        hasAdditionalSvg
+                      />
+                    )}
                   {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     hasFeature(
                       featureToggles.featureToggles,
@@ -393,39 +398,43 @@ const CompleteNavBar = () => {
                     hasFeature(
                       featureToggles.featureToggles,
                       EFeatureToggles.LOAN_MANAGEMENT
-                    ) &&
-                    <ListItem
-                      isSideBarOpen={sidebarOpen}
-                      linkTo="#"
-                      tooltipName="Projects & Contracts"
-                      linkName="Projects & Contracts"
-                      svgIcon={
-                        <ProjectsAndContractsSVG isActive={openDropdown === 'Projects & Contracts' || currentPath.startsWith('/projects')} />
-                      }
-                      additionalSvgIcon={<ChevronDownSVG />}
-                      dropdownItems={[
-                        {
-                          name: 'Contracts',
-                          link: '/projects/contracts',
+                    ) && (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="#"
+                        tooltipName="Projects & Contracts"
+                        linkName="Projects & Contracts"
+                        svgIcon={
+                          <ProjectsAndContractsSVG
+                            isActive={
+                              openDropdown === 'Projects & Contracts' ||
+                              currentPath.startsWith('/projects')
+                            }
+                          />
                         }
-                      ]}
-                      isDropdownOpen={openDropdown === 'Projects & Contracts'}
-                      setDropdownOpen={() => {
-                        setOpenDropdown((prev) =>
-                          prev === 'Projects & Contracts' ? null : 'Projects & Contracts'
-                        );
-                      }}
-                      hasAdditionalSvg
-                    />
-                  }
+                        additionalSvgIcon={<ChevronDownSVG />}
+                        dropdownItems={[
+                          {
+                            name: 'Contracts',
+                            link: '/projects/contracts',
+                          },
+                        ]}
+                        isDropdownOpen={openDropdown === 'Projects & Contracts'}
+                        setDropdownOpen={() => {
+                          setOpenDropdown((prev) =>
+                            prev === 'Projects & Contracts'
+                              ? null
+                              : 'Projects & Contracts'
+                          );
+                        }}
+                        hasAdditionalSvg
+                      />
+                    )}
 
-                  {
-                    hasFeature(featureToggles.featureToggles, EFeatureToggles.RECRUITMENT_MANAGEMENT) &&
                   {hasFeature(
                     featureToggles.featureToggles,
                     EFeatureToggles.RECRUITMENT_MANAGEMENT
                   ) && (
-
                     <ListItem
                       isSideBarOpen={sidebarOpen}
                       linkTo="#"
@@ -478,7 +487,6 @@ const CompleteNavBar = () => {
                       }}
                       hasAdditionalSvg
                     />
-                  }
                   )}
 
                   <ListItem

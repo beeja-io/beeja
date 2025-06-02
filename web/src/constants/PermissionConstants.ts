@@ -93,7 +93,6 @@ export const PROFILE_PIC_MODULE = {
   UPDATE_PROFILE_PHOTO_ALL: 'UPPA',
 };
 
-
 export const CLIENT_MODULE = {
-  GENERATE_INVOICE : 'DEX'
-}
+  GENERATE_INVOICE: 'DEX',
+};

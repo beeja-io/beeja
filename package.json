@@ -1,28 +1,17 @@
 {
-
   "name": "beeja",
   "version": "1.0.0",
   "description": "**Beeja**",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "postinstall": "cd web && npm install"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
-
-    "scripts": {
-        "prepare": "husky install",
-        "postinstall": "cd web && npm install"
-    },
-    "name": "beeja",
-    "version": "1.0.0",
-    "description": "**Beeja**",
-    "main": "index.js",
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "devDependencies": {
-        "husky": "^9.1.7"
-    }
+  "license": "ISC",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
 }

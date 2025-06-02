@@ -8,7 +8,7 @@ export const TimesheetContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin: 24px 0;
-    
+
   .heading {
     font-size: 24px;
     font-style: normal;
@@ -22,43 +22,43 @@ export const TimesheetContainer = styled.div`
     padding-bottom: 20px;
   }
 
-  .TimeSheet_Container{
-   background-color: ${(props) => props.theme.colors.backgroundColors.primary};
-   padding-left: 42px;
-   }     
-  
+  .TimeSheet_Container {
+    background-color: ${(props) => props.theme.colors.backgroundColors.primary};
+    padding-left: 42px;
+  }
+
   .TimeSheet_Heading {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid
       ${(props) => props.theme.colors.grayColors.grayscale300};
-    padding-top: 15px 
-    }
+    padding-top: 15px;
+  }
   .TimeSheetTitle {
     padding: 12px 8px 2px 0px;
     color: #005792;
     font-size: 14px;
     font-weight: 700;
     text-align: center;
-    align-item: flex-end; 
+    align-item: flex-end;
   }
   .underline {
     border-bottom: 2px solid #005792;
   }
-  .Filter_Container{
+  .Filter_Container {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  .Export{
+  .Export {
     padding: 10px;
     border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
     border-radius: 8px;
-    }
+  }
 `;
 export const SearchBox = styled.div`
   display: flex;
-  fontstyle : Nunito;
+  fontstyle: Nunito;
   padding: 8px 8px 8px 16px;
   align-items: center;
   justify-content: space-between;
@@ -138,7 +138,8 @@ export const TimesheetRow = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+  border-bottom: 1px solid
+    ${(props) => props.theme.colors.grayColors.grayscale300};
   align-items: center;
 `;
 
@@ -153,13 +154,14 @@ export const NavigationButtons = styled.div`
     border-radius: 8px;
     cursor: pointer;
     background-color: ${(props) => props.theme.colors.backgroundColors.primary};
-     border: 1px solid #F1F2F4
-    }
-    `;
+    border: 1px solid #f1f2f4;
+  }
+`;
 
 export const RotateArrow = styled.span<{ isExpanded: boolean }>`
   display: inline-block;
-  transform: ${({ isExpanded }) => (isExpanded ? "rotate(180deg)" : "rotate(0deg)")};
+  transform: ${({ isExpanded }) =>
+    isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'};
   transition: transform 0.1s ease-in-out;
   opacity: 0.8;
   padding: 15px;
@@ -172,21 +174,21 @@ export const FormContainer = styled.div`
 
   .Form_Headings {
     display: flex;
-  justify-content: space-between;
-  background: #F6FBFF;
-  padding: 10px;
-  font-weight: bold;
-  border-radius: 5px;
-}
+    justify-content: space-between;
+    background: #f6fbff;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 5px;
+  }
   .Form_Row {
     display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 0;
-  border-bottom: 1px solid #ddd;
-  
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
   }
-input, textarea {
+  input,
+  textarea {
     flex: 1;
     margin: 0 5px;
     padding: 8px;
@@ -195,11 +197,10 @@ input, textarea {
   }
   input {
     min-width: 120px;
-    max-width: 150px
+    max-width: 150px;
   }
-    textarea{
-     min-width: 180px;
-      max-width: 250px
-    }
-  
-`
+  textarea {
+    min-width: 180px;
+    max-width: 250px;
+  }
+`;
