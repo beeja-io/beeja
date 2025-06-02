@@ -12,6 +12,8 @@ import {
   AddressDiv,
   LogoPreview,
   LogoNameWrapper,
+  ButtonGroup,
+  ActionButton,
 } from '../styles/ClientStyles.style';
 
 import {
@@ -28,24 +30,30 @@ import { downloadClientLogo, getClient } from '../service/axiosInstance';
 import { useParams } from 'react-router-dom';
 import AddProjectForm from '../components/directComponents/AddProjectForm.component';
 import CenterModalMain from '../components/reusableComponents/CenterModalMain.component';
-
-interface Props {
-  client: ClientResponse | null;
-}
+import ClientTabsSection from './ClientTabSection.screen';
+import AddContractForm from '../components/directComponents/AddContractForm.component';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 
 const ClientDetailsScreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const { id } = useParams();
   const [client, setClient] = useState<ClientResponse | null>(null);
   const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
+  const [isAddContractModalOpen, setIsAddContractModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleAddProjectModalToggle = () => {
     setIsAddProjectModalOpen((prev) => !prev);
   };
 
+  const handleAddContractModalToggle = () => {
+    setIsAddContractModalOpen((prev) => !prev);
+  };
+
   useEffect(() => {
     const fetchLogoImage = async () => {
       if (client?.logoId) {
+        setLoading(true);
         try {
           const response = await downloadClientLogo(client.logoId);
 
@@ -57,6 +65,7 @@ const ClientDetailsScreen: React.FC = () => {
           reader.onloadend = () => {
             const imageUrl = reader.result as string;
             setLogoUrl(imageUrl);
+            setLoading(false);
           };
           reader.onerror = () => {
             throw new Error('Error converting blob to base64');
@@ -79,20 +88,45 @@ const ClientDetailsScreen: React.FC = () => {
   useEffect(() => {
     const fetchClient = async () => {
       if (!id) return;
+      setLoading(true);
       try {
         const res = await getClient(id);
         setClient(res.data);
       } catch (error) {
         throw new Error('Failed to fetch client:' + error);
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchClient();
   }, [id]);
 
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const handleShowSuccessMessage = () => {
+    setShowSuccessMessage(true);
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 2000);
+  };
+  const handleSuccessMessage = () => {
+    handleShowSuccessMessage();
+    setIsAddProjectModalOpen(false);
+  };
+
+  if (loading) {
+    return <SpinAnimation />;
+  }
+
   return (
-    <Container>
-      <LeftSection>
+    <Container
+      style={{
+        maxWidth: '1200px',
+        margin: '0 auto',
+        display: 'flex',
+        gap: '20px',
+      }}
+    >
+      <LeftSection style={{ flex: 2, minWidth: '750px' }}>
         <ClientInfo>
           <LogoNameWrapper>
             {client?.logoId && (
@@ -103,51 +137,70 @@ const ClientDetailsScreen: React.FC = () => {
             <ClientTitle> {client?.clientName}</ClientTitle>
           </LogoNameWrapper>
           <div style={{ display: 'flex', marginBottom: '30px' }}>
-            <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
-              ID: {client?.clientId}
-            </ClientInfoDiv>
-            <DotSVG />
-            <ClientInfoDiv style={{ width: '150px' }}>
-              {client?.clientType}
-            </ClientInfoDiv>
-
-            <DotSVG />
-            <IndustrySVG />
-            <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
-              {client?.industry}
-            </ClientInfoDiv>
-            <DotSVG />
-            <EmailSVG />
-
-            <ClientInfoDiv style={{ width: '200px', wordWrap: 'break-word' }}>
-              {client?.email}
-            </ClientInfoDiv>
-            <DotSVG />
-            <CallSVG />
-            <ClientInfoDiv style={{ width: '100px' }}>
-              {t('91+')}
-              {client?.contact}
-            </ClientInfoDiv>
+            {client?.clientId && (
+              <>
+                <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
+                  ID: {client.clientId}
+                </ClientInfoDiv>
+              </>
+            )}
+            {client?.clientType && (
+              <>
+                <DotSVG />
+                <ClientInfoDiv style={{ width: '120px' }}>
+                  {client.clientType}
+                </ClientInfoDiv>
+              </>
+            )}
+            {client?.industry && (
+              <>
+                <DotSVG />
+                <IndustrySVG />
+                <ClientInfoDiv style={{ width: '130px', paddingRight: '10px' }}>
+                  {client.industry}
+                </ClientInfoDiv>
+              </>
+            )}
+            {client?.email && (
+              <>
+                <DotSVG />
+                <EmailSVG />
+                <ClientInfoDiv
+                  style={{ width: '160px', wordWrap: 'break-word' }}
+                >
+                  {client.email}
+                </ClientInfoDiv>
+              </>
+            )}
+            {client?.contact && (
+              <>
+                <DotSVG />
+                <CallSVG />
+                <ClientInfoDiv style={{ width: '100px' }}>
+                  {t('91+')}
+                  {client.contact}
+                </ClientInfoDiv>
+              </>
+            )}
           </div>
-          <div style={{ display: 'flex' }}>
-            <div
-              style={{ display: 'flex', cursor: 'pointer' }}
-              onClick={handleAddProjectModalToggle}
-            >
-              <AddSVG />
-              <ProjectInfo>{t(' Add Project')}</ProjectInfo>
-            </div>
 
-            <div>
+          <ButtonGroup>
+            <ActionButton onClick={handleAddProjectModalToggle}>
               <AddSVG />
-            </div>
-            <ProjectInfo>{t('Add Contract')}</ProjectInfo>
-          </div>
+              <ProjectInfo>{t('Add Project')}</ProjectInfo>
+            </ActionButton>
+
+            <ActionButton onClick={handleAddContractModalToggle}>
+              <AddSVG />
+              <ProjectInfo>{t('Add Contract')}</ProjectInfo>
+            </ActionButton>
+          </ButtonGroup>
         </ClientInfo>
-        <TableContainer></TableContainer>
+
+        {client?.clientId && <ClientTabsSection clientId={client?.clientId} />}
       </LeftSection>
 
-      <RightSection>
+      <RightSection style={{ flex: 1, minWidth: '300px' }}>
         <RightSectionDiv>
           <div>Primary Address</div>
           <AddressDiv>
@@ -192,10 +245,27 @@ const ClientDetailsScreen: React.FC = () => {
             <AddProjectForm
               handleClose={handleAddProjectModalToggle}
               onCancel={handleAddProjectModalToggle}
+              handleSuccessMessage={handleSuccessMessage}
               onSubmit={() => {
                 handleAddProjectModalToggle();
               }}
-              clientId={client.clientId}
+              client={client}
+            />
+          }
+        />
+      )}
+      {isAddContractModalOpen && client?.clientId && (
+        <CenterModalMain
+          heading="ADD_NEW_CONTRACT"
+          modalClose={handleAddContractModalToggle}
+          actualContentContainer={
+            <AddContractForm
+              handleClose={handleAddContractModalToggle}
+              handleSuccessMessage={handleSuccessMessage}
+              onSubmit={() => {
+                handleAddContractModalToggle();
+              }}
+              client={client}
             />
           }
         />

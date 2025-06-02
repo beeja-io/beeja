@@ -293,6 +293,24 @@ export const putClient = (
   return axiosInstance.put(`/projects/v1/clients/${id}`, data);
 };
 
+export const postProjects = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/projects`, data);
+};
+
+export const postContracts = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/contracts`, data);
+};
+
+export const getProjectDetails = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/projects/client/${id}`);
+};
+
+export const getContractDetails = (
+  contractId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/contracts/${contractId}`);
+};
+
 export const getAllRolesInOrganization = (): Promise<AxiosResponse> => {
   return axiosInstance.get('/accounts/v1/roles');
 };

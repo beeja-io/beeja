@@ -366,12 +366,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                       value={formData?.clientName}
                       onChange={handleChange}
                       required
-                      style={{ width: '400px' }}
                     />
                   </InputLabelContainer>
                   <InputLabelContainer>
                     <label>
-                      {t('Email')}{' '}
+                      {t('Email')}
                       <ValidationText className="star">*</ValidationText>
                     </label>
                     <TextInput
@@ -382,7 +381,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       value={formData?.email}
                       onChange={handleChange}
                       required
-                      style={{ width: '400px' }}
                     />
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -394,7 +392,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       className="largeInput"
                       value={formData?.contact}
                       onChange={handleChange}
-                      style={{ width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
@@ -410,7 +407,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       value={formData?.clientType}
                       onChange={handleChange}
                       required
-                      style={{ width: '400px' }}
                     >
                       <option value="">{t('Select type')}</option>
                       <option value="INTERNAL">{t('INTERNAL')}</option>
@@ -426,7 +422,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       name="industry"
                       value={formData?.industry}
                       onChange={handleChange}
-                      style={{ width: '400px' }}
                     >
                       <option value="">{t('Select Industry')}</option>
                       <option value="HRMS">{t('HRMS')}</option>
@@ -444,7 +439,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       className="largeInput"
                       value={formData?.description}
                       onChange={handleChange}
-                      style={{ width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
@@ -510,7 +504,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       name="taxDetails.taxCategory"
                       value={formData.taxDetails?.taxCategory ?? ''}
                       onChange={handleChange}
-                      style={{ width: '400px' }}
                     >
                       <option value="">{t('Select category')}</option>
                       <option value="VAT">{t('VAT')}</option>
@@ -530,7 +523,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       className="largeInput"
                       value={formData.taxDetails?.taxNumber ?? ''}
                       onChange={handleChange}
-                      style={{ width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
@@ -625,7 +617,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       className="largeInput"
                       value={formData.primaryAddress?.country}
                       onChange={handleChange}
-                      style={{ width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
@@ -705,7 +696,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       className="largeInput"
                       value={formData?.billingAddress?.country ?? ''}
                       onChange={handleChange}
-                      style={{ width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
