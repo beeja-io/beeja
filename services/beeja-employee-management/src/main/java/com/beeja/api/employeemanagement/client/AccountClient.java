@@ -1,5 +1,6 @@
 package com.beeja.api.employeemanagement.client;
 
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeNameDTO;
 import com.beeja.api.employeemanagement.requests.EmployeeOrgRequest;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -11,9 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PostMapping;
+import java.util.List;
 
 @FeignClient(value = "account-service", url = "${client-urls.accountsService}")
 public interface AccountClient {
+
+  @PostMapping("/v1/users/names")
+  List<EmployeeNameDTO> getEmployeeNamesByIds(@RequestBody List<String> employeeIds);
 
   @RequestMapping(value = "/v1/users", method = RequestMethod.GET)
   @ResponseBody

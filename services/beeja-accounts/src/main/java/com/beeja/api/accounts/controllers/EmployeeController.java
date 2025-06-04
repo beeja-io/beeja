@@ -190,4 +190,10 @@ public class EmployeeController {
       @Valid @RequestBody ChangeEmailAndPasswordRequest changeEmailAndPasswordRequest) {
     return ResponseEntity.ok(employeeService.changeEmailAndPassword(changeEmailAndPasswordRequest));
   }
+
+  @PostMapping("/validate-employees")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public List<String> checkEmployeesPresentOrNot(@RequestBody List<String> employeeIds){
+      return employeeService.checkEmployees(employeeIds);
+  }
 }

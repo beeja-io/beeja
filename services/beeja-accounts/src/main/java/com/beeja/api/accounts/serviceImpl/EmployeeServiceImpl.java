@@ -526,4 +526,15 @@ public class EmployeeServiceImpl implements EmployeeService {
     userRepository.save(user);
     return Constants.UPDATED;
   }
+
+  @Override
+  public List<String> checkEmployees(List<String> employeeIds) {
+    List<User> existingUsers = userRepository.findByEmployeeIdInAndOrganizations_Id(
+            employeeIds,
+            UserContext.getLoggedInUserOrganization().getId());
+
+    return existingUsers.stream()
+            .map(User::getEmployeeId)
+            .collect(Collectors.toList());
+  }
 }

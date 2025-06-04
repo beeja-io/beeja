@@ -1,7 +1,9 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
+import com.beeja.api.projectmanagement.client.AccountClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
+import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.Project;
@@ -34,6 +36,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
     ProjectRepository projectRepository;
+
+    @Autowired
+    AccountClient accountClient;
 
     /**
      * Creates a new {@link Project} for a given {@link Client} based on the provided {@link ProjectRequest}.
@@ -72,6 +77,24 @@ public class ProjectServiceImpl implements ProjectService {
         }
         if(project.getClientId() != null){
             newProject.setClientId(project.getClientId());
+        }
+        if(project.getProjectManagers() != null && !project.getProjectManagers().isEmpty()){
+            try {
+                List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(project.getProjectManagers());
+                newProject.setProjectManagers(validProjectManagers);
+            } catch (FeignClientException e){
+                log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS, e.getMessage(), e);
+                throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
+            }
+        }
+        if(project.getProjectResources() != null && !project.getProjectResources().isEmpty()){
+            try {
+                List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(project.getProjectResources());
+                newProject.setProjectResources(validProjectResources);
+            } catch (FeignClientException e){
+                log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
+                throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
+            }
         }
         newProject.setOrganizationId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
@@ -228,6 +251,24 @@ public class ProjectServiceImpl implements ProjectService {
         }
         if(project.getEndDate() != null) {
             existingProject.setEndDate(project.getEndDate());
+        }
+        if(project.getProjectManagers() != null && !project.getProjectManagers().isEmpty()){
+            try {
+                List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(project.getProjectManagers());
+                existingProject.setProjectManagers(validProjectManagers);
+            } catch (FeignClientException e){
+                log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
+                throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
+            }
+        }
+        if(project.getProjectResources() != null && !project.getProjectResources().isEmpty()){
+            try {
+                List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(project.getProjectResources());
+                existingProject.setProjectResources(validProjectResources);
+            } catch (FeignClientException e){
+                log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
+                throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
+            }
         }
         try{
             existingProject = projectRepository.save(existingProject);
