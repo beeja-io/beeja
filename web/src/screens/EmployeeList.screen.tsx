@@ -697,10 +697,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         props.setIsResponseLoading(true);
         const resp = await createEmployee(formData);
         setUser(resp.data);
-        handleShowPassword();
+        if (resp.data.password) {
+          handleShowPassword();
+        }
         props.reloadEmployeeList();
         props.refetchEmployeeCount();
         toast.success(t('PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED'));
+        props.handleClose();
       } catch (e) {
         if (axios.isAxiosError(e)) {
           const axiosError: AxiosError = e;
