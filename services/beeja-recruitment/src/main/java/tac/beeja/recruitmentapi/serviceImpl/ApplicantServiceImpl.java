@@ -66,7 +66,8 @@ public class ApplicantServiceImpl implements ApplicantService {
   OrganizationTest organizationTest;
 
   @Override
-  public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
+public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
+    // Check for duplicate applicant within the last 6 months
     Query query = new Query();
     query.addCriteria(Criteria.where("email").is(applicant.getEmail())
             .and("positionAppliedFor").is(applicant.getPositionAppliedFor())
@@ -76,21 +77,22 @@ public class ApplicantServiceImpl implements ApplicantService {
     calendar.add(Calendar.MONTH, -6);
     Date sixMonthsAgo = calendar.getTime();
     for (Applicant existingApplicant : existingApplicants) {
-      Date createdAt = existingApplicant.getCreatedAt();
-      if (createdAt != null && createdAt.after(sixMonthsAgo)) {
-          log.error(DUPLICATE_APPLICATION_LOG, applicant.getEmail(), applicant.getPositionAppliedFor());
+        Date createdAt = existingApplicant.getCreatedAt();
+        if (createdAt != null && createdAt.after(sixMonthsAgo)) {
+            log.error(DUPLICATE_APPLICATION_LOG, applicant.getEmail(), applicant.getPositionAppliedFor());
             throw new ConflictException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.CONFLICT,
                             ErrorCode.DUPLICATE_APPLICANT,
                             DUPLICATE_APPLICANT));
-      }
+        }
     }
-        //    accept only pdf, doc and docx for applicant.getResume()
+
+    // Accept only PDF, DOC, and DOCX for applicant.getResume()
     if (!applicant.getResume().getContentType().equals("application/pdf")
             && !applicant.getResume().getContentType().equals("application/msword")
             && !applicant.getResume().getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
-      throw new BadRequestException("Only PDF, DOC and DOCX files are allowed");
+        throw new BadRequestException("Only PDF, DOC and DOCX files are allowed");
     }
     Applicant newApplicant = new Applicant();
     newApplicant.setEmail(applicant.getEmail());
@@ -230,6 +232,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     return ORG_Prefix + datePart + sequencePart;
 
   }
+
 
   @Override
   public List<Applicant> getAllApplicantsInOrganization() throws Exception {
@@ -622,4 +625,6 @@ public class ApplicantServiceImpl implements ApplicantService {
     String filename = headers.getFirst("fileName");
     return new FileDownloadResultMetaData(filename, createdBy, entityId, organizationId);
   }
+
+
 }

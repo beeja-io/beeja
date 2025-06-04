@@ -54,18 +54,20 @@ import static com.beeja.api.financemanagementservice.Utils.Constants.zipFile;
 @Slf4j
 public class LoanServiceImpl implements LoanService {
   private final MongoOperations mongoOperations;
+  private final FileClient fileClient;
+  private final LoanRepository loanRepository;
 
   @Autowired
-  public LoanServiceImpl(MongoOperations mongoOperations) {
+  public LoanServiceImpl(MongoOperations mongoOperations,LoanRepository loanRepository,FileClient fileClient) {
     this.mongoOperations = mongoOperations;
+    this.fileClient = fileClient;
+    this.loanRepository=loanRepository;
   }
 
-  @Autowired LoanRepository loanRepository;
 
   @Autowired
   AccountClient accountClient;
 
-  @Autowired FileClient fileClient;
 
   /**
    * Changes the status of a loan based on the provided loan ID.
@@ -185,7 +187,7 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
     Set<String> employeeIds = loans.stream()
             .map(LoanDTO::getEmployeeId)
             .collect(Collectors.toSet());
-    
+
     List<EmployeeNameDTO> employeeNamesList=null;
 
     try{

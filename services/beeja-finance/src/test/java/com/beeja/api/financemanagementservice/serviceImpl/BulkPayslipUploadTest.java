@@ -41,7 +41,7 @@ public class BulkPayslipUploadTest {
     @Test
     void testValidPdf_uploadSuccess() throws Exception {
         // 1. Create dummy PDF with employee ID
-        byte[] pdfBytes = createDummyPdf("Employee ID: EMP12345");
+        byte[] pdfBytes = createDummyPdf("Employee Code: EMP12345");
 
         // 2. Zip the dummy PDF
         byte[] zipBytes = createZipBytes(Map.of("payslip1.pdf", pdfBytes));
@@ -130,7 +130,7 @@ public class BulkPayslipUploadTest {
 
     @Test
     void testFileUploadFailure_logged() throws Exception {
-        byte[] pdfBytes = createDummyPdf("Employee ID: EMP99999");
+        byte[] pdfBytes = createDummyPdf("Employee Code: EMP99999");
         byte[] zipBytes = createZipBytes(Map.of("failme.pdf", pdfBytes));
         when(zipFile.getInputStream()).thenReturn(new ByteArrayInputStream(zipBytes));
 
