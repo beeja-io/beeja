@@ -194,10 +194,14 @@ const OrganizationSettings = () => {
                       className={activeTab === 'profile' ? 'active' : ''}
                       onClick={() => {
                         handleTabClick('profile');
-                        setOpenDropdown(openDropdown === 'profile' ? null : 'profile');
+                        setOpenDropdown(
+                          openDropdown === 'profile' ? null : 'profile'
+                        );
                       }}
                     >
-                      <MyProfileSVG props={{ isActive: activeTab === 'profile' }} />
+                      <MyProfileSVG
+                        props={{ isActive: activeTab === 'profile' }}
+                      />
                       {t('PROFILE')}
                     </li>
                   )}
@@ -211,133 +215,173 @@ const OrganizationSettings = () => {
                       className={activeTab === 'dateCurrency' ? 'active' : ''}
                       onClick={() => {
                         handleTabClick('dateCurrency');
-                        setOpenDropdown(openDropdown === 'dateCurrency' ? null : 'dateCurrency');
-                      }
-                      }
+                        setOpenDropdown(
+                          openDropdown === 'dateCurrency'
+                            ? null
+                            : 'dateCurrency'
+                        );
+                      }}
                     >
                       <CalenderSVG isActive={activeTab === 'dateCurrency'} />
                       {t('DATE_AND_CURRENCY')}
                     </li>
                   )}
 
-                {user && hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
-                  <>
-                    {featureToggles &&
-                      hasFeature(featureToggles.featureToggles, EFeatureToggles.LOAN_MANAGEMENT) && (
-                        <li
-                          className={openDropdown === 'loan' ? 'active open' : ''}
-                          onClick={() => {
-                            setOpenDropdown(openDropdown === 'loan' ? null : 'loan');
-                          }}
-                        >
-                          <LoanIconSVG isActive={openDropdown === 'loan'} />
-                          {t('LOANS')}
-                        </li>
+                {user &&
+                  hasPermission(
+                    user,
+                    ORGANIZATION_MODULE.UPDATE_ORGANIZATION
+                  ) && (
+                    <>
+                      {featureToggles &&
+                        hasFeature(
+                          featureToggles.featureToggles,
+                          EFeatureToggles.LOAN_MANAGEMENT
+                        ) && (
+                          <li
+                            className={
+                              openDropdown === 'loan' ? 'active open' : ''
+                            }
+                            onClick={() => {
+                              setOpenDropdown(
+                                openDropdown === 'loan' ? null : 'loan'
+                              );
+                            }}
+                          >
+                            <LoanIconSVG isActive={openDropdown === 'loan'} />
+                            {t('LOANS')}
+                          </li>
+                        )}
+                      {openDropdown === 'loan' && (
+                        <ul className="dropdown-menu">
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'Loan types & Limits' ? 'active' : ''}`}
+                            onClick={() =>
+                              handleTabClick('Loan types & Limits')
+                            }
+                          >
+                            {t('Loan types & Limits')}
+                          </li>
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'Loan ID pattern' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('Loan ID pattern')}
+                          >
+                            {t('Loan ID pattern')}
+                          </li>
+                        </ul>
                       )}
-                    {openDropdown === 'loan' && (
-                      <ul className="dropdown-menu">
-                        <li
-                          className={`dropdown-item-thread ${activeTab === 'Loan types & Limits' ? 'active' : ''}`}
-                          onClick={() => handleTabClick('Loan types & Limits')}
-                        >
-                          {t('Loan types & Limits')}
-                        </li>
-                        <li
-                          className={`dropdown-item-thread ${activeTab === 'Loan ID pattern' ? 'active' : ''}`}
-                          onClick={() => handleTabClick('Loan ID pattern')}
-                        >
-                          {t('Loan ID pattern')}
-                        </li>
-                      </ul>
-                    )}
 
-                    <li
-                      className={openDropdown === 'expense' ? 'active open' : ''}
-                      onClick={() => {
-                        setOpenDropdown(openDropdown === 'expense' ? null : 'expense');
-                      }}
-                    >
-                      <ExpenseIconSVG isActive={openDropdown === 'expense'} />
-                      {t('Expense Settings')}
-                    </li>
-                    {openDropdown === 'expense' && (
-                      <ul className="dropdown-menu">
-                        <li
-                          className={`dropdown-item-thread ${activeTab === 'ExpenseType' ? 'active' : ''}`}
-                          onClick={() => handleTabClick('ExpenseType')}
-                        >
-                          Expense Type
-                        </li>
-                        <li
-                          className={`dropdown-item-thread ${activeTab === 'ModeOfPayments' ? 'active' : ''}`}
-                          onClick={() => handleTabClick('ModeOfPayments')}
-                        >
-                          Mode Of Payments
-                        </li>
-                        <li
-                          className={`dropdown-item-thread ${activeTab === 'ExpenseCategories' ? 'active' : ''}`}
-                          onClick={() => handleTabClick('ExpenseCategories')}
-                        >
-                          Expense Categories
-                        </li>
-                      </ul>
-                    )}
-
-                    <li
-                      className={openDropdown === 'employee' ? 'active open' : ''}
-                      onClick={() => {
-                        setOpenDropdown(openDropdown === 'employee' ? null : 'employee');
-                      }}
-                    >
-                      <EmployeeIconSVG isActive={openDropdown === 'employee'} />
-                      {t('Employee Settings')}
-                    </li>
-                    {openDropdown === 'employee' && (
-                      <ul className="dropdown-menu">
-                        <li
-                          className={`dropdown-item-thread ${activeTab === 'EmployeeIdPattern' ? 'active' : ''}`}
-                          onClick={() => handleTabClick('EmployeeIdPattern')}
-                        >
-                          Employee ID Pattern
-                        </li>
-                        <li
-                          className={`dropdown-item-thread ${activeTab === 'EmploymentType' ? 'active' : ''}`}
-                          onClick={() => handleTabClick('EmploymentType')}
-                        >
-                          Employment Type
-                        </li>
-                        <li
-                          className={`dropdown-item-thread ${activeTab === 'jobtitles' ? 'active' : ''}`}
-                          onClick={() => handleTabClick('jobtitles')}
-                        >
-                          JobTitles
-                        </li>
-                        <li
-                          className={`dropdown-item-thread ${activeTab === 'departments' ? 'active' : ''}`}
-                          onClick={() => handleTabClick('departments')}
-                        >
-                          Departments
-                        </li>
-                      </ul>
-                    )}
-
-                    {featureToggles &&
-                      (hasFeature(featureToggles.featureToggles, EFeatureToggles.ORGANIZATION_SETTINGS_THEMES) ||
-                        hasFeature(featureToggles.featureToggles, EFeatureToggles.ORGANIZATION_SETTINGS_FONT_NAME)) &&
-                      EFeatureToggles.ORGANIZATION_SETTINGS_FONT_SIZE && (
-                        <li
-                          className={activeTab === 'themesTypography' ? 'active' : ''}
-                          onClick={() => {
-                            handleTabClick('themesTypography');
-                            setOpenDropdown(openDropdown === 'themesTypography' ? null : 'themesTypography');
-                          }}
-                        >
-                          <ThemeAndTypographySVG isActive={activeTab === 'themesTypography'} />
-                          {t('THEMES_AND_TYPOGRAPHY')}
-                        </li>
+                      <li
+                        className={
+                          openDropdown === 'expense' ? 'active open' : ''
+                        }
+                        onClick={() => {
+                          setOpenDropdown(
+                            openDropdown === 'expense' ? null : 'expense'
+                          );
+                        }}
+                      >
+                        <ExpenseIconSVG isActive={openDropdown === 'expense'} />
+                        {t('Expense Settings')}
+                      </li>
+                      {openDropdown === 'expense' && (
+                        <ul className="dropdown-menu">
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'ExpenseType' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('ExpenseType')}
+                          >
+                            Expense Type
+                          </li>
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'ModeOfPayments' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('ModeOfPayments')}
+                          >
+                            Mode Of Payments
+                          </li>
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'ExpenseCategories' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('ExpenseCategories')}
+                          >
+                            Expense Categories
+                          </li>
+                        </ul>
                       )}
-                  </>
-                )}
+
+                      <li
+                        className={
+                          openDropdown === 'employee' ? 'active open' : ''
+                        }
+                        onClick={() => {
+                          setOpenDropdown(
+                            openDropdown === 'employee' ? null : 'employee'
+                          );
+                        }}
+                      >
+                        <EmployeeIconSVG
+                          isActive={openDropdown === 'employee'}
+                        />
+                        {t('Employee Settings')}
+                      </li>
+                      {openDropdown === 'employee' && (
+                        <ul className="dropdown-menu">
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'EmployeeIdPattern' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('EmployeeIdPattern')}
+                          >
+                            Employee ID Pattern
+                          </li>
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'EmploymentType' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('EmploymentType')}
+                          >
+                            Employment Type
+                          </li>
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'jobtitles' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('jobtitles')}
+                          >
+                            JobTitles
+                          </li>
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'departments' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('departments')}
+                          >
+                            Departments
+                          </li>
+                        </ul>
+                      )}
+
+                      {featureToggles &&
+                        (hasFeature(
+                          featureToggles.featureToggles,
+                          EFeatureToggles.ORGANIZATION_SETTINGS_THEMES
+                        ) ||
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.ORGANIZATION_SETTINGS_FONT_NAME
+                          )) &&
+                        EFeatureToggles.ORGANIZATION_SETTINGS_FONT_SIZE && (
+                          <li
+                            className={
+                              activeTab === 'themesTypography' ? 'active' : ''
+                            }
+                            onClick={() => {
+                              handleTabClick('themesTypography');
+                              setOpenDropdown(
+                                openDropdown === 'themesTypography'
+                                  ? null
+                                  : 'themesTypography'
+                              );
+                            }}
+                          >
+                            <ThemeAndTypographySVG
+                              isActive={activeTab === 'themesTypography'}
+                            />
+                            {t('THEMES_AND_TYPOGRAPHY')}
+                          </li>
+                        )}
+                    </>
+                  )}
 
                 {featureToggles &&
                   user &&
@@ -347,13 +391,23 @@ const OrganizationSettings = () => {
                   ) &&
                   hasPermission(user, EMPLOYEE_MODULE.READ_EMPLOYEE) && (
                     <li
-                      className={activeTab === 'userRolesPermissions' ? 'active' : ''}
+                      className={
+                        activeTab === 'userRolesPermissions' ? 'active' : ''
+                      }
                       onClick={() => {
                         handleTabClick('userRolesPermissions');
-                        setOpenDropdown(openDropdown === 'userRolesPermissions' ? null : 'userRolesPermissions');
+                        setOpenDropdown(
+                          openDropdown === 'userRolesPermissions'
+                            ? null
+                            : 'userRolesPermissions'
+                        );
                       }}
                     >
-                      <UserBoxWithLinkSVG props={{ isActive: activeTab === 'userRolesPermissions' }} />
+                      <UserBoxWithLinkSVG
+                        props={{
+                          isActive: activeTab === 'userRolesPermissions',
+                        }}
+                      />
                       {t('USER_ROLES_AND_PERMISSIONS')}
                     </li>
                   )}
@@ -361,7 +415,9 @@ const OrganizationSettings = () => {
                 <li
                   className={openDropdown === 'device' ? 'active open' : ''}
                   onClick={() => {
-                    setOpenDropdown(openDropdown === 'device' ? null : 'device');
+                    setOpenDropdown(
+                      openDropdown === 'device' ? null : 'device'
+                    );
                   }}
                 >
                   <DeviceIconSVG isActive={openDropdown === 'device'} />
