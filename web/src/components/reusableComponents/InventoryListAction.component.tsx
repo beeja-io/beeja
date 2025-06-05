@@ -71,6 +71,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
       setConfirmDeleteModal(true);
     }
     setIsOpen(false);
+    setSelectedOption(null);
   };
   const deleteSelectedDevice = async () => {
     try {

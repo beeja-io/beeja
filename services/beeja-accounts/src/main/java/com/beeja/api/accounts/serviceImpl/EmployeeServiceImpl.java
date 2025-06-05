@@ -227,12 +227,8 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
   @Override
   public List<EmployeeNameDTO> getEmployeeNamesByIds(List<String> employeeIds) {
-    return userRepository.findByEmployeeIdIn(employeeIds).stream()
-            .filter(user -> user.getEmployeeId() != null)
-            .map(user -> new EmployeeNameDTO(
-                    user.getEmployeeId(),
-                    user.getFirstName() + " " + user.getLastName()))
-            .collect(Collectors.toList());
+    return userRepository.findEmployeeNamesByEmployeeIdInAndOrganizations_Id(employeeIds,
+                    UserContext.getLoggedInUserOrganization().getId());
   }
 
   @Override
@@ -395,7 +391,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 
       for (Role role : roles) {
         Query userQuery = new Query();
-        userQuery.addCriteria(Criteria.where("roles").in(role.getId()).and("isActive").is(true));
+        userQuery.addCriteria(Criteria.where("roles").in(role.getId()).and("isActive").is(true).
+                and("organizations").is(UserContext.getLoggedInUserOrganization()));
         userQuery
             .fields()
             .include("firstName")
@@ -404,8 +401,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             .include("email");
         userSet.addAll(mongoTemplate.find(userQuery, User.class));
       }
-      List<User> users = new ArrayList<>(userSet);
-      return users;
+        return new ArrayList<>(userSet);
     } catch (Exception e) {
       throw new Exception(
           BuildErrorMessage.buildErrorMessage(

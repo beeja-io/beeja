@@ -35,42 +35,41 @@ const RecruitmentManagementScreen = (
   const handleIsLoading = () => {
     setIsLoading(!isLoading);
   };
-   const handlePageChange = (newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
-  }
+  };
 
   const fetchApplicants = useCallback(async () => {
-  try {
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    const queryString = `?page=${currentPage}&pageSize=${itemsPerPage}`;
+      const queryString = `?page=${currentPage}&pageSize=${itemsPerPage}`;
 
-    const response = props.isReferral
-      ? await getMyReferrals(queryString)
-      : await getAllApplicantList(queryString);
+      const response = props.isReferral
+        ? await getMyReferrals(queryString)
+        : await getAllApplicantList(queryString);
 
-    const applicantData = Array.isArray(response?.data?.applicants)
-      ? response.data.applicants
-      : response?.data ?? [];
+      const applicantData = Array.isArray(response?.data?.applicants)
+        ? response.data.applicants
+        : (response?.data ?? []);
 
-    setAllApplicants(applicantData);
+      setAllApplicants(applicantData);
 
-   const totalCount = response?.data?.totalRecords ?? applicantData.length;
-   setTotalItems(totalCount);
-
-  } catch (error) {
-    alert('Failed to fetch applicants');
-    setAllApplicants([]);
-    setTotalItems(0);
-  } finally {
-    setIsLoading(false);
-  }
-}, [props.isReferral, currentPage, itemsPerPage]);
+      const totalCount = response?.data?.totalRecords ?? applicantData.length;
+      setTotalItems(totalCount);
+    } catch (error) {
+      alert('Failed to fetch applicants');
+      setAllApplicants([]);
+      setTotalItems(0);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [props.isReferral, currentPage, itemsPerPage]);
 
   useEffect(() => {
     fetchApplicants();
@@ -112,7 +111,6 @@ const RecruitmentManagementScreen = (
           isReferral={props.isReferral}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
-         
         />
         <Pagination
           currentPage={currentPage}
