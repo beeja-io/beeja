@@ -239,7 +239,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         props.handleClose();
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          const { response } = error;
+          const { response, message } = error;
+          if (message.includes('413')) {
+            const errorMsg =
+              'File exceeds the 10 MB limit. Please upload a smaller file';
+            setResponseErrorMessage(errorMsg);
+            handleShowErrorMessage();
+            return;
+          }
           if (response) {
             if (response.data.startsWith('At least one receipt is required')) {
               setResponseErrorMessage(
@@ -617,7 +624,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         props.handleClose();
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          const { response } = error;
+          const { response, message } = error;
+          if (message.includes('413')) {
+            const errorMsg =
+              'File exceeds the 10 MB limit. Please upload a smaller file';
+            setResponseErrorMessage(errorMsg);
+            handleShowErrorMessage();
+            return;
+          }
           if (response) {
             if (response.data.startsWith('At least one receipt is required')) {
               setResponseErrorMessage(
