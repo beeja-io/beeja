@@ -81,7 +81,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         }
 
         Invoice invoice = new Invoice();
-        invoice.setInvoiceId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        invoice.setInvoiceId(request.setInvoiceId);
         invoice.setContractId(contractId);
         invoice.setOrganizationId(contract.getOrganizationId());
         invoice.setAmount(request.getAmount());

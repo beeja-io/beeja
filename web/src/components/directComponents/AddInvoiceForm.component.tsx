@@ -35,6 +35,7 @@ import {
   RowProps,
 } from '../../entities/InvoiceGenerationEntity';
 import { Address } from '../../entities/OrganizationEntity';
+import { createInvoice } from '../../service/axiosInstance';
 import { Button } from '../../styles/CommonStyles.style';
 import {
   CheckBoxOnSVG,
@@ -50,6 +51,7 @@ import {
   RightArrowSVG,
 } from '../../svgs/InvoiceSvgs.svg';
 import CenterModal from '../reusableComponents/CenterModal.component';
+import { toast } from 'sonner';
 
 export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
   const generateDueRemarks = (
@@ -86,12 +88,24 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     pinCode: 0,
   });
 
+  const getCurrencySymbol = (currencyType?: string): string => {
+    const currencySymbols: Record<string, string> = {
+      DOLLER: '$',
+      INDIAN_RUPEE: '₹',
+      EURO: '€',
+    };
+    return currencyType && currencySymbols[currencyType]
+      ? currencySymbols[currencyType]
+      : '';
+  };
   const [formData, setFormData] = useState<FormDataProps>({
     RemittanceNo: props.remittanceReferenceNumber || '',
     InvoiceNo: props.invoiceId || '',
     tax: 18,
-    taxId: organizationDetails?.tanNumber || '',
+    taxId: organizationDetails?.taxId || '',
     organization: organizationDetails?.name || '',
+    organizationId: props.organizationId || '',
+    projectId: props.projectId || '',
     fromDate: props.startDate
       ? new Date(props.startDate)
       : new Date(2024, 2, 4),
@@ -99,6 +113,9 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     contractName: props.contractTitle || '',
     contractId: props.contractId,
     clientName: props.clientName || '',
+    clientId: props.clientId || '',
+    status: props.status || '',
+    currencyType: organizationDetails?.currencyType || '',
     primaryAddress: organizationDetails?.address
       ? {
           addressOne: organizationDetails.address.addressOne || '',
@@ -116,6 +133,12 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       state: '',
       postalCode: '',
       country: '',
+    },
+    bankDetails: {
+      accountName: organizationDetails?.bankDetails?.accountName || '',
+      bankName: organizationDetails?.bankDetails?.bankName || '',
+      accountNumber: organizationDetails?.bankDetails?.accountNumber || '',
+      ifscNumber: organizationDetails?.bankDetails?.ifscNumber || '',
     },
     dueRemarks: generateDueRemarks(
       props.endDate ? new Date(props.endDate) : undefined,
@@ -136,6 +159,9 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       InvoiceNo: props.invoiceId || '',
       fromDate: props.startDate ? new Date(props.startDate) : prevData.fromDate,
       toDate: props.endDate ? new Date(props.endDate) : prevData.toDate,
+      status: props.status || '',
+      clientId: props.clientId || '',
+      currencyType: organizationDetails?.currencyType || '',
       primaryAddress: organizationDetails?.address
         ? {
             addressOne: organizationDetails.address.addressOne || '',
@@ -158,8 +184,19 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
         props.endDate ? new Date(props.endDate) : undefined,
         props.dueDays
       ),
-      taxId: organizationDetails?.tanNumber || prevData.taxId,
+      taxId: organizationDetails?.taxId || prevData.taxId,
       organization: organizationDetails?.name || '',
+      paymentDetails: {
+        accountName:
+          organizationDetails?.bankDetails?.accountName ||
+          'TECHATCORE PRIVATE LIMITED',
+        bankName: organizationDetails?.bankDetails?.bankName || 'ICICI',
+        accountNumber:
+          organizationDetails?.bankDetails?.accountNumber ||
+          'DE63 1001 1001 2628 1900 12',
+        ifscNumber:
+          organizationDetails?.bankDetails?.ifscNumber || 'NTSBDEB1XXX',
+      },
     }));
   }, [
     props.invoiceId,
@@ -169,7 +206,9 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     props.billingAddress,
     props.clientName,
     props.dueDays,
-    organizationDetails?.tanNumber,
+    props.clientId,
+    props.status,
+    organizationDetails?.taxId,
     organizationDetails?.name,
     organizationDetails?.address?.addressOne,
     organizationDetails?.address?.addressTwo,
@@ -177,6 +216,11 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     organizationDetails?.address?.state,
     organizationDetails?.address?.pinCode,
     organizationDetails?.address?.country,
+    organizationDetails?.bankDetails?.accountName,
+    organizationDetails?.bankDetails?.bankName,
+    organizationDetails?.bankDetails?.accountNumber,
+    organizationDetails?.bankDetails?.ifscNumber,
+    organizationDetails?.currencyType,
   ]);
 
   const [isRemittanceRefEditModeOn, setIsRemittanceRefEditModeOn] =
@@ -329,15 +373,6 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       }));
       return;
     }
-    if (!rowData.description.trim()) {
-      setErrors((prevState) => ({
-        ...prevState,
-        contract: '',
-        description: '* description should not be empty',
-        price: '',
-      }));
-      return;
-    }
     if (!rowData.price.trim()) {
       setErrors((prevState) => ({
         ...prevState,
@@ -380,9 +415,54 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
   const [confirmSaveChanges, setConfirmSaveChanges] = useState(false);
 
-  const handleConfirmSaveChanges = (e: { preventDefault: () => void }) => {
+  const handleConfirmSaveChanges = async (e: {
+    preventDefault: () => void;
+  }) => {
     e.preventDefault();
-    setConfirmSaveChanges(true);
+    try {
+      if (
+        !formData.contractId ||
+        !formData.clientId ||
+        !Total ||
+        !formData.fromDate ||
+        !formData.toDate
+      ) {
+        return;
+      }
+      const invoiceRequest: InvoiceRequest = {
+        contractId: formData.contractId,
+        billingDate: formData.fromDate.toISOString(),
+        dueDate: formData.toDate.toISOString(),
+        amount: Total,
+        currencyType: formData.currencyType,
+        notes: [formData.remarksNote || '', formData.dueRemarks || ''].filter(
+          Boolean
+        ),
+        tasks: data.map((item) => ({
+          name: item.contract,
+          description: item.description,
+          amount: Number(item.price),
+        })),
+        clientId: formData.clientId,
+        projectId: formData.projectId || null,
+        remittanceRef: formData.RemittanceNo || null,
+        vat: formData.tax || 18,
+        daysLeftForPayment: formData.dueRemarks.match(/\d+/)?.[0] || '30',
+        invoicePeriod: {
+          from: formData.fromDate.toISOString(),
+          to: formData.toDate.toISOString(),
+        },
+      };
+
+      await createInvoice(invoiceRequest);
+
+      setConfirmSaveChanges(true);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          'Failed to create invoice. Please try again.'
+      );
+    }
   };
 
   const CapitalizeWords = (str: string) => {
@@ -487,7 +567,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                 <>
                   <span className="applyMargin">
                     {' '}
-                    {organizationDetails?.tanNumber}{' '}
+                    {organizationDetails?.taxId}{' '}
                   </span>
                   <span onClick={handleIsTaxIdEditModeOn}>
                     <EditWhitePenSVG />
@@ -645,9 +725,31 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               <TableHead>
                 <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
                   <th>Sno</th>
-                  <th>Contract</th>
+                  <th>
+                    <label
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      <ValidationText>*</ValidationText> Task
+                    </label>
+                  </th>
                   <th>Description</th>
-                  <th>{'Price In {$} '}</th>
+                  <th>
+                    <label
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                      }}
+                    >
+                      <ValidationText>*</ValidationText>{' '}
+                      {'Price In ' +
+                        getCurrencySymbol(organizationDetails?.currencyType)}
+                    </label>
+                  </th>
                 </tr>
               </TableHead>
               {data.map((project, index) => (
@@ -675,28 +777,27 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             ) : (
               <div className="rowsAlign">
                 <div className="rowItem">
-                  <label>
-                    Contract<ValidationText className="star">*</ValidationText>
-                  </label>
+                  <input
+                    name="serialNo"
+                    value={data.length + 1}
+                    readOnly
+                    style={{
+                      backgroundColor: '#f0f0f0',
+                      cursor: 'not-allowed',
+                      width: '60px',
+                    }}
+                  />
+                </div>
+                <div className="rowItem">
                   <input name="contract" onChange={handleChangeRows} />
                   {errors.contract && (
                     <span className="errorSpan">{errors.contract}</span>
                   )}
                 </div>
                 <div className="rowItem">
-                  <label>
-                    Description
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
                   <input name="description" onChange={handleChangeRows} />
-                  {errors.description && (
-                    <span className="errorSpan">{errors.description}</span>
-                  )}
                 </div>
                 <div className="rowItem">
-                  <label>
-                    Price<ValidationText className="star">*</ValidationText>
-                  </label>
                   <input
                     name="price"
                     onChange={handleChangeRows}
@@ -736,13 +837,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               <div className="borderCollapse">
                 <TableRow>
                   <td style={{ paddingRight: '20px' }}>Sub Total</td>
-                  <td>($){subTotal}</td>
+                  <td>{`${getCurrencySymbol(organizationDetails?.currencyType)} ${subTotal}`}</td>
                 </TableRow>
                 <TableRow>
                   <td>Tax</td>
                   {!taxFlag ? (
                     <td>
-                      ($){formData.tax}{' '}
+                      {`${getCurrencySymbol(organizationDetails?.currencyType)} ${formData.tax}`}
                       <span onClick={handleTaxClick}>
                         {' '}
                         <EditWhitePenSVG />{' '}
@@ -763,14 +864,17 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                 </TableRow>
                 <TableRow>
                   <td>Total</td>
-                  <td>($){Total}</td>
+                  <td>
+                    ({getCurrencySymbol(organizationDetails?.currencyType)}){' '}
+                    {Total}
+                  </td>
                 </TableRow>
               </div>
             </Tablelist>
 
             <Tablelist>
               <TableRow>
-                <td>Amount In Words(Dollars):</td>
+                <td>Amount In Words({organizationDetails?.currencyType}):</td>
                 <td style={{ fontWeight: 'bold' }}>
                   {CapitalizeWords(toWords(Total))} Only/-
                 </td>
@@ -801,20 +905,20 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             <div>
               <Tablelist>
                 <TableBodyRows>
-                  <td>Name</td>
-                  <td>TECHATCORE PRIVATE LIMITED</td>
+                  <td>Name :</td>
+                  <td>{organizationDetails?.bankDetails?.accountName}</td>
                 </TableBodyRows>
                 <TableBodyRows>
-                  <td> Bank Name</td>
-                  <td>ICICI</td>
+                  <td> Bank Name :</td>
+                  <td>{organizationDetails?.bankDetails?.bankName}</td>
                 </TableBodyRows>
                 <TableBodyRows>
-                  <td>Account Number</td>
-                  <td>DE63 1001 1001 2628 1900 12</td>
+                  <td>Account Number :</td>
+                  <td>{organizationDetails?.bankDetails?.accountNumber}</td>
                 </TableBodyRows>
                 <TableBodyRows>
-                  <td>IFSC</td>
-                  <td>NTSBDEB1XXX</td>
+                  <td>IFSC :</td>
+                  <td>{organizationDetails?.bankDetails?.ifscNumber}</td>
                 </TableBodyRows>
               </Tablelist>
             </div>
@@ -843,7 +947,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             )}
             <div className="spanSign">
               <span className="remarksNote"> Best Regards </span>
-              <span className="remarks"> Tech.at.core </span>
+              <span className="remarks"> {organizationDetails?.name} </span>
             </div>
           </div>
           <div className="formButtons">

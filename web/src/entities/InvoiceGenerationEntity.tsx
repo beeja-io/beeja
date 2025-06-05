@@ -13,14 +13,11 @@ interface Address {
   pinCode: number;
   country: string;
 }
-// @ts-ignore
-interface ContextAddress {
-  addressOne: string;
-  addressTwo?: string;
-  city: string;
-  state: string;
-  pinCode: number;
-  country: string;
+interface BankDetails {
+  accountName: string;
+  bankName: string;
+  accountNumber: string;
+  ifscNumber: string;
 }
 
 export interface AddInvoiceFormProps {
@@ -35,6 +32,12 @@ export interface AddInvoiceFormProps {
   billingAddress?: BillingAddress;
   clientName?: string;
   dueDays?: number;
+  organizationId?: string;
+  projectId?: string;
+  bankDetails?: BankDetails;
+  status?: string;
+  clientId?: string;
+  currencyType?: string;
 }
 
 export interface FormDataProps {
@@ -52,6 +55,12 @@ export interface FormDataProps {
   billingAddress?: BillingAddress;
   clientName: string;
   organization: string;
+  organizationId: string;
+  projectId: string;
+  bankDetails: BankDetails;
+  status: string;
+  clientId: string;
+  currencyType: string;
 }
 
 export interface RowProps {

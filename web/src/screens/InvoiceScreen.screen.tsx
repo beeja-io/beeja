@@ -46,6 +46,7 @@ export const InvoiceScreen = () => {
 
   const { user } = useUser();
   useEffect(() => {
+    setIsLoading(true);
     const loadContractDetails = async () => {
       try {
         const response = await fetchContractById(contractId);
@@ -63,6 +64,8 @@ export const InvoiceScreen = () => {
       } catch (error) {
         // eslint-disable-next-line no-console
         console.log('error');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -90,6 +93,9 @@ export const InvoiceScreen = () => {
     }
     setIsCreateModalOpen(!isCreateModalOpen);
   };
+  if (isLoading) {
+    return <SpinAnimation />;
+  }
 
   return (
     <>
@@ -196,6 +202,10 @@ export const InvoiceScreen = () => {
               endDate={contractDetails?.endDate}
               billingAddress={clientDetails?.billingAddress}
               clientName={clientDetails?.clientName}
+              organizationId={contractDetails?.organizationId}
+              projectId={projectId}
+              status={projects?.status}
+              clientId={clientDetails?.clientId}
             />
           }
         />

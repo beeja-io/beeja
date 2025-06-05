@@ -13,9 +13,16 @@ interface ContextAddress {
 }
 
 interface IMinimalOrganizationDetails {
-  tanNumber?: string;
+  taxId?: string;
   name?: string;
   address?: ContextAddress;
+  bankDetails?: {
+    accountName?: string;
+    bankName?: string;
+    accountNumber?: string;
+    ifscNumber?: string;
+  };
+  currencyType?: string;
 }
 interface AppContextType {
   employeeList: EmployeeEntity[] | null | undefined;
@@ -34,7 +41,7 @@ export const ApplicationContext = createContext<AppContextType>({
   updateEmployeeList: () => {},
   loansList: null,
   updateLoansList: () => {},
-  organizationDetails: null, // Initial value for organization details
+  organizationDetails: null,
   setOrganizationData: () => {},
 });
 
@@ -60,7 +67,6 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({
     IMinimalOrganizationDetails | null | undefined
   >(null);
 
-  // This function takes the full IOrganization object and extracts only 'tanNumber' and 'state'
   const setOrganizationData = useCallback(
     (orgData: IOrganization | null | undefined) => {
       if (orgData) {
@@ -76,9 +82,18 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({
           : undefined;
 
         setOrganizationDetails({
-          tanNumber: orgData.accounts?.tanNumber,
+          taxId: orgData.accounts?.taxId,
+          currencyType: orgData.preferences?.currencyType,
           name: orgData.name,
           address: contextAddress,
+          bankDetails: orgData.bankDetails
+            ? {
+                accountName: orgData.bankDetails.accountName || '',
+                bankName: orgData.bankDetails.bankName || '',
+                accountNumber: orgData.bankDetails.accountNumber || '',
+                ifscNumber: orgData.bankDetails.ifscNumber || '',
+              }
+            : undefined,
         });
       } else {
         setOrganizationDetails(null);

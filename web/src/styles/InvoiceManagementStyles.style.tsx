@@ -25,6 +25,7 @@ export const InvoiceAddFormSubContainer = styled.form`
 
   .remarks {
     font-size: 12px;
+    fort-weight: bold;
   }
 
   .remarksNote {
@@ -109,6 +110,23 @@ export const InvoiceInnersmallContainer = styled.div`
     font-size: 13px;
     color: #005792;
   }
+  > div:last-child {
+    display: flex;
+    justify-content: flex-start;
+    gap: 20px;
+    margin-top: 10px;
+  }
+
+  > div:last-child > span {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 15px;
+  }
+
+  > div:last-child > span > svg {
+    transform: translateY(-1px);
+  }
 `;
 
 export const InvoiceAddFormMainContainer = styled.div`
@@ -152,7 +170,7 @@ export const InvoiceAddFormMainContainer = styled.div`
   }
 
   .spanSign span {
-    margin: 10px 0px;
+    margin: 5px 0px;
   }
 `;
 

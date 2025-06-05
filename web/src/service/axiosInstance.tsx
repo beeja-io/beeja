@@ -316,8 +316,12 @@ export const deleteRole = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/accounts/v1/roles/${id}`);
 };
 
-export const getAllApplicantList = (queryString = ''): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/recruitments/v1/applicants/combinedApplicants${queryString}`);
+export const getAllApplicantList = (
+  queryString = ''
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/recruitments/v1/applicants/combinedApplicants${queryString}`
+  );
 };
 
 export const postApplicant = (data: FormData): Promise<AxiosResponse> => {
@@ -422,4 +426,11 @@ export const fetchProjectByIdAndClientId = async (
     `/projects/v1/projects/${projectId}/${clientId}`
   );
   return response.data;
+};
+
+export const createInvoice = (invoiceRequest: {
+  contractId: string;
+  [key: string]: any;
+}) => {
+  return axiosInstance.post('/projects/v1/invoices', invoiceRequest);
 };
