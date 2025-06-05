@@ -34,15 +34,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class TimesheetServiceImpl implements TimesheetService {
 
-    @Autowired
-    private TimesheetRepository timesheetRepository;
-
-    @Autowired
-    private ProjectRepository projectRepository;
-
-    @Autowired
-    private ContractRepository contractRepository;
-
+    private final TimesheetRepository timesheetRepository;
+    private final ProjectRepository projectRepository;
+    private final ContractRepository contractRepository;
     private final MongoTemplate mongoTemplate;
 
     @Override

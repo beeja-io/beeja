@@ -25,7 +25,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
-  - url: http://localhost:8000/projects/v1
+  - url: http://localhost:8000/projects
     description: Local development server
   - url: /projects/v1
     description: Relative path (works behind proxies)
@@ -42,9 +42,11 @@ tags:
     description: Manage organization projects
   - name: HelloWorld
     description: Simple greeting endpoint
+  - name: TimeSheet
+    description:
 
 paths:
-  /clients:
+  /v1/clients:
     get:
       tags:
         - Clients
@@ -108,7 +110,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /clients/{clientId}:
+  /v1/clients/{clientId}:
     get:
       tags:
         - Clients
@@ -181,7 +183,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /contracts:
+  /v1/contracts:
     post:
       tags: [Contracts]
       summary: Create a new contract (requires existing project)
@@ -223,7 +225,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /contracts/{contractId}:
+  /v1/contracts/{contractId}:
     get:
       tags:
         - Contracts
@@ -296,7 +298,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /contracts/project/{projectId}:
+  /v1/contracts/project/{projectId}:
     get:
       tags:
         - Contracts
@@ -330,7 +332,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /projects:
+  /v1/projects:
     get:
       tags:
         - Projects
@@ -403,7 +405,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/{projectId}/{clientId}:
+  /v1/projects/{projectId}/{clientId}:
     get:
       tags:
         - Projects
@@ -442,7 +444,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/client/{clientId}:
+  /v1/projects/client/{clientId}:
     get:
       tags:
         - Projects
@@ -476,7 +478,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/{projectId}:
+  /v1/projects/{projectId}:
     put:
       tags:
         - Projects
@@ -516,7 +518,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /:
+  /v1:
     get:
       tags:
         - HelloWorld
@@ -532,6 +534,186 @@ paths:
                 example: "Hello, John Doe"
         401:
           $ref: '#/components/responses/Unauthorized'
+
+  /api/timesheets:
+    post:
+      tags: [ Timesheets ]
+      summary: Create a new timesheet
+      operationId: saveTimesheet
+      security:
+        - bearerAuth: [ CREATE_TIMESHEET ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimesheetRequestDto'
+      responses:
+        201:
+          description: Timesheet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+        400:
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+      tags: [ Timesheets ]
+      summary: Get timesheets with filtering options
+      description: |-
+        Returns timesheets based on filtering criteria. If month is provided without day/week,
+        returns timesheets grouped by week for that month.
+      operationId: getTimesheets
+      security:
+        - bearerAuth: [ GET_TIMESHEET ]
+      parameters:
+        - name: day
+          in: query
+          description: Filter by specific day (YYYY-MM-DD format)
+          required: false
+          schema:
+            type: string
+        - name: week
+          in: query
+          description: Filter by week number (1-52)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 52
+        - name: month
+          in: query
+          description: Filter by month (YYYY-MM format) or group by week when used alone
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number (0-based)
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: employeeId
+          in: query
+          description: Filter by employee ID
+          required: false
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful response (either paginated list or grouped by week)
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CustomPageResponse'
+                  - type: object
+                    additionalProperties: true
+        400:
+          description: Invalid parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/timesheets/{Id}:
+    put:
+        tags: [ Timesheets ]
+        summary: Update a timesheet
+        operationId: updateLog
+        security:
+          - bearerAuth: [ UPDATE_TIMESHEET ]
+        parameters:
+          - name: Id
+            in: path
+            required: true
+            schema:
+              type: string
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimesheetRequestDto'
+        responses:
+          200:
+            description: Timesheet updated successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Timesheet'
+          400:
+            description: Invalid request parameters
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Error'
+          401:
+            $ref: '#/components/responses/Unauthorized'
+          403:
+            $ref: '#/components/responses/Forbidden'
+          404:
+            $ref: '#/components/responses/NotFound'
+          500:
+            $ref: '#/components/responses/InternalServerError'
+
+  /api/timesheets/{id}:
+    delete:
+        tags: [ Timesheets ]
+        summary: Delete a timesheet
+        operationId: deleteTimesheet
+        security:
+          - bearerAuth: [ DELETE_TIMESHEET ]
+        parameters:
+          - name: id
+            in: path
+            required: true
+            schema:
+              type: string
+        responses:
+          200:
+            description: Timesheet deleted successfully
+            content:
+              application/json:
+                schema:
+                  type: string
+                  example: "Timesheet deleted successfully"
+          401:
+            $ref: '#/components/responses/Unauthorized'
+          403:
+            $ref: '#/components/responses/Forbidden'
+          404:
+            $ref: '#/components/responses/NotFound'
+          500:
+            $ref: '#/components/responses/InternalServerError'
 
 components:
   schemas:
@@ -684,6 +866,106 @@ components:
           example: "5f8d0d55b54764421b7156c3"
           description: Must reference an existing client
 
+    Timesheet:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the timesheet
+        employeeId:
+          type: string
+          description: ID of the employee who logged the time
+        organizationId:
+          type: string
+          description: ID of the organization
+        clientId:
+          type: string
+          description: ID of the associated client
+        projectId:
+          type: string
+          description: ID of the associated project
+        contractId:
+          type: string
+          description: ID of the associated contract
+        startDate:
+          type: string
+          format: date-time
+          description: Start date and time of the work period
+        timeInMinutes:
+          type: integer
+          minimum: 1
+          description: Duration of work in minutes
+        description:
+          type: string
+          description: Description of work performed
+        createdAt:
+          type: string
+          format: date-time
+          description: When the timesheet was created
+        createdBy:
+          type: string
+          description: User who created the timesheet
+        modifiedAt:
+          type: string
+          format: date-time
+          description: When the timesheet was last modified
+        modifiedBy:
+          type: string
+          description: User who last modified the timesheet
+
+    TimesheetRequestDto:
+        type: object
+        required:
+          - clientId
+          - projectId
+          - startDate
+          - timeInMinutes
+        properties:
+          clientId:
+            type: string
+            description: ID of the associated client
+          projectId:
+            type: string
+            description: ID of the associated project
+          contractId:
+            type: string
+            description: ID of the associated contract (optional)
+          startDate:
+            type: string
+            format: date-time
+            description: Start date and time of the work period
+          timeInMinutes:
+            type: integer
+            minimum: 1
+            description: Duration of work in minutes
+            example: 480
+          description:
+            type: string
+            description: Description of work performed
+            maxLength: 1000
+
+    CustomPageResponse:
+        type: object
+        properties:
+          content:
+            type: array
+            items:
+              $ref: '#/components/schemas/Timesheet'
+            description: List of timesheets
+          pageNumber:
+            type: integer
+            description: Current page number (0-based)
+            example: 0
+          pageSize:
+            type: integer
+            description: Number of items per page
+            example: 10
+          totalElements:
+            type: integer
+            description: Total number of items across all pages
+          totalPages:
+            type: integer
+            description: Total number of pages available
     Error:
       type: object
       properties:

@@ -21,8 +21,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class TimesheetController {
 
-    @Autowired
-    private TimesheetService timesheetService;
+    private final TimesheetService timesheetService;
 
 
     @PostMapping
