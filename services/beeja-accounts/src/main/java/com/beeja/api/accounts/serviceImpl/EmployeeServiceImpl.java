@@ -142,7 +142,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     user.setEmployeeId(addEmployeeRequest.getEmployeeId());
     Set<Role> userRoles = new HashSet<>();
     /*
-    TODO:  Update the Default Role
+    TODO:  Update the Default Role based on organization defaults
     */
     try {
       Role defaultRole =
