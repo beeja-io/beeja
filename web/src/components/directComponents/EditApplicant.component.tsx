@@ -41,11 +41,12 @@ const EditApplicant = () => {
   };
 
   const fetchApplicantById = () => {
+    setIsLoading(true);
     id &&
       getApplicantById(id)
         .then((res) => {
           setApplicant(res.data);
-          setIsLoading(true);
+          setIsLoading(false);
         })
         .catch((error) => {
           if (error instanceof AxiosError) {
@@ -60,7 +61,6 @@ const EditApplicant = () => {
   };
   useEffect(() => {
     fetchApplicantById();
-    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -99,7 +99,7 @@ const EditApplicant = () => {
 
   return (
     <>
-      {!isLoading ? (
+      {isLoading ? (
         <SpinAnimation />
       ) : (
         <ExpenseManagementMainContainer>
