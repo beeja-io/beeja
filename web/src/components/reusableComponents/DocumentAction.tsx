@@ -98,6 +98,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
       documentPreview(fileName, fileId);
     }
     setIsOpen(false);
+    setSelectedOption(null);
     // onOptionSelect(option);
   };
 
