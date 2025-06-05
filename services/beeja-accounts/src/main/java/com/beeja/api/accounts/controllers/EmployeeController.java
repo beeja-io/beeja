@@ -46,14 +46,8 @@ public class EmployeeController {
   @GetMapping("/me")
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
   public ResponseEntity<User> getLoggedInUser() throws Exception {
-    User loggedInUser =
-        employeeService.getEmployeeByEmail(
-            UserContext.getLoggedInUserEmail(), UserContext.getLoggedInUserOrganization());
-    if (loggedInUser != null) {
-      return ResponseEntity.ok(loggedInUser);
-    } else {
-      return ResponseEntity.notFound().build();
-    }
+    return ResponseEntity.ok(employeeService.getEmployeeByEmail(
+            UserContext.getLoggedInUserEmail(), UserContext.getLoggedInUserOrganization()));
   }
   @PostMapping("/names")
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
