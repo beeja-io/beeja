@@ -17,6 +17,7 @@ import axios from 'axios';
 import UnAuthorisedScreen from './screens/UnAuthorisedScreen.screen';
 import ServiceUnavailable from './screens/ServiceUnavailable.screen';
 import { ProfileImageProvider } from './context/ProfileImageContext';
+import { CompanyProfile } from './components/reusableComponents/CompanyProfile.component';
 
 function App() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -100,6 +101,9 @@ function App() {
           <ProfileImageProvider>
             {' '}
             {/* Wrap the main content with ProfileImageProvider */}
+            <div style={{ display: 'none' }}>
+              <CompanyProfile />
+            </div>
             <CompleteNavBar />
           </ProfileImageProvider>
         );

@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvoiceRequest {
+    public String setInvoiceId;
     private String contractId;
     private Date billingDate;
     private Date dueDate;
