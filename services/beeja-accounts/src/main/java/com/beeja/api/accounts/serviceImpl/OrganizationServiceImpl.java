@@ -37,6 +37,7 @@ import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -60,6 +61,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class OrganizationServiceImpl implements OrganizationService {
 
   @Autowired OrganizationRepository organizationRepository;
@@ -607,4 +609,29 @@ public class OrganizationServiceImpl implements OrganizationService {
     allFutures.join();
     log.info("All defaults generated");
   }
+  @Override
+  public List<String> getOrganizationsWithBirthdayNotificationsEnabled() {
+    return organizationRepository.findByIsBirthDayNotificationEnabled(true)
+            .stream()
+            .map(Organization::getId)
+
+            .collect(Collectors.toList());
+  }
+
+  @Override
+  public String getBirthdayWebhookUrl(String orgId) {
+    return organizationRepository.findById(orgId)
+            .map(Organization::getBirthdayWebhookUrl)
+            .orElse(null);
+  }
+  @Override
+  public void updateBirthdayPreference(String orgId, boolean enabled, String webhookUrl) {
+    Organization org = organizationRepository.findById(orgId)
+            .orElseThrow(() -> new ResourceNotFoundException("Organization not found"));
+
+    org.setBirthDayNotificationEnabled(enabled);
+    org.setBirthdayWebhookUrl(enabled ? webhookUrl : null);
+    organizationRepository.save(org);
+  }
+
 }

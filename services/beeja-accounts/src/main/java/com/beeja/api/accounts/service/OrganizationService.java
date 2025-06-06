@@ -26,4 +26,10 @@ public interface OrganizationService {
   List<OrgDefaults> getOrganizationValues(List<String> keys) throws Exception;
 
   void generateOrganizationDefaults() throws Exception;
+
+  List<String> getOrganizationsWithBirthdayNotificationsEnabled() throws Exception;
+
+  String getBirthdayWebhookUrl(String orgId) throws Exception;
+
+  void updateBirthdayPreference(String orgId, boolean enabled, String webhookUrl) throws Exception;
 }

@@ -1,6 +1,7 @@
 package com.beeja.api.employeemanagement.repository;
 
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.EmployeeDTO;
 import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -29,6 +30,6 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
   })
   List<EmployeeDefaultValues> findDistinctTypeByOrganizationId(String organizationId);
 
-
+  List<EmployeeDTO> findAllByOrganizationId(String orgId);
 
 }
