@@ -145,7 +145,6 @@ public class InvoiceServiceImpl implements InvoiceService {
             LinkedHashMap<String, Object> responseBody =
                     (LinkedHashMap<String, Object>) uploadedFile.getBody();
 
-            ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.convertValue(responseBody, File.class);
 
             invoice.setInvoiceFileId(responseBody.get("id").toString());
