@@ -12,70 +12,57 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("v1/files")
 public class FileController {
 
-    @Autowired
-    FileService fileService;
+  @Autowired FileService fileService;
 
-    @GetMapping("download/{fileId}")
-    @HasPermission(PermissionConstants.READ_DOCUMENT)
-    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileId) throws Exception{
-        ByteArrayResource byteArrayResource = fileService.downloadFile(fileId);
+  @GetMapping("download/{fileId}")
+  @HasPermission(PermissionConstants.READ_DOCUMENT)
+  public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileId)
+      throws Exception {
+    ByteArrayResource byteArrayResource = fileService.downloadFile(fileId);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(
-                HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + byteArrayResource.getFilename() + "\"");
-        headers.add("Access-Control-Expose-Headers", "Content-Disposition");
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(
+        HttpHeaders.CONTENT_DISPOSITION,
+        "attachment; filename=\"" + byteArrayResource.getFilename() + "\"");
+    headers.add("Access-Control-Expose-Headers", "Content-Disposition");
 
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .headers(headers)
-                .body(byteArrayResource);
-    }
+    return ResponseEntity.ok()
+        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+        .headers(headers)
+        .body(byteArrayResource);
+  }
 
-    @GetMapping("/{entityId}")
-    @HasPermission({
-            PermissionConstants.READ_DOCUMENT,
-            PermissionConstants.READ_ALL_DOCUMENTS
-    })
-    public ResponseEntity<FileResponse> getAllFilesOfEntityId(
-            @PathVariable String entityId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size)
-            throws Exception {
-        return ResponseEntity.ok(fileService.listOfFileByEntityId(entityId, page, size));
-    }
+  @GetMapping("/{entityId}")
+  @HasPermission({PermissionConstants.READ_DOCUMENT, PermissionConstants.READ_ALL_DOCUMENTS})
+  public ResponseEntity<FileResponse> getAllFilesOfEntityId(
+      @PathVariable String entityId,
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "10") int size)
+      throws Exception {
+    return ResponseEntity.ok(fileService.listOfFileByEntityId(entityId, page, size));
+  }
 
-    @PostMapping
-    @HasPermission({
-            PermissionConstants.CREATE_DOCUMENT,
-            PermissionConstants.CREATE_ALL_DOCUMENT
-    })
-    public ResponseEntity<File> uploadFile(FileUploadRequest fileUploadRequest) throws Exception {
-        return ResponseEntity.ok(fileService.uploadFile(fileUploadRequest));
-    }
+  @PostMapping
+  @HasPermission({PermissionConstants.CREATE_DOCUMENT, PermissionConstants.CREATE_ALL_DOCUMENT})
+  public ResponseEntity<File> uploadFile(FileUploadRequest fileUploadRequest) throws Exception {
+    return ResponseEntity.ok(fileService.uploadFile(fileUploadRequest));
+  }
 
-    @DeleteMapping("/{fileId}")
-    @HasPermission({
-            PermissionConstants.DELETE_DOCUMENT,
-            PermissionConstants.DELETE_ALL_DOCUMENT
-    })
-    public ResponseEntity<File> deleteFile(@PathVariable String fileId) throws Exception {
-        return ResponseEntity.ok(fileService.deleteFile(fileId));
-    }
+  @DeleteMapping("/{fileId}")
+  @HasPermission({PermissionConstants.DELETE_DOCUMENT, PermissionConstants.DELETE_ALL_DOCUMENT})
+  public ResponseEntity<File> deleteFile(@PathVariable String fileId) throws Exception {
+    return ResponseEntity.ok(fileService.deleteFile(fileId));
+  }
 
-    @PutMapping("/{fileId}")
-    @HasPermission({
-            PermissionConstants.UPDATE_DOCUMENT,
-            PermissionConstants.UPDATE_ALL_DOCUMENT
-    })
-    public ResponseEntity<File> updateFileByFileId(
-            @PathVariable String fileId, FileUploadRequest fileUploadRequest) throws Exception {
-        return ResponseEntity.ok(fileService.updateFile(fileId, fileUploadRequest));
-    }
-
+  @PutMapping("/{fileId}")
+  @HasPermission({PermissionConstants.UPDATE_DOCUMENT, PermissionConstants.UPDATE_ALL_DOCUMENT})
+  public ResponseEntity<File> updateFileByFileId(
+      @PathVariable String fileId, FileUploadRequest fileUploadRequest) throws Exception {
+    return ResponseEntity.ok(fileService.updateFile(fileId, fileUploadRequest));
+  }
 }

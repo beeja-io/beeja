@@ -1,8 +1,7 @@
 package com.beeja.api.employeemanagement.model;
 
-import lombok.Data;
-
 import java.util.Date;
+import lombok.Data;
 
 @Data
 public class JobDetails {

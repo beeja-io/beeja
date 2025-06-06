@@ -34,7 +34,6 @@ public class AuthController {
     return response.setComplete();
   }
 
-
   @GetMapping("/login")
   public ResponseEntity<Object> login() {
     return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)

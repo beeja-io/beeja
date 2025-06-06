@@ -5,9 +5,8 @@ import com.beeja.api.financemanagementservice.modals.Loan;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
 import com.beeja.api.financemanagementservice.requests.SubmitLoanRequest;
 import com.beeja.api.financemanagementservice.response.LoanResponse;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+import org.springframework.stereotype.Service;
 
 @Service
 public interface LoanService {
@@ -19,7 +18,8 @@ public interface LoanService {
 
   Loan submitLoanRequest(SubmitLoanRequest loanRequest) throws Exception;
 
-  LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortBy, String sortDirection, LoanStatus status);
+  LoanResponse getLoansWithCount(
+      int pageNumber, int pageSize, String sortBy, String sortDirection, LoanStatus status);
 
   List<Loan> getAllLoansByEmployeeId(String employeeId) throws Exception;
 }

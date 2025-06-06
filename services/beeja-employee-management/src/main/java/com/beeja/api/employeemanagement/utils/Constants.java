@@ -51,5 +51,6 @@ public class Constants {
   public static final String INVALID_PROFILE_PIC_FORMATS =
       "Please provide valid file formats (jpeg, jpg, png)";
   public static final String NO_NUMERIC_FOUND = "No numeric part found in empId : ";
-  public static final String ERROR_IN_EXTRACTING_EMP_NUMBER = "Failed to extract numeric employee number from empId: {}" ;
+  public static final String ERROR_IN_EXTRACTING_EMP_NUMBER =
+      "Failed to extract numeric employee number from empId: {}";
 }

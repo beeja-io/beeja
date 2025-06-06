@@ -2,12 +2,10 @@ package com.beeja.api.financemanagementservice.client;
 
 import com.beeja.api.financemanagementservice.modals.clients.finance.EmployeeNameDTO;
 import com.beeja.api.financemanagementservice.modals.clients.finance.OrganizationPattern;
+import java.util.List;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Map;
 
 @FeignClient(value = "account-service", url = "${client-urls.accountsService}")
 public interface AccountClient {

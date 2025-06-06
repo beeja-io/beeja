@@ -2,13 +2,11 @@ package com.beeja.api.financemanagementservice.requests;
 
 import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.Type;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
 import java.util.Date;
+import lombok.Data;
 
 @Data
 public class DeviceDetails {

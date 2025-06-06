@@ -17,11 +17,10 @@ import com.beeja.api.accounts.service.RoleService;
 import com.beeja.api.accounts.utils.BuildErrorMessage;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Objects;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /** This class represents the business logic for managing roles within an organization. */
 @Service

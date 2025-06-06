@@ -1,5 +1,7 @@
 package com.beeja.api.expense.serviceImpl;
 
+import static com.beeja.api.expense.utils.Constants.*;
+
 import com.beeja.api.expense.client.FileClient;
 import com.beeja.api.expense.config.properties.AllowedContentTypes;
 import com.beeja.api.expense.enums.ErrorCode;
@@ -22,6 +24,10 @@ import com.beeja.api.expense.utils.Constants;
 import com.beeja.api.expense.utils.UserContext;
 import com.beeja.api.expense.utils.helpers.FileExtensionHelpers;
 import com.beeja.api.expense.utils.methods.ServiceMethods;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,13 +41,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.beeja.api.expense.utils.Constants.*;
 
 @Service
 @Slf4j
@@ -71,20 +70,18 @@ public class ExpenseServiceImpl implements ExpenseService {
       } else {
         log.error(Constants.EXPENSE_NOT_FOUND + expenseId);
         throw new ExpenseNotFound(
-                BuildErrorMessage.buildErrorMessage(
-                        ErrorType.RESOURCE_NOT_FOUND,
-                        ErrorCode.EXPENSE_NOT_FOUND,
-                        EXPENSE_NOT_FOUND + expenseId));
+            BuildErrorMessage.buildErrorMessage(
+                ErrorType.RESOURCE_NOT_FOUND,
+                ErrorCode.EXPENSE_NOT_FOUND,
+                EXPENSE_NOT_FOUND + expenseId));
       }
     } catch (ExpenseNotFound e) {
-            throw e;
+      throw e;
     } catch (Exception e) {
       log.error(SERVICE_DOWN_ERROR, e.getMessage());
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.API_ERROR,
-                      ErrorCode.SERVER_ERROR,
-              Constants.SERVICE_DOWN_ERROR));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.API_ERROR, ErrorCode.SERVER_ERROR, Constants.SERVICE_DOWN_ERROR));
     }
   }
 
@@ -108,10 +105,10 @@ public class ExpenseServiceImpl implements ExpenseService {
               file.getContentType(), allowedContentTypes.getAllowedTypes())) {
             log.error(INVALID_FILE_FORMATS);
             throw new Exception(
-                    BuildErrorMessage.buildErrorMessage(
-                            ErrorType.VALIDATION_ERROR,
-                            ErrorCode.INVALID_FILE_FORMAT,
-                            INVALID_FILE_FORMATS));
+                BuildErrorMessage.buildErrorMessage(
+                    ErrorType.VALIDATION_ERROR,
+                    ErrorCode.INVALID_FILE_FORMAT,
+                    INVALID_FILE_FORMATS));
           }
         }
       } else if (updatedExpense.getNewFiles() != null
@@ -124,10 +121,8 @@ public class ExpenseServiceImpl implements ExpenseService {
       if (finalFileCount > 3) {
         log.error(FILE_COUNT_ERROR + 3);
         throw new Exception(
-                BuildErrorMessage.buildErrorMessage(
-                        ErrorType.VALIDATION_ERROR,
-                        ErrorCode.FILE_COUNT_EXCEED,
-                        FILE_COUNT_ERROR + 3));
+            BuildErrorMessage.buildErrorMessage(
+                ErrorType.VALIDATION_ERROR, ErrorCode.FILE_COUNT_EXCEED, FILE_COUNT_ERROR + 3));
       }
 
       String loggedInUserOrganizationId =
@@ -203,20 +198,20 @@ public class ExpenseServiceImpl implements ExpenseService {
         existingExpense.setFileId(fileIds);
         return expenseRepository.save(existingExpense);
       } else {
-        log.error(Constants.EXPENSE_NOT_FOUND_ORGANIZATION+expenseId);
+        log.error(Constants.EXPENSE_NOT_FOUND_ORGANIZATION + expenseId);
         throw new OrganizationMismatchException(
-                BuildErrorMessage.buildErrorMessage(
-                        ErrorType.RESOURCE_NOT_FOUND,
-                        ErrorCode.EXPENSE_NOT_FOUND,
-                        Constants.EXPENSE_NOT_FOUND_ORGANIZATION+expenseId));
+            BuildErrorMessage.buildErrorMessage(
+                ErrorType.RESOURCE_NOT_FOUND,
+                ErrorCode.EXPENSE_NOT_FOUND,
+                Constants.EXPENSE_NOT_FOUND_ORGANIZATION + expenseId));
       }
     } catch (Exception e) {
       log.error(Constants.ERROR_UPDATING_EXPENSE + e.getMessage());
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.INTERNAL_SERVER_ERROR,
-                      ErrorCode.EXPENSE_UPDATE_FAILED,
-                      Constants.ERROR_UPDATING_EXPENSE));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.INTERNAL_SERVER_ERROR,
+              ErrorCode.EXPENSE_UPDATE_FAILED,
+              Constants.ERROR_UPDATING_EXPENSE));
     }
   }
 
@@ -228,12 +223,10 @@ public class ExpenseServiceImpl implements ExpenseService {
      * Currently the number of files is limited to 3
      * */
     if (createExpense.getFiles() != null && createExpense.getFiles().size() > 3) {
-      log.error(FILE_COUNT_ERROR+3);
+      log.error(FILE_COUNT_ERROR + 3);
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.VALIDATION_ERROR,
-                      ErrorCode.FILE_COUNT_EXCEED,
-                      FILE_COUNT_ERROR+3));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.VALIDATION_ERROR, ErrorCode.FILE_COUNT_EXCEED, FILE_COUNT_ERROR + 3));
     }
 
     //        Checking the extensions of files
@@ -243,10 +236,8 @@ public class ExpenseServiceImpl implements ExpenseService {
             file.getContentType(), allowedContentTypes.getAllowedTypes())) {
           log.error(INVALID_FILE_FORMATS);
           throw new Exception(
-                  BuildErrorMessage.buildErrorMessage(
-                          ErrorType.VALIDATION_ERROR,
-                          ErrorCode.INVALID_FILE_FORMAT,
-                          INVALID_FILE_FORMATS));
+              BuildErrorMessage.buildErrorMessage(
+                  ErrorType.VALIDATION_ERROR, ErrorCode.INVALID_FILE_FORMAT, INVALID_FILE_FORMATS));
         }
       }
     }
@@ -305,10 +296,10 @@ public class ExpenseServiceImpl implements ExpenseService {
           }
           log.error(ERROR_SAVING_FILE_IN_FILE_SERVICE, e.getMessage());
           throw new Exception(
-                  BuildErrorMessage.buildErrorMessage(
-                          ErrorType.INTERNAL_SERVER_ERROR,
-                          ErrorCode.ERROR_SAVING_FILE,
-                          ERROR_SAVING_FILE_IN_FILE_SERVICE));
+              BuildErrorMessage.buildErrorMessage(
+                  ErrorType.INTERNAL_SERVER_ERROR,
+                  ErrorCode.ERROR_SAVING_FILE,
+                  ERROR_SAVING_FILE_IN_FILE_SERVICE));
         }
       }
     }
@@ -317,25 +308,24 @@ public class ExpenseServiceImpl implements ExpenseService {
     } catch (Exception e) {
       log.error(ERROR_SAVING_EXPENSE, e.getMessage());
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.INTERNAL_SERVER_ERROR,
-                      ErrorCode.EXPENSE_SAVED_FAILED,
-                      ERROR_SAVING_EXPENSE));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.INTERNAL_SERVER_ERROR,
+              ErrorCode.EXPENSE_SAVED_FAILED,
+              ERROR_SAVING_EXPENSE));
     }
   }
 
   @Override
   public Expense getExpenseById(String expenseId) throws Exception {
     return expenseRepository
-            .findById(expenseId)
-            .orElseThrow(() -> {
+        .findById(expenseId)
+        .orElseThrow(
+            () -> {
               String errorMessage = Constants.EXPENSE_NOT_FOUND + expenseId;
               log.error(errorMessage);
               throw new ExpenseNotFound(
-                      BuildErrorMessage.buildErrorMessage(
-                              ErrorType.RESOURCE_NOT_FOUND,
-                              ErrorCode.EXPENSE_NOT_FOUND,
-                              errorMessage));
+                  BuildErrorMessage.buildErrorMessage(
+                      ErrorType.RESOURCE_NOT_FOUND, ErrorCode.EXPENSE_NOT_FOUND, errorMessage));
             });
   }
 
@@ -345,10 +335,8 @@ public class ExpenseServiceImpl implements ExpenseService {
     if (Constants.STATUS_SETTLED.equals(expense.getStatus())) {
       log.error(Constants.SETTLED);
       throw new ExpenseAlreadySettledException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.BAD_REQUEST,
-                      ErrorCode.EXPENSE_ALREADY_SETTLED,
-              Constants.SETTLED));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.BAD_REQUEST, ErrorCode.EXPENSE_ALREADY_SETTLED, Constants.SETTLED));
     }
     expense.setStatus(Constants.STATUS_SETTLED);
     return expenseRepository.save(expense);
@@ -356,27 +344,26 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public List<Expense> getFilteredExpenses(
-          Date startDate,
-          Date endDate,
-          List<String> department,
-          String filterBasedOn,
-          List<String> modeOfPayment,
-          List<String> expenseType,
-          List<String> expenseCategory,
-          String organizationId,
-          int pageNumber,
-          int pageSize,
-          String sortBy,
-          Boolean settlementStatus,
-          boolean ascending
-  ) {
+      Date startDate,
+      Date endDate,
+      List<String> department,
+      String filterBasedOn,
+      List<String> modeOfPayment,
+      List<String> expenseType,
+      List<String> expenseCategory,
+      String organizationId,
+      int pageNumber,
+      int pageSize,
+      String sortBy,
+      Boolean settlementStatus,
+      boolean ascending) {
     if (pageNumber <= 0 || pageSize <= 0) {
       log.error(Constants.INVALID_PAGINATION_PARAM);
       throw new IllegalArgumentException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.BAD_REQUEST,
-                      ErrorCode.INVALID_PAGINATION_PARAMS,
-                      Constants.INVALID_PAGINATION_PARAM));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.BAD_REQUEST,
+              ErrorCode.INVALID_PAGINATION_PARAMS,
+              Constants.INVALID_PAGINATION_PARAM));
     }
 
     try {
@@ -431,12 +418,13 @@ public class ExpenseServiceImpl implements ExpenseService {
     } catch (Exception e) {
       log.error(Constants.ERROR_FILTERING_EXPENSE);
       throw new handleInternalServerException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.INTERNAL_SERVER_ERROR,
-                      ErrorCode.EXPENSE_FILTERING_FAILED,
-                      Constants.ERROR_FILTERING_EXPENSE));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.INTERNAL_SERVER_ERROR,
+              ErrorCode.EXPENSE_FILTERING_FAILED,
+              Constants.ERROR_FILTERING_EXPENSE));
     }
   }
+
   @Override
   public Double getFilteredTotalAmount(
       Date startDate,
@@ -473,15 +461,15 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public Long getTotalExpensesSize(
-          Date startDate,
-          Date endDate,
-          List<String> department,
-          String filterBasedOn,
-          List<String> modeOfPayment,
-          List<String> expenseType,
-          List<String> expenseCategory,
-          Boolean settlementStatus,
-          String organizationId) {
+      Date startDate,
+      Date endDate,
+      List<String> department,
+      String filterBasedOn,
+      List<String> modeOfPayment,
+      List<String> expenseType,
+      List<String> expenseCategory,
+      Boolean settlementStatus,
+      String organizationId) {
     Query query = new Query();
     if (startDate != null && endDate != null) {
       query.addCriteria(Criteria.where(filterBasedOn).gte(startDate).lte(endDate));
@@ -513,7 +501,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     if (settlementStatus != null && settlementStatus.equals(true)) {
       query.addCriteria(Criteria.where("paymentSettled").ne(null));
     } else if (settlementStatus != null && settlementStatus.equals(false)) {
-        query.addCriteria(Criteria.where("paymentSettled").is(null));
+      query.addCriteria(Criteria.where("paymentSettled").is(null));
     }
 
     return mongoTemplate.count(query, Expense.class);
@@ -521,21 +509,31 @@ public class ExpenseServiceImpl implements ExpenseService {
 
   @Override
   public ExpenseValues getExpenseDefaultValues(String organizationId) {
-    List<ExpenseDefaultValues> expenseDefaultValues = expenseRepository.findDistinctTypeByOrganizationId(organizationId);
+    List<ExpenseDefaultValues> expenseDefaultValues =
+        expenseRepository.findDistinctTypeByOrganizationId(organizationId);
 
     if (expenseDefaultValues.isEmpty()) {
       log.error(Constants.ERROR_FETCH_EXPENSE_DEFAULTS + organizationId);
       throw new handleInternalServerException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.INTERNAL_SERVER_ERROR,
-                      ErrorCode.EXPENSE_DEFAULT_FETCH_FAILED,
-                      Constants.ERROR_FETCH_EXPENSE_DEFAULTS + organizationId));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.INTERNAL_SERVER_ERROR,
+              ErrorCode.EXPENSE_DEFAULT_FETCH_FAILED,
+              Constants.ERROR_FETCH_EXPENSE_DEFAULTS + organizationId));
     }
 
     ExpenseValues expenseValues = new ExpenseValues();
-    Set<String> categories = expenseDefaultValues.stream().map(ExpenseDefaultValues::getCategory).collect(Collectors.toSet());
-    Set<String> types = expenseDefaultValues.stream().map(ExpenseDefaultValues::getType).collect(Collectors.toSet());
-    Set<String> modeOfPayments = expenseDefaultValues.stream().map(ExpenseDefaultValues::getModeOfPayment).collect(Collectors.toSet());
+    Set<String> categories =
+        expenseDefaultValues.stream()
+            .map(ExpenseDefaultValues::getCategory)
+            .collect(Collectors.toSet());
+    Set<String> types =
+        expenseDefaultValues.stream()
+            .map(ExpenseDefaultValues::getType)
+            .collect(Collectors.toSet());
+    Set<String> modeOfPayments =
+        expenseDefaultValues.stream()
+            .map(ExpenseDefaultValues::getModeOfPayment)
+            .collect(Collectors.toSet());
 
     expenseValues.setExpenseCategories(categories);
     expenseValues.setExpenseTypes(types);
@@ -545,15 +543,15 @@ public class ExpenseServiceImpl implements ExpenseService {
   }
 
   private Criteria getCriteria(
-          Date startDate,
-          Date endDate,
-          List<String> department,
-          String filterBasedOn,
-          List<String> modeOfPayment,
-          List<String> expenseType,
-          List<String> expenseCategory,
-          Boolean settlementStatus,
-          String organizationId) {
+      Date startDate,
+      Date endDate,
+      List<String> department,
+      String filterBasedOn,
+      List<String> modeOfPayment,
+      List<String> expenseType,
+      List<String> expenseCategory,
+      Boolean settlementStatus,
+      String organizationId) {
     Criteria criteria = new Criteria();
 
     if (startDate != null && endDate != null) {
@@ -586,8 +584,8 @@ public class ExpenseServiceImpl implements ExpenseService {
 
     if (settlementStatus != null && settlementStatus.equals(true)) {
       criteria.and("paymentSettled").ne(null);
-    }else if (settlementStatus != null && settlementStatus.equals(false)){
-        criteria.and("paymentSettled").is(null);
+    } else if (settlementStatus != null && settlementStatus.equals(false)) {
+      criteria.and("paymentSettled").is(null);
     }
     return criteria;
   }

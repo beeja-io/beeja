@@ -1,6 +1,12 @@
 package tac.beeja.recruitmentapi.serviceImpl;
 
+import static tac.beeja.recruitmentapi.utils.Constants.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -41,15 +47,6 @@ import tac.beeja.recruitmentapi.utils.Constants;
 import tac.beeja.recruitmentapi.utils.OrganizationCheck;
 import tac.beeja.recruitmentapi.utils.UserContext;
 
-import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static tac.beeja.recruitmentapi.utils.Constants.*;
-
 @Service
 @Slf4j
 public class ApplicantServiceImpl implements ApplicantService {
@@ -62,15 +59,18 @@ public class ApplicantServiceImpl implements ApplicantService {
 
   @Autowired AccountClient accountClient;
 
-  @Autowired
-  OrganizationTest organizationTest;
+  @Autowired OrganizationTest organizationTest;
 
   @Override
   public Applicant postApplicant(ApplicantRequest applicant, boolean isReferral) throws Exception {
     Query query = new Query();
-    query.addCriteria(Criteria.where("email").is(applicant.getEmail())
-            .and("positionAppliedFor").is(applicant.getPositionAppliedFor())
-            .and("organizationId").is(UserContext.getLoggedInUserOrganization().get("id").toString()));
+    query.addCriteria(
+        Criteria.where("email")
+            .is(applicant.getEmail())
+            .and("positionAppliedFor")
+            .is(applicant.getPositionAppliedFor())
+            .and("organizationId")
+            .is(UserContext.getLoggedInUserOrganization().get("id").toString()));
     List<Applicant> existingApplicants = mongoTemplate.find(query, Applicant.class);
     Calendar calendar = Calendar.getInstance();
     calendar.add(Calendar.MONTH, -6);
@@ -78,18 +78,20 @@ public class ApplicantServiceImpl implements ApplicantService {
     for (Applicant existingApplicant : existingApplicants) {
       Date createdAt = existingApplicant.getCreatedAt();
       if (createdAt != null && createdAt.after(sixMonthsAgo)) {
-          log.error(DUPLICATE_APPLICATION_LOG, applicant.getEmail(), applicant.getPositionAppliedFor());
-            throw new ConflictException(
-                    BuildErrorMessage.buildErrorMessage(
-                            ErrorType.CONFLICT,
-                            ErrorCode.DUPLICATE_APPLICANT,
-                            DUPLICATE_APPLICANT));
+        log.error(
+            DUPLICATE_APPLICATION_LOG, applicant.getEmail(), applicant.getPositionAppliedFor());
+        throw new ConflictException(
+            BuildErrorMessage.buildErrorMessage(
+                ErrorType.CONFLICT, ErrorCode.DUPLICATE_APPLICANT, DUPLICATE_APPLICANT));
       }
     }
-        //    accept only pdf, doc and docx for applicant.getResume()
+    //    accept only pdf, doc and docx for applicant.getResume()
     if (!applicant.getResume().getContentType().equals("application/pdf")
-            && !applicant.getResume().getContentType().equals("application/msword")
-            && !applicant.getResume().getContentType().equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+        && !applicant.getResume().getContentType().equals("application/msword")
+        && !applicant
+            .getResume()
+            .getContentType()
+            .equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
       throw new BadRequestException("Only PDF, DOC and DOCX files are allowed");
     }
     Applicant newApplicant = new Applicant();
@@ -107,8 +109,12 @@ public class ApplicantServiceImpl implements ApplicantService {
       newApplicant.setReferredByEmployeeId(UserContext.getLoggedInEmployeeId());
       newApplicant.setReferredByEmployeeName(UserContext.getLoggedInUserName());
     }
-    String fileName = newApplicant.getFirstName() +"."+ Objects.requireNonNull(applicant.getResume().getOriginalFilename()).substring(applicant.getResume().getOriginalFilename().lastIndexOf('.') + 1);
-    FileRequest fileRequest = new FileRequest(applicant.getResume(), fileName , RESUME_FILE_ENTITY);
+    String fileName =
+        newApplicant.getFirstName()
+            + "."
+            + Objects.requireNonNull(applicant.getResume().getOriginalFilename())
+                .substring(applicant.getResume().getOriginalFilename().lastIndexOf('.') + 1);
+    FileRequest fileRequest = new FileRequest(applicant.getResume(), fileName, RESUME_FILE_ENTITY);
     try {
       ResponseEntity<?> fileResponse = fileClient.uploadFile(fileRequest);
       Map<String, Object> responseBody = (Map<String, Object>) fileResponse.getBody();
@@ -116,11 +122,9 @@ public class ApplicantServiceImpl implements ApplicantService {
     } catch (Exception e) {
       log.error(ERROR_IN_RESUME_UPLOAD);
       throw new FeignClientException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.FEIGN_CLIENT_ERROR,
-                      ErrorCode.FILE_UPLOAD_FAILED,
-                      ERROR_IN_RESUME_UPLOAD));
-      }
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.FEIGN_CLIENT_ERROR, ErrorCode.FILE_UPLOAD_FAILED, ERROR_IN_RESUME_UPLOAD));
+    }
 
     newApplicant.setResumeId(fileId);
     try {
@@ -128,25 +132,37 @@ public class ApplicantServiceImpl implements ApplicantService {
     } catch (Exception e) {
       log.error(ERROR_IN_CREATING_APPLICANT, e.getMessage());
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.DB_ERROR,
-                      ErrorCode.APPLICANT_CREATION_FAILED,
-                      ERROR_IN_CREATING_APPLICANT));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.DB_ERROR,
+              ErrorCode.APPLICANT_CREATION_FAILED,
+              ERROR_IN_CREATING_APPLICANT));
     }
   }
 
   @Override
   public PaginatedApplicantResponse getPaginatedApplicants(
-          Integer page, Integer limit, String applicantId, String firstName,
-          String positionAppliedFor, ApplicantStatus status, String experience,
-          Date fromDate,Date toDate, String sortBy, String sortDirection) {
+      Integer page,
+      Integer limit,
+      String applicantId,
+      String firstName,
+      String positionAppliedFor,
+      ApplicantStatus status,
+      String experience,
+      Date fromDate,
+      Date toDate,
+      String sortBy,
+      String sortDirection) {
 
     int pageNumber = (page != null && page >= 1) ? page - 1 : 0;
     int pageSize = (limit != null && limit > 0 && limit <= 100) ? limit : 10;
 
-    Pageable pageable = (sortBy != null && "asc".equalsIgnoreCase(sortDirection))
+    Pageable pageable =
+        (sortBy != null && "asc".equalsIgnoreCase(sortDirection))
             ? PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC, sortBy))
-            : PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.DESC, sortBy != null ? sortBy : "createdAt"));
+            : PageRequest.of(
+                pageNumber,
+                pageSize,
+                Sort.by(Sort.Direction.DESC, sortBy != null ? sortBy : "createdAt"));
 
     List<Criteria> criteriaList = new ArrayList<>();
 
@@ -157,7 +173,8 @@ public class ApplicantServiceImpl implements ApplicantService {
       criteriaList.add(Criteria.where("firstName").regex("^" + firstName + "$", "i"));
     }
     if (positionAppliedFor != null && !positionAppliedFor.isEmpty()) {
-      criteriaList.add(Criteria.where("positionAppliedFor").regex("^" + positionAppliedFor + "$", "i"));
+      criteriaList.add(
+          Criteria.where("positionAppliedFor").regex("^" + positionAppliedFor + "$", "i"));
     }
     if (status != null) {
       criteriaList.add(Criteria.where("status").is(status));
@@ -194,41 +211,58 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     Query countQuery = new Query(finalCriteria);
     long totalRecords = mongoTemplate.count(countQuery, Applicant.class);
-    if(OrganizationCheck.isValidOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString(), organizationTest.getOrganizationId())){
+    if (OrganizationCheck.isValidOrganizationId(
+        UserContext.getLoggedInUserOrganization().get("id").toString(),
+        organizationTest.getOrganizationId())) {
       log.info("Total records in organization: {}", totalRecords);
     }
 
     Query paginatedQuery = new Query(finalCriteria).with(pageable);
     List<Applicant> applicants = mongoTemplate.find(paginatedQuery, Applicant.class);
 
-    List<ApplicantDTO> applicantDTOs = applicants.stream().map(applicant -> new ApplicantDTO(
-            applicant.getId(), applicant.getApplicantId(), applicant.getFirstName(), applicant.getLastName(),
-            applicant.getEmail(), applicant.getPhoneNumber(), applicant.getPositionAppliedFor(),
-            applicant.getStatus(), applicant.getExperience(), applicant.getReferredByEmployeeName(),
-            applicant.getCreatedAt()
-    )).collect(Collectors.toList());
+    List<ApplicantDTO> applicantDTOs =
+        applicants.stream()
+            .map(
+                applicant ->
+                    new ApplicantDTO(
+                        applicant.getId(),
+                        applicant.getApplicantId(),
+                        applicant.getFirstName(),
+                        applicant.getLastName(),
+                        applicant.getEmail(),
+                        applicant.getPhoneNumber(),
+                        applicant.getPositionAppliedFor(),
+                        applicant.getStatus(),
+                        applicant.getExperience(),
+                        applicant.getReferredByEmployeeName(),
+                        applicant.getCreatedAt()))
+            .collect(Collectors.toList());
 
     int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 
-    return new PaginatedApplicantResponse(applicantDTOs, pageNumber + 1, pageSize, totalRecords, totalPages);
-
+    return new PaginatedApplicantResponse(
+        applicantDTOs, pageNumber + 1, pageSize, totalRecords, totalPages);
   }
 
   private String generateApplicantId() {
 
     String organizationName = UserContext.getLoggedInUserOrganization().get("name").toString();
 
-    String ORG_Prefix = organizationName.length()>=3 ? organizationName.toUpperCase().substring(0,3).toUpperCase() : organizationName.toUpperCase();
+    String ORG_Prefix =
+        organizationName.length() >= 3
+            ? organizationName.toUpperCase().substring(0, 3).toUpperCase()
+            : organizationName.toUpperCase();
 
     String datePart = new SimpleDateFormat("MMddyy").format(new Date());
 
-    long existingCount = applicantRepository.countByOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
+    long existingCount =
+        applicantRepository.countByOrganizationId(
+            UserContext.getLoggedInUserOrganization().get("id").toString());
     int newCount = (int) (existingCount + 1);
 
     String sequencePart = String.format("%04d", newCount);
 
     return ORG_Prefix + datePart + sequencePart;
-
   }
 
   @Override
@@ -249,10 +283,10 @@ public class ApplicantServiceImpl implements ApplicantService {
     } catch (Exception e) {
       log.error(ERROR_IN_GETTING_LIST_OF_APPLICANTS, e.getMessage());
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.DB_ERROR,
-                      ErrorCode.APPLICANT_FETCH_FAILED,
-                      ERROR_IN_GETTING_LIST_OF_APPLICANTS));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.DB_ERROR,
+              ErrorCode.APPLICANT_FETCH_FAILED,
+              ERROR_IN_GETTING_LIST_OF_APPLICANTS));
     }
   }
 
@@ -261,16 +295,16 @@ public class ApplicantServiceImpl implements ApplicantService {
       throws Exception {
     try {
       Applicant applicant =
-              applicantRepository.findByIdAndOrganizationId(
-                      applicantId, UserContext.getLoggedInUserOrganization().get("id").toString());
+          applicantRepository.findByIdAndOrganizationId(
+              applicantId, UserContext.getLoggedInUserOrganization().get("id").toString());
 
       if (applicant == null) {
         log.error(NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId);
         throw new Exception(
-                BuildErrorMessage.buildErrorMessage(
-                        ErrorType.RESOURCE_NOT_FOUND,
-                        ErrorCode.APPLICANT_NOT_FOUND,
-                        NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
+            BuildErrorMessage.buildErrorMessage(
+                ErrorType.RESOURCE_NOT_FOUND,
+                ErrorCode.APPLICANT_NOT_FOUND,
+                NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
       }
 
       for (Map.Entry<String, Object> entry : fields.entrySet()) {
@@ -288,19 +322,15 @@ public class ApplicantServiceImpl implements ApplicantService {
             String message = "Field " + key + " not found in Applicant class.";
             log.error(message);
             throw new Exception(
-                    BuildErrorMessage.buildErrorMessage(
-                            ErrorType.DATA_PROCESSING_ERROR,
-                            ErrorCode.FIELD_NOT_FOUND,
-                            message));
+                BuildErrorMessage.buildErrorMessage(
+                    ErrorType.DATA_PROCESSING_ERROR, ErrorCode.FIELD_NOT_FOUND, message));
           }
         } catch (Exception e) {
           String message = "Error updating field " + key + ": " + e.getMessage();
           log.error(message, e.getMessage());
           throw new Exception(
-                  BuildErrorMessage.buildErrorMessage(
-                          ErrorType.DATA_PROCESSING_ERROR,
-                          ErrorCode.FIELD_UPDATE_FAILED,
-                          message));
+              BuildErrorMessage.buildErrorMessage(
+                  ErrorType.DATA_PROCESSING_ERROR, ErrorCode.FIELD_UPDATE_FAILED, message));
         }
       }
 
@@ -309,19 +339,19 @@ public class ApplicantServiceImpl implements ApplicantService {
       } catch (Exception e) {
         log.error(Constants.ERROR_IN_SAVING_UPDATED_APPLICANT, e.getMessage());
         throw new Exception(
-                BuildErrorMessage.buildErrorMessage(
-                        ErrorType.DB_ERROR,
-                        ErrorCode.APPLICANT_UPDATE_FAILED,
-                        Constants.ERROR_IN_SAVING_UPDATED_APPLICANT));
+            BuildErrorMessage.buildErrorMessage(
+                ErrorType.DB_ERROR,
+                ErrorCode.APPLICANT_UPDATE_FAILED,
+                Constants.ERROR_IN_SAVING_UPDATED_APPLICANT));
       }
 
     } catch (Exception e) {
       log.error(ERROR_IN_UPDATING_APPLICANTS, e.getMessage());
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.INTERNAL_SERVER_ERROR,
-                      ErrorCode.APPLICANT_UPDATE_FAILED,
-                      ERROR_IN_UPDATING_APPLICANTS));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.INTERNAL_SERVER_ERROR,
+              ErrorCode.APPLICANT_UPDATE_FAILED,
+              ERROR_IN_UPDATING_APPLICANTS));
     }
   }
 
@@ -334,7 +364,7 @@ public class ApplicantServiceImpl implements ApplicantService {
     try {
       ResponseEntity<?> response = fileClient.getFileById(fileId);
       LinkedHashMap<String, Object> responseBody =
-              (LinkedHashMap<String, Object>) response.getBody();
+          (LinkedHashMap<String, Object>) response.getBody();
 
       ObjectMapper objectMapper = new ObjectMapper();
       FileResponse file = objectMapper.convertValue(responseBody, FileResponse.class);
@@ -342,18 +372,18 @@ public class ApplicantServiceImpl implements ApplicantService {
       if (!Objects.equals(file.getEntityType(), RESUME_FILE_ENTITY)) {
         log.error(Constants.UNAUTHORISED_ACCESS_TO_DOWNLOAD_RESUME);
         throw new UnAuthorisedException(
-                BuildErrorMessage.buildErrorMessage(
-                        ErrorType.AUTHORIZATION_ERROR,
-                        ErrorCode.UNAUTHORIZED_FILE_ACCESS,
-                        Constants.UNAUTHORISED_ACCESS_TO_DOWNLOAD_RESUME));
+            BuildErrorMessage.buildErrorMessage(
+                ErrorType.AUTHORIZATION_ERROR,
+                ErrorCode.UNAUTHORIZED_FILE_ACCESS,
+                Constants.UNAUTHORISED_ACCESS_TO_DOWNLOAD_RESUME));
       }
     } catch (Exception e) {
       log.error(Constants.ERROR_FETCH_FILE_METADATA + fileId);
       throw new FeignClientException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.FEIGN_CLIENT_ERROR,
-                      ErrorCode.FILE_METADATA_FETCH_FAILED,
-                      Constants.ERROR_FETCH_FILE_METADATA + fileId));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.FEIGN_CLIENT_ERROR,
+              ErrorCode.FILE_METADATA_FETCH_FAILED,
+              Constants.ERROR_FETCH_FILE_METADATA + fileId));
     }
 
     try {
@@ -365,17 +395,17 @@ public class ApplicantServiceImpl implements ApplicantService {
         @Override
         public String getFilename() {
           return finalMetaData.getFileName() != null
-                  ? finalMetaData.getFileName()
-                  : "Beeja_Resume.pdf";
+              ? finalMetaData.getFileName()
+              : "Beeja_Resume.pdf";
         }
       };
     } catch (Exception e) {
       log.error(Constants.ERROR_IN_DOWNLOAD_FILE + fileId);
       throw new FeignClientException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.FEIGN_CLIENT_ERROR,
-                      ErrorCode.FILE_DOWNLOAD_FAILED,
-                      Constants.ERROR_IN_DOWNLOAD_FILE + fileId));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.FEIGN_CLIENT_ERROR,
+              ErrorCode.FILE_DOWNLOAD_FAILED,
+              Constants.ERROR_IN_DOWNLOAD_FILE + fileId));
     }
   }
 
@@ -399,10 +429,10 @@ public class ApplicantServiceImpl implements ApplicantService {
     if (applicant == null) {
       log.error(NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId);
       throw new ResourceNotFoundException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.RESOURCE_NOT_FOUND,
-                      ErrorCode.APPLICANT_NOT_FOUND_FOR_FEEDBACK,
-                      NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.RESOURCE_NOT_FOUND,
+              ErrorCode.APPLICANT_NOT_FOUND_FOR_FEEDBACK,
+              NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
     }
     return applicant;
   }
@@ -411,74 +441,77 @@ public class ApplicantServiceImpl implements ApplicantService {
   public Applicant assignInterviewer(String applicantId, AssignedInterviewer assignedInterviewer)
       throws Exception {
     Applicant applicant =
-            applicantRepository
-                    .findById(applicantId)
-                    .orElseThrow(() ->
-                            new ResourceNotFoundException(
-                            BuildErrorMessage.buildErrorMessage(
-                                    ErrorType.RESOURCE_NOT_FOUND,
-                                    ErrorCode.APPLICANT_NOT_FOUND,
-                                    NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId)));
+        applicantRepository
+            .findById(applicantId)
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                            ErrorType.RESOURCE_NOT_FOUND,
+                            ErrorCode.APPLICANT_NOT_FOUND,
+                            NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId)));
 
     if (applicant.getAssignedInterviewers() == null) {
       applicant.setAssignedInterviewers(new ArrayList<>());
     }
 
     boolean isAlreadyAssigned =
-            applicant.getAssignedInterviewers().stream()
-                    .anyMatch(interviewer ->
-                            interviewer.getEmployeeId().equals(assignedInterviewer.getEmployeeId()));
+        applicant.getAssignedInterviewers().stream()
+            .anyMatch(
+                interviewer ->
+                    interviewer.getEmployeeId().equals(assignedInterviewer.getEmployeeId()));
 
     if (isAlreadyAssigned) {
       log.error(Constants.INTERVIEWER_ALREADY_ASSIGNED);
       throw new BadRequestException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.BAD_REQUEST,
-                      ErrorCode.INTERVIEWER_ALREADY_ASSIGNED,
-                      Constants.INTERVIEWER_ALREADY_ASSIGNED));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.BAD_REQUEST,
+              ErrorCode.INTERVIEWER_ALREADY_ASSIGNED,
+              Constants.INTERVIEWER_ALREADY_ASSIGNED));
     }
 
     ResponseEntity<?> employeeResponse;
     try {
-      employeeResponse = accountClient.isEmployeeHasPermission(
+      employeeResponse =
+          accountClient.isEmployeeHasPermission(
               assignedInterviewer.getEmployeeId(), Constants.TAKE_INTERVIEW);
     } catch (Exception e) {
       log.error(Constants.INTERVIEWER_PERMISSION_FETCH_FAILED);
       throw new FeignClientException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.FEIGN_CLIENT_ERROR,
-                      ErrorCode.INTERVIEWER_PERMISSION_FETCH_FAILED,
-                      Constants.INTERVIEWER_PERMISSION_FETCH_FAILED));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.FEIGN_CLIENT_ERROR,
+              ErrorCode.INTERVIEWER_PERMISSION_FETCH_FAILED,
+              Constants.INTERVIEWER_PERMISSION_FETCH_FAILED));
     }
 
     if (employeeResponse.getStatusCode().isError()) {
       log.error(Constants.INTERVIEWER_PERMISSION_FETCH_FAILED);
       throw new InterviewerException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.FEIGN_CLIENT_ERROR,
-                      ErrorCode.INTERVIEWER_PERMISSION_FETCH_FAILED,
-                      Constants.INTERVIEWER_PERMISSION_FETCH_FAILED));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.FEIGN_CLIENT_ERROR,
+              ErrorCode.INTERVIEWER_PERMISSION_FETCH_FAILED,
+              Constants.INTERVIEWER_PERMISSION_FETCH_FAILED));
     }
 
     Boolean hasPermission = (Boolean) employeeResponse.getBody();
     if (Boolean.FALSE.equals(hasPermission)) {
       log.error(Constants.INTERVIEWER_PERMISSION_DENIED);
       throw new InterviewerException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.AUTHORIZATION_ERROR,
-                      ErrorCode.INTERVIEWER_PERMISSION_DENIED,
-                      Constants.INTERVIEWER_PERMISSION_DENIED));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.AUTHORIZATION_ERROR,
+              ErrorCode.INTERVIEWER_PERMISSION_DENIED,
+              Constants.INTERVIEWER_PERMISSION_DENIED));
     }
 
     String uuid = UUID.randomUUID().toString();
     String interviewId =
-            UserContext.getLoggedInUserOrganization()
-                    .get("name")
-                    .toString()
-                    .substring(0, 2)
-                    .toUpperCase()
-                    + uuid.substring(uuid.length() - 4).toUpperCase()
-                    + new SimpleDateFormat("ddMM").format(new Date());
+        UserContext.getLoggedInUserOrganization()
+                .get("name")
+                .toString()
+                .substring(0, 2)
+                .toUpperCase()
+            + uuid.substring(uuid.length() - 4).toUpperCase()
+            + new SimpleDateFormat("ddMM").format(new Date());
 
     assignedInterviewer.setInterviewId(interviewId);
     applicant.getAssignedInterviewers().add(assignedInterviewer);
@@ -488,10 +521,10 @@ public class ApplicantServiceImpl implements ApplicantService {
     } catch (Exception e) {
       log.error(Constants.INTERVIEWER_ASSIGNMENT_FAILED, e.getMessage());
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.DB_ERROR,
-                      ErrorCode.INTERVIEWER_ASSIGNMENT_FAILED,
-                      Constants.INTERVIEWER_ASSIGNMENT_FAILED));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.DB_ERROR,
+              ErrorCode.INTERVIEWER_ASSIGNMENT_FAILED,
+              Constants.INTERVIEWER_ASSIGNMENT_FAILED));
     }
   }
 
@@ -504,21 +537,21 @@ public class ApplicantServiceImpl implements ApplicantService {
       if (applicant == null) {
         log.error(NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId);
         throw new ResourceNotFoundException(
-                BuildErrorMessage.buildErrorMessage(
-                        ErrorType.RESOURCE_NOT_FOUND,
-                        ErrorCode.APPLICANT_NOT_FOUND,
-                        NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
+            BuildErrorMessage.buildErrorMessage(
+                ErrorType.RESOURCE_NOT_FOUND,
+                ErrorCode.APPLICANT_NOT_FOUND,
+                NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
       }
       return applicant;
-    } catch(ResourceNotFoundException e) {
+    } catch (ResourceNotFoundException e) {
       throw e;
-    }catch(Exception e) {
+    } catch (Exception e) {
       log.error(Constants.ERROR_IN_GETTING_APPLICANT + applicantId, e.getMessage());
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.DB_ERROR,
-                      ErrorCode.GET_APPLICANT_FAILED,
-                      Constants.ERROR_IN_GETTING_APPLICANT + applicantId));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.DB_ERROR,
+              ErrorCode.GET_APPLICANT_FAILED,
+              Constants.ERROR_IN_GETTING_APPLICANT + applicantId));
     }
   }
 
@@ -531,19 +564,19 @@ public class ApplicantServiceImpl implements ApplicantService {
     if (applicant == null) {
       log.error(NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId);
       throw new ResourceNotFoundException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.RESOURCE_NOT_FOUND,
-                      ErrorCode.APPLICANT_NOT_FOUND,
-                      NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.RESOURCE_NOT_FOUND,
+              ErrorCode.APPLICANT_NOT_FOUND,
+              NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
     }
     List<AssignedInterviewer> assignedInterviewers = applicant.getAssignedInterviewers();
     if (assignedInterviewers == null || assignedInterviewers.isEmpty()) {
       log.error(Constants.NO_INTERVIEWER_ASSIGNED + applicantId);
       throw new ResourceNotFoundException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.RESOURCE_NOT_FOUND,
-                      ErrorCode.NO_INTERVIEWER_ASSIGNED,
-                      Constants.NO_INTERVIEWER_ASSIGNED + applicantId));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.RESOURCE_NOT_FOUND,
+              ErrorCode.NO_INTERVIEWER_ASSIGNED,
+              Constants.NO_INTERVIEWER_ASSIGNED + applicantId));
     }
     assignedInterviewers.removeIf(
         assignedInterviewer -> assignedInterviewer.getInterviewId().equals(interviewId));
@@ -561,10 +594,10 @@ public class ApplicantServiceImpl implements ApplicantService {
     if (applicant == null) {
       log.error(NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicant.getApplicantId());
       throw new ResourceNotFoundException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.RESOURCE_NOT_FOUND,
-                      ErrorCode.APPLICANT_NOT_FOUND,
-                      NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicant.getApplicantId()));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.RESOURCE_NOT_FOUND,
+              ErrorCode.APPLICANT_NOT_FOUND,
+              NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicant.getApplicantId()));
     }
 
     List<ApplicantComment> applicantComments = applicant.getApplicantComments();
@@ -595,10 +628,10 @@ public class ApplicantServiceImpl implements ApplicantService {
     if (applicant == null) {
       log.error(NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId);
       throw new ResourceNotFoundException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.RESOURCE_NOT_FOUND,
-                      ErrorCode.APPLICANT_NOT_FOUND,
-                      NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.RESOURCE_NOT_FOUND,
+              ErrorCode.APPLICANT_NOT_FOUND,
+              NO_APPLICANT_FOUND_WITH_GIVEN_ID + applicantId));
     }
     try {
       ApplicantStatus applicantStatus = ApplicantStatus.valueOf(status);
@@ -607,10 +640,10 @@ public class ApplicantServiceImpl implements ApplicantService {
     } catch (IllegalArgumentException e) {
       log.error(Constants.INVALID_APPLICANT_STATUS + status, e.getMessage());
       throw new BadRequestException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.BAD_REQUEST,
-                      ErrorCode.INVALID_APPLICANT_STATUS,
-                      Constants.INVALID_APPLICANT_STATUS + status));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.BAD_REQUEST,
+              ErrorCode.INVALID_APPLICANT_STATUS,
+              Constants.INVALID_APPLICANT_STATUS + status));
     }
   }
 

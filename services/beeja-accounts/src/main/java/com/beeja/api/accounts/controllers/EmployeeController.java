@@ -17,23 +17,21 @@ import com.beeja.api.accounts.service.EmployeeService;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
 import jakarta.validation.Valid;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -46,12 +44,15 @@ public class EmployeeController {
   @GetMapping("/me")
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
   public ResponseEntity<User> getLoggedInUser() throws Exception {
-    return ResponseEntity.ok(employeeService.getEmployeeByEmail(
+    return ResponseEntity.ok(
+        employeeService.getEmployeeByEmail(
             UserContext.getLoggedInUserEmail(), UserContext.getLoggedInUserOrganization()));
   }
+
   @PostMapping("/names")
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
-  public ResponseEntity<List<EmployeeNameDTO>> getEmployeeNames(@RequestBody List<String> employeeIds) {
+  public ResponseEntity<List<EmployeeNameDTO>> getEmployeeNames(
+      @RequestBody List<String> employeeIds) {
     try {
       List<EmployeeNameDTO> employeeNames = employeeService.getEmployeeNamesByIds(employeeIds);
       return ResponseEntity.ok(employeeNames);
@@ -134,12 +135,12 @@ public class EmployeeController {
     employeeService.changeEmployeeStatus(employeeId);
     return new ResponseEntity<>(Constants.USER_STATUS_UPDATED, HttpStatus.OK);
   }
-  
+
   @PutMapping("/roles/{employeeId}")
   @HasPermission(PermissionConstants.UPDATE_ROLES_AND_PERMISSIONS)
   public ResponseEntity<?> updateUserRolesByEmployeeId(
-          @PathVariable String employeeId, @RequestBody UpdateUserRoleRequest newRoles)
-          throws Exception {
+      @PathVariable String employeeId, @RequestBody UpdateUserRoleRequest newRoles)
+      throws Exception {
     User updatedUser = employeeService.updateEmployeeRolesDyEmployeeId(employeeId, newRoles);
     return new ResponseEntity<>(updatedUser, HttpStatus.OK);
   }

@@ -1,5 +1,16 @@
 package com.beeja.api.expense.service;
 
+import static com.mongodb.assertions.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.expense.client.AccountClient;
 import com.beeja.api.expense.client.FileClient;
 import com.beeja.api.expense.exceptions.ExpenseNotFound;
@@ -10,6 +21,15 @@ import com.beeja.api.expense.requests.ExpenseUpdateRequest;
 import com.beeja.api.expense.response.CountryResponse;
 import com.beeja.api.expense.serviceImpl.ExpenseServiceImpl;
 import com.beeja.api.expense.utils.UserContext;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,27 +41,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
-import static com.mongodb.assertions.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 class ExpenseServiceImplTest {
 
@@ -87,7 +86,6 @@ class ExpenseServiceImplTest {
     Expense savedExpense = expenseService.createExpense(createExpense);
     assertNotNull(savedExpense);
     verify(expenseRepository, times(1)).save(any());
-
   }
 
   @Test
@@ -206,7 +204,7 @@ class ExpenseServiceImplTest {
     List<String> modeOfPayment = Arrays.asList("Credit Card");
     List<String> expenseType = Arrays.asList("Office Supplies");
     List<String> expenseCategory = Arrays.asList("Stationery");
-    Boolean settlementStatus=true;
+    Boolean settlementStatus = true;
     String organizationId = "Org123";
     Map<String, Object> mockResult = Collections.singletonMap("totalAmount", 5000.0);
     AggregationResults<Map> mockAggregationResults = mock(AggregationResults.class);
@@ -237,7 +235,7 @@ class ExpenseServiceImplTest {
     List<String> modeOfPayment = Arrays.asList("Credit Card");
     List<String> expenseType = Arrays.asList("Office Supplies");
     List<String> expenseCategory = Arrays.asList("Stationery");
-    Boolean settlementStatus=true;
+    Boolean settlementStatus = true;
     String organizationId = "Org123";
     long expectedCount = 10;
     when(mongoTemplate.count(any(Query.class), eq(Expense.class))).thenReturn(expectedCount);
@@ -274,7 +272,8 @@ class ExpenseServiceImplTest {
             1,
             10,
             "createdDate",
-            true, ascending);
+            true,
+            ascending);
     assertNotNull(result);
     assertEquals(1, result.size());
     verify(mongoTemplate).find(any(Query.class), eq(Expense.class));

@@ -6,6 +6,7 @@ import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.response.OrganizationResponse;
 import com.beeja.api.accounts.service.OrganizationService;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -15,8 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/v1/organizations")
@@ -80,17 +79,18 @@ public class OrganizationController {
   public ResponseEntity<OrgDefaults> getOrganizationValuesByKey(@PathVariable String key)
       throws Exception {
     OrgDefaults orgDefaults = organizationService.getOrganizationValuesByKey(key);
-    if(orgDefaults == null) {
-        return ResponseEntity.noContent().build();
+    if (orgDefaults == null) {
+      return ResponseEntity.noContent().build();
     }
     return ResponseEntity.ok(organizationService.getOrganizationValuesByKey(key));
   }
 
   @GetMapping("/values")
-    @HasPermission(PermissionConstants.READ_EMPLOYEE)
-  public ResponseEntity<List<OrgDefaults>> getOrganizationValues(@RequestParam List<String> keys) throws Exception {
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public ResponseEntity<List<OrgDefaults>> getOrganizationValues(@RequestParam List<String> keys)
+      throws Exception {
     return ResponseEntity.ok(organizationService.getOrganizationValues(keys));
-    }
+  }
 
   @PostMapping("/generate-defaults")
   @HasPermission(PermissionConstants.UPDATE_ORGANIZATIONS)
