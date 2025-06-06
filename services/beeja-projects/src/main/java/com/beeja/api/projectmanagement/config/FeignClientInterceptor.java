@@ -7,15 +7,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
- * Feign client interceptor that propagates the {@code Authorization} header
- * from the incoming HTTP request to outgoing Feign client requests.
+ * Feign client interceptor that propagates the {@code Authorization} header from the incoming HTTP
+ * request to outgoing Feign client requests.
  */
 @Component
 public class FeignClientInterceptor implements RequestInterceptor {
 
   /**
-   * Intercepts a Feign request and adds the {@code Authorization} header
-   * from the current HTTP request if available.
+   * Intercepts a Feign request and adds the {@code Authorization} header from the current HTTP
+   * request if available.
+   *
    * @param template the Feign request template to modify
    */
   @Override
@@ -28,11 +29,12 @@ public class FeignClientInterceptor implements RequestInterceptor {
 
   /**
    * Retrieves the {@code Authorization} header from the current HTTP request.
+   *
    * @return the token value if present; {@code null} otherwise
    */
   private String getRequestToken() {
     ServletRequestAttributes attributes =
-            (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     if (attributes != null) {
       return attributes.getRequest().getHeader("authorization");
     }

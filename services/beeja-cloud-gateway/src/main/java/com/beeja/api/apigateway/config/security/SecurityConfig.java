@@ -3,14 +3,13 @@ package com.beeja.api.apigateway.config.security;
 import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
 import com.beeja.api.apigateway.config.security.properties.AuthProperties;
+import com.beeja.api.apigateway.config.security.properties.SkipGatewayFilterRoutesProperty;
+import com.beeja.api.apigateway.utils.Constants;
 import java.time.Duration;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.beeja.api.apigateway.config.security.properties.SkipGatewayFilterRoutesProperty;
-import com.beeja.api.apigateway.utils.Constants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +36,6 @@ public class SecurityConfig {
   @Autowired AuthProperties authProperties;
 
   @Autowired private SkipGatewayFilterRoutesProperty skipGatewayFilterRoutesProperty;
-
 
   @Autowired private ServerAuthenticationFailureHandler authenticationFailureHandler;
 
@@ -140,9 +138,9 @@ public class SecurityConfig {
   @Order(1)
   public SecurityWebFilterChain publicPostSecurity(ServerHttpSecurity httpSecurity) {
     httpSecurity
-            .securityMatcher(pathMatchers(HttpMethod.POST, skipGatewayFilterRoutesProperty.getRoutes()))
-            .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.anyExchange().permitAll())
-            .csrf(ServerHttpSecurity.CsrfSpec::disable);
+        .securityMatcher(pathMatchers(HttpMethod.POST, skipGatewayFilterRoutesProperty.getRoutes()))
+        .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec.anyExchange().permitAll())
+        .csrf(ServerHttpSecurity.CsrfSpec::disable);
     return httpSecurity.build();
   }
 
@@ -150,12 +148,12 @@ public class SecurityConfig {
   @Order(2)
   public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
     serverHttpSecurity.exceptionHandling(
-            exceptionHandlingSpec ->
-                    exceptionHandlingSpec.authenticationEntryPoint(
-                            ((exchange, ex) -> {
-                              exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                              return Mono.empty();
-                            })));
+        exceptionHandlingSpec ->
+            exceptionHandlingSpec.authenticationEntryPoint(
+                ((exchange, ex) -> {
+                  exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                  return Mono.empty();
+                })));
     ServiceLoader<AuthenticationProvider> loader = ServiceLoader.load(AuthenticationProvider.class);
 
     for (AuthenticationProvider provider : loader) {
@@ -171,19 +169,15 @@ public class SecurityConfig {
     return new BCryptPasswordEncoder();
   }
 
-
   @Bean
   public CorsWebFilter corsWebFilter() throws Exception {
-    if(authProperties.getFrontEndUrl() == null || authProperties.getUrls() == null){
+    if (authProperties.getFrontEndUrl() == null || authProperties.getUrls() == null) {
       throw new Exception(Constants.ERROR_MISSING_FE_URLS);
     }
     CorsConfiguration corsConfig = new CorsConfiguration();
     corsConfig.setAllowedOriginPatterns(
-            Stream.concat(
-                    Stream.of(authProperties.getFrontEndUrl()),
-                    authProperties.getUrls().stream()
-            ).collect(Collectors.toList())
-    );
+        Stream.concat(Stream.of(authProperties.getFrontEndUrl()), authProperties.getUrls().stream())
+            .collect(Collectors.toList()));
     log.info("Allowed URLs: {}", authProperties.getUrls());
     corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
     corsConfig.setAllowedHeaders(List.of("*"));
@@ -194,7 +188,6 @@ public class SecurityConfig {
 
     return new CorsWebFilter(source);
   }
-
 
   @Bean
   public CookieWebSessionIdResolver cookieSessionIdResolverWithoutSameSite() {

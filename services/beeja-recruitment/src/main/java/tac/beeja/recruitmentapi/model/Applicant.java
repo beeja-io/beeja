@@ -1,6 +1,7 @@
 package tac.beeja.recruitmentapi.model;
 
-import jakarta.validation.constraints.Pattern;
+import java.util.Date;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,9 +12,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 import tac.beeja.recruitmentapi.enums.ApplicantStatus;
-
-import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter

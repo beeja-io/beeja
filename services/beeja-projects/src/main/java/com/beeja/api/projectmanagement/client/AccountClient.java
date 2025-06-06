@@ -27,5 +27,4 @@ public interface AccountClient {
 
   @GetMapping("/v1/organizations/{organizationId}")
   ResponseEntity<Object> getOrganizationById(@PathVariable("organizationId") String organizationId);
-
 }

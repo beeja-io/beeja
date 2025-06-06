@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentDetails {
-    String accountName;
-    String bankName;
-    String accountNumber;
-    String ifscNumber;
+  String accountName;
+  String bankName;
+  String accountNumber;
+  String ifscNumber;
 }

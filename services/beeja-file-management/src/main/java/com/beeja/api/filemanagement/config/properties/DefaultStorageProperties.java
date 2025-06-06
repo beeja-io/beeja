@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "storage.local")
 public class DefaultStorageProperties {
-    private String path;
+  private String path;
 }
