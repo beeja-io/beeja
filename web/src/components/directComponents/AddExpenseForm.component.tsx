@@ -239,16 +239,13 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         props.handleClose();
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          const { response, message } = error;
-          if (message.includes('413')) {
-            const errorMsg =
-              'File exceeds the 10 MB limit. Please upload a smaller file';
-            setResponseErrorMessage(errorMsg);
-            handleShowErrorMessage();
-            return;
-          }
+          const { response } = error;
           if (response) {
-            if (response.data.startsWith('At least one receipt is required')) {
+            if (
+              response.data.message.startsWith(
+                'At least one receipt is required'
+              )
+            ) {
               setResponseErrorMessage(
                 'ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED'
               );
@@ -261,7 +258,9 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               );
               handleShowErrorMessage();
             } else if (response.status === 413) {
-              setResponseErrorMessage(response.data);
+              setResponseErrorMessage(
+                'File exceeds the 5 MB limit. Please upload a smaller file'
+              );
               handleShowErrorMessage();
             } else {
               setResponseErrorMessage('SOMETHING_ERROR_HAPPENED');
@@ -624,16 +623,13 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         props.handleClose();
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          const { response, message } = error;
-          if (message.includes('413')) {
-            const errorMsg =
-              'File exceeds the 10 MB limit. Please upload a smaller file';
-            setResponseErrorMessage(errorMsg);
-            handleShowErrorMessage();
-            return;
-          }
+          const { response } = error;
           if (response) {
-            if (response.data.startsWith('At least one receipt is required')) {
+            if (
+              response.data.message.startsWith(
+                'At least one receipt is required'
+              )
+            ) {
               setResponseErrorMessage(
                 'ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED'
               );
@@ -646,7 +642,9 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               );
               handleShowErrorMessage();
             } else if (response.status === 413) {
-              setResponseErrorMessage(response.data);
+              setResponseErrorMessage(
+                'File exceeds the 5 MB limit. Please upload a smaller file'
+              );
               handleShowErrorMessage();
             } else {
               setResponseErrorMessage('SOMETHING_ERROR_HAPPENED');
