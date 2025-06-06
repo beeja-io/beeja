@@ -38,9 +38,9 @@ public class OrgDefaultsGenerationImpl {
     finance.setValue("Finance");
     finance.setDescription("Finance Department");
 
-    OrgValues DevOps = new OrgValues();
-    DevOps.setValue("DevOps");
-    DevOps.setDescription("DevOps Department");
+    OrgValues devOps = new OrgValues();
+    devOps.setValue("devOps");
+    devOps.setDescription("devOps Department");
 
     if (orgDepartments.getValues() == null) {
       orgDepartments.setValues(new HashSet<>());
@@ -48,7 +48,7 @@ public class OrgDefaultsGenerationImpl {
     orgDepartments.getValues().add(hr);
     orgDepartments.getValues().add(engineering);
     orgDepartments.getValues().add(finance);
-    orgDepartments.getValues().add(DevOps);
+    orgDepartments.getValues().add(devOps);
 
     orgDepartments.setValues(new HashSet<>(orgDepartments.getValues()));
     try {
@@ -80,9 +80,9 @@ public class OrgDefaultsGenerationImpl {
     finance.setValue("Finance Manager");
     finance.setDescription("Finance");
 
-    OrgValues DevOps = new OrgValues();
-    DevOps.setValue("DevOps Engineer");
-    DevOps.setDescription("DevOps");
+    OrgValues devOps = new OrgValues();
+    devOps.setValue("devOps Engineer");
+    devOps.setDescription("devOps");
 
     if (orgJobTitles.getValues() == null) {
       orgJobTitles.setValues(new HashSet<>());
@@ -90,7 +90,7 @@ public class OrgDefaultsGenerationImpl {
     orgJobTitles.getValues().add(hr);
     orgJobTitles.getValues().add(softwareEngineer);
     orgJobTitles.getValues().add(finance);
-    orgJobTitles.getValues().add(DevOps);
+    orgJobTitles.getValues().add(devOps);
 
     orgJobTitles.setValues(new HashSet<>(orgJobTitles.getValues()));
 

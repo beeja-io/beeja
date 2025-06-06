@@ -1,6 +1,11 @@
 package com.beeja.api.expense.serviceImpl;
 
-import static com.beeja.api.expense.utils.Constants.*;
+import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_EXPENSE;
+import static com.beeja.api.expense.utils.Constants.ERROR_SAVING_FILE_IN_FILE_SERVICE;
+import static com.beeja.api.expense.utils.Constants.EXPENSE_NOT_FOUND;
+import static com.beeja.api.expense.utils.Constants.FILE_COUNT_ERROR;
+import static com.beeja.api.expense.utils.Constants.INVALID_FILE_FORMATS;
+import static com.beeja.api.expense.utils.Constants.SERVICE_DOWN_ERROR;
 
 import com.beeja.api.expense.client.FileClient;
 import com.beeja.api.expense.config.properties.AllowedContentTypes;
@@ -26,7 +31,13 @@ import com.beeja.api.expense.utils.helpers.FileExtensionHelpers;
 import com.beeja.api.expense.utils.methods.ServiceMethods;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -68,7 +79,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         expenseRepository.deleteById(expenseId);
         return expense.get();
       } else {
-        log.error(Constants.EXPENSE_NOT_FOUND + expenseId);
+        log.error(EXPENSE_NOT_FOUND + expenseId);
         throw new ExpenseNotFound(
             BuildErrorMessage.buildErrorMessage(
                 ErrorType.RESOURCE_NOT_FOUND,
@@ -81,7 +92,7 @@ public class ExpenseServiceImpl implements ExpenseService {
       log.error(SERVICE_DOWN_ERROR, e.getMessage());
       throw new Exception(
           BuildErrorMessage.buildErrorMessage(
-              ErrorType.API_ERROR, ErrorCode.SERVER_ERROR, Constants.SERVICE_DOWN_ERROR));
+              ErrorType.API_ERROR, ErrorCode.SERVER_ERROR, SERVICE_DOWN_ERROR));
     }
   }
 
@@ -321,7 +332,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         .findById(expenseId)
         .orElseThrow(
             () -> {
-              String errorMessage = Constants.EXPENSE_NOT_FOUND + expenseId;
+              String errorMessage = EXPENSE_NOT_FOUND + expenseId;
               log.error(errorMessage);
               throw new ExpenseNotFound(
                   BuildErrorMessage.buildErrorMessage(

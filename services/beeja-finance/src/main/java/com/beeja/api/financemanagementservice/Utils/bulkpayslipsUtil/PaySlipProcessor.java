@@ -53,7 +53,7 @@ public class PaySlipProcessor {
       FileUploadRequest fileUploadRequest = new FileUploadRequest();
       fileUploadRequest.setEntityId(pdfResponse.getEntityId());
       fileUploadRequest.setName(
-          Constants.PAYSLIP_ + bulkPayslipRequest.getMonth() + "_" + bulkPayslipRequest.getYear());
+          Constants.PAY_SLIP + bulkPayslipRequest.getMonth() + "_" + bulkPayslipRequest.getYear());
       fileUploadRequest.setFileType(Constants.PAYSLIP_ENTITY_TYPE);
       fileUploadRequest.setEntityType(Constants.PAYSLIP_ENTITY_TYPE);
       fileUploadRequest.setFile(pdfResponse.getPdfFile());

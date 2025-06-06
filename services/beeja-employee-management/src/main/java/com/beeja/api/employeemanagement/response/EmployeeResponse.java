@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EmployeeResponse {
-  List<Map<String, Object>> EmployeeList;
+  List<Map<String, Object>> employeeList;
   Long totalSize;
 }

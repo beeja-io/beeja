@@ -75,7 +75,7 @@ public class ProjectServiceImpl implements ProjectService {
     newProject.setOrganizationId(
         UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
-    //        FIXME:  PROJECT ID GENERATION
+    //        TODO:  PROJECT ID GENERATION
     newProject.setProjectId(UUID.randomUUID().toString().toUpperCase().substring(0, 6));
     try {
       newProject = projectRepository.save(newProject);

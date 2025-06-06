@@ -19,7 +19,7 @@ public interface InventoryService {
       String provider,
       Availability availability,
       String os,
-      String RAM,
+      String ram,
       String searchTerm)
       throws Exception;
 
@@ -34,7 +34,7 @@ public interface InventoryService {
       String provider,
       Availability availability,
       String os,
-      String RAM,
+      String ram,
       String organizationId,
       String searchTerm);
 }

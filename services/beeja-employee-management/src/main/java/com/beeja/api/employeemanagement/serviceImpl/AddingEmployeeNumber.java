@@ -17,10 +17,10 @@ public class AddingEmployeeNumber {
 
   @PostConstruct
   public void initAddEmpNumber() {
-    AddEmpNumber();
+    addEmpNumber();
   }
 
-  private void AddEmpNumber() {
+  private void addEmpNumber() {
 
     List<Employee> allEmployees = employeeRepository.findAll();
 

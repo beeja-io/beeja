@@ -1,11 +1,25 @@
 package tac.beeja.recruitmentapi.serviceImpl;
 
-import static tac.beeja.recruitmentapi.utils.Constants.*;
+import static tac.beeja.recruitmentapi.utils.Constants.DUPLICATE_APPLICANT;
+import static tac.beeja.recruitmentapi.utils.Constants.DUPLICATE_APPLICATION_LOG;
+import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_CREATING_APPLICANT;
+import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_GETTING_LIST_OF_APPLICANTS;
+import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_RESUME_UPLOAD;
+import static tac.beeja.recruitmentapi.utils.Constants.ERROR_IN_UPDATING_APPLICANTS;
+import static tac.beeja.recruitmentapi.utils.Constants.NO_APPLICANT_FOUND_WITH_GIVEN_ID;
+import static tac.beeja.recruitmentapi.utils.Constants.RESUME_FILE_ENTITY;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +41,12 @@ import tac.beeja.recruitmentapi.client.FileClient;
 import tac.beeja.recruitmentapi.enums.ApplicantStatus;
 import tac.beeja.recruitmentapi.enums.ErrorCode;
 import tac.beeja.recruitmentapi.enums.ErrorType;
-import tac.beeja.recruitmentapi.exceptions.*;
+import tac.beeja.recruitmentapi.exceptions.BadRequestException;
+import tac.beeja.recruitmentapi.exceptions.ConflictException;
+import tac.beeja.recruitmentapi.exceptions.FeignClientException;
+import tac.beeja.recruitmentapi.exceptions.InterviewerException;
+import tac.beeja.recruitmentapi.exceptions.ResourceNotFoundException;
+import tac.beeja.recruitmentapi.exceptions.UnAuthorisedException;
 import tac.beeja.recruitmentapi.model.Applicant;
 import tac.beeja.recruitmentapi.model.ApplicantComment;
 import tac.beeja.recruitmentapi.model.AssignedInterviewer;
@@ -248,7 +267,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     String organizationName = UserContext.getLoggedInUserOrganization().get("name").toString();
 
-    String ORG_Prefix =
+    String orgPrefix =
         organizationName.length() >= 3
             ? organizationName.toUpperCase().substring(0, 3).toUpperCase()
             : organizationName.toUpperCase();
@@ -262,7 +281,7 @@ public class ApplicantServiceImpl implements ApplicantService {
 
     String sequencePart = String.format("%04d", newCount);
 
-    return ORG_Prefix + datePart + sequencePart;
+    return orgPrefix + datePart + sequencePart;
   }
 
   @Override

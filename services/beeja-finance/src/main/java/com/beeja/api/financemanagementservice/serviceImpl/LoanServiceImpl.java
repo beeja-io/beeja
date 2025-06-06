@@ -1,7 +1,6 @@
 package com.beeja.api.financemanagementservice.serviceImpl;
 
 import static com.beeja.api.financemanagementservice.Utils.Constants.GET_ALL_LOANS;
-import static com.beeja.api.financemanagementservice.Utils.Constants.zipFile;
 
 import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.Constants;
@@ -26,7 +25,12 @@ import com.beeja.api.financemanagementservice.service.LoanService;
 import feign.FeignException;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;

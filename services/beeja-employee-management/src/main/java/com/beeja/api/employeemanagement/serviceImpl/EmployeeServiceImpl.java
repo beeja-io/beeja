@@ -491,11 +491,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setPfDetails(existingPfDetails);
       }
 
-      if (updatedPfDetails.getPFNumber() != null) {
-        existingPfDetails.setPFNumber(updatedPfDetails.getPFNumber());
+      if (updatedPfDetails.getPfNumber() != null) {
+        existingPfDetails.setPfNumber(updatedPfDetails.getPfNumber());
       }
-      if (updatedPfDetails.getUAN() != null) {
-        existingPfDetails.setUAN(updatedPfDetails.getUAN());
+      if (updatedPfDetails.getUan() != null) {
+        existingPfDetails.setUan(updatedPfDetails.getUan());
       }
       if (updatedPfDetails.getJoiningData() != null) {
         existingPfDetails.setJoiningData(updatedPfDetails.getJoiningData());

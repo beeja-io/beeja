@@ -157,8 +157,8 @@ public class InvoicePDFGen {
 
     Date stDate = invoice.getInvoicePeriod().getStartDate();
     String startDate = formatter.format(stDate);
-    Date due_Date = invoice.getInvoicePeriod().getEndDate();
-    String endDate = formatter.format(due_Date);
+    Date dueDate = invoice.getInvoicePeriod().getEndDate();
+    String endDate = formatter.format(dueDate);
 
     String remarks = "Thank you so much for the great opportunity as always.";
     String orgCity = map.get("city").toString();
@@ -363,7 +363,7 @@ public class InvoicePDFGen {
     String orgName = invoice.getPaymentDetails().getAccountName().toString();
     String bankName = invoice.getPaymentDetails().getBankName().toString();
     String accountNo = invoice.getPaymentDetails().getAccountNumber().toString();
-    String IFSC = invoice.getPaymentDetails().getIfscNumber().toString();
+    String isfc = invoice.getPaymentDetails().getIfscNumber().toString();
 
     Paragraph paymentHeader =
         new Paragraph("Payment Details")
@@ -414,10 +414,10 @@ public class InvoicePDFGen {
             .setFontColor(blackColor));
 
     paymentTable.addCell(
-        new Cell().add(new Paragraph("IFSC")).setBorder(Border.NO_BORDER).setFontColor(grayColor));
+        new Cell().add(new Paragraph("isfc")).setBorder(Border.NO_BORDER).setFontColor(grayColor));
     paymentTable.addCell(
         new Cell()
-            .add(new Paragraph(IFSC))
+            .add(new Paragraph(isfc))
             .setBorder(Border.NO_BORDER)
             .setBold()
             .setFontColor(blackColor));
