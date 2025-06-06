@@ -4,6 +4,7 @@ import com.beeja.api.projectmanagement.annotations.HasPermission;
 import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Invoice;
+import com.beeja.api.projectmanagement.model.dto.InvoiceIdentifiersResponse;
 import com.beeja.api.projectmanagement.request.InvoiceRequest;
 import com.beeja.api.projectmanagement.service.InvoiceService;
 import lombok.extern.slf4j.Slf4j;
@@ -64,4 +65,14 @@ public class InvoiceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+    @PostMapping("/generate-identifiers")
+    public ResponseEntity<InvoiceIdentifiersResponse> generateInvoiceIdentifiers(@RequestBody String contractId) {
+        try {
+            InvoiceIdentifiersResponse response = invoiceService.generateInvoiceIdentifiers(contractId);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return ResponseEntity.internalServerError().build();
+            }
+        }
 }
