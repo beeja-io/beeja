@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { TextInput } from 'web-kit-components';
+import { TextInput } from '../../styles/InputStyles.style';
 import { IApplicant } from '../../entities/ApplicantEntity';
 import {
   changeApplicationStatus,
@@ -145,7 +145,7 @@ const EditApplicant = () => {
                       }}
                       placeholder={'Ex: John'}
                       autoComplete="off"
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -174,7 +174,7 @@ const EditApplicant = () => {
                         }
                       }}
                       placeholder={'Ex: Doe'}
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
@@ -206,7 +206,7 @@ const EditApplicant = () => {
                         }
                       }}
                       placeholder={'Enter Phone Number'}
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -223,7 +223,7 @@ const EditApplicant = () => {
                       required
                       disabled
                       placeholder={'Enter Email'}
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
