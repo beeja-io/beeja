@@ -6,10 +6,12 @@ import com.beeja.api.employeemanagement.service.FileService;
 import com.beeja.api.employeemanagement.service.ProfilePicService;
 import com.beeja.api.employeemanagement.utils.Constants;
 import com.beeja.api.employeemanagement.utils.UserContext;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class ProfilePicServiceImpl implements ProfilePicService {
 
@@ -30,7 +32,7 @@ public class ProfilePicServiceImpl implements ProfilePicService {
     try {
       return fileService.uploadFile(fileUploadRequest);
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error(Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE, e);
       throw new Exception(Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE);
     }
   }

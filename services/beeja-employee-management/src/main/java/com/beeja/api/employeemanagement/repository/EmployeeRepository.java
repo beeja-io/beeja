@@ -22,8 +22,10 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
   @Aggregation(
       pipeline = {
         "{ $match: { 'organizationId': ?0 } }",
-        "{ $project: { _id: 0, employmentType: '$jobDetails.employementType', designation: '$jobDetails.designation', department: '$jobDetails.department' } }",
-        "{ $group: { _id: null, uniqueValues: { $addToSet: { employmentType: '$employmentType', designation: '$designation', department: '$department' } } } }",
+        "{ $project: { _id: 0, employmentType: '$jobDetails.employementType', designation: '$jobDetails.designation', "
+            + "department: '$jobDetails.department' } }",
+        "{ $group: { _id: null, uniqueValues: { $addToSet: { employmentType: '$employmentType', "
+            + "designation: '$designation', department: '$department' } } } }",
         "{ $unwind: '$uniqueValues' }",
         "{ $replaceRoot: { newRoot: '$uniqueValues' } }"
       })

@@ -48,6 +48,6 @@ public class Constants {
       "Failed to fetch default expense values for organizationId: ";
   public static final String FILE_SIZE_EXCEEDED =
       "The uploaded file exceeds the maximum allowed size of ";
-  public static String INVALID_PAGINATION_PARAM =
+  public static final String INVALID_PAGINATION_PARAM =
       "Invalid pagination parameters(pageNumber and pageSize)";
 }

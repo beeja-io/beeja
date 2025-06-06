@@ -75,7 +75,7 @@ public class InventoryServiceImpl implements InventoryService {
     device.setType(deviceDetails.getType());
     device.setOs(deviceDetails.getOs());
     device.setSpecifications(deviceDetails.getSpecifications());
-    device.setRAM(deviceDetails.getRAM());
+    device.setRam(deviceDetails.getRam());
     device.setAvailability(deviceDetails.getAvailability());
     device.setProductId(deviceDetails.getProductId());
     device.setPrice(deviceDetails.getPrice());
@@ -135,7 +135,7 @@ public class InventoryServiceImpl implements InventoryService {
       String provider,
       Availability availability,
       String os,
-      String RAM,
+      String ram,
       String searchTerm) {
     try {
 
@@ -154,8 +154,8 @@ public class InventoryServiceImpl implements InventoryService {
       if (os != null && StringUtils.hasText(os)) {
         query.addCriteria(Criteria.where("os").is(os));
       }
-      if (RAM != null && StringUtils.hasText(RAM)) {
-        query.addCriteria(Criteria.where("RAM").is(RAM));
+      if (ram != null && StringUtils.hasText(ram)) {
+        query.addCriteria(Criteria.where("ram").is(ram));
       }
       if (searchTerm != null && !searchTerm.isEmpty()) {
         query.addCriteria(
@@ -185,7 +185,7 @@ public class InventoryServiceImpl implements InventoryService {
       String provider,
       Availability availability,
       String os,
-      String RAM,
+      String ram,
       String organizationId,
       String searchTerm) {
     Query query = new Query();
@@ -202,8 +202,8 @@ public class InventoryServiceImpl implements InventoryService {
       query.addCriteria(Criteria.where("os").is(os));
     }
 
-    if (RAM != null && !RAM.isEmpty()) {
-      query.addCriteria(Criteria.where("RAM").is(RAM));
+    if (ram != null && !ram.isEmpty()) {
+      query.addCriteria(Criteria.where("ram").is(ram));
     }
 
     if (organizationId != null) {

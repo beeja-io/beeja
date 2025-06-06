@@ -42,7 +42,7 @@ public class Inventory {
 
   private String specifications;
 
-  private String RAM;
+  private String ram;
 
   @NotNull private Availability availability;
 
