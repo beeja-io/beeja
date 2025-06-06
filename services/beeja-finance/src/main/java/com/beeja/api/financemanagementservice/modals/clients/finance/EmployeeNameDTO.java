@@ -1,6 +1,5 @@
 package com.beeja.api.financemanagementservice.modals.clients.finance;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,8 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmployeeNameDTO {
-    private String employeeId;
-    private String fullName;
+  private String employeeId;
+  private String fullName;
 
-    // Constructor, Getters, Setters
+  // Constructor, Getters, Setters
 }

@@ -1,18 +1,17 @@
 package com.beeja.api.financemanagementservice.config;
 
+import static com.beeja.api.financemanagementservice.Utils.Constants.NO_REQUIRED_PERMISSIONS;
+
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.annotations.HasPermission;
 import com.beeja.api.financemanagementservice.exceptions.CustomAccessDeniedException;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
-import static com.beeja.api.financemanagementservice.Utils.Constants.NO_REQUIRED_PERMISSIONS;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
 
 @Aspect
 @Component

@@ -11,15 +11,14 @@ import com.beeja.api.expense.service.ReceiptService;
 import com.beeja.api.expense.utils.BuildErrorMessage;
 import com.beeja.api.expense.utils.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.LinkedHashMap;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.LinkedHashMap;
-import java.util.Objects;
 
 @Service
 @Slf4j
@@ -43,18 +42,18 @@ public class ReceiptServiceImpl implements ReceiptService {
       if (!Objects.equals(file.getEntityType(), "expense")) {
         log.error(Constants.UNAUTHORISED_ACCESS);
         throw new UnAuthorisedException(
-                BuildErrorMessage.buildErrorMessage(
-                        ErrorType.AUTHORIZATION_ERROR,
-                        ErrorCode.PERMISSION_MISSING,
-                        Constants.UNAUTHORISED_ACCESS));
+            BuildErrorMessage.buildErrorMessage(
+                ErrorType.AUTHORIZATION_ERROR,
+                ErrorCode.PERMISSION_MISSING,
+                Constants.UNAUTHORISED_ACCESS));
       }
     } catch (Exception e) {
       log.error(Constants.FILE_SERVICE_FETCH_FAILED);
       throw new FeignClientException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.FEIGN_CLIENT_ERROR,
-                      ErrorCode.FILE_SERVICE_COMMUNICATION_FAILED,
-                      Constants.FILE_SERVICE_FETCH_FAILED));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.FEIGN_CLIENT_ERROR,
+              ErrorCode.FILE_SERVICE_COMMUNICATION_FAILED,
+              Constants.FILE_SERVICE_FETCH_FAILED));
     }
 
     try {
@@ -73,10 +72,10 @@ public class ReceiptServiceImpl implements ReceiptService {
     } catch (Exception e) {
       log.error(Constants.FILE_DOWNLOAD_FAILED);
       throw new FeignClientException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.FEIGN_CLIENT_ERROR,
-                      ErrorCode.FILE_DOWNLOAD_FAILED,
-                      Constants.FILE_DOWNLOAD_FAILED));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.FEIGN_CLIENT_ERROR,
+              ErrorCode.FILE_DOWNLOAD_FAILED,
+              Constants.FILE_DOWNLOAD_FAILED));
     }
   }
 

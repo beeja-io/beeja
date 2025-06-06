@@ -1,9 +1,9 @@
 package com.beeja.api.financemanagementservice.requests;
 
+import static com.beeja.api.financemanagementservice.Utils.Constants.PAYSLIP_ENTITY_TYPE;
+
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
-
-import static com.beeja.api.financemanagementservice.Utils.Constants.PAYSLIP_ENTITY_TYPE;
 
 @Data
 public class BulkPayslipRequest {

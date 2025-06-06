@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConfigurationProperties(prefix = "logs")
 public class OrganizationTest {
-    private String organizationId;
+  private String organizationId;
 }

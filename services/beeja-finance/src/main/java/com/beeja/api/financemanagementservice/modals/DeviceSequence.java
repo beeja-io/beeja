@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "device_sequences")
 public class DeviceSequence {
-  @Id
-  private String id;
+  @Id private String id;
   private long seq;
 }
