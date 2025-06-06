@@ -1,4 +1,4 @@
-import { Button } from 'web-kit-components';
+import { Button } from '../../styles/CommonStyles.style';
 import {
   CommentContainer,
   CommentForm,
@@ -33,7 +33,7 @@ const CommentsSection = (props: CommentSectionProps) => {
           placeholder={t('ENTER_YOUR_COMMENTS_HERE')}
         />
         <Button
-          className="normal"
+          className="submit"
           type="submit"
           onClick={(e) => {
             e.preventDefault();
