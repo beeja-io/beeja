@@ -29,6 +29,7 @@ public class UsernamePasswordAuthProvider implements AuthenticationProvider {
                     .pathMatchers(
                         "/login",
                         "/auth/login/**",
+                        "/auth/**",
                         "/actuator/**",
                         "/static/favicon.ico",
                         "/favicon.ico",
