@@ -39,7 +39,7 @@ public class LoanController {
   public LoanResponse getAllLoansBasedOnCount(
       @RequestParam(defaultValue = "0") int pageNumber,
       @RequestParam(defaultValue = "10") int pageSize,
-      @RequestParam(defaultValue = "loanNumber") String sortBy,
+      @RequestParam(defaultValue = "createdAt") String sortBy,
       @RequestParam(defaultValue = "desc") String sortDirection,
       @RequestParam(required = false) LoanStatus status) {
     return loanService.getLoansWithCount(pageNumber, pageSize, sortBy, sortDirection, status);
