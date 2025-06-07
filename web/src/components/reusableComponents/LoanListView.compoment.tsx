@@ -11,7 +11,7 @@ import {
   TableHead,
   TableBodyRow,
 } from '../../styles/DocumentTabStyles.style';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CalenderIcon } from '../../svgs/DocumentTabSvgs.svg';
 import { LoanAction } from './LoanListAction';
 import { useUser } from '../../context/UserContext';
@@ -30,18 +30,13 @@ type LoanListViewProps = {
   setTotalApplicants: (total: number) => void;
   loansList: Loan[];
   loading: boolean;
-  fetchLoans?: () => void; // optional
+  fetchLoans: () => void;
 };
 
 const LoanListView = (props: LoanListViewProps) => {
   const { user } = useUser();
   const { t } = useTranslation();
-  const {
-    handleIsApplyLoanScreen,
-    loansList,
-    loading,
-    fetchLoans = () => {}, // 👈 default fallback function
-  } = props;
+  const { handleIsApplyLoanScreen, loansList, loading, fetchLoans } = props;
 
   const [isLoanPreviewModalOpen, setIsLoanPreviewModalOpen] = useState(false);
   const [loanToBePreviewed, setIsLoanToBePreviewed] = useState<Loan>();
@@ -80,6 +75,10 @@ const LoanListView = (props: LoanListViewProps) => {
     status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
 
   const Actions = [{ title: 'Approve' }, { title: 'Reject' }];
+
+  useEffect(() => {
+    fetchLoans();
+  }, [user, fetchLoans]);
 
   return (
     <>
