@@ -71,7 +71,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const departments = selectedDepartments.map(encodeURIComponent);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const categories=selectedCategories.map(encodeURIComponent);
+  const categories = selectedCategories.map(encodeURIComponent);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>(
     []
