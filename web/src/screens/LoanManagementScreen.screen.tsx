@@ -97,6 +97,7 @@ const LoanManagementScreen = () => {
             setTotalApplicants={setTotalApplicants}
             loansList={loansList}
             loading={loading}
+            fetchLoans={fetchLoanData}
           />
           <Pagination
             currentPage={currentPage}
