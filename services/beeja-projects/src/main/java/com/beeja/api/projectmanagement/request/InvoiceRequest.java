@@ -12,17 +12,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvoiceRequest {
-  private String contractId;
-  private Date billingDate;
-  private Date dueDate;
-  private Double amount;
-  private String currency;
-  private List<String> notes;
-  private List<Task> tasks;
-  private String clientId;
-  private String projectId;
-  private String remittanceRef;
-  private int vat;
-  private String daysLeftForPayment;
-  private InvoicePeriod invoicePeriod;
+
+    public String setInvoiceId;
+    private String contractId;
+    private Date billingDate;
+    private Date dueDate;
+    private Double amount;
+    private String currency;
+    private List<String> notes;
+    private List<Task> tasks;
+    private String clientId;
+    private String projectId;
+    private String remittanceRef;
+    private int vat;
+    private String daysLeftForPayment;
+    private InvoicePeriod invoicePeriod;
+
+
 }
