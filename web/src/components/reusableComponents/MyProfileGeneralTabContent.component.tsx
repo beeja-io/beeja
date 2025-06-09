@@ -1,43 +1,43 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { EMPLOYEE_MODULE } from '../../constants/PermissionConstants';
 import { useUser } from '../../context/UserContext';
 import { EmployeeEntity } from '../../entities/EmployeeEntity';
-import {
-  TabContentMainContainer,
-  TabContentMainContainerHeading,
-  TabContentEditArea,
-  BorderDivLine,
-  TabContentInnerContainer,
-  TabContentTable,
-  TabContentTableTd,
-  InlineInput,
-  StyledCalendarIconDark,
-  CalendarInputContainer,
-  CalendarContainer,
-} from '../../styles/MyProfile.style';
-import {
-  EditWhitePenSVG,
-  CheckBoxOnSVG,
-  CrossMarkSVG,
-} from '../../svgs/CommonSvgs.svs';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import ToastMessage from './ToastMessage.component';
+import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
 import {
   getOrganizationValuesByKey,
   updateEmployeeDetailsByEmployeeId,
 } from '../../service/axiosInstance';
+import { Select } from '../../styles/CommonStyles.style';
+import {
+  BorderDivLine,
+  CalendarContainer,
+  CalendarInputContainer,
+  InlineInput,
+  StyledCalendarIconDark,
+  TabContentEditArea,
+  TabContentInnerContainer,
+  TabContentMainContainer,
+  TabContentMainContainerHeading,
+  TabContentTable,
+  TabContentTableTd,
+} from '../../styles/MyProfile.style';
+import {
+  CheckBoxOnSVG,
+  CrossMarkSVG,
+  EditWhitePenSVG,
+} from '../../svgs/CommonSvgs.svs';
+import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import {
   formatDate,
-  formatDateYYYYMMDD,
   formatDateDDMMYYYY,
+  formatDateYYYYMMDD,
 } from '../../utils/dateFormatter';
-import { Select } from '../../styles/CommonStyles.style';
-import { EMPLOYEE_MODULE } from '../../constants/PermissionConstants';
-import Calendar from './Calendar.component';
-import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import { isValidEmail, isValidPINCode } from '../../utils/formInputValidators';
 import { hasPermission } from '../../utils/permissionCheck';
-import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import Calendar from './Calendar.component';
+import ToastMessage from './ToastMessage.component';
 
 type GeneralDetailsTabProps = {
   heading: string;
@@ -351,6 +351,8 @@ export const GeneralDetailsTab = ({
         return 'personalInformation.nomineeDetails.relationType';
       case 'Aadhar Number':
         return 'personalInformation.nomineeDetails.aadharNumber';
+      case 'Personal Tax ID':
+        return 'personalInformation.personalTaxId';
       default:
         return label.toLowerCase().replace(/\s/g, '');
     }
