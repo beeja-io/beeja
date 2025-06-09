@@ -2,9 +2,9 @@ package com.beeja.api.accounts.response;
 
 import com.beeja.api.accounts.model.Organization.Accounts;
 import com.beeja.api.accounts.model.Organization.Address;
+import com.beeja.api.accounts.model.Organization.BankDetails;
 import com.beeja.api.accounts.model.Organization.LoanLimit;
 import com.beeja.api.accounts.model.Organization.Preferences;
-import com.beeja.api.accounts.model.Organization.BankDetails;
 import lombok.Data;
 
 @Data
@@ -32,5 +32,4 @@ public class OrganizationResponse {
   private LoanLimit loanLimit;
 
   private BankDetails bankDetails;
-
 }

@@ -1,12 +1,11 @@
 package com.beeja.api.financemanagementservice.modals.clients.finance;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
-import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data

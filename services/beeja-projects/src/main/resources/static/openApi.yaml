@@ -25,7 +25,7 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0.html
 
 servers:
-  - url: http://localhost:8000/projects/v1
+  - url: http://localhost:8000/projects
     description: Local development server
   - url: /projects/v1
     description: Relative path (works behind proxies)
@@ -44,7 +44,7 @@ tags:
     description: Simple greeting endpoint
 
 paths:
-  /clients:
+  /v1/clients:
     get:
       tags:
         - Clients
@@ -108,7 +108,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /clients/{clientId}:
+  /v1/clients/{clientId}:
     get:
       tags:
         - Clients
@@ -181,7 +181,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /contracts:
+  /v1/contracts:
     post:
       tags: [Contracts]
       summary: Create a new contract (requires existing project)
@@ -223,7 +223,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /contracts/{contractId}:
+  /v1/contracts/{contractId}:
     get:
       tags:
         - Contracts
@@ -296,7 +296,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /contracts/project/{projectId}:
+  /v1/contracts/project/{projectId}:
     get:
       tags:
         - Contracts
@@ -330,7 +330,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /projects:
+  /v1/projects:
     get:
       tags:
         - Projects
@@ -403,7 +403,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/{projectId}/{clientId}:
+  /v1/projects/{projectId}/{clientId}:
     get:
       tags:
         - Projects
@@ -442,7 +442,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/client/{clientId}:
+  /v1/projects/client/{clientId}:
     get:
       tags:
         - Projects
@@ -476,7 +476,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /projects/{projectId}:
+  /v1/projects/{projectId}:
     put:
       tags:
         - Projects
@@ -516,7 +516,7 @@ paths:
         500:
           $ref: '#/components/responses/InternalServerError'
 
-  /:
+  /v1:
     get:
       tags:
         - HelloWorld
@@ -532,6 +532,121 @@ paths:
                 example: "Hello, John Doe"
         401:
           $ref: '#/components/responses/Unauthorized'
+
+  /v1/invoices:
+    post:
+      tags: [ Invoices ]
+      summary: Create a new invoice for a contract
+      operationId: createInvoice
+      description: |
+        Generates an invoice for a given contract. Requires permission: `CREATE_INVOICE`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceRequest'
+      responses:
+        201:
+          description: Invoice created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Invoice'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/invoices/{invoiceId}:
+    get:
+        tags: [ Invoices ]
+        summary: Get invoice by ID
+        operationId: getInvoiceById
+        description: |
+          Retrieves a single invoice by its unique ID. Requires permission: `GET_INVOICE`.
+        parameters:
+          - name: invoiceId
+            in: path
+            required: true
+            schema:
+              type: string
+        responses:
+          200:
+            description: Invoice found
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Invoice'
+          401:
+            $ref: '#/components/responses/Unauthorized'
+          403:
+            $ref: '#/components/responses/Forbidden'
+          404:
+            $ref: '#/components/responses/NotFound'
+          500:
+            $ref: '#/components/responses/InternalServerError'
+
+  /v1/invoices/contract/{contractId}:
+    get:
+        tags: [ Invoices ]
+        summary: Get all invoices for a contract
+        operationId: getInvoicesByContractId
+        description: |
+          Retrieves all invoices associated with a specified contract. Requires permission: `GET_INVOICE`.
+        parameters:
+          - name: contractId
+            in: path
+            required: true
+            schema:
+              type: string
+        responses:
+          200:
+            description: List of invoices for the contract
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Invoice'
+          401:
+            $ref: '#/components/responses/Unauthorized'
+          403:
+            $ref: '#/components/responses/Forbidden'
+          500:
+            $ref: '#/components/responses/InternalServerError'
+
+  /v1/invoices/{invoiceId}/mark-paid:
+    put:
+        tags: [ Invoices ]
+        summary: Mark invoice as paid
+        operationId: markInvoiceAsPaid
+        description: |
+          Updates an invoice's status to 'paid'. Requires permission: `UPDATE_STATUS_INVOICE`.
+        parameters:
+          - name: invoiceId
+            in: path
+            required: true
+            schema:
+              type: string
+        responses:
+          200:
+            description: Invoice marked as paid successfully
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Invoice'
+          401:
+            $ref: '#/components/responses/Unauthorized'
+          403:
+            $ref: '#/components/responses/Forbidden'
+          404:
+            $ref: '#/components/responses/NotFound'
+          500:
+            $ref: '#/components/responses/InternalServerError'
+
 
 components:
   schemas:
@@ -683,6 +798,106 @@ components:
           type: string
           example: "5f8d0d55b54764421b7156c3"
           description: Must reference an existing client
+
+    Invoice:
+      type: object
+      properties:
+        id:
+          type: string
+          description: MongoDB document ID
+        invoiceId:
+          type: string
+          description: Business identifier for the invoice
+        contractId:
+          type: string
+        projectId:
+          type: string
+        clientId:
+          type: string
+        organizationId:
+          type: string
+        amount:
+          type: number
+          format: double
+        currency:
+          type: string
+          example: "USD"
+        billingDate:
+          type: string
+          format: date-time
+        dueDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [ PENDING, PAID, CANCELLED, OVERDUE ]
+        notes:
+          type: array
+          items:
+            type: string
+        invoiceFileId:
+          type: string
+        paymentDetails:
+          $ref: '#/components/schemas/PaymentDetails'
+        remittanceRef:
+          type: string
+        taxId:
+          type: string
+        amountInWords:
+          type: string
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+        vat:
+          type: integer
+        daysLeftForPayment:
+          type: string
+        invoicePeriod:
+          $ref: '#/components/schemas/InvoicePeriod'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    InvoicePeriod:
+        type: object
+        properties:
+          startDate:
+            type: string
+            format: date-time
+          endDate:
+            type: string
+            format: date-time
+
+    PaymentDetails:
+      type: object
+      description: Payment details for the invoice
+      properties:
+        accountName:
+          type: string
+        bankName:
+          type: string
+        accountNumber:
+          type: string
+        ifscNumber:
+          type: string
+
+
+    Task:
+      type: object
+      description: Task included in the invoice
+      properties:
+        taskName:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+          format: double
+
 
     Error:
       type: object

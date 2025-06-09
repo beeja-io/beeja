@@ -1,5 +1,13 @@
 package com.beeja.api.employeemanagement.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.employeemanagement.client.AccountClient;
 import com.beeja.api.employeemanagement.model.*;
 import com.beeja.api.employeemanagement.model.clients.accounts.OrganizationDTO;
@@ -11,6 +19,10 @@ import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
 import com.beeja.api.employeemanagement.response.GetLimitedEmployee;
 import com.beeja.api.employeemanagement.serviceImpl.EmployeeServiceImpl;
 import com.beeja.api.employeemanagement.utils.UserContext;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,20 +39,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /** */
 @ExtendWith(MockitoExtension.class)
@@ -253,8 +251,6 @@ public class EmployeeServiceTest {
         .findByEmployeeIdAndOrganizationId(employeeId, organizationId);
     verify(employeeRepository, times(1)).save(any(Employee.class)); // Ensure save is called
   }
-
-
 
   @Test
   void updateKYCRequest_withValidData_returnsUpdatedEmployee() throws Exception {

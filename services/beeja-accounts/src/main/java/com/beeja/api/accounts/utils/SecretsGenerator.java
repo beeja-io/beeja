@@ -1,10 +1,9 @@
 package com.beeja.api.accounts.utils;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
 import java.security.SecureRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
  * The {@code SecretsGenerator} class provides utility methods to generate secure random secrets,

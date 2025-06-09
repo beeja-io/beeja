@@ -25,6 +25,8 @@ type ApplicantsListProps = {
   isLoading: boolean;
   handleIsLoading: () => void;
   isReferral: boolean;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
 };
 const ApplicantsList = (props: ApplicantsListProps) => {
   const { user } = useUser();

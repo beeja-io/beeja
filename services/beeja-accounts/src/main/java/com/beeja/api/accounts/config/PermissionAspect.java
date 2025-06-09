@@ -7,15 +7,14 @@ import com.beeja.api.accounts.exceptions.CustomAccessDenied;
 import com.beeja.api.accounts.utils.BuildErrorMessage;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.springframework.stereotype.Component;
-
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.stereotype.Component;
 
 @Aspect
 @Component

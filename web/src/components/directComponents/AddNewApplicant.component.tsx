@@ -2,7 +2,7 @@ import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { TextInput } from 'web-kit-components';
+import { TextInput } from '../../styles/InputStyles.style';
 import { RECRUITMENT_MODULE } from '../../constants/PermissionConstants';
 import { useUser } from '../../context/UserContext';
 import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
@@ -199,6 +199,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     id="firstName"
                     onChange={handleChange}
                     value={newApplicant.firstName}
+                    style={{ width: '400px' }}
                     required
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === 'Enter') {
@@ -224,6 +225,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     name="lastName"
                     id="lastName"
                     onChange={handleChange}
+                    style={{ width: '400px' }}
                     required
                     autoComplete="off"
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -252,6 +254,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     name="phoneNumber"
                     id="phoneNumber"
                     onChange={handleChange}
+                    style={{ width: '400px' }}
                     required
                     autoComplete="off"
                     maxLength={10}
@@ -278,6 +281,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     name="email"
                     id="email"
                     onChange={handleChange}
+                    style={{ width: '400px' }}
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$"
                     autoComplete="off"
                     required

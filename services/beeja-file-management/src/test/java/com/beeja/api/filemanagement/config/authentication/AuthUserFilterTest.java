@@ -1,6 +1,5 @@
 package com.beeja.api.filemanagement.config.authentication;
 
-
 import static org.mockito.Mockito.*;
 
 import com.beeja.api.filemanagement.repository.FileRepository;
@@ -48,8 +47,6 @@ public class AuthUserFilterTest {
     ResponseEntity<String> mockResponseEntity = new ResponseEntity<>(mockResponse, HttpStatus.OK);
     when(restTemplate.getForEntity(any(String.class), any(Class.class)))
         .thenReturn(mockResponseEntity);
-
-
 
     when(response.getWriter()).thenReturn(mock(PrintWriter.class));
 
