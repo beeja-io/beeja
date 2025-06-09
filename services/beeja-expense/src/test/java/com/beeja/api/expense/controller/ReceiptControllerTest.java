@@ -1,5 +1,8 @@
 package com.beeja.api.expense.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.expense.controllers.ReceiptController;
 import com.beeja.api.expense.service.ReceiptService;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,9 +14,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 class ReceiptControllerTest {
 
