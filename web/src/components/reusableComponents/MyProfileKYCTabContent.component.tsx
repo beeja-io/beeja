@@ -36,7 +36,6 @@ type KycTabContentProps = {
   isEditModeOn: boolean;
   handleIsEditModeOn: () => void;
   employee: EmployeeEntity;
-  fetchEmployeeAgain: () => void;
 };
 
 const KycTabContent = ({
@@ -45,7 +44,6 @@ const KycTabContent = ({
   isEditModeOn,
   handleIsEditModeOn,
   employee,
-  fetchEmployeeAgain,
 }: KycTabContentProps) => {
   const { t } = useTranslation();
   const { user } = useUser();
@@ -245,7 +243,7 @@ const KycTabContent = ({
         employee.employee.employeeId,
         mapFormDataToBackendStructure(updatedData)
       );
-      fetchEmployeeAgain();
+      // fetchEmployeeAgain();
       setIsUpdateToastMessage(true);
       setIsFormSubmitted(true);
       handleIsEditModeOn();

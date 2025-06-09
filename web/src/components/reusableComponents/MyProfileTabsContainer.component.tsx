@@ -5,6 +5,7 @@ import {
 } from '../../styles/MyProfile.style';
 import { EmployeeEntity } from '../../entities/EmployeeEntity';
 import { useUser } from '../../context/UserContext';
+import { useLocation } from 'react-router-dom';
 import { GeneralDetailsTab } from './MyProfileGeneralTabContent.component';
 import KycTabContent from './MyProfileKYCTabContent.component';
 import { DocumentTabContent } from './MyProfileDocumentTabContent.component';
@@ -41,13 +42,22 @@ const MyProfileTabsContainerComponent = ({
   const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
     setSelectedTab('general');
+    setIsActiveTab('general');
   }, [employee]);
-  
-useEffect(() => {
-  if (selectedTab !== isActiveTab) {
+
+  useEffect(() => {
     setSelectedTab(isActiveTab);
-  }
-}, [isActiveTab, selectedTab]);
+  }, [isActiveTab]);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/profile/me') {
+      handleTabChange('general');
+      handleIsActiveTab('general');
+      chooseTab('General');
+    }
+  }, [location.pathname]);
 
   const handleTabChange = (selectedTab: string) => {
     setSelectedTab(selectedTab);
@@ -478,7 +488,6 @@ useEffect(() => {
                 onClick={() => {
                   handleTabChange('kyc');
                   handleIsActiveTab('kyc');
-                  setIsActiveTab('kyc');
                   chooseTab('KYC');
                 }}
               >
@@ -555,7 +564,6 @@ useEffect(() => {
               details={kycDetails}
               isEditModeOn={isKycDetailsEditModeOn}
               employee={employee}
-              fetchEmployeeAgain={fetchEmployeeAgain}
               handleIsEditModeOn={handleIsKycDetailsEditModeOn}
             />
             <KycTabContent
@@ -563,7 +571,6 @@ useEffect(() => {
               details={bankDetails}
               isEditModeOn={isBankDetailsEditModeOn}
               employee={employee}
-              fetchEmployeeAgain={fetchEmployeeAgain}
               handleIsEditModeOn={handleIsBankDetailsEditModeOn}
             />
           </div>
