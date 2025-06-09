@@ -560,7 +560,11 @@ public class EmployeeServiceImpl implements EmployeeService {
       if (updatedPersonalInfo.getMaritalStatus() != null) {
         existingPersonalInfo.setMaritalStatus(updatedPersonalInfo.getMaritalStatus());
       }
+      if (updatedPersonalInfo.getPersonalTaxId() != null){
+        existingPersonalInfo.setPersonalTaxId(updatedPersonalInfo.getPersonalTaxId());
+      }
       updateNomineeDetails(existingPersonalInfo, updatedPersonalInfo.getNomineeDetails());
+
     }
   }
 
