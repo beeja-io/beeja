@@ -599,6 +599,11 @@ export const GeneralDetailsTab = ({
                                 : ''
                             }
                             placeholder={`Enter ${t(label)}`}
+                            onFocus={(e) => {
+                              if (e.target.value === '-') {
+                                e.target.value = '';
+                              }
+                            }}
                             onChange={(e) => {
                               const inputValue = e.target.value;
                               const labelsToExcludeFromStrictAlphabets = [
@@ -708,6 +713,11 @@ export const GeneralDetailsTab = ({
                                   ? formData[label]
                                   : value
                               }
+                              onFocus={(e) => {
+                                if (e.target.value === '-') {
+                                  e.target.value = '';
+                                }
+                              }}
                               onChange={(e) => {
                                 const inputValue = e.target.value;
                                 const labelsWhichAllowOnlyNumbers = [
