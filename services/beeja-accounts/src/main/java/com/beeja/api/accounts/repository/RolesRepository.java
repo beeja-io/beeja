@@ -15,4 +15,6 @@ public interface RolesRepository extends MongoRepository<Role, String> {
   List<Role> findByOrganizationId(String organizationId);
 
   List<Role> findAllByName(String superAdmin);
+
+    List<Role> findAllByOrganizationIdAndIsDefaultRole(String organizationId, boolean isDefaultRole);
 }

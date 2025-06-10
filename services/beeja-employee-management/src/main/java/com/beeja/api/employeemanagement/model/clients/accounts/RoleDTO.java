@@ -14,4 +14,5 @@ public class RoleDTO {
   private String description;
   private Set<String> permissions;
   private String organizationId;
+  private boolean isDefaultRole = false;
 }
