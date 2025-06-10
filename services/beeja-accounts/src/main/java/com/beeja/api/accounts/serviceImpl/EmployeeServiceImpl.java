@@ -142,14 +142,14 @@ public class EmployeeServiceImpl implements EmployeeService {
     // formattedSequence;
     user.setEmployeeId(addEmployeeRequest.getEmployeeId());
     Set<Role> userRoles = new HashSet<>();
-    /*
-    TODO:  Update the Default Role based on organization defaults
-    */
+
     try {
-      Role defaultRole =
-          rolesRepository.findByNameAndOrganizationId(
-              RoleConstants.ROLE_EMPLOYEE, UserContext.getLoggedInUserOrganization().getId());
-      userRoles.add(defaultRole);
+      List<Role> roles =
+              rolesRepository.findAllByOrganizationIdAndIsDefaultRole(
+                      UserContext.getLoggedInUserOrganization().getId(), true);
+      if(roles != null){
+        userRoles.addAll(roles);
+      }
     } catch (Exception e) {
       throw new Exception(
           BuildErrorMessage.buildErrorMessage(
