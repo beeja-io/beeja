@@ -41,6 +41,10 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
     localStorage.setItem('i18nextLng', selectedLanguage);
   };
   const handleLogout = async () => {
+    // Clear localStorage and sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+
     /*If application is running
       in dev environment, then it will use dev base URL
       else, it will use localhost as origin
