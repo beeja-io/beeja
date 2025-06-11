@@ -115,11 +115,11 @@ function App() {
   return (
     <ThemeProvider
       theme={
-        preferences
-          ? preferences.theme === 'LIGHT'
-            ? Theme.light
-            : Theme.dark
-          : Theme.light
+        localStorage.getItem('theme') === 'dark'
+          ? Theme.dark
+          : preferences?.theme === 'dark'
+            ? Theme.dark
+            : Theme.light
       }
     >
       <ApplicationContextProvider>
