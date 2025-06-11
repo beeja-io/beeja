@@ -23,9 +23,7 @@ import { EFeatureToggles } from '../../entities/FeatureToggle';
 import leafsAnimation from '../../images/birthdayAnimation.gif';
 import { hasFeature } from '../../utils/featureCheck';
 import { hasPermission } from '../../utils/permissionCheck';
-
 import HappyBirthday from '../directComponents/HappyBirthday';
-
 
 type MyProfileTabsContainerComponentProps = {
   employee: EmployeeEntity;
