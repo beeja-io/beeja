@@ -67,7 +67,7 @@ public class InventoryController {
   public ResponseEntity<InventoryResponseDTO> filterInventory(
       @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
       @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
-      @RequestParam(required = false) Device device,
+      @RequestParam(required = false) String device,
       @RequestParam(required = false) String provider,
       @RequestParam(required = false) Availability availability,
       @RequestParam(required = false) String os,
