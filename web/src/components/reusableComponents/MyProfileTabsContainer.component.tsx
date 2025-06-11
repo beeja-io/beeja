@@ -23,6 +23,7 @@ import HappyBirthday from '../directComponents/HappyBirthday';
 import { DocumentTabContent } from './MyProfileDocumentTabContent.component';
 import { GeneralDetailsTab } from './MyProfileGeneralTabContent.component';
 import KycTabContent from './MyProfileKYCTabContent.component';
+import { useLocation } from 'react-router-dom';
 
 type MyProfileTabsContainerComponentProps = {
   employee: EmployeeEntity;
@@ -41,12 +42,22 @@ const MyProfileTabsContainerComponent = ({
   const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
     setSelectedTab('general');
+    setIsActiveTab('general');
   }, [employee]);
 
   useEffect(() => {
     setSelectedTab(isActiveTab);
   }, [isActiveTab]);
 
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/profile/me') {
+      handleTabChange('general');
+      handleIsActiveTab('general');
+      chooseTab('General');
+    }
+  }, [location.pathname]);
   const handleTabChange = (selectedTab: string) => {
     setSelectedTab(selectedTab);
     setIsActiveTab(selectedTab);
@@ -559,7 +570,6 @@ const MyProfileTabsContainerComponent = ({
               details={kycDetails}
               isEditModeOn={isKycDetailsEditModeOn}
               employee={employee}
-              fetchEmployeeAgain={fetchEmployeeAgain}
               handleIsEditModeOn={handleIsKycDetailsEditModeOn}
             />
             <KycTabContent
@@ -567,7 +577,6 @@ const MyProfileTabsContainerComponent = ({
               details={bankDetails}
               isEditModeOn={isBankDetailsEditModeOn}
               employee={employee}
-              fetchEmployeeAgain={fetchEmployeeAgain}
               handleIsEditModeOn={handleIsBankDetailsEditModeOn}
             />
           </div>
