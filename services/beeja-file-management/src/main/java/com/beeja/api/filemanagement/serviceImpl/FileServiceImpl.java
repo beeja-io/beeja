@@ -198,7 +198,7 @@ public class FileServiceImpl implements FileService {
                               .and("organizationId")
                               .is(UserContext.getLoggedInUserOrganization().get("id").toString())
                               .and("fileType")
-                              .ne("ProfilePicture"));
+                              .not().regex("^profilepicture$", "i"));
       SkipOperation skipStage =
               Aggregation.skip((long) (page - 1) * size);
       LimitOperation limitStage = Aggregation.limit(size); // Limit to the specified size
@@ -209,7 +209,8 @@ public class FileServiceImpl implements FileService {
       query.addCriteria(
               Criteria.where("organizationId")
                       .is(UserContext.getLoggedInUserOrganization().get("id").toString()));
-      query.addCriteria(Criteria.where("fileType").ne("ProfilePicture"));
+      query.addCriteria(
+              Criteria.where("fileType").not().regex("^profilepicture$", "i"));
 
       List<File> documents =
               mongoTemplate.aggregate(aggregation, File.class, File.class).getMappedResults();
