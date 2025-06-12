@@ -184,6 +184,9 @@ public class ApplicantServiceImpl implements ApplicantService {
                 Sort.by(Sort.Direction.DESC, sortBy != null ? sortBy : "createdAt"));
 
     List<Criteria> criteriaList = new ArrayList<>();
+    if (UserContext.getLoggedInUserPermissions().contains(Constants.GET_ENTIRE_APPLICANTS)) {
+      criteriaList.add(Criteria.where("organizationId").is(UserContext.getLoggedInUserOrganization().get("id").toString()));
+    }
 
     if (applicantId != null && !applicantId.isEmpty()) {
       criteriaList.add(Criteria.where("applicantId").is(applicantId));
