@@ -873,7 +873,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
               )}
             </TableList>
           )}
-          {totalPages && (
+          {expenses && expenses?.expenses?.length > 0 && totalPages && (
             <Pagination
               totalPages={totalPages}
               currentPage={currentPage}
