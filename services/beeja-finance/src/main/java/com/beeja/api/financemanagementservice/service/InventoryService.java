@@ -15,7 +15,7 @@ public interface InventoryService {
   List<Inventory> filterInventory(
       int pageNumber,
       int pageSize,
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
@@ -30,7 +30,7 @@ public interface InventoryService {
   List<Inventory> getAllDevicesByOrganizationId(String organizationId);
 
   Long getTotalInventorySize(
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
