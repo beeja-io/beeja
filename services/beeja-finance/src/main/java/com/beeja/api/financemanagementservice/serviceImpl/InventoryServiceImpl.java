@@ -131,7 +131,7 @@ public class InventoryServiceImpl implements InventoryService {
   public List<Inventory> filterInventory(
       int pageNumber,
       int pageSize,
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
@@ -141,7 +141,7 @@ public class InventoryServiceImpl implements InventoryService {
 
       Query query = new Query();
 
-      if (device != null) {
+      if (device != null && !device.trim().isEmpty()) {
         query.addCriteria(Criteria.where("device").is(device));
       }
       if (provider != null && StringUtils.hasText(provider)) {
@@ -181,7 +181,7 @@ public class InventoryServiceImpl implements InventoryService {
 
   @Override
   public Long getTotalInventorySize(
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,

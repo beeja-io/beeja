@@ -149,7 +149,7 @@ public class InventoryControllerTest {
   @Test
   public void testFilterInventory_Success() throws Exception {
     Inventory inventory = new Inventory();
-    inventory.setDevice(Device.MOBILE);
+    inventory.setDevice("Mobile");
     inventory.setProvider("Google");
     inventory.setAvailability(Availability.NO);
     inventory.setOs("NA");
@@ -158,7 +158,7 @@ public class InventoryControllerTest {
     when(inventoryService.filterInventory(
             anyInt(),
             anyInt(),
-            any(Device.class),
+            anyString(),
             anyString(),
             any(Availability.class),
             anyString(),
@@ -170,7 +170,7 @@ public class InventoryControllerTest {
         .thenReturn(1L);
     ResponseEntity<InventoryResponseDTO> responseEntity =
         inventoryController.filterInventory(
-            1, 10, Device.MOBILE, "Google", Availability.NO, "NA", "NA", "Mobile");
+            1, 10, "Mobile", "Google", Availability.NO, "NA", "NA", "Mobile");
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 
@@ -179,7 +179,7 @@ public class InventoryControllerTest {
     assertEquals(1L, responseBody.getMetadata().get("totalSize"));
     assertEquals(1, responseBody.getInventory().size());
     Inventory returnedInventory = responseBody.getInventory().get(0);
-    assertEquals(Device.MOBILE, returnedInventory.getDevice());
+    assertEquals("Mobile", returnedInventory.getDevice());
     assertEquals("Google", returnedInventory.getProvider());
     assertEquals(Availability.NO, returnedInventory.getAvailability());
     assertEquals("NA", returnedInventory.getOs());
