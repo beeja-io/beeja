@@ -4,7 +4,6 @@ import static com.beeja.api.accounts.utils.SecretsGenerator.hashWithBcrypt;
 
 import com.beeja.api.accounts.clients.EmployeeFeignClient;
 import com.beeja.api.accounts.constants.PermissionConstants;
-import com.beeja.api.accounts.constants.RoleConstants;
 import com.beeja.api.accounts.enums.ErrorCode;
 import com.beeja.api.accounts.enums.ErrorType;
 import com.beeja.api.accounts.exceptions.BadRequestException;
@@ -145,9 +144,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     try {
       List<Role> roles =
-              rolesRepository.findAllByOrganizationIdAndIsDefaultRole(
-                      UserContext.getLoggedInUserOrganization().getId(), true);
-      if(roles != null){
+          rolesRepository.findAllByOrganizationIdAndIsDefaultRole(
+              UserContext.getLoggedInUserOrganization().getId(), true);
+      if (roles != null) {
         userRoles.addAll(roles);
       }
     } catch (Exception e) {

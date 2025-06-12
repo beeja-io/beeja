@@ -196,9 +196,11 @@ public class FileServiceImpl implements FileService {
               Criteria.where("entityId")
                   .is(entityId)
                   .and("organizationId")
-                  .is(UserContext.getLoggedInUserOrganization().get("id").toString()));
-      SkipOperation skipStage =
-          Aggregation.skip((long) (page - 1) * size); // Skip documents for pagination
+                  .is(UserContext.getLoggedInUserOrganization().get("id").toString())
+                  .and("fileType")
+                  .not()
+                  .regex("^profilepicture$", "i"));
+      SkipOperation skipStage = Aggregation.skip((long) (page - 1) * size);
       LimitOperation limitStage = Aggregation.limit(size); // Limit to the specified size
       Aggregation aggregation = Aggregation.newAggregation(matchStage, skipStage, limitStage);
 
@@ -207,6 +209,8 @@ public class FileServiceImpl implements FileService {
       query.addCriteria(
           Criteria.where("organizationId")
               .is(UserContext.getLoggedInUserOrganization().get("id").toString()));
+      query.addCriteria(Criteria.where("fileType").not().regex("^profilepicture$", "i"));
+
       List<File> documents =
           mongoTemplate.aggregate(aggregation, File.class, File.class).getMappedResults();
       HashMap<String, Object> metadata = new HashMap<>();
