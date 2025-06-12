@@ -1,7 +1,6 @@
 package com.beeja.api.financemanagementservice.service;
 
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import java.util.List;

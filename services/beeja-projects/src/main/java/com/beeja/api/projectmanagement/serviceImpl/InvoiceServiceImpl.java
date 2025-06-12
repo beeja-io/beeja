@@ -100,7 +100,7 @@ public class InvoiceServiceImpl implements InvoiceService {
             UserContext.getLoggedInUserOrganization().get("id").toString());
     Map<String, Object> responseMap =
         objectMapper.convertValue(
-            orgResponse.getBody(), new TypeReference<Map<String, Object>>() { });
+            orgResponse.getBody(), new TypeReference<Map<String, Object>>() {});
     Map<String, Object> accountsMap = (Map<String, Object>) responseMap.get("accounts");
     String taxId = accountsMap.get("taxId").toString();
 

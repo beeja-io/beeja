@@ -9,7 +9,6 @@ import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.annotations.HasPermission;
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.exceptions.BadRequestException;

@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.exceptions.BadRequestException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;

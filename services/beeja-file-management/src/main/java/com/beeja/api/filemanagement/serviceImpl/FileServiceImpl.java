@@ -192,28 +192,27 @@ public class FileServiceImpl implements FileService {
   public FileResponse listofFileByEntityId(String entityId, int page, int size) throws Exception {
     try {
       MatchOperation matchStage =
-              Aggregation.match(
-                      Criteria.where("entityId")
-                              .is(entityId)
-                              .and("organizationId")
-                              .is(UserContext.getLoggedInUserOrganization().get("id").toString())
-                              .and("fileType")
-                              .not().regex("^profilepicture$", "i"));
-      SkipOperation skipStage =
-              Aggregation.skip((long) (page - 1) * size);
+          Aggregation.match(
+              Criteria.where("entityId")
+                  .is(entityId)
+                  .and("organizationId")
+                  .is(UserContext.getLoggedInUserOrganization().get("id").toString())
+                  .and("fileType")
+                  .not()
+                  .regex("^profilepicture$", "i"));
+      SkipOperation skipStage = Aggregation.skip((long) (page - 1) * size);
       LimitOperation limitStage = Aggregation.limit(size); // Limit to the specified size
       Aggregation aggregation = Aggregation.newAggregation(matchStage, skipStage, limitStage);
 
       Query query = new Query();
       query.addCriteria(Criteria.where("entityId").is(entityId));
       query.addCriteria(
-              Criteria.where("organizationId")
-                      .is(UserContext.getLoggedInUserOrganization().get("id").toString()));
-      query.addCriteria(
-              Criteria.where("fileType").not().regex("^profilepicture$", "i"));
+          Criteria.where("organizationId")
+              .is(UserContext.getLoggedInUserOrganization().get("id").toString()));
+      query.addCriteria(Criteria.where("fileType").not().regex("^profilepicture$", "i"));
 
       List<File> documents =
-              mongoTemplate.aggregate(aggregation, File.class, File.class).getMappedResults();
+          mongoTemplate.aggregate(aggregation, File.class, File.class).getMappedResults();
       HashMap<String, Object> metadata = new HashMap<>();
       metadata.put("totalSize", mongoTemplate.count(query, File.class));
       FileResponse response = new FileResponse();
@@ -223,8 +222,8 @@ public class FileServiceImpl implements FileService {
     } catch (Exception e) {
       log.error(Constants.SERVICE_DOWN_ERROR, e.getMessage());
       throw new Exception(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.SERVICE_ERROR, ErrorCode.SERVICE_DOWN, Constants.SERVICE_DOWN_ERROR));
+          BuildErrorMessage.buildErrorMessage(
+              ErrorType.SERVICE_ERROR, ErrorCode.SERVICE_DOWN, Constants.SERVICE_DOWN_ERROR));
     }
   }
 
