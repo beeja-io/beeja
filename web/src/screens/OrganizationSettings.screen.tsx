@@ -485,10 +485,7 @@ const OrganizationSettings = () => {
               <SettingsTypes keyvalue="expenseTypes" type="Expense Type" />
             )}
             {activeTab === 'ModeOfPayments' && (
-              <SettingsTypes
-                keyvalue="expensePaymentTypes"
-                type="Mode Of Payment"
-              />
+              <SettingsTypes keyvalue="paymentModes" type="Mode Of Payment" />
             )}
             {activeTab === 'ExpenseCategories' && (
               <SettingsTypes
