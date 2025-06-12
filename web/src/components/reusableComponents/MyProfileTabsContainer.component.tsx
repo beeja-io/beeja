@@ -41,9 +41,19 @@ const MyProfileTabsContainerComponent = ({
   const [selectedTab, setSelectedTab] = useState('general');
   const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
-    setSelectedTab('general');
-    setIsActiveTab('general');
-  }, [employee]);
+    const savedTab = localStorage.getItem('selectedTab');
+    if (savedTab) {
+      setSelectedTab(savedTab);
+      setIsActiveTab(savedTab);
+    } else {
+      setSelectedTab('general');
+      setIsActiveTab('general');
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('selectedTab', selectedTab);
+  }, [selectedTab]);
 
   useEffect(() => {
     setSelectedTab(isActiveTab);
@@ -570,6 +580,7 @@ const MyProfileTabsContainerComponent = ({
               details={kycDetails}
               isEditModeOn={isKycDetailsEditModeOn}
               employee={employee}
+              fetchEmployeeAgain={fetchEmployeeAgain}
               handleIsEditModeOn={handleIsKycDetailsEditModeOn}
             />
             <KycTabContent
@@ -577,6 +588,7 @@ const MyProfileTabsContainerComponent = ({
               details={bankDetails}
               isEditModeOn={isBankDetailsEditModeOn}
               employee={employee}
+              fetchEmployeeAgain={fetchEmployeeAgain}
               handleIsEditModeOn={handleIsBankDetailsEditModeOn}
             />
           </div>
