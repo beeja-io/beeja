@@ -9,7 +9,6 @@ import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.annotations.HasPermission;
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.exceptions.BadRequestException;
@@ -67,7 +66,7 @@ public class InventoryController {
   public ResponseEntity<InventoryResponseDTO> filterInventory(
       @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
       @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
-      @RequestParam(required = false) Device device,
+      @RequestParam(required = false) String device,
       @RequestParam(required = false) String provider,
       @RequestParam(required = false) Availability availability,
       @RequestParam(required = false) String os,
