@@ -29,10 +29,9 @@ const LoanManagementScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const goToPreviousPage = () => {
-    if(isApplyLoanScreen){
+    if (isApplyLoanScreen) {
       setIsApplyLoanScreen(false);
-    }
-    else{
+    } else {
       navigate(-1);
     }
   };
