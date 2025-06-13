@@ -23,6 +23,7 @@ import HappyBirthday from '../directComponents/HappyBirthday';
 import { DocumentTabContent } from './MyProfileDocumentTabContent.component';
 import { GeneralDetailsTab } from './MyProfileGeneralTabContent.component';
 import KycTabContent from './MyProfileKYCTabContent.component';
+import { useLocation } from 'react-router-dom';
 
 type MyProfileTabsContainerComponentProps = {
   employee: EmployeeEntity;
@@ -40,13 +41,33 @@ const MyProfileTabsContainerComponent = ({
   const [selectedTab, setSelectedTab] = useState('general');
   const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
-    setSelectedTab('general');
-  }, [employee]);
+    const savedTab = localStorage.getItem('selectedTab');
+    if (savedTab) {
+      setSelectedTab(savedTab);
+      setIsActiveTab(savedTab);
+    } else {
+      setSelectedTab('general');
+      setIsActiveTab('general');
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('selectedTab', selectedTab);
+  }, [selectedTab]);
 
   useEffect(() => {
     setSelectedTab(isActiveTab);
   }, [isActiveTab]);
 
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/profile/me') {
+      handleTabChange('general');
+      handleIsActiveTab('general');
+      chooseTab('General');
+    }
+  }, [location.pathname]);
   const handleTabChange = (selectedTab: string) => {
     setSelectedTab(selectedTab);
     setIsActiveTab(selectedTab);
