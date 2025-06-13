@@ -32,7 +32,7 @@ class GetLoansWithCountMethodTest {
 
   @BeforeEach
   void setup() {
-    loanService = new LoanServiceImpl(mongoOperations, loanRepository);
+    loanService = new LoanServiceImpl(mongoOperations);
   }
 
   @Test

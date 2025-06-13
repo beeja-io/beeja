@@ -112,14 +112,16 @@ const RecruitmentManagementScreen = (
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
         />
-        <Pagination
-          currentPage={currentPage}
-          totalPages={Math.max(1, Math.ceil(totalItems / itemsPerPage))}
-          handlePageChange={handlePageChange}
-          itemsPerPage={itemsPerPage}
-          handleItemsPerPage={handlePageSizeChange}
-          totalItems={totalItems}
-        />
+        {allApplicants.length > 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={Math.max(1, Math.ceil(totalItems / itemsPerPage))}
+            handlePageChange={handlePageChange}
+            itemsPerPage={itemsPerPage}
+            handleItemsPerPage={handlePageSizeChange}
+            totalItems={totalItems}
+          />
+        )}
       </ExpenseManagementMainContainer>
     </>
   );
