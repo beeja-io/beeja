@@ -103,14 +103,16 @@ const LoanManagementScreen = () => {
             loading={loading}
             fetchLoans={fetchLoanData}
           />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(totalItems / itemsPerPage)}
-            handlePageChange={handlePageChange}
-            itemsPerPage={itemsPerPage}
-            handleItemsPerPage={handlePageSizeChange}
-            totalItems={totalItems}
-          />
+          {loansList.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(totalItems / itemsPerPage)}
+              handlePageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              handleItemsPerPage={handlePageSizeChange}
+              totalItems={totalItems}
+            />
+          )}
         </>
       )}
     </ExpenseManagementMainContainer>

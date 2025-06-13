@@ -294,7 +294,7 @@ const InventoryList = ({
               </tbody>
             </TableList>
           )}
-          {totalPages && (
+          {inventoryList.length > 0 && totalPages && (
             <Pagination
               totalPages={totalPages}
               currentPage={currentPage}
