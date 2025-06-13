@@ -66,6 +66,12 @@ export const ExpenseAddFormMainContainer = styled.form`
     outline: none;
     cursor: pointer;
   }
+
+  input:disabled {
+    color: #a0a0a0;
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
 `;
 
 export const FileUploadField = styled.div`
