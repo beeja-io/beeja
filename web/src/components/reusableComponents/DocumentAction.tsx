@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   ActionIcon,
   ChevronLeftSVG,
@@ -74,6 +74,17 @@ export const DocumentAction: React.FC<ActionProps> = ({
   const handleIsDocumentPreviewModalOpen = () => {
     setIsDocumentPreviewModalOpen(!isDocumentPreviewModalOpen);
   };
+  useEffect(() => {
+    if (isDocumentPreviewModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isDocumentPreviewModalOpen]);
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
