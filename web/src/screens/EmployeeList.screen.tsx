@@ -638,6 +638,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         setLoading(true);
         const key = 'employeeTypes';
         const response = await getOrganizationValuesByKey(key);
+
+        if (!response?.data?.values || response.data.values.length === 0) {
+          toast.error(
+            'Employee type is empty. Please add at least one Employee Type in Organization.'
+          );
+          return null;
+        }
         setOrganizationValues(response.data);
       } catch (err) {
         toast.error(t('ERROR_OCCURRED_PLEASE_RELOAD'));
@@ -867,6 +874,10 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
             onChange={handleChange}
+            disabled={
+              !organizationValues?.values ||
+              organizationValues.values.length === 0
+            }
           >
             <option value="">{t('SELECT_EMPLOYMENT_TYPE')}</option>
             {organizationValues &&

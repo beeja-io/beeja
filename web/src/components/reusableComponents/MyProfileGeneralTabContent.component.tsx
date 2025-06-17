@@ -415,7 +415,7 @@ export const GeneralDetailsTab = ({
           const jobDetailsResponse =
             await getOrganizationValuesByKey('jobTitles');
           const employmentTypesResponse =
-            await getOrganizationValuesByKey('employmentTypes');
+            await getOrganizationValuesByKey('employeeTypes');
           setEmploymentTypes(employmentTypesResponse.data);
           setJobTitles(jobDetailsResponse.data);
           setDepartmentList(response.data);
@@ -542,7 +542,7 @@ export const GeneralDetailsTab = ({
                                         (department) => department.value
                                       )
                                     : label === 'Employment Type'
-                                      ? employmentTypes?.values.map(
+                                      ? employmentTypes?.values?.map(
                                           (employmentType) =>
                                             employmentType.value
                                         )
@@ -832,7 +832,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
       }
     >
       <option value="">Select</option>
-      {options.map((option) => (
+      {options?.map((option) => (
         <option key={option} value={option} selected={selected === option}>
           {option}
         </option>
