@@ -71,6 +71,7 @@ const CompleteNavBar = () => {
   const [activeTheme, setActiveTheme] = useState<'LIGHT' | 'DARK'>('LIGHT');
 
   const handleThemeClick = (theme: 'LIGHT' | 'DARK') => {
+    localStorage.setItem('theme', theme);
     setActiveTheme(theme);
     changeTheme(theme);
   };
