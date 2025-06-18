@@ -538,7 +538,7 @@ export const GeneralDetailsTab = ({
                                 : label === 'Nationality'
                                   ? ['Indian', 'German', 'American']
                                   : label === 'Department'
-                                    ? departmentList?.values.map(
+                                    ? departmentList?.values?.map(
                                         (department) => department.value
                                       )
                                     : label === 'Employment Type'
@@ -547,7 +547,7 @@ export const GeneralDetailsTab = ({
                                             employmentType.value
                                         )
                                       : label === 'Designation'
-                                        ? jobTitles?.values.map(
+                                        ? jobTitles?.values?.map(
                                             (jobTitle) => jobTitle.value
                                           )
                                         : []
