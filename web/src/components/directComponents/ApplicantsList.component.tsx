@@ -160,9 +160,7 @@ const ApplicantsList = (props: ApplicantsListProps) => {
                       <td>{applicant.phoneNumber}</td>
                       {!props.isReferral && (
                         <td>
-                          {applicant.referredByEmployeeName
-                            ? applicant.referredByEmployeeName
-                            : '-'}
+                          {applicant.referredBy ? applicant.referredBy : '-'}
                         </td>
                       )}
                       <td>
