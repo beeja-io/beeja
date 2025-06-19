@@ -93,6 +93,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     Employee emp = new Employee();
     emp.setBeejaAccountId(((String) employee.get("id")));
     emp.setEmployeeId(((String) employee.get("employeeId")));
+    emp.setEmploymentType(((String) employee.get("employmentType")));
     emp.setEmployeeNumber(ExtractEmpNumUtil.extractEmpNumber(emp.getEmployeeId()));
     Object organizationsObject = employee.get("organizations");
     if (organizationsObject instanceof Map) {
@@ -100,9 +101,10 @@ public class EmployeeServiceImpl implements EmployeeService {
       emp.setOrganizationId((String) organizationsMap.get("id"));
     }
 
-    if (employee.get("department") != null) {
+    if (employee.get("department") != null || employee.get("employmentType")!=null) {
       JobDetails jobDetails = new JobDetails();
       jobDetails.setDepartment(employee.get("department").toString());
+      jobDetails.setEmployementType(employee.get("employmentType").toString());
       emp.setJobDetails(jobDetails);
     }
     try {
@@ -230,7 +232,9 @@ public class EmployeeServiceImpl implements EmployeeService {
             || updatedEmployee.getLastName() != null) {
           accountClient.updateUser(updatedEmployee.getEmployeeId(), updatedEmployee);
         }
-
+        if(updatedEmployee.getJobDetails()!=null){
+          existingEmployee.setEmploymentType(updatedEmployee.getJobDetails().getEmployementType());
+        }
         return employeeRepository.save(existingEmployee);
       } else if (UserContext.getLoggedInEmployeeId().equals(id)) {
         updateContact(existingEmployee, updatedEmployee.getContact());
