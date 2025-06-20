@@ -16,6 +16,7 @@ export interface IApplicantComment {
 }
 
 export interface IApplicant {
+  referredBy: string;
   id: string;
   firstName: string;
   lastName: string;
