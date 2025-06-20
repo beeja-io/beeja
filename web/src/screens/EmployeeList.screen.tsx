@@ -161,7 +161,7 @@ const EmployeeList = () => {
 
   const fetchEmployeeTypes = async () => {
     try {
-      const response = await getOrganizationValuesByKey('employmentTypes');
+      const response = await getOrganizationValuesByKey('employeeTypes');
       setEmployeeTypes(response.data);
     } catch {
       setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES'));
@@ -265,7 +265,6 @@ const EmployeeList = () => {
   });
 
   const currentEmployees = finalEmpList;
-
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
