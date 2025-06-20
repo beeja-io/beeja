@@ -172,6 +172,12 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('departments');
       setDepartmentOptions(response.data);
+      if (!response?.data?.values || response.data.values.length === 0) {
+        toast.error(
+          'Department list is empty. Please add at least one Department in Organization.'
+        );
+        return;
+      }
     } catch {
       setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
     }
@@ -909,6 +915,10 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
             onChange={handleChange}
+            disabled={
+              !props.departmentOptions?.values ||
+              props.departmentOptions.values.length === 0
+            }
           >
             <option value="">{t('SELECT_DEPARTMENT')}</option>
             {props.departmentOptions &&
