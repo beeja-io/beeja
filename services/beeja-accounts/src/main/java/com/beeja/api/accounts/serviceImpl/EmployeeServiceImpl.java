@@ -179,6 +179,7 @@ public class EmployeeServiceImpl implements EmployeeService {
       newEmployee.put("email", createdUser.getEmail());
       newEmployee.put("organizations", createdUser.getOrganizations());
       newEmployee.put("department", addEmployeeRequest.getDepartment());
+      newEmployee.put("employmentType", addEmployeeRequest.getEmploymentType());
       employeeFeignClient.createEmployee(newEmployee);
     } catch (FeignException.FeignClientException e) {
       userRepository.delete(createdUser);
