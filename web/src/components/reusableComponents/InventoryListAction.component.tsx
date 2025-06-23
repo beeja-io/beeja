@@ -121,6 +121,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
         >
           <div
             style={{
+              marginTop: +8,
               opacity: !hasActionPermission ? 0.3 : 1,
               cursor: !hasActionPermission ? 'not-allowed' : 'pointer',
             }}
