@@ -41,21 +41,6 @@ const MyProfileTabsContainerComponent = ({
   const [selectedTab, setSelectedTab] = useState('general');
   const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
-    const savedTab = localStorage.getItem('selectedTab');
-    if (savedTab) {
-      setSelectedTab(savedTab);
-      setIsActiveTab(savedTab);
-    } else {
-      setSelectedTab('general');
-      setIsActiveTab('general');
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('selectedTab', selectedTab);
-  }, [selectedTab]);
-
-  useEffect(() => {
     setSelectedTab(isActiveTab);
   }, [isActiveTab]);
 
