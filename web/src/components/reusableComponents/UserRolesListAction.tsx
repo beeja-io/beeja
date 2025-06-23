@@ -72,7 +72,11 @@ const UserRoleListAction: React.FC<UserRoleListActionProps> = ({
             cursor: role.name === 'Super Admin' ? 'not-allowed' : 'pointer',
           }}
         >
-          <ActionIcon />
+          <div style={{ marginTop: -8 }}>
+            {' '}
+            {/*this div make action button centered*/}
+            <ActionIcon />
+          </div>
         </ActionMenu>
         {isOpen && role.name != 'Super Admin' && (
           <ActionMenuContent>
