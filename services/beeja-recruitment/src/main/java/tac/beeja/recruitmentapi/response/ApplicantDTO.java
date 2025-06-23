@@ -19,6 +19,7 @@ public class ApplicantDTO {
   private String positionAppliedFor;
   private ApplicantStatus status;
   private String experience;
+  private String resumeId;
   private String referredByEmployeeName;
   private Date createdAt;
 }
