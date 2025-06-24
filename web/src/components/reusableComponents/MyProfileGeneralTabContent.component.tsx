@@ -190,10 +190,20 @@ export const GeneralDetailsTab = ({
       (formData[postalCode]?.trim().length < 6 ||
         !isValidPINCode(formData[postalCode]))
     ) {
-      setFormErrorToastHead('Error in updating profile');
-      setFormErrorToastMessage('Postal Code must be 6 digits!');
-      handleIsFormEmailValid();
-      return;
+      // condition to check if the user is sure that the postal code has to empty
+      const confirmEmpty = window.confirm(
+        'Postal Code is Empty. Do you want to leave it empty?'
+      );
+      if (confirmEmpty && formData[postalCode]?.trim() == '') {
+        // To set the value to ""
+        setFormData((prev: typeof formData) => ({ ...prev, [postalCode]: '' }));
+      } else {
+        // User chose not to leave it empty
+        setFormErrorToastHead('Error in updating profile');
+        setFormErrorToastMessage('Postal Code must be 6 digits!');
+        handleIsFormEmailValid();
+        return;
+      }
     }
 
     const fullName = 'Full Name';
