@@ -93,7 +93,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     Employee emp = new Employee();
     emp.setBeejaAccountId(((String) employee.get("id")));
     emp.setEmployeeId(((String) employee.get("employeeId")));
-    emp.setEmploymentType(((String) employee.get("employmentType")));
     emp.setEmployeeNumber(ExtractEmpNumUtil.extractEmpNumber(emp.getEmployeeId()));
     Object organizationsObject = employee.get("organizations");
     if (organizationsObject instanceof Map) {
@@ -233,7 +232,24 @@ public class EmployeeServiceImpl implements EmployeeService {
           accountClient.updateUser(updatedEmployee.getEmployeeId(), updatedEmployee);
         }
         if(updatedEmployee.getJobDetails()!=null){
-          existingEmployee.setEmploymentType(updatedEmployee.getJobDetails().getEmployementType());
+          if(existingEmployee.getJobDetails() == null) {
+              existingEmployee.setJobDetails(new JobDetails());
+          }
+          if(updatedEmployee.getJobDetails().getEmployementType() !=null) {
+            existingEmployee.getJobDetails().setEmployementType(updatedEmployee.getJobDetails().getEmployementType());
+          }
+            if(updatedEmployee.getJobDetails().getDepartment() !=null) {
+                existingEmployee.getJobDetails().setDepartment(updatedEmployee.getJobDetails().getDepartment());
+            }
+            if (updatedEmployee.getJobDetails().getDesignation() != null) {
+                existingEmployee.getJobDetails().setDesignation(updatedEmployee.getJobDetails().getDesignation());
+            }
+            if (updatedEmployee.getJobDetails().getJoiningDate() != null) {
+                existingEmployee.getJobDetails().setJoiningDate(updatedEmployee.getJobDetails().getJoiningDate());
+            }
+            if (updatedEmployee.getJobDetails().getResignationDate() != null) {
+                existingEmployee.getJobDetails().setResignationDate(updatedEmployee.getJobDetails().getResignationDate());
+            }
         }
         return employeeRepository.save(existingEmployee);
       } else if (UserContext.getLoggedInEmployeeId().equals(id)) {
