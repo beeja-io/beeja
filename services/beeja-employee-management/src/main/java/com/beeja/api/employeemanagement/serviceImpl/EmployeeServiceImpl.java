@@ -231,26 +231,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             || updatedEmployee.getLastName() != null) {
           accountClient.updateUser(updatedEmployee.getEmployeeId(), updatedEmployee);
         }
-        if(updatedEmployee.getJobDetails()!=null){
-          if(existingEmployee.getJobDetails() == null) {
-              existingEmployee.setJobDetails(new JobDetails());
-          }
-          if(updatedEmployee.getJobDetails().getEmployementType() !=null) {
-            existingEmployee.getJobDetails().setEmployementType(updatedEmployee.getJobDetails().getEmployementType());
-          }
-            if(updatedEmployee.getJobDetails().getDepartment() !=null) {
-                existingEmployee.getJobDetails().setDepartment(updatedEmployee.getJobDetails().getDepartment());
-            }
-            if (updatedEmployee.getJobDetails().getDesignation() != null) {
-                existingEmployee.getJobDetails().setDesignation(updatedEmployee.getJobDetails().getDesignation());
-            }
-            if (updatedEmployee.getJobDetails().getJoiningDate() != null) {
-                existingEmployee.getJobDetails().setJoiningDate(updatedEmployee.getJobDetails().getJoiningDate());
-            }
-            if (updatedEmployee.getJobDetails().getResignationDate() != null) {
-                existingEmployee.getJobDetails().setResignationDate(updatedEmployee.getJobDetails().getResignationDate());
-            }
-        }
+
         return employeeRepository.save(existingEmployee);
       } else if (UserContext.getLoggedInEmployeeId().equals(id)) {
         updateContact(existingEmployee, updatedEmployee.getContact());
