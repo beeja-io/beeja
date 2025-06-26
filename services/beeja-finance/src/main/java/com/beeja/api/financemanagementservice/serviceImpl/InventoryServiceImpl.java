@@ -189,7 +189,7 @@ public class InventoryServiceImpl implements InventoryService {
       String searchTerm) {
     Query query = new Query();
 
-    if (device != null) {
+    if (device != null && !device.isEmpty()) {
       query.addCriteria(Criteria.where("device").is(device));
     }
 
