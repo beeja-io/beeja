@@ -99,16 +99,16 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
         {isMenuExpanded && <MobileNavbar handleIsOpen={handleIsMenuExpanded} />}
       </span>
       <span className="mainTopNav">
-        {/*} <SearchBox className="search">
+        {/* <SearchBox className="search">
           <span className="span">
             <SearchSVG />
             <SearchInput placeholder={t('Search anything...')} />
           </span>
-        </SearchBox>*/}
+        </SearchBox>
         <span className="topNavLinks">
           <span>{t('DOCUMENTS')}</span>
           <span>{t('PAYSLIPS')}</span>
-        </span>
+        </span> */}
       </span>
       <TopNavRightIcons>
         <span className="language">
