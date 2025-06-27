@@ -41,6 +41,12 @@ export const StyledForm = styled.form`
     display: flex;
     justify-content: space-between;
   }
+
+  h3 {
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+  }
 `;
 
 export const InputLabelContainer = styled.div`
