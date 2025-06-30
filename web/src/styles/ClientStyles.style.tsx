@@ -71,7 +71,8 @@ export const Line = styled.div`
 
 export const FormInputsContainer = styled.div`
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-evenly;  
+   grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 40px;x
   flex-wrap: wrap;
   width: 100%;

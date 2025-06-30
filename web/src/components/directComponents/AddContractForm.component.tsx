@@ -21,8 +21,6 @@ import {
   BrowseText,
   FileName,
   RemoveButton,
-  FormInputs,
-  AddClientButtons,
 } from '../../styles/ClientStyles.style';
 import { UploadSVG, CheckIcon, LineIcon } from '../../svgs/ClientSvgs.svs';
 import { Button } from '../../styles/CommonStyles.style';
@@ -57,8 +55,6 @@ export type ContractFormData = {
 const AddContractForm: React.FC<AddContractFormProps> = ({
   handleClose,
   handleSuccessMessage,
-  onSubmit,
-  client,
 }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<ContractFormData>({
@@ -121,7 +117,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     } catch (error) {
       throw new Error('Error submitting contract:' + error);
     }
-  };
+  };      
   const { t } = useTranslation();
 
   return (
@@ -323,7 +319,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         )}
 
         {step === 2 && (
-          // <ExpenseAddFormMainContainer className="formBackground">
           <form onSubmit={handleSubmitData}>
             <FormInputsContainer>
               <div>
@@ -353,8 +348,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   <select
                     name="projectManagers"
                     value={formData.projectManagers}
-                    // value={formData.projectName.map((pm) => pm.id)}
-                    // onChange={handleProjectManagerSelect}
                     onChange={handleChange}
                     className="selectoption largeSelectOption"
                     style={{ width: '400px' }}
@@ -397,7 +390,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 <TextInput
                   type="text"
                   placeholder={t('Search People')}
-                  // value={formData.searchTerm}
+
                   onChange={(e) =>
                     setFormData((prev) => ({
                       ...prev,
@@ -424,18 +417,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 marginLeft: '190px',
               }}
             >
-              {/* <ManageResourceAllocation
-                    onClick={() =>
-                      alert('Open Manage Resource Allocation screen')
-                    }
-                  > */}
+              
               <div
                 onClick={() => alert('Open Manage Resource Allocation screen')}
               >
                 {t('Manage Resource Allocation')}
-                {/* <ArrowDownSVG />  */}
-                {/* </ManageResourceAllocation> */}
-              </div>
+                        </div>
             </InputLabelContainer>
             <ButtonContainer>
               <Button onClick={handlePreviousStep} className="leftAlign">
@@ -445,10 +432,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
               <Button className="submit" type="submit">
                 {t('Submit')}
               </Button>
-              {/* <button type="submit">Submit</button> */}
             </ButtonContainer>
           </form>
-          // </ExpenseAddFormMainContainer>
+          
         )}
         {/* {showErrorMessage && (
           <ToastMessage
