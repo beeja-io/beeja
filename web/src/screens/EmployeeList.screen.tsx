@@ -134,7 +134,9 @@ const EmployeeList = () => {
             hasProfilePicture.add(employeeId);
           } catch (error) {
             imageUrls.set(employeeId, '');
-            throw new Error('Error fetching data:' + error);
+            throw new Error(
+              `Error fetching profile image for employee ${employeeId}:` + error
+            );
           }
         } else {
           imageUrls.set(employeeId, '');
