@@ -267,20 +267,30 @@ export const deleteInventory = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/finance/v1/inventory/${id}`);
 };
 
+export const downloadClientLogo = (
+  logoId: string
+): Promise<AxiosResponse<Blob>> => {
+  return axiosInstance.get(`/projects/v1/clients${logoId}`, {
+    responseType: 'blob',
+  });
+};
 export const postClient = (data: any): Promise<AxiosResponse> => {
   return axiosInstance.post(`/projects/v1/clients`, data);
 };
 
 export const getClient = (id: string): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/projects/v1/clients/api/${id}`);
+  return axiosInstance.get(`/projects/v1/clients/${id}`);
 };
 
 export const getAllClient = (): Promise<AxiosResponse> => {
   return axiosInstance.get(`/projects/v1/clients`);
 };
 
-export const putClient = (id: string): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/projects/v1/clients/api/${id}`);
+export const putClient = (
+  id: string,
+  data: FormData
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(`/projects/v1/clients/${id}`, data);
 };
 
 export const getAllRolesInOrganization = (): Promise<AxiosResponse> => {

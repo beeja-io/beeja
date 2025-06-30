@@ -4,27 +4,57 @@ import {
   ExpenseHeadingSection,
   ExpenseManagementMainContainer,
 } from '../styles/ExpenseManagementStyles.style';
-import { ArrowDownSVG} from '../svgs/CommonSvgs.svs';
+import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
 import { useEffect, useState, useCallback } from 'react';
 import AddClientForm from '../components/directComponents/AddClientForm.component';
 import ClientList from './ClientList.Screen';
-import {
-  getAllClient,
-} from '../service/axiosInstance';
+import { getAllClient, getClient } from '../service/axiosInstance';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { useTranslation } from 'react-i18next';
+import { ClientDetails } from '../entities/ClientEntity';
+
+interface Client {
+  clientId: string;
+  clientName: string;
+  clientType: string;
+  organizationId: string;
+  id: string;
+}
+
 const ClientManagement = () => {
   const navigate = useNavigate();
   const goToPreviousPage = () => {
     navigate(-1);
   };
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const handleIsCreateModalOpen = () => {
-    setIsCreateModalOpen((prev) => { 
-      return !prev;
-    });
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedClientData, setSelectedClientData] =
+    useState<ClientDetails | null>(null);
+
+  const handleOpenCreateModal = useCallback(() => {
+    setIsEditMode(false);
+    setSelectedClientData(null);
+    setIsCreateModalOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setIsCreateModalOpen(false);
+    setIsEditMode(false);
+    setSelectedClientData(null);
+  }, []);
+
+  const onEditClient = async (client: Client) => {
+    try {
+      const res = await getClient(client.clientId);
+      setSelectedClientData(res.data);
+      setIsEditMode(true);
+      setIsCreateModalOpen(true);
+    } catch (error) {
+      throw new Error('Error fetching edit getClient:' + error);
+    }
   };
+
   const handleSuccessMessage = () => {
     handleShowSuccessMessage();
     setIsCreateModalOpen(false);
@@ -41,19 +71,19 @@ const ClientManagement = () => {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getAllClient(); // Fetch client data
-      setAllClients(res.data); // Store response in allClients
+      const res = await getAllClient();
+      setAllClients(res.data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching client data:', error);
       setLoading(false);
+      throw new Error('Error fetching client data:' + error);
     }
   }, []);
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-  const updateClientList =() => {
-    fetchData();
+  const updateClientList = async (): Promise<void> => {
+    await fetchData();
   };
 
   const { t } = useTranslation();
@@ -66,11 +96,17 @@ const ClientManagement = () => {
               <ArrowDownSVG />
             </span>
             {t('Client Management')}
+            {isCreateModalOpen && (
+              <>
+                <span className="separator"> {`>`} </span>
+                <span className="nav_AddClient">{t('Add Client')}</span>
+              </>
+            )}
           </span>
-          {!isCreateModalOpen  && (
+          {!isCreateModalOpen && (
             <Button
               className="submit shadow"
-              onClick={handleIsCreateModalOpen}
+              onClick={handleOpenCreateModal}
               width="216px"
             >
               <AddNewPlusSVG />
@@ -78,20 +114,24 @@ const ClientManagement = () => {
             </Button>
           )}
         </ExpenseHeadingSection>
-               {isCreateModalOpen ? (
+        {isCreateModalOpen ? (
           <AddClientForm
-            handleClose={handleIsCreateModalOpen}
+            handleClose={handleCloseModal}
             handleSuccessMessage={handleSuccessMessage}
+            isEditMode={isEditMode}
+            initialData={selectedClientData ?? undefined}
+            updateClientList={updateClientList}
           />
         ) : (
           <ClientList
             clientList={allClients}
             updateClientList={updateClientList}
             isLoading={loading}
+            onEditClient={onEditClient}
           />
         )}
       </ExpenseManagementMainContainer>
-     
+
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
