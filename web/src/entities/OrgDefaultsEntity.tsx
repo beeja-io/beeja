@@ -7,4 +7,5 @@ export interface OrgDefaults {
 export interface OrgValues {
   value: string;
   description: string;
+  loanLimit?: string;
 }

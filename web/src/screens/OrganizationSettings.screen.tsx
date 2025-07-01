@@ -465,7 +465,9 @@ const OrganizationSettings = () => {
               <UserRolesPermissionsComponent />
             )}
             {activeTab === 'themesTypography' && <ThemesAndTypography />}
-
+            {activeTab === 'Loan types & Limits' && (
+              <SettingsTypes keyvalue="Loan Types" type="Loan Type" />
+            )}
             {activeTab === 'DeviceType' && (
               <SettingsTypes keyvalue="deviceTypes" type="DeviceType" />
             )}
