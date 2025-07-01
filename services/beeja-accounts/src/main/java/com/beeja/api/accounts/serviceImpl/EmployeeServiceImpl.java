@@ -183,6 +183,7 @@ public class EmployeeServiceImpl implements EmployeeService {
       employeeFeignClient.createEmployee(newEmployee);
     } catch (FeignException.FeignClientException e) {
       userRepository.delete(createdUser);
+      log.error("Error creating employee in Employee Service: {}", e.getMessage());
       throw new Exception(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.API_ERROR,
