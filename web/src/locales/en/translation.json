@@ -226,7 +226,7 @@
   "ENTER_DATE": "Enter Date",
   "UPLOAD_RECEIPTS": "Upload Receipts",
   "MAXIMUM_THREE": "Maximum 3",
-  "EXPENSE_FILE_FORMATS": "File format : .pdf, .png, .jpeg (Maximum 3 files of 10MB each)",
+  "EXPENSE_FILE_FORMATS": "File format : .pdf, .png, .jpeg (Maximum 3 files of 5MB each)",
   "UNDO_DELETE": "Undo Delete",
   "UPLOADED_RECEIPTS": "Uploaded Receipts",
   "UPDATE": "Update",

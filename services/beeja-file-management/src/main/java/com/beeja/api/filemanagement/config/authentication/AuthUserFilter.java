@@ -1,25 +1,29 @@
 package com.beeja.api.filemanagement.config.authentication;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.beeja.api.filemanagement.client.AccountClient;
 import com.beeja.api.filemanagement.utils.Constants;
 import com.beeja.api.filemanagement.utils.JwtUtils;
 import com.beeja.api.filemanagement.utils.UserContext;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.*;
 
 @Component
 @Slf4j
@@ -64,7 +68,7 @@ public class AuthUserFilter extends OncePerRequestFilter {
   private boolean isValidAccessToken(String accessToken) {
 
     try {
-        return validateJWT(accessToken);
+      return validateJWT(accessToken);
     } catch (HttpClientErrorException e) {
       log.error("HTTP Error: {}", e.getStatusCode());
       return false;

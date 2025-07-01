@@ -161,7 +161,7 @@ const EmployeeList = () => {
 
   const fetchEmployeeTypes = async () => {
     try {
-      const response = await getOrganizationValuesByKey('employmentTypes');
+      const response = await getOrganizationValuesByKey('employeeTypes');
       setEmployeeTypes(response.data);
     } catch {
       setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES'));
@@ -172,6 +172,12 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('departments');
       setDepartmentOptions(response.data);
+      if (!response?.data?.values || response.data.values.length === 0) {
+        toast.error(
+          'Department list is empty. Please add at least one Department in Organization.'
+        );
+        return;
+      }
     } catch {
       setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
     }
@@ -265,7 +271,6 @@ const EmployeeList = () => {
   });
 
   const currentEmployees = finalEmpList;
-
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
@@ -638,6 +643,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         setLoading(true);
         const key = 'employeeTypes';
         const response = await getOrganizationValuesByKey(key);
+
+        if (!response?.data?.values || response.data.values.length === 0) {
+          toast.error(
+            'Employee type is empty. Please add at least one Employee Type in Organization.'
+          );
+          return null;
+        }
         setOrganizationValues(response.data);
       } catch (err) {
         toast.error(t('ERROR_OCCURRED_PLEASE_RELOAD'));
@@ -697,10 +709,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         props.setIsResponseLoading(true);
         const resp = await createEmployee(formData);
         setUser(resp.data);
-        handleShowPassword();
+        if (resp.data.password) {
+          handleShowPassword();
+        }
         props.reloadEmployeeList();
         props.refetchEmployeeCount();
         toast.success(t('PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED'));
+        props.handleClose();
       } catch (e) {
         if (axios.isAxiosError(e)) {
           const axiosError: AxiosError = e;
@@ -864,6 +879,10 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
             onChange={handleChange}
+            disabled={
+              !organizationValues?.values ||
+              organizationValues.values.length === 0
+            }
           >
             <option value="">{t('SELECT_EMPLOYMENT_TYPE')}</option>
             {organizationValues &&
@@ -896,6 +915,10 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
             onChange={handleChange}
+            disabled={
+              !props.departmentOptions?.values ||
+              props.departmentOptions.values.length === 0
+            }
           >
             <option value="">{t('SELECT_DEPARTMENT')}</option>
             {props.departmentOptions &&

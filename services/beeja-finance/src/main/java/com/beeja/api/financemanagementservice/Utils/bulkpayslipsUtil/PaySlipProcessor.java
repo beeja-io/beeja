@@ -1,12 +1,10 @@
 package com.beeja.api.financemanagementservice.Utils.bulkpayslipsUtil;
 
 import com.beeja.api.financemanagementservice.Utils.Constants;
-import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.client.FileClient;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
 import com.beeja.api.financemanagementservice.requests.FileUploadRequest;
-import com.beeja.api.financemanagementservice.requests.PayslipEmailRequest;
 import com.beeja.api.financemanagementservice.response.PDFResponse;
 import feign.FeignException;
 import java.util.ArrayList;
@@ -55,7 +53,7 @@ public class PaySlipProcessor {
       FileUploadRequest fileUploadRequest = new FileUploadRequest();
       fileUploadRequest.setEntityId(pdfResponse.getEntityId());
       fileUploadRequest.setName(
-          Constants.PAYSLIP_ + bulkPayslipRequest.getMonth() + "_" + bulkPayslipRequest.getYear());
+          Constants.PAY_SLIP + bulkPayslipRequest.getMonth() + "_" + bulkPayslipRequest.getYear());
       fileUploadRequest.setFileType(Constants.PAYSLIP_ENTITY_TYPE);
       fileUploadRequest.setEntityType(Constants.PAYSLIP_ENTITY_TYPE);
       fileUploadRequest.setFile(pdfResponse.getPdfFile());
@@ -83,5 +81,4 @@ public class PaySlipProcessor {
     }
     return null;
   }
-
 }

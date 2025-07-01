@@ -1,10 +1,14 @@
 package com.beeja.api.financemanagementservice.controllers;
 
+import static com.beeja.api.financemanagementservice.Utils.Constants.CREATE_DEVICES;
+import static com.beeja.api.financemanagementservice.Utils.Constants.DELETE_DEVICES;
+import static com.beeja.api.financemanagementservice.Utils.Constants.READ_DEVICES;
+import static com.beeja.api.financemanagementservice.Utils.Constants.UPDATE_DEVICES;
+
 import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.annotations.HasPermission;
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.exceptions.BadRequestException;
@@ -13,6 +17,9 @@ import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import com.beeja.api.financemanagementservice.response.InventoryResponseDTO;
 import com.beeja.api.financemanagementservice.service.InventoryService;
 import jakarta.validation.Valid;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,15 +34,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.beeja.api.financemanagementservice.Utils.Constants.CREATE_DEVICES;
-import static com.beeja.api.financemanagementservice.Utils.Constants.DELETE_DEVICES;
-import static com.beeja.api.financemanagementservice.Utils.Constants.READ_DEVICES;
-import static com.beeja.api.financemanagementservice.Utils.Constants.UPDATE_DEVICES;
 
 @RestController
 @RequestMapping("/v1/inventory")
@@ -68,11 +66,11 @@ public class InventoryController {
   public ResponseEntity<InventoryResponseDTO> filterInventory(
       @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
       @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
-      @RequestParam(required = false) Device device,
+      @RequestParam(required = false) String device,
       @RequestParam(required = false) String provider,
       @RequestParam(required = false) Availability availability,
       @RequestParam(required = false) String os,
-      @RequestParam(required = false) String RAM,
+      @RequestParam(required = false) String ram,
       @RequestParam(required = false) String searchTerm)
       throws Exception {
     HashMap<String, Object> metadata = new HashMap<>();
@@ -83,13 +81,13 @@ public class InventoryController {
             provider,
             availability,
             os,
-            RAM,
+            ram,
             UserContext.getLoggedInUserOrganization().get("id").toString(),
             searchTerm));
 
     List<Inventory> devices =
         inventoryService.filterInventory(
-            pageNumber, pageSize, device, provider, availability, os, RAM, searchTerm);
+            pageNumber, pageSize, device, provider, availability, os, ram, searchTerm);
     InventoryResponseDTO response = new InventoryResponseDTO();
     response.setMetadata(metadata);
     response.setInventory(devices);

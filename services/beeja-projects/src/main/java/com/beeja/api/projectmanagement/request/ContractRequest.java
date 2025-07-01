@@ -11,14 +11,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ContractRequest {
-    private String projectId;
-    private String clientId;
-    private String contractTitle;
-    private String description;
-    private Double contractValue;
-    private Date startDate;
-    private Date endDate;
-    private String signedBy;
-    List<String> projectManagers;
-    List<String> projectResources;
+  private String projectId;
+  private String clientId;
+  private String contractTitle;
+  private String description;
+  private Double contractValue;
+  private Date startDate;
+  private Date endDate;
+  private String signedBy;
+  List<String> projectManagers;
+  List<String> projectResources;
 }

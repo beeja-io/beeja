@@ -5,7 +5,6 @@ import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
@@ -16,6 +15,10 @@ import com.beeja.api.financemanagementservice.repository.InventoryRepository;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import com.beeja.api.financemanagementservice.service.InventoryService;
 import com.mongodb.DuplicateKeyException;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -25,13 +28,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import java.lang.reflect.Field;
-import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Service
 public class InventoryServiceImpl implements InventoryService {
@@ -49,8 +45,8 @@ public class InventoryServiceImpl implements InventoryService {
 
   @Autowired InventoryRepository inventoryRepository;
 
-  @Autowired
-  AccountClient accountClient;
+  @Autowired AccountClient accountClient;
+
   /**
    * Adds a new device to the inventory.
    *
@@ -78,7 +74,7 @@ public class InventoryServiceImpl implements InventoryService {
     device.setType(deviceDetails.getType());
     device.setOs(deviceDetails.getOs());
     device.setSpecifications(deviceDetails.getSpecifications());
-    device.setRAM(deviceDetails.getRAM());
+    device.setRam(deviceDetails.getRam());
     device.setAvailability(deviceDetails.getAvailability());
     device.setProductId(deviceDetails.getProductId());
     device.setPrice(deviceDetails.getPrice());
@@ -105,13 +101,12 @@ public class InventoryServiceImpl implements InventoryService {
   }
 
   /*
-    * Generates a unique device ID based on the organization's pattern and the current count of
-    * devices.
+   * Generates a unique device ID based on the organization's pattern and the current count of
+   * devices.
    */
   private String generateDeviceId() {
-    OrganizationPattern devicePattern = accountClient
-            .getActivePatternByType("DEVICE_ID_PATTERN")
-            .getBody();
+    OrganizationPattern devicePattern =
+        accountClient.getActivePatternByType("DEVICE_ID_PATTERN").getBody();
 
     String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
     long sizeOfDevices = inventoryRepository.countByOrganizationId(orgId);
@@ -127,25 +122,25 @@ public class InventoryServiceImpl implements InventoryService {
   }
 
   /**
-     * Retrieves all devices from the inventory.
-     *
-     * @return List of all Inventory objects representing devices.
-     */
+   * Retrieves all devices from the inventory.
+   *
+   * @return List of all Inventory objects representing devices.
+   */
   @Override
   public List<Inventory> filterInventory(
       int pageNumber,
       int pageSize,
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
-      String RAM,
+      String ram,
       String searchTerm) {
     try {
 
       Query query = new Query();
 
-      if (device != null) {
+      if (device != null && !device.trim().isEmpty()) {
         query.addCriteria(Criteria.where("device").is(device));
       }
       if (provider != null && StringUtils.hasText(provider)) {
@@ -158,15 +153,16 @@ public class InventoryServiceImpl implements InventoryService {
       if (os != null && StringUtils.hasText(os)) {
         query.addCriteria(Criteria.where("os").is(os));
       }
-      if (RAM != null && StringUtils.hasText(RAM)) {
-        query.addCriteria(Criteria.where("RAM").is(RAM));
+      if (ram != null && StringUtils.hasText(ram)) {
+        query.addCriteria(Criteria.where("ram").is(ram));
       }
       if (searchTerm != null && !searchTerm.isEmpty()) {
         query.addCriteria(
             Criteria.where("deviceNumber").regex(".*" + Pattern.quote(searchTerm) + ".*", "i"));
       }
-      query.addCriteria(Criteria.where("organizationId").is(
-              UserContext.getLoggedInUserOrganization().get("id").toString()));
+      query.addCriteria(
+          Criteria.where("organizationId")
+              .is(UserContext.getLoggedInUserOrganization().get("id").toString()));
 
       int skip = (pageNumber - 1) * pageSize;
       query.skip(skip).limit(pageSize);
@@ -184,16 +180,16 @@ public class InventoryServiceImpl implements InventoryService {
 
   @Override
   public Long getTotalInventorySize(
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
-      String RAM,
+      String ram,
       String organizationId,
       String searchTerm) {
     Query query = new Query();
 
-    if (device != null) {
+    if (device != null && !device.isEmpty()) {
       query.addCriteria(Criteria.where("device").is(device));
     }
 
@@ -205,8 +201,8 @@ public class InventoryServiceImpl implements InventoryService {
       query.addCriteria(Criteria.where("os").is(os));
     }
 
-    if (RAM != null && !RAM.isEmpty()) {
-      query.addCriteria(Criteria.where("RAM").is(RAM));
+    if (ram != null && !ram.isEmpty()) {
+      query.addCriteria(Criteria.where("ram").is(ram));
     }
 
     if (organizationId != null) {

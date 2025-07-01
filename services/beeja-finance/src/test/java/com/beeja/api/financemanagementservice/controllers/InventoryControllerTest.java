@@ -1,14 +1,28 @@
 package com.beeja.api.financemanagementservice.controllers;
 
+import static com.mongodb.assertions.Assertions.assertNotNull;
+import static com.mongodb.internal.connection.tlschannel.util.Util.assertTrue;
+import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.exceptions.BadRequestException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import com.beeja.api.financemanagementservice.response.InventoryResponseDTO;
 import com.beeja.api.financemanagementservice.service.InventoryService;
 import com.beeja.api.financemanagementservice.serviceImpl.LoanServiceImpl;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,22 +35,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import static com.mongodb.assertions.Assertions.assertNotNull;
-import static com.mongodb.internal.connection.tlschannel.util.Util.assertTrue;
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class InventoryControllerTest {
 
@@ -150,7 +148,7 @@ public class InventoryControllerTest {
   @Test
   public void testFilterInventory_Success() throws Exception {
     Inventory inventory = new Inventory();
-    inventory.setDevice(Device.MOBILE);
+    inventory.setDevice("Mobile");
     inventory.setProvider("Google");
     inventory.setAvailability(Availability.NO);
     inventory.setOs("NA");
@@ -159,7 +157,7 @@ public class InventoryControllerTest {
     when(inventoryService.filterInventory(
             anyInt(),
             anyInt(),
-            any(Device.class),
+            anyString(),
             anyString(),
             any(Availability.class),
             anyString(),
@@ -167,10 +165,11 @@ public class InventoryControllerTest {
             anyString()))
         .thenReturn(filteredDevices);
     when(inventoryService.getTotalInventorySize(
-            any(), anyString(), any(), anyString(), anyString(),anyString(), anyString()))
+            any(), anyString(), any(), anyString(), anyString(), anyString(), anyString()))
         .thenReturn(1L);
     ResponseEntity<InventoryResponseDTO> responseEntity =
-        inventoryController.filterInventory(1, 10, Device.MOBILE, "Google", Availability.NO, "NA","NA", "Mobile");
+        inventoryController.filterInventory(
+            1, 10, "Mobile", "Google", Availability.NO, "NA", "NA", "Mobile");
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertNotNull(responseEntity.getBody());
 
@@ -179,7 +178,7 @@ public class InventoryControllerTest {
     assertEquals(1L, responseBody.getMetadata().get("totalSize"));
     assertEquals(1, responseBody.getInventory().size());
     Inventory returnedInventory = responseBody.getInventory().get(0);
-    assertEquals(Device.MOBILE, returnedInventory.getDevice());
+    assertEquals("Mobile", returnedInventory.getDevice());
     assertEquals("Google", returnedInventory.getProvider());
     assertEquals(Availability.NO, returnedInventory.getAvailability());
     assertEquals("NA", returnedInventory.getOs());

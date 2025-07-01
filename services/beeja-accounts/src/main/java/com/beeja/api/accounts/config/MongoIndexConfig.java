@@ -9,21 +9,21 @@ import org.springframework.data.mongodb.core.index.Index;
 
 @Configuration
 public class MongoIndexConfig {
-    private final MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
 
-    public MongoIndexConfig(MongoTemplate mongoTemplate) {
-        this.mongoTemplate = mongoTemplate;
-    }
+  public MongoIndexConfig(MongoTemplate mongoTemplate) {
+    this.mongoTemplate = mongoTemplate;
+  }
 
-    @PostConstruct
-    public void ensureIndexes() {
-        mongoTemplate
-                .indexOps("organization-values")
-                .ensureIndex(
-                        new Index()
-                                .on("key", Sort.Direction.ASC)
-                                .on("organizationId", Sort.Direction.ASC)
-                                .unique()
-                                .named(MongoIndexes.UNIQUE_DEFAULT_TYPE_IS_REQUIRED));
-    }
+  @PostConstruct
+  public void ensureIndexes() {
+    mongoTemplate
+        .indexOps("organization-values")
+        .ensureIndex(
+            new Index()
+                .on("key", Sort.Direction.ASC)
+                .on("organizationId", Sort.Direction.ASC)
+                .unique()
+                .named(MongoIndexes.UNIQUE_DEFAULT_TYPE_IS_REQUIRED));
+  }
 }

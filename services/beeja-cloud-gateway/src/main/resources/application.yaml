@@ -6,7 +6,7 @@ server:
 
 spring:
   session:
-    timeout: 111111m
+    timeout: 120000m
   application:
     name: api-gateway
   data:

@@ -1,6 +1,5 @@
 package com.beeja.api.filemanagement.utils;
 
-import static org.bouncycastle.asn1.x509.X509ObjectIdentifiers.organization;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -20,7 +19,7 @@ public class UserContextTest {
     Set<String> permissions = new HashSet<>();
     permissions.add("READ_EMPLOYEE");
 
-    UserContext.setLoggedInUser(email, name,  employeeId, new HashMap<>(),permissions);
+    UserContext.setLoggedInUser(email, name, employeeId, new HashMap<>(), permissions);
 
     assertEquals(email, UserContext.getLoggedInUserEmail());
     assertEquals(name, UserContext.getLoggedInUserName());

@@ -41,6 +41,10 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
     localStorage.setItem('i18nextLng', selectedLanguage);
   };
   const handleLogout = async () => {
+    // Clear localStorage and sessionStorage
+    localStorage.clear();
+    sessionStorage.clear();
+
     /*If application is running
       in dev environment, then it will use dev base URL
       else, it will use localhost as origin
@@ -95,16 +99,17 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
         {isMenuExpanded && <MobileNavbar handleIsOpen={handleIsMenuExpanded} />}
       </span>
       <span className="mainTopNav">
-        {/*} <SearchBox className="search">
+        {/* TODO: Uncomment once implemented */}
+        {/* <SearchBox className="search">
           <span className="span">
             <SearchSVG />
             <SearchInput placeholder={t('Search anything...')} />
           </span>
-        </SearchBox>*/}
+        </SearchBox>
         <span className="topNavLinks">
           <span>{t('DOCUMENTS')}</span>
           <span>{t('PAYSLIPS')}</span>
-        </span>
+        </span> */}
       </span>
       <TopNavRightIcons>
         <span className="language">

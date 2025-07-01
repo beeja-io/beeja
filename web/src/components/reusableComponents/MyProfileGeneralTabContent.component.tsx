@@ -1,43 +1,43 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { EMPLOYEE_MODULE } from '../../constants/PermissionConstants';
 import { useUser } from '../../context/UserContext';
 import { EmployeeEntity } from '../../entities/EmployeeEntity';
-import {
-  TabContentMainContainer,
-  TabContentMainContainerHeading,
-  TabContentEditArea,
-  BorderDivLine,
-  TabContentInnerContainer,
-  TabContentTable,
-  TabContentTableTd,
-  InlineInput,
-  StyledCalendarIconDark,
-  CalendarInputContainer,
-  CalendarContainer,
-} from '../../styles/MyProfile.style';
-import {
-  EditWhitePenSVG,
-  CheckBoxOnSVG,
-  CrossMarkSVG,
-} from '../../svgs/CommonSvgs.svs';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import ToastMessage from './ToastMessage.component';
+import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
 import {
   getOrganizationValuesByKey,
   updateEmployeeDetailsByEmployeeId,
 } from '../../service/axiosInstance';
+import { Select } from '../../styles/CommonStyles.style';
+import {
+  BorderDivLine,
+  CalendarContainer,
+  CalendarInputContainer,
+  InlineInput,
+  StyledCalendarIconDark,
+  TabContentEditArea,
+  TabContentInnerContainer,
+  TabContentMainContainer,
+  TabContentMainContainerHeading,
+  TabContentTable,
+  TabContentTableTd,
+} from '../../styles/MyProfile.style';
+import {
+  CheckBoxOnSVG,
+  CrossMarkSVG,
+  EditWhitePenSVG,
+} from '../../svgs/CommonSvgs.svs';
+import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import {
   formatDate,
-  formatDateYYYYMMDD,
   formatDateDDMMYYYY,
+  formatDateYYYYMMDD,
 } from '../../utils/dateFormatter';
-import { Select } from '../../styles/CommonStyles.style';
-import { EMPLOYEE_MODULE } from '../../constants/PermissionConstants';
-import Calendar from './Calendar.component';
-import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import { isValidEmail, isValidPINCode } from '../../utils/formInputValidators';
 import { hasPermission } from '../../utils/permissionCheck';
-import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import Calendar from './Calendar.component';
+import ToastMessage from './ToastMessage.component';
 
 type GeneralDetailsTabProps = {
   heading: string;
@@ -351,6 +351,8 @@ export const GeneralDetailsTab = ({
         return 'personalInformation.nomineeDetails.relationType';
       case 'Aadhar Number':
         return 'personalInformation.nomineeDetails.aadharNumber';
+      case 'Personal Tax ID':
+        return 'personalInformation.personalTaxId';
       default:
         return label.toLowerCase().replace(/\s/g, '');
     }
@@ -413,7 +415,7 @@ export const GeneralDetailsTab = ({
           const jobDetailsResponse =
             await getOrganizationValuesByKey('jobTitles');
           const employmentTypesResponse =
-            await getOrganizationValuesByKey('employmentTypes');
+            await getOrganizationValuesByKey('employeeTypes');
           setEmploymentTypes(employmentTypesResponse.data);
           setJobTitles(jobDetailsResponse.data);
           setDepartmentList(response.data);
@@ -536,16 +538,16 @@ export const GeneralDetailsTab = ({
                                 : label === 'Nationality'
                                   ? ['Indian', 'German', 'American']
                                   : label === 'Department'
-                                    ? departmentList?.values.map(
+                                    ? departmentList?.values?.map(
                                         (department) => department.value
                                       )
                                     : label === 'Employment Type'
-                                      ? employmentTypes?.values.map(
+                                      ? employmentTypes?.values?.map(
                                           (employmentType) =>
                                             employmentType.value
                                         )
                                       : label === 'Designation'
-                                        ? jobTitles?.values.map(
+                                        ? jobTitles?.values?.map(
                                             (jobTitle) => jobTitle.value
                                           )
                                         : []
@@ -599,6 +601,11 @@ export const GeneralDetailsTab = ({
                                 : ''
                             }
                             placeholder={`Enter ${t(label)}`}
+                            onFocus={(e) => {
+                              if (e.target.value === '-') {
+                                e.target.value = '';
+                              }
+                            }}
                             onChange={(e) => {
                               const inputValue = e.target.value;
                               const labelsToExcludeFromStrictAlphabets = [
@@ -708,6 +715,11 @@ export const GeneralDetailsTab = ({
                                   ? formData[label]
                                   : value
                               }
+                              onFocus={(e) => {
+                                if (e.target.value === '-') {
+                                  e.target.value = '';
+                                }
+                              }}
                               onChange={(e) => {
                                 const inputValue = e.target.value;
                                 const labelsWhichAllowOnlyNumbers = [
@@ -820,7 +832,7 @@ export const SelectInput: React.FC<SelectInputProps> = ({
       }
     >
       <option value="">Select</option>
-      {options.map((option) => (
+      {options?.map((option) => (
         <option key={option} value={option} selected={selected === option}>
           {option}
         </option>
