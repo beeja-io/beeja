@@ -49,6 +49,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -73,6 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
   @Override
+  @Transactional
   public CreatedUserResponse createEmployee(AddEmployeeRequest addEmployeeRequest)
       throws Exception {
     User user = new User();
