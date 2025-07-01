@@ -14,6 +14,8 @@ import com.beeja.api.projectmanagement.service.ProjectService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -40,10 +42,22 @@ public class ProjectServiceImpl implements ProjectService {
    * Creates a new {@link Project} for a given {@link Client} based on the provided {@link
    * ProjectRequest}.
    *
-   * @param project the {@link ProjectRequest} containing the details to create the {@link Project}
+   * @param employeeIds the {@link ProjectRequest} containing the details to create the {@link Project}
    * @return the newly created {@link Project}
    * @throws ResourceNotFoundException if the {@link Client} is not found with the provided clientId
    */
+
+  private List<String> validateAndFetchEmployees(List<String> employeeIds, String errorMessage) {
+    if (employeeIds != null && !employeeIds.isEmpty()) {
+      try {
+        return accountClient.checkEmployeesPresentOrNot(employeeIds);
+      } catch (FeignClientException e) {
+        log.error(errorMessage, e.getMessage(), e);
+        throw new FeignClientException(errorMessage);
+      }
+    }
+    return Collections.emptyList();
+  }
   @Override
   public Project createProjectForClient(ProjectRequest project) {
     Client client =
@@ -76,24 +90,11 @@ public class ProjectServiceImpl implements ProjectService {
     if (project.getClientId() != null) {
       newProject.setClientId(project.getClientId());
     }
-    if(project.getProjectManagers() != null && !project.getProjectManagers().isEmpty()){
-          try {
-              List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(project.getProjectManagers());
-              newProject.setProjectManagers(validProjectManagers);
-          } catch (FeignClientException e){
-              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS, e.getMessage(), e);
-              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
-          }
-    }
-    if(project.getProjectResources() != null && !project.getProjectResources().isEmpty()){
-          try {
-              List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(project.getProjectResources());
-              newProject.setProjectResources(validProjectResources);
-          } catch (FeignClientException e){
-              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
-              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
-          }
-    }
+    newProject.setProjectManagers(
+            validateAndFetchEmployees(project.getProjectManagers(), Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS));
+
+    newProject.setProjectResources(
+            validateAndFetchEmployees(project.getProjectResources(), Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES));
     newProject.setOrganizationId(
         UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 

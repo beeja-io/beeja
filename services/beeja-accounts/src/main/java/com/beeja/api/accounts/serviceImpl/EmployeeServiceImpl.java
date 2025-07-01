@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -532,12 +534,44 @@ public class EmployeeServiceImpl implements EmployeeService {
 
   @Override
   public List<String> checkEmployees(List<String> employeeIds) {
-    List<User> existingUsers = userRepository.findByEmployeeIdInAndOrganizations_Id(
-            employeeIds,
-            UserContext.getLoggedInUserOrganization().getId());
+    if (employeeIds == null || employeeIds.isEmpty()) {
+      log.warn(Constants.EMPLOYEE_ID_NOT_NULL);
+      throw new BadRequestException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.VALIDATION_ERROR,
+                      ErrorCode.FIELD_VALIDATION_MISSING,
+                      Constants.EMPLOYEE_ID_NOT_NULL
+              )
+      );
+    }
+    Organization organization = UserContext.getLoggedInUserOrganization();
+        if (organization == null || organization.getId() == null) {
+          log.error(Constants.ERROR_NO_ORGANIZATION_FOUND_WITH_PROVIDED_ID);
 
-    return existingUsers.stream()
-            .map(User::getEmployeeId)
-            .collect(Collectors.toList());
-  }
+          throw new ResourceNotFoundException(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                          ErrorCode.ORGANIZATION_NOT_FOUND,
+                          Constants.ERROR_NO_ORGANIZATION_FOUND_WITH_PROVIDED_ID
+                  )
+          );
+        }
+        List<User> existingUsers;
+        try {
+          existingUsers = userRepository.findByEmployeeIdInAndOrganizations_Id(
+                  employeeIds, organization.getId());
+        } catch (Exception ex) {
+          log.error(Constants.UNABLE_TO_FETCH_DETAILS_FROM_DATABASE, ex);
+          throw new RuntimeException(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.DB_ERROR,
+                          ErrorCode.UNABLE_TO_FETCH_DETAILS,
+                          Constants.UNABLE_TO_FETCH_DETAILS_FROM_DATABASE
+                  )
+          );
+        }
+         return existingUsers.stream()
+                  .map(User::getEmployeeId)
+                  .collect(Collectors.toList());
+      }
 }

@@ -188,7 +188,8 @@ public class EmployeeController {
 
   @PostMapping("/validate-employees")
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
-  public List<String> checkEmployeesPresentOrNot(@RequestBody List<String> employeeIds){
-      return employeeService.checkEmployees(employeeIds);
+  public ResponseEntity<List<String>> checkEmployeesPresentOrNot(@RequestBody List<String> employeeIds)throws Exception{
+    List<String> validEmployeeIds = employeeService.checkEmployees(employeeIds);
+    return ResponseEntity.ok(validEmployeeIds);
   }
 }
