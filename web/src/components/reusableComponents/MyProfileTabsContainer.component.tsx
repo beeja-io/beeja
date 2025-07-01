@@ -51,8 +51,9 @@ const MyProfileTabsContainerComponent = ({
       handleTabChange('general');
       handleIsActiveTab('general');
       chooseTab('General');
-    }
+    } 
   }, [location.pathname]);
+
   const handleTabChange = (selectedTab: string) => {
     setSelectedTab(selectedTab);
     setIsActiveTab(selectedTab);
