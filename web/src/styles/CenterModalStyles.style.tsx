@@ -337,6 +337,8 @@ export const CenterModalTypeTwoInnerContainer = styled.section`
       width: 227px;
       color: ${(props) => props.theme.colors.blackColors.black7};
       font-family: Nunito;
+      font-size: 24px;
+      font-style: normal;
       font-weight: 700;
       display: flex;
       flex-direction: column;
