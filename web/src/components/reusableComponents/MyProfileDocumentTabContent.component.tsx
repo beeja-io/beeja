@@ -32,6 +32,7 @@ import {
 import { DocumentAction } from './DocumentAction';
 import {
   getAllFilesByEmployeeId,
+  getOrganizationValuesByKey,
   uploadEmployeeFiles,
 } from '../../service/axiosInstance';
 import { EmployeeEntity } from '../../entities/EmployeeEntity';
@@ -54,6 +55,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import Pagination from '../directComponents/Pagination.component';
+import { OrganizationValues } from '../../entities/OrgValueEntity';
 type DocumentTabContentProps = {
   employee: EmployeeEntity;
 };
@@ -77,17 +79,9 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     setErrors((prevErrors) => ({ ...prevErrors, emptyFile: '' }));
     setErrors((prevErrors) => ({ ...prevErrors, emptyDocumentType: '' }));
   };
-
-  const documentType = [
-    'Identity',
-    'Payslip',
-    'ADDRESS_PROOF',
-    'Education',
-    'NDA',
-    'Tax_Exit_Doc',
-    'Equipment_Policy',
-    'Appraisal Letter',
-  ];
+  const [documentType, setDocumentType] = useState<OrganizationValues>(
+    {} as OrganizationValues
+  );
   const Actions = [
     ...(user &&
     (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
@@ -203,6 +197,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
       setIsLoading(false);
     }
   }, [currentPage, itemsPerPage, entityId]);
+
+  useEffect(() => {
+    fetchDeviceTypes();
+  }, []);
+  const fetchDeviceTypes = async () => {
+    const responce = await getOrganizationValuesByKey('documentTypes');
+    setDocumentType(responce?.data);
+  };
 
   const [isUpdateToastMessage, setIsUpdateToastMessage] = useState(false);
   const handleUpdateToastMessage = () => {
@@ -474,9 +476,10 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       onChange={handleDocumentTypeChange}
                       className="selectoption"
                     >
-                      {['Select a Type', ...documentType].map((option) => (
-                        <option key={option} value={option}>
-                          {option}
+                      <option value=""> Select Type</option>
+                      {documentType?.values?.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.value}
                         </option>
                       ))}
                     </select>

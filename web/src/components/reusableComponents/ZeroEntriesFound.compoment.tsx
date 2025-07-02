@@ -4,7 +4,7 @@ import { NoDocsIcon } from '../../svgs/DocumentTabSvgs.svg';
 
 type ZeroEntriesFoundProps = {
   heading: string;
-  message: string;
+  message?: string;
 };
 const ZeroEntriesFound = (props: ZeroEntriesFoundProps) => {
   const { t } = useTranslation();
@@ -15,7 +15,7 @@ const ZeroEntriesFound = (props: ZeroEntriesFoundProps) => {
       </span>
       <span className="contentArea">
         <span className="heading">{t(props.heading)}</span>
-        <span className="content">{t(props.message)}</span>
+        {props.message && <span className="content">{t(props.message)}</span>}
       </span>
     </ZeroEntriesFoundMainContainer>
   );
