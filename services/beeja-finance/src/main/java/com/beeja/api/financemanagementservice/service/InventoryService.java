@@ -1,13 +1,11 @@
 package com.beeja.api.financemanagementservice.service;
 
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public interface InventoryService {
@@ -16,11 +14,11 @@ public interface InventoryService {
   List<Inventory> filterInventory(
       int pageNumber,
       int pageSize,
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
-      String RAM,
+      String ram,
       String searchTerm)
       throws Exception;
 
@@ -31,11 +29,11 @@ public interface InventoryService {
   List<Inventory> getAllDevicesByOrganizationId(String organizationId);
 
   Long getTotalInventorySize(
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
-      String RAM,
+      String ram,
       String organizationId,
       String searchTerm);
 }

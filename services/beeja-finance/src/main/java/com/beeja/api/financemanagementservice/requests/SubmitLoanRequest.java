@@ -4,9 +4,8 @@ import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.enums.LoanType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-
 import java.util.Date;
+import lombok.Data;
 
 @Data
 public class SubmitLoanRequest {

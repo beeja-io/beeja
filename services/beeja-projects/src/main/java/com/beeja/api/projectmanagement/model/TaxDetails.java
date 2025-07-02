@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 public class TaxDetails {
-    @NotNull(message = "Tax Category cannot be null")
-    private TaxCategory taxCategory;
+  @NotNull(message = "Tax Category cannot be null")
+  private TaxCategory taxCategory;
 
-    @NotNull(message = "Tax Number cannot be null")
-    private String taxNumber;
+  @NotNull(message = "Tax Number cannot be null")
+  private String taxNumber;
 }

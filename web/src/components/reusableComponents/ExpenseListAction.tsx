@@ -87,6 +87,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
       handleIsEditModalOpen();
     }
     setIsOpen(false);
+    setSelectedOption(null);
     // onOptionSelect(option);
   };
 

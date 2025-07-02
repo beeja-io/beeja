@@ -6,7 +6,7 @@ server:
 
 spring:
   session:
-    timeout: 111111m
+    timeout: 120000m
   application:
     name: api-gateway
   data:
@@ -67,6 +67,20 @@ spring:
             - Path= /recruitments/**
           filters:
             - CustomTokenRelay=true
+
+        - id: REPORTS-SERVICE
+          uri: lb://REPORTS-SERVICE
+          predicates:
+            - Path= /reports/**
+          filters:
+            - CustomTokenRelay=true
+
+        - id: PERFORMANCE-SERVICE
+          uri: lb://PERFORMANCE-SERVICE
+          predicates:
+            - Path= /performance/**
+          filters:
+            - CustomTokenRelay=true
   mvc:
     favicon:
       location: classpath:/resources/static/favicon.ico
@@ -86,6 +100,7 @@ auth.cors.allowed-origins:
     - ${FRONTEND_URL}
     - http://localhost:3000
     - http://localhost:3001
+    - http://localhost:4000
 
 skip-gateway-filter-routes:
   routes: ${SKIP_GATEWAY_FILTER_ROUTES}

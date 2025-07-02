@@ -4,5 +4,5 @@
   "expense_permissions" : ["CEX", "REX", "UEX", "DEX"],
   "finance_permissions" : ["CLON", "RLON", "ULON", "DLON", "SCLON", "CBPS", "REMP", "GALON", "CPAY","UPAY","RPAY","RDEV","UDEV","CDEV","DDEV","CHIN","RHIN","UHIN","DHIN"],
   "recruitment_permissions" : ["CAPT", "GAAPT", "GENAPT", "RRSM", "UENTAP", "UAPL", "TINT", "DINT", "ACREF"],
-  "projects_permissions" : ["CCL", "UCL", "GCL", "DCL", "CCON", "UCON", "GCON", "DCON", "CPT", "UPT", "GPT", "DPT","CIN", "UIN", "GIN", "DIN", "USIN"]
+  "projects_permissions" : ["CCL", "UCL", "GCL", "DCL", "CCON", "UCON", "GCON", "DCON", "CPT", "UPT", "GPT", "DPT","CIN", "UIN", "GIN", "DIN", "USIN", "RDCMT", "CDCMT", "DDCMT", "UDCMT", "RALDCMT", "CALDCMT", "DALDCMT", "UALDCMT"]
 }

@@ -1,9 +1,5 @@
 package com.beeja.api.filemanagement.controller;
 
-import com.beeja.api.filemanagement.exceptions.FileNotFoundException;
-import com.beeja.api.filemanagement.exceptions.FileTypeMismatchException;
-import com.beeja.api.filemanagement.exceptions.FileAccessException;
-import com.beeja.api.filemanagement.exceptions.MongoFileUploadException;
 import com.beeja.api.filemanagement.model.File;
 import com.beeja.api.filemanagement.requests.FileUploadRequest;
 import com.beeja.api.filemanagement.response.FileDownloadResult;
@@ -16,7 +12,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/files")
@@ -38,7 +41,7 @@ public class FileController {
   public ResponseEntity<?> uploadFile(FileUploadRequest fileInput) throws Exception {
     if (fileInput.getFile() == null || fileInput.getFile().getOriginalFilename() == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body(Constants.FILE_MISSING_IN_REQUEST_ERROR);
+          .body(Constants.FILE_MISSING_IN_REQUEST_ERROR);
     }
     File file = fileService.uploadFile(fileInput);
     return ResponseEntity.ok(file);
@@ -50,16 +53,17 @@ public class FileController {
     ByteArrayResource resource = result.getResource();
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
+    headers.add(
+        HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
     headers.add("createdBy", result.getCreatedBy());
     headers.add("organizationId", result.getOrganizationId());
     headers.add("entityId", result.getEntityId());
     headers.add("fileName", result.getFileName());
 
     return ResponseEntity.ok()
-            .contentType(MediaType.APPLICATION_OCTET_STREAM)
-            .headers(headers)
-            .body(resource);
+        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+        .headers(headers)
+        .body(resource);
   }
 
   // Delete file
@@ -77,7 +81,8 @@ public class FileController {
   }
 
   @GetMapping("/find/{fileId}")
-  public ResponseEntity<?> getFileById(@PathVariable String fileId) throws java.io.FileNotFoundException {
+  public ResponseEntity<?> getFileById(@PathVariable String fileId)
+      throws java.io.FileNotFoundException {
     return ResponseEntity.ok(fileService.getFileById(fileId));
   }
 
@@ -89,7 +94,7 @@ public class FileController {
   public ResponseEntity<?> uploadOrUpdateFile(FileUploadRequest fileInput) throws Exception {
     if (fileInput.getFile() == null || fileInput.getFile().getOriginalFilename() == null) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body(Constants.FILE_MISSING_IN_REQUEST_ERROR);
+          .body(Constants.FILE_MISSING_IN_REQUEST_ERROR);
     }
 
     File file = fileService.uploadOrUpdateFile(fileInput);

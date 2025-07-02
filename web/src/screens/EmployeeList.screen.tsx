@@ -161,7 +161,7 @@ const EmployeeList = () => {
 
   const fetchEmployeeTypes = async () => {
     try {
-      const response = await getOrganizationValuesByKey('employmentTypes');
+      const response = await getOrganizationValuesByKey('employeeTypes');
       setEmployeeTypes(response.data);
     } catch {
       setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES'));
@@ -172,6 +172,12 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('departments');
       setDepartmentOptions(response.data);
+      if (!response?.data?.values || response.data.values.length === 0) {
+        toast.error(
+          'Department list is empty. Please add at least one Department in Organization.'
+        );
+        return;
+      }
     } catch {
       setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
     }
@@ -265,7 +271,6 @@ const EmployeeList = () => {
   });
 
   const currentEmployees = finalEmpList;
-
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
@@ -450,6 +455,7 @@ const EmployeeList = () => {
               <TableHead>
                 <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
                   <th style={{ width: '250px' }}>{t('NAME')}</th>
+                  <th style={{ width: '120px' }}>{t('EMPLOYEE_ID')}</th>
                   <th style={{ width: '120px' }}>{t('JOB_TITLE')}</th>
                   <th style={{ width: '140px' }}>{t('TYPE')}</th>
                   <th style={{ width: '140px' }}>{t('DEPARTMENT')}</th>
@@ -526,6 +532,11 @@ const EmployeeList = () => {
                               {emp.account.email}
                             </span>
                           </span>
+                        </td>
+                        <td>
+                          {emp.employee.employeeId
+                            ? emp.employee.employeeId
+                            : '-'}
                         </td>
                         <td>
                           {emp.employee.jobDetails
@@ -605,6 +616,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     email: '',
     employmentType: '',
     department: '',
+    employeeId: '',
   });
   const [organizationValues, setOrganizationValues] =
     useState<OrganizationValues | null>(null);
@@ -620,6 +632,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     lastName: '',
     email: '',
     employmentType: '',
+    employeeId: '',
   });
   const [emailMessage, setEmailMessage] = useState('');
 
@@ -629,6 +642,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         setLoading(true);
         const key = 'employeeTypes';
         const response = await getOrganizationValuesByKey(key);
+
+        if (!response?.data?.values || response.data.values.length === 0) {
+          toast.error(
+            'Employee type is empty. Please add at least one Employee Type in Organization.'
+          );
+          return null;
+        }
         setOrganizationValues(response.data);
       } catch (err) {
         toast.error(t('ERROR_OCCURRED_PLEASE_RELOAD'));
@@ -673,6 +693,12 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
       employmentType:
         formData.employmentType === '' ? EMPLOYMENT_TYPRE_REQUIRED : '',
       department: formData.department === '' ? 'DEPARTMENT_REQUIRED' : '',
+      employeeId:
+        formData.employeeId === ''
+          ? 'EMPLOYEE_ID_REQUIRED'
+          : formData.employeeId.length < 4
+            ? 'EMPLOYEE_ID_LENGTH'
+            : '',
     };
 
     setErrors(newErrors);
@@ -682,10 +708,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         props.setIsResponseLoading(true);
         const resp = await createEmployee(formData);
         setUser(resp.data);
-        handleShowPassword();
+        if (resp.data.password) {
+          handleShowPassword();
+        }
         props.reloadEmployeeList();
         props.refetchEmployeeCount();
         toast.success(t('PROFILE_HAS_BEEN_SUCCESSFULLY_ADDED'));
+        props.handleClose();
       } catch (e) {
         if (axios.isAxiosError(e)) {
           const axiosError: AxiosError = e;
@@ -781,6 +810,31 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
 
         <InputLabelContainer>
           <label>
+            {t('EMPLOYEE_ID')}{' '}
+            <ValidationText className="star">*</ValidationText>
+          </label>
+          <TextInput
+            type="text"
+            name="employeeId"
+            placeholder="Ex: ORG1234"
+            value={formData.employeeId}
+            onChange={handleChange}
+            className={`${errors.employeeId}` ? 'errorEnabledInput' : ''}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+              }
+            }}
+          />
+          {errors.lastName && (
+            <ValidationText>
+              <AlertISVG /> {errors.lastName}
+            </ValidationText>
+          )}
+        </InputLabelContainer>
+
+        <InputLabelContainer>
+          <label>
             {t('EMAIL_ADDRESS')}{' '}
             <ValidationText className="star">*</ValidationText>
           </label>
@@ -824,6 +878,10 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
             onChange={handleChange}
+            disabled={
+              !organizationValues?.values ||
+              organizationValues.values.length === 0
+            }
           >
             <option value="">{t('SELECT_EMPLOYMENT_TYPE')}</option>
             {organizationValues &&
@@ -856,6 +914,10 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
             onChange={handleChange}
+            disabled={
+              !props.departmentOptions?.values ||
+              props.departmentOptions.values.length === 0
+            }
           >
             <option value="">{t('SELECT_DEPARTMENT')}</option>
             {props.departmentOptions &&
@@ -873,11 +935,12 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           )}
         </SelectOption>
 
-        <span>
+        {/* TODO: Revert this back when using automatic employee id generation */}
+        {/* <span>
           <ValidationText className="info">
             {t('EMPLOYEE_ID_WILL_BE_GENERATED_BASED_ON_PATTERN')}
           </ValidationText>
-        </span>
+        </span> */}
       </div>
 
       <div>

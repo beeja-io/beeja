@@ -31,9 +31,9 @@ public class Constants {
   public static final String FILE_NOT_FOUND_AT_PATH = "File not found at path: ";
   public static final String ERROR_READING_FILE = "Error reading file ";
   public static final String ERROR_DELETING_FILE = "Error deleting file: ";
-  public static final String DOC_URL_RESOURCE_NOT_FOUND = "https://beeja-dev.techatcore.com/" ;
+  public static final String DOC_URL_RESOURCE_NOT_FOUND = "https://beeja-dev.techatcore.com/";
   public static final String BEEJA = "BEEJA";
-  public static final String FILE_UPLOAD_FAILED = "Error accessing file." ;
+  public static final String FILE_UPLOAD_FAILED = "Error accessing file.";
   public static final String FILE_UPDATE_FAILED = "Error updating file with ID: ";
   public static final String ERROR_UPLOAD_UPDATE = "Error during uploadOrUpdate";
 }

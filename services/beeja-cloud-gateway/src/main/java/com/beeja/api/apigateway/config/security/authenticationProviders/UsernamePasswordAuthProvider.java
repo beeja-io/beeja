@@ -15,36 +15,36 @@ import org.springframework.security.web.server.authentication.ServerAuthenticati
 @Slf4j
 public class UsernamePasswordAuthProvider implements AuthenticationProvider {
 
-    @Autowired
-    private ServerAuthenticationFailureHandler authenticationFailureHandler;
+  @Autowired private ServerAuthenticationFailureHandler authenticationFailureHandler;
 
-    @Override
-    public void configure(ServerHttpSecurity serverHttpSecurity) {
-        log.info(Constants.REGISTERED_USERNAME_PASSWORD_PROVIDER);
-        serverHttpSecurity
-                .authorizeExchange(
-                        authorizeExchangeSpec ->
-                                authorizeExchangeSpec
-                                        .pathMatchers(HttpMethod.OPTIONS)
-                                        .permitAll()
-                                        .pathMatchers(
-                                                "/login",
-                                                "/auth/login/**",
-                                                "/actuator/**",
-                                                "/static/favicon.ico",
-                                                "/favicon.ico",
-                                                "/auth/login/error",
-                                                "/auth/logout")
-                                        .permitAll()
-                                        .anyExchange()
-                                        .authenticated())
-                .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .formLogin(
-                        formLoginSpec ->
-                                formLoginSpec.authenticationFailureHandler(authenticationFailureHandler));
-    }
+  @Override
+  public void configure(ServerHttpSecurity serverHttpSecurity) {
+    log.info(Constants.REGISTERED_USERNAME_PASSWORD_PROVIDER);
+    serverHttpSecurity
+        .authorizeExchange(
+            authorizeExchangeSpec ->
+                authorizeExchangeSpec
+                    .pathMatchers(HttpMethod.OPTIONS)
+                    .permitAll()
+                    .pathMatchers(
+                        "/login",
+                        "/auth/login/**",
+                        "/auth/**",
+                        "/actuator/**",
+                        "/static/favicon.ico",
+                        "/favicon.ico",
+                        "/auth/login/error",
+                        "/auth/logout")
+                    .permitAll()
+                    .anyExchange()
+                    .authenticated())
+        .csrf(ServerHttpSecurity.CsrfSpec::disable)
+        .formLogin(
+            formLoginSpec ->
+                formLoginSpec.authenticationFailureHandler(authenticationFailureHandler));
+  }
 
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

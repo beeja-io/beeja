@@ -360,6 +360,11 @@ const DeductionsTab = ({
                             type="text"
                             placeholder={'Enter Amount'}
                             value={formData[label] || ''}
+                            onFocus={(e) => {
+                              if (e.target.value === '-') {
+                                e.target.value = '';
+                              }
+                            }}
                             onChange={(e) => {
                               const inputValue = e.target.value;
                               const labelsWhichAllowOnlyNumbers = [

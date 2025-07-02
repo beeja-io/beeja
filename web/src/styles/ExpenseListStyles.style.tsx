@@ -216,7 +216,7 @@ export const TableList = styled.table`
 `;
 
 export const ActionContainer = styled.div`
-  position: relative;
+  position: absolute;
   // display: inline-block;
   width: 24px;
 `;

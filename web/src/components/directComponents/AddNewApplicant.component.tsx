@@ -1,36 +1,36 @@
+import { t } from 'i18next';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ExpenseHeadingSection,
-  ExpenseManagementMainContainer,
-} from '../../styles/ExpenseManagementStyles.style';
-import { useUser } from '../../context/UserContext';
-import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
-import { hasPermission } from '../../utils/permissionCheck';
+import { toast } from 'sonner';
+import { TextInput } from '../../styles/InputStyles.style';
 import { RECRUITMENT_MODULE } from '../../constants/PermissionConstants';
-import { TextInput } from 'web-kit-components';
+import { useUser } from '../../context/UserContext';
+import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
+import {
+  getOrganizationValuesByKey,
+  postApplicant,
+  referApplicant,
+} from '../../service/axiosInstance';
 import { BulkPayslipContainer } from '../../styles/BulkPayslipStyles.style';
+import { Button } from '../../styles/CommonStyles.style';
 import {
   FileUploadField,
   FormFileSelected,
   InputLabelContainer,
   ValidationText,
 } from '../../styles/DocumentTabStyles.style';
-import { noOfYearsExperience } from '../../utils/selectOptions';
-import { useEffect, useState } from 'react';
+import {
+  ExpenseHeadingSection,
+  ExpenseManagementMainContainer,
+} from '../../styles/ExpenseManagementStyles.style';
+import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
+import { FormFileCloseIcon } from '../../svgs/DocumentTabSvgs.svg';
 import {
   FileTextIcon,
   UploadReceiptIcon,
 } from '../../svgs/ExpenseListSvgs.svg';
-import { FormFileCloseIcon } from '../../svgs/DocumentTabSvgs.svg';
-import {
-  getOrganizationValuesByKey,
-  postApplicant,
-  referApplicant,
-} from '../../service/axiosInstance';
-import { toast } from 'sonner';
-import { Button } from '../../styles/CommonStyles.style';
-import { t } from 'i18next';
-import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
+import { hasPermission } from '../../utils/permissionCheck';
+import { noOfYearsExperience } from '../../utils/selectOptions';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 
 type AddNewApplicantProps = {
@@ -140,8 +140,17 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       } else {
         toast.error(t('FAILED_TO_SAVE_APPLICANT'));
       }
-    } catch {
-      toast.error(t('ERROR_WHILE_SAVING_APPLICANT'));
+    } catch (error: any) {
+      setIsLoading(false);
+      if (error.response?.data?.code === 'DUPLICATE_APPLICANT') {
+        toast.error(
+          props.isReferScreen
+            ? 'A referral has already applied for this position within the past six months.'
+            : 'An application has already applied for this position within the past six months.'
+        );
+      } else {
+        toast.error('An error occurred while saving the applicant');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -153,8 +162,28 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       setApiLoading(true);
       try {
         const response = await getOrganizationValuesByKey('jobTitles');
-        setJobTitles(response.data);
+        const data = response?.data;
+
+        if (!data || !Array.isArray(data.values)) {
+          setJobTitles({
+            organizationId: '',
+            key: 'jobTitles',
+            values: [],
+          });
+        } else {
+          setJobTitles(data);
+          if (data.values.length === 0) {
+            toast.info(
+              t('Job Titles is empty, Please update in Orginazation Settings')
+            );
+          }
+        }
       } catch {
+        setJobTitles({
+          organizationId: '',
+          key: 'jobTitles',
+          values: [],
+        });
         toast.error(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
       } finally {
         setApiLoading(false);
@@ -193,6 +222,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     id="firstName"
                     onChange={handleChange}
                     value={newApplicant.firstName}
+                    style={{ width: '400px' }}
                     required
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === 'Enter') {
@@ -218,6 +248,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     name="lastName"
                     id="lastName"
                     onChange={handleChange}
+                    style={{ width: '400px' }}
                     required
                     autoComplete="off"
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -246,6 +277,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     name="phoneNumber"
                     id="phoneNumber"
                     onChange={handleChange}
+                    style={{ width: '400px' }}
                     required
                     autoComplete="off"
                     maxLength={10}
@@ -272,6 +304,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     name="email"
                     id="email"
                     onChange={handleChange}
+                    style={{ width: '400px' }}
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$"
                     autoComplete="off"
                     required
@@ -292,18 +325,23 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     id="positionAppliedFor"
                     onChange={handleChange}
                     required
+                    disabled={
+                      !jobTitles?.values || jobTitles.values.length === 0
+                    }
                     onKeyPress={(event) => {
                       if (event.key === 'Enter') {
                         event.preventDefault();
                       }
                     }}
                   >
-                    <option value="">{t('SELECT_POSITION')}</option>
-                    {jobTitles?.values.map((position, index) => (
-                      <option key={index} value={position.value}>
-                        {t(position.value)}
-                      </option>
-                    ))}
+                    <option value="">Select Position</option>
+                    {jobTitles?.values &&
+                      jobTitles?.values?.length > 0 &&
+                      jobTitles?.values.map((position, index) => (
+                        <option key={index} value={position.value}>
+                          {position.value}
+                        </option>
+                      ))}
                   </select>
                 </InputLabelContainer>
                 <InputLabelContainer>

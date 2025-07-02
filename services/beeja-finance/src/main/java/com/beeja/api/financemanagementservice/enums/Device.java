@@ -15,18 +15,17 @@ public enum Device {
   SERVER("Server"),
   SMARTPHONE("Smartphone"),
   ROUTER("Router"),
-  KEYBOARD ("Keyboard"),
+  KEYBOARD("Keyboard"),
   CCTV("cctv"),
   UPS("ups"),
   ACCESSORIES("Accessories");
-
-
 
   private final String displayName;
 
   Device(String displayName) {
     this.displayName = displayName;
   }
+
   @JsonValue
   public String getDisplayName() {
     return displayName;

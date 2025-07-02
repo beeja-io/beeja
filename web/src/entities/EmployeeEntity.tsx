@@ -21,6 +21,7 @@ export interface EmployeeEntity {
       dateOfBirth: string;
       gender: string;
       maritalStatus: string;
+      personalTaxId: string;
       nomineeDetails: {
         name: string;
         email: string;

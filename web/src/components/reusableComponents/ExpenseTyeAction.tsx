@@ -33,6 +33,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
   const handleActionClick = (action: string) => {
     setSelectedOption(action);
     onActionClick(action, currentExpense);
+    setSelectedOption(null);
     setIsOpen(false);
   };
   const { t } = useTranslation();

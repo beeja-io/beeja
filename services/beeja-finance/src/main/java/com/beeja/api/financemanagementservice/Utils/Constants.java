@@ -53,14 +53,12 @@ public class Constants {
       "You have no required permissions to do this operation";
 
   // GCP PATH GENERATOR
-  public static final String expense = "expense";
-
-  public static final String id = "id";
+  public static final String EXPENSE = "expense";
   public static final String PDF = ".pdf";
   public static final String I_D = "_id";
-  public static final String PAYSLIP_ = "Payslip_";
-  public static final String zipFile = "zipFile";
-  public static final String organization = "organizations";
+  public static final String PAY_SLIP = "Payslip_";
+  public static final String ZIPFILE = "zipFile";
+  public static final String ORGANIZATION = "organizations";
 
   // Bulk Payslips successful
   public static final String BULK_PAYSLIP_ADDED_SUCCESSFULLY =
@@ -97,6 +95,7 @@ public class Constants {
   public static final String EMI_TENURE_MUST_GREATER_THAN_ZERO =
       "EMI Tenure must be greater than 0";
   public static final String EMPID_MUST_NOT_NULL = "employeeId must not be null";
+  public static final String EMPNAME_MUST_NOT_NULL = "employeeName must not be null";
   public static final String AMT_GREATER_THAN_ZERO = "Amount must be greater than 0";
   public static final String ORG_ID_NOT_NULL = "organizationId must not be null";
   public static final String VALUE_MUST_GREATER_THAN_ZERO = "value must be greater than 0";

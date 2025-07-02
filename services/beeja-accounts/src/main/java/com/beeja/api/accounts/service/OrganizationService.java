@@ -4,10 +4,9 @@ import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.User;
 import com.beeja.api.accounts.response.OrganizationResponse;
+import java.util.List;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 public interface OrganizationService {
   List<User> getAllUsersByOrganizationId(String organizationId) throws Exception;

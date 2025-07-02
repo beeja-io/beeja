@@ -1,27 +1,27 @@
+import { AxiosError } from 'axios';
 import React, { useEffect, useState } from 'react';
-import { TextInput } from 'web-kit-components';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
+import { TextInput } from '../../styles/InputStyles.style';
+import { IApplicant } from '../../entities/ApplicantEntity';
+import {
+  changeApplicationStatus,
+  getApplicantById,
+  postComment,
+} from '../../service/axiosInstance';
 import { BulkPayslipContainer } from '../../styles/BulkPayslipStyles.style';
 import {
   InputLabelContainer,
   ValidationText,
 } from '../../styles/DocumentTabStyles.style';
 import {
-  ExpenseManagementMainContainer,
   ExpenseHeadingSection,
+  ExpenseManagementMainContainer,
 } from '../../styles/ExpenseManagementStyles.style';
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
-import { useNavigate, useParams } from 'react-router-dom';
-import {
-  changeApplicationStatus,
-  getApplicantById,
-  postComment,
-} from '../../service/axiosInstance';
-import { IApplicant } from '../../entities/ApplicantEntity';
-import { AxiosError } from 'axios';
-import CommentsSection from '../reusableComponents/CommentsSection.component';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
-import { toast } from 'sonner';
-import { useTranslation } from 'react-i18next';
+import CommentsSection from '../reusableComponents/CommentsSection.component';
 
 const EditApplicant = () => {
   const navigate = useNavigate();
@@ -41,10 +41,12 @@ const EditApplicant = () => {
   };
 
   const fetchApplicantById = () => {
+    setIsLoading(true);
     id &&
       getApplicantById(id)
         .then((res) => {
           setApplicant(res.data);
+          setIsLoading(false);
         })
         .catch((error) => {
           if (error instanceof AxiosError) {
@@ -58,9 +60,7 @@ const EditApplicant = () => {
         });
   };
   useEffect(() => {
-    setIsLoading(true);
     fetchApplicantById();
-    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -145,7 +145,7 @@ const EditApplicant = () => {
                       }}
                       placeholder={'PLACEHOLDER_FIRST_NAME'}
                       autoComplete="off"
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -173,8 +173,8 @@ const EditApplicant = () => {
                           }
                         }
                       }}
-                      placeholder={'PLACEHOLDER_LAST_NAME'}
-                      style={{ cursor: 'not-allowed' }}
+                      placeholder={'Ex: Doe'}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
@@ -206,7 +206,7 @@ const EditApplicant = () => {
                         }
                       }}
                       placeholder={'Enter Phone Number'}
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -223,7 +223,7 @@ const EditApplicant = () => {
                       required
                       disabled
                       placeholder={'Enter Email'}
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>

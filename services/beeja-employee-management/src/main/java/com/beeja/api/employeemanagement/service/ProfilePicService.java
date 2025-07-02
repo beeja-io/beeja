@@ -6,9 +6,9 @@ import org.springframework.core.io.ByteArrayResource;
 
 public interface ProfilePicService {
 
-    File saveProfilePicture(FileUploadRequest file) throws Exception;
+  File saveProfilePicture(FileUploadRequest file) throws Exception;
 
-    File updateProfilePicture(String fileId, FileUploadRequest fileUploadRequest) throws Exception;
+  File updateProfilePicture(String fileId, FileUploadRequest fileUploadRequest) throws Exception;
 
-    ByteArrayResource getProfilePicById(String fileId) throws Exception;
+  ByteArrayResource getProfilePicById(String fileId) throws Exception;
 }

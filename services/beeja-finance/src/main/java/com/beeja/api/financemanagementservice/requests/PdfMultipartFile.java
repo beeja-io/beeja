@@ -1,12 +1,11 @@
 package com.beeja.api.financemanagementservice.requests;
 
 import com.beeja.api.financemanagementservice.Utils.Constants;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import org.springframework.web.multipart.MultipartFile;
 
 public class PdfMultipartFile implements MultipartFile {
 

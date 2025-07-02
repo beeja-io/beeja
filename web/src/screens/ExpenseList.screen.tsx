@@ -69,7 +69,9 @@ export const ExpenseList = (props: ExpenseListProps) => {
   };
 
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const departments = selectedDepartments.map(encodeURIComponent);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const categories = selectedCategories.map(encodeURIComponent);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>(
     []
@@ -276,12 +278,12 @@ export const ExpenseList = (props: ExpenseListProps) => {
       setFilteredResponseLoading(true);
       const queryParams = [];
 
-      if (selectedDepartments.length > 0) {
-        queryParams.push(`department=${selectedDepartments.join(',')}`);
+      if (departments.length > 0) {
+        queryParams.push(`department=${departments.join(',')}`);
       }
 
-      if (selectedCategories.length > 0) {
-        queryParams.push(`expenseCategory=${selectedCategories.join(',')}`);
+      if (categories.length > 0) {
+        queryParams.push(`expenseCategory=${categories.join(',')}`);
       }
 
       if (selectedTypes.length > 0) {
@@ -871,7 +873,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
               )}
             </TableList>
           )}
-          {totalPages && (
+          {expenses && expenses?.expenses?.length > 0 && totalPages && (
             <Pagination
               totalPages={totalPages}
               currentPage={currentPage}

@@ -5,9 +5,7 @@ import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Utility class for storing information about the currently logged-in user.
- */
+/** Utility class for storing information about the currently logged-in user. */
 public class UserContext {
   @Getter @Setter private static String loggedInUserEmail;
 
@@ -23,6 +21,7 @@ public class UserContext {
 
   /**
    * Sets the details of the currently logged-in user.
+   *
    * @param email the email of the logged-in user
    * @param name the name of the logged-in user
    * @param employeeId the employee ID of the logged-in user
@@ -42,7 +41,6 @@ public class UserContext {
     loggedInEmployeeId = employeeId;
     loggedInUserOrganization = organization;
     loggedInUserPermissions = permissions;
-    loggedInUserToken = token
-    ;
+    loggedInUserToken = token;
   }
 }

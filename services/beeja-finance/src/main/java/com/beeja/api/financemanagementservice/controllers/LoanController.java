@@ -12,6 +12,8 @@ import com.beeja.api.financemanagementservice.requests.SubmitLoanRequest;
 import com.beeja.api.financemanagementservice.response.LoanResponse;
 import com.beeja.api.financemanagementservice.service.LoanService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,9 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/v1/loans")
 public class LoanController {
@@ -38,13 +37,14 @@ public class LoanController {
   @GetMapping
   @HasPermission(Constants.GET_ALL_LOANS)
   public LoanResponse getAllLoansBasedOnCount(
-          @RequestParam(defaultValue="0") int pageNumber,
-          @RequestParam(defaultValue="10") int pageSize,
-          @RequestParam(defaultValue = "loanNumber") String sortBy,
-          @RequestParam(defaultValue="desc") String sortDirection,
-          @RequestParam(required = false) LoanStatus status){
-    return loanService.getLoansWithCount(pageNumber, pageSize,sortBy,sortDirection,status);
+      @RequestParam(defaultValue = "0") int pageNumber,
+      @RequestParam(defaultValue = "10") int pageSize,
+      @RequestParam(defaultValue = "createdAt") String sortBy,
+      @RequestParam(defaultValue = "desc") String sortDirection,
+      @RequestParam(required = false) LoanStatus status) {
+    return loanService.getLoansWithCount(pageNumber, pageSize, sortBy, sortDirection, status);
   }
+
   @GetMapping("/{employeeID}")
   @HasPermission(Constants.READ_LOAN)
   public ResponseEntity<List<Loan>> getLoansByEmployeeId(@PathVariable String employeeID)

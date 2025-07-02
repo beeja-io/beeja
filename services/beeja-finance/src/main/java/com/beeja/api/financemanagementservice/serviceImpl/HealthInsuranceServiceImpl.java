@@ -12,11 +12,10 @@ import com.beeja.api.financemanagementservice.modals.HealthInsurance;
 import com.beeja.api.financemanagementservice.repository.HealthInsuranceRepository;
 import com.beeja.api.financemanagementservice.requests.HealthInsuranceRequest;
 import com.beeja.api.financemanagementservice.service.HealthInsuranceService;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 /**
  * Implementation of the HealthInsuranceService interface providing CRUD operations for managing

@@ -362,6 +362,11 @@ const KycTabContent = ({
                                 : `Enter ${t(label)}`
                           }
                           onChange={(e) => handleChange(label, e.target.value)}
+                          onFocus={(e) => {
+                            if (e.target.value === '-') {
+                              handleChange(label, '');
+                            }
+                          }}
                           onBlur={() => handleBlur(label)}
                           maxLength={
                             label === 'Aadhaar Number' ||

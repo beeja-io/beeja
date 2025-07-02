@@ -1,9 +1,17 @@
 package com.beeja.api.employeemanagement.serviceImpl;
 
-import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
-import com.beeja.api.employeemanagement.response.EmployeeValues;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static com.beeja.api.employeemanagement.constants.PermissionConstants.CREATE_EMPLOYEE;
+import static com.beeja.api.employeemanagement.constants.PermissionConstants.READ_COMPLETE_EMPLOYEE_DETAILS;
+import static com.beeja.api.employeemanagement.constants.PermissionConstants.UPDATE_ALL_EMPLOYEES;
+import static com.beeja.api.employeemanagement.utils.Constants.EMAIL_ALREADY_REGISTERED;
+import static com.beeja.api.employeemanagement.utils.Constants.EMPLOYEE_NOT_FOUND;
+import static com.beeja.api.employeemanagement.utils.Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE;
+import static com.beeja.api.employeemanagement.utils.Constants.INVALID_PROFILE_PIC_FORMATS;
+import static com.beeja.api.employeemanagement.utils.Constants.SUCCESSFULLY_UPDATED_PROFILE_PHOTO;
+import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
+import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_TO_UPDATE_PROFILE_PIC;
+import static com.google.common.io.Files.getFileExtension;
+
 import com.beeja.api.employeemanagement.client.AccountClient;
 import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.enums.ErrorCode;
@@ -27,25 +35,18 @@ import com.beeja.api.employeemanagement.requests.EmployeeOrgRequest;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.FileUploadRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
+import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
+import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.beeja.api.employeemanagement.response.GetLimitedEmployee;
 import com.beeja.api.employeemanagement.service.EmployeeService;
 import com.beeja.api.employeemanagement.service.FileService;
 import com.beeja.api.employeemanagement.utils.BuildErrorMessage;
 import com.beeja.api.employeemanagement.utils.Constants;
+import com.beeja.api.employeemanagement.utils.ExtractEmpNumUtil;
 import com.beeja.api.employeemanagement.utils.UserContext;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,18 +58,18 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.google.common.io.Files.getFileExtension;
-import static com.beeja.api.employeemanagement.constants.PermissionConstants.CREATE_EMPLOYEE;
-import static com.beeja.api.employeemanagement.constants.PermissionConstants.READ_COMPLETE_EMPLOYEE_DETAILS;
-import static com.beeja.api.employeemanagement.constants.PermissionConstants.UPDATE_ALL_EMPLOYEES;
-import static com.beeja.api.employeemanagement.utils.Constants.EMAIL_ALREADY_REGISTERED;
-import static com.beeja.api.employeemanagement.utils.Constants.EMPLOYEE_NOT_FOUND;
-import static com.beeja.api.employeemanagement.utils.Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE;
-import static com.beeja.api.employeemanagement.utils.Constants.INVALID_PROFILE_PIC_FORMATS;
-import static com.beeja.api.employeemanagement.utils.Constants.SUCCESSFULLY_UPDATED_PROFILE_PHOTO;
-import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
-import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_TO_UPDATE_PROFILE_PIC;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
@@ -92,15 +93,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     Employee emp = new Employee();
     emp.setBeejaAccountId(((String) employee.get("id")));
     emp.setEmployeeId(((String) employee.get("employeeId")));
+    emp.setEmployeeNumber(ExtractEmpNumUtil.extractEmpNumber(emp.getEmployeeId()));
     Object organizationsObject = employee.get("organizations");
     if (organizationsObject instanceof Map) {
       Map<String, Object> organizationsMap = (Map<String, Object>) organizationsObject;
       emp.setOrganizationId((String) organizationsMap.get("id"));
     }
 
-    if(employee.get("department") != null) {
+    if (employee.get("department") != null || employee.get("employmentType")!=null) {
       JobDetails jobDetails = new JobDetails();
       jobDetails.setDepartment(employee.get("department").toString());
+      jobDetails.setEmployementType(employee.get("employmentType").toString());
       emp.setJobDetails(jobDetails);
     }
     try {
@@ -245,12 +248,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
   @Override
   public List<GetLimitedEmployee> getLimitedDataOfEmployees(
-      String department,
-      String designation,
-      String employmentType,
-      int pageNumber,
-      int pageSize,
-      String status) {
+          String department,
+          String designation,
+          String employmentType,
+          int pageNumber,
+          int pageSize,
+          String status) {
     String organizationId = UserContext.getLoggedInUserOrganization().getId();
 
     Criteria criteria = Criteria.where("organizationId").is(organizationId);
@@ -264,51 +267,48 @@ public class EmployeeServiceImpl implements EmployeeService {
       criteria.and("jobDetails.employementType").is(employmentType);
     }
 
-    List<Employee> employees = mongoTemplate.find(Query.query(criteria), Employee.class);
-    List<String> employeeIds =
-        employees.stream().map(Employee::getEmployeeId).collect(Collectors.toList());
+    Query baseQuery = new Query(criteria);
+    List<Employee> filteredEmployees = mongoTemplate.find(baseQuery, Employee.class);
+    List<String> employeeIds = filteredEmployees.stream()
+            .map(Employee::getEmployeeId)
+            .collect(Collectors.toList());
+
     ResponseEntity<?> accountResponse =
-        accountClient.getUsersByEmployeeIds(new EmployeeOrgRequest(employeeIds));
+            accountClient.getUsersByEmployeeIds(new EmployeeOrgRequest(employeeIds));
 
-    // Check if accountResponse is successful and contains body data
-    if (accountResponse != null && accountResponse.getStatusCode().is2xxSuccessful()) {
-      List<Map<String, Object>> accountDataList =
-          (List<Map<String, Object>>) accountResponse.getBody();
-      boolean isActive = "active".equalsIgnoreCase(status);
-
-      // Filter account data based on the active status
-      List<Map<String, Object>> filteredAccountData =
-          accountDataList.stream()
-              .filter(accountData -> Boolean.TRUE.equals(accountData.get("active")) == isActive)
-              .collect(Collectors.toList());
-
-      // Add criteria based on the filtered account data
-      List<String> matchedEmployeeIds =
-          filteredAccountData.stream()
-              .map(accountData -> (String) accountData.get("employeeId"))
-              .collect(Collectors.toList());
-      criteria.and("employeeId").in(matchedEmployeeIds);
-      if (pageNumber < 1) {
-        throw new IllegalArgumentException(Constants.PAGE_NUMBER_INVALID);
-      }
-      if (pageSize < 1) {
-        throw new IllegalArgumentException(Constants.PAGE_SIZE_INVALID);
-      }
-      if (pageSize > 100) {
-        throw new IllegalArgumentException(Constants.PAGE_SIZE_EXCEEDS_LIMIT);
-      }
-      Aggregation aggregation =
-          Aggregation.newAggregation(
-              Aggregation.match(criteria),
-              Aggregation.project("id", "employeeId", "jobDetails"),
-              Aggregation.skip((pageNumber - 1) * pageSize),
-              Aggregation.limit(pageSize));
-      AggregationResults<GetLimitedEmployee> results =
-          mongoTemplate.aggregate(aggregation, "employees", GetLimitedEmployee.class);
-      return results.getMappedResults();
+    if (accountResponse == null || !accountResponse.getStatusCode().is2xxSuccessful()) {
+      return Collections.emptyList();
     }
-    return Collections.emptyList();
+
+    List<Map<String, Object>> accountDataList = (List<Map<String, Object>>) accountResponse.getBody();
+
+    List<String> matchedEmployeeIds = accountDataList.stream()
+            .filter(account -> {
+              if (status == null || status.equals("-") || status.isEmpty()) return true;
+              boolean isActive = "active".equalsIgnoreCase(status);
+              return Boolean.TRUE.equals(account.get("active")) == isActive;
+            })
+            .map(account -> (String) account.get("employeeId"))
+            .collect(Collectors.toList());
+
+    if (matchedEmployeeIds.isEmpty()) return Collections.emptyList();
+    Criteria finalCriteria = Criteria.where("organizationId").is(organizationId)
+            .and("employeeId").in(matchedEmployeeIds);
+
+    Aggregation aggregation = Aggregation.newAggregation(
+            Aggregation.match(finalCriteria),
+            Aggregation.project("id", "employeeId", "jobDetails", "employeeNumber"),
+            Aggregation.sort(Sort.by(Sort.Direction.ASC, "employeeNumber")),
+            Aggregation.skip((long) (pageNumber - 1) * pageSize),
+            Aggregation.limit(pageSize)
+    );
+
+    AggregationResults<GetLimitedEmployee> results =
+            mongoTemplate.aggregate(aggregation, "employees", GetLimitedEmployee.class);
+
+    return results.getMappedResults();
   }
+
 
   public EmployeeResponse getCombinedLimitedDataOfEmployees(
       String department,
@@ -353,14 +353,15 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<Map<String, Object>> combinedDataList = new ArrayList<>();
         List<Map<String, Object>> accountDataList =
             (List<Map<String, Object>>) accountResponse.getBody();
-        boolean isActive = "active".equalsIgnoreCase(status);
+
         for (GetLimitedEmployee employee : employeesWithLimitedData) {
           Optional<Map<String, Object>> accountDataOptional =
               accountDataList.stream()
-                  .filter(
-                      accountData ->
-                          employee.getEmployeeId().equals(accountData.get("employeeId"))
-                              && accountData.get("active").equals(isActive))
+                      .filter(accountData ->
+                              employee.getEmployeeId().equals(accountData.get("employeeId")) &&
+                                      (status == null || status.equals("-") || status.isEmpty() ||
+                                              accountData.get("active").equals("active".equalsIgnoreCase(status)))
+                      )
                   .findFirst();
 
           if (accountDataOptional.isPresent()) {
@@ -392,45 +393,60 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
   private Long getFilteredEmployeeCount(
-      String department, String designation, String employementType, String status) {
+          String department, String designation, String employementType, String status) {
 
-    Query query = new Query();
+    Criteria criteria = new Criteria();
     if (department != null && !department.isEmpty()) {
-      query.addCriteria(Criteria.where("jobDetails.department").is(department));
+      criteria.and("jobDetails.department").is(department);
     }
     if (designation != null && !designation.isEmpty()) {
-      query.addCriteria(Criteria.where("jobDetails.designation").is(designation));
+      criteria.and("jobDetails.designation").is(designation);
     }
     if (employementType != null && !employementType.isEmpty()) {
-      query.addCriteria(Criteria.where("jobDetails.employementType").is(employementType));
+      criteria.and("jobDetails.employementType").is(employementType);
     }
-    List<Employee> employees = mongoTemplate.find(query, Employee.class);
 
-    List<String> employeeIds =
-        employees.stream().map(Employee::getEmployeeId).collect(Collectors.toList());
+    List<Employee> employees = mongoTemplate.find(new Query(criteria), Employee.class);
+    List<String> employeeIds = employees.stream()
+            .map(Employee::getEmployeeId)
+            .collect(Collectors.toList());
+
     ResponseEntity<?> accountResponse =
-        accountClient.getUsersByEmployeeIds(new EmployeeOrgRequest(employeeIds));
+            accountClient.getUsersByEmployeeIds(new EmployeeOrgRequest(employeeIds));
+
     if (accountResponse != null && accountResponse.getStatusCode().is2xxSuccessful()) {
       List<Map<String, Object>> accountDataList =
-          (List<Map<String, Object>>) accountResponse.getBody();
+              (List<Map<String, Object>>) accountResponse.getBody();
+
+      // Index account data by employeeId for fast lookup
+      Map<String, Map<String, Object>> accountMap = accountDataList.stream()
+              .collect(Collectors.toMap(
+                      acc -> (String) acc.get("employeeId"),
+                      acc -> acc,
+                      (existing, replacement) -> existing // handle duplicates
+              ));
+
+      boolean isFilterApplied = status != null && !status.equals("-") && !status.isEmpty();
       boolean isActive = "active".equalsIgnoreCase(status);
+
       long count = 0;
       for (Employee employee : employees) {
-        Optional<Map<String, Object>> accountDataOptional =
-            accountDataList.stream()
-                .filter(
-                    accountData ->
-                        employee.getEmployeeId().equals(accountData.get("employeeId"))
-                            && Boolean.TRUE.equals(accountData.get("active")) == isActive)
-                .findFirst();
-        if (accountDataOptional.isPresent()) {
+        Map<String, Object> account = accountMap.get(employee.getEmployeeId());
+        if (account == null) continue;
+
+        Object activeObj = account.get("active");
+
+        if (!isFilterApplied || (Boolean.TRUE.equals(activeObj) == isActive)) {
           count++;
         }
       }
       return count;
     }
+
     return 0L;
   }
+
+
 
   public void updateJobDetails(Employee existingEmployee, JobDetails updatedJobDetails) {
     if (updatedJobDetails != null) {
@@ -488,11 +504,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setPfDetails(existingPfDetails);
       }
 
-      if (updatedPfDetails.getPFNumber() != null) {
-        existingPfDetails.setPFNumber(updatedPfDetails.getPFNumber());
+      if (updatedPfDetails.getPfNumber() != null) {
+        existingPfDetails.setPfNumber(updatedPfDetails.getPfNumber());
       }
-      if (updatedPfDetails.getUAN() != null) {
-        existingPfDetails.setUAN(updatedPfDetails.getUAN());
+      if (updatedPfDetails.getUan() != null) {
+        existingPfDetails.setUan(updatedPfDetails.getUan());
       }
       if (updatedPfDetails.getJoiningData() != null) {
         existingPfDetails.setJoiningData(updatedPfDetails.getJoiningData());
@@ -556,6 +572,9 @@ public class EmployeeServiceImpl implements EmployeeService {
       }
       if (updatedPersonalInfo.getMaritalStatus() != null) {
         existingPersonalInfo.setMaritalStatus(updatedPersonalInfo.getMaritalStatus());
+      }
+      if (updatedPersonalInfo.getPersonalTaxId() != null) {
+        existingPersonalInfo.setPersonalTaxId(updatedPersonalInfo.getPersonalTaxId());
       }
       updateNomineeDetails(existingPersonalInfo, updatedPersonalInfo.getNomineeDetails());
     }
@@ -764,10 +783,21 @@ public class EmployeeServiceImpl implements EmployeeService {
   @Override
   public EmployeeValues getEmployeeValues() throws Exception {
     EmployeeValues employeeValues = new EmployeeValues();
-    List<EmployeeDefaultValues> employeeDefaultValues = employeeRepository.findDistinctTypeByOrganizationId(UserContext.getLoggedInUserOrganization().getId());
-    Set<String> departments = employeeDefaultValues.stream().map(EmployeeDefaultValues::getDepartment).collect(Collectors.toSet());
-    Set<String> designations = employeeDefaultValues.stream().map(EmployeeDefaultValues::getDesignation).collect(Collectors.toSet());
-    Set<String> employmentTypes = employeeDefaultValues.stream().map(EmployeeDefaultValues::getEmploymentType).collect(Collectors.toSet());
+    List<EmployeeDefaultValues> employeeDefaultValues =
+        employeeRepository.findDistinctTypeByOrganizationId(
+            UserContext.getLoggedInUserOrganization().getId());
+    Set<String> departments =
+        employeeDefaultValues.stream()
+            .map(EmployeeDefaultValues::getDepartment)
+            .collect(Collectors.toSet());
+    Set<String> designations =
+        employeeDefaultValues.stream()
+            .map(EmployeeDefaultValues::getDesignation)
+            .collect(Collectors.toSet());
+    Set<String> employmentTypes =
+        employeeDefaultValues.stream()
+            .map(EmployeeDefaultValues::getEmploymentType)
+            .collect(Collectors.toSet());
 
     employeeValues.setDepartments(departments);
     employeeValues.setDesignations(designations);

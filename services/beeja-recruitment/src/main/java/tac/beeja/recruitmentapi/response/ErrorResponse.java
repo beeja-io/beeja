@@ -10,11 +10,11 @@ import tac.beeja.recruitmentapi.enums.ErrorType;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ErrorResponse {
-    private ErrorType type;
-    private ErrorCode code;
-    private String message;
-    private String docUrl;
-    private String path;
-    private String referenceId;
-    private String timestamp;
+  private ErrorType type;
+  private ErrorCode code;
+  private String message;
+  private String docUrl;
+  private String path;
+  private String referenceId;
+  private String timestamp;
 }

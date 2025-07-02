@@ -1,28 +1,29 @@
 import { useEffect, useState } from 'react';
-import {
-  MyProfileTabsDiv,
-  MyProfileTabsMainContainer,
-} from '../../styles/MyProfile.style';
-import { EmployeeEntity } from '../../entities/EmployeeEntity';
-import { useUser } from '../../context/UserContext';
-import { GeneralDetailsTab } from './MyProfileGeneralTabContent.component';
-import KycTabContent from './MyProfileKYCTabContent.component';
-import { DocumentTabContent } from './MyProfileDocumentTabContent.component';
-import DeductionsTab from '../directComponents/DeductionsTab.component';
+import { useTranslation } from 'react-i18next';
+import { LOADING } from '../../constants/Constants';
 import {
   DOCUMENT_MODULE,
   EMPLOYEE_MODULE,
   HEALTH_INSURANCE_MODULE,
   KYC_MODULE,
 } from '../../constants/PermissionConstants';
-import { hasPermission } from '../../utils/permissionCheck';
-import { hasFeature } from '../../utils/featureCheck';
 import { useFeatureToggles } from '../../context/FeatureToggleContext';
+import { useUser } from '../../context/UserContext';
+import { EmployeeEntity } from '../../entities/EmployeeEntity';
 import { EFeatureToggles } from '../../entities/FeatureToggle';
-import HappyBirthday from '../directComponents/HappyBirthday';
 import leafsAnimation from '../../images/birthdayAnimation.gif';
-import { LOADING } from '../../constants/Constants';
-import { useTranslation } from 'react-i18next';
+import {
+  MyProfileTabsDiv,
+  MyProfileTabsMainContainer,
+} from '../../styles/MyProfile.style';
+import { hasFeature } from '../../utils/featureCheck';
+import { hasPermission } from '../../utils/permissionCheck';
+import DeductionsTab from '../directComponents/DeductionsTab.component';
+import HappyBirthday from '../directComponents/HappyBirthday';
+import { DocumentTabContent } from './MyProfileDocumentTabContent.component';
+import { GeneralDetailsTab } from './MyProfileGeneralTabContent.component';
+import KycTabContent from './MyProfileKYCTabContent.component';
+import { useLocation } from 'react-router-dom';
 
 type MyProfileTabsContainerComponentProps = {
   employee: EmployeeEntity;
@@ -41,8 +42,17 @@ const MyProfileTabsContainerComponent = ({
   const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
     setSelectedTab(isActiveTab);
-  }, [employee, isActiveTab]);
+  }, [isActiveTab]);
 
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/profile/me') {
+      handleTabChange('general');
+      handleIsActiveTab('general');
+      chooseTab('General');
+    }
+  }, [location.pathname]);
   const handleTabChange = (selectedTab: string) => {
     setSelectedTab(selectedTab);
     setIsActiveTab(selectedTab);
@@ -93,8 +103,15 @@ const MyProfileTabsContainerComponent = ({
           ? employee.employee.personalInformation.maritalStatus
           : '-',
     },
-    // FIXME - Update personal Tax ID
-    { label: 'Personal Tax ID', value: '-' },
+
+    {
+      label: 'Personal Tax ID',
+      value:
+        employee.employee.personalInformation &&
+        employee.employee.personalInformation.personalTaxId
+          ? employee.employee.personalInformation.personalTaxId
+          : '-',
+    },
     {
       label: 'Phone Number',
       value:
@@ -485,7 +502,7 @@ const MyProfileTabsContainerComponent = ({
         {selectedTab === 'general' && (
           <div>
             <GeneralDetailsTab
-              heading="Personal Info"
+              heading={t('PERSONAL_INFO')}
               details={personalDetails}
               isEditModeOn={isPersonalDetailsEditModeOn}
               handleIsEditModeOn={handleIsPersonalDetailsEditModeOn}
@@ -493,7 +510,7 @@ const MyProfileTabsContainerComponent = ({
               fetchEmployeeAgain={fetchEmployeeAgain}
             />
             <GeneralDetailsTab
-              heading="Address"
+              heading={t('ADDRESS')}
               details={addressDetails}
               isEditModeOn={isAddressDetailsEditModeOn}
               handleIsEditModeOn={handleIsAddressDetailsEditModeOn}
@@ -508,7 +525,7 @@ const MyProfileTabsContainerComponent = ({
                 // FIXME - Update after discussion with Prasad/Jay
                 user.employeeId === employee.account.employeeId) && (
                 <GeneralDetailsTab
-                  heading="Emergency Contact"
+                  heading={t('EMERGENCY_CONTACT')}
                   details={nomineeDetails}
                   isEditModeOn={isNomineeDetailsEditModeOn}
                   handleIsEditModeOn={handleIsNomineeDetailsEditModeOn}
@@ -520,7 +537,7 @@ const MyProfileTabsContainerComponent = ({
         )}
         {selectedTab === 'job' && (
           <GeneralDetailsTab
-            heading="Employment Info"
+            heading={t('EMPLOYMENT_INFO')}
             details={jobDetails}
             employee={employee}
             fetchEmployeeAgain={fetchEmployeeAgain}
@@ -530,7 +547,7 @@ const MyProfileTabsContainerComponent = ({
         )}
         {selectedTab === 'deductions' && (
           <DeductionsTab
-            heading="Health Insurance"
+            heading={t('HEALTH_INSURANCE')}
             handleIsEditModeOn={handleIsHealthInsuranceDetailsEditModeOn}
             isEditModeOn={isHealthInsuranceDetailsEditModeOn}
             employee={employee}
@@ -552,7 +569,7 @@ const MyProfileTabsContainerComponent = ({
               handleIsEditModeOn={handleIsKycDetailsEditModeOn}
             />
             <KycTabContent
-              heading="Bank Details"
+              heading={t('BANK_DETAILS')}
               details={bankDetails}
               isEditModeOn={isBankDetailsEditModeOn}
               employee={employee}

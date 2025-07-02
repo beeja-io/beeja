@@ -39,6 +39,9 @@ client-urls:
   accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
   fileService: ${FILE_SERVICE_BASE_URL}/files
 
+logs:
+  organizationId: 654b0d9d355b9f0029b7733c
+
 
 jwt:
   secret: ${JWT_SECRET_KEY}
