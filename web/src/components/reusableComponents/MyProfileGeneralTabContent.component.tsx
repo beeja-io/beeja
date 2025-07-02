@@ -190,10 +190,14 @@ export const GeneralDetailsTab = ({
       (formData[postalCode]?.trim().length < 6 ||
         !isValidPINCode(formData[postalCode]))
     ) {
-      setFormErrorToastHead('Error in updating profile');
-      setFormErrorToastMessage('Postal Code must be 6 digits!');
-      handleIsFormEmailValid();
-      return;
+      if (formData[postalCode]?.trim() == '') {
+        setFormData((prev: typeof formData) => ({ ...prev, [postalCode]: '' }));
+      } else {
+        setFormErrorToastHead('Error in updating profile');
+        setFormErrorToastMessage('Postal Code must be 6 digits!');
+        handleIsFormEmailValid();
+        return;
+      }
     }
 
     const fullName = 'Full Name';
