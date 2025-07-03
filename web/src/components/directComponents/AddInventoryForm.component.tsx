@@ -195,6 +195,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 value={formData.specifications}
                 onChange={handleChange}
                 required
+                autoComplete="off"
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -324,6 +325,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 value={formData.model}
                 onChange={handleChange}
                 required
+                autoComplete="off"
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -348,6 +350,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 placeholder={t('EXAMPLE_MAC_OS')}
                 value={formData.os || ''}
                 onChange={handleChange}
+                autoComplete="off"
                 disabled={Boolean(
                   formData.device &&
                     formData.device !== 'Select Device' &&
@@ -451,6 +454,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 value={formData.productId}
                 onChange={handleChange}
                 required
+                autoComplete="off"
               />
             </InputLabelContainer>
             <InputLabelContainer>
