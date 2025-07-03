@@ -29,6 +29,8 @@ import EditApplicant from '../components/directComponents/EditApplicant.componen
 import ReferEmployeeScreen from '../screens/ReferEmployeeScreen.screen';
 import ClientDetailsScreen from '../screens/ClientDetailsScreen.screen';
 import ClientListWrapper from '../screens/ClientListWrapper';
+import ProjectManagement from '../screens/ProjectMangagement.screen';
+import ContractManagement from '../screens/ContractManagement.screen';
 
 const AllRoutes = () => {
   return (
@@ -83,30 +85,83 @@ const AllRoutes = () => {
         }
       />
 
-      <Route path="/clients/client-management" element={<ClientManagement />}>
-        <Route
-          index
-          element={
-            <CustomRoute
-              permission={INVENTORY_MODULE.READ_DEVICE}
-              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
-            >
-              <ClientListWrapper />
-            </CustomRoute>
-          }
-        />
-        <Route
-          path=":id"
-          element={
-            <CustomRoute
-              permission={INVENTORY_MODULE.READ_DEVICE}
-              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
-            >
-              <ClientDetailsScreen />
-            </CustomRoute>
-          }
-        />
-      </Route>
+     <Route path="/clients/client-management" element={<ClientManagement />}>
+  <Route
+    index
+    element={
+      <CustomRoute
+        permission={INVENTORY_MODULE.READ_DEVICE}
+        featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+      >
+        <ClientListWrapper />
+      </CustomRoute>
+    }
+  />
+  <Route
+    path=":id"
+    element={
+      <CustomRoute
+        permission={INVENTORY_MODULE.READ_DEVICE}
+        featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+      >
+        <ClientDetailsScreen />
+      </CustomRoute>
+    }
+  />
+</Route>
+
+{/* ✅ Add Project Management Route */}
+<Route path="/projects/project-management" element={<ProjectManagement />}>
+  <Route
+    index
+    element={
+      <CustomRoute
+        permission={INVENTORY_MODULE.READ_DEVICE}
+        featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+      >
+        <ClientListWrapper />
+      </CustomRoute>
+    }
+  />
+  <Route
+    path=":id"
+    element={
+      <CustomRoute
+        permission={INVENTORY_MODULE.READ_DEVICE}
+        featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+      >
+        <ClientDetailsScreen />
+      </CustomRoute>
+    }
+  />
+</Route>
+
+{/* ✅ Add Contract Management Route */}
+<Route path="/contracts/contract-management" element={<ContractManagement />}>
+  <Route
+    index
+    element={
+      <CustomRoute
+        permission={INVENTORY_MODULE.READ_DEVICE}
+        featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+      >
+        <ClientListWrapper />
+      </CustomRoute>
+    }
+  />
+  <Route
+    path=":id"
+    element={
+      <CustomRoute
+        permission={INVENTORY_MODULE.READ_DEVICE}
+        featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+      >
+        <ClientDetailsScreen />
+      </CustomRoute>
+    }
+  />
+</Route>
+
 
       <Route
         path="/payroll/deductions-loans"

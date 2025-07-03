@@ -20,10 +20,10 @@ import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import { TextInput } from '../../styles/InputStyles.style';
 
 interface AddProjectFormProps {
-  onCancel: () => void;
-  onSubmit: (formData: ProjectFormData) => void;
-  handleClose: () => void;
-  clientId: string;
+  // onCancel: () => void;
+  // onSubmit: (formData: ProjectFormData) => void;
+  // handleClose: () => void;
+  // clientId: string;
   initialData?: Partial<ProjectFormData>;
 }
 
@@ -37,11 +37,11 @@ interface ProjectFormData {
 }
 
 const AddProjectForm: React.FC<AddProjectFormProps> = ({
-  onCancel,
-  onSubmit,
+  // onCancel,
+  // onSubmit,
   initialData,
-  handleClose,
-  clientId,
+  // handleClose,
+  // clientId,
 }) => {
   const [formData, setFormData] = useState<ProjectFormData>({
     projectName: initialData?.projectName || '',
@@ -94,7 +94,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
       alert(t('Please fill in all required fields.'));
       return;
     }
-    onSubmit(formData);
+    // onSubmit(formData);
   };
 
   return (
@@ -219,7 +219,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
         </FormGrid>
 
         <ButtonContainer>
-          <CancelButton type="button" onClick={handleClose}>
+          <CancelButton type="button" >
             {t('Cancel')}
           </CancelButton>
           <SubmitButton type="submit">{t('Add')}</SubmitButton>
