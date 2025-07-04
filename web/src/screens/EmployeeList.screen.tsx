@@ -771,7 +771,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             placeholder="Ex: John"
             value={formData.firstName}
             onChange={handleChange}
-            autoComplete="off"
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault();
@@ -796,7 +795,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             placeholder="Ex: Mark"
             value={formData.lastName}
             onChange={handleChange}
-            autoComplete="off"
             className={`${errors.lastName}` ? 'errorEnabledInput' : ''}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -822,7 +820,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             placeholder="Ex: ORG1234"
             value={formData.employeeId}
             onChange={handleChange}
-            autoComplete="off"
             className={`${errors.employeeId}` ? 'errorEnabledInput' : ''}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -848,7 +845,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             placeholder="Ex: john@techatcore.com"
             value={formData.email}
             onChange={handleChange}
-            autoComplete="off"
             className={`${errors.email}` ? 'errorEnabledInput' : ''}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
