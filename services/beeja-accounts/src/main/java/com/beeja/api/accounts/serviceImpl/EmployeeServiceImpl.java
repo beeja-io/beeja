@@ -15,6 +15,7 @@ import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
 import com.beeja.api.accounts.repository.OrganizationPatternsRepository;
@@ -574,4 +575,10 @@ public class EmployeeServiceImpl implements EmployeeService {
                   .map(User::getEmployeeId)
                   .collect(Collectors.toList());
       }
+
+  public List<EmployeeIdNameDTO> getAllEmployeeNameId() {
+    return userRepository.findAllEmployeeNamesAndIdByOrganizations_Id(
+            UserContext.getLoggedInUserOrganization().getId());
+  }
+
 }

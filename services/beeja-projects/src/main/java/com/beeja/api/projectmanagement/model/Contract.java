@@ -1,5 +1,7 @@
 package com.beeja.api.projectmanagement.model;
 
+import com.beeja.api.projectmanagement.enums.ContractBillingType;
+import com.beeja.api.projectmanagement.enums.ContractType;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import java.util.Date;
 import lombok.AllArgsConstructor;
@@ -31,7 +33,8 @@ public class Contract {
   private Date startDate;
   private Date endDate;
   private ProjectStatus status;
-
+  private ContractBillingType billingType;
+  private ContractType contractType;
   private String signedBy;
   private Boolean isActive = true;
 

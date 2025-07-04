@@ -3,6 +3,7 @@ package com.beeja.api.projectmanagement.serviceImpl;
 import com.beeja.api.projectmanagement.client.AccountClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
@@ -274,5 +275,34 @@ public class ProjectServiceImpl implements ProjectService {
               Constants.ERROR_UPDATING_PROJECT));
     }
     return existingProject;
+  }
+  @Override
+  public Project changeProjectStatus(String projectId, ProjectStatus status) {
+    Project project =
+            projectRepository.findByProjectIdAndOrganizationId(
+                    projectId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+
+    if (project == null) {
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.PROJECT_NOT_FOUND));
+    }
+
+    project.setStatus(status);
+
+    try {
+      project = projectRepository.save(project);
+    } catch (Exception e) {
+      log.error("Error updating project status: {}", e.getMessage());
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.RESOURCE_CREATION_ERROR,
+                      "Failed to update project status"));
+    }
+
+    return project;
   }
 }

@@ -4,6 +4,7 @@ import com.beeja.api.accounts.annotations.HasPermission;
 import com.beeja.api.accounts.constants.PermissionConstants;
 import com.beeja.api.accounts.exceptions.BadRequestException;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import com.beeja.api.accounts.repository.UserRepository;
 import com.beeja.api.accounts.requests.AddEmployeeRequest;
@@ -191,5 +192,11 @@ public class EmployeeController {
   public ResponseEntity<List<String>> checkEmployeesPresentOrNot(@RequestBody List<String> employeeIds)throws Exception{
     List<String> validEmployeeIds = employeeService.checkEmployees(employeeIds);
     return ResponseEntity.ok(validEmployeeIds);
+  }
+
+  @GetMapping("/names")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public ResponseEntity<List<EmployeeIdNameDTO>> getAllEmployeeNameId() throws Exception {
+    return new ResponseEntity<>(employeeService.getAllEmployeeNameId(), HttpStatus.OK);
   }
 }
