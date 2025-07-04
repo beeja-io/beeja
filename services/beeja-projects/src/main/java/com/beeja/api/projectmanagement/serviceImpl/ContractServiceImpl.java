@@ -1,7 +1,10 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
+import com.beeja.api.projectmanagement.client.AccountClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
+import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Project;
@@ -16,6 +19,10 @@ import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 /**
@@ -31,6 +38,12 @@ public class ContractServiceImpl implements ContractService {
   @Autowired private ContractRepository contractRepository;
 
   @Autowired private ProjectRepository projectRepository;
+
+    @Autowired
+    AccountClient accountClient;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
   /**
    * Creates a new {@link Contract} for a given {@link Project} and {@link ContractRequest}.
@@ -65,6 +78,28 @@ public class ContractServiceImpl implements ContractService {
     contract.setEndDate(request.getEndDate());
     contract.setSignedBy(request.getSignedBy());
     contract.setOrganizationId(project.getOrganizationId());
+    contract.setBillingType(request.getBillingType());
+    contract.setContractType(request.getContractType());
+    contract.setStatus(ProjectStatus.ACTIVE);
+
+      if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
+          try{
+              List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(request.getProjectManagers());
+              contract.setProjectManagers(validProjectManagers);
+          } catch (FeignClientException e){
+              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
+              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
+          }
+      }
+      if(request.getProjectResources() !=null && !request.getProjectResources().isEmpty()){
+          try {
+              List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(request.getProjectResources());
+              contract.setProjectResources(validProjectResources);
+          } catch (FeignClientException e){
+              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
+              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
+          }
+      }
 
     try {
       return contractRepository.save(contract);
@@ -133,6 +168,25 @@ public class ContractServiceImpl implements ContractService {
     if (request.getEndDate() != null) contract.setEndDate(request.getEndDate());
     if (request.getSignedBy() != null) contract.setSignedBy(request.getSignedBy());
 
+      if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
+          try{
+              List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(request.getProjectManagers());
+              contract.setProjectManagers(validProjectManagers);
+          } catch (FeignClientException e){
+              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
+              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
+          }
+      }
+      if(request.getProjectResources() !=null && !request.getProjectResources().isEmpty()){
+          try {
+              List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(request.getProjectResources());
+              contract.setProjectResources(validProjectResources);
+          } catch (FeignClientException e){
+              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
+              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
+          }
+      }
+
     try {
       return contractRepository.save(contract);
     } catch (Exception e) {
@@ -144,4 +198,45 @@ public class ContractServiceImpl implements ContractService {
               Constants.ERROR_UPDATING_CONTRACT));
     }
   }
+    @Override
+    public List<Contract> getAllContracts(int pageNumber, int pageSize, String projectId, ProjectStatus status) {
+        try {
+            Query query = buildContractQuery(projectId, status);
+
+            int skip = (pageNumber - 1) * pageSize;
+            query.skip(skip).limit(pageSize);
+            query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
+
+            return mongoTemplate.find(query, Contract.class);
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    String.valueOf(BuildErrorMessage.buildErrorMessage(
+                            ErrorType.DB_ERROR,
+                            ErrorCode.RESOURCE_NOT_FOUND,
+                            "Error fetching contract details")));
+        }
+    }
+    @Override
+    public Long getTotalContractSize(String projectId, ProjectStatus status) {
+        Query query = buildContractQuery(projectId, status);
+        return mongoTemplate.count(query, Contract.class);
+    }
+
+    private Query buildContractQuery(String projectId, ProjectStatus status) {
+        Query query = new Query();
+
+        if (projectId != null && !projectId.isEmpty()) {
+            query.addCriteria(Criteria.where("projectId").is(projectId));
+        }
+
+        if (status != null) {
+            query.addCriteria(Criteria.where("status").is(status));
+        }
+
+        query.addCriteria(Criteria.where("organizationId")
+                .is(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString()));
+
+        return query;
+    }
+
 }

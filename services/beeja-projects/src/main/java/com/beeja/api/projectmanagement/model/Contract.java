@@ -1,5 +1,7 @@
 package com.beeja.api.projectmanagement.model;
 
+import com.beeja.api.projectmanagement.enums.ContractBillingType;
+import com.beeja.api.projectmanagement.enums.ContractType;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import java.util.Date;
 import lombok.AllArgsConstructor;
@@ -9,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.List;
 
 @Document(collection = "contracts")
 @Data
@@ -30,11 +33,14 @@ public class Contract {
   private Date startDate;
   private Date endDate;
   private ProjectStatus status;
-
+  private ContractBillingType billingType;
+  private ContractType contractType;
   private String signedBy;
   private Boolean isActive = true;
 
   @CreatedDate private Date createdAt;
 
   @LastModifiedDate private Date updatedAt;
+  List<String> projectManagers;
+  List<String> projectResources;
 }

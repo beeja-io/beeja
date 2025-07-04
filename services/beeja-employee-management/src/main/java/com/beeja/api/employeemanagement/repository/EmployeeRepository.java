@@ -30,4 +30,10 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
         "{ $replaceRoot: { newRoot: '$uniqueValues' } }"
       })
   List<EmployeeDefaultValues> findDistinctTypeByOrganizationId(String organizationId);
+
+
+ List<Employee> findAllByOrganizationId(String organizationId);
+
+ List<Employee> findAllByOrganizationIdAndJobDetailsDesignationIn(String organizationId, List<String> designations);
+
 }

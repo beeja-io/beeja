@@ -3,6 +3,7 @@ package com.beeja.api.accounts.repository;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import java.util.List;
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -42,4 +43,10 @@ public interface UserRepository extends MongoRepository<User, String> {
 
   @Query(value = "{ 'organizations._id': ?0 }", count = true)
   long countByOrganizationId(String organizationId);
+  @Query(
+          value = "{ 'organizations.id': ?0 }",
+          fields = "{ 'employeeId': 1, 'firstName': 1, 'lastName': 1, '_id': 0 }"
+  )
+  List<EmployeeIdNameDTO> findAllEmployeeNamesAndIdByOrganizations_Id(String organizationId);
+
 }

@@ -1,5 +1,6 @@
 package com.beeja.api.projectmanagement.service;
 
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import java.util.List;
@@ -47,4 +48,6 @@ public interface ProjectService {
    * @return the updated {@link Project} object
    */
   Project updateProjectByProjectId(ProjectRequest project, String projectId);
+
+  Project changeProjectStatus(String projectId, ProjectStatus status);
 }

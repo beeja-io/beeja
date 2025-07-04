@@ -2,20 +2,18 @@ package com.beeja.api.projectmanagement.controllers;
 
 import com.beeja.api.projectmanagement.annotations.HasPermission;
 import com.beeja.api.projectmanagement.constants.PermissionConstants;
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.request.ContractRequest;
+import com.beeja.api.projectmanagement.responses.ContractResponseDTO;
 import com.beeja.api.projectmanagement.service.ContractService;
+
+import java.util.HashMap;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for managing contracts within the project management system. Provides endpoints
@@ -78,4 +76,27 @@ public class ContractsController {
       @PathVariable String contractId, @RequestBody ContractRequest request) {
     return ResponseEntity.ok(contractService.updateContract(contractId, request));
   }
+  @GetMapping
+  @HasPermission(PermissionConstants.GET_CONTRACT)
+  public ResponseEntity<ContractResponseDTO> getAllContracts(
+          @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
+          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+          @RequestParam(required = false) String projectId,
+          @RequestParam(required = false) ProjectStatus status
+  ) {
+    HashMap<String, Object> metadata = new HashMap<>();
+    metadata.put(
+            "totalSize",
+            contractService.getTotalContractSize(projectId, status)
+    );
+
+    List<Contract> contracts = contractService.getAllContracts(pageNumber, pageSize, projectId, status);
+
+    ContractResponseDTO response = new ContractResponseDTO();
+    response.setMetadata(metadata);
+    response.setContracts(contracts);
+
+    return ResponseEntity.ok(response);
+  }
+
 }

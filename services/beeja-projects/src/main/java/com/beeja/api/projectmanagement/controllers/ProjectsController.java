@@ -2,6 +2,7 @@ package com.beeja.api.projectmanagement.controllers;
 
 import com.beeja.api.projectmanagement.annotations.HasPermission;
 import com.beeja.api.projectmanagement.constants.PermissionConstants;
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.service.ProjectService;
@@ -9,13 +10,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for managing projects within the project management system. Provides endpoints
@@ -93,6 +88,14 @@ public class ProjectsController {
   public ResponseEntity<Project> updateProject(
       @PathVariable String projectId, @RequestBody ProjectRequest projectRequest) {
     Project updatedProject = projectService.updateProjectByProjectId(projectRequest, projectId);
+    return ResponseEntity.ok(updatedProject);
+  }
+  @PatchMapping("/{projectId}/status")
+  public ResponseEntity<Project> changeProjectStatus(
+          @PathVariable String projectId,
+          @RequestBody ProjectStatus status) {
+
+    Project updatedProject = projectService.changeProjectStatus(projectId, status);
     return ResponseEntity.ok(updatedProject);
   }
 }

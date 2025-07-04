@@ -1,7 +1,10 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
+import com.beeja.api.projectmanagement.client.AccountClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
+import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.Project;
@@ -12,6 +15,8 @@ import com.beeja.api.projectmanagement.service.ProjectService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
+
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
@@ -32,14 +37,28 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Autowired ProjectRepository projectRepository;
 
+    @Autowired
+    AccountClient accountClient;
   /**
    * Creates a new {@link Project} for a given {@link Client} based on the provided {@link
    * ProjectRequest}.
    *
-   * @param project the {@link ProjectRequest} containing the details to create the {@link Project}
+   * @param employeeIds the {@link ProjectRequest} containing the details to create the {@link Project}
    * @return the newly created {@link Project}
    * @throws ResourceNotFoundException if the {@link Client} is not found with the provided clientId
    */
+
+  private List<String> validateAndFetchEmployees(List<String> employeeIds, String errorMessage) {
+    if (employeeIds != null && !employeeIds.isEmpty()) {
+      try {
+        return accountClient.checkEmployeesPresentOrNot(employeeIds);
+      } catch (FeignClientException e) {
+        log.error(errorMessage, e.getMessage(), e);
+        throw new FeignClientException(errorMessage);
+      }
+    }
+    return Collections.emptyList();
+  }
   @Override
   public Project createProjectForClient(ProjectRequest project) {
     Client client =
@@ -72,6 +91,11 @@ public class ProjectServiceImpl implements ProjectService {
     if (project.getClientId() != null) {
       newProject.setClientId(project.getClientId());
     }
+    newProject.setProjectManagers(
+            validateAndFetchEmployees(project.getProjectManagers(), Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS));
+
+    newProject.setProjectResources(
+            validateAndFetchEmployees(project.getProjectResources(), Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES));
     newProject.setOrganizationId(
         UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
@@ -222,6 +246,24 @@ public class ProjectServiceImpl implements ProjectService {
     if (project.getEndDate() != null) {
       existingProject.setEndDate(project.getEndDate());
     }
+    if(project.getProjectManagers() != null && !project.getProjectManagers().isEmpty()){
+          try {
+              List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(project.getProjectManagers());
+              existingProject.setProjectManagers(validProjectManagers);
+          } catch (FeignClientException e){
+              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
+              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
+          }
+      }
+      if(project.getProjectResources() != null && !project.getProjectResources().isEmpty()){
+          try {
+              List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(project.getProjectResources());
+              existingProject.setProjectResources(validProjectResources);
+          } catch (FeignClientException e){
+              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
+              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
+          }
+      }
     try {
       existingProject = projectRepository.save(existingProject);
     } catch (Exception e) {
@@ -233,5 +275,34 @@ public class ProjectServiceImpl implements ProjectService {
               Constants.ERROR_UPDATING_PROJECT));
     }
     return existingProject;
+  }
+  @Override
+  public Project changeProjectStatus(String projectId, ProjectStatus status) {
+    Project project =
+            projectRepository.findByProjectIdAndOrganizationId(
+                    projectId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+
+    if (project == null) {
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.PROJECT_NOT_FOUND));
+    }
+
+    project.setStatus(status);
+
+    try {
+      project = projectRepository.save(project);
+    } catch (Exception e) {
+      log.error("Error updating project status: {}", e.getMessage());
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.RESOURCE_CREATION_ERROR,
+                      "Failed to update project status"));
+    }
+
+    return project;
   }
 }
