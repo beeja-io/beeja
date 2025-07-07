@@ -2,7 +2,7 @@ server:
   servlet:
     context-path: /finance
     multipart:
-      max-file-size: 50MB
+      max-file-size: 15MB
       max-request-size: 50MB
   port: ${FINANCE_SERVICE_PORT}
 spring:
