@@ -199,4 +199,9 @@ public class EmployeeController {
   public ResponseEntity<List<EmployeeIdNameDTO>> getAllEmployeeNameId() throws Exception {
     return new ResponseEntity<>(employeeService.getAllEmployeeNameId(), HttpStatus.OK);
   }
+  @PostMapping("/details-by-ids")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public List<EmployeeNameDTO> getEmployeeDetailsById(@RequestBody List<String> ids) {
+    return employeeService.getEmployeeNamesById(ids);
+  }
 }

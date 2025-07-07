@@ -3,6 +3,8 @@ package com.beeja.api.projectmanagement.service;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.request.ContractRequest;
+import com.beeja.api.projectmanagement.responses.ContractResponsesDTO;
+
 import java.util.List;
 
 /** Service interface for managing {@link Contract} entities. */
@@ -41,6 +43,9 @@ public interface ContractService {
    */
   Contract updateContract(String contractId, ContractRequest request);
 
-  List<Contract> getAllContracts(int pageNumber, int pageSize, String projectId, ProjectStatus status);
+  List<Contract> getAllContractsInOrganization(int pageNumber, int pageSize, String projectId, ProjectStatus status);
   Long getTotalContractSize(String projectId, ProjectStatus status);
+
+  List<ContractResponsesDTO>getAllContracts(int pageNumber, int pageSize, String projectid, ProjectStatus status);
+  Contract changeContractStatus(String contractId, ProjectStatus status);
 }

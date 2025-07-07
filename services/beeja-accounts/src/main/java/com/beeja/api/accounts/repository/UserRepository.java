@@ -49,4 +49,5 @@ public interface UserRepository extends MongoRepository<User, String> {
   )
   List<EmployeeIdNameDTO> findAllEmployeeNamesAndIdByOrganizations_Id(String organizationId);
 
+  List<User> findAllByEmployeeIdInAndOrganizations_Id(List<String> ids, String organizationId);
 }

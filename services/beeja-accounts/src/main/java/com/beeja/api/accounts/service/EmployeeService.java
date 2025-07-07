@@ -43,4 +43,6 @@ public interface EmployeeService {
   List<String> checkEmployees(List<String> employeeIds);
 
   List<EmployeeIdNameDTO> getAllEmployeeNameId();
+
+  List<EmployeeNameDTO> getEmployeeNamesById(List<String> ids);
 }

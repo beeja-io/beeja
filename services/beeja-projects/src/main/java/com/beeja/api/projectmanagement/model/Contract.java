@@ -1,5 +1,6 @@
 package com.beeja.api.projectmanagement.model;
 
+import com.beeja.api.projectmanagement.enums.ContractBillingCurrency;
 import com.beeja.api.projectmanagement.enums.ContractBillingType;
 import com.beeja.api.projectmanagement.enums.ContractType;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
@@ -35,6 +36,7 @@ public class Contract {
   private ProjectStatus status;
   private ContractBillingType billingType;
   private ContractType contractType;
+  private ContractBillingCurrency billingCurrency;
   private String signedBy;
   private Boolean isActive = true;
 

@@ -4,8 +4,10 @@ import com.beeja.api.projectmanagement.annotations.HasPermission;
 import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Contract;
+import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ContractRequest;
 import com.beeja.api.projectmanagement.responses.ContractResponseDTO;
+import com.beeja.api.projectmanagement.responses.ContractResponsesDTO;
 import com.beeja.api.projectmanagement.service.ContractService;
 
 import java.util.HashMap;
@@ -76,27 +78,32 @@ public class ContractsController {
       @PathVariable String contractId, @RequestBody ContractRequest request) {
     return ResponseEntity.ok(contractService.updateContract(contractId, request));
   }
+
   @GetMapping
   @HasPermission(PermissionConstants.GET_CONTRACT)
-  public ResponseEntity<ContractResponseDTO> getAllContracts(
-          @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
-          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
-          @RequestParam(required = false) String projectId,
-          @RequestParam(required = false) ProjectStatus status
-  ) {
+  public ResponseEntity<ContractResponseDTO> getAllContracts( @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
+                                                                     @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+                                                                     @RequestParam(required = false) String projectId,
+                                                                     @RequestParam(required = false) ProjectStatus status) {
     HashMap<String, Object> metadata = new HashMap<>();
     metadata.put(
             "totalSize",
             contractService.getTotalContractSize(projectId, status)
     );
 
-    List<Contract> contracts = contractService.getAllContracts(pageNumber, pageSize, projectId, status);
-
+    List<ContractResponsesDTO> contracts = contractService.getAllContracts(pageNumber, pageSize, projectId, status);
     ContractResponseDTO response = new ContractResponseDTO();
     response.setMetadata(metadata);
     response.setContracts(contracts);
-
     return ResponseEntity.ok(response);
+  }
+  @PatchMapping("/{contractId}/status")
+  public ResponseEntity<Contract> changeContractStatus(
+          @PathVariable String contractId,
+          @RequestBody ProjectStatus status) {
+
+    Contract updatedContract = contractService.changeContractStatus(contractId, status);
+    return ResponseEntity.ok(updatedContract);
   }
 
 }

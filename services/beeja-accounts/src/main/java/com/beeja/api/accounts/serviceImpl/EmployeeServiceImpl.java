@@ -580,5 +580,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     return userRepository.findAllEmployeeNamesAndIdByOrganizations_Id(
             UserContext.getLoggedInUserOrganization().getId());
   }
+  @Override
+  public List<EmployeeNameDTO> getEmployeeNamesById(List<String> ids) {
+    String orgId = UserContext.getLoggedInUserOrganization().getId();
+
+    List<User> employees = userRepository
+            .findAllByEmployeeIdInAndOrganizations_Id(ids, orgId);
+
+    if (employees == null || employees.isEmpty()) {
+      log.error(Constants.EMPLOYEE_ID_NOT_NULL, ids, orgId);
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                      ErrorCode.ORGANIZATION_NOT_FOUND,
+                      Constants.ERROR_NO_ORGANIZATION_FOUND_WITH_PROVIDED_ID
+              )
+      );
+    }
+    return employees.stream()
+            .map(emp -> new EmployeeNameDTO(
+                    emp.getEmployeeId(),
+                    emp.getFirstName() + " " + emp.getLastName(),
+                    emp.isActive()))
+            .collect(Collectors.toList());
+  }
 
 }

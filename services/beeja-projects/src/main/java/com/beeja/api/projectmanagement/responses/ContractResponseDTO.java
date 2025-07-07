@@ -15,6 +15,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class ContractResponseDTO {
     private Map<String, Object> metadata;
-    private List<Contract> contracts;
+    private List<ContractResponsesDTO> contracts;
 
 }

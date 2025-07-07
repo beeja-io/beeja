@@ -57,6 +57,7 @@ public class Constants {
       "Error while fetching projects with provided clientId";
   public static final String ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION =
       "Error while fetching projects with provided organizationId";
+  public static final String FETCH_ERROR_FOR_PROJECT_MANAGERS = "Failed to fetch Project Manager names for IDs";
 
   // ========== Contract Errors ==========
   public static final String CONTRACT_NOT_FOUND = "Contract not found with given contractId";

@@ -116,13 +116,18 @@ public class ProjectsControllerTest {
     project2.setClientId("client2");
     projects.add(project2);
 
-    when(projectService.getAllProjectsInOrganization()).thenReturn(projects);
+    int pageNumber = 0;
+    int pageSize = 10;
+    String projectId = null;
+    ProjectStatus status = null;
 
-    ResponseEntity<List<Project>> responseEntity = projectsController.getAllProjects();
+    when(projectService.getAllProjectsInOrganization(pageNumber, pageSize, projectId, status)).thenReturn(projects);
+
+    ResponseEntity<List<Project>> responseEntity = projectsController.getAllProjects(pageNumber, pageSize, projectId, status);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertEquals(projects, responseEntity.getBody());
-    verify(projectService, times(1)).getAllProjectsInOrganization();
+    verify(projectService, times(1)).getAllProjectsInOrganization(pageNumber, pageSize, projectId, status);
   }
 
   @Test

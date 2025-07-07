@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.Project;
@@ -187,7 +188,12 @@ class ProjectServiceImplTest {
 
     when(projectRepository.findByOrganizationId(anyString())).thenReturn(projects);
 
-    List<Project> result = projectService.getAllProjectsInOrganization();
+    int pageNumber = 0;
+    int pageSize = 10;
+    String projectId = null;
+    ProjectStatus status = null;
+
+    List<Project> result = projectService.getAllProjectsInOrganization(pageNumber, pageSize, projectId, status);
 
     assertNotNull(result);
     assertEquals(2, result.size());
@@ -197,7 +203,12 @@ class ProjectServiceImplTest {
   void testGetAllProjectsInOrganization_noProjects_returnsEmptyList() {
     when(projectRepository.findByOrganizationId(anyString())).thenReturn(List.of());
 
-    List<Project> result = projectService.getAllProjectsInOrganization();
+    int pageNumber = 0;
+    int pageSize = 10;
+    String projectId = null;
+    ProjectStatus status = null;
+
+    List<Project> result = projectService.getAllProjectsInOrganization( pageNumber, pageSize, projectId, status);
 
     assertNotNull(result);
     assertTrue(result.isEmpty(), "Expected empty list when no projects found");

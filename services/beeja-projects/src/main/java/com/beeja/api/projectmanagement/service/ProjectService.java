@@ -3,6 +3,8 @@ package com.beeja.api.projectmanagement.service;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
+import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
+
 import java.util.List;
 
 /** Service interface for managing {@link Project} entities. */
@@ -38,7 +40,10 @@ public interface ProjectService {
    *
    * @return a list of all {@link Project} objects within the organization
    */
-  List<Project> getAllProjectsInOrganization();
+  List<Project> getAllProjectsInOrganization(int pageNumber, int pageSize,String projectId, ProjectStatus status);
+
+  Long getTotalProjectsInOrganization(String projectId, ProjectStatus status);
+
 
   /**
    * Updates an existing project based on the provided project ID and project request.
@@ -50,4 +55,7 @@ public interface ProjectService {
   Project updateProjectByProjectId(ProjectRequest project, String projectId);
 
   Project changeProjectStatus(String projectId, ProjectStatus status);
+
+  List<ProjectResponseDTO> getAllProjects(int pageNumber, int pageSize, String projectId, ProjectStatus status);
+
 }

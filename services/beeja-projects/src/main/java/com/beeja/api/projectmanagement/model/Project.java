@@ -1,5 +1,6 @@
 package com.beeja.api.projectmanagement.model;
 
+import com.beeja.api.projectmanagement.enums.ContractBillingCurrency;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import java.util.Date;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class Project {
   private Date endDate;
   private String clientId;
   private String organizationId;
-
+  private ContractBillingCurrency billingCurrency;
   @CreatedDate private Date createdAt;
 
   @LastModifiedDate private Date updatedAt;

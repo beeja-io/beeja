@@ -1,5 +1,6 @@
 package com.beeja.api.projectmanagement.request;
 
+import com.beeja.api.projectmanagement.enums.ContractBillingCurrency;
 import com.beeja.api.projectmanagement.enums.ContractBillingType;
 import com.beeja.api.projectmanagement.enums.ContractType;
 import lombok.AllArgsConstructor;
@@ -21,6 +22,7 @@ public class ContractRequest {
   private Date startDate;
   private Date endDate;
   private String signedBy;
+  private ContractBillingCurrency billingCurrency;
   private ContractType contractType;
   private ContractBillingType billingType;
   List<String> projectManagers;

@@ -6,17 +6,23 @@ import com.beeja.api.projectmanagement.enums.ErrorType;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
+import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Project;
+import com.beeja.api.projectmanagement.model.dto.EmployeeNameDTO;
+import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.repository.ContractRepository;
 import com.beeja.api.projectmanagement.repository.ProjectRepository;
 import com.beeja.api.projectmanagement.request.ContractRequest;
+import com.beeja.api.projectmanagement.responses.ContractResponsesDTO;
 import com.beeja.api.projectmanagement.service.ContractService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -38,12 +44,16 @@ public class ContractServiceImpl implements ContractService {
   @Autowired private ContractRepository contractRepository;
 
   @Autowired private ProjectRepository projectRepository;
+    @Autowired  private ClientRepository clientRepository;
 
     @Autowired
     AccountClient accountClient;
 
     @Autowired
     MongoTemplate mongoTemplate;
+
+
+    @Autowired ProjectServiceImpl projectServiceImpl;
 
   /**
    * Creates a new {@link Contract} for a given {@link Project} and {@link ContractRequest}.
@@ -78,13 +88,13 @@ public class ContractServiceImpl implements ContractService {
     contract.setEndDate(request.getEndDate());
     contract.setSignedBy(request.getSignedBy());
     contract.setOrganizationId(project.getOrganizationId());
+    contract.setBillingCurrency(request.getBillingCurrency());
     contract.setBillingType(request.getBillingType());
     contract.setContractType(request.getContractType());
     contract.setStatus(ProjectStatus.ACTIVE);
-
       if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
           try{
-              List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(request.getProjectManagers());
+              List<String> validProjectManagers = projectServiceImpl.validateAndFetchEmployees(request.getProjectManagers());
               contract.setProjectManagers(validProjectManagers);
           } catch (FeignClientException e){
               log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
@@ -93,7 +103,7 @@ public class ContractServiceImpl implements ContractService {
       }
       if(request.getProjectResources() !=null && !request.getProjectResources().isEmpty()){
           try {
-              List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(request.getProjectResources());
+              List<String> validProjectResources =  projectServiceImpl.validateAndFetchEmployees(request.getProjectResources());
               contract.setProjectResources(validProjectResources);
           } catch (FeignClientException e){
               log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
@@ -170,7 +180,7 @@ public class ContractServiceImpl implements ContractService {
 
       if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
           try{
-              List<String> validProjectManagers = accountClient.checkEmployeesPresentOrNot(request.getProjectManagers());
+              List<String> validProjectManagers = projectServiceImpl.validateAndFetchEmployees(request.getProjectManagers());
               contract.setProjectManagers(validProjectManagers);
           } catch (FeignClientException e){
               log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
@@ -179,7 +189,7 @@ public class ContractServiceImpl implements ContractService {
       }
       if(request.getProjectResources() !=null && !request.getProjectResources().isEmpty()){
           try {
-              List<String> validProjectResources =  accountClient.checkEmployeesPresentOrNot(request.getProjectResources());
+              List<String> validProjectResources =  projectServiceImpl.validateAndFetchEmployees(request.getProjectResources());
               contract.setProjectResources(validProjectResources);
           } catch (FeignClientException e){
               log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
@@ -199,7 +209,7 @@ public class ContractServiceImpl implements ContractService {
     }
   }
     @Override
-    public List<Contract> getAllContracts(int pageNumber, int pageSize, String projectId, ProjectStatus status) {
+    public List<Contract> getAllContractsInOrganization(int pageNumber, int pageSize, String projectId, ProjectStatus status) {
         try {
             Query query = buildContractQuery(projectId, status);
 
@@ -237,6 +247,107 @@ public class ContractServiceImpl implements ContractService {
                 .is(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString()));
 
         return query;
+    }
+    @Override
+    public Contract changeContractStatus(String contractId, ProjectStatus status) {
+        String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+
+
+        Contract contract = contractRepository.findByContractIdAndOrganizationId(contractId, organizationId);
+
+        if (contract == null) {
+            throw new ResourceNotFoundException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.DB_ERROR,
+                            ErrorCode.RESOURCE_NOT_FOUND,
+                            "Contract not found for the given project")
+            );
+        }
+
+        contract.setStatus(status);
+
+        try {
+            contract = contractRepository.save(contract);
+        } catch (Exception e) {
+            log.error("Error updating contract status: {}", e.getMessage(), e);
+            throw new ResourceNotFoundException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.DB_ERROR,
+                            ErrorCode.RESOURCE_CREATION_ERROR,
+                            Constants.SOMETHING_WENT_WRONG)
+            );
+        }
+
+        return contract;
+    }
+    @Override
+    public List<ContractResponsesDTO> getAllContracts(int pageNumber, int pageSize, String projectid, ProjectStatus status) {
+        String orgId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+
+        List<Contract> contracts;
+        try {
+            contracts = getAllContractsInOrganization(pageNumber, pageSize, projectid, status);
+            if (contracts.isEmpty()) {
+                throw new ResourceNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.NOT_FOUND,
+                                ErrorCode.RESOURCE_NOT_FOUND,
+                                Constants.CONTRACT_NOT_FOUND + orgId
+                        )
+                );
+            }
+        } catch (Exception e) {
+            throw new ResourceNotFoundException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.DB_ERROR,
+                            ErrorCode.DATA_FETCH_ERROR,
+                            Constants.CONTRACT_NOT_FOUND + orgId
+                    )
+            );
+        }
+        return contracts.stream().map(contract -> {
+            String projectId = contract.getProjectId();
+
+            Project project = projectRepository.findByProjectId(projectId)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            BuildErrorMessage.buildErrorMessage(
+                                    ErrorType.NOT_FOUND,
+                                    ErrorCode.RESOURCE_NOT_FOUND,
+                                    Constants.PROJECT_NOT_FOUND+ projectId
+                            )
+                    ));
+
+            List<String> pmIds = contract.getProjectManagers();
+            List<String> pmNames;
+            try {
+                pmNames = (pmIds != null && !pmIds.isEmpty())
+                        ? accountClient.getEmployeeNamesById(pmIds).stream()
+                        .map(EmployeeNameDTO::getFullName)
+                        .toList()
+                        : Collections.emptyList();
+            } catch (Exception e) {
+                throw new ResourceNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.FEIGN_CLIENT_ERROR,
+                                ErrorCode.RESOURCE_NOT_FOUND,
+                                Constants.FETCH_ERROR_FOR_PROJECT_MANAGERS + pmIds
+                        )
+                );
+            }
+            Client client = clientRepository.findByClientIdAndOrganizationId(contract.getClientId(), orgId);
+            String clientName = (client != null) ? client.getClientName() : Constants.CLIENT_NOT_FOUND;
+
+            return ContractResponsesDTO.builder()
+                    .contractId(contract.getContractId())
+                    .projectId(contract.getProjectId())
+                    .contractTitle(contract.getContractTitle())
+                    .projectName(project.getName())
+                    .clientName(clientName)
+                    .projectManagerIds(pmIds)
+                    .projectManagerNames(pmNames)
+                    .status(contract.getStatus() != null ? contract.getStatus().name() : null)
+                    .build();
+        }).collect(Collectors.toList());
     }
 
 }

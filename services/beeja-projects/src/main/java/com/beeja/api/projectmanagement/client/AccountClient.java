@@ -1,5 +1,6 @@
 package com.beeja.api.projectmanagement.client;
 
+import com.beeja.api.projectmanagement.model.dto.EmployeeNameDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,5 +35,8 @@ public interface AccountClient {
 
   @PostMapping("/v1/users/validate-employees")
   List<String> checkEmployeesPresentOrNot(@RequestBody List<String> employeeIds);
+
+  @PostMapping("/v1/users/details-by-ids")
+  List<EmployeeNameDTO> getEmployeeNamesById(@RequestBody List<String> ids);
 
 }
