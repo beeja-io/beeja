@@ -85,7 +85,12 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
     } catch (error) {
       if (
         axios.isAxiosError(error) &&
-        error.response?.data.startsWith('Product ID already exists')
+        error.response?.data.message === '[value must be greater than 0]'
+      ) {
+        setErrorMessage('Price value must be greater than 0');
+      } else if (
+        axios.isAxiosError(error) &&
+        error.response?.data.message.startsWith('Product ID already exists')
       ) {
         setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
       } else {
