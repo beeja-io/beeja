@@ -759,7 +759,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
   return (
     <StyledForm style={{ cursor: props.isResponseLoading ? 'progress' : '' }}>
       <div>
-        <h3>{t('ADD_NEW_PROFILE')}</h3>
+        <h3 className="add-new-employee-heading">{t('ADD_NEW_PROFILE')}</h3>
         <InputLabelContainer>
           <label>
             {t('FIRST_NAME')}{' '}
