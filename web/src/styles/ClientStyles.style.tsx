@@ -75,6 +75,14 @@ export const FormInputsContainer = styled.div`
   margin-left: 80px;
 `;
 
+export const FormResourceContainer = styled.div`
+  display: flex;
+  margin-left: 190px;
+  gap: 10px;
+  height: 86px;
+  width: 1160px;
+`;
+
 export const InputLabelContainer = styled.div<{ Width?: string }>`
   margin: 20px 0;
   display: flex;
@@ -169,8 +177,7 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
 export const InputLabelLogoContainer = styled.div<{ Width?: string }>`
   margin: 20px 0;
   display: flex;
-  flex-direction: row;
-
+  width: 1240px;
   label {
     font-size: 14px;
   }
@@ -392,13 +399,24 @@ export const SubHeadingDiv = styled.div`
 `;
 
 export const HeadingContainer = styled.div`
-  width: 850px;
-  margin-left: 80px;
-  font-family: 'Nunito';
-  margin-bottom: 5px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  margin-left: 60px;
+`;
+
+export const SectionHeader = styled.div`
+  position: relative;
+  padding: 12px 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+`;
+export const EditIconWrapper = styled.div`
+  position: absolute;
+  top: 12px;
+  left: 1130px;
+  cursor: pointer;
 `;
 
 export const InfoRow = styled.div`
@@ -424,10 +442,20 @@ export const AddressBlock = styled.div`
   padding: 10px 0 10px 10px;
   display: flex;
 `;
+// export const BasicOrganizationDetailsContainer = styled.div`
+//   margin-bottom: 5px;
+//   margin-top: 5px;
+//   width: 850px;
+//   margin-left: 80px;
+//   background-color: rgba(248, 249, 251, 1);
+// `;
+
 export const BasicOrganizationDetailsContainer = styled.div`
   margin-bottom: 5px;
   margin-top: 5px;
-  width: 850px;
+  width: 2200px;
+  display: flex;
+  justify-content: space-between;
   margin-left: 80px;
   background-color: rgba(248, 249, 251, 1);
 `;

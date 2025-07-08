@@ -1,4 +1,6 @@
-import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import AddProjectForm from '../components/directComponents/AddProjectForm.component';
 import { Button } from '../styles/CommonStyles.style';
 import {
   ExpenseHeadingSection,
@@ -6,61 +8,47 @@ import {
 } from '../styles/ExpenseManagementStyles.style';
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
-import { useEffect, useState, useCallback } from 'react';
-import AddClientForm from '../components/directComponents/AddClientForm.component';
-
-import { getAllClient, getClient } from '../service/axiosInstance';
-import ToastMessage from '../components/reusableComponents/ToastMessage.component';
-import { useTranslation } from 'react-i18next';
-import { ClientDetails } from '../entities/ClientEntity';
 import { Outlet } from 'react-router-dom';
-import { useLocation, matchPath } from 'react-router-dom';
-
-interface Client {
-  clientId: string;
-  clientName: string;
-  clientType: string;
-  organizationId: string;
-  id: string;
-}
+import { useTranslation } from 'react-i18next';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
+import { ProjectEntity } from '../entities/ProjectEntity';
+import { getAllProjects } from '../service/axiosInstance';
 
 const ProjectManagement = () => {
   const navigate = useNavigate();
   const goToPreviousPage = () => {
     navigate(-1);
   };
+
+  const location = useLocation();
+
+  const isProjectDetailsRoute = matchPath(
+    '/clients/client-management/:id',
+    location.pathname
+  );
+
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedClientData, setSelectedClientData] =
-    useState<ClientDetails | null>(null);
+  const [selectedProjectData, setSelectedProjectData] =
+    useState<ProjectEntity | null>(null);
 
   const handleOpenCreateModal = useCallback(() => {
     setIsEditMode(false);
-    setSelectedClientData(null);
     setIsCreateModalOpen(true);
+    setSelectedProjectData(null);
   }, []);
 
   const handleCloseModal = useCallback(() => {
-    setIsCreateModalOpen(false);
     setIsEditMode(false);
-    setSelectedClientData(null);
+    setIsCreateModalOpen(false);
+    setSelectedProjectData(null);
   }, []);
-
-  const onEditClient = async (client: Client) => {
-    try {
-      const res = await getClient(client.clientId);
-      setSelectedClientData(res.data);
-      setIsEditMode(true);
-      setIsCreateModalOpen(true);
-    } catch (error) {
-      throw new Error('Error fetching edit getClient:' + error);
-    }
-  };
 
   const handleSuccessMessage = () => {
     handleShowSuccessMessage();
     setIsCreateModalOpen(false);
   };
+
   const [loading, setLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const handleShowSuccessMessage = () => {
@@ -69,33 +57,30 @@ const ProjectManagement = () => {
       setShowSuccessMessage(false);
     }, 2000);
   };
-  const [allClients, setAllClients] = useState([]);
+
+  const [allProjects, setAllProjects] = useState<ProjectEntity[]>([]);
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getAllClient();
-      setAllClients(res.data);
+      const res = await getAllProjects();
+      setAllProjects(res.data.projects);
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      throw new Error('Error fetching client data:' + error);
+      throw new Error('Error fetching project data: ' + error);
     }
   }, []);
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-  const updateClientList = async (): Promise<void> => {
+
+  const updateProjectList = async (): Promise<void> => {
     await fetchData();
   };
 
-  const location = useLocation();
-
-  const isClientDetailsRoute = matchPath(
-    '/clients/client-management/:id',
-    location.pathname
-  );
-
   const { t } = useTranslation();
+
   return (
     <>
       <ExpenseManagementMainContainer>
@@ -104,17 +89,17 @@ const ProjectManagement = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            Project Management
+            {t('Project Management')}
             {isCreateModalOpen && (
               <>
                 <span className="separator"> {`>`} </span>
-                <span className="nav_AddClient">{t('Add Client')}</span>
+                <span className="nav_AddClient">{t('Add Project')}</span>
               </>
             )}
-            {!isCreateModalOpen && isClientDetailsRoute && (
+            {!isCreateModalOpen && isProjectDetailsRoute && (
               <>
                 <span className="separator"> {`>`} </span>
-                <span className="nav_AddClient">{t('Client Details')}</span>
+                <span className="nav_AddClient">{t('Project Details')}</span>
               </>
             )}
           </span>
@@ -129,21 +114,19 @@ const ProjectManagement = () => {
             </Button>
           )}
         </ExpenseHeadingSection>
+
         {isCreateModalOpen ? (
-          <AddClientForm
+          <AddProjectForm
             handleClose={handleCloseModal}
             handleSuccessMessage={handleSuccessMessage}
-            isEditMode={isEditMode}
-            initialData={selectedClientData ?? undefined}
-            updateClientList={updateClientList}
+            initialData={selectedProjectData ?? undefined}
           />
         ) : (
           <Outlet
             context={{
-              clientList: allClients,
-              updateClientList,
+              projectList: allProjects,
               isLoading: loading,
-              onEditClient,
+              updateProjectList,
             }}
           />
         )}
@@ -152,7 +135,7 @@ const ProjectManagement = () => {
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody="THE_CLIENT_HAS_BEEN_ADDED"
+          messageBody="THE_PROJECT_HAS_BEEN_ADDED"
           messageHeading="SUCCESSFULLY_ADDED"
           handleClose={handleShowSuccessMessage}
         />
@@ -160,4 +143,5 @@ const ProjectManagement = () => {
     </>
   );
 };
+
 export default ProjectManagement;

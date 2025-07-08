@@ -3,6 +3,11 @@ import { OriginURL, ProdOriginURL } from '../constants/UrlConstants';
 import { IFeatureToggle } from '../entities/FeatureToggle';
 import { IAssignedInterviewer } from '../entities/ApplicantEntity';
 import { OrganizationValues } from '../entities/OrgValueEntity';
+import {
+  ProjectEntity,
+  ProjectStatus,
+  Employee,
+} from '../entities/ProjectEntity';
 /* eslint-disable */
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -291,6 +296,73 @@ export const putClient = (
   data: FormData
 ): Promise<AxiosResponse> => {
   return axiosInstance.put(`/projects/v1/clients/${id}`, data);
+};
+
+export const postProjects = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/projects`, data);
+};
+
+export const postContracts = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/contracts`, data);
+};
+
+export const getProjectDetails = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/projects/client/${id}`);
+};
+
+export const getContractDetails = (
+  contractId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/contracts/${contractId}`);
+};
+
+export const getResourceManager = (): Promise<AxiosResponse<Employee[]>> => {
+  return axiosInstance.get('/accounts/v1/users/names');
+};
+
+export const getAllProjects = (): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get('/projects/v1/projects/all-projects');
+};
+
+export const getProject = (
+  projectId: string,
+  clientId: string
+): Promise<AxiosResponse<ProjectEntity>> => {
+  return axiosInstance.get(`/projects/v1/projects/${projectId}/${clientId}`);
+};
+
+export const getAllContracts = (): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get(`/projects/v1/contracts`);
+};
+
+export const updateProjectStatus = (
+  projectId: string,
+  newStatus: ProjectStatus
+): Promise<AxiosResponse<ProjectEntity>> => {
+  return axiosInstance.patch(
+    `/projects/v1/projects/${projectId}/status`,
+    JSON.stringify(newStatus),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+};
+
+export const updateContractStatus = (
+  contractId: string,
+  newStatus: ProjectStatus
+): Promise<AxiosResponse<ProjectEntity>> => {
+  return axiosInstance.patch(
+    `/projects/v1/contracts/${contractId}/status`,
+    JSON.stringify(newStatus),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 };
 
 export const getAllRolesInOrganization = (): Promise<AxiosResponse> => {

@@ -36,12 +36,15 @@ import {
   FileName,
   RemoveButton,
   LogoNameWrapper,
+  EditIconWrapper,
+  SectionHeader,
 } from '../../styles/ClientStyles.style';
 import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
 import { postClient, putClient } from '../../service/axiosInstance';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import {
+  clientOptions,
   ClientType,
   Industry,
   TaxCategory,
@@ -50,7 +53,6 @@ import {
   UploadSVG,
   EditSVG,
   DotSVG,
-  IndustrySVG,
   EmailSVG,
   CallSVG,
   CheckIcon,
@@ -413,10 +415,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                       style={{ width: '400px' }}
                     >
                       <option value="">{t('Select type')}</option>
-                      <option value="INTERNAL">{t('INTERNAL')}</option>
-                      <option value="INDIVIDUAL">{t('INDIVIDUAL')}</option>
-                      <option value="COMPANY">{t('COMPANY')}</option>
-                      <option value="ORGANIZATION">{t('ORGANIZATION')}</option>
+                      {clientOptions.clientType.map((type) => (
+                        <option key={type} value={type}>
+                          {t(type)}
+                        </option>
+                      ))}
                     </select>
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -737,57 +740,56 @@ const AddClientForm = (props: AddClientFormProps) => {
             onSubmit={handleSubmitData}
           >
             <HeadingContainer>
-              {t('Basic Organisation Details')}
-              <EditSVG onClick={() => setStep(1)} />
+              <SectionHeader>
+                {t('Basic Organisation Details')}
+                <EditIconWrapper>
+                  <EditSVG onClick={() => setStep(2)} />
+                </EditIconWrapper>
+              </SectionHeader>
             </HeadingContainer>
             <InputLabelLogoContainer>
               <BasicOrganizationDetailsContainer>
-                <InfoRow>
-                  <SubHeadingDiv>Client Name</SubHeadingDiv>
-                  <InfoText>{formData.clientName}</InfoText>
-                </InfoRow>
-                <InfoRow>
-                  <SubHeadingDiv>{t('Client Type')}</SubHeadingDiv>
-                  <InfoText>{formData.clientType}</InfoText>
-                </InfoRow>
-                <InfoRow>
-                  <SubHeadingDiv>{t('Description')}</SubHeadingDiv>
-                  <InfoText>{formData.description}</InfoText>
-                </InfoRow>
-                <InfoRow>
-                  <SubHeadingDiv style={{ width: '100px' }}>
-                    {t('Internal Type')}
-                  </SubHeadingDiv>
-                  <DotSVG />
-                  <IndustrySVG />
-                  <SubHeadingDiv style={{ width: '150px' }}>
-                    {formData.industry}
-                  </SubHeadingDiv>
-                  <DotSVG />
-                  <EmailSVG />
-
-                  <SubHeadingDiv style={{ width: '200px' }}>
-                    {formData.email}
-                  </SubHeadingDiv>
-                  <DotSVG />
-                  <CallSVG />
-                  <SubHeadingDiv style={{ width: '200px' }}>
-                    {t('91+ ')}
-                    {formData.contact}
-                  </SubHeadingDiv>
-                </InfoRow>
+                <div>
+                  <InfoRow>
+                    <SubHeadingDiv>Client Name</SubHeadingDiv>
+                    <InfoText>{formData.clientName}</InfoText>
+                  </InfoRow>
+                  <InfoRow>
+                    <SubHeadingDiv>Client Type</SubHeadingDiv>
+                    <InfoText>{formData.clientType}</InfoText>
+                  </InfoRow>
+                  <InfoRow>
+                    <SubHeadingDiv>Description</SubHeadingDiv>
+                    <InfoText>{formData.description}</InfoText>
+                  </InfoRow>
+                  <InfoRow>
+                    <SubHeadingDiv>Internal Type</SubHeadingDiv>
+                    <InfoText>{formData.industry}</InfoText>
+                    <DotSVG />
+                    <EmailSVG />
+                    <InfoText>{formData.email}</InfoText>
+                    <DotSVG />
+                    <CallSVG />
+                    <InfoText>{formData.contact}</InfoText>
+                  </InfoRow>
+                </div>
+                {logoPreviewUrl && (
+                  <LogoNameWrapper>
+                    <LogoPreview>
+                      <img src={logoPreviewUrl} alt="Client Logo" />
+                    </LogoPreview>
+                  </LogoNameWrapper>
+                )}
               </BasicOrganizationDetailsContainer>
-              {logoPreviewUrl && (
-                <LogoNameWrapper>
-                  <LogoPreview>
-                    <img src={logoPreviewUrl} alt="Logo Preview" />
-                  </LogoPreview>
-                </LogoNameWrapper>
-              )}
             </InputLabelLogoContainer>
+
             <HeadingContainer>
-              {t('Details')}
-              <EditSVG onClick={() => setStep(2)} />
+              <SectionHeader>
+                {t('Details')}
+                <EditIconWrapper>
+                  <EditSVG onClick={() => setStep(2)} />
+                </EditIconWrapper>
+              </SectionHeader>
             </HeadingContainer>
             <FormInputsContainer
               style={{ backgroundColor: 'rgba(248, 249, 251, 1)' }}
@@ -806,8 +808,12 @@ const AddClientForm = (props: AddClientFormProps) => {
               </InfoBlock>
             </FormInputsContainer>
             <HeadingContainer>
-              {t('Address')}
-              <EditSVG onClick={() => setStep(3)} />
+              <SectionHeader>
+                {t('Address')}
+                <EditIconWrapper>
+                  <EditSVG onClick={() => setStep(2)} />
+                </EditIconWrapper>
+              </SectionHeader>
             </HeadingContainer>
             <FormInputsContainer
               style={{ backgroundColor: 'rgba(248, 249, 251, 1)' }}

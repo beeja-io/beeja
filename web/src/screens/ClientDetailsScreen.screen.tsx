@@ -28,6 +28,7 @@ import { downloadClientLogo, getClient } from '../service/axiosInstance';
 import { useParams } from 'react-router-dom';
 import AddProjectForm from '../components/directComponents/AddProjectForm.component';
 import CenterModalMain from '../components/reusableComponents/CenterModalMain.component';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 
 interface Props {
   client: ClientResponse | null;
@@ -38,6 +39,7 @@ const ClientDetailsScreen: React.FC = () => {
   const { id } = useParams();
   const [client, setClient] = useState<ClientResponse | null>(null);
   const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleAddProjectModalToggle = () => {
     setIsAddProjectModalOpen((prev) => !prev);
@@ -46,6 +48,7 @@ const ClientDetailsScreen: React.FC = () => {
   useEffect(() => {
     const fetchLogoImage = async () => {
       if (client?.logoId) {
+        setLoading(true);
         try {
           const response = await downloadClientLogo(client.logoId);
 
@@ -57,6 +60,7 @@ const ClientDetailsScreen: React.FC = () => {
           reader.onloadend = () => {
             const imageUrl = reader.result as string;
             setLogoUrl(imageUrl);
+            setLoading(false);
           };
           reader.onerror = () => {
             throw new Error('Error converting blob to base64');
@@ -79,16 +83,23 @@ const ClientDetailsScreen: React.FC = () => {
   useEffect(() => {
     const fetchClient = async () => {
       if (!id) return;
+      setLoading(true);
       try {
         const res = await getClient(id);
         setClient(res.data);
       } catch (error) {
         throw new Error('Failed to fetch client:' + error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchClient();
   }, [id]);
+
+  if (loading) {
+    return <SpinAnimation />;
+  }
 
   return (
     <Container>
@@ -184,7 +195,7 @@ const ClientDetailsScreen: React.FC = () => {
           </div>
         </RightSectionDiv>
       </RightSection>
-      {isAddProjectModalOpen && client?.clientId && (
+      {/* {isAddProjectModalOpen && client?.clientId && (
         <CenterModalMain
           heading="ADD_NEW_PROJECT"
           modalClose={handleAddProjectModalToggle}
@@ -199,7 +210,7 @@ const ClientDetailsScreen: React.FC = () => {
             />
           }
         />
-      )}
+      )} */}
     </Container>
   );
 };

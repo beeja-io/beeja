@@ -72,3 +72,11 @@ export interface ClientResponse {
   createdAt: string;
   usePrimaryAsBillingAddress: boolean;
 }
+
+export interface Client {
+  clientId: string;
+  clientName: string;
+  clientType: string;
+  organizationId: string;
+  id: string;
+}

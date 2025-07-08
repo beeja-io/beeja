@@ -1,5 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { t } from 'i18next';
+import { Button } from '../../styles/CommonStyles.style';
+import Calendar from '../reusableComponents/Calendar.component';
+import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import {
   FormContainer,
   SectionTitle,
@@ -7,28 +10,36 @@ import {
   FormField,
   Label,
   Input,
-  Select,
-  TextArea,
+  SelectDropDown,
   ButtonContainer,
-  SubmitButton,
-  CancelButton,
   RequiredAsterisk,
   DateInputWrapper,
+  SelectWrapper,
+  TextInput,
 } from '../../styles/ProjectStyles.style.tsx';
-import Calendar from '../reusableComponents/Calendar.component';
-import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
-import { TextInput } from '../../styles/InputStyles.style';
+import {
+  getAllClient,
+  getResourceManager,
+  postProjects,
+} from '../../service/axiosInstance.tsx';
+import Select from 'react-select';
+import { Employee } from '../../entities/ProjectEntity.tsx';
+import { Client } from '../../entities/ClientEntity.tsx';
 
 interface AddProjectFormProps {
-  // onCancel: () => void;
-  // onSubmit: (formData: ProjectFormData) => void;
-  // handleClose: () => void;
-  // clientId: string;
+  handleClose: () => void;
+  handleSuccessMessage: () => void;
   initialData?: Partial<ProjectFormData>;
 }
 
+type OptionType = {
+  value: string;
+  label: string;
+};
+
 interface ProjectFormData {
-  projectName: string;
+  clientId: string;
+  name: string;
   clientName: string;
   projectManagers: string[];
   resources: string[];
@@ -37,14 +48,13 @@ interface ProjectFormData {
 }
 
 const AddProjectForm: React.FC<AddProjectFormProps> = ({
-  // onCancel,
-  // onSubmit,
+  handleClose,
+  handleSuccessMessage,
   initialData,
-  // handleClose,
-  // clientId,
 }) => {
   const [formData, setFormData] = useState<ProjectFormData>({
-    projectName: initialData?.projectName || '',
+    clientId: initialData?.clientId || '',
+    name: initialData?.name || '',
     clientName: initialData?.clientName || '',
     projectManagers: initialData?.projectManagers || [],
     resources: initialData?.resources || [],
@@ -54,9 +64,48 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
 
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [isStartDateCalOpen, setIsStartDateCalOpen] = useState(false);
+  const [resourceOptions, setResourceOptions] = useState<OptionType[]>([]);
+  const [managerOptions, setManagerOptions] = useState<OptionType[]>([]);
+  const [clientOptions, setClientOptions] = useState<OptionType[]>([]);
+
+  useEffect(() => {
+    getResourceManager()
+      .then((response) => {
+        const users = response.data as Employee[];
+
+        const userOptions = users.map((user) => {
+          const fullName = `${user.firstName} ${user.lastName}`;
+          return {
+            value: user.employeeId,
+            label: fullName,
+          };
+        });
+        setManagerOptions(userOptions);
+        setResourceOptions(userOptions);
+      })
+      .catch((error) => {
+        throw new Error('Error fetching resource managers:' + error);
+      });
+  }, []);
+
+  useEffect(() => {
+    getAllClient()
+      .then((response) => {
+        const clients: Client[] = response.data;
+
+        const clientOpts: OptionType[] = clients.map((client) => ({
+          value: client.clientId,
+          label: client.clientName,
+        }));
+
+        setClientOptions(clientOpts);
+      })
+      .catch((error) => {
+        throw new Error('Error fetching clients: ' + error);
+      });
+  }, []);
 
   const calendarRef = useRef<HTMLDivElement>(null);
-
   const handleCalendarToggle = (state: boolean) => {
     setIsStartDateCalOpen(state);
   };
@@ -64,6 +113,10 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   const handleDateSelect = (date: Date | null) => {
     if (date) {
       setStartDate(date);
+      setFormData((prev) => ({
+        ...prev,
+        startDate: date.toISOString().split('T')[0],
+      }));
       setIsStartDateCalOpen(false);
     }
   };
@@ -82,19 +135,22 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, selectedOptions } = e.target;
-    const values = Array.from(selectedOptions).map((option) => option.value);
-    setFormData((prev) => ({ ...prev, [name]: values }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.projectName || !formData.clientName || !formData.startDate) {
-      alert(t('Please fill in all required fields.'));
-      return;
+
+    try {
+      const response = await postProjects(formData);
+      if (response?.status === 200 || response?.status === 201) {
+        handleSuccessMessage();
+        handleClose();
+      } else {
+        throw new Error(
+          'Project submission failed with status: ' + response?.status
+        );
+      }
+    } catch (error) {
+      throw new Error('An error occurred during submission.' + error);
     }
-    // onSubmit(formData);
   };
 
   return (
@@ -103,80 +159,104 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
       <form onSubmit={handleSubmit}>
         <FormGrid>
           <FormField>
-            <Label htmlFor="projectName">
+            <Label htmlFor="name">
               {t('Project Name')}
               <RequiredAsterisk>*</RequiredAsterisk>
             </Label>
             <Input
               type="text"
-              id="projectName"
-              name="projectName"
-              value={formData.projectName}
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
               placeholder={t('Enter Project Name')}
               required
             />
           </FormField>
-
           <FormField>
             <Label htmlFor="clientName">
               {t('Client Name')}
               <RequiredAsterisk>*</RequiredAsterisk>
             </Label>
-            <Select
-              id="clientName"
+
+            <SelectDropDown
               name="clientName"
-              value={formData.clientName}
-              onChange={handleChange}
-              required
+              value={formData.clientId}
+              onChange={(e) => {
+                const selectedValue = e.target.value;
+                const selectedOption = clientOptions.find(
+                  (opt) => opt.value === selectedValue
+                );
+                if (selectedOption) {
+                  setFormData((prev) => ({
+                    ...prev,
+                    clientId: selectedOption.value,
+                    clientName: selectedOption.label,
+                  }));
+                }
+              }}
             >
-              <option value="">{t('Select Client')}</option>
-
-              <option value="client1">Client A</option>
-              <option value="client2">Client B</option>
-            </Select>
+              <option value="">Select Client</option>
+              {clientOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </SelectDropDown>
           </FormField>
 
-          <FormField>
-            <Label htmlFor="projectManagers">{t('Project Managers')}</Label>
-            <Select
-              id="projectManagers"
-              name="projectManagers"
-              multiple
-              value={formData.projectManagers}
-              onChange={handleSelectChange}
-            >
-              <option value="">{t('Select Managers')}</option>
-              <option value="pm1">Manager 1</option>
-              <option value="pm2">Manager 2</option>
-              <option value="pm3">Manager 3</option>
-            </Select>
-          </FormField>
-
-          <FormField>
-            <Label htmlFor="resources">{t('Resources')}</Label>
-            <Select
-              id="resources"
-              name="resources"
-              multiple
-              value={formData.resources}
-              onChange={handleSelectChange}
-            >
-              <option value="">{t('Select Resources')}</option>
-              <option value="res1">Resource 1</option>
-              <option value="res2">Resource 2</option>
-            </Select>
-          </FormField>
-
+          <SelectWrapper>
+            <FormField>
+              <Label>
+                {t('Project Managers')}
+                <RequiredAsterisk>*</RequiredAsterisk>
+              </Label>
+              <Select
+                isMulti
+                name="projectManagers"
+                value={managerOptions.filter((option) =>
+                  formData.projectManagers.includes(option.value)
+                )}
+                options={managerOptions}
+                onChange={(selected) => {
+                  const values = selected.map((opt) => opt.value);
+                  setFormData((prev) => ({ ...prev, projectManagers: values }));
+                }}
+                classNamePrefix="react-select"
+                placeholder={t('Select Project Managers')}
+              />
+            </FormField>
+          </SelectWrapper>
+          <SelectWrapper>
+            <FormField>
+              <Label>
+                {t('Resources')}
+                <RequiredAsterisk>*</RequiredAsterisk>
+              </Label>
+              <Select
+                isMulti
+                name="resources"
+                value={resourceOptions.filter((option) =>
+                  formData.resources.includes(option.value)
+                )}
+                options={resourceOptions}
+                onChange={(selected) => {
+                  const values = selected.map((opt) => opt.value);
+                  setFormData((prev) => ({ ...prev, resources: values }));
+                }}
+                classNamePrefix="react-select"
+                placeholder={t('Select Resources')}
+              />
+            </FormField>
+          </SelectWrapper>
           <FormField style={{ gridColumn: '1 / span 1' }}>
             <Label htmlFor="description">{t('Description')}</Label>
-            <TextArea
+            <Input
               id="description"
               name="description"
               value={formData.description}
               onChange={handleChange}
               placeholder={t('Add Project Description')}
-              rows={4}
             />
           </FormField>
 
@@ -219,10 +299,12 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
         </FormGrid>
 
         <ButtonContainer>
-          <CancelButton type="button" >
+          <Button onClick={handleClose} type="button">
             {t('Cancel')}
-          </CancelButton>
-          <SubmitButton type="submit">{t('Add')}</SubmitButton>
+          </Button>
+          <Button className="submit" type="submit">
+            {t('Add')}
+          </Button>
         </ButtonContainer>
       </form>
     </FormContainer>

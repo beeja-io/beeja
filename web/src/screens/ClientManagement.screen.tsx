@@ -12,17 +12,9 @@ import AddClientForm from '../components/directComponents/AddClientForm.componen
 import { getAllClient, getClient } from '../service/axiosInstance';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { useTranslation } from 'react-i18next';
-import { ClientDetails } from '../entities/ClientEntity';
+import { Client, ClientDetails } from '../entities/ClientEntity';
 import { Outlet } from 'react-router-dom';
 import { useLocation, matchPath } from 'react-router-dom';
-
-interface Client {
-  clientId: string;
-  clientName: string;
-  clientType: string;
-  organizationId: string;
-  id: string;
-}
 
 const ClientManagement = () => {
   const navigate = useNavigate();
