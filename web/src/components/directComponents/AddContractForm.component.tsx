@@ -98,7 +98,7 @@ export type ContractFormData = {
   contractTitle: string;
   startDate: string;
   endDate: string;
-  type: string;
+  contractType: string;
   billingType?: string;
   billingCurrency?: string;
   contractValue?: string;
@@ -118,7 +118,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     contractTitle: '',
     startDate: '',
     endDate: '',
-    type: '',
+    contractType: '',
     billingType: '',
     billingCurrency: '',
     contractValue: '',
@@ -247,6 +247,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
       await postContracts(payload);
 
       handleSuccessMessage('Contract saved successfully');
+      handleClose();
     } catch (error) {
       throw new Error('Error submitting contract: ' + error);
     }
@@ -330,7 +331,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         onClick={() => setIsStartDateCalOpen(true)}
                         readOnly
                         autoComplete="off"
-                        // style={{ width: '400px' }}
                       />
                       <span
                         className="iconArea"
@@ -403,8 +403,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     </label>
 
                     <select
-                      name="type"
-                      value={formData.type}
+                      name="contractType"
+                      value={formData.contractType}
                       onChange={handleChange}
                       className="selectoption largeSelectOption"
                       required
@@ -685,22 +685,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </SaveButton>
                 </ResourceAllocationRow>
               </FormField>
-
-              {/* </SelectWrapper> */}
             </FormResourceContainer>
 
-            {/* {selectedResources.length > 0 && (
-              <ResourceListContainer>
-                {selectedResources.map((option) => (
-                  <ResourceCard key={option.value}>
-                    <ResourceName>{option.label}</ResourceName>
-                    <ResourceAvailability>
-                      Availability: {option.availability}%
-                    </ResourceAvailability>
-                  </ResourceCard>
-                ))}
-              </ResourceListContainer>
-            )} */}
             {selectedResources.length > 0 && (
               <ResourceBlock>
                 <ResourceLabel>All Resources</ResourceLabel>
@@ -711,62 +697,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 </NameBubbleListContainer>
               </ResourceBlock>
             )}
-
-            {/* {selectedResources.length > 0 && (
-              <ManageAllocationContainer>
-                <ManageHeader>Manage Resource Allocation</ManageHeader>
-
-                {selectedResources.map((resource) => (
-                  <AllocatedRow key={resource.value}>
-                    <InitialCircle>{resource.label.charAt(0)}</InitialCircle>
-
-                    <AllocatedInfo>
-                      <div className="name">{resource.label}</div>
-                      <div className="availability">
-                        Availability: {resource.availability}%
-                      </div>
-                    </AllocatedInfo>
-
-                    <AllocatedValue>{resource.availability}%</AllocatedValue>
-
-                    <RemoveButton
-                      onClick={() => {
-                        const updated = selectedResources.filter(
-                          (r) => r.value !== resource.value
-                        );
-
-                        setSelectedResources(updated);
-                        setFormData((form) => ({
-                          ...form,
-                          Resources: updated;
-                        }));
-                      }}
-                    >
-                      ×
-                    </RemoveButton>
-                  </AllocatedRow>
-                ))}
-              </ManageAllocationContainer>
-            )} */}
-
-            <InputLabelContainer
-              style={{
-                marginLeft: '190px',
-              }}
-            >
-              {/* <ManageResourceAllocation
-                    onClick={() =>
-                      alert('Open Manage Resource Allocation screen')
-                    }
-                  > */}
-              <div
-                onClick={() => alert('Open Manage Resource Allocation screen')}
-              >
-                {t('Manage Resource Allocation')}
-                {/* <ArrowDownSVG /> 
-                 </ManageResourceAllocation> */}
-              </div>
-            </InputLabelContainer>
 
             <ButtonContainer>
               <Button onClick={handlePreviousStep} className="leftAlign">
@@ -779,7 +709,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
               {/* <button type="submit">Submit</button> */}
             </ButtonContainer>
           </form>
-          // </ExpenseAddFormMainContainer>
         )}
         {/* {showErrorMessage && (
           <ToastMessage
@@ -796,49 +725,3 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 };
 
 export default AddContractForm;
-
-{
-  /* <InputLabelContainer
-              style={{
-                gridColumn: '1 / -1',
-                width: '900px',
-                marginLeft: '190px',
-              }}
-            >
-              <label>
-                {t('Resources Allocation')}
-                <ValidationText className="star">*</ValidationText>
-              </label>
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '10px',
-                  alignItems: 'center',
-                }}
-              >
-                <TextInput
-                  type="text"
-                  placeholder={t('Search People')}
-                  // value={formData.searchTerm}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      searchTerm: e.target.value,
-                    }))
-                  }
-                  style={{ flex: 1 }}
-                />
-                <SearchSVG />
-              </div>
-            </InputLabelContainer>
-            <InputLabelContainer
-              style={{
-                marginLeft: '190px',
-              }}
-            >
-              <label>{t('All Resources')}</label>
-              <div
-                style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}
-              ></div>
-            </InputLabelContainer> */
-}

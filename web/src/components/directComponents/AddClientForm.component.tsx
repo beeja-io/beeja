@@ -422,6 +422,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       ))}
                     </select>
                   </InputLabelContainer>
+
                   <InputLabelContainer>
                     <label>{t('Industry')}</label>
                     <select
@@ -432,12 +433,14 @@ const AddClientForm = (props: AddClientFormProps) => {
                       style={{ width: '400px' }}
                     >
                       <option value="">{t('Select Industry')}</option>
-                      <option value="HRMS">{t('HRMS')}</option>
-                      <option value="SOCIALMEDIA">{t('SOCIALMEDIA')}</option>
-                      <option value=" ECOMMERCE">{t('ECOMMERCE')}</option>
-                      <option value="ITSERVICES">{t('ITSERVICES')}</option>
+                      {clientOptions.industry.map((industry) => (
+                        <option key={industry} value={industry}>
+                          {t(industry)}
+                        </option>
+                      ))}
                     </select>
                   </InputLabelContainer>
+
                   <InputLabelContainer>
                     <label>{t('Description')}</label>
                     <TextInput
@@ -516,10 +519,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                       style={{ width: '400px' }}
                     >
                       <option value="">{t('Select category')}</option>
-                      <option value="VAT">{t('VAT')}</option>
-                      <option value="GST">{t('GST')}</option>
-                      <option value="SALES_TAX">{t('SALES_TAX')}</option>
-                      <option value="EXCISE_TAX">{t('EXCISE_TAX')}</option>
+                      {clientOptions.taxCategory.map((category) => (
+                        <option key={category} value={category}>
+                          {t(category)}
+                        </option>
+                      ))}
                     </select>
                   </InputLabelContainer>
                 </div>

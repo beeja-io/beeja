@@ -42,7 +42,7 @@ const ContractManagement = () => {
   const location = useLocation();
 
   const isContractDetailsRoute = matchPath(
-    '/clients/contract-management/:id',
+    '/contracts/contract-management/:id',
     location.pathname
   );
   const fetchData = useCallback(async () => {

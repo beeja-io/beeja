@@ -104,6 +104,9 @@ export const ResourceBlock = styled.div`
   flex-direction: column;
   gap: 6px;
   margin-top: 16px;
+  margin-left: 190px;
+  margin-bottom: 30px;
+  width: 900px;
 `;
 
 export const ResourceLabel = styled.label`

@@ -38,6 +38,7 @@ import {
   ProjectSeactionHeading,
   RightSubSectionDiv,
 } from '../styles/AddContractFormStyles.style';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 
 const ContractDetailsScreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -86,7 +87,7 @@ const ContractDetailsScreen: React.FC = () => {
   useEffect(() => {
     const fetchClient = async () => {
       if (!id) return;
-      setIsLoading(false);
+      setIsLoading(true);
       try {
         const res = await getContractDetails(id);
 
@@ -121,6 +122,10 @@ const ContractDetailsScreen: React.FC = () => {
 
     fetchClient();
   }, [projectId, clientId]);
+
+  if (isLoading) {
+    return <SpinAnimation />;
+  }
 
   return (
     <Container>
@@ -157,13 +162,15 @@ const ContractDetailsScreen: React.FC = () => {
           <div
             style={{
               display: 'flex',
-
+              alignItems: 'center',
               borderBottom: '1px solid #E5E7EB',
               paddingBottom: '20px',
             }}
           >
             <CompanyIcon />
-            <ClientInfoDiv style={{ width: '130px', paddingLeft: '7px' }}>
+            <ClientInfoDiv
+              style={{ width: '130px', paddingLeft: '7px', display: 'flex' }}
+            >
               {contract?.contractTitle}
             </ClientInfoDiv>
             <ClientInfoDiv
@@ -171,42 +178,65 @@ const ContractDetailsScreen: React.FC = () => {
                 width: '130px',
                 paddingLeft: '7px',
                 paddingRight: '10px',
+                display: 'flex',
+                alignItems: 'flex-end',
               }}
             >
               <CompanyIcon />
               {client?.clientName}
             </ClientInfoDiv>
-            <ClientInfoDiv
+
+            <div
               style={{
-                width: '140px',
-                paddingLeft: '20px',
-                paddingRight: '10px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
               }}
             >
-              <DateIcon />
-              {contract?.startDate &&
-                new Date(contract.startDate).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: '2-digit',
-                })}
-            </ClientInfoDiv>
-            <ClientInfoDiv>TO</ClientInfoDiv>
-            <DateIcon />
-            <ClientInfoDiv
-              style={{
-                width: '140px',
-                paddingLeft: '7px',
-                paddingRight: '10px',
-              }}
-            >
-              {contract?.endDate &&
-                new Date(contract.startDate).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: '2-digit',
-                })}
-            </ClientInfoDiv>
+              <ClientInfoDiv
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '140px',
+                  paddingLeft: '20px',
+                  paddingRight: '10px',
+                  gap: '6px',
+                }}
+              >
+                <DateIcon />
+                <span>
+                  {contract?.startDate &&
+                    new Date(contract.startDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: '2-digit',
+                    })}
+                </span>
+              </ClientInfoDiv>
+
+              <ClientInfoDiv>TO</ClientInfoDiv>
+
+              <ClientInfoDiv
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '140px',
+                  paddingLeft: '7px',
+                  paddingRight: '10px',
+                  gap: '6px',
+                }}
+              >
+                <DateIcon />
+                <span>
+                  {contract?.endDate &&
+                    new Date(contract.endDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: '2-digit',
+                    })}
+                </span>
+              </ClientInfoDiv>
+            </div>
           </div>
         </ClientInfo>
         <TableContainer></TableContainer>

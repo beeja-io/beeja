@@ -32,6 +32,7 @@ const ContractList = ({
   isLoading,
 }: ContractListProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const [contractLists, setContractLists] = useState<ContractDetails[]>([]);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [editableContractId, setEditableContractId] = useState<string | null>(
     null
@@ -40,6 +41,10 @@ const ContractList = ({
   const [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setContractLists(contractList);
+  }, [contractList]);
 
   const handleShowSuccessMessage = () => {
     setShowSuccessMessage(true);
@@ -65,7 +70,7 @@ const ContractList = ({
         </ExpenseHeading>
 
         <TableListContainer style={{ marginTop: 0 }}>
-          {!isLoading && contractList?.length === 0 ? (
+          {!isLoading && contractLists?.length === 0 ? (
             <ZeroEntriesFound
               heading="No Contracts Found"
               message="You Don't Have Any Contracts"
@@ -94,7 +99,7 @@ const ContractList = ({
                         ))}
                       </TableBodyRow>
                     ))
-                  : contractList?.map((contract, index) => (
+                  : contractLists?.map((contract, index) => (
                       <TableBodyRow key={index}>
                         <td
                           onClick={() =>
@@ -128,31 +133,43 @@ const ContractList = ({
                         </td>
                         {/* <td>{contract?.projectManagerNames[0]}</td> */}
                         <td>{contract?.projectManagerNames[0]}</td>
-
-                        <StatusDropdown
-                          value={contract.status ?? 'NOT_STARTED'}
-                          disabled={editableContractId !== contract.contractId}
-                          onChange={async (newStatus) => {
-                            if (editableContractId !== contract.contractId)
-                              return;
-                            try {
-                              setStatusUpdateLoading(true);
-                              await updateContractStatus(
-                                contract.contractId,
-                                newStatus as ProjectStatus
-                              );
-                              handleShowSuccessMessage();
-                              setEditableContractId(null);
-                            } catch (error) {
-                              throw new Error(
-                                'Failed to update status: ' + error
-                              );
-                            } finally {
-                              setStatusUpdateLoading(false);
+                        <td>
+                          <StatusDropdown
+                            value={contract.status ?? 'NOT_STARTED'}
+                            disabled={
+                              editableContractId !== contract.contractId
                             }
-                          }}
-                        />
-
+                            onChange={async (newStatus) => {
+                              if (editableContractId !== contract.contractId)
+                                return;
+                              try {
+                                setStatusUpdateLoading(true);
+                                await updateContractStatus(
+                                  contract.contractId,
+                                  newStatus as ProjectStatus
+                                );
+                                setContractLists((prevList) =>
+                                  prevList.map((p) =>
+                                    p.contractId === contract.contractId
+                                      ? ({
+                                          ...p,
+                                          status: newStatus as ProjectStatus,
+                                        } as ContractDetails)
+                                      : p
+                                  )
+                                );
+                                handleShowSuccessMessage();
+                                setEditableContractId(null);
+                              } catch (error) {
+                                throw new Error(
+                                  'Failed to update status: ' + error
+                                );
+                              } finally {
+                                setStatusUpdateLoading(false);
+                              }
+                            }}
+                          />
+                        </td>
                         <td>
                           <EditSVG
                             onClick={() =>

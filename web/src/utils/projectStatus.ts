@@ -10,13 +10,13 @@ export const ProjectStatus: ProjectStatusOption[] = [
     value: 'NOT_STARTED',
     label: 'Not Started',
     color: '#A0AEC0',
-    bgColor: '#EDF2F7',
+    bgColor: '#A0AEC01A',
   },
   {
     value: 'IN_PROGRESS',
     label: 'In Progress',
-    color: '#ED8936',
-    bgColor: '#FEF3C7',
+    color: '#FF9900',
+    bgColor: '#FF99001A',
   },
   {
     value: 'COMPLETED',
@@ -27,8 +27,8 @@ export const ProjectStatus: ProjectStatusOption[] = [
   {
     value: 'CANCELLED',
     label: 'Cancelled',
-    color: '#E53E3E',
-    bgColor: '#FEE2E2',
+    color: '#E03137',
+    bgColor: '#E031371A',
   },
   { value: 'ACTIVE', label: 'Active', color: '#2563EB', bgColor: '#DBEAFE' },
   {
@@ -37,5 +37,10 @@ export const ProjectStatus: ProjectStatusOption[] = [
     color: '#6B7280',
     bgColor: '#E5E7EB',
   },
-  { value: 'ON_HOLD', label: 'On Hold', color: '#F59E0B', bgColor: '#FEF9C3' },
+  {
+    value: 'ON_HOLD',
+    label: 'On Hold',
+    color: '#005792',
+    bgColor: '#0057921A',
+  },
 ];

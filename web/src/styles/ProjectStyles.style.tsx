@@ -101,10 +101,17 @@ export const FormContainer = styled.div`
 `;
 
 export const SectionTitle = styled.h2`
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 18px;
+  leading-trim: NONE;
+  line-height: 150%;
+  letter-spacing: 0px;
+  color: #005792;
   font-size: 18px;
   font-weight: 600;
-  margin-bottom: 24px;
-  color: #1e1e1e;
+  margin: 40px 0 28px 190px;
 `;
 
 export const FormGrid = styled.div`
@@ -112,6 +119,8 @@ export const FormGrid = styled.div`
   grid-template-columns: 1fr 1fr;
   grid-template-rows: auto auto auto;
   gap: 14px 22px;
+  max-width: 900px;
+  margin: 0 auto;
 `;
 
 export const FormField = styled.div`
@@ -153,7 +162,7 @@ export const SelectDropDown = styled.select`
   font-size: 14px;
   background-color: white;
   max-width: 100%;
-  appearance: none;
+  appearance: auto;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

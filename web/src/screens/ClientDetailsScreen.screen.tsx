@@ -140,20 +140,6 @@ const ClientDetailsScreen: React.FC = () => {
               {client?.contact}
             </ClientInfoDiv>
           </div>
-          <div style={{ display: 'flex' }}>
-            <div
-              style={{ display: 'flex', cursor: 'pointer' }}
-              onClick={handleAddProjectModalToggle}
-            >
-              <AddSVG />
-              <ProjectInfo>{t(' Add Project')}</ProjectInfo>
-            </div>
-
-            <div>
-              <AddSVG />
-            </div>
-            <ProjectInfo>{t('Add Contract')}</ProjectInfo>
-          </div>
         </ClientInfo>
         <TableContainer></TableContainer>
       </LeftSection>

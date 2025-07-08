@@ -17,6 +17,7 @@ import {
   CallSVG,
   AddSVG,
   CompanyIcon,
+  DateIcon,
 } from '../svgs/ClientSvgs.svs';
 
 import { ClientResponse } from '../entities/ClientEntity';
@@ -34,6 +35,7 @@ import {
   InfoText,
   IconWrapper,
 } from '../styles/ProjectStyles.style';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 
 const ProjectDetailsSCreen: React.FC = () => {
   const { projectId, clientId } = useParams<{
@@ -45,6 +47,7 @@ const ProjectDetailsSCreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [project, setProject] = useState<ProjectEntity | null>(null);
   const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleAddProjectModalToggle = () => {
     setIsAddProjectModalOpen((prev) => !prev);
@@ -86,6 +89,7 @@ const ProjectDetailsSCreen: React.FC = () => {
   useEffect(() => {
     const fetchClient = async () => {
       if (!projectId || !clientId) return;
+      setLoading(true);
       try {
         const projectRes = await getProject(projectId, clientId);
         const clientRes = await getClient(clientId);
@@ -93,11 +97,17 @@ const ProjectDetailsSCreen: React.FC = () => {
         setClient(clientRes.data);
       } catch (error) {
         throw new Error('Failed to fetch client:' + error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchClient();
   }, [projectId, clientId]);
+
+  if (loading) {
+    return <SpinAnimation />;
+  }
 
   return (
     <Container>
@@ -109,7 +119,6 @@ const ProjectDetailsSCreen: React.FC = () => {
             <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
               ID: {project?.projectId}
             </ClientInfoDiv>
-
             <DotSVG />
             <CompanyIcon />
             <ClientInfoDiv
@@ -121,23 +130,29 @@ const ProjectDetailsSCreen: React.FC = () => {
             >
               {client?.clientName}
             </ClientInfoDiv>
-            <DotSVG />
-
-            <ClientInfoDiv style={{ width: '200px', wordWrap: 'break-word' }}>
-              Start Date:{' '}
-              {project?.startDate &&
-                new Date(project.startDate).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: '2-digit',
-                })}
-            </ClientInfoDiv>
-          </div>
-          <div style={{ display: 'flex' }}>
-            <div>
-              <AddSVG />
+            <div
+              style={{ display: 'flex', alignItems: 'flex-start', gap: '4px' }}
+            >
+              <DotSVG />
+              <ClientInfoDiv
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  width: '250px',
+                  wordWrap: 'break-word',
+                }}
+              >
+                <span>Start Date :</span> &nbsp;
+                <DateIcon /> &nbsp;
+                {project?.startDate &&
+                  new Date(project.startDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: '2-digit',
+                  })}
+              </ClientInfoDiv>
             </div>
-            <ProjectInfo>{t('Add Contract')}</ProjectInfo>
           </div>
         </ClientInfo>
         <TableContainer></TableContainer>
