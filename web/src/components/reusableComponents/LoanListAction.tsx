@@ -133,6 +133,7 @@ export const LoanAction: React.FC<ActionProps> = ({
         >
           <div
             style={{
+              marginTop: +9,
               opacity:
                 currentLoan.status === 'APPROVED' ||
                 currentLoan.status === 'REJECTED' ||
