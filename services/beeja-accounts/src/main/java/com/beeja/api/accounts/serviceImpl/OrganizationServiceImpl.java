@@ -691,6 +691,19 @@ public class OrganizationServiceImpl implements OrganizationService {
                   }
                   return result;
                 });
+    CompletableFuture<Void> documentTypesFuture =
+            CompletableFuture.runAsync(() -> {
+              orgDefaultsGenerationImpl.generateDocumentTypes();
+            }).handle((result, ex) -> {
+              if (ex != null) {
+                log.error(Constants.ERROR_GENERATING_DEFAULT_VALUES,
+                        "documentTypes",
+                        UserContext.getLoggedInUserOrganization().getId(),
+                        ex);
+              }
+              return result;
+            });
+
     CompletableFuture<Void> allFutures =
         CompletableFuture.allOf(
             jobTitlesFuture,
@@ -699,6 +712,7 @@ public class OrganizationServiceImpl implements OrganizationService {
             expenseCategoriesFuture,
             expenseTypesFuture,
             paymentModesFuture,
+            documentTypesFuture,
             generateExistingValuesOfExpenseType,
             generateExistingValuesOfExpenseCategories,
             generateExistingPaymentModes,
