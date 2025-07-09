@@ -172,6 +172,12 @@ export const TextInput = styled.input`
   &.grayText {
     color: #8b8b8b;
   }
+  &:-webkit-autofill {
+    box-shadow: 0 0 0 1000px
+      ${(props) => props.theme.colors.backgroundColors.primary} inset;
+    -webkit-text-fill-color: ${(props) =>
+      props.theme.colors.blackColors.black1};
+  }
 `;
 
 export const StyledForm = styled.form`

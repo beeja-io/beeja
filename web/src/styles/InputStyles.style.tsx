@@ -25,6 +25,12 @@ export const TextInput = styled.input<{ isError?: boolean }>`
   &.errorEnabledInput {
     border-color: red;
   }
+  &:-webkit-autofill {
+    box-shadow: 0 0 0 1000px
+      ${(props) => props.theme.colors.backgroundColors.primary} inset;
+    -webkit-text-fill-color: ${(props) =>
+      props.theme.colors.blackColors.black1};
+  }
 `;
 
 export const StyledForm = styled.form`
