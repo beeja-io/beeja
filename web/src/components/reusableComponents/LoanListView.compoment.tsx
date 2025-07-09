@@ -21,7 +21,7 @@ import LoanPreview from '../directComponents/LoanPreview.component';
 import { Loan } from '../../entities/LoanEntity';
 import { LOAN_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
-
+import { disableScroll, enableScroll } from '../../constants/Utility';
 type LoanListViewProps = {
   handleIsApplyLoanScreen: () => void;
   currentPage: number;
@@ -82,12 +82,12 @@ const LoanListView = (props: LoanListViewProps) => {
 
   useEffect(() => {
     if (isLoanPreviewModalOpen) {
-      document.body.style.overflow = 'hidden';
+      disableScroll();
     } else {
-      document.body.style.overflow = '';
+      enableScroll();
     }
     return () => {
-      document.body.style.overflow = '';
+      enableScroll();
     };
   }, [isLoanPreviewModalOpen]);
   return (
