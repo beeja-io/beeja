@@ -1,7 +1,7 @@
 // Scroll
-export const disableScroll = () => {
+export const disableBodyScroll = () => {
   document.body.style.overflow = 'hidden';
 };
-export const enableScroll = () => {
+export const enableBodyScroll = () => {
   document.body.style.overflow = '';
 };
