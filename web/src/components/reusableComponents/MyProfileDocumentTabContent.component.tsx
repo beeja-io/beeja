@@ -55,7 +55,6 @@ import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import Pagination from '../directComponents/Pagination.component';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
-
 type DocumentTabContentProps = {
   employee: EmployeeEntity;
 };
@@ -590,6 +589,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       <Button
                         className="submit"
                         style={{ cursor: isResponseLoading ? 'progress' : '' }}
+                        disabled={isResponseLoading}
                       >
                         Submit
                       </Button>
