@@ -209,9 +209,9 @@ public class ContractServiceImpl implements ContractService {
     }
   }
     @Override
-    public List<Contract> getAllContractsInOrganization(int pageNumber, int pageSize, String projectId, ProjectStatus status) {
+    public List<Contract> getAllContractsInOrganization(String organizationId,int pageNumber, int pageSize, String projectId, ProjectStatus status) {
         try {
-            Query query = buildContractQuery(projectId, status);
+            Query query = buildContractQuery(organizationId, projectId, status);
 
             int skip = (pageNumber - 1) * pageSize;
             query.skip(skip).limit(pageSize);
@@ -227,12 +227,12 @@ public class ContractServiceImpl implements ContractService {
         }
     }
     @Override
-    public Long getTotalContractSize(String projectId, ProjectStatus status) {
-        Query query = buildContractQuery(projectId, status);
+    public Long getTotalContractSize(String organizationId, String projectId, ProjectStatus status) {
+        Query query = buildContractQuery(organizationId,projectId, status);
         return mongoTemplate.count(query, Contract.class);
     }
 
-    private Query buildContractQuery(String projectId, ProjectStatus status) {
+    private Query buildContractQuery(String organizationId, String projectId, ProjectStatus status) {
         Query query = new Query();
 
         if (projectId != null && !projectId.isEmpty()) {
@@ -281,18 +281,17 @@ public class ContractServiceImpl implements ContractService {
         return contract;
     }
     @Override
-    public List<ContractResponsesDTO> getAllContracts(int pageNumber, int pageSize, String projectid, ProjectStatus status) {
-        String orgId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+    public List<ContractResponsesDTO> getAllContracts(String organizationId, int pageNumber, int pageSize, String projectid, ProjectStatus status) {
 
         List<Contract> contracts;
         try {
-            contracts = getAllContractsInOrganization(pageNumber, pageSize, projectid, status);
+            contracts = getAllContractsInOrganization(organizationId, pageNumber, pageSize, projectid, status);
             if (contracts.isEmpty()) {
                 throw new ResourceNotFoundException(
                         BuildErrorMessage.buildErrorMessage(
                                 ErrorType.NOT_FOUND,
                                 ErrorCode.RESOURCE_NOT_FOUND,
-                                Constants.CONTRACT_NOT_FOUND + orgId
+                                Constants.CONTRACT_NOT_FOUND + organizationId
                         )
                 );
             }
@@ -301,7 +300,7 @@ public class ContractServiceImpl implements ContractService {
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.DB_ERROR,
                             ErrorCode.DATA_FETCH_ERROR,
-                            Constants.CONTRACT_NOT_FOUND + orgId
+                            Constants.CONTRACT_NOT_FOUND + organizationId
                     )
             );
         }
@@ -334,7 +333,7 @@ public class ContractServiceImpl implements ContractService {
                         )
                 );
             }
-            Client client = clientRepository.findByClientIdAndOrganizationId(contract.getClientId(), orgId);
+            Client client = clientRepository.findByClientIdAndOrganizationId(contract.getClientId(), organizationId);
             String clientName = (client != null) ? client.getClientName() : Constants.CLIENT_NOT_FOUND;
 
             return ContractResponsesDTO.builder()

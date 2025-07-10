@@ -4,8 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -27,10 +26,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 
 class ProjectServiceImplTest {
 
@@ -39,6 +37,9 @@ class ProjectServiceImplTest {
   @Mock private ProjectRepository projectRepository;
 
   @Mock private ClientRepository clientRepository;
+
+  @Mock
+  private MongoTemplate mongoTemplate;
 
   private static Map<String, Object> orgMap;
   private static MockedStatic<UserContext> userContextMock;
@@ -193,26 +194,45 @@ class ProjectServiceImplTest {
     String projectId = null;
     ProjectStatus status = null;
 
-    List<Project> result = projectService.getAllProjectsInOrganization(pageNumber, pageSize, projectId, status);
+    List<Project> result = projectService.getAllProjectsInOrganization(anyString(), eq(pageNumber), eq(pageSize), eq(projectId), eq(status));
 
     assertNotNull(result);
     assertEquals(2, result.size());
   }
 
-  @Test
-  void testGetAllProjectsInOrganization_noProjects_returnsEmptyList() {
-    when(projectRepository.findByOrganizationId(anyString())).thenReturn(List.of());
+@Test
+void testGetAllProjectsInOrganization_noProjects_returnsEmptyList() {
+  String organizationId = "org123";
+  int pageNumber = 1;
+  int pageSize = 5;
+  String projectId = "proj001";
+  ProjectStatus status = ProjectStatus.ACTIVE;
 
-    int pageNumber = 0;
-    int pageSize = 10;
-    String projectId = null;
-    ProjectStatus status = null;
+  Project project = new Project();
+  project.setProjectId(projectId);
+  project.setOrganizationId(organizationId);
+  project.setStatus(status);
 
-    List<Project> result = projectService.getAllProjectsInOrganization( pageNumber, pageSize, projectId, status);
+  List<Project> expectedProjects = List.of(project);
 
-    assertNotNull(result);
-    assertTrue(result.isEmpty(), "Expected empty list when no projects found");
-  }
+  when(mongoTemplate.find(any(Query.class), eq(Project.class)))
+          .thenReturn(expectedProjects);
+
+  List<Project> actualProjects = projectService.getAllProjectsInOrganization(
+          organizationId, pageNumber, pageSize, projectId, status);
+
+  assertNotNull(actualProjects);
+  assertEquals(1, actualProjects.size());
+  assertEquals(projectId, actualProjects.get(0).getProjectId());
+
+  ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+  verify(mongoTemplate).find(queryCaptor.capture(), eq(Project.class));
+  Query capturedQuery = queryCaptor.getValue();
+
+  assertTrue(capturedQuery.getQueryObject().toString().contains("organizationId"));
+  assertTrue(capturedQuery.getQueryObject().toString().contains("proj001"));
+  assertTrue(capturedQuery.getQueryObject().toString().contains("ACTIVE"));
+}
 
   @Test
   void testUpdateProjectByProjectId_success() {

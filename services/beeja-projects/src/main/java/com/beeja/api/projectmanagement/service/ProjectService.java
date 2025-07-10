@@ -40,9 +40,9 @@ public interface ProjectService {
    *
    * @return a list of all {@link Project} objects within the organization
    */
-  List<Project> getAllProjectsInOrganization(int pageNumber, int pageSize,String projectId, ProjectStatus status);
+  List<Project> getAllProjectsInOrganization(String organizationId,int pageNumber, int pageSize,String projectId, ProjectStatus status);
 
-  Long getTotalProjectsInOrganization(String projectId, ProjectStatus status);
+  Long getTotalProjectsInOrganization(String organizationId, String projectId, ProjectStatus status);
 
 
   /**
@@ -56,6 +56,6 @@ public interface ProjectService {
 
   Project changeProjectStatus(String projectId, ProjectStatus status);
 
-  List<ProjectResponseDTO> getAllProjects(int pageNumber, int pageSize, String projectId, ProjectStatus status);
+  List<ProjectResponseDTO> getAllProjects(String organizationId, int pageNumber, int pageSize, String projectId, ProjectStatus status);
 
 }

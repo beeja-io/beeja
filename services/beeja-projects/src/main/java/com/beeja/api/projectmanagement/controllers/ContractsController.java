@@ -12,6 +12,9 @@ import com.beeja.api.projectmanagement.service.ContractService;
 
 import java.util.HashMap;
 import java.util.List;
+
+import com.beeja.api.projectmanagement.utils.Constants;
+import com.beeja.api.projectmanagement.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -85,19 +88,22 @@ public class ContractsController {
                                                                      @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
                                                                      @RequestParam(required = false) String projectId,
                                                                      @RequestParam(required = false) ProjectStatus status) {
+    String organizationId = UserContext.getLoggedInUserOrganization()
+            .get(Constants.ID).toString();
     HashMap<String, Object> metadata = new HashMap<>();
     metadata.put(
             "totalSize",
-            contractService.getTotalContractSize(projectId, status)
+            contractService.getTotalContractSize(organizationId,projectId, status)
     );
 
-    List<ContractResponsesDTO> contracts = contractService.getAllContracts(pageNumber, pageSize, projectId, status);
+    List<ContractResponsesDTO> contracts = contractService.getAllContracts(organizationId,pageNumber, pageSize, projectId, status);
     ContractResponseDTO response = new ContractResponseDTO();
     response.setMetadata(metadata);
     response.setContracts(contracts);
     return ResponseEntity.ok(response);
   }
   @PatchMapping("/{contractId}/status")
+  @HasPermission(PermissionConstants.UPDATE_CONTRACT)
   public ResponseEntity<Contract> changeContractStatus(
           @PathVariable String contractId,
           @RequestBody ProjectStatus status) {

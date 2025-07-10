@@ -102,7 +102,7 @@ public class ProjectServiceImpl implements ProjectService {
       newProject.setDescription(project.getDescription());
     }
     if (project.getStatus() != null) {
-      newProject.setStatus(project.getStatus());
+      newProject.setStatus(ProjectStatus.ACTIVE);
     }
     if (project.getStartDate() != null) {
       newProject.setStartDate(project.getStartDate());
@@ -220,9 +220,9 @@ public class ProjectServiceImpl implements ProjectService {
    * @throws ResourceNotFoundException if no {@link Project} entities are found for the organization
    */
   @Override
-  public List<Project> getAllProjectsInOrganization(int pageNumber, int pageSize, String projectId, ProjectStatus status) {
+  public List<Project> getAllProjectsInOrganization(String organizationId,int pageNumber, int pageSize, String projectId, ProjectStatus status) {
     try {
-      Query query = buildProjectQuery(projectId, status);
+      Query query = buildProjectQuery(organizationId, projectId, status);
 
       int skip = (pageNumber - 1) * pageSize;
       query.skip(skip).limit(pageSize);
@@ -238,10 +238,10 @@ public class ProjectServiceImpl implements ProjectService {
                       Constants.ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION));
     }
   }
-  private Query buildProjectQuery(String projectId, ProjectStatus status) {
+  private Query buildProjectQuery(String organizationId,String projectId, ProjectStatus status) {
     Query query = new Query();
     query.addCriteria(Criteria.where("organizationId")
-            .is(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString()));
+            .is(organizationId));
 
     if (projectId != null && !projectId.isEmpty()) {
       query.addCriteria(Criteria.where("projectId").is(projectId));
@@ -253,8 +253,8 @@ public class ProjectServiceImpl implements ProjectService {
     return query;
   }
   @Override
-  public Long getTotalProjectsInOrganization(String projectId, ProjectStatus status) {
-    Query query = buildProjectQuery(projectId, status);
+  public Long getTotalProjectsInOrganization(String organizationId,String projectId, ProjectStatus status) {
+    Query query = buildProjectQuery(organizationId,projectId, status);
     return mongoTemplate.count(query, Project.class);
   }
 
@@ -360,10 +360,10 @@ public class ProjectServiceImpl implements ProjectService {
     return project;
   }
   @Override
-  public List<ProjectResponseDTO> getAllProjects(int pageNumber, int pageSize, String projectId, ProjectStatus status) {
+  public List<ProjectResponseDTO> getAllProjects(String organizationId,int pageNumber, int pageSize, String projectId, ProjectStatus status) {
     List<Project> projects;
     try {
-      projects = getAllProjectsInOrganization(pageNumber, pageSize, projectId, status);
+      projects = getAllProjectsInOrganization(organizationId, pageNumber, pageSize, projectId, status);
     } catch (Exception e) {
       throw new ResourceNotFoundException(
               BuildErrorMessage.buildErrorMessage(

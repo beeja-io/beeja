@@ -43,9 +43,9 @@ public interface ContractService {
    */
   Contract updateContract(String contractId, ContractRequest request);
 
-  List<Contract> getAllContractsInOrganization(int pageNumber, int pageSize, String projectId, ProjectStatus status);
-  Long getTotalContractSize(String projectId, ProjectStatus status);
+  List<Contract> getAllContractsInOrganization(String organizationId, int pageNumber, int pageSize, String projectId, ProjectStatus status);
+  Long getTotalContractSize(String organizationId,String projectId, ProjectStatus status);
 
-  List<ContractResponsesDTO>getAllContracts(int pageNumber, int pageSize, String projectid, ProjectStatus status);
+  List<ContractResponsesDTO>getAllContracts(String organizationId, int pageNumber, int pageSize, String projectid, ProjectStatus status);
   Contract changeContractStatus(String contractId, ProjectStatus status);
 }

@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.beeja.api.projectmanagement.utils.Constants;
+import com.beeja.api.projectmanagement.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,7 +84,9 @@ public class ProjectsController {
                                                       @RequestParam(defaultValue = "10") int pageSize,
                                                       @RequestParam(required = false) String projectId,
                                                       @RequestParam(required = false) ProjectStatus status) {
-    List<Project> projects = projectService.getAllProjectsInOrganization(pageNumber,  pageSize, projectId, status );
+    String organizationId = UserContext.getLoggedInUserOrganization()
+            .get(Constants.ID).toString();
+    List<Project> projects = projectService.getAllProjectsInOrganization(organizationId, pageNumber,  pageSize, projectId, status );
     return ResponseEntity.ok(projects);
   }
 
@@ -118,11 +122,13 @@ public class ProjectsController {
           @RequestParam(required = false) ProjectStatus status) {
 
     try {
-      List<ProjectResponseDTO> projects = projectService.getAllProjects(
+      String organizationId = UserContext.getLoggedInUserOrganization()
+              .get(Constants.ID).toString();
+      List<ProjectResponseDTO> projects = projectService.getAllProjects(organizationId,
               pageNumber, pageSize, projectId, status
       );
 
-      long totalSize = projectService.getTotalProjectsInOrganization(projectId, status);
+      long totalSize = projectService.getTotalProjectsInOrganization(organizationId, projectId, status);
 
       Map<String, Object> response = new HashMap<>();
       response.put("metadata", Map.of(
