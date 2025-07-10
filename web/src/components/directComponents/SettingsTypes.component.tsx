@@ -158,6 +158,9 @@ export const SettingsTypes = ({
       values: updatedSettingTypes?.map((category) => ({
         value: category.orgValues.value,
         description: category.orgValues.description,
+        ...(keyvalue === 'Loan Types' && {
+          loanLimit: category.orgValues.loanLimit,
+        }),
       })),
     };
     try {
@@ -210,6 +213,9 @@ export const SettingsTypes = ({
           <TableHead>
             <tr className="table-row">
               <th className="th-type">{type}</th>
+              {keyvalue === 'Loan Types' && (
+                <th className="th-type">Limit</th>
+              )}
               <th className="th-description">Description</th>
               <th className="th-action">Action</th>
             </tr>
@@ -223,6 +229,9 @@ export const SettingsTypes = ({
               .map((settingTypes) => (
                 <TableBodyRow key={settingTypes.index}>
                   <td>{settingTypes.orgValues.value}</td>
+                  {keyvalue === 'Loan Types' && (
+                    <td>{settingTypes.orgValues.loanLimit}</td>
+                  )}
                   <td>{settingTypes.orgValues.description}</td>
                   <td>
                     <ExpenseTypeAction
@@ -279,6 +288,21 @@ export const SettingsTypes = ({
               </div>
             )}
           </div>
+          {keyvalue === 'Loan Types' && (
+            <div>
+              <InputContainer>
+                <label>Loan Limit:</label>
+                <input
+                  type="number"
+                  value={newSettingType.loanLimit || ''}
+                  onChange={(e) =>
+                    handleInputChange('loanLimit', e.target.value)
+                  }
+                  required
+                />
+              </InputContainer>
+            </div>
+          )}
           <div>
             <InputContainer>
               <label>{t('DESCRIPTION')}:</label>
