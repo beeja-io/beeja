@@ -1,21 +1,32 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
+import com.beeja.api.projectmanagement.client.AccountClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
+import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.Project;
+import com.beeja.api.projectmanagement.model.dto.EmployeeNameDTO;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.repository.ProjectRepository;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
+import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 import com.beeja.api.projectmanagement.service.ProjectService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 /**
@@ -32,14 +43,44 @@ public class ProjectServiceImpl implements ProjectService {
 
   @Autowired ProjectRepository projectRepository;
 
+    @Autowired
+    AccountClient accountClient;
+
+    @Autowired
+  MongoTemplate mongoTemplate;
   /**
    * Creates a new {@link Project} for a given {@link Client} based on the provided {@link
    * ProjectRequest}.
    *
-   * @param project the {@link ProjectRequest} containing the details to create the {@link Project}
+   * @param employeeIds the {@link ProjectRequest} containing the details to create the {@link Project}
    * @return the newly created {@link Project}
    * @throws ResourceNotFoundException if the {@link Client} is not found with the provided clientId
    */
+
+  public List<String> validateAndFetchEmployees(List<String> employeeIds) {
+    if (employeeIds != null && !employeeIds.isEmpty()) {
+      try {
+        List<EmployeeNameDTO> employeeDTOs = accountClient.getEmployeeNamesById(employeeIds);
+        List<String> inactiveEmployees = employeeDTOs.stream()
+                .filter(dto -> !dto.isActive())
+                .map(EmployeeNameDTO::getEmployeeId)
+                .collect(Collectors.toList());
+
+        if (!inactiveEmployees.isEmpty()) {
+          log.warn("Some employees are inactive and excluded: {}", inactiveEmployees);
+        }
+        return employeeDTOs.stream()
+                .filter(EmployeeNameDTO::isActive)
+                .map(EmployeeNameDTO::getEmployeeId)
+                .collect(Collectors.toList());
+
+      } catch (FeignClientException e) {
+        log.error("Error while validating employees: {}", e.getMessage(), e);
+        throw new FeignClientException(Constants.SOMETHING_WENT_WRONG);
+      }
+    }
+    return Collections.emptyList();
+  }
   @Override
   public Project createProjectForClient(ProjectRequest project) {
     Client client =
@@ -61,7 +102,7 @@ public class ProjectServiceImpl implements ProjectService {
       newProject.setDescription(project.getDescription());
     }
     if (project.getStatus() != null) {
-      newProject.setStatus(project.getStatus());
+      newProject.setStatus(ProjectStatus.ACTIVE);
     }
     if (project.getStartDate() != null) {
       newProject.setStartDate(project.getStartDate());
@@ -71,6 +112,25 @@ public class ProjectServiceImpl implements ProjectService {
     }
     if (project.getClientId() != null) {
       newProject.setClientId(project.getClientId());
+    }
+
+    if(project.getProjectManagers() != null && !project.getProjectManagers().isEmpty()){
+      try {
+        List<String> validProjectManagers = validateAndFetchEmployees(project.getProjectManagers());
+        newProject.setProjectManagers(validProjectManagers);
+      } catch (FeignClientException e){
+        log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
+        throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
+      }
+    }
+    if(project.getProjectResources() != null && !project.getProjectResources().isEmpty()){
+      try {
+        List<String> validProjectResources =  validateAndFetchEmployees(project.getProjectResources());
+        newProject.setProjectResources(validProjectResources);
+      } catch (FeignClientException e){
+        log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
+        throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
+      }
     }
     newProject.setOrganizationId(
         UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
@@ -160,24 +220,42 @@ public class ProjectServiceImpl implements ProjectService {
    * @throws ResourceNotFoundException if no {@link Project} entities are found for the organization
    */
   @Override
-  public List<Project> getAllProjectsInOrganization() {
-    List<Project> projects;
+  public List<Project> getAllProjectsInOrganization(String organizationId,int pageNumber, int pageSize, String projectId, ProjectStatus status) {
     try {
-      projects =
-          projectRepository.findByOrganizationId(
-              UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+      Query query = buildProjectQuery(organizationId, projectId, status);
+
+      int skip = (pageNumber - 1) * pageSize;
+      query.skip(skip).limit(pageSize);
+      query.with(Sort.by(Sort.Direction.DESC, "createdAt")); // Sort by createdAt descending
+
+      return mongoTemplate.find(query, Project.class);
     } catch (Exception e) {
-      log.error(Constants.ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION, e.getMessage());
+      log.error(Constants.ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION, e.getMessage(), e);
       throw new ResourceNotFoundException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.DB_ERROR,
-              ErrorCode.RESOURCE_NOT_FOUND,
-              Constants.ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION));
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION));
     }
-    if (projects == null || projects.isEmpty()) {
-      return List.of();
+  }
+  private Query buildProjectQuery(String organizationId,String projectId, ProjectStatus status) {
+    Query query = new Query();
+    query.addCriteria(Criteria.where("organizationId")
+            .is(organizationId));
+
+    if (projectId != null && !projectId.isEmpty()) {
+      query.addCriteria(Criteria.where("projectId").is(projectId));
     }
-    return projects;
+
+    if (status != null) {
+      query.addCriteria(Criteria.where("status").is(status.name()));
+    }
+    return query;
+  }
+  @Override
+  public Long getTotalProjectsInOrganization(String organizationId,String projectId, ProjectStatus status) {
+    Query query = buildProjectQuery(organizationId,projectId, status);
+    return mongoTemplate.count(query, Project.class);
   }
 
   /**
@@ -222,6 +300,24 @@ public class ProjectServiceImpl implements ProjectService {
     if (project.getEndDate() != null) {
       existingProject.setEndDate(project.getEndDate());
     }
+    if(project.getProjectManagers() != null && !project.getProjectManagers().isEmpty()){
+          try {
+              List<String> validProjectManagers = validateAndFetchEmployees(project.getProjectManagers());
+              existingProject.setProjectManagers(validProjectManagers);
+          } catch (FeignClientException e){
+              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
+              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
+          }
+      }
+      if(project.getProjectResources() != null && !project.getProjectResources().isEmpty()){
+          try {
+              List<String> validProjectResources =  validateAndFetchEmployees(project.getProjectResources());
+              existingProject.setProjectResources(validProjectResources);
+          } catch (FeignClientException e){
+              log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
+              throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
+          }
+      }
     try {
       existingProject = projectRepository.save(existingProject);
     } catch (Exception e) {
@@ -233,5 +329,93 @@ public class ProjectServiceImpl implements ProjectService {
               Constants.ERROR_UPDATING_PROJECT));
     }
     return existingProject;
+  }
+  @Override
+  public Project changeProjectStatus(String projectId, ProjectStatus status) {
+    Project project =
+            projectRepository.findByProjectIdAndOrganizationId(
+                    projectId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+
+    if (project == null) {
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.PROJECT_NOT_FOUND));
+    }
+
+    project.setStatus(status);
+
+    try {
+      project = projectRepository.save(project);
+    } catch (Exception e) {
+      log.error("Error updating project status: {}", e.getMessage());
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.RESOURCE_CREATION_ERROR,
+                      Constants.SOMETHING_WENT_WRONG));
+    }
+
+    return project;
+  }
+  @Override
+  public List<ProjectResponseDTO> getAllProjects(String organizationId,int pageNumber, int pageSize, String projectId, ProjectStatus status) {
+    List<Project> projects;
+    try {
+      projects = getAllProjectsInOrganization(organizationId, pageNumber, pageSize, projectId, status);
+    } catch (Exception e) {
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.DATA_FETCH_ERROR,
+                      Constants.ERROR_FETCHING_PROJECT));
+    }
+    if (projects == null || projects.isEmpty()) {
+      return Collections.emptyList();
+    }
+
+    Set<String> allPMIds = projects.stream()
+            .flatMap(p -> Optional.ofNullable(p.getProjectManagers())
+                    .orElse(Collections.emptyList())
+                    .stream())
+            .collect(Collectors.toSet());
+
+    List<EmployeeNameDTO> employeeNameDTOs;
+    try {
+      employeeNameDTOs = accountClient.getEmployeeNamesById(new ArrayList<>(allPMIds));
+    } catch (Exception e) {
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.FEIGN_CLIENT_ERROR,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.SOMETHING_WENT_WRONG));
+    }
+
+    Map<String, String> idToNameMap = employeeNameDTOs.stream()
+            .collect(Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
+
+      return projects.stream().map(project -> {
+        ProjectResponseDTO dto = new ProjectResponseDTO();
+        dto.setProjectId(project.getProjectId());
+        dto.setName(project.getName());
+        dto.setProjectManagerIds(project.getProjectManagers());
+        dto.setProjectStatus(project.getStatus());
+        dto.setClientId(project.getClientId());
+        Client client = clientRepository.findByClientIdAndOrganizationId(project.getClientId(), project.getOrganizationId());
+        if (client != null) {
+          dto.setClientName(client.getClientName());
+        }
+
+        List<String> names = Optional.ofNullable(project.getProjectManagers())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(idToNameMap::get)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        dto.setProjectManagerNames(names);
+        return dto;
+      }).collect(Collectors.toList());
   }
 }

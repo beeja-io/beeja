@@ -15,6 +15,7 @@ import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
 import com.beeja.api.accounts.repository.OrganizationPatternsRepository;
@@ -41,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -532,4 +535,77 @@ public class EmployeeServiceImpl implements EmployeeService {
     userRepository.save(user);
     return Constants.UPDATED;
   }
+
+  @Override
+  public List<String> checkEmployees(List<String> employeeIds) {
+    if (employeeIds == null || employeeIds.isEmpty()) {
+      log.warn(Constants.EMPLOYEE_ID_NOT_NULL);
+      throw new BadRequestException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.VALIDATION_ERROR,
+                      ErrorCode.FIELD_VALIDATION_MISSING,
+                      Constants.EMPLOYEE_ID_NOT_NULL
+              )
+      );
+    }
+    Organization organization = UserContext.getLoggedInUserOrganization();
+        if (organization == null || organization.getId() == null) {
+          log.error(Constants.ERROR_NO_ORGANIZATION_FOUND_WITH_PROVIDED_ID);
+
+          throw new ResourceNotFoundException(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                          ErrorCode.ORGANIZATION_NOT_FOUND,
+                          Constants.ERROR_NO_ORGANIZATION_FOUND_WITH_PROVIDED_ID
+                  )
+          );
+        }
+        List<User> existingUsers;
+        try {
+          existingUsers = userRepository.findByEmployeeIdInAndOrganizations_Id(
+                  employeeIds, organization.getId());
+        } catch (Exception ex) {
+          log.error(Constants.UNABLE_TO_FETCH_DETAILS_FROM_DATABASE, ex);
+          throw new RuntimeException(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.DB_ERROR,
+                          ErrorCode.UNABLE_TO_FETCH_DETAILS,
+                          Constants.UNABLE_TO_FETCH_DETAILS_FROM_DATABASE
+                  )
+          );
+        }
+         return existingUsers.stream()
+                  .map(User::getEmployeeId)
+                  .collect(Collectors.toList());
+      }
+
+  public List<EmployeeIdNameDTO> getAllEmployeeNameId() {
+    return userRepository.findAllEmployeeNamesAndIdByOrganizations_Id(
+            UserContext.getLoggedInUserOrganization().getId());
+  }
+  @Override
+  public List<EmployeeNameDTO> getEmployeeNamesById(List<String> ids) {
+    String orgId = UserContext.getLoggedInUserOrganization().getId();
+
+    List<User> employees = userRepository
+            .findAllByEmployeeIdInAndOrganizations_Id(ids, orgId);
+
+    if (employees == null || employees.isEmpty()) {
+      log.error(Constants.EMPLOYEE_ID_NOT_NULL, ids, orgId);
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                      ErrorCode.ORGANIZATION_NOT_FOUND,
+                      Constants.ERROR_NO_ORGANIZATION_FOUND_WITH_PROVIDED_ID
+              )
+      );
+    }
+    return employees.stream()
+            .map(emp -> new EmployeeNameDTO(
+                    emp.getEmployeeId(),
+                    emp.getFirstName() + " " + emp.getLastName(),
+                    emp.isActive()))
+            .collect(Collectors.toList());
+  }
+
 }

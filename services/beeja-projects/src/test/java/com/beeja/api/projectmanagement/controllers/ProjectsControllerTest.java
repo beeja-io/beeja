@@ -1,6 +1,8 @@
 package com.beeja.api.projectmanagement.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -9,13 +11,13 @@ import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.service.ProjectService;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import com.beeja.api.projectmanagement.utils.Constants;
+import com.beeja.api.projectmanagement.utils.UserContext;
+import java.util.*;
+import org.junit.jupiter.api.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,14 +28,26 @@ public class ProjectsControllerTest {
 
   @InjectMocks private ProjectsController projectsController;
 
+  private static MockedStatic<UserContext> userContextMock;
+
   @BeforeEach
   public void setUp() {
     MockitoAnnotations.openMocks(this);
+
+    Map<String, Object> orgMap = new HashMap<>();
+    orgMap.put(Constants.ID, "org123");
+
+    userContextMock = org.mockito.Mockito.mockStatic(UserContext.class);
+    userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(orgMap);
+  }
+
+  @AfterEach
+  public void tearDown() {
+    userContextMock.close();
   }
 
   @Test
   public void testCreateProject() {
-
     ProjectRequest projectRequest = new ProjectRequest();
     projectRequest.setName("Test Project");
     projectRequest.setClientId("client123");
@@ -56,7 +70,6 @@ public class ProjectsControllerTest {
 
   @Test
   public void testGetProjectById() {
-
     String projectId = "project123";
     String clientId = "client123";
     Project project = new Project();
@@ -75,7 +88,6 @@ public class ProjectsControllerTest {
 
   @Test
   public void testGetProjectsByClientId() {
-
     String clientId = "client123";
     List<Project> projects = new ArrayList<>();
     Project project1 = new Project();
@@ -93,7 +105,7 @@ public class ProjectsControllerTest {
     when(projectService.getProjectsByClientIdInOrganization(clientId)).thenReturn(projects);
 
     ResponseEntity<List<Project>> responseEntity =
-        projectsController.getProjectsByClientId(clientId);
+            projectsController.getProjectsByClientId(clientId);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertEquals(projects, responseEntity.getBody());
@@ -102,7 +114,6 @@ public class ProjectsControllerTest {
 
   @Test
   public void testGetAllProjects() {
-
     List<Project> projects = new ArrayList<>();
     Project project1 = new Project();
     project1.setId("project1");
@@ -116,18 +127,23 @@ public class ProjectsControllerTest {
     project2.setClientId("client2");
     projects.add(project2);
 
-    when(projectService.getAllProjectsInOrganization()).thenReturn(projects);
+    int pageNumber = 0;
+    int pageSize = 10;
+    String projectId = null;
+    ProjectStatus status = null;
 
-    ResponseEntity<List<Project>> responseEntity = projectsController.getAllProjects();
+    when(projectService.getAllProjectsInOrganization(eq("org123"), eq(pageNumber), eq(pageSize), eq(projectId), eq(status)))
+            .thenReturn(projects);
+
+    ResponseEntity<List<Project>> responseEntity = projectsController.getAllProjects(pageNumber, pageSize, projectId, status);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertEquals(projects, responseEntity.getBody());
-    verify(projectService, times(1)).getAllProjectsInOrganization();
+    verify(projectService, times(1)).getAllProjectsInOrganization(eq("org123"), eq(pageNumber), eq(pageSize), eq(projectId), eq(status));
   }
 
   @Test
   public void testUpdateProject() {
-
     String projectId = "project123";
     ProjectRequest projectRequest = new ProjectRequest();
     projectRequest.setName("Updated Project Name");
@@ -141,10 +157,10 @@ public class ProjectsControllerTest {
     updatedProject.setClientId("client123");
 
     when(projectService.updateProjectByProjectId(projectRequest, projectId))
-        .thenReturn(updatedProject);
+            .thenReturn(updatedProject);
 
     ResponseEntity<Project> responseEntity =
-        projectsController.updateProject(projectId, projectRequest);
+            projectsController.updateProject(projectId, projectRequest);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertEquals(updatedProject, responseEntity.getBody());

@@ -209,4 +209,5 @@ public class Constants {
       "New Permissions entry created and saved for '{}'.";
   public static final String SUCCESSFULLY_UPDATED_PERMISSIONS_ENTRY =
       "Successfully Updated PErmissions Entry";
+  public static final String EMPLOYEE_ID_NOT_NULL = "Employee ID list must not be null or empty";
 }

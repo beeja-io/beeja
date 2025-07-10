@@ -1,5 +1,6 @@
 package com.beeja.api.projectmanagement.model;
 
+import com.beeja.api.projectmanagement.enums.ContractBillingCurrency;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import java.util.Date;
 import lombok.AllArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
-
+import java.util.List;
 @Document(collection = "projects")
 @Data
 @NoArgsConstructor
@@ -25,8 +26,11 @@ public class Project {
   private Date endDate;
   private String clientId;
   private String organizationId;
-
+  private ContractBillingCurrency billingCurrency;
   @CreatedDate private Date createdAt;
 
   @LastModifiedDate private Date updatedAt;
+  List<String> projectManagers;
+  List<String> projectResources;
 }
+
