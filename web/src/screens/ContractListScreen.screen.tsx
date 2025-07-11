@@ -90,9 +90,9 @@ const ContractList = ({
               </TableHead>
               <tbody>
                 {isLoading
-                  ? [...Array(6)].map((_, rowIndex) => (
+                  ? [...Array(7)].map((_, rowIndex) => (
                       <TableBodyRow key={rowIndex}>
-                        {[...Array(5)].map((_, cellIndex) => (
+                        {[...Array(7)].map((_, cellIndex) => (
                           <td key={cellIndex}>
                             <div className="skeleton skeleton-text">&nbsp;</div>
                           </td>
@@ -131,7 +131,6 @@ const ContractList = ({
                         >
                           {contract.clientName ?? '-'}
                         </td>
-                        {/* <td>{contract?.projectManagerNames[0]}</td> */}
                         <td>{contract?.projectManagerNames[0]}</td>
                         <td>
                           <StatusDropdown

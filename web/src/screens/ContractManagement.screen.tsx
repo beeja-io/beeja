@@ -185,7 +185,7 @@ const ContractManagement = () => {
             context={{
               contractList,
               isLoading,
-              fetchData,
+              updateContractList: fetchData,
             }}
           />
         )}

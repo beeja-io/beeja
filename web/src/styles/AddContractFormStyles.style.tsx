@@ -31,6 +31,7 @@ export const ResourceAllocationRow = styled.div`
   gap: 10px;
   height: 86px;
   align-items: flex-start;
+  margin-bottom: 20px;
 `;
 export const TextInput = styled.input`
   outline: none;

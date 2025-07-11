@@ -144,6 +144,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   const [isEndDateCalOpen, setIsEndDateCalOpen] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
   const calendarEndRef = useRef<HTMLDivElement>(null);
+  const [errors, setErrors] = useState<{
+    contractTitle?: string;
+    startDate?: string;
+    endDate?: string;
+    contractType?: string;
+  }>({});
   const formatDate = (dateStr: string | Date) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-CA');
@@ -253,6 +259,21 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     }
   };
 
+  const validateStepOne = () => {
+    const newErrors: typeof errors = {};
+
+    if (!formData.contractTitle)
+      newErrors.contractTitle = 'Please enter contract Name';
+    if (!formData.startDate) newErrors.startDate = 'Please select Start Date';
+    if (!formData.endDate) newErrors.endDate = 'Please select End Date';
+    if (!formData.contractType)
+      newErrors.contractType = 'Please select Contract Type';
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   const { t } = useTranslation();
 
   return (
@@ -305,10 +326,21 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       type="text"
                       placeholder="Enter Contract Name"
                       value={formData.contractTitle}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (errors.contractTitle) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractTitle: undefined,
+                          }));
+                        }
+                      }}
                       required
                       style={{ width: '400px' }}
                     />
+                    {errors.contractTitle && (
+                      <ValidationText>{errors.contractTitle}</ValidationText>
+                    )}
                   </InputLabelContainer>
 
                   <InputLabelContainer>
@@ -356,6 +388,10 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                                 ...prev,
                                 startDate: date.toLocaleDateString('en-CA'),
                               }));
+                              setErrors((prev) => ({
+                                ...prev,
+                                startDate: undefined,
+                              }));
                               setIsStartDateCalOpen(false);
                             }}
                             handleCalenderChange={() => {}}
@@ -363,6 +399,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         )}
                       </div>
                     </DateInputWrapper>
+                    {errors.startDate && (
+                      <ValidationText>{errors.startDate}</ValidationText>
+                    )}
                   </InputLabelContainer>
 
                   <InputLabelContainer>
@@ -405,7 +444,15 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     <select
                       name="contractType"
                       value={formData.contractType}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (errors.contractType) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractType: undefined,
+                          }));
+                        }
+                      }}
                       className="selectoption largeSelectOption"
                       required
                       style={{ width: '400px' }}
@@ -417,6 +464,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         </option>
                       ))}
                     </select>
+                    {errors.contractType && (
+                      <ValidationText>{errors.contractType}</ValidationText>
+                    )}
                   </InputLabelContainer>
 
                   <InputLabelContainer>
@@ -466,6 +516,10 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                                 ...prev,
                                 endDate: date.toLocaleDateString('en-CA'),
                               }));
+                              setErrors((prev) => ({
+                                ...prev,
+                                endDate: undefined,
+                              }));
                               setIsEndDateCalOpen(false);
                             }}
                             handleCalenderChange={() => {}}
@@ -473,6 +527,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         )}
                       </div>
                     </DateInputWrapper>
+                    {errors.endDate && (
+                      <ValidationText>{errors.endDate}</ValidationText>
+                    )}
                   </InputLabelContainer>
 
                   <InputLabelContainer>
@@ -540,7 +597,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   className="submit"
                   type="button"
                   onClick={() => {
-                    handleNextStep();
+                    if (validateStepOne()) {
+                      handleNextStep();
+                    }
                   }}
                 >
                   Save & Continue
@@ -551,7 +610,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         )}
 
         {step === 2 && (
-          // <ExpenseAddFormMainContainer className="formBackground">
           <form onSubmit={handleSubmitData}>
             <FormInputsContainer>
               <div>
@@ -611,7 +669,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
             </FormInputsContainer>
 
             <FormResourceContainer>
-              {/* <SelectWrapper> */}
               <FormField>
                 <Label>
                   Resources Allocation <RequiredAsterisk>*</RequiredAsterisk>
@@ -706,7 +763,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
               <Button className="submit" type="submit">
                 {t('Submit')}
               </Button>
-              {/* <button type="submit">Submit</button> */}
             </ButtonContainer>
           </form>
         )}

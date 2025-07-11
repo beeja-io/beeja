@@ -29,7 +29,12 @@ interface Props {
   onEditProject: (project: ProjectEntity) => void;
 }
 
-const ProjectList = ({ projectList, updateProjectList, isLoading }: Props) => {
+const ProjectList = ({
+  projectList,
+  updateProjectList,
+  isLoading,
+  onEditProject,
+}: Props) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const { t } = useTranslation();
@@ -61,9 +66,23 @@ const ProjectList = ({ projectList, updateProjectList, isLoading }: Props) => {
     navigate(`/projects/project-management/${projectId}/${clientId}`);
   };
 
-  const handleEditClick = (project: ProjectEntity) => {
-    setEditableProjectId(project.projectId);
-  };
+  // const handleEditClick = (project: ProjectEntity) => {
+  //   console.log(project, 'startDate');
+  //   navigate('/add-project', {
+  //     state: {
+  //       initialData: {
+  //         projectId: project.projectId,
+  //         name: project.name,
+  //         clientId: project.clientId,
+  //         clientName: project.clientName,
+  //         description: project.description,
+  //         startDate: project.startDate,
+  //         projectManagers: project.projectManagerNames ?? [],
+  //         // projectResources: project.projectResources ?? [],
+  //       },
+  //     },
+  //   });
+  // };
 
   return (
     <>
@@ -96,7 +115,7 @@ const ProjectList = ({ projectList, updateProjectList, isLoading }: Props) => {
                 {isLoading
                   ? [...Array(6).keys()].map((rowIndex) => (
                       <TableBodyRow key={rowIndex}>
-                        {[...Array(4).keys()].map((cellIndex) => (
+                        {[...Array(6).keys()].map((cellIndex) => (
                           <td key={cellIndex}>
                             <div className="skeleton skeleton-text">&nbsp;</div>
                           </td>
@@ -151,10 +170,10 @@ const ProjectList = ({ projectList, updateProjectList, isLoading }: Props) => {
                             project.projectManagerNames[0]}
                         </td>
 
-                        <td>
+                        {/* <td>
                           <StatusDropdown
                             value={project.projectStatus ?? 'NOT_STARTED'}
-                            disabled={editableProjectId !== project.projectId}
+                            // disabled={editableProjectId !== project.projectId}
                             onChange={async (newStatus) => {
                               try {
                                 setStatusUpdateLoading(true);
@@ -183,9 +202,46 @@ const ProjectList = ({ projectList, updateProjectList, isLoading }: Props) => {
                               }
                             }}
                           />
-                        </td>
+                        </td> */}
+
                         <td>
+                          <StatusDropdown
+                            value={project.projectStatus ?? 'NOT_STARTED'}
+                            onChange={async (newStatus) => {
+                              try {
+                                setStatusUpdateLoading(true);
+                                await updateProjectStatus(
+                                  project.projectId,
+                                  newStatus as ProjectStatus
+                                );
+                                setProjectList((prevList) =>
+                                  prevList.map((p) =>
+                                    p.projectId === project.projectId
+                                      ? {
+                                          ...p,
+                                          status: newStatus as ProjectStatus,
+                                        }
+                                      : p
+                                  )
+                                );
+                                handleShowSuccessMessage();
+                              } catch (error) {
+                                throw new Error(
+                                  'Failed to update status:' + error
+                                );
+                              } finally {
+                                setStatusUpdateLoading(false);
+                              }
+                            }}
+                          />
+                        </td>
+
+                        {/* <td>
                           <EditSVG onClick={() => handleEditClick(project)} />
+                        </td> */}
+
+                        <td>
+                          <EditSVG onClick={() => onEditProject(project)} />
                         </td>
                       </TableBodyRow>
                     ))}

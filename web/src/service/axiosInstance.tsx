@@ -8,6 +8,7 @@ import {
   ProjectStatus,
   Employee,
 } from '../entities/ProjectEntity';
+import { ProjectFormData } from '../components/directComponents/AddProjectForm.component';
 /* eslint-disable */
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -298,8 +299,19 @@ export const putClient = (
   return axiosInstance.put(`/projects/v1/clients/${id}`, data);
 };
 
+export const putProject = (
+  projectId: string,
+  data: ProjectFormData
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(`/projects/v1/projects/${projectId}`, data, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+};
+
 export const postProjects = (data: any): Promise<AxiosResponse> => {
-  return axiosInstance.post(`/projects/v1/projects`, data);
+  return axiosInstance.post(`/projects/v1/projects`, data, {
+    headers: { 'Content-Type': 'application/json' },
+  });
 };
 
 export const postContracts = (data: any): Promise<AxiosResponse> => {

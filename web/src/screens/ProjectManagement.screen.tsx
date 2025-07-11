@@ -12,7 +12,7 @@ import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { ProjectEntity } from '../entities/ProjectEntity';
-import { getAllProjects } from '../service/axiosInstance';
+import { getAllProjects, getProject } from '../service/axiosInstance';
 
 const ProjectManagement = () => {
   const navigate = useNavigate();
@@ -29,6 +29,7 @@ const ProjectManagement = () => {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+
   const [selectedProjectData, setSelectedProjectData] =
     useState<ProjectEntity | null>(null);
 
@@ -43,6 +44,17 @@ const ProjectManagement = () => {
     setIsCreateModalOpen(false);
     setSelectedProjectData(null);
   }, []);
+
+  const onEditProject = async (project: ProjectEntity) => {
+    try {
+      const res = await getProject(project.projectId, project.clientId);
+      setSelectedProjectData(res.data);
+      setIsEditMode(true);
+      setIsCreateModalOpen(true);
+    } catch (error) {
+      throw new Error('Error fetching project data:' + error);
+    }
+  };
 
   const handleSuccessMessage = () => {
     handleShowSuccessMessage();
@@ -120,6 +132,8 @@ const ProjectManagement = () => {
             handleClose={handleCloseModal}
             handleSuccessMessage={handleSuccessMessage}
             initialData={selectedProjectData ?? undefined}
+            refreshProjectList={updateProjectList}
+            isEditMode={isEditMode}
           />
         ) : (
           <Outlet
@@ -127,6 +141,7 @@ const ProjectManagement = () => {
               projectList: allProjects,
               isLoading: loading,
               updateProjectList,
+              onEditProject,
             }}
           />
         )}

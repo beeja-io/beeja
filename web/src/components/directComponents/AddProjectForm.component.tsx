@@ -21,6 +21,7 @@ import {
   getAllClient,
   getResourceManager,
   postProjects,
+  putProject,
 } from '../../service/axiosInstance.tsx';
 import Select from 'react-select';
 import { Employee } from '../../entities/ProjectEntity.tsx';
@@ -30,6 +31,8 @@ interface AddProjectFormProps {
   handleClose: () => void;
   handleSuccessMessage: () => void;
   initialData?: Partial<ProjectFormData>;
+  refreshProjectList: () => Promise<void>;
+  isEditMode?: boolean;
 }
 
 type OptionType = {
@@ -37,29 +40,33 @@ type OptionType = {
   label: string;
 };
 
-interface ProjectFormData {
+export interface ProjectFormData {
   clientId: string;
   name: string;
   clientName: string;
   projectManagers: string[];
-  resources: string[];
+  projectResources: string[];
   description: string;
   startDate: string;
+  projectId: string;
 }
 
 const AddProjectForm: React.FC<AddProjectFormProps> = ({
   handleClose,
   handleSuccessMessage,
   initialData,
+  refreshProjectList,
+  isEditMode,
 }) => {
-  const [formData, setFormData] = useState<ProjectFormData>({
+  const [projectFormData, setProjectFormData] = useState<ProjectFormData>({
     clientId: initialData?.clientId || '',
     name: initialData?.name || '',
     clientName: initialData?.clientName || '',
     projectManagers: initialData?.projectManagers || [],
-    resources: initialData?.resources || [],
+    projectResources: initialData?.projectResources || [],
     description: initialData?.description || '',
-    startDate: initialData?.startDate || '',
+    startDate: '',
+    projectId: initialData?.projectId || '',
   });
 
   const [startDate, setStartDate] = useState<Date | null>(null);
@@ -105,6 +112,19 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
       });
   }, []);
 
+  useEffect(() => {
+    if (initialData?.startDate) {
+      const parsedDate = new Date(initialData.startDate);
+      if (!isNaN(parsedDate.getTime())) {
+        setStartDate(parsedDate);
+        setProjectFormData((prev) => ({
+          ...prev,
+          startDate: parsedDate.toISOString().split('T')[0],
+        }));
+      }
+    }
+  }, []);
+
   const calendarRef = useRef<HTMLDivElement>(null);
   const handleCalendarToggle = (state: boolean) => {
     setIsStartDateCalOpen(state);
@@ -113,7 +133,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   const handleDateSelect = (date: Date | null) => {
     if (date) {
       setStartDate(date);
-      setFormData((prev) => ({
+      setProjectFormData((prev) => ({
         ...prev,
         startDate: date.toISOString().split('T')[0],
       }));
@@ -132,24 +152,29 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
     >
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setProjectFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const response = await postProjects(formData);
+      const response =
+        isEditMode && initialData?.projectId
+          ? await putProject(initialData.projectId, projectFormData)
+          : await postProjects(projectFormData);
+
       if (response?.status === 200 || response?.status === 201) {
         handleSuccessMessage();
         handleClose();
+        await refreshProjectList();
       } else {
         throw new Error(
           'Project submission failed with status: ' + response?.status
         );
       }
     } catch (error) {
-      throw new Error('An error occurred during submission.' + error);
+      throw new Error('An error occurred during submission: ' + error);
     }
   };
 
@@ -167,7 +192,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
               type="text"
               id="name"
               name="name"
-              value={formData.name}
+              value={projectFormData.name}
               onChange={handleChange}
               placeholder={t('Enter Project Name')}
               required
@@ -181,14 +206,14 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
 
             <SelectDropDown
               name="clientName"
-              value={formData.clientId}
+              value={projectFormData.clientId}
               onChange={(e) => {
                 const selectedValue = e.target.value;
                 const selectedOption = clientOptions.find(
                   (opt) => opt.value === selectedValue
                 );
                 if (selectedOption) {
-                  setFormData((prev) => ({
+                  setProjectFormData((prev) => ({
                     ...prev,
                     clientId: selectedOption.value,
                     clientName: selectedOption.label,
@@ -215,12 +240,15 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 isMulti
                 name="projectManagers"
                 value={managerOptions.filter((option) =>
-                  formData.projectManagers.includes(option.value)
+                  projectFormData.projectManagers.includes(option.value)
                 )}
                 options={managerOptions}
                 onChange={(selected) => {
                   const values = selected.map((opt) => opt.value);
-                  setFormData((prev) => ({ ...prev, projectManagers: values }));
+                  setProjectFormData((prev) => ({
+                    ...prev,
+                    projectManagers: values,
+                  }));
                 }}
                 classNamePrefix="react-select"
                 placeholder={t('Select Project Managers')}
@@ -237,12 +265,15 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 isMulti
                 name="resources"
                 value={resourceOptions.filter((option) =>
-                  formData.resources.includes(option.value)
+                  projectFormData.projectResources.includes(option.value)
                 )}
                 options={resourceOptions}
                 onChange={(selected) => {
                   const values = selected.map((opt) => opt.value);
-                  setFormData((prev) => ({ ...prev, resources: values }));
+                  setProjectFormData((prev) => ({
+                    ...prev,
+                    projectResources: values,
+                  }));
                 }}
                 classNamePrefix="react-select"
                 placeholder={t('Select Resources')}
@@ -254,7 +285,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
             <Input
               id="description"
               name="description"
-              value={formData.description}
+              value={projectFormData.description}
               onChange={handleChange}
               placeholder={t('Add Project Description')}
             />

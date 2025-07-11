@@ -36,6 +36,7 @@ import {
   IconWrapper,
 } from '../styles/ProjectStyles.style';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import ProjectTabSection from './ProjectTabSection';
 
 const ProjectDetailsSCreen: React.FC = () => {
   const { projectId, clientId } = useParams<{
@@ -155,6 +156,15 @@ const ProjectDetailsSCreen: React.FC = () => {
             </div>
           </div>
         </ClientInfo>
+        {client?.clientId && (
+          <ProjectTabSection
+            clientId={client.clientId}
+            projectId={project?.projectId}
+
+            // client={client}
+            // project={project}
+          />
+        )}
         <TableContainer></TableContainer>
       </LeftSection>
 
