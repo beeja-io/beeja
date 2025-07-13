@@ -10,6 +10,7 @@ import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.model.dto.EmployeeNameDTO;
+import com.beeja.api.projectmanagement.model.dto.ResourceAllocation;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.repository.ContractRepository;
 import com.beeja.api.projectmanagement.repository.ProjectRepository;
@@ -103,7 +104,16 @@ public class ContractServiceImpl implements ContractService {
       }
       if(request.getProjectResources() !=null && !request.getProjectResources().isEmpty()){
           try {
-              List<String> validProjectResources =  projectServiceImpl.validateAndFetchEmployees(request.getProjectResources());
+              List<String> employeeIds = request.getProjectResources().stream()
+                      .map(ResourceAllocation::getEmployeeId)
+                      .collect(Collectors.toList());
+
+              List<String> validatedEmployeeIds = projectServiceImpl.validateAndFetchEmployees(employeeIds);
+
+              List<ResourceAllocation> validProjectResources = request.getProjectResources().stream()
+                      .filter(resource -> validatedEmployeeIds.contains(resource.getEmployeeId()))
+                      .collect(Collectors.toList());
+
               contract.setProjectResources(validProjectResources);
           } catch (FeignClientException e){
               log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
@@ -177,8 +187,10 @@ public class ContractServiceImpl implements ContractService {
     if (request.getStartDate() != null) contract.setStartDate(request.getStartDate());
     if (request.getEndDate() != null) contract.setEndDate(request.getEndDate());
     if (request.getSignedBy() != null) contract.setSignedBy(request.getSignedBy());
-
-      if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
+    if (request.getBillingCurrency() != null) contract.setBillingCurrency(request.getBillingCurrency());
+    if(request.getContractType() != null) contract.setContractType(request.getContractType());
+    if(request.getBillingType() != null) contract.setBillingType(request.getBillingType());
+    if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
           try{
               List<String> validProjectManagers = projectServiceImpl.validateAndFetchEmployees(request.getProjectManagers());
               contract.setProjectManagers(validProjectManagers);
@@ -186,10 +198,19 @@ public class ContractServiceImpl implements ContractService {
               log.error(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS,e.getMessage(), e);
               throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_MANAGERS);
           }
-      }
+    }
       if(request.getProjectResources() !=null && !request.getProjectResources().isEmpty()){
           try {
-              List<String> validProjectResources =  projectServiceImpl.validateAndFetchEmployees(request.getProjectResources());
+              List<String> employeeIds = request.getProjectResources().stream()
+                      .map(ResourceAllocation::getEmployeeId)
+                      .collect(Collectors.toList());
+
+              List<String> validatedEmployeeIds = projectServiceImpl.validateAndFetchEmployees(employeeIds);
+
+              List<ResourceAllocation> validProjectResources = request.getProjectResources().stream()
+                      .filter(resource -> validatedEmployeeIds.contains(resource.getEmployeeId()))
+                      .collect(Collectors.toList());
+
               contract.setProjectResources(validProjectResources);
           } catch (FeignClientException e){
               log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
@@ -212,12 +233,17 @@ public class ContractServiceImpl implements ContractService {
     public List<Contract> getAllContractsInOrganization(String organizationId,int pageNumber, int pageSize, String projectId, ProjectStatus status) {
         try {
             Query query = buildContractQuery(organizationId, projectId, status);
-
             int skip = (pageNumber - 1) * pageSize;
             query.skip(skip).limit(pageSize);
             query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
 
-            return mongoTemplate.find(query, Contract.class);
+            List<Contract> contracts = mongoTemplate.find(query, Contract.class);
+
+            for (Contract contract : contracts) {
+                contract.setProjectResources(contract.normalizeProjectResources(contract.getRawProjectResources()));
+            }
+
+            return contracts;
         } catch (Exception e) {
             throw new RuntimeException(
                     String.valueOf(BuildErrorMessage.buildErrorMessage(
@@ -244,7 +270,7 @@ public class ContractServiceImpl implements ContractService {
         }
 
         query.addCriteria(Criteria.where("organizationId")
-                .is(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString()));
+                .is(organizationId));
 
         return query;
     }

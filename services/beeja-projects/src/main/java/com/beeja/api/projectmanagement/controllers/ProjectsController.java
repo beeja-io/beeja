@@ -6,9 +6,11 @@ import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
+import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
 import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 import com.beeja.api.projectmanagement.service.ProjectService;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,10 +55,10 @@ public class ProjectsController {
    */
   @GetMapping("/{projectId}/{clientId}")
   @HasPermission(PermissionConstants.GET_PROJECT)
-  public ResponseEntity<Project> getProjectById(
+  public ResponseEntity<List<ProjectDetailViewResponseDTO>> getProjectById(
       @PathVariable String projectId, @PathVariable String clientId) {
-    Project project = projectService.getProjectByIdAndClientId(projectId, clientId);
-    return ResponseEntity.ok(project);
+    ProjectDetailViewResponseDTO responseDTO = projectService.getProjectByIdAndClientId(projectId, clientId);
+    return ResponseEntity.ok(Collections.singletonList(responseDTO));
   }
 
   /**

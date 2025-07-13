@@ -7,12 +7,15 @@ import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
+import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.model.dto.EmployeeNameDTO;
+import com.beeja.api.projectmanagement.model.dto.ResourceAllocation;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
+import com.beeja.api.projectmanagement.repository.ContractRepository;
 import com.beeja.api.projectmanagement.repository.ProjectRepository;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
-import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
+import com.beeja.api.projectmanagement.responses.*;
 import com.beeja.api.projectmanagement.service.ProjectService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
 import com.beeja.api.projectmanagement.utils.Constants;
@@ -48,6 +51,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Autowired
   MongoTemplate mongoTemplate;
+
+    @Autowired
+    ContractRepository contractRepository;
   /**
    * Creates a new {@link Project} for a given {@link Client} based on the provided {@link
    * ProjectRequest}.
@@ -101,9 +107,6 @@ public class ProjectServiceImpl implements ProjectService {
     if (project.getDescription() != null) {
       newProject.setDescription(project.getDescription());
     }
-    if (project.getStatus() != null) {
-      newProject.setStatus(ProjectStatus.ACTIVE);
-    }
     if (project.getStartDate() != null) {
       newProject.setStartDate(project.getStartDate());
     }
@@ -113,7 +116,7 @@ public class ProjectServiceImpl implements ProjectService {
     if (project.getClientId() != null) {
       newProject.setClientId(project.getClientId());
     }
-
+    newProject.setStatus(ProjectStatus.IN_PROGRESS);
     if(project.getProjectManagers() != null && !project.getProjectManagers().isEmpty()){
       try {
         List<String> validProjectManagers = validateAndFetchEmployees(project.getProjectManagers());
@@ -160,29 +163,143 @@ public class ProjectServiceImpl implements ProjectService {
    *     and clientId
    */
   @Override
-  public Project getProjectByIdAndClientId(String projectId, String clientId) {
+  public ProjectDetailViewResponseDTO getProjectByIdAndClientId(String projectId, String clientId) {
+    String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+
     Project project;
     try {
-      project =
-          projectRepository.findByProjectIdAndClientIdAndOrganizationId(
-              projectId,
-              clientId,
-              UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+      project = projectRepository.findByProjectIdAndClientIdAndOrganizationId(projectId, clientId, organizationId);
     } catch (Exception e) {
       log.error(Constants.PROJECT_NOT_FOUND_WITH_CLIENT, e.getMessage());
       throw new ResourceNotFoundException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.DB_ERROR,
-              ErrorCode.RESOURCE_NOT_FOUND,
-              Constants.PROJECT_NOT_FOUND_WITH_CLIENT));
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.PROJECT_NOT_FOUND_WITH_CLIENT));
     }
+
     if (project == null) {
       throw new ResourceNotFoundException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.DB_ERROR, ErrorCode.RESOURCE_NOT_FOUND, Constants.PROJECT_NOT_FOUND));
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.DB_ERROR,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.PROJECT_NOT_FOUND));
     }
-    return project;
+
+    List<String> projectManagerIds = Optional.ofNullable(project.getProjectManagers()).orElse(Collections.emptyList());
+    List<String> projectResourceIds = Optional.ofNullable(project.getProjectResources()).orElse(Collections.emptyList());
+
+    List<Contract> contracts = contractRepository.findByProjectIdAndOrganizationId(projectId, organizationId);
+
+    Set<String> contractManagerIds = contracts.stream()
+            .flatMap(contract -> Optional.ofNullable(contract.getProjectManagers()).orElse(Collections.emptyList()).stream())
+            .collect(Collectors.toSet());
+
+    Set<String> contractResourceIds = contracts.stream()
+            .flatMap(contract -> Optional.ofNullable(contract.getProjectResources()).orElse(Collections.emptyList()).stream())
+            .map(ResourceAllocation::getEmployeeId)
+            .collect(Collectors.toSet());
+
+    Set<String> allEmployeeIds = new HashSet<>();
+    allEmployeeIds.addAll(projectManagerIds);
+    allEmployeeIds.addAll(projectResourceIds);
+    allEmployeeIds.addAll(contractManagerIds);
+    allEmployeeIds.addAll(contractResourceIds);
+
+    List<String> activeEmployeeIds = validateAndFetchEmployees(new ArrayList<>(allEmployeeIds));
+
+    Map<String, String> idToNameMap;
+    if (!activeEmployeeIds.isEmpty()) {
+      List<EmployeeNameDTO> employeeDetails = accountClient.getEmployeeNamesById(activeEmployeeIds);
+      idToNameMap = employeeDetails.stream()
+              .collect(Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
+    } else {
+        idToNameMap = new HashMap<>();
+    }
+
+    List<ProjectManagerView> projectManagerViews = projectManagerIds.stream()
+            .map(id -> new ProjectManagerView(id, idToNameMap.getOrDefault(id, "N/A"), null))
+            .collect(Collectors.toList());
+
+    List<ContractView> contractViews = new ArrayList<>();
+    for (Contract contract : contracts) {
+      List<ProjectManagerView> contractManagers = Optional.ofNullable(contract.getProjectManagers())
+              .orElse(Collections.emptyList())
+              .stream()
+              .map(id -> new ProjectManagerView(id, idToNameMap.getOrDefault(id, "N/A"), contract.getContractTitle()))
+              .collect(Collectors.toList());
+
+      ContractView contractView = new ContractView();
+      contractView.setContractId(contract.getContractId());
+      contractView.setName(contract.getContractTitle());
+      contractView.setStatus(contract.getStatus());
+      contractView.setStartDate(contract.getStartDate());
+      contractView.setProjectManagers(contractManagers);
+
+      contractViews.add(contractView);
+    }
+
+    List<ResourceView> resourceViews = new ArrayList<>();
+    for (Contract contract : contracts) {
+      contract.setProjectResources(contract.normalizeProjectResources(contract.getRawProjectResources()));
+      List<ResourceAllocation> allocations = Optional.ofNullable(contract.getProjectResources()).orElse(Collections.emptyList());
+      for (ResourceAllocation resource : allocations) {
+        ResourceView rv = new ResourceView();
+        rv.setEmployeeId(resource.getEmployeeId());
+        rv.setName(idToNameMap.getOrDefault(resource.getEmployeeId(), "N/A"));
+        rv.setContractName(contract.getContractTitle());
+        rv.setAllocationPercentage(resource.getAllocationPercentage());
+        resourceViews.add(rv);
+      }
+    }
+
+    List<String> projectManagerNames = projectManagerIds.stream()
+            .map(idToNameMap::get)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+    List<String> projectResourceNames = projectResourceIds.stream()
+            .map(idToNameMap::get)
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
+
+    String clientName = null;
+    Client client = clientRepository.findByClientIdAndOrganizationId(clientId, organizationId);
+    if (client != null) {
+      clientName = client.getClientName();
+    }
+
+    ProjectDetailViewResponseDTO dto = new ProjectDetailViewResponseDTO();
+    dto.setProjectId(project.getProjectId());
+    dto.setName(project.getName());
+    dto.setDescription(project.getDescription());
+    dto.setStatus(project.getStatus());
+    dto.setStartDate(project.getStartDate());
+    dto.setEndDate(project.getEndDate());
+    dto.setClientId(project.getClientId());
+    dto.setClientName(clientName);
+    dto.setBillingCurrency(project.getBillingCurrency());
+    dto.setClientContact((client.getContact()));
+    dto.setClientIndustries(client.getIndustry());
+    dto.setClientEmail(client.getEmail());
+    dto.setClientLogId(client.getLogoId());
+
+
+    dto.setProjectManagerIds(projectManagerIds);
+    dto.setProjectManagerNames(projectManagerNames);
+    dto.setProjectResourceIds(projectResourceIds);
+    dto.setProjectResourceNames(projectResourceNames);
+
+    dto.setProjectManagers(projectManagerViews);
+    dto.setContracts(contractViews);
+    dto.setResources(resourceViews);
+
+    return dto;
   }
+
+
+
+
 
   /**
    * Retrieves a list of {@link Project} entities associated with a specific {@link Client} in the
@@ -226,7 +343,7 @@ public class ProjectServiceImpl implements ProjectService {
 
       int skip = (pageNumber - 1) * pageSize;
       query.skip(skip).limit(pageSize);
-      query.with(Sort.by(Sort.Direction.DESC, "createdAt")); // Sort by createdAt descending
+      query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
 
       return mongoTemplate.find(query, Project.class);
     } catch (Exception e) {

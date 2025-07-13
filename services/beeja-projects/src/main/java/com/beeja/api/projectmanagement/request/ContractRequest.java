@@ -3,6 +3,7 @@ package com.beeja.api.projectmanagement.request;
 import com.beeja.api.projectmanagement.enums.ContractBillingCurrency;
 import com.beeja.api.projectmanagement.enums.ContractBillingType;
 import com.beeja.api.projectmanagement.enums.ContractType;
+import com.beeja.api.projectmanagement.model.dto.ResourceAllocation;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,5 @@ public class ContractRequest {
   private ContractType contractType;
   private ContractBillingType billingType;
   List<String> projectManagers;
-  List<String> projectResources;
+  List<ResourceAllocation> projectResources;
 }

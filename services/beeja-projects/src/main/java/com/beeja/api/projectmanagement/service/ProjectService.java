@@ -3,6 +3,7 @@ package com.beeja.api.projectmanagement.service;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
+import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
 import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface ProjectService {
    * @param clientId the unique identifier of the client
    * @return the {@link Project} object corresponding to the given project ID and client ID
    */
-  Project getProjectByIdAndClientId(String projectId, String clientId);
+  ProjectDetailViewResponseDTO getProjectByIdAndClientId(String projectId, String clientId);
 
   /**
    * Retrieves a list of projects associated with a given client within an organization.
