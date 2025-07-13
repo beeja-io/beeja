@@ -200,16 +200,42 @@ const AddClientForm = (props: AddClientFormProps) => {
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+  useEffect(() => {
+  return () => {
+    if (logoPreviewUrl) {
+      URL.revokeObjectURL(logoPreviewUrl);
+    }
+  };
+}, [logoPreviewUrl]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile);
-      setFormData((prevFormData) => ({
-        ...prevFormData,
-        logo: selectedFile,
-      }));
-      setLogoPreviewUrl(URL.createObjectURL(selectedFile));
+      // Validate file type and size
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
+      if (!validTypes.includes(selectedFile.type)) {
+        alert('Invalid file type. Please upload an image file (JPEG, PNG, GIF).');
+        return;
+      }
+      if (selectedFile.size > maxSizeInBytes) {
+        alert('File is too large. Please upload a file smaller than 5 MB.');
+        return;
+      }
+      
+      // Revoke previous blob URL if exists
+      if (logoPreviewUrl) {
+        URL.revokeObjectURL(logoPreviewUrl);
+      }
+      
+      // Set new file and generate blob URL
+      const objectUrl = URL.createObjectURL(selectedFile);
+    setLogoPreviewUrl(objectUrl);
+    setFile(selectedFile);
+    setFormData((prev) => ({
+      ...prev,
+      clientLogo: selectedFile,
+    }));
     }
   };
 
