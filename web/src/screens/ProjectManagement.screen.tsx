@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
-import AddProjectForm from '../components/directComponents/AddProjectForm.component';
+import AddProjectForm, { ProjectFormData } from '../components/directComponents/AddProjectForm.component';
 import { Button } from '../styles/CommonStyles.style';
 import {
   ExpenseHeadingSection,
@@ -16,22 +16,28 @@ import { getAllProjects, getProject } from '../service/axiosInstance';
 
 const ProjectManagement = () => {
   const navigate = useNavigate();
-  const goToPreviousPage = () => {
-    navigate(-1);
-  };
-
   const location = useLocation();
+  const { t } = useTranslation();
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedProjectData, setSelectedProjectData] = useState<Partial<ProjectFormData> | null>(null);
+  const [allProjects, setAllProjects] = useState<ProjectEntity[]>([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const [toastData, setToastData] = useState<{ heading: string; body: string } | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const isProjectDetailsRoute = matchPath(
     '/clients/client-management/:id',
     location.pathname
   );
 
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [isEditMode, setIsEditMode] = useState(false);
 
-  const [selectedProjectData, setSelectedProjectData] =
-    useState<ProjectEntity | null>(null);
+  const goToPreviousPage = () => {
+    navigate(-1);
+  };
 
   const handleOpenCreateModal = useCallback(() => {
     setIsEditMode(false);
@@ -48,7 +54,22 @@ const ProjectManagement = () => {
   const onEditProject = async (project: ProjectEntity) => {
     try {
       const res = await getProject(project.projectId, project.clientId);
-      setSelectedProjectData(res.data);
+      const data = res.data[0];
+
+      const mappedData: Partial<ProjectFormData> = {
+        projectId: data.projectId,
+        name: data.name,
+        description: data.description,
+        clientId: data.clientId,
+        clientName: data.clientName,
+        projectManagers: data.projectManagerIds || [],
+        projectResources: data.projectResourceIds || [],
+        startDate: data.startDate
+          ? new Date(data.startDate).toISOString().split('T')[0]
+          : '',
+      };
+
+      setSelectedProjectData(mappedData);
       setIsEditMode(true);
       setIsCreateModalOpen(true);
     } catch (error) {
@@ -56,21 +77,19 @@ const ProjectManagement = () => {
     }
   };
 
-  const handleSuccessMessage = () => {
-    handleShowSuccessMessage();
-    setIsCreateModalOpen(false);
-  };
-
-  const [loading, setLoading] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const handleShowSuccessMessage = () => {
+  const handleSuccessMessage = (projectId: string) => {
+    setToastData({
+      heading: 'Project Added Successfully.',
+      body: `New Project has been Added\nsuccessfully with project: "${projectId}".`,
+    });
     setShowSuccessMessage(true);
+    setIsCreateModalOpen(false);
+
     setTimeout(() => {
       setShowSuccessMessage(false);
-    }, 2000);
+    }, 3000);
   };
 
-  const [allProjects, setAllProjects] = useState<ProjectEntity[]>([]);
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
@@ -90,8 +109,6 @@ const ProjectManagement = () => {
   const updateProjectList = async (): Promise<void> => {
     await fetchData();
   };
-
-  const { t } = useTranslation();
 
   return (
     <>
@@ -147,12 +164,12 @@ const ProjectManagement = () => {
         )}
       </ExpenseManagementMainContainer>
 
-      {showSuccessMessage && (
+      {showSuccessMessage && toastData && (
         <ToastMessage
           messageType="success"
-          messageBody="THE_PROJECT_HAS_BEEN_ADDED"
-          messageHeading="SUCCESSFULLY_ADDED"
-          handleClose={handleShowSuccessMessage}
+          messageHeading={toastData.heading}
+          messageBody={toastData.body}
+          handleClose={() => setShowSuccessMessage(false)}
         />
       )}
     </>

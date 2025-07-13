@@ -16,6 +16,8 @@ import {
   TableListContainer,
 } from '../styles/ExpenseListStyles.style';
 
+import { toast } from 'sonner';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { ProjectEntity, ProjectStatus } from '../entities/ProjectEntity';
 import { updateProjectStatus } from '../service/axiosInstance';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
@@ -41,10 +43,7 @@ const ProjectList = ({
   const navigate = useNavigate();
 
   const [projectLists, setProjectList] = useState<ProjectEntity[]>([]);
-  const [statusUpdateLoading, setStatusUpdateLoading] = useState(false);
-  const [editableProjectId, setEditableProjectId] = useState<string | null>(
-    null
-  );
+  const [editLoadingProjectId, setEditLoadingProjectId] = useState<string | null>(null);
 
   useEffect(() => {
     setProjectList(projectList);
@@ -65,25 +64,6 @@ const ProjectList = ({
   const handleProjectClick = (projectId: string, clientId: string) => {
     navigate(`/projects/project-management/${projectId}/${clientId}`);
   };
-
-  // const handleEditClick = (project: ProjectEntity) => {
-  //   console.log(project, 'startDate');
-  //   navigate('/add-project', {
-  //     state: {
-  //       initialData: {
-  //         projectId: project.projectId,
-  //         name: project.name,
-  //         clientId: project.clientId,
-  //         clientName: project.clientName,
-  //         description: project.description,
-  //         startDate: project.startDate,
-  //         projectManagers: project.projectManagerNames ?? [],
-  //         // projectResources: project.projectResources ?? [],
-  //       },
-  //     },
-  //   });
-  // };
-
   return (
     <>
       <StyledDiv>
@@ -169,79 +149,49 @@ const ProjectList = ({
                           {project.projectManagerNames &&
                             project.projectManagerNames[0]}
                         </td>
-
-                        {/* <td>
-                          <StatusDropdown
-                            value={project.projectStatus ?? 'NOT_STARTED'}
-                            // disabled={editableProjectId !== project.projectId}
-                            onChange={async (newStatus) => {
-                              try {
-                                setStatusUpdateLoading(true);
-                                await updateProjectStatus(
-                                  project.projectId,
-                                  newStatus as ProjectStatus
-                                );
-                                setProjectList((prevList) =>
-                                  prevList.map((p) =>
-                                    p.projectId === project.projectId
-                                      ? {
-                                          ...p,
-                                          status: newStatus as ProjectStatus,
-                                        }
-                                      : p
-                                  )
-                                );
-                                handleShowSuccessMessage();
-                                setEditableProjectId(null);
-                              } catch (error) {
-                                throw new Error(
-                                  'Failed to update status:' + error
-                                );
-                              } finally {
-                                setStatusUpdateLoading(false);
-                              }
-                            }}
-                          />
-                        </td> */}
-
                         <td>
-                          <StatusDropdown
-                            value={project.projectStatus ?? 'NOT_STARTED'}
-                            onChange={async (newStatus) => {
-                              try {
-                                setStatusUpdateLoading(true);
-                                await updateProjectStatus(
-                                  project.projectId,
-                                  newStatus as ProjectStatus
+                         {project.projectStatus ? (
+                            <StatusDropdown
+                              value={project.projectStatus}
+                              onChange={(newStatus) => {
+                                toast.promise(
+                                  updateProjectStatus(project.projectId, newStatus as ProjectStatus)
+                                    .then(() => {
+                                      setProjectList((prevList) =>
+                                        prevList.map((p) =>
+                                          p.projectId === project.projectId
+                                            ? { ...p, projectStatus: newStatus as ProjectStatus }
+                                            : p
+                                        )
+                                      );
+                                    }),
+                                  {
+                                    loading: 'Updating project status...',
+                                    success: 'Project status updated successfully!',
+                                    error: 'Failed to update project status',
+                                  }
                                 );
-                                setProjectList((prevList) =>
-                                  prevList.map((p) =>
-                                    p.projectId === project.projectId
-                                      ? {
-                                          ...p,
-                                          status: newStatus as ProjectStatus,
-                                        }
-                                      : p
-                                  )
-                                );
-                                handleShowSuccessMessage();
-                              } catch (error) {
-                                throw new Error(
-                                  'Failed to update status:' + error
-                                );
-                              } finally {
-                                setStatusUpdateLoading(false);
-                              }
-                            }}
-                          />
+                              }}
+                            />
+                          ) : (
+                            <span>-</span>
+                          )}
                         </td>
-
-                        {/* <td>
-                          <EditSVG onClick={() => handleEditClick(project)} />
-                        </td> */}
-
                         <td>
-                          <EditSVG onClick={() => onEditProject(project)} />
+                          {editLoadingProjectId === project.projectId ? (
+                            <SpinAnimation />
+                          ) : (
+                            <EditSVG
+                              onClick={async () => {
+                                setEditLoadingProjectId(project.projectId); 
+                                try {
+                                  await onEditProject(project); 
+                                } finally {
+                                  setEditLoadingProjectId(null); 
+                                }
+                              }}
+                            />
+                          )}
                         </td>
                       </TableBodyRow>
                     ))}
@@ -254,7 +204,7 @@ const ProjectList = ({
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody="THE_PROJECT_HAS_BEEN_ADDED"
+          messageBody="The project Added Sucessfully"
           messageHeading="SUCCESSFULLY_UPDATED"
           handleClose={handleShowSuccessMessage}
         />

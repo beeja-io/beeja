@@ -1,41 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import {
-  LeftSection,
-  RightSection,
-  Container,
-  TableContainer,
   ClientInfo,
   ClientInfoDiv,
   ClientTitle,
-  ProjectInfo,
+  Container,
+  LeftSection,
   LogoPreview,
+  RightSection,
+  TableContainer
 } from '../styles/ClientStyles.style';
 
 import {
-  DotSVG,
-  EmailSVG,
   CallSVG,
-  AddSVG,
   CompanyIcon,
   DateIcon,
+  DotSVG,
+  EmailSVG
 } from '../svgs/ClientSvgs.svs';
 
-import { ClientResponse } from '../entities/ClientEntity';
-import { t } from 'i18next';
-import {
-  downloadClientLogo,
-  getClient,
-  getProject,
-} from '../service/axiosInstance';
 import { useParams } from 'react-router-dom';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { ProjectEntity } from '../entities/ProjectEntity';
 import {
-  RightSectionDiv,
+  downloadClientLogo,
+  getProject
+} from '../service/axiosInstance';
+import StatusDropdown from '../styles/ProjectStatusStyle.style';
+import {
   ClientInfoWrapper,
-  InfoText,
   IconWrapper,
+  InfoText,
+  RightSectionDiv,
 } from '../styles/ProjectStyles.style';
-import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import ProjectTabSection from './ProjectTabSection';
 
 const ProjectDetailsSCreen: React.FC = () => {
@@ -44,7 +40,6 @@ const ProjectDetailsSCreen: React.FC = () => {
     clientId: string;
   }>();
 
-  const [client, setClient] = useState<ClientResponse | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [project, setProject] = useState<ProjectEntity | null>(null);
   const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
@@ -56,9 +51,9 @@ const ProjectDetailsSCreen: React.FC = () => {
 
   useEffect(() => {
     const fetchLogoImage = async () => {
-      if (client?.logoId) {
+      if (project?.logoId) {
         try {
-          const response = await downloadClientLogo(client.logoId);
+          const response = await downloadClientLogo(project.logoId);
 
           if (!response.data || response.data.size === 0) {
             throw new Error('Received empty or invalid blob data');
@@ -85,7 +80,7 @@ const ProjectDetailsSCreen: React.FC = () => {
     return () => {
       setLogoUrl(null);
     };
-  }, [client?.logoId]);
+  }, [project?.logoId]);
 
   useEffect(() => {
     const fetchClient = async () => {
@@ -93,9 +88,7 @@ const ProjectDetailsSCreen: React.FC = () => {
       setLoading(true);
       try {
         const projectRes = await getProject(projectId, clientId);
-        const clientRes = await getClient(clientId);
-        setProject(projectRes.data);
-        setClient(clientRes.data);
+        setProject(projectRes.data[0]);
       } catch (error) {
         throw new Error('Failed to fetch client:' + error);
       } finally {
@@ -114,8 +107,19 @@ const ProjectDetailsSCreen: React.FC = () => {
     <Container>
       <LeftSection>
         <ClientInfo>
-          <ClientTitle> {project?.name}</ClientTitle>
+          <ClientTitle style={{ position: 'relative' }}>{project?.name}
+            {project?.status && (
+              <div style={{ position: 'absolute', top: 0, left: '42rem',transform: 'scale(0.7)'}}>
+        <StatusDropdown
+          value={project.status}
+          onChange={() => {}}
+          disabled
+        />
+      </div>
 
+    
+            )}
+          </ClientTitle>
           <div style={{ display: 'flex', marginBottom: '30px' }}>
             <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
               ID: {project?.projectId}
@@ -129,7 +133,7 @@ const ProjectDetailsSCreen: React.FC = () => {
                 paddingLeft: '10px',
               }}
             >
-              {client?.clientName}
+              {project?.clientName}
             </ClientInfoDiv>
             <div
               style={{ display: 'flex', alignItems: 'flex-start', gap: '4px' }}
@@ -156,13 +160,10 @@ const ProjectDetailsSCreen: React.FC = () => {
             </div>
           </div>
         </ClientInfo>
-        {client?.clientId && (
+        {project?.clientId && project?.projectId && (
           <ProjectTabSection
-            clientId={client.clientId}
-            projectId={project?.projectId}
-
-            // client={client}
-            // project={project}
+            clientId={project.clientId}
+            projectId={project.projectId}
           />
         )}
         <TableContainer></TableContainer>
@@ -170,28 +171,35 @@ const ProjectDetailsSCreen: React.FC = () => {
 
       <RightSection>
         <RightSectionDiv>
-          <div>Client Details</div>
+          <div style={{marginBottom: '5px'}}>Client Details</div>
 
-          {client?.clientId && (
+          {project?.clientId && (
             <ClientInfoWrapper>
               <LogoPreview>
                 <img src={logoUrl || undefined} alt="Logo Preview" />
               </LogoPreview>
               <InfoText>
                 <div className="id">
-                  ID: <span>{client.clientId}</span>
+                  ID: <span>{project.clientId}</span>
                 </div>
-                <div className="name">{client.clientName}</div>
-                <div className="industry">{client.industry}</div>
+                <div className="name">{project.clientName}</div>
+                <div className="industry">{project.clientIndustries}</div>
               </InfoText>
             </ClientInfoWrapper>
           )}
 
-          <IconWrapper>
-            <CallSVG />
+        <IconWrapper>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <CallSVG />
+    <span>{project?.clientContact || 'N/A'}</span>
+  </div>
 
-            <EmailSVG />
-          </IconWrapper>
+  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+    <EmailSVG />
+    <span>{project?.clientEmail || 'N/A'}</span>
+  </div>
+</IconWrapper>
+
         </RightSectionDiv>
       </RightSection>
     </Container>

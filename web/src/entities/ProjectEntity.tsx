@@ -2,25 +2,56 @@ export type ProjectStatus =
   | 'NOT_STARTED'
   | 'IN_PROGRESS'
   | 'COMPLETED'
-  | 'ON_HOLD'
   | 'CANCELLED';
 
-export interface ProjectEntity {
-  projectManagerNames: any;
+export interface ProjectEntity{
   projectStatus: string;
-  projectManagers: any[];
-  resources?: string[];
   projectId: string;
-  id?: string;
   name: string;
-  description?: string;
+  description: string;
   status: ProjectStatus;
-  startDate: string;
-  endDate?: string;
   clientId: string;
-  clientName?: string;
-  organizationId?: string;
+  clientName: string;
+  projectManagerIds: string[];
+  projectManagerNames: string[];
+  projectResourceIds: string[];
+  projectResourceNames: string[];
+  startDate: string;
+  clientIndustries:string;
+  clientContact:string;
+  clientEmail:string;
+  endDate: string | null;
+  billingCurrency: string | null;
+
+  projectManagers: {
+    employeeId: string;
+    name: string;
+    contractName: string | null;
+  }[];
+
+  contracts: {
+    contractId: string;
+    name: string;
+    status: ProjectStatus;
+    startDate: string;
+    projectManagers: {
+      employeeId: string;
+      name: string;
+      contractName: string;
+    }[];
+  }[];
+
+  resources: {
+    employeeId: string;
+    name: string;
+    contractName: string;
+    allocationPercentage: number;
+  }[];
+
+  logoId?: string;
+  industry?: string;
 }
+
 
 export interface Employee {
   employeeId: string;

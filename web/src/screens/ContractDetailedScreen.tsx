@@ -4,7 +4,6 @@ import {
   Container,
   TableContainer,
   ClientInfo,
-  ClientInfoDiv,
   LogoPreview,
   ClientTitle,
 } from '../styles/ClientStyles.style';
@@ -39,6 +38,7 @@ import {
   RightSubSectionDiv,
 } from '../styles/AddContractFormStyles.style';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import ContactTabSection from './ContractTabSection';
 
 const ContractDetailsScreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -56,11 +56,9 @@ const ContractDetailsScreen: React.FC = () => {
       if (client?.logoId) {
         try {
           const response = await downloadClientLogo(client.logoId);
-
           if (!response.data || response.data.size === 0) {
             throw new Error('Received empty or invalid blob data');
           }
-
           const reader = new FileReader();
           reader.onloadend = () => {
             const imageUrl = reader.result as string;
@@ -69,58 +67,52 @@ const ContractDetailsScreen: React.FC = () => {
           reader.onerror = () => {
             throw new Error('Error converting blob to base64');
           };
-
           reader.readAsDataURL(response.data);
         } catch (error) {
           throw new Error('Error fetching logo:' + error);
         }
       }
     };
-
     fetchLogoImage();
-
     return () => {
       setLogoUrl(null);
     };
   }, [client?.logoId]);
 
   useEffect(() => {
-    const fetchClient = async () => {
+    const fetchContract = async () => {
       if (!id) return;
       setIsLoading(true);
       try {
         const res = await getContractDetails(id);
-
         setContract(res.data);
         setClientId(res.data.clientId);
         setProjectId(res.data.projectId);
       } catch (error) {
-        throw new Error('Failed to fetch client:' + error);
+        throw new Error('Failed to fetch contract: ' + error);
       } finally {
         setIsLoading(false);
       }
     };
-
-    fetchClient();
+    fetchContract();
   }, [id]);
 
   useEffect(() => {
-    const fetchClient = async () => {
+    const fetchProjectAndClient = async () => {
       if (!projectId || !clientId) return;
       setIsLoading(true);
       try {
         const projectRes = await getProject(projectId, clientId);
         const clientRes = await getClient(clientId);
-        setProject(projectRes.data);
+        setProject(projectRes?.data[0]);
         setClient(clientRes.data);
       } catch (error) {
-        throw new Error('Failed to fetch client:' + error);
+        throw new Error('Failed to fetch project/client: ' + error);
       } finally {
         setIsLoading(false);
       }
     };
-
-    fetchClient();
+    fetchProjectAndClient();
   }, [projectId, clientId]);
 
   if (isLoading) {
@@ -131,115 +123,74 @@ const ContractDetailsScreen: React.FC = () => {
     <Container>
       <LeftSection>
         <ClientInfo>
-          <ClientTitle> {contract?.contractTitle}</ClientTitle>
-          <div
-            style={{
-              display: 'flex',
-              marginBottom: '30px',
-              borderBottom: '1px solid #E5E7EB',
-              paddingBottom: '20px',
-            }}
-          >
-            <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
-              ID: {contract?.contractId}
-            </ClientInfoDiv>
-            <DotSVG />
-            <ClientInfoDiv style={{ width: '150px' }}>
-              {contract?.contractType}
-            </ClientInfoDiv>
+  <ClientTitle>{contract?.contractTitle}</ClientTitle>
 
-            <DotSVG />
-            <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
-              {contract?.projectManagers[0]}
-            </ClientInfoDiv>
-            <DotSVG />
-            <DollarIcon />
+  <div
+    style={{
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      columnGap: '10px',
+      rowGap: '6px',
+      fontSize: '14px',
+      fontWeight: 500,
+      color: '#1f2937',
+      marginBottom: '8px',
+    }}
+  >
+    <span>ID: {contract?.contractId}</span>
+    <DotSVG />
+    <span>{contract?.contractType}</span>
+    <DotSVG />
+    <span>{contract?.billingType}</span>
+    <DotSVG />
+    <DollarIcon />
+    <span>{contract?.contractValue}</span>
+  </div>
+    
+  <div
+    style={{
+      display: 'flex',
+      flexWrap: 'wrap',
+      alignItems: 'center',
+      borderBottom: '1px solid #E5E7EB',
+      paddingBottom: '20px',
+      marginBottom: '20px',
+      columnGap: '10px',
+      rowGap: '6px',
+      fontSize: '14px',
+      fontWeight: 500,
+      color: '#1f2937',
+    }}
+  >
+    <CompanyIcon />
+    <span>{client?.clientName}</span>
+    <DotSVG />
+    <span>{project?.projectManagerNames}</span>
+    <DateIcon />
+    <span>
+      {contract?.startDate &&
+        new Date(contract.startDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit',
+        })}
+    </span>
+    <span>TO</span>
+    <DateIcon />
+    <span>
+      {contract?.endDate &&
+        new Date(contract.endDate).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit',
+        })}
+    </span>
+  </div>
+</ClientInfo>
 
-            <ClientInfoDiv style={{ width: '200px', paddingLeft: '10px' }}>
-              {contract?.contractValue}
-            </ClientInfoDiv>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              borderBottom: '1px solid #E5E7EB',
-              paddingBottom: '20px',
-            }}
-          >
-            <CompanyIcon />
-            <ClientInfoDiv
-              style={{ width: '130px', paddingLeft: '7px', display: 'flex' }}
-            >
-              {contract?.contractTitle}
-            </ClientInfoDiv>
-            <ClientInfoDiv
-              style={{
-                width: '130px',
-                paddingLeft: '7px',
-                paddingRight: '10px',
-                display: 'flex',
-                alignItems: 'flex-end',
-              }}
-            >
-              <CompanyIcon />
-              {client?.clientName}
-            </ClientInfoDiv>
-
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-            >
-              <ClientInfoDiv
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  width: '140px',
-                  paddingLeft: '20px',
-                  paddingRight: '10px',
-                  gap: '6px',
-                }}
-              >
-                <DateIcon />
-                <span>
-                  {contract?.startDate &&
-                    new Date(contract.startDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: '2-digit',
-                    })}
-                </span>
-              </ClientInfoDiv>
-
-              <ClientInfoDiv>TO</ClientInfoDiv>
-
-              <ClientInfoDiv
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  width: '140px',
-                  paddingLeft: '7px',
-                  paddingRight: '10px',
-                  gap: '6px',
-                }}
-              >
-                <DateIcon />
-                <span>
-                  {contract?.endDate &&
-                    new Date(contract.endDate).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: '2-digit',
-                    })}
-                </span>
-              </ClientInfoDiv>
-            </div>
-          </div>
-        </ClientInfo>
-        <TableContainer></TableContainer>
+        {contract?.contractId && <ContactTabSection contractId={contract.contractId} />}
+        <TableContainer />
       </LeftSection>
 
       <RightSection>
@@ -265,17 +216,20 @@ const ContractDetailsScreen: React.FC = () => {
             <EmailSVG />
           </IconWrapper>
 
-          <br />
+   
           <RightSubSectionDiv>
             <RightSectionHeading>Project Details</RightSectionHeading>
             <ProjectSeactionHeading>{client?.industry}</ProjectSeactionHeading>
 
             {project?.projectId && (
+              <>
               <ClientInfoWrapper>
                 <div className="name">{project.projectManagerNames}</div>
                 <DotSVG />
                 <div>{project.projectId}</div>
-                <DateIcon />
+              </ClientInfoWrapper>
+              <ClientInfoWrapper>
+                   <DateIcon />
                 <div className="industry">
                   {new Date(project.startDate).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -284,6 +238,7 @@ const ContractDetailsScreen: React.FC = () => {
                   })}
                 </div>
               </ClientInfoWrapper>
+              </>
             )}
           </RightSubSectionDiv>
         </RightSectionDiv>

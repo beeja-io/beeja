@@ -464,7 +464,7 @@ export const ClientInfo = styled.div`
   display: flex;
   flex-direction: column;
   width: 750px;
-  height: 200px;
+  height: 150px;
   background-color: #ffffff;
   border-radius: 8px;
   padding: 20px;

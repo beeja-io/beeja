@@ -339,7 +339,7 @@ export const getAllProjects = (): Promise<AxiosResponse<any>> => {
 export const getProject = (
   projectId: string,
   clientId: string
-): Promise<AxiosResponse<ProjectEntity>> => {
+): Promise<AxiosResponse<ProjectEntity[]>> => {
   return axiosInstance.get(`/projects/v1/projects/${projectId}/${clientId}`);
 };
 

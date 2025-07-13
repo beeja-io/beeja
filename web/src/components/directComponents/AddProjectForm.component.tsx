@@ -1,35 +1,36 @@
-import React, { useRef, useState, useEffect } from 'react';
 import { t } from 'i18next';
-import { Button } from '../../styles/CommonStyles.style';
-import Calendar from '../reusableComponents/Calendar.component';
-import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
-import {
-  FormContainer,
-  SectionTitle,
-  FormGrid,
-  FormField,
-  Label,
-  Input,
-  SelectDropDown,
-  ButtonContainer,
-  RequiredAsterisk,
-  DateInputWrapper,
-  SelectWrapper,
-  TextInput,
-} from '../../styles/ProjectStyles.style.tsx';
+import React, { useEffect, useRef, useState } from 'react';
+import Select from 'react-select';
+import { Client } from '../../entities/ClientEntity.tsx';
+import { Employee } from '../../entities/ProjectEntity.tsx';
 import {
   getAllClient,
   getResourceManager,
   postProjects,
   putProject,
 } from '../../service/axiosInstance.tsx';
-import Select from 'react-select';
-import { Employee } from '../../entities/ProjectEntity.tsx';
-import { Client } from '../../entities/ClientEntity.tsx';
+import { Button } from '../../styles/CommonStyles.style';
+import {
+  ButtonContainer,
+  DateInputWrapper,
+  FormContainer,
+  FormField,
+  FormGrid,
+  Input,
+  Label,
+  RequiredAsterisk,
+  SectionTitle,
+  SelectDropDown,
+  SelectWrapper,
+  TextInput,
+} from '../../styles/ProjectStyles.style.tsx';
+import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
+import SpinAnimation from '../loaders/SprinAnimation.loader.tsx';
+import Calendar from '../reusableComponents/Calendar.component';
 
 interface AddProjectFormProps {
   handleClose: () => void;
-  handleSuccessMessage: () => void;
+  handleSuccessMessage: (newProjectId: string) => void;
   initialData?: Partial<ProjectFormData>;
   refreshProjectList: () => Promise<void>;
   isEditMode?: boolean;
@@ -74,19 +75,17 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   const [resourceOptions, setResourceOptions] = useState<OptionType[]>([]);
   const [managerOptions, setManagerOptions] = useState<OptionType[]>([]);
   const [clientOptions, setClientOptions] = useState<OptionType[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
     getResourceManager()
       .then((response) => {
         const users = response.data as Employee[];
-
-        const userOptions = users.map((user) => {
-          const fullName = `${user.firstName} ${user.lastName}`;
-          return {
-            value: user.employeeId,
-            label: fullName,
-          };
-        });
+        const userOptions = users.map((user) => ({
+          value: user.employeeId,
+          label: `${user.firstName} ${user.lastName}`,
+        }));
         setManagerOptions(userOptions);
         setResourceOptions(userOptions);
       })
@@ -99,12 +98,10 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
     getAllClient()
       .then((response) => {
         const clients: Client[] = response.data;
-
         const clientOpts: OptionType[] = clients.map((client) => ({
           value: client.clientId,
           label: client.clientName,
         }));
-
         setClientOptions(clientOpts);
       })
       .catch((error) => {
@@ -126,6 +123,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   }, []);
 
   const calendarRef = useRef<HTMLDivElement>(null);
+
   const handleCalendarToggle = (state: boolean) => {
     setIsStartDateCalOpen(state);
   };
@@ -147,9 +145,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   };
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setProjectFormData((prev) => ({ ...prev, [name]: value }));
@@ -157,37 +153,37 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setIsSubmitting(true);
     try {
-      const response =
-        isEditMode && initialData?.projectId
-          ? await putProject(initialData.projectId, projectFormData)
-          : await postProjects(projectFormData);
+      const response = isEditMode && initialData?.projectId
+        ? await putProject(initialData.projectId, projectFormData)
+        : await postProjects(projectFormData);
 
       if (response?.status === 200 || response?.status === 201) {
-        handleSuccessMessage();
-        handleClose();
+        handleSuccessMessage(response.data.projectId);
+        setIsSuccess(true);
         await refreshProjectList();
+        setTimeout(() => {
+          handleClose();
+        }, 1500);
       } else {
-        throw new Error(
-          'Project submission failed with status: ' + response?.status
-        );
+        throw new Error('Project submission failed with status: ' + response?.status);
       }
     } catch (error) {
       throw new Error('An error occurred during submission: ' + error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <FormContainer>
       <SectionTitle>{t('Project Details')}</SectionTitle>
+      {isSuccess && <SpinAnimation />}
       <form onSubmit={handleSubmit}>
         <FormGrid>
           <FormField>
-            <Label htmlFor="name">
-              {t('Project Name')}
-              <RequiredAsterisk>*</RequiredAsterisk>
-            </Label>
+            <Label htmlFor="name">{t('Project Name')}<RequiredAsterisk>*</RequiredAsterisk></Label>
             <Input
               type="text"
               id="name"
@@ -199,19 +195,13 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
             />
           </FormField>
           <FormField>
-            <Label htmlFor="clientName">
-              {t('Client Name')}
-              <RequiredAsterisk>*</RequiredAsterisk>
-            </Label>
-
+            <Label htmlFor="clientName">{t('Client Name')}<RequiredAsterisk>*</RequiredAsterisk></Label>
             <SelectDropDown
               name="clientName"
               value={projectFormData.clientId}
               onChange={(e) => {
                 const selectedValue = e.target.value;
-                const selectedOption = clientOptions.find(
-                  (opt) => opt.value === selectedValue
-                );
+                const selectedOption = clientOptions.find(opt => opt.value === selectedValue);
                 if (selectedOption) {
                   setProjectFormData((prev) => ({
                     ...prev,
@@ -223,63 +213,47 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
             >
               <option value="">Select Client</option>
               {clientOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
             </SelectDropDown>
           </FormField>
 
           <SelectWrapper>
             <FormField>
-              <Label>
-                {t('Project Managers')}
-                <RequiredAsterisk>*</RequiredAsterisk>
-              </Label>
+              <Label>{t('Project Managers')}<RequiredAsterisk>*</RequiredAsterisk></Label>
               <Select
                 isMulti
                 name="projectManagers"
-                value={managerOptions.filter((option) =>
-                  projectFormData.projectManagers.includes(option.value)
-                )}
+                value={managerOptions.filter(option => projectFormData.projectManagers.includes(option.value))}
                 options={managerOptions}
                 onChange={(selected) => {
                   const values = selected.map((opt) => opt.value);
-                  setProjectFormData((prev) => ({
-                    ...prev,
-                    projectManagers: values,
-                  }));
+                  setProjectFormData((prev) => ({ ...prev, projectManagers: values }));
                 }}
                 classNamePrefix="react-select"
                 placeholder={t('Select Project Managers')}
               />
             </FormField>
           </SelectWrapper>
+
           <SelectWrapper>
             <FormField>
-              <Label>
-                {t('Resources')}
-                <RequiredAsterisk>*</RequiredAsterisk>
-              </Label>
+              <Label>{t('Resources')}<RequiredAsterisk>*</RequiredAsterisk></Label>
               <Select
                 isMulti
                 name="resources"
-                value={resourceOptions.filter((option) =>
-                  projectFormData.projectResources.includes(option.value)
-                )}
+                value={resourceOptions.filter(option => projectFormData.projectResources.includes(option.value))}
                 options={resourceOptions}
                 onChange={(selected) => {
                   const values = selected.map((opt) => opt.value);
-                  setProjectFormData((prev) => ({
-                    ...prev,
-                    projectResources: values,
-                  }));
+                  setProjectFormData((prev) => ({ ...prev, projectResources: values }));
                 }}
                 classNamePrefix="react-select"
                 placeholder={t('Select Resources')}
               />
             </FormField>
           </SelectWrapper>
+
           <FormField style={{ gridColumn: '1 / span 1' }}>
             <Label htmlFor="description">{t('Description')}</Label>
             <Input
@@ -292,10 +266,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
           </FormField>
 
           <FormField>
-            <Label htmlFor="startDate">
-              {t('Start Date')}
-              <RequiredAsterisk>*</RequiredAsterisk>
-            </Label>
+            <Label htmlFor="startDate">{t('Start Date')}<RequiredAsterisk>*</RequiredAsterisk></Label>
             <DateInputWrapper ref={calendarRef}>
               <TextInput
                 type="text"
@@ -307,10 +278,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 readOnly
                 autoComplete="off"
               />
-              <span
-                className="iconArea"
-                onClick={() => handleCalendarToggle(true)}
-              >
+              <span className="iconArea" onClick={() => handleCalendarToggle(true)}>
                 <CalenderIconDark />
               </span>
               <div className="calendarSpace">
@@ -329,14 +297,18 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
           </FormField>
         </FormGrid>
 
-        <ButtonContainer>
-          <Button onClick={handleClose} type="button">
-            {t('Cancel')}
-          </Button>
-          <Button className="submit" type="submit">
-            {t('Add')}
-          </Button>
-        </ButtonContainer>
+       {isSubmitting ? (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
+            <SpinAnimation />
+          </div>
+        ) : (
+          <ButtonContainer>
+            <Button onClick={handleClose} type="button">{t('Cancel')}</Button>
+            <Button className="submit" type="submit">
+              {isEditMode ? t('Update') : t('Add')}
+            </Button>
+          </ButtonContainer>
+)}
       </form>
     </FormContainer>
   );

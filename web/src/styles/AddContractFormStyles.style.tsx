@@ -231,7 +231,7 @@ export const ProjectSeactionHeading = styled.div`
   font-family: Nunito;
   font-weight: 700;
   font-style: Bold;
-  font-size: 18px;
+  font-size: 15px;
   leading-trim: NONE;
   line-height: 160%;
   letter-spacing: 0px;

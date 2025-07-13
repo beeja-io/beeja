@@ -30,17 +30,4 @@ export const ProjectStatus: ProjectStatusOption[] = [
     color: '#E03137',
     bgColor: '#E031371A',
   },
-  { value: 'ACTIVE', label: 'Active', color: '#2563EB', bgColor: '#DBEAFE' },
-  {
-    value: 'INACTIVE',
-    label: 'Inactive',
-    color: '#6B7280',
-    bgColor: '#E5E7EB',
-  },
-  {
-    value: 'ON_HOLD',
-    label: 'On Hold',
-    color: '#005792',
-    bgColor: '#0057921A',
-  },
 ];
