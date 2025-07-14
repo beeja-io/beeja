@@ -936,10 +936,10 @@ const MyProfileQuickDetailsComponent = ({
               </ZoomSliderContainer>
             </>
           }
-          handleModalSubmit={handleModalClose}
-          modalRightButtonText="Cancel"
-          modalLeftButtonText="Save"
-          handleModalLeftButtonClick={handleSaveAndUpload}
+          handleModalSubmit={handleSaveAndUpload}
+          modalRightButtonText="Save"
+          modalLeftButtonText="Cancel"
+          handleModalLeftButtonClick={handleModalClose}
           handleModalClose={handleModalClose}
           isImageSelected={!!selectedImage}
           isMonogramView={false}
