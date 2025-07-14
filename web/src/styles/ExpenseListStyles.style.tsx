@@ -191,7 +191,9 @@ export const TableListContainer = styled.section`
   margin-top: 60px;
   display: relative;
 `;
-export const TableHead = styled.thead``;
+export const TableHead = styled.thead`
+text-align:left;
+`;
 export const TableList = styled.table`
   border: 0;
   margin-top: 30px;
