@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeNameDTO {
-  private String employeeId;
-  private String fullName;
-  private boolean isActive;
+public class EmployeeIdNameDTO {
+    private String employeeId;
+    private String firstName;
+    private String lastName;
 }

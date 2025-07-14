@@ -57,6 +57,7 @@ public class Constants {
       "Error while fetching projects with provided clientId";
   public static final String ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION =
       "Error while fetching projects with provided organizationId";
+  public static final String FETCH_ERROR_FOR_PROJECT_MANAGERS = "Failed to fetch Project Manager names for IDs";
 
   // ========== Contract Errors ==========
   public static final String CONTRACT_NOT_FOUND = "Contract not found with given contractId";
@@ -89,6 +90,8 @@ public class Constants {
       "Received null response from file service for fileId: ";
   public static final String ERROR_IN_UPDATING_FILE_FROM_FILE_SERVICE =
       "Error in Updating File in File Service";
+    public static final String ERROR_IN_VALIDATE_PROJECT_MANAGERS = "Error while validating project managers via account service" ;
+  public static final String ERROR_IN_VALIDATE_PROJECT_RESOURCES = "Error while validating project resources via account service";
 
   // ========== Utility ==========
   public static String format(String message, Object... args) {

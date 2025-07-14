@@ -26,4 +26,7 @@ public interface ContractRepository extends MongoRepository<Contract, String> {
    * @return a list of {@link Contract} objects linked to the specified project and organization
    */
   List<Contract> findByProjectIdAndOrganizationId(String projectId, String organizationId);
+
+  List<Contract> findAllContractsByOrganizationId(String organizationId);
+
 }
