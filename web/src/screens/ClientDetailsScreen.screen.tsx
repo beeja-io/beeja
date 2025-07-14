@@ -1,34 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import {
-  LeftSection,
-  RightSection,
-  Container,
-  TableContainer,
+  AddressDiv,
   ClientInfo,
   ClientInfoDiv,
+  ClientInfoRowItem,
+  ClientInfoSection,
   ClientTitle,
-  ProjectInfo,
-  RightSectionDiv,
-  AddressDiv,
-  LogoPreview,
+  Container,
+  DotWrapper,
+  LeftSection,
   LogoNameWrapper,
+  LogoPreview,
+  RightSection,
+  RightSectionDiv,
+  TaxDetailsWrapper,
+  TaxItem,
+  TaxLabel,
+  TaxValue
 } from '../styles/ClientStyles.style';
 
 import {
-  DotSVG,
-  IndustrySVG,
-  EmailSVG,
   CallSVG,
-  AddSVG,
-} from '../svgs/ClientSvgs.svs';
+  DotSVG,
+  EmailSVG,
+  IndustrySVG
+} from '../svgs/ClientManagmentSvgs.svg';
 
-import { ClientResponse } from '../entities/ClientEntity';
 import { t } from 'i18next';
-import { downloadClientLogo, getClient } from '../service/axiosInstance';
 import { useParams } from 'react-router-dom';
-import AddProjectForm from '../components/directComponents/AddProjectForm.component';
-import CenterModalMain from '../components/reusableComponents/CenterModalMain.component';
+import { toast } from 'sonner';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import { ClientResponse } from '../entities/ClientEntity';
+import { downloadClientLogo, getClient } from '../service/axiosInstance';
+import ClientTabsSection from './ClientTabSection.screen';
 
 interface Props {
   client: ClientResponse | null;
@@ -53,7 +57,7 @@ const ClientDetailsScreen: React.FC = () => {
           const response = await downloadClientLogo(client.logoId);
 
           if (!response.data || response.data.size === 0) {
-            throw new Error('Received empty or invalid blob data');
+            toast.error('Received empty or invalid blob data');
           }
 
           const reader = new FileReader();
@@ -63,12 +67,12 @@ const ClientDetailsScreen: React.FC = () => {
             setLoading(false);
           };
           reader.onerror = () => {
-            throw new Error('Error converting blob to base64');
+            toast.error('Error converting blob to base64');
           };
 
           reader.readAsDataURL(response.data);
         } catch (error) {
-          throw new Error('Error fetching logo:' + error);
+          toast.error('fetching logo');
         }
       }
     };
@@ -88,7 +92,7 @@ const ClientDetailsScreen: React.FC = () => {
         const res = await getClient(id);
         setClient(res.data);
       } catch (error) {
-        throw new Error('Failed to fetch client:' + error);
+        toast.error('Failed to fetch client');
       } finally {
         setLoading(false);
       }
@@ -113,40 +117,49 @@ const ClientDetailsScreen: React.FC = () => {
             )}
             <ClientTitle> {client?.clientName}</ClientTitle>
           </LogoNameWrapper>
-          <div style={{ display: 'flex', marginBottom: '30px' }}>
-            <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
-              ID: {client?.clientId}
-            </ClientInfoDiv>
-            <DotSVG />
-            <ClientInfoDiv style={{ width: '150px' }}>
-              {client?.clientType}
-            </ClientInfoDiv>
+          <ClientInfoSection>
+          <ClientInfoRowItem>
+            <ClientInfoDiv>{t('ID')}: {client?.clientId}</ClientInfoDiv>
+          </ClientInfoRowItem>
 
-            <DotSVG />
+          <DotWrapper><DotSVG /></DotWrapper>
+
+          <ClientInfoRowItem>
+            <ClientInfoDiv>{client?.clientType}</ClientInfoDiv>
+          </ClientInfoRowItem>
+
+          <DotWrapper><DotSVG /></DotWrapper>
+
+          <ClientInfoRowItem>
             <IndustrySVG />
-            <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
-              {client?.industry}
-            </ClientInfoDiv>
-            <DotSVG />
-            <EmailSVG />
+            <ClientInfoDiv>{client?.industry}</ClientInfoDiv>
+          </ClientInfoRowItem>
 
-            <ClientInfoDiv style={{ width: '200px', wordWrap: 'break-word' }}>
-              {client?.email}
-            </ClientInfoDiv>
-            <DotSVG />
+          <DotWrapper><DotSVG /></DotWrapper>
+
+          <ClientInfoRowItem>
+            <EmailSVG />
+            <ClientInfoDiv>{client?.email}</ClientInfoDiv>
+          </ClientInfoRowItem>
+
+          <DotWrapper><DotSVG /></DotWrapper>
+
+          <ClientInfoRowItem>
             <CallSVG />
-            <ClientInfoDiv style={{ width: '100px' }}>
-              {t('91+')}
-              {client?.contact}
-            </ClientInfoDiv>
-          </div>
+            <ClientInfoDiv>{t('91+')}{client?.contact}</ClientInfoDiv>
+          </ClientInfoRowItem>
+        </ClientInfoSection>
         </ClientInfo>
-        <TableContainer></TableContainer>
+         {client?.clientId && (
+          <ClientTabsSection
+              clientId={client.clientId}
+            />
+          )}
       </LeftSection>
 
       <RightSection>
         <RightSectionDiv>
-          <div>Primary Address</div>
+          <div>{t('Primary Address')}</div>
           <AddressDiv>
             {client?.primaryAddress?.street},{client?.primaryAddress?.city},
             {client?.primaryAddress?.state},{client?.primaryAddress?.country},
@@ -154,7 +167,7 @@ const ClientDetailsScreen: React.FC = () => {
           </AddressDiv>
         </RightSectionDiv>
         <RightSectionDiv>
-          <div>Billing Address</div>
+          <div>{t('Billing Address')}</div>
           <AddressDiv>
             {client?.primaryAddress?.street},{client?.primaryAddress?.city},
             {client?.primaryAddress?.state},{client?.primaryAddress?.country},
@@ -163,42 +176,21 @@ const ClientDetailsScreen: React.FC = () => {
         </RightSectionDiv>
         <RightSectionDiv>
           <div>{t('Tax Details')}</div>
-          <div style={{ display: 'flex' }}>
-            <AddressDiv style={{ width: '130px' }}>
-              {t(' VAT/ GAT Number')}
-            </AddressDiv>
-            <AddressDiv style={{ paddingLeft: '20px' }}>
-              {client?.taxDetails?.taxNumber ?? '-'}
-            </AddressDiv>
-          </div>
-          <div style={{ display: 'flex' }}>
-            <AddressDiv style={{ width: '130px' }}>
-              {t(' Tax Category')}
-            </AddressDiv>
-            <AddressDiv style={{ paddingLeft: '20px' }}>
-              {client?.taxDetails?.taxCategory ?? '-'}
-            </AddressDiv>
-          </div>
+          <TaxDetailsWrapper>
+            <TaxItem>
+              <TaxLabel>{t('VAT/ GAT Number')}:</TaxLabel>
+              <TaxValue>{client?.taxDetails?.taxNumber ?? '-'}</TaxValue>
+            </TaxItem>
+            <TaxItem>
+              <TaxLabel>{t('Tax Category')}:</TaxLabel>
+              <TaxValue>{client?.taxDetails?.taxCategory ?? '-'}</TaxValue>
+            </TaxItem>
+          </TaxDetailsWrapper>
         </RightSectionDiv>
-      </RightSection>
-      {/* {isAddProjectModalOpen && client?.clientId && (
-        <CenterModalMain
-          heading="ADD_NEW_PROJECT"
-          modalClose={handleAddProjectModalToggle}
-          actualContentContainer={
-            <AddProjectForm
-              handleClose={handleAddProjectModalToggle}
-              onCancel={handleAddProjectModalToggle}
-              onSubmit={() => {
-                handleAddProjectModalToggle();
-              }}
-              clientId={client.clientId}
-            />
-          }
-        />
-      )} */}
-    </Container>
-  );
-};
+
+              </RightSection>
+            </Container>
+          );
+        };
 
 export default ClientDetailsScreen;

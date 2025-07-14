@@ -1,65 +1,65 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from '../../styles/CommonStyles.style';
-import {
-  TextInput,
-  ValidationText,
-} from '../../styles/DocumentTabStyles.style';
-import {
-  FormContainer,
-  StepsContainer,
-  StepLabel,
-  FormInputsContainer,
-  LogoLabel,
-  LogoUploadContainer,
-  UploadText,
-  BrowseText,
-  FormInputs,
-  HeadingDiv,
-  CheckBoxOuterContainer,
-  StyledCheckbox,
-  LabelText,
-  SubHeadingDiv,
-  HeadingContainer,
-  InfoRow,
-  InfoText,
-  InfoBlock,
-  AddressBlock,
-  BasicOrganizationDetailsContainer,
-  AddClientButtons,
-  AddFormMainContainer,
-  InputLabelContainer,
-  LogoContainer,
-  StepWrapper,
-  Line,
-  InputLabelLogoContainer,
-  LogoPreview,
-  FileName,
-  RemoveButton,
-  LogoNameWrapper,
-  EditIconWrapper,
-  SectionHeader,
-} from '../../styles/ClientStyles.style';
-import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
-import { postClient, putClient } from '../../service/axiosInstance';
-import ToastMessage from '../reusableComponents/ToastMessage.component';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import {
-  clientOptions,
-  ClientType,
-  Industry,
-  TaxCategory,
-} from '../reusableComponents/ClientEnums.component';
-import {
-  UploadSVG,
-  EditSVG,
-  DotSVG,
-  EmailSVG,
-  CallSVG,
-  CheckIcon,
-  LineIcon,
-} from '../../svgs/ClientSvgs.svs';
 import { useTranslation } from 'react-i18next';
 import { ClientDetails } from '../../entities/ClientEntity';
+import { postClient, putClient } from '../../service/axiosInstance';
+import {
+    AddClientButtons,
+    AddFormMainContainer,
+    AddressBlock,
+    BasicOrganizationDetailsContainer,
+    BrowseText,
+    CheckBoxOuterContainer,
+    EditIconWrapper,
+    FileName,
+    FormContainer,
+    FormInputs,
+    FormInputsContainer,
+    HeadingContainer,
+    HeadingDiv,
+    InfoBlock,
+    InfoRow,
+    InfoText,
+    InputLabelContainer,
+    InputLabelLogoContainer,
+    LabelText,
+    Line,
+    LogoContainer,
+    LogoLabel,
+    LogoNameWrapper,
+    LogoPreview,
+    LogoUploadContainer,
+    RemoveButton,
+    SectionHeader,
+    StepLabel,
+    StepsContainer,
+    StepWrapper,
+    StyledCheckbox,
+    SubHeadingDiv,
+    UploadText,
+} from '../../styles/ClientStyles.style';
+import { Button } from '../../styles/CommonStyles.style';
+import {
+    TextInput,
+    ValidationText,
+} from '../../styles/DocumentTabStyles.style';
+import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
+import {
+    CallSVG,
+    CheckIcon,
+    DotSVG,
+    EditSVG,
+    EmailSVG,
+    LineIcon,
+    UploadSVG,
+} from '../../svgs/ClientManagmentSvgs.svg';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import {
+    clientOptions,
+    ClientType,
+    Industry,
+    TaxCategory,
+} from '../reusableComponents/ClientEnums.component';
+import ToastMessage from '../reusableComponents/ToastMessage.component';
 
 type AddClientFormProps = {
   handleClose: () => void;
@@ -600,7 +600,7 @@ const AddClientForm = (props: AddClientFormProps) => {
               <HeadingDiv>{t('Primary Address')}</HeadingDiv>
               <FormInputs>
                 <div style={{ fontFamily: 'Nunito' }}>
-                  <InputLabelContainer style={{ marginBottom: '1px' }}>
+                  <InputLabelContainer>
                     <label>{t('Street')}</label>
                     <TextInput
                       type="text"
@@ -821,9 +821,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                 </EditIconWrapper>
               </SectionHeader>
             </HeadingContainer>
-            <FormInputsContainer
-              style={{ backgroundColor: 'rgba(248, 249, 251, 1)' }}
-            >
+            <FormInputsContainer>
               <InfoBlock style={{ display: 'flex' }}>
                 <SubHeadingDiv style={{ width: '100px' }}>
                   {t('Tax Category')}
@@ -831,7 +829,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                 <InfoText>{formData.taxDetails.taxCategory}</InfoText>
               </InfoBlock>
               <InfoBlock style={{ display: 'flex' }}>
-                <SubHeadingDiv style={{ width: '100px' }}>
+                <SubHeadingDiv>
                   {t('GST Number')}
                 </SubHeadingDiv>
                 <InfoText>{formData.taxDetails.taxNumber}</InfoText>
@@ -845,9 +843,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                 </EditIconWrapper>
               </SectionHeader>
             </HeadingContainer>
-            <FormInputsContainer
-              style={{ backgroundColor: 'rgba(248, 249, 251, 1)' }}
-            >
+            <FormInputsContainer>
               <div>
                 <AddressBlock>
                   <SubHeadingDiv>{t('Street')}</SubHeadingDiv>

@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { ProjectEntity } from '../entities/ProjectEntity';
 import { getAllProjects, getProject } from '../service/axiosInstance';
+import { toast } from 'sonner';
 
 const ProjectManagement = () => {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ const ProjectManagement = () => {
       setIsEditMode(true);
       setIsCreateModalOpen(true);
     } catch (error) {
-      throw new Error('Error fetching project data:' + error);
+      toast.error('Error fetching project data');
     }
   };
 
@@ -98,7 +99,7 @@ const ProjectManagement = () => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      throw new Error('Error fetching project data: ' + error);
+      toast.error('Error Fetching Project data');
     }
   }, []);
 

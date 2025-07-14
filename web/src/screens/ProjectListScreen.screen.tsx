@@ -21,7 +21,7 @@ import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { ProjectEntity, ProjectStatus } from '../entities/ProjectEntity';
 import { updateProjectStatus } from '../service/axiosInstance';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
-import { EditSVG } from '../svgs/ClientSvgs.svs';
+import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
 
 interface Props {
@@ -81,14 +81,12 @@ const ProjectList = ({
             <TableList>
               <TableHead>
                 <tr>
-                  <th style={{ textAlign: 'left' }}>{t('Project ID')}</th>
-                  <th style={{ textAlign: 'left' }}>{t('Project Name')}</th>
-                  <th style={{ textAlign: 'left' }}>{t('Client Name')}</th>
-                  <th style={{ textAlign: 'left' }}>
-                    {t('Project Manager(s)')}
-                  </th>
-                  <th style={{ textAlign: 'left' }}>{t('Status')}</th>
-                  <th style={{ textAlign: 'left' }}>{t('ACTION')}</th>
+                  <th>{t('Project ID')}</th>
+                  <th>{t('Project Name')}</th>
+                  <th>{t('Client Name')}</th>
+                  <th>{t('Project Manager(s)')}</th>
+                  <th>{t('Status')}</th>
+                  <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
               <tbody>

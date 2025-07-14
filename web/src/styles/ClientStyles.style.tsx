@@ -71,8 +71,10 @@ export const FormInputsContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   gap: 10px;
-  width: 1160px;
+  width: 100%;
+  max-width: 1160px;
   margin-left: 80px;
+  backgroundColor: 'rgba(248, 249, 251, 1)'
 `;
 
 export const FormResourceContainer = styled.div`
@@ -140,7 +142,7 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
 
   &.fileInputSelected {
     .selectedFilesMain {
-      display: 'flex';
+      display: flex;
       flex-direction: row;
       flex-wrap: wrap;
       max-width: 400px;
@@ -395,7 +397,7 @@ export const SubHeadingDiv = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
   color: #818181;
-  width: 90px;
+  width: 100px;
 `;
 
 export const HeadingContainer = styled.div`
@@ -442,14 +444,6 @@ export const AddressBlock = styled.div`
   padding: 10px 0 10px 10px;
   display: flex;
 `;
-// export const BasicOrganizationDetailsContainer = styled.div`
-//   margin-bottom: 5px;
-//   margin-top: 5px;
-//   width: 850px;
-//   margin-left: 80px;
-//   background-color: rgba(248, 249, 251, 1);
-// `;
-
 export const BasicOrganizationDetailsContainer = styled.div`
   margin-bottom: 5px;
   margin-top: 5px;
@@ -464,11 +458,38 @@ export const ClientInfo = styled.div`
   display: flex;
   flex-direction: column;
   width: 750px;
-  height: 150px;
   background-color: #ffffff;
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+`;
+export const ClientInfoRowItem = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
+export const DotWrapper = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 6px;
+
+  svg {
+    width: 6px;
+    height: 6px;
+  }
+`;
+
+export const ClientInfoSection = styled.section`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  row-gap: 12px;
+  align-items: center;
 `;
 
 export const TableContainer = styled.div`
@@ -510,7 +531,7 @@ export const ClientInfoDiv = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
   color: #818181;
-  width: 70px;
+  // width: 70px;
 `;
 
 export const ClientTitle = styled.div`
@@ -568,4 +589,39 @@ export const AddressDiv = styled.div`
 
 export const nav_AddClient = styled.span`
   transform: rotate(90deg);
+`;
+
+export const CountBadge = styled.span`
+  background-color: #f1f2f4;
+  color: #333;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  margin-left: 6px;
+`;
+export const TaxDetailsWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 0.5rem;
+`;
+
+export const TaxItem = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+`;
+export const TaxLabel = styled.div`
+  color: #555;
+`;
+
+export const TaxValue = styled.div`
+  font-weight: 600; // slightly bold
+  color: #222;
+`;
+
+export const DateIconWrapper = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 `;

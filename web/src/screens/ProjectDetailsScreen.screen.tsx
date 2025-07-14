@@ -16,7 +16,7 @@ import {
   DateIcon,
   DotSVG,
   EmailSVG
-} from '../svgs/ClientSvgs.svs';
+} from '../svgs/ClientManagmentSvgs.svg';
 
 import { useParams } from 'react-router-dom';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
@@ -25,12 +25,14 @@ import {
   downloadClientLogo,
   getProject
 } from '../service/axiosInstance';
-import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import {
   ClientInfoWrapper,
+  ClientTitleWrapper,
   IconWrapper,
+  InfoRow,
   InfoText,
   RightSectionDiv,
+  StyledStatusDropdown
 } from '../styles/ProjectStyles.style';
 import ProjectTabSection from './ProjectTabSection';
 
@@ -107,71 +109,49 @@ const ProjectDetailsSCreen: React.FC = () => {
     <Container>
       <LeftSection>
         <ClientInfo>
-          <ClientTitle style={{ position: 'relative' }}>{project?.name}
+          <ClientTitleWrapper>
+            <ClientTitle>{project?.name}</ClientTitle>
             {project?.status && (
-              <div style={{ position: 'absolute', top: 0, left: '42rem',transform: 'scale(0.7)'}}>
-        <StatusDropdown
-          value={project.status}
-          onChange={() => {}}
-          disabled
-        />
-      </div>
-
-    
+              <StyledStatusDropdown
+                value={project.status}
+                onChange={() => {}}
+                disabled
+              />
             )}
-          </ClientTitle>
-          <div style={{ display: 'flex', marginBottom: '30px' }}>
-            <ClientInfoDiv style={{ width: '100px', paddingRight: '10px' }}>
-              ID: {project?.projectId}
-            </ClientInfoDiv>
+          </ClientTitleWrapper>
+
+          <InfoRow>
+            <ClientInfoDiv>ID: {project?.projectId}</ClientInfoDiv>
             <DotSVG />
             <CompanyIcon />
-            <ClientInfoDiv
-              style={{
-                width: '100px',
-                paddingRight: '10px',
-                paddingLeft: '10px',
-              }}
-            >
-              {project?.clientName}
+            <ClientInfoDiv>{project?.clientName}</ClientInfoDiv>
+            <DotSVG />
+            <ClientInfoDiv>
+              <DateIcon />
+              &nbsp;
+              {project?.startDate &&
+                new Date(project.startDate).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: '2-digit',
+                })}
             </ClientInfoDiv>
-            <div
-              style={{ display: 'flex', alignItems: 'flex-start', gap: '4px' }}
-            >
-              <DotSVG />
-              <ClientInfoDiv
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  width: '250px',
-                  wordWrap: 'break-word',
-                }}
-              >
-                <span>Start Date :</span> &nbsp;
-                <DateIcon /> &nbsp;
-                {project?.startDate &&
-                  new Date(project.startDate).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: '2-digit',
-                  })}
-              </ClientInfoDiv>
-            </div>
-          </div>
+          </InfoRow>
         </ClientInfo>
+
         {project?.clientId && project?.projectId && (
           <ProjectTabSection
             clientId={project.clientId}
             projectId={project.projectId}
           />
         )}
-        <TableContainer></TableContainer>
+
+        <TableContainer />
       </LeftSection>
 
       <RightSection>
         <RightSectionDiv>
-          <div style={{marginBottom: '5px'}}>Client Details</div>
+          <div>Client Details</div>
 
           {project?.clientId && (
             <ClientInfoWrapper>
@@ -188,18 +168,17 @@ const ProjectDetailsSCreen: React.FC = () => {
             </ClientInfoWrapper>
           )}
 
-        <IconWrapper>
-  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-    <CallSVG />
-    <span>{project?.clientContact || 'N/A'}</span>
-  </div>
+          <IconWrapper>
+            <div>
+              <CallSVG />
+              <span>{project?.clientContact || 'N/A'}</span>
+            </div>
 
-  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-    <EmailSVG />
-    <span>{project?.clientEmail || 'N/A'}</span>
-  </div>
-</IconWrapper>
-
+            <div>
+              <EmailSVG />
+              <span>{project?.clientEmail || 'N/A'}</span>
+            </div>
+          </IconWrapper>
         </RightSectionDiv>
       </RightSection>
     </Container>

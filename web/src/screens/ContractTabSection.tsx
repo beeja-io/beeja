@@ -1,4 +1,3 @@
-// src/screens/ContactTabSection.tsx
 import React, { useState } from 'react';
 import {
   Container,
@@ -7,6 +6,7 @@ import {
   TabContent,
   Tabs
 } from '../styles/ProjectTabSectionStyles.style';
+import { useTranslation } from 'react-i18next';
 
 interface ContactTabSectionProps {
   contractId: string;
@@ -14,15 +14,19 @@ interface ContactTabSectionProps {
 
 const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
   const [activeTab, setActiveTab] = useState<'Resources' | 'Description'>('Resources');
+  const { t } = useTranslation();
 
   return (
-    <Container style={{ maxWidth: '1400px', marginTop: '2rem' }}>
+    <Container>
       <Tabs>
-        {['Resources', 'Description'].map((tab) => (
-          <Tab key={tab} active={activeTab === tab} onClick={() => setActiveTab(tab as any)}>
-            {tab}
-          </Tab>
-        ))}
+        {[t('resources'), t('description')].map((tabLabel, index) => {
+          const tabKey = index === 0 ? 'Resources' : 'Description';
+          return (
+            <Tab key={tabKey} active={activeTab === tabKey} onClick={() => setActiveTab(tabKey as any)}>
+              {tabLabel}
+            </Tab>
+          );
+        })}
       </Tabs>
 
       <TabContent>
@@ -30,16 +34,16 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
           <ProjectsTable>
             <thead>
               <tr>
-                <th>Employee ID</th>
-                <th>Name</th>
-                <th>Contract Name</th>
-                <th>Allocation</th>
+                <th>{t('employeeId')}</th>
+                <th>{t('name')}</th>
+                <th>{t('contractName')}</th>
+                <th>{t('allocation')}</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td colSpan={4} style={{ textAlign: 'center' }}>
-                  Static Resource Table (No Data)
+                <td >
+                  {t('staticResourceTableNoData')}
                 </td>
               </tr>
             </tbody>
@@ -47,9 +51,8 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
         )}
 
         {activeTab === 'Description' && (
-          <div style={{ padding: '1rem', fontSize: '16px', lineHeight: '1.5' }}>
-            <p><strong>Description:</strong> Placeholder description for contract details.</p>
-            <p>You can describe the contract goals, responsibilities, and terms here.</p>
+          <div>
+            <p><strong>{t('description')}:</strong> {t('No discription Found')}</p>
           </div>
         )}
       </TabContent>

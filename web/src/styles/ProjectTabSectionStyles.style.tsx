@@ -12,9 +12,12 @@ export const Tabs = styled.div`
   display: flex;
   border-bottom: 1px solid #ddd;
   margin-bottom: 16px;
+  
 `;
 
 export const Tab = styled.div<{ active: boolean }>`
+  flex: 1;
+  text-align: center;
   padding: 10px 16px;
   cursor: pointer;
   border-bottom: 2px solid
@@ -33,19 +36,32 @@ export const TabContent = styled.div`
 export const ProjectsTable = styled.table`
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+  opacity: 0.8;
 
   th,
   td {
     padding: 12px;
     border-bottom: 1px solid #eee;
     text-align: left;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   th {
     background-color: #f9f9f9;
     font-weight: 600;
   }
+
+  tbody tr:nth-child(even) {
+    background-color: #f7f9fa;
+  }
+
+  tbody tr:hover {
+    background-color: #eef2f6;
+  }
 `;
+
 
 export const Status = styled.span`
   background-color: #ffecb3;

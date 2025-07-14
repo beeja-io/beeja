@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import React, { useEffect, useState } from 'react';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { getProject } from '../service/axiosInstance';
@@ -66,21 +67,27 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
       setLoading(true);
       try {
         const projectResponse = await getProject(projectId, clientId);
-        const entity = projectResponse.data[0];
+        const entity = projectResponse?.data[0];
+
+        if (!entity) {
+          setError('Project not found');
+          setLoading(false);
+          return;
+        }
 
         const mappedProject: Project = {
-          projectId: entity.projectId,
-          name: entity.name,
-          status: entity.status ?? 'N/A',
-          startDate: entity.startDate?.split('T')[0] ?? '',
-          projectManagers: (entity.projectManagers || []).map((pm: any) => ({
-            employeeId: pm.employeeId ?? 'N/A',
-            name: pm.name ?? 'N/A',
-            contract: pm.contractName ?? 'N/A',
+          projectId: entity?.projectId,
+          name: entity?.name,
+          status: entity?.status ?? 'N/A',
+          startDate: entity?.startDate?.split('T')[0] ?? '',
+          projectManagers: (entity?.projectManagers || []).map((pm: any) => ({
+            employeeId: pm?.employeeId ?? 'N/A',
+            name: pm?.name ?? 'N/A',
+            contract: pm?.contractName ?? 'N/A',
           })),
         };
 
-        const mappedContracts: Contract[] = (entity.contracts || []).map((c: any) => ({
+        const mappedContracts: Contract[] = (entity?.contracts || []).map((c: any) => ({
           contractId: c.contractId ?? 'N/A',
           name: c.name ?? 'N/A',
           status: c.status ?? 'N/A',
@@ -117,9 +124,9 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
   if (loading) return <SpinAnimation />;
 
   return (
-    <Container style={{ maxWidth: '1400px' }}>
+    <Container>
       <Tabs>
-        {['Project Managers', 'Contracts', 'Resources', 'Attachments', 'Description'].map((tab) => (
+        {['Project Managers', 'Contracts', 'Resources', 'Description'].map((tab) => (
           <Tab key={tab} active={activeTab === tab} onClick={() => setActiveTab(tab as any)}>
             {tab}
           </Tab>
@@ -131,23 +138,23 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           <ProjectsTable>
             <thead>
               <tr>
-                <th>Employee ID</th>
-                <th>Name</th>
-                <th>Contract</th>
+                <th>{t('Employee ID')}</th>
+                <th>{t('Name')}</th>
+                <th>{t('Contract')}</th>
               </tr>
             </thead>
             <tbody>
               {project?.projectManagers?.length ? (
                 project.projectManagers.map((pm, idx) => (
                   <tr key={idx}>
-                    <td>{pm.employeeId}</td>
-                    <td>{pm.name}</td>
-                    <td>{pm.contract}</td>
+                    <td>{pm?.employeeId}</td>
+                    <td>{pm?.name}</td>
+                    <td>{pm?.contract}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3}>No Project Managers Available</td>
+                  <td colSpan={3}>{t('No Project Managers Available')}</td>
                 </tr>
               )}
             </tbody>
@@ -158,37 +165,37 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           <ProjectsTable>
             <thead>
               <tr>
-                <th>Contract ID</th>
-                <th>Contract Name</th>
-                <th>Status</th>
-                <th>Project Manager</th>
-                <th>Start Date</th>
+                <th>{t('Contract ID')}</th>
+                <th>{t('Contract Name')}</th>
+                <th>{t('Status')}</th>
+                <th>{t('Project Manager')}</th>
+                <th>{t('Start Date')}</th>
               </tr>
             </thead>
             <tbody>
-              {contracts.length ? (
-                contracts.map((contract) => (
-                  <tr key={contract.contractId}>
-                    <td>{contract.contractId}</td>
-                    <td>{contract.name}</td>
+              {contracts?.length ? (
+                contracts?.map((contract) => (
+                  <tr key={contract?.contractId}>
+                    <td>{contract?.contractId}</td>
+                    <td>{contract?.name}</td>
                     <td>
                       <StatusDropdown
-                        value={contract.status}
+                        value={contract?.status}
                         onChange={() => {}}
                         disabled
                       />
                     </td>
                     <td>
                       {contract.projectManagers.length
-                        ? contract.projectManagers.map((pm) => pm.name).join(', ')
+                        ? contract?.projectManagers.map((pm) => pm.name).join(', ')
                         : 'N/A'}
                     </td>
-                    <td>{contract.startDate}</td>
+                    <td>{contract?.startDate}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5}>No Contracts Available</td>
+                  <td colSpan={5}>{t('No Contracts Available')}</td>
                 </tr>
               )}
             </tbody>
@@ -199,25 +206,25 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           <ProjectsTable>
             <thead>
               <tr>
-                <th>Employee ID</th>
-                <th>Name</th>
-                <th>Contract Name</th>
-                <th>Allocation</th>
+                <th>{t('Employee ID')}</th>
+                <th>{t('Name')}</th>
+                <th>{t('Contract Name')}</th>
+                <th>{t('Allocation')}</th>
               </tr>
             </thead>
             <tbody>
-              {resources.length ? (
+              {resources?.length ? (
                 resources.map((r) => (
-                  <tr key={r.employeeId}>
-                    <td>{r.employeeId}</td>
-                    <td>{r.name}</td>
-                    <td>{r.contractName}</td>
-                    <td>{r.allocation}</td>
+                  <tr key={r?.employeeId}>
+                    <td>{r?.employeeId}</td>
+                    <td>{r?.name}</td>
+                    <td>{r?.contractName}</td>
+                    <td>{r?.allocation}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4}>No Resources Available</td>
+                  <td colSpan={4}>{t('No Resources Available')}</td>
                 </tr>
               )}
             </tbody>

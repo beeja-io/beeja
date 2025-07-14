@@ -347,6 +347,12 @@ export const getAllContracts = (): Promise<AxiosResponse<any>> => {
   return axiosInstance.get(`/projects/v1/contracts`);
 };
 
+export const getProjectsByClientId = (
+  clientId: string
+): Promise<AxiosResponse<ProjectEntity[]>> => {
+  return axiosInstance.get(`/projects/v1/projects/client/${clientId}`);
+};
+
 export const updateProjectStatus = (
   projectId: string,
   newStatus: ProjectStatus

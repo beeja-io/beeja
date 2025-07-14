@@ -1,4 +1,6 @@
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AddClientForm from '../components/directComponents/AddClientForm.component';
 import { Button } from '../styles/CommonStyles.style';
 import {
   ExpenseHeadingSection,
@@ -6,15 +8,14 @@ import {
 } from '../styles/ExpenseManagementStyles.style';
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
-import { useEffect, useState, useCallback } from 'react';
-import AddClientForm from '../components/directComponents/AddClientForm.component';
 
-import { getAllClient, getClient } from '../service/axiosInstance';
-import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { useTranslation } from 'react-i18next';
+import { matchPath, Outlet, useLocation } from 'react-router-dom';
+import { toast } from 'sonner';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { Client, ClientDetails } from '../entities/ClientEntity';
-import { Outlet } from 'react-router-dom';
-import { useLocation, matchPath } from 'react-router-dom';
+import { getAllClient, getClient } from '../service/axiosInstance';
 
 const ClientManagement = () => {
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const ClientManagement = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedClientData, setSelectedClientData] =
     useState<ClientDetails | null>(null);
-
+const [editLoading, setEditLoading] = useState(false);
   const handleOpenCreateModal = useCallback(() => {
     setIsEditMode(false);
     setSelectedClientData(null);
@@ -40,13 +41,16 @@ const ClientManagement = () => {
 
   const onEditClient = async (client: Client) => {
     try {
+      setEditLoading(true); 
       const res = await getClient(client.clientId);
       setSelectedClientData(res.data);
       setIsEditMode(true);
       setIsCreateModalOpen(true);
     } catch (error) {
-      throw new Error('Error fetching edit getClient:' + error);
-    }
+      toast.error(t('Failed to fetch client details. Please try again.'));
+    }finally {
+    setEditLoading(false);
+  }
   };
 
   const handleSuccessMessage = () => {
@@ -70,7 +74,7 @@ const ClientManagement = () => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      throw new Error('Error fetching client data:' + error);
+      toast.error('Error fetching client data');
     }
   }, []);
   useEffect(() => {
@@ -139,6 +143,7 @@ const ClientManagement = () => {
             }}
           />
         )}
+        {editLoading && <SpinAnimation />}
       </ExpenseManagementMainContainer>
 
       {showSuccessMessage && (

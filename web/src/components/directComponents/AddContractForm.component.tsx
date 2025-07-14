@@ -1,34 +1,48 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+import { useTranslation } from 'react-i18next';
+import Select, { MultiValue } from 'react-select';
+import { toast } from 'sonner';
+import { ContractDetails } from '../../entities/ContractEntiy';
+import { Employee, ProjectEntity } from '../../entities/ProjectEntity';
 import {
-  // TextInput,
-  ValidationText,
-} from '../../styles/DocumentTabStyles.style';
-import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
+  getAllProjects,
+  getResourceManager,
+  postContracts,
+} from '../../service/axiosInstance';
 import {
-  FormContainer,
-  StepsContainer,
-  StepWrapper,
-  StepLabel,
-  Line,
+  AvailabilityInput,
+  NameBubble,
+  NameBubbleListContainer,
+  ResourceAllocationRow,
+  ResourceBlock,
+  ResourceLabel,
+  SaveButton,
+  StyledResourceWrapper,
+  TextInput
+} from '../../styles/AddContractFormStyles.style';
+import {
   AddFormMainContainer,
+  BrowseText,
+  FileName,
+  FormContainer,
   FormInputsContainer,
+  FormResourceContainer,
   InputLabelContainer,
+  Line,
   LogoContainer,
   LogoLabel,
   LogoUploadContainer,
-  UploadText,
-  BrowseText,
-  FileName,
   RemoveButton,
-  FormInputs,
-  AddClientButtons,
-  FormResourceContainer,
+  StepLabel,
+  StepsContainer,
+  StepWrapper,
+  UploadText
 } from '../../styles/ClientStyles.style';
-import { UploadSVG, CheckIcon, LineIcon } from '../../svgs/ClientSvgs.svs';
 import { Button } from '../../styles/CommonStyles.style';
-import { ClientResponse } from '../../entities/ClientEntity';
-import { useTranslation } from 'react-i18next';
+import {
+  ValidationText,
+} from '../../styles/DocumentTabStyles.style';
 import {
   DateInputWrapper,
   FormField,
@@ -37,13 +51,8 @@ import {
   SelectWrapper,
   TextArea,
 } from '../../styles/ProjectStyles.style';
-import { SearchSVG } from '../../svgs/NavBarSvgs.svg';
 import { ButtonContainer } from '../../styles/SettingsStyles.style';
-import {
-  getAllProjects,
-  getResourceManager,
-  postContracts,
-} from '../../service/axiosInstance';
+import { CheckIcon, LineIcon, UploadSVG } from '../../svgs/ClientManagmentSvgs.svg';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import Calendar from '../reusableComponents/Calendar.component';
 import {
@@ -54,37 +63,10 @@ import {
   ContractType,
   ContractTypeLabels,
 } from '../reusableComponents/ContractEnums.component';
-import { Employee, ProjectEntity } from '../../entities/ProjectEntity';
-import { ContractDetails } from '../../entities/ContractEntiy';
-import Select, { MultiValue } from 'react-select';
-import {
-  AllocatedInfo,
-  AllocatedRow,
-  AllocatedValue,
-  AvailabilityInput,
-  InitialCircle,
-  ManageAllocationContainer,
-  ManageHeader,
-  NameBubble,
-  NameBubbleListContainer,
-  ResourceAllocationRow,
-  ResourceAvailability,
-  ResourceBlock,
-  ResourceCard,
-  ResourceLabel,
-  ResourceListContainer,
-  ResourceName,
-  SaveButton,
-  StyledResourceWrapper,
-  TextInput,
-  // StyledSelectWrapper,
-} from '../../styles/AddContractFormStyles.style';
 
 type AddContractFormProps = {
   handleClose: () => void;
   handleSuccessMessage: (msg: string) => void;
-  // onSubmit: (data: ContractFormData, file: File | null) => void;
-  // client: ClientResponse;
   initialData?: ContractDetails;
 };
 
@@ -138,8 +120,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
   const [currentResource, setCurrentResource] = useState<string | null>(null);
   const [currentAvailability, setCurrentAvailability] = useState('');
-
-  const [startDate, setStartDate] = useState<Date | null>(null);
   const [isStartDateCalOpen, setIsStartDateCalOpen] = useState(false);
   const [isEndDateCalOpen, setIsEndDateCalOpen] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
@@ -163,12 +143,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         if (Array.isArray(data)) {
           setProjectOptions(data);
         } else {
-          throw new Error('Invalid project data received.');
+          toast.error('Invalid project data received.');
         }
       })
       .catch((error) => {
         setProjectOptions([]);
-        throw new Error('Failed to fetch project list.' + error);
+        toast.error('Failed to fetch project list.' + error);
       });
   }, []);
 
@@ -198,7 +178,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         setResourceOptions(resourceOpts);
       })
       .catch((error) => {
-        throw new Error('Error fetching resource managers:' + error);
+        toast.error('Error fetching resource managers:' + error);
       });
   }, []);
 
@@ -255,7 +235,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
       handleSuccessMessage('Contract saved successfully');
       handleClose();
     } catch (error) {
-      throw new Error('Error submitting contract: ' + error);
+      toast.error('Error submitting contract: ' + error);
     }
   };
 
@@ -318,7 +298,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 <div>
                   <InputLabelContainer>
                     <label>
-                      Contract Name
+                      {t('Contract Name')}
                       <ValidationText className="star">*</ValidationText>
                     </label>
                     <TextInput
@@ -345,7 +325,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
                   <InputLabelContainer>
                     <label>
-                      Start Date
+                      {t('Start Date')}
                       <ValidationText className="star">*</ValidationText>
                     </label>
 
@@ -405,7 +385,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </InputLabelContainer>
 
                   <InputLabelContainer>
-                    <label>Billing Type</label>
+                    <label>{t('Billing Type')}</label>
                     <select
                       name="billingType"
                       value={formData.billingType}
@@ -413,7 +393,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       className="selectoption largeSelectOption"
                       style={{ width: '400px' }}
                     >
-                      <option value="">Select Billing Type</option>
+                      <option value="">{t('Select Billing Type')}</option>
                       {Object.values(ContractBillingType).map((type) => (
                         <option key={type} value={type}>
                           {ContractBillingTypeLabels[type]}
@@ -422,7 +402,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     </select>
                   </InputLabelContainer>
                   <InputLabelContainer>
-                    <label>Budget</label>
+                    <label>{t('Budget')}</label>
                     <TextInput
                       type="text"
                       name="contractValue"
@@ -437,7 +417,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 <div>
                   <InputLabelContainer>
                     <label>
-                      Contract Type
+                      {t('Contract Type')}
                       <ValidationText className="star">*</ValidationText>
                     </label>
 
@@ -471,7 +451,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
                   <InputLabelContainer>
                     <label>
-                      End Date
+                      {t('End Date')}
                       <ValidationText className="star">*</ValidationText>
                     </label>
 
@@ -533,7 +513,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </InputLabelContainer>
 
                   <InputLabelContainer>
-                    <label>Billing Currency</label>
+                    <label>{t('Billing Currency')}</label>
                     <select
                       name="billingCurrency"
                       value={formData.billingCurrency}
@@ -550,7 +530,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     </select>
                   </InputLabelContainer>
                   <InputLabelContainer>
-                    <label>Description</label>
+                    <label>{t('Description')}</label>
                     <TextArea
                       name="description"
                       placeholder="Enter Contract Description"
@@ -563,7 +543,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
               </FormInputsContainer>
 
               <LogoContainer>
-                <LogoLabel>Attachments</LogoLabel>
+                <LogoLabel>{t('Attachments')}</LogoLabel>
                 <LogoUploadContainer
                   onClick={() =>
                     document.getElementById('contractFile')?.click()
@@ -578,7 +558,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   />
                   <UploadSVG />
                   <UploadText>
-                    Drag and drop or <BrowseText>Browse</BrowseText>
+                    {t('Drag and drop or')} <BrowseText>{t('Browse')}</BrowseText>
                   </UploadText>
                 </LogoUploadContainer>
                 {file && (
@@ -591,7 +571,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
               <div className="formButtons">
                 <Button onClick={handleClose} type="button">
-                  Cancel
+                  {t('Cancel')}
                 </Button>
                 <Button
                   className="submit"
@@ -602,7 +582,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     }
                   }}
                 >
-                  Save & Continue
+                  {t('Save & Continue')}
                 </Button>
               </div>
             </form>
@@ -671,7 +651,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
             <FormResourceContainer>
               <FormField>
                 <Label>
-                  Resources Allocation <RequiredAsterisk>*</RequiredAsterisk>
+                  {t('Resources Allocation')} <RequiredAsterisk>*</RequiredAsterisk>
                 </Label>
 
                 <ResourceAllocationRow>
@@ -738,7 +718,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       setCurrentAvailability('');
                     }}
                   >
-                    Save
+                    {t('Save')}
                   </SaveButton>
                 </ResourceAllocationRow>
               </FormField>
@@ -746,7 +726,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
             {selectedResources.length > 0 && (
               <ResourceBlock>
-                <ResourceLabel>All Resources</ResourceLabel>
+                <ResourceLabel>{t('All Resources')}</ResourceLabel>
                 <NameBubbleListContainer>
                   {selectedResources.map((option) => (
                     <NameBubble key={option.value}>{option.label}</NameBubble>
@@ -766,15 +746,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
             </ButtonContainer>
           </form>
         )}
-        {/* {showErrorMessage && (
-          <ToastMessage
-            messageType="error"
-            messageBody={errorMessage}
-            messageHeading="UPLOAD_UNSUCCESSFUL"
-            handleClose={handleShowErrorMessage}
-          />
-        )}
-        {isResponseLoading && <SpinAnimation />} */}
       </>
     </FormContainer>
   );

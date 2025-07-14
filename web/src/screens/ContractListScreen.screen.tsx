@@ -1,4 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
+import { ContractDetails } from '../entities/ContractEntiy';
+import { ProjectStatus } from '../entities/ProjectEntity';
+import { updateContractStatus } from '../service/axiosInstance';
+import { keyPressFind } from '../service/keyboardShortcuts/shortcutValidator';
 import {
   ExpenseHeading,
   ExpenseTitle,
@@ -8,18 +17,9 @@ import {
   TableList,
   TableListContainer,
 } from '../styles/ExpenseListStyles.style';
-import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
-import { capitalizeFirstLetter } from '../utils/stringUtils';
-import { keyPressFind } from '../service/keyboardShortcuts/shortcutValidator';
-import { useTranslation } from 'react-i18next';
-import { EditSVG } from '../svgs/ClientSvgs.svs';
-import { useNavigate } from 'react-router-dom';
-import { ContractDetails } from '../entities/ContractEntiy';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
-import { updateContractStatus } from '../service/axiosInstance';
-import { ProjectStatus } from '../entities/ProjectEntity';
-import { toast } from 'sonner';
-import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
+import { capitalizeFirstLetter } from '../utils/stringUtils';
 
 export interface ContractListProps {
   contractList: ContractDetails[];
@@ -79,7 +79,7 @@ const ContractList = ({
           <ExpenseTitle>{t('All Contracts')}</ExpenseTitle>
         </ExpenseHeading>
 
-        <TableListContainer style={{ marginTop: 0 }}>
+        <TableListContainer>
           {!isLoading && contractLists.length === 0 ? (
             <ZeroEntriesFound
               heading="No Contracts Found"
@@ -89,13 +89,13 @@ const ContractList = ({
             <TableList>
               <TableHead>
                 <tr>
-                  <th style={{ width: '140px', textAlign: 'left' }}>{t('Contract ID')}</th>
-                  <th style={{ width: '200px', textAlign: 'left' }}>{t('Contract Name')}</th>
-                  <th style={{ width: '200px', textAlign: 'left' }}>{t('Project')}</th>
-                  <th style={{ width: '200px', textAlign: 'left' }}>{t('Client')}</th>
-                  <th style={{ width: '200px', textAlign: 'left' }}>{t('Project Manager')}</th>
-                  <th style={{ width: '160px', textAlign: 'left' }}>{t('Status')}</th>
-                  <th style={{ width: '100px', textAlign: 'left' }}>{t('ACTION')}</th>
+                  <th>{t('Contract ID')}</th>
+                  <th>{t('Contract Name')}</th>
+                  <th>{t('Project')}</th>
+                  <th>{t('Client')}</th>
+                  <th>{t('Project Manager')}</th>
+                  <th>{t('Status')}</th>
+                  <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
 

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import StatusDropdown from './ProjectStatusStyle.style';
 
 export const Select = styled.select`
   padding: 0.6rem 0.75rem;
@@ -273,4 +274,26 @@ export const DateInputWrapper = styled.div`
     top: 60px;
     z-index: 10;
   }
+`;
+
+export const ClientTitleWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+export const InfoRow = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+
+  svg {
+    vertical-align: middle;
+  }
+`;
+
+export const StyledStatusDropdown = styled(StatusDropdown)`
+  max-width: 150px;
 `;

@@ -27,6 +27,7 @@ import {
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import SpinAnimation from '../loaders/SprinAnimation.loader.tsx';
 import Calendar from '../reusableComponents/Calendar.component';
+import { toast } from 'sonner';
 
 interface AddProjectFormProps {
   handleClose: () => void;
@@ -90,7 +91,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
         setResourceOptions(userOptions);
       })
       .catch((error) => {
-        throw new Error('Error fetching resource managers:' + error);
+        toast.error('Error fetching resource managers', error);
       });
   }, []);
 
@@ -105,7 +106,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
         setClientOptions(clientOpts);
       })
       .catch((error) => {
-        throw new Error('Error fetching clients: ' + error);
+        toast.error('Error Fetching Clients', error);
       });
   }, []);
 
@@ -167,10 +168,10 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
           handleClose();
         }, 1500);
       } else {
-        throw new Error('Project submission failed with status: ' + response?.status);
+        toast.error('Project Submition Failed');
       }
     } catch (error) {
-      throw new Error('An error occurred during submission: ' + error);
+      toast.error('An error occurred during submission: ' + error);
     } finally {
       setIsSubmitting(false);
     }
@@ -298,9 +299,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
         </FormGrid>
 
        {isSubmitting ? (
-          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1rem' }}>
             <SpinAnimation />
-          </div>
         ) : (
           <ButtonContainer>
             <Button onClick={handleClose} type="button">{t('Cancel')}</Button>

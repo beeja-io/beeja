@@ -1,4 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
+import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
+import { keyPressFind } from '../service/keyboardShortcuts/shortcutValidator';
 import {
   ExpenseHeading,
   ExpenseTitle,
@@ -8,13 +13,8 @@ import {
   TableList,
   TableListContainer,
 } from '../styles/ExpenseListStyles.style';
-import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
-import ToastMessage from '../components/reusableComponents/ToastMessage.component';
+import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter, removeUnderScore } from '../utils/stringUtils';
-import { keyPressFind } from '../service/keyboardShortcuts/shortcutValidator';
-import { useTranslation } from 'react-i18next';
-import { EditSVG } from '../svgs/ClientSvgs.svs';
-import { useNavigate } from 'react-router-dom';
 
 interface Client {
   clientId: string;
@@ -73,10 +73,10 @@ const ClientList = ({
             <TableList>
               <TableHead>
                 <tr>
-                  <th style={{ textAlign: 'left' }}>{t('Client ID')}</th>
-                  <th style={{ textAlign: 'left' }}>{t('Client Name')}</th>
-                  <th style={{ textAlign: 'left' }}>{t('Client Type')}</th>
-                  <th style={{ textAlign: 'left' }}>{t('ACTION')}</th>
+                  <th>{t('Client ID')}</th>
+                  <th>{t('Client Name')}</th>
+                  <th>{t('Client Type')}</th>
+                  <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
               <tbody>
