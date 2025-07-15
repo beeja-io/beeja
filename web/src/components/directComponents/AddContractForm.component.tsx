@@ -740,7 +740,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 <span className="separator">{`<`}</span> &nbsp;
                 {t('Previous')}
               </Button>
-              <Button className="submit" type="submit">
+              <Button className='submit' type='submit'>
                 {t('Submit')}
               </Button>
             </ButtonContainer>

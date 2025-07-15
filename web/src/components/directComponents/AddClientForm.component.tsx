@@ -569,12 +569,12 @@ const AddClientForm = (props: AddClientFormProps) => {
                 </div>
               </FormInputs>
               <AddClientButtons>
-                <div onClick={handlePreviousStep} className="leftAlign">
+                <div onClick={handlePreviousStep} className='leftAlign'>
                   <span className="separator"> {`<`} </span> &nbsp;
                   {t('Previous')}
                 </div>
-                <div className="centerAlign">
-                  <Button onClick={props.handleClose} type="button">
+                <div className='centerAlign'>
+                  <Button onClick={props.handleClose} type='button'>
                     {t('Cancel')}
                   </Button>
                   <Button
@@ -748,8 +748,8 @@ const AddClientForm = (props: AddClientFormProps) => {
                   <span className="separator"> {`<`} </span> &nbsp;
                   {t('Previous')}
                 </div>
-                <div className="centerAlign">
-                  <Button onClick={props.handleClose} type="button">
+                <div className='centerAlign'>
+                  <Button onClick={props.handleClose} type='button'>
                     {t('Cancel')}
                   </Button>
                   <Button
