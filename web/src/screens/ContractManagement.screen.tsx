@@ -1,6 +1,6 @@
-import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { matchPath, Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 import { Button } from '../styles/CommonStyles.style';
 import {
@@ -8,13 +8,13 @@ import {
   ExpenseManagementMainContainer,
 } from '../styles/ExpenseManagementStyles.style';
 
-import { ArrowDownSVG} from '../svgs/CommonSvgs.svs';
+import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
 
+import AddContractForm from '../components/directComponents/AddContractForm.component';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { ContractDetails } from '../entities/ContractEntiy';
 import { getAllContracts } from '../service/axiosInstance';
-import AddContractForm from '../components/directComponents/AddContractForm.component';
 
 const ContractManagement = () => {
   const navigate = useNavigate();
@@ -50,18 +50,15 @@ const ContractManagement = () => {
     fetchData();
   }, [fetchData]);
 
-  const [isEditMode, setIsEditMode] = useState(false);
   const [selectedContractData, setSelectedContractData] =
     useState<ContractDetails | null>(null);
 
   const handleOpenCreateModal = useCallback(() => {
-    setIsEditMode(false);
     setIsCreateModalOpen(true);
     setSelectedContractData(null);
   }, []);
 
   const handleCloseModal = useCallback(() => {
-    setIsEditMode(false);
     setIsCreateModalOpen(false);
     setSelectedContractData(null);
   }, []);

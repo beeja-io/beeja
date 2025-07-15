@@ -1,6 +1,5 @@
 import { styled } from "styled-components";
-import StatusDropdown from "./ProjectStatusStyle.style";
-import { ClientInfo } from "./ClientStyles.style";
+
 
 export const RowWrapper = styled.div`
   display: flex;
