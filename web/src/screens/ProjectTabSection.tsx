@@ -8,7 +8,7 @@ import {
   ProjectsTable,
   Tab,
   TabContent,
-  Tabs
+  Tabs,
 } from '../styles/ProjectTabSectionStyles.style';
 import { toast } from 'sonner';
 
@@ -53,7 +53,11 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
   projectId,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    'Project Managers' | 'Contracts' | 'Resources' | 'Attachments' | 'Description'
+    | 'Project Managers'
+    | 'Contracts'
+    | 'Resources'
+    | 'Attachments'
+    | 'Description'
   >('Project Managers');
 
   const [project, setProject] = useState<Project | null>(null);
@@ -86,24 +90,28 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           })),
         };
 
-        const mappedContracts: Contract[] = (entity?.contracts || []).map((c: any) => ({
-          contractId: c.contractId ?? 'N/A',
-          name: c.name ?? 'N/A',
-          status: c.status ?? 'N/A',
-          projectManagers: (c.projectManagers || []).map((pm: any) => ({
-            employeeId: pm.employeeId ?? 'N/A',
-            name: pm.name ?? 'N/A',
-            contractName: pm.contractName ?? 'N/A',
-          })),
-          startDate: c.startDate?.split('T')[0] ?? '',
-        }));
+        const mappedContracts: Contract[] = (entity?.contracts || []).map(
+          (c: any) => ({
+            contractId: c.contractId ?? 'N/A',
+            name: c.name ?? 'N/A',
+            status: c.status ?? 'N/A',
+            projectManagers: (c.projectManagers || []).map((pm: any) => ({
+              employeeId: pm.employeeId ?? 'N/A',
+              name: pm.name ?? 'N/A',
+              contractName: pm.contractName ?? 'N/A',
+            })),
+            startDate: c.startDate?.split('T')[0] ?? '',
+          })
+        );
 
-        const mappedResources: Resource[] = (entity.resources || []).map((r: any) => ({
-          employeeId: r.employeeId,
-          name: r.name,
-          contractName: r.contractName ?? 'N/A',
-          allocation: `${r.allocationPercentage ?? 0}%`,
-        }));
+        const mappedResources: Resource[] = (entity.resources || []).map(
+          (r: any) => ({
+            employeeId: r.employeeId,
+            name: r.name,
+            contractName: r.contractName ?? 'N/A',
+            allocation: `${r.allocationPercentage ?? 0}%`,
+          })
+        );
 
         setProject(mappedProject);
         setContracts(mappedContracts);
@@ -123,11 +131,17 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
   return (
     <Container>
       <Tabs>
-        {['Project Managers', 'Contracts', 'Resources', 'Description'].map((tab) => (
-          <Tab key={tab} active={activeTab === tab} onClick={() => setActiveTab(tab as any)}>
-            {tab}
-          </Tab>
-        ))}
+        {['Project Managers', 'Contracts', 'Resources', 'Description'].map(
+          (tab) => (
+            <Tab
+              key={tab}
+              active={activeTab === tab}
+              onClick={() => setActiveTab(tab as any)}
+            >
+              {tab}
+            </Tab>
+          )
+        )}
       </Tabs>
 
       <TabContent>
@@ -184,7 +198,9 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
                     </td>
                     <td>
                       {contract.projectManagers.length
-                        ? contract?.projectManagers.map((pm) => pm.name).join(', ')
+                        ? contract?.projectManagers
+                            .map((pm) => pm.name)
+                            .join(', ')
                         : 'N/A'}
                     </td>
                     <td>{contract?.startDate}</td>

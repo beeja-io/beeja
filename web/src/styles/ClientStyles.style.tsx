@@ -74,7 +74,7 @@ export const FormInputsContainer = styled.div`
   width: 100%;
   max-width: 1160px;
   margin-left: 80px;
-  backgroundColor: 'rgba(248, 249, 251, 1)'
+  background-color: rgba(248, 249, 251, 1);
 `;
 
 export const FormResourceContainer = styled.div`

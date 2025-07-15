@@ -19,7 +19,7 @@ import {
   ResourceLabel,
   SaveButton,
   StyledResourceWrapper,
-  TextInput
+  TextInput,
 } from '../../styles/AddContractFormStyles.style';
 import {
   AddFormMainContainer,
@@ -37,12 +37,10 @@ import {
   StepLabel,
   StepsContainer,
   StepWrapper,
-  UploadText
+  UploadText,
 } from '../../styles/ClientStyles.style';
 import { Button } from '../../styles/CommonStyles.style';
-import {
-  ValidationText,
-} from '../../styles/DocumentTabStyles.style';
+import { ValidationText } from '../../styles/DocumentTabStyles.style';
 import {
   DateInputWrapper,
   FormField,
@@ -52,7 +50,11 @@ import {
   TextArea,
 } from '../../styles/ProjectStyles.style';
 import { ButtonContainer } from '../../styles/SettingsStyles.style';
-import { CheckIcon, LineIcon, UploadSVG } from '../../svgs/ClientManagmentSvgs.svg';
+import {
+  CheckIcon,
+  LineIcon,
+  UploadSVG,
+} from '../../svgs/ClientManagmentSvgs.svg';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import Calendar from '../reusableComponents/Calendar.component';
 import {
@@ -558,7 +560,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   />
                   <UploadSVG />
                   <UploadText>
-                    {t('Drag and drop or')} <BrowseText>{t('Browse')}</BrowseText>
+                    {t('Drag and drop or')}{' '}
+                    <BrowseText>{t('Browse')}</BrowseText>
                   </UploadText>
                 </LogoUploadContainer>
                 {file && (
@@ -651,7 +654,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
             <FormResourceContainer>
               <FormField>
                 <Label>
-                  {t('Resources Allocation')} <RequiredAsterisk>*</RequiredAsterisk>
+                  {t('Resources Allocation')}{' '}
+                  <RequiredAsterisk>*</RequiredAsterisk>
                 </Label>
 
                 <ResourceAllocationRow>
@@ -737,10 +741,10 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
             <ButtonContainer>
               <Button onClick={handlePreviousStep} className="leftAlign">
-                <span className="separator">{`<`}</span> &nbsp;
+                <span className="separator">{'<'}</span> &nbsp;
                 {t('Previous')}
               </Button>
-              <Button className='submit' type='submit'>
+              <Button className="submit" type="submit">
                 {t('Submit')}
               </Button>
             </ButtonContainer>

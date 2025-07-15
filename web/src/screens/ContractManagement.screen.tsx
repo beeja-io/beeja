@@ -81,14 +81,14 @@ const ContractManagement = () => {
 
             {isCreateModalOpen && (
               <>
-                <span className="separator"> {`>`} </span>
+                <span className="separator"> {'>'} </span>
                 <span className="nav_AddClient">{t('Add Contract')}</span>
               </>
             )}
 
             {!isCreateModalOpen && isContractDetailsRoute && (
               <>
-                <span className="separator"> {`>`} </span>
+                <span className="separator"> {'>'} </span>
                 <span className="nav_AddClient">{t('Contract Details')}</span>
               </>
             )}

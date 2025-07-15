@@ -38,7 +38,9 @@ const ContractList = ({
   const [contractLists, setContractLists] = useState<ContractDetails[]>([]);
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [editLoadingContractId, setEditLoadingContractId] = useState<string | null>(null);
+  const [editLoadingContractId, setEditLoadingContractId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     setContractLists(contractList);
@@ -61,7 +63,7 @@ const ContractList = ({
       setContractLists((prev): ContractDetails[] =>
         prev.map((c) =>
           c.contractId === contractId
-            ? { ...c, status: newStatus } as ContractDetails
+            ? ({ ...c, status: newStatus } as ContractDetails)
             : c
         )
       );
@@ -112,16 +114,32 @@ const ContractList = ({
                     ))
                   : contractLists.map((contract) => (
                       <TableBodyRow key={contract.contractId}>
-                        <td onClick={() => handleContractClick(contract.contractId)}>
+                        <td
+                          onClick={() =>
+                            handleContractClick(contract.contractId)
+                          }
+                        >
                           {contract.contractId ?? '-'}
                         </td>
-                        <td onClick={() => handleContractClick(contract.contractId)}>
+                        <td
+                          onClick={() =>
+                            handleContractClick(contract.contractId)
+                          }
+                        >
                           {capitalizeFirstLetter(contract.contractTitle) ?? '-'}
                         </td>
-                        <td onClick={() => handleContractClick(contract.contractId)}>
+                        <td
+                          onClick={() =>
+                            handleContractClick(contract.contractId)
+                          }
+                        >
                           {contract.projectName ?? '-'}
                         </td>
-                        <td onClick={() => handleContractClick(contract.contractId)}>
+                        <td
+                          onClick={() =>
+                            handleContractClick(contract.contractId)
+                          }
+                        >
                           {contract.clientName ?? '-'}
                         </td>
                         <td>{contract.projectManagerNames?.[0]}</td>
@@ -137,7 +155,7 @@ const ContractList = ({
                               }
                             />
                           ) : (
-                            '-' 
+                            '-'
                           )}
                         </td>
 

@@ -4,7 +4,7 @@ export type ProjectStatus =
   | 'COMPLETED'
   | 'CANCELLED';
 
-export interface ProjectEntity{
+export interface ProjectEntity {
   projectStatus: string;
   projectId: string;
   name: string;
@@ -17,9 +17,9 @@ export interface ProjectEntity{
   projectResourceIds: string[];
   projectResourceNames: string[];
   startDate: string;
-  clientIndustries:string;
-  clientContact:string;
-  clientEmail:string;
+  clientIndustries: string;
+  clientContact: string;
+  clientEmail: string;
   endDate: string | null;
   billingCurrency: string | null;
 
@@ -51,7 +51,6 @@ export interface ProjectEntity{
   logoId?: string;
   industry?: string;
 }
-
 
 export interface Employee {
   employeeId: string;

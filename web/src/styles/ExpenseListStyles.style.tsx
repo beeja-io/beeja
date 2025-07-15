@@ -192,7 +192,7 @@ export const TableListContainer = styled.section`
   display: relative;
 `;
 export const TableHead = styled.thead`
-text-align:left;
+  text-align: left;
 `;
 export const TableList = styled.table`
   border: 0;

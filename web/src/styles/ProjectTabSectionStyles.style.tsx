@@ -12,7 +12,6 @@ export const Tabs = styled.div`
   display: flex;
   border-bottom: 1px solid #ddd;
   margin-bottom: 16px;
-  
 `;
 
 export const Tab = styled.div<{ active: boolean }>`
@@ -61,7 +60,6 @@ export const ProjectsTable = styled.table`
     background-color: #eef2f6;
   }
 `;
-
 
 export const Status = styled.span`
   background-color: #ffecb3;
