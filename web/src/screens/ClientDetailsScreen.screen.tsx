@@ -34,20 +34,13 @@ import { ClientResponse } from '../entities/ClientEntity';
 import { downloadClientLogo, getClient } from '../service/axiosInstance';
 import ClientTabsSection from './ClientTabSection.screen';
 
-interface Props {
-  client: ClientResponse | null;
-}
 
 const ClientDetailsScreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const { id } = useParams();
   const [client, setClient] = useState<ClientResponse | null>(null);
-  const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleAddProjectModalToggle = () => {
-    setIsAddProjectModalOpen((prev) => !prev);
-  };
 
   useEffect(() => {
     const fetchLogoImage = async () => {

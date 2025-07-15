@@ -44,12 +44,8 @@ const ProjectDetailsSCreen: React.FC = () => {
 
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [project, setProject] = useState<ProjectEntity | null>(null);
-  const [isAddProjectModalOpen, setIsAddProjectModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleAddProjectModalToggle = () => {
-    setIsAddProjectModalOpen((prev) => !prev);
-  };
 
   useEffect(() => {
     const fetchLogoImage = async () => {

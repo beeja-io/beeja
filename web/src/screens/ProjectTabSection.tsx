@@ -10,6 +10,7 @@ import {
   TabContent,
   Tabs
 } from '../styles/ProjectTabSectionStyles.style';
+import { toast } from 'sonner';
 
 interface Project {
   projectId: string;
@@ -59,7 +60,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -70,7 +70,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
         const entity = projectResponse?.data[0];
 
         if (!entity) {
-          setError('Project not found');
           setLoading(false);
           return;
         }
@@ -109,10 +108,8 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
         setProject(mappedProject);
         setContracts(mappedContracts);
         setResources(mappedResources);
-        setError(null);
       } catch (err: any) {
-        setError('Failed to load project');
-        console.error('Fetch Error:', err);
+        toast.error('Fetching Error', err);
       } finally {
         setLoading(false);
       }
