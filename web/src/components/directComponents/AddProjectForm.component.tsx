@@ -146,7 +146,9 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = e.target;
     setProjectFormData((prev) => ({ ...prev, [name]: value }));
@@ -156,9 +158,10 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const response = isEditMode && initialData?.projectId
-        ? await putProject(initialData.projectId, projectFormData)
-        : await postProjects(projectFormData);
+      const response =
+        isEditMode && initialData?.projectId
+          ? await putProject(initialData.projectId, projectFormData)
+          : await postProjects(projectFormData);
 
       if (response?.status === 200 || response?.status === 201) {
         handleSuccessMessage(response.data.projectId);
@@ -184,7 +187,10 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
       <form onSubmit={handleSubmit}>
         <FormGrid>
           <FormField>
-            <Label htmlFor="name">{t('Project Name')}<RequiredAsterisk>*</RequiredAsterisk></Label>
+            <Label htmlFor="name">
+              {t('Project Name')}
+              <RequiredAsterisk>*</RequiredAsterisk>
+            </Label>
             <Input
               type="text"
               id="name"
@@ -196,13 +202,18 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
             />
           </FormField>
           <FormField>
-            <Label htmlFor="clientName">{t('Client Name')}<RequiredAsterisk>*</RequiredAsterisk></Label>
+            <Label htmlFor="clientName">
+              {t('Client Name')}
+              <RequiredAsterisk>*</RequiredAsterisk>
+            </Label>
             <SelectDropDown
               name="clientName"
               value={projectFormData.clientId}
               onChange={(e) => {
                 const selectedValue = e.target.value;
-                const selectedOption = clientOptions.find(opt => opt.value === selectedValue);
+                const selectedOption = clientOptions.find(
+                  (opt) => opt.value === selectedValue
+                );
                 if (selectedOption) {
                   setProjectFormData((prev) => ({
                     ...prev,
@@ -214,22 +225,32 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
             >
               <option value="">Select Client</option>
               {clientOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </SelectDropDown>
           </FormField>
 
           <SelectWrapper>
             <FormField>
-              <Label>{t('Project Managers')}<RequiredAsterisk>*</RequiredAsterisk></Label>
+              <Label>
+                {t('Project Managers')}
+                <RequiredAsterisk>*</RequiredAsterisk>
+              </Label>
               <Select
                 isMulti
                 name="projectManagers"
-                value={managerOptions.filter(option => projectFormData.projectManagers.includes(option.value))}
+                value={managerOptions.filter((option) =>
+                  projectFormData.projectManagers.includes(option.value)
+                )}
                 options={managerOptions}
                 onChange={(selected) => {
                   const values = selected.map((opt) => opt.value);
-                  setProjectFormData((prev) => ({ ...prev, projectManagers: values }));
+                  setProjectFormData((prev) => ({
+                    ...prev,
+                    projectManagers: values,
+                  }));
                 }}
                 classNamePrefix="react-select"
                 placeholder={t('Select Project Managers')}
@@ -239,15 +260,23 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
 
           <SelectWrapper>
             <FormField>
-              <Label>{t('Resources')}<RequiredAsterisk>*</RequiredAsterisk></Label>
+              <Label>
+                {t('Resources')}
+                <RequiredAsterisk>*</RequiredAsterisk>
+              </Label>
               <Select
                 isMulti
                 name="resources"
-                value={resourceOptions.filter(option => projectFormData.projectResources.includes(option.value))}
+                value={resourceOptions.filter((option) =>
+                  projectFormData.projectResources.includes(option.value)
+                )}
                 options={resourceOptions}
                 onChange={(selected) => {
                   const values = selected.map((opt) => opt.value);
-                  setProjectFormData((prev) => ({ ...prev, projectResources: values }));
+                  setProjectFormData((prev) => ({
+                    ...prev,
+                    projectResources: values,
+                  }));
                 }}
                 classNamePrefix="react-select"
                 placeholder={t('Select Resources')}
@@ -267,7 +296,10 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
           </FormField>
 
           <FormField>
-            <Label htmlFor="startDate">{t('Start Date')}<RequiredAsterisk>*</RequiredAsterisk></Label>
+            <Label htmlFor="startDate">
+              {t('Start Date')}
+              <RequiredAsterisk>*</RequiredAsterisk>
+            </Label>
             <DateInputWrapper ref={calendarRef}>
               <TextInput
                 type="text"
@@ -279,7 +311,10 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 readOnly
                 autoComplete="off"
               />
-              <span className="iconArea" onClick={() => handleCalendarToggle(true)}>
+              <span
+                className="iconArea"
+                onClick={() => handleCalendarToggle(true)}
+              >
                 <CalenderIconDark />
               </span>
               <div className="calendarSpace">
@@ -298,16 +333,18 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
           </FormField>
         </FormGrid>
 
-       {isSubmitting ? (
-            <SpinAnimation />
+        {isSubmitting ? (
+          <SpinAnimation />
         ) : (
           <ButtonContainer>
-            <Button onClick={handleClose} type="button">{t('Cancel')}</Button>
+            <Button onClick={handleClose} type="button">
+              {t('Cancel')}
+            </Button>
             <Button className="submit" type="submit">
               {isEditMode ? t('Update') : t('Add')}
             </Button>
           </ButtonContainer>
-)}
+        )}
       </form>
     </FormContainer>
   );

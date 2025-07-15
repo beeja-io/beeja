@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
-import AddProjectForm, { ProjectFormData } from '../components/directComponents/AddProjectForm.component';
+import AddProjectForm, {
+  ProjectFormData,
+} from '../components/directComponents/AddProjectForm.component';
 import { Button } from '../styles/CommonStyles.style';
 import {
   ExpenseHeadingSection,
@@ -22,19 +24,21 @@ const ProjectManagement = () => {
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [selectedProjectData, setSelectedProjectData] = useState<Partial<ProjectFormData> | null>(null);
+  const [selectedProjectData, setSelectedProjectData] =
+    useState<Partial<ProjectFormData> | null>(null);
   const [allProjects, setAllProjects] = useState<ProjectEntity[]>([]);
   const [loading, setLoading] = useState(false);
 
-
-  const [toastData, setToastData] = useState<{ heading: string; body: string } | null>(null);
+  const [toastData, setToastData] = useState<{
+    heading: string;
+    body: string;
+  } | null>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const isProjectDetailsRoute = matchPath(
     '/clients/client-management/:id',
     location.pathname
   );
-
 
   const goToPreviousPage = () => {
     navigate(-1);
@@ -122,13 +126,13 @@ const ProjectManagement = () => {
             {t('Project Management')}
             {isCreateModalOpen && (
               <>
-                <span className="separator"> {`>`} </span>
+                <span className="separator"> {'>'} </span>
                 <span className="nav_AddClient">{t('Add Project')}</span>
               </>
             )}
             {!isCreateModalOpen && isProjectDetailsRoute && (
               <>
-                <span className="separator"> {`>`} </span>
+                <span className="separator"> {'>'} </span>
                 <span className="nav_AddClient">{t('Project Details')}</span>
               </>
             )}

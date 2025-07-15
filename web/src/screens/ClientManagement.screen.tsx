@@ -26,7 +26,7 @@ const ClientManagement = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedClientData, setSelectedClientData] =
     useState<ClientDetails | null>(null);
-const [editLoading, setEditLoading] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
   const handleOpenCreateModal = useCallback(() => {
     setIsEditMode(false);
     setSelectedClientData(null);
@@ -41,16 +41,16 @@ const [editLoading, setEditLoading] = useState(false);
 
   const onEditClient = async (client: Client) => {
     try {
-      setEditLoading(true); 
+      setEditLoading(true);
       const res = await getClient(client.clientId);
       setSelectedClientData(res.data);
       setIsEditMode(true);
       setIsCreateModalOpen(true);
     } catch (error) {
       toast.error(t('Failed to fetch client details. Please try again.'));
-    }finally {
-    setEditLoading(false);
-  }
+    } finally {
+      setEditLoading(false);
+    }
   };
 
   const handleSuccessMessage = () => {
@@ -103,13 +103,13 @@ const [editLoading, setEditLoading] = useState(false);
             {t('Client Management')}
             {isCreateModalOpen && (
               <>
-                <span className="separator"> {`>`} </span>
+                <span className="separator"> {'>'} </span>
                 <span className="nav_AddClient">{t('Add Client')}</span>
               </>
             )}
             {!isCreateModalOpen && isClientDetailsRoute && (
               <>
-                <span className="separator"> {`>`} </span>
+                <span className="separator"> {'>'} </span>
                 <span className="nav_AddClient">{t('Client Details')}</span>
               </>
             )}

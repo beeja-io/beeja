@@ -16,14 +16,14 @@ import {
   TaxDetailsWrapper,
   TaxItem,
   TaxLabel,
-  TaxValue
+  TaxValue,
 } from '../styles/ClientStyles.style';
 
 import {
   CallSVG,
   DotSVG,
   EmailSVG,
-  IndustrySVG
+  IndustrySVG,
 } from '../svgs/ClientManagmentSvgs.svg';
 
 import { t } from 'i18next';
@@ -34,13 +34,11 @@ import { ClientResponse } from '../entities/ClientEntity';
 import { downloadClientLogo, getClient } from '../service/axiosInstance';
 import ClientTabsSection from './ClientTabSection.screen';
 
-
 const ClientDetailsScreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const { id } = useParams();
   const [client, setClient] = useState<ClientResponse | null>(null);
   const [loading, setLoading] = useState(false);
-
 
   useEffect(() => {
     const fetchLogoImage = async () => {
@@ -111,43 +109,52 @@ const ClientDetailsScreen: React.FC = () => {
             <ClientTitle> {client?.clientName}</ClientTitle>
           </LogoNameWrapper>
           <ClientInfoSection>
-          <ClientInfoRowItem>
-            <ClientInfoDiv>{t('ID')}: {client?.clientId}</ClientInfoDiv>
-          </ClientInfoRowItem>
+            <ClientInfoRowItem>
+              <ClientInfoDiv>
+                {t('ID')}: {client?.clientId}
+              </ClientInfoDiv>
+            </ClientInfoRowItem>
 
-          <DotWrapper><DotSVG /></DotWrapper>
+            <DotWrapper>
+              <DotSVG />
+            </DotWrapper>
 
-          <ClientInfoRowItem>
-            <ClientInfoDiv>{client?.clientType}</ClientInfoDiv>
-          </ClientInfoRowItem>
+            <ClientInfoRowItem>
+              <ClientInfoDiv>{client?.clientType}</ClientInfoDiv>
+            </ClientInfoRowItem>
 
-          <DotWrapper><DotSVG /></DotWrapper>
+            <DotWrapper>
+              <DotSVG />
+            </DotWrapper>
 
-          <ClientInfoRowItem>
-            <IndustrySVG />
-            <ClientInfoDiv>{client?.industry}</ClientInfoDiv>
-          </ClientInfoRowItem>
+            <ClientInfoRowItem>
+              <IndustrySVG />
+              <ClientInfoDiv>{client?.industry}</ClientInfoDiv>
+            </ClientInfoRowItem>
 
-          <DotWrapper><DotSVG /></DotWrapper>
+            <DotWrapper>
+              <DotSVG />
+            </DotWrapper>
 
-          <ClientInfoRowItem>
-            <EmailSVG />
-            <ClientInfoDiv>{client?.email}</ClientInfoDiv>
-          </ClientInfoRowItem>
+            <ClientInfoRowItem>
+              <EmailSVG />
+              <ClientInfoDiv>{client?.email}</ClientInfoDiv>
+            </ClientInfoRowItem>
 
-          <DotWrapper><DotSVG /></DotWrapper>
+            <DotWrapper>
+              <DotSVG />
+            </DotWrapper>
 
-          <ClientInfoRowItem>
-            <CallSVG />
-            <ClientInfoDiv>{t('91+')}{client?.contact}</ClientInfoDiv>
-          </ClientInfoRowItem>
-        </ClientInfoSection>
+            <ClientInfoRowItem>
+              <CallSVG />
+              <ClientInfoDiv>
+                {t('91+')}
+                {client?.contact}
+              </ClientInfoDiv>
+            </ClientInfoRowItem>
+          </ClientInfoSection>
         </ClientInfo>
-         {client?.clientId && (
-          <ClientTabsSection
-              clientId={client.clientId}
-            />
-          )}
+        {client?.clientId && <ClientTabsSection clientId={client.clientId} />}
       </LeftSection>
 
       <RightSection>
@@ -180,10 +187,9 @@ const ClientDetailsScreen: React.FC = () => {
             </TaxItem>
           </TaxDetailsWrapper>
         </RightSectionDiv>
-
-              </RightSection>
-            </Container>
-          );
-        };
+      </RightSection>
+    </Container>
+  );
+};
 
 export default ClientDetailsScreen;

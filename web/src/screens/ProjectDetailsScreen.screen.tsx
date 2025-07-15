@@ -7,7 +7,7 @@ import {
   LeftSection,
   LogoPreview,
   RightSection,
-  TableContainer
+  TableContainer,
 } from '../styles/ClientStyles.style';
 
 import {
@@ -15,16 +15,13 @@ import {
   CompanyIcon,
   DateIcon,
   DotSVG,
-  EmailSVG
+  EmailSVG,
 } from '../svgs/ClientManagmentSvgs.svg';
 
 import { useParams } from 'react-router-dom';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { ProjectEntity } from '../entities/ProjectEntity';
-import {
-  downloadClientLogo,
-  getProject
-} from '../service/axiosInstance';
+import { downloadClientLogo, getProject } from '../service/axiosInstance';
 import {
   ClientInfoWrapper,
   ClientTitleWrapper,
@@ -32,7 +29,7 @@ import {
   InfoRow,
   InfoText,
   RightSectionDiv,
-  StyledStatusDropdown
+  StyledStatusDropdown,
 } from '../styles/ProjectStyles.style';
 import ProjectTabSection from './ProjectTabSection';
 
@@ -45,7 +42,6 @@ const ProjectDetailsSCreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [project, setProject] = useState<ProjectEntity | null>(null);
   const [loading, setLoading] = useState(false);
-
 
   useEffect(() => {
     const fetchLogoImage = async () => {

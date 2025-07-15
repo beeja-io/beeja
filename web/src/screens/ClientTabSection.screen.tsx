@@ -43,9 +43,11 @@ interface ClientTabsSectionProps {
   projectId?: string;
 }
 
-const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId}) => {
+const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<'Projects' | 'Contracts' | 'Resources' | 'Attachments' | 'Description'>('Projects');
+  const [activeTab, setActiveTab] = useState<
+    'Projects' | 'Contracts' | 'Resources' | 'Attachments' | 'Description'
+  >('Projects');
   const [projects, setProjects] = useState<Project[]>([]);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
@@ -71,14 +73,14 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId}) => {
         setDescription(entity?.description ?? '');
 
         const mappedProjects: Project[] = res.data.map((entity) => ({
-            projectId: entity.projectId ?? 'N/A',
-            name: entity.name ?? 'N/A',
-            status: entity.status ?? 'N/A',
-            startDate: entity.startDate?.split('T')[0] ?? 'N/A',
-            projectManagers: Array.isArray(entity.projectManagers)
-                ? entity.projectManagers.map((pm: any) => pm?.name ?? 'N/A')
-                : [],
-            }));
+          projectId: entity.projectId ?? 'N/A',
+          name: entity.name ?? 'N/A',
+          status: entity.status ?? 'N/A',
+          startDate: entity.startDate?.split('T')[0] ?? 'N/A',
+          projectManagers: Array.isArray(entity.projectManagers)
+            ? entity.projectManagers.map((pm: any) => pm?.name ?? 'N/A')
+            : [],
+        }));
 
         const mappedContracts: Contract[] = Array.isArray(entity.contracts)
           ? entity.contracts.map((c: any) => ({
@@ -114,7 +116,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId}) => {
         setResources(Object.values(resourceMap));
       } catch (error) {
         toast.error(t('Failed to load project data'));
-        console.error(error);
       } finally {
         setLoading(false);
       }
@@ -127,15 +128,19 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId}) => {
 
   return (
     <Container>
-        <Tabs>
+      <Tabs>
         {['Projects', 'Contracts', 'Resources', 'Description'].map((tab) => (
-            <Tab key={tab} active={activeTab === tab} onClick={() => setActiveTab(tab as any)}>
+          <Tab
+            key={tab}
+            active={activeTab === tab}
+            onClick={() => setActiveTab(tab as any)}
+          >
             {t(tab)}
             {tab === 'Projects' && <CountBadge>{projects.length}</CountBadge>}
             {tab === 'Contracts' && <CountBadge>{contracts.length}</CountBadge>}
-            </Tab>
+          </Tab>
         ))}
-        </Tabs>
+      </Tabs>
 
       <TabContent>
         {activeTab === 'Projects' && projects && (
@@ -150,29 +155,37 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId}) => {
               </tr>
             </thead>
             <tbody>
-                {projects.length ? (
-                    projects.map((project) => (
-                    <tr key={project.projectId}>
-                        <td>{project.projectId}</td>
-                        <td>{project.name}</td>
-                        <td>
-                        <StatusDropdown value={project.status} disabled onChange={() => {}} />
-                        </td>
-                        <td>{project.projectManagers.length ? project.projectManagers.join(', ') : 'N/A'}</td>
-                        <td>
-                        <DateIconWrapper>
-                            <DateIcon />
-                            {project.startDate}
-                        </DateIconWrapper>
-                        </td>
-                    </tr>
-                    ))
-                ) : (
-                    <tr>
-                    <td colSpan={5}>{t('No Projects Available')}</td>
-                    </tr>
-                )}
-                </tbody>
+              {projects.length ? (
+                projects.map((project) => (
+                  <tr key={project.projectId}>
+                    <td>{project.projectId}</td>
+                    <td>{project.name}</td>
+                    <td>
+                      <StatusDropdown
+                        value={project.status}
+                        disabled
+                        onChange={() => {}}
+                      />
+                    </td>
+                    <td>
+                      {project.projectManagers.length
+                        ? project.projectManagers.join(', ')
+                        : 'N/A'}
+                    </td>
+                    <td>
+                      <DateIconWrapper>
+                        <DateIcon />
+                        {project.startDate}
+                      </DateIconWrapper>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={5}>{t('No Projects Available')}</td>
+                </tr>
+              )}
+            </tbody>
           </ProjectsTable>
         )}
 
@@ -196,9 +209,17 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId}) => {
                     <td>{c.name}</td>
                     <td>{c.projectName}</td>
                     <td>
-                      <StatusDropdown value={c.status} disabled onChange={() => {}} />
+                      <StatusDropdown
+                        value={c.status}
+                        disabled
+                        onChange={() => {}}
+                      />
                     </td>
-                    <td>{c.projectManagers.length ? c.projectManagers.join(', ') : 'N/A'}</td>
+                    <td>
+                      {c.projectManagers.length
+                        ? c.projectManagers.join(', ')
+                        : 'N/A'}
+                    </td>
                     <td>{c.startDate}</td>
                   </tr>
                 ))
@@ -245,14 +266,14 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId}) => {
         )}
 
         {activeTab === 'Description' && (
-          <div> 
+          <div>
             {description ? (
               <p>{description}</p>
             ) : (
               <p>{t('No Description Available')}</p>
             )}
           </div>
-)}
+        )}
       </TabContent>
     </Container>
   );

@@ -3,61 +3,61 @@ import { useTranslation } from 'react-i18next';
 import { ClientDetails } from '../../entities/ClientEntity';
 import { postClient, putClient } from '../../service/axiosInstance';
 import {
-    AddClientButtons,
-    AddFormMainContainer,
-    AddressBlock,
-    BasicOrganizationDetailsContainer,
-    BrowseText,
-    CheckBoxOuterContainer,
-    EditIconWrapper,
-    FileName,
-    FormContainer,
-    FormInputs,
-    FormInputsContainer,
-    HeadingContainer,
-    HeadingDiv,
-    InfoBlock,
-    InfoRow,
-    InfoText,
-    InputLabelContainer,
-    InputLabelLogoContainer,
-    LabelText,
-    Line,
-    LogoContainer,
-    LogoLabel,
-    LogoNameWrapper,
-    LogoPreview,
-    LogoUploadContainer,
-    RemoveButton,
-    SectionHeader,
-    StepLabel,
-    StepsContainer,
-    StepWrapper,
-    StyledCheckbox,
-    SubHeadingDiv,
-    UploadText,
+  AddClientButtons,
+  AddFormMainContainer,
+  AddressBlock,
+  BasicOrganizationDetailsContainer,
+  BrowseText,
+  CheckBoxOuterContainer,
+  EditIconWrapper,
+  FileName,
+  FormContainer,
+  FormInputs,
+  FormInputsContainer,
+  HeadingContainer,
+  HeadingDiv,
+  InfoBlock,
+  InfoRow,
+  InfoText,
+  InputLabelContainer,
+  InputLabelLogoContainer,
+  LabelText,
+  Line,
+  LogoContainer,
+  LogoLabel,
+  LogoNameWrapper,
+  LogoPreview,
+  LogoUploadContainer,
+  RemoveButton,
+  SectionHeader,
+  StepLabel,
+  StepsContainer,
+  StepWrapper,
+  StyledCheckbox,
+  SubHeadingDiv,
+  UploadText,
 } from '../../styles/ClientStyles.style';
 import { Button } from '../../styles/CommonStyles.style';
 import {
-    TextInput,
-    ValidationText,
+  TextInput,
+  ValidationText,
 } from '../../styles/DocumentTabStyles.style';
 import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
 import {
-    CallSVG,
-    CheckIcon,
-    DotSVG,
-    EditSVG,
-    EmailSVG,
-    LineIcon,
-    UploadSVG,
+  CallSVG,
+  CheckIcon,
+  DotSVG,
+  EditSVG,
+  EmailSVG,
+  LineIcon,
+  UploadSVG,
 } from '../../svgs/ClientManagmentSvgs.svg';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import {
-    clientOptions,
-    ClientType,
-    Industry,
-    TaxCategory,
+  clientOptions,
+  ClientType,
+  Industry,
+  TaxCategory,
 } from '../reusableComponents/ClientEnums.component';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
 
@@ -201,12 +201,12 @@ const AddClientForm = (props: AddClientFormProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
   useEffect(() => {
-  return () => {
-    if (logoPreviewUrl) {
-      URL.revokeObjectURL(logoPreviewUrl);
-    }
-  };
-}, [logoPreviewUrl]);
+    return () => {
+      if (logoPreviewUrl) {
+        URL.revokeObjectURL(logoPreviewUrl);
+      }
+    };
+  }, [logoPreviewUrl]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
@@ -215,27 +215,29 @@ const AddClientForm = (props: AddClientFormProps) => {
       const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
       const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
       if (!validTypes.includes(selectedFile.type)) {
-        alert('Invalid file type. Please upload an image file (JPEG, PNG, GIF).');
+        alert(
+          'Invalid file type. Please upload an image file (JPEG, PNG, GIF).'
+        );
         return;
       }
       if (selectedFile.size > maxSizeInBytes) {
         alert('File is too large. Please upload a file smaller than 5 MB.');
         return;
       }
-      
+
       // Revoke previous blob URL if exists
       if (logoPreviewUrl) {
         URL.revokeObjectURL(logoPreviewUrl);
       }
-      
+
       // Set new file and generate blob URL
       const objectUrl = URL.createObjectURL(selectedFile);
-    setLogoPreviewUrl(objectUrl);
-    setFile(selectedFile);
-    setFormData((prev) => ({
-      ...prev,
-      clientLogo: selectedFile,
-    }));
+      setLogoPreviewUrl(objectUrl);
+      setFile(selectedFile);
+      setFormData((prev) => ({
+        ...prev,
+        clientLogo: selectedFile,
+      }));
     }
   };
 
@@ -569,12 +571,12 @@ const AddClientForm = (props: AddClientFormProps) => {
                 </div>
               </FormInputs>
               <AddClientButtons>
-                <div onClick={handlePreviousStep} className='leftAlign'>
-                  <span className="separator"> {`<`} </span> &nbsp;
+                <div onClick={handlePreviousStep} className="leftAlign">
+                  <span className="separator"> {'<'} </span> &nbsp;
                   {t('Previous')}
                 </div>
-                <div className='centerAlign'>
-                  <Button onClick={props.handleClose} type='button'>
+                <div className="centerAlign">
+                  <Button onClick={props.handleClose} type="button">
                     {t('Cancel')}
                   </Button>
                   <Button
@@ -745,11 +747,11 @@ const AddClientForm = (props: AddClientFormProps) => {
               </FormInputs>
               <AddClientButtons>
                 <div onClick={handlePreviousStep} className="leftAlign">
-                  <span className="separator"> {`<`} </span> &nbsp;
+                  <span className="separator"> {'<'} </span> &nbsp;
                   {t('Previous')}
                 </div>
-                <div className='centerAlign'>
-                  <Button onClick={props.handleClose} type='button'>
+                <div className="centerAlign">
+                  <Button onClick={props.handleClose} type="button">
                     {t('Cancel')}
                   </Button>
                   <Button
@@ -829,9 +831,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                 <InfoText>{formData.taxDetails.taxCategory}</InfoText>
               </InfoBlock>
               <InfoBlock style={{ display: 'flex' }}>
-                <SubHeadingDiv>
-                  {t('GST Number')}
-                </SubHeadingDiv>
+                <SubHeadingDiv>{t('GST Number')}</SubHeadingDiv>
                 <InfoText>{formData.taxDetails.taxNumber}</InfoText>
               </InfoBlock>
             </FormInputsContainer>

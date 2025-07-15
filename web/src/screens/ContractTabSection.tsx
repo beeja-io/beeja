@@ -4,7 +4,7 @@ import {
   ProjectsTable,
   Tab,
   TabContent,
-  Tabs
+  Tabs,
 } from '../styles/ProjectTabSectionStyles.style';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +13,9 @@ interface ContactTabSectionProps {
 }
 
 const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
-  const [activeTab, setActiveTab] = useState<'Resources' | 'Description'>('Resources');
+  const [activeTab, setActiveTab] = useState<'Resources' | 'Description'>(
+    'Resources'
+  );
   const { t } = useTranslation();
 
   return (
@@ -22,7 +24,11 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
         {[t('resources'), t('description')].map((tabLabel, index) => {
           const tabKey = index === 0 ? 'Resources' : 'Description';
           return (
-            <Tab key={tabKey} active={activeTab === tabKey} onClick={() => setActiveTab(tabKey as any)}>
+            <Tab
+              key={tabKey}
+              active={activeTab === tabKey}
+              onClick={() => setActiveTab(tabKey as any)}
+            >
               {tabLabel}
             </Tab>
           );
@@ -42,9 +48,7 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
             </thead>
             <tbody>
               <tr>
-                <td >
-                  {t('staticResourceTableNoData')}
-                </td>
+                <td>{t('staticResourceTableNoData')}</td>
               </tr>
             </tbody>
           </ProjectsTable>
@@ -52,7 +56,9 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
 
         {activeTab === 'Description' && (
           <div>
-            <p><strong>{t('description')}:</strong> {t('No discription Found')}</p>
+            <p>
+              <strong>{t('description')}:</strong> {t('No discription Found')}
+            </p>
           </div>
         )}
       </TabContent>

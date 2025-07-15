@@ -43,7 +43,9 @@ const ProjectList = ({
   const navigate = useNavigate();
 
   const [projectLists, setProjectList] = useState<ProjectEntity[]>([]);
-  const [editLoadingProjectId, setEditLoadingProjectId] = useState<string | null>(null);
+  const [editLoadingProjectId, setEditLoadingProjectId] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     setProjectList(projectList);
@@ -148,24 +150,31 @@ const ProjectList = ({
                             project.projectManagerNames[0]}
                         </td>
                         <td>
-                         {project.projectStatus ? (
+                          {project.projectStatus ? (
                             <StatusDropdown
                               value={project.projectStatus}
                               onChange={(newStatus) => {
                                 toast.promise(
-                                  updateProjectStatus(project.projectId, newStatus as ProjectStatus)
-                                    .then(() => {
-                                      setProjectList((prevList) =>
-                                        prevList.map((p) =>
-                                          p.projectId === project.projectId
-                                            ? { ...p, projectStatus: newStatus as ProjectStatus }
-                                            : p
-                                        )
-                                      );
-                                    }),
+                                  updateProjectStatus(
+                                    project.projectId,
+                                    newStatus as ProjectStatus
+                                  ).then(() => {
+                                    setProjectList((prevList) =>
+                                      prevList.map((p) =>
+                                        p.projectId === project.projectId
+                                          ? {
+                                              ...p,
+                                              projectStatus:
+                                                newStatus as ProjectStatus,
+                                            }
+                                          : p
+                                      )
+                                    );
+                                  }),
                                   {
                                     loading: 'Updating project status...',
-                                    success: 'Project status updated successfully!',
+                                    success:
+                                      'Project status updated successfully!',
                                     error: 'Failed to update project status',
                                   }
                                 );
@@ -181,11 +190,11 @@ const ProjectList = ({
                           ) : (
                             <EditSVG
                               onClick={async () => {
-                                setEditLoadingProjectId(project.projectId); 
+                                setEditLoadingProjectId(project.projectId);
                                 try {
-                                  await onEditProject(project); 
+                                  await onEditProject(project);
                                 } finally {
-                                  setEditLoadingProjectId(null); 
+                                  setEditLoadingProjectId(null);
                                 }
                               }}
                             />
