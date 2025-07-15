@@ -39,7 +39,12 @@ import {
   RightSectionHeading,
   RightSubSectionDiv,
 } from '../styles/AddContractFormStyles.style';
-import { ColumnItem, HorizontalLine, IconItem, RowWrapper } from '../styles/ContractStyle.style';
+import {
+  ColumnItem,
+  HorizontalLine,
+  IconItem,
+  RowWrapper,
+} from '../styles/ContractStyle.style';
 import { InfoText } from '../styles/ProjectStyles.style';
 import ContactTabSection from './ContractTabSection';
 
@@ -60,7 +65,7 @@ const ContractDetailsScreen: React.FC = () => {
         try {
           const response = await downloadClientLogo(client.logoId);
           if (!response.data || response.data.size === 0) {
-            toast.error('Received empty or invalid blob data')
+            toast.error('Received empty or invalid blob data');
           }
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -70,9 +75,9 @@ const ContractDetailsScreen: React.FC = () => {
           reader.onerror = () => {
             toast.error('Error converting blob to base64');
           };
-          reader.readAsDataURL(response.data);  
+          reader.readAsDataURL(response.data);
         } catch (error) {
-          toast.error(t('Error Fetching logo'))
+          toast.error(t('Error Fetching logo'));
         }
       }
     };
@@ -129,7 +134,9 @@ const ContractDetailsScreen: React.FC = () => {
           <ClientTitle>{contract?.contractTitle}</ClientTitle>
 
           <RowWrapper>
-            <ColumnItem>{t('ID')}: {contract?.contractId}</ColumnItem>
+            <ColumnItem>
+              {t('ID')}: {contract?.contractId}
+            </ColumnItem>
             <DotSVG />
             <ColumnItem>{contract?.contractType}</ColumnItem>
             <DotSVG />
@@ -168,7 +175,9 @@ const ContractDetailsScreen: React.FC = () => {
           </RowWrapper>
         </ClientInfo>
 
-        {contract?.contractId && <ContactTabSection contractId={contract?.contractId} />}
+        {contract?.contractId && (
+          <ContactTabSection contractId={contract?.contractId} />
+        )}
         <TableContainer />
       </LeftSection>
 
@@ -199,7 +208,7 @@ const ContractDetailsScreen: React.FC = () => {
               <span>{client?.email}</span>
             </IconItem>
           </IconWrapper>
-          <HorizontalLine/>
+          <HorizontalLine />
           <RightSubSectionDiv>
             <RightSectionHeading>{t('Project Details')}</RightSectionHeading>
             <ProjectSeactionHeading>{client?.industry}</ProjectSeactionHeading>

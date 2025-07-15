@@ -5,22 +5,22 @@ interface ClientOptions {
 }
 /* eslint-disable no-unused-vars */
 export enum ClientType {
-  INTERNAL = "INTERNAL",
-  INDIVIDUAL = "INDIVIDUAL",
-  COMPANY = "COMPANY",
-  ORGANIZATION = "ORGANIZATION",
+  INTERNAL = 'INTERNAL',
+  INDIVIDUAL = 'INDIVIDUAL',
+  COMPANY = 'COMPANY',
+  ORGANIZATION = 'ORGANIZATION',
 }
 export enum Industry {
-  HRMS = "HRMS",
-  SOCIALMEDIA = "SOCIALMEDIA",
-  ECOMMERCE = "ECOMMERCE",
-  ITSERVICES = "ITSERVICES",
+  HRMS = 'HRMS',
+  SOCIALMEDIA = 'SOCIALMEDIA',
+  ECOMMERCE = 'ECOMMERCE',
+  ITSERVICES = 'ITSERVICES',
 }
 export enum TaxCategory {
-  VAT = "VAT",
-  GST = "GST",
-  SALES_TAX = "SALES_TAX",
-  EXCISE_TAX = "EXCISE_TAX",
+  VAT = 'VAT',
+  GST = 'GST',
+  SALES_TAX = 'SALES_TAX',
+  EXCISE_TAX = 'EXCISE_TAX',
 }
 /* eslint-enable no-unused-vars */
 export const clientOptions: ClientOptions = {
