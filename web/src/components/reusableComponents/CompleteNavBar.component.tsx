@@ -287,7 +287,7 @@ const CompleteNavBar = () => {
                         },
                         {
                           name: 'Projects',
-                          link: '/projects/project-management',
+                          link: '/project-management',
                         },
                         {
                           name: 'Contracts',
