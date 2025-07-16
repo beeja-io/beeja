@@ -112,7 +112,7 @@ function App() {
     }
   };
 
-  const storedTheme = localStorage.getItem('theme');
+  const storedTheme = localStorage.getItem('theme') || 'LIGHT';
 
   return (
     <ThemeProvider
