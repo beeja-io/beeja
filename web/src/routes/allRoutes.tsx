@@ -114,10 +114,7 @@ const AllRoutes = () => {
         />
       </Route>
 
-      <Route
-        path="/projects/project-management"
-        element={<ProjectManagement />}
-      >
+      <Route path="/project-management" element={<ProjectManagement />}>
         <Route
           index
           element={
