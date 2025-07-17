@@ -149,8 +149,8 @@ const ClientManagement = () => {
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody="THE_CLIENT_HAS_BEEN_ADDED"
-          messageHeading="SUCCESSFULLY_ADDED"
+          messageBody="The Client has been Added Successfully"
+          messageHeading="Client Suceessfully Added."
           handleClose={handleShowSuccessMessage}
         />
       )}

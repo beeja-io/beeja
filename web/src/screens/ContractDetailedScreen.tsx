@@ -41,10 +41,12 @@ import {
 } from '../styles/AddContractFormStyles.style';
 import {
   ColumnItem,
+  ContractTitleHeader,
   HorizontalLine,
   IconItem,
   RowWrapper,
 } from '../styles/ContractStyle.style';
+import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { InfoText } from '../styles/ProjectStyles.style';
 import ContactTabSection from './ContractTabSection';
 
@@ -131,7 +133,16 @@ const ContractDetailsScreen: React.FC = () => {
     <Container>
       <LeftSection>
         <ClientInfo>
-          <ClientTitle>{contract?.contractTitle}</ClientTitle>
+          <ContractTitleHeader>
+            <ClientTitle>{contract?.contractTitle}</ClientTitle>
+            {contract?.status && (
+              <StatusDropdown
+                value={contract.status}
+                onChange={() => {}}
+                disabled
+              />
+            )}
+          </ContractTitleHeader>
 
           <RowWrapper>
             <ColumnItem>
@@ -176,7 +187,11 @@ const ContractDetailsScreen: React.FC = () => {
         </ClientInfo>
 
         {contract?.contractId && (
-          <ContactTabSection contractId={contract?.contractId} />
+          <ContactTabSection
+            contractId={contract?.contractId}
+            rawProjectResources={contract?.rawProjectResources}
+            description={contract?.description || ''}
+          />
         )}
         <TableContainer />
       </LeftSection>
@@ -211,8 +226,16 @@ const ContractDetailsScreen: React.FC = () => {
           <HorizontalLine />
           <RightSubSectionDiv>
             <RightSectionHeading>{t('Project Details')}</RightSectionHeading>
-            <ProjectSeactionHeading>{client?.industry}</ProjectSeactionHeading>
-
+            <ContractTitleHeader>
+              <ProjectSeactionHeading>{project?.name}</ProjectSeactionHeading>
+              {project?.status && (
+                <StatusDropdown
+                  value={project.status}
+                  onChange={() => {}}
+                  disabled
+                />
+              )}
+            </ContractTitleHeader>
             {project?.projectId && (
               <>
                 <ClientInfoWrapper>
