@@ -48,6 +48,6 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
   Project findByProjectIdAndClientIdAndOrganizationId(
       String projectId, String clientId, String organizationId);
 
-  Optional<Project> findByProjectId(String projectId);
+  Optional<Project> findByProjectId(String projectId, String organizationId);
 
 }
