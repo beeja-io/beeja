@@ -297,6 +297,8 @@ public class ClientServiceImpl implements ClientService {
    */
   @Override
   public List<Client> getAllClientsOfOrganization() {
+    log.info("Fetching all clients for organization: {}",
+        UserContext.getLoggedInUserOrganization().get(Constants.ID));
     // TODO: Implement pagination
     List<Client> clientsInOrganization =
         clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(
