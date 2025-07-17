@@ -34,14 +34,8 @@ import com.beeja.api.accounts.utils.SecretsGenerator;
 import com.beeja.api.accounts.utils.UserContext;
 import com.beeja.api.accounts.utils.methods.ServiceMethods;
 import feign.FeignException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
@@ -591,14 +585,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             .findAllByEmployeeIdInAndOrganizations_Id(ids, orgId);
 
     if (employees == null || employees.isEmpty()) {
-      log.error(Constants.EMPLOYEE_ID_NOT_NULL, ids, orgId);
-      throw new ResourceNotFoundException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.RESOURCE_NOT_FOUND_ERROR,
-                      ErrorCode.ORGANIZATION_NOT_FOUND,
-                      Constants.ERROR_NO_ORGANIZATION_FOUND_WITH_PROVIDED_ID
-              )
-      );
+      log.warn("No employees found for IDs: {} in organization: {}", ids, orgId);
+      return Collections.emptyList();
     }
     return employees.stream()
             .map(emp -> new EmployeeNameDTO(
