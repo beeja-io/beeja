@@ -4,6 +4,7 @@ export const FormContainer = styled.div`
   background-color: white;
   border-radius: 10px;
   border: 1px solid #f1f2f4;
+  padding: 2rem;
 `;
 
 export const StepsContainer = styled.div`
@@ -457,7 +458,7 @@ export const BasicOrganizationDetailsContainer = styled.div`
 export const ClientInfo = styled.div`
   display: flex;
   flex-direction: column;
-  width: 750px;
+  width: auto;
   background-color: #ffffff;
   border-radius: 8px;
   padding: 20px;
@@ -531,17 +532,16 @@ export const ClientInfoDiv = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
   color: #818181;
-  // width: 70px;
 `;
 
 export const ClientTitle = styled.div`
   font-family: Nunito;
   font-weight: 700;
-  font-size: 26px;
+  font-size: 24px;
   line-height: 160%;
   letter-spacing: 0px;
   vertical-align: middle;
-  width: 330px;
+  width: 40rem;
   height: 42px;
   color: #005792;
   margin-bottom: 20px;
@@ -616,7 +616,7 @@ export const TaxLabel = styled.div`
 `;
 
 export const TaxValue = styled.div`
-  font-weight: 600; // slightly bold
+  font-weight: 600;
   color: #222;
 `;
 

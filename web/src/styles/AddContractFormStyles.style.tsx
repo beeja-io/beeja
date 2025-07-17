@@ -217,7 +217,7 @@ export const RightSectionDiv = styled.div`
   font-size: 16px;
   line-height: 160%;
   letter-spacing: 0.2px;
-  width: 315px;
+  width: auto;
   height: 424px;
   gap: 16px;
   padding: 16px;
@@ -225,6 +225,7 @@ export const RightSectionDiv = styled.div`
   align-items: flex-start;
   justify-content: flex-start;
   word-wrap: break-word;
+  background-color: #ffffff;
 `;
 
 export const ProjectSeactionHeading = styled.div`
