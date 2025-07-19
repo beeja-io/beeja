@@ -393,10 +393,6 @@ export const GeneralDetailsTab = ({
   const handleIsUpdateResponseLoading = () => {
     setIsUpdateResponseLoading(!isUpdateResponseLoading);
   };
-  const editableFieldsForLoggedInEmployee = [
-    'Alt Email Address',
-    'Alt Phone Number',
-  ];
   const allowFullEditingAccess =
     user && hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES);
 
@@ -441,8 +437,7 @@ export const GeneralDetailsTab = ({
         <TabContentMainContainer>
           <TabContentMainContainerHeading>
             <h4>{heading}</h4>
-            {allowFullEditingAccess &&
-            user.employeeId != employee.account.employeeId ? (
+            {allowFullEditingAccess ? (
               <TabContentEditArea>
                 {user &&
                   (allowFullEditingAccess ||
@@ -518,11 +513,7 @@ export const GeneralDetailsTab = ({
                 {firstColumn.map(({ label, value }) => (
                   <tr key={label}>
                     <TabContentTableTd>{t(label)}</TabContentTableTd>
-                    {isEditModeOn &&
-                    ((user?.employeeId === employee.account.employeeId &&
-                      editableFieldsForLoggedInEmployee.includes(label)) ||
-                      (allowFullEditingAccess &&
-                        user.employeeId !== employee.account.employeeId)) ? (
+                    {isEditModeOn && allowFullEditingAccess ? (
                       <TabContentTableTd>
                         {label === 'Country' ||
                         label === 'Nationality' ||
@@ -687,11 +678,7 @@ export const GeneralDetailsTab = ({
                   {secondColumn.map(({ label, value }) => (
                     <tr key={label}>
                       <TabContentTableTd>{t(label)}</TabContentTableTd>
-                      {isEditModeOn &&
-                      ((user?.employeeId === employee.account.employeeId &&
-                        editableFieldsForLoggedInEmployee.includes(label)) ||
-                        (allowFullEditingAccess &&
-                          user.employeeId !== employee.account.employeeId)) ? (
+                      {isEditModeOn && allowFullEditingAccess ? (
                         <TabContentTableTd>
                           {label === 'Gender' || label === 'Marital Status' ? (
                             <SelectInput
