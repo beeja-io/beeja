@@ -219,8 +219,25 @@ public class EmployeeServiceImpl implements EmployeeService {
 
       Employee existingEmployee = existingEmployeeOptional.get();
       updatedEmployee.setId(existingEmployee.getId());
-      updatedEmployee.setEmployeeId(existingEmployee.getEmployeeId());
       updatedEmployee.setBeejaAccountId(existingEmployee.getBeejaAccountId());
+
+      String currentEmployeeId = existingEmployee.getEmployeeId();
+      String newEmployeeId = updatedEmployee.getEmployeeId();
+
+      if (newEmployeeId != null && !newEmployeeId.equals(currentEmployeeId)) {
+        Employee duplicateCheck =
+                employeeRepository.findByEmployeeIdAndOrganizationId(
+                        newEmployeeId, UserContext.getLoggedInUserOrganization().getId());
+        if (duplicateCheck != null) {
+          throw new ResourceAlreadyFound(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.RESOURCE_EXISTS_ERROR,
+                          ErrorCode.RESOURCE_CREATING_ERROR,
+                          "Employee ID already exists"));
+        }
+        existingEmployee.setEmployeeId(newEmployeeId);
+      }
+
 
       if (UserContext.getLoggedInUserPermissions().contains(UPDATE_ALL_EMPLOYEES)) {
         existingEmployee.setPosition(updatedEmployee.getPosition());
@@ -233,9 +250,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         updatePfDetails(existingEmployee, updatedEmployee.getPfDetails());
 
         if (updatedEmployee.getEmail() != null
-            || updatedEmployee.getFirstName() != null
-            || updatedEmployee.getLastName() != null) {
-          accountClient.updateUser(updatedEmployee.getEmployeeId(), updatedEmployee);
+                || updatedEmployee.getFirstName() != null
+                || updatedEmployee.getLastName() != null
+                || (newEmployeeId != null && !newEmployeeId.equals(currentEmployeeId))) {
+          accountClient.updateUser(currentEmployeeId, updatedEmployee);
         }
 
         return employeeRepository.save(existingEmployee);
