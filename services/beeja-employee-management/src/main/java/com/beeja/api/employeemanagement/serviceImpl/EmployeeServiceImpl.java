@@ -101,20 +101,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     emp.setEmployeeId(((String) employee.get("employeeId")));
     emp.setEmployeeNumber(ExtractEmpNumUtil.extractEmpNumber(emp.getEmployeeId()));
     Object organizationsObject = employee.get("organizations");
-    if (organizationsObject instanceof Map) {
-      Map<String, Object> organizationsMap = (Map<String, Object>) organizationsObject;
-      emp.setOrganizationId((String) organizationsMap.get("id"));
+    try{
+      if (organizationsObject instanceof Map) {
+        Map<String, Object> organizationsMap = (Map<String, Object>) organizationsObject;
+        emp.setOrganizationId((String) organizationsMap.get("id"));
+      }
+    }catch (Exception e){
+      log.error("Error occurred while getting org Id: " + e.getMessage());
     }
 
-    if (employee.get("department") != null || employee.get("employmentType")!=null) {
-      JobDetails jobDetails = new JobDetails();
-      jobDetails.setDepartment(employee.get("department").toString());
-      jobDetails.setEmployementType(employee.get("employmentType").toString());
-      emp.setJobDetails(jobDetails);
+    try{
+      if (employee.get("department") != null || employee.get("employmentType")!=null) {
+        JobDetails jobDetails = new JobDetails();
+        jobDetails.setDepartment(employee.get("department").toString());
+        jobDetails.setEmployementType(employee.get("employmentType").toString());
+        emp.setJobDetails(jobDetails);
+      }
+    }catch (Exception e){
+      log.error("error occurred while mapping departments and jobdetails : " + e.getMessage());
     }
     try {
       return employeeRepository.save(emp);
     } catch (Exception e) {
+      log.error("Error while creating employee: " + e.getMessage());
       throw new Exception(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.DB_ERROR,

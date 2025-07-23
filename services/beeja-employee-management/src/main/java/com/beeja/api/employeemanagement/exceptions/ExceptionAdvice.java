@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+@Slf4j
 @ControllerAdvice
 public class ExceptionAdvice {
 
@@ -103,6 +106,7 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {
+    log.error("Unexpected error occurred: "+ex.getMessage());
     String[] errorMessage = convertStringToArray(ex.getMessage());
     ErrorResponse errorResponse =
         new ErrorResponse(
