@@ -273,8 +273,7 @@ const DeductionsTab = ({
       <TabContentMainContainerHeading>
         <h4>{heading}</h4>
         {user &&
-        hasPermission(user, HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE) &&
-        user.employeeId != employee.account.employeeId ? (
+        hasPermission(user, HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE) ? (
           <TabContentEditArea>
             {!isEditModeOn ? (
               <span
