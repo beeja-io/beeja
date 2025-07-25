@@ -181,11 +181,13 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 required
               >
                 <option value="">{t('SELECT_DEVICE')}</option>
-                {deviceTypes?.values?.map((device) => (
-                  <option key={device.value} value={device.value}>
-                    {device.description || device.value}
-                  </option>
-                ))}
+                {[...(deviceTypes?.values || [])]
+                  .sort((a, b) => a.value.localeCompare(b.value))
+                  .map((device) => (
+                    <option key={device.value} value={device.value}>
+                      {device.description || device.value}
+                    </option>
+                  ))}
               </select>
             </InputLabelContainer>
 
@@ -203,9 +205,9 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                   required
                 >
                   <option value="">{t('SELECT_ACCESSORY_TYPE')}</option>
-                  <option value="KEYBOARD">Keyboard</option>
                   <option value="CABLE">Cable</option>
                   <option value="HEADSET">Headset</option>
+                  <option value="KEYBOARD">Keyboard</option>
                   <option value="MOUSE">Mouse</option>
                   <option value="USB_STICKS">USB sticks</option>
                 </select>
@@ -256,8 +258,8 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 required
               >
                 <option value="">{t('SELECT_AVAILABILITY')}</option>
-                <option value="YES">{t('YES')}</option>
                 <option value="NO">{t('NO')}</option>
+                <option value="YES">{t('YES')}</option>
               </select>
             </InputLabelContainer>
 

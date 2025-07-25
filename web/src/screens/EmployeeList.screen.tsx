@@ -281,6 +281,7 @@ const EmployeeList = () => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
   };
+
   useEffect(() => {
     if (isCreateEmployeeModelOpen) {
       document.body.style.overflow = 'hidden';
@@ -379,11 +380,14 @@ const EmployeeList = () => {
                 }}
               >
                 <option value="">Department</option>{' '}
-                {departmentOptions?.values.map((department) => (
-                  <option key={department.value} value={department.value}>
-                    {t(department.value)}
-                  </option>
-                ))}
+                {departmentOptions?.values &&
+                  [...departmentOptions.values]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((department) => (
+                      <option key={department.value} value={department.value}>
+                        {t(department.value)}
+                      </option>
+                    ))}
               </select>
             )}
             {jobTitles && (
@@ -397,11 +401,14 @@ const EmployeeList = () => {
                 }}
               >
                 <option value="">Job Title</option>{' '}
-                {jobTitles?.values.map((jobTitle) => (
-                  <option key={jobTitle.value} value={jobTitle.value}>
-                    {t(jobTitle.value)}
-                  </option>
-                ))}
+                {jobTitles?.values &&
+                  [...jobTitles.values]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((jobTitle) => (
+                      <option key={jobTitle.value} value={jobTitle.value}>
+                        {t(jobTitle.value)}
+                      </option>
+                    ))}
               </select>
             )}
 
@@ -416,14 +423,14 @@ const EmployeeList = () => {
                 }}
               >
                 <option value="">Employement Type</option>
-                {employeeTypes?.values.map((employementType) => (
-                  <option
-                    key={employementType.value}
-                    value={employementType.value}
-                  >
-                    {t(employementType.value)}
-                  </option>
-                ))}
+                {departmentOptions?.values &&
+                  [...departmentOptions.values]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((department) => (
+                      <option key={department.value} value={department.value}>
+                        {t(department.value)}
+                      </option>
+                    ))}
               </select>
             )}
 
@@ -889,11 +896,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             <option value="">{t('SELECT_EMPLOYMENT_TYPE')}</option>
             {organizationValues &&
               organizationValues.values &&
-              organizationValues.values.map((type, index) => (
-                <option key={index} value={type.value}>
-                  {t(type.value)}
-                </option>
-              ))}
+              [...(organizationValues?.values || [])]
+                .sort((a, b) => a.value.localeCompare(b.value))
+                .map((type, index) => (
+                  <option key={index} value={type.value}>
+                    {t(type.value)}
+                  </option>
+                ))}
           </select>
           {errors.employmentType && (
             <ValidationText>
@@ -925,11 +934,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             <option value="">{t('SELECT_DEPARTMENT')}</option>
             {props.departmentOptions &&
               props.departmentOptions.values &&
-              props.departmentOptions.values.map((department, index) => (
-                <option key={index} value={department.value}>
-                  {t(department.value)}
-                </option>
-              ))}
+              [...(props.departmentOptions?.values || [])]
+                .sort((a, b) => a.value.localeCompare(b.value))
+                .map((department, index) => (
+                  <option key={index} value={department.value}>
+                    {t(department.value)}
+                  </option>
+                ))}
           </select>
           {errors.employmentType && (
             <ValidationText>

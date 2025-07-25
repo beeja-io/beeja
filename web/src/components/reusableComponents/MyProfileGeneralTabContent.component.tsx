@@ -836,11 +836,13 @@ export const SelectInput: React.FC<SelectInputProps> = ({
       }
     >
       <option value="">Select</option>
-      {options?.map((option) => (
-        <option key={option} value={option} selected={selected === option}>
-          {option}
-        </option>
-      ))}
+      {[...(options || [])]
+        .sort((a, b) => a.localeCompare(b))
+        .map((option) => (
+          <option key={option} value={option} selected={selected === option}>
+            {option}
+          </option>
+        ))}
     </Select>
   );
 };
