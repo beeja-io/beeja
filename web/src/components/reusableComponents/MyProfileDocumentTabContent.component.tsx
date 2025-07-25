@@ -54,6 +54,8 @@ import { hasPermission } from '../../utils/permissionCheck';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import Pagination from '../directComponents/Pagination.component';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
+
 type DocumentTabContentProps = {
   employee: EmployeeEntity;
 };
@@ -284,13 +286,13 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
   });
   useEffect(() => {
     if (isCreateDocumentModelOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
 
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isCreateDocumentModelOpen]);
 
