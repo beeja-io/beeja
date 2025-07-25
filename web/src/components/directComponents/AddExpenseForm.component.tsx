@@ -877,18 +877,21 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               ) : (
                 <>
                   <option value="">{t('SELECT_DEPARTMENT')}</option>
-                  {props.expenseDepartments.values.map((internalValue) => (
-                    <option
-                      key={internalValue.value}
-                      value={internalValue.value}
-                      selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                        props.expense?.department === internalValue.value
-                      }
-                    >
-                      {internalValue.value}
-                    </option>
-                  ))}
+                  {[...(props.expenseDepartments?.values || [])]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((internalValue) => (
+                      <option
+                        key={internalValue.value}
+                        value={internalValue.value}
+                        selected={
+                          (modeOfModal === 'edit' ||
+                            modeOfModal === 'preview') &&
+                          props.expense?.department === internalValue.value
+                        }
+                      >
+                        {internalValue.value}
+                      </option>
+                    ))}
                 </>
               )}
             </select>
@@ -922,18 +925,21 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               ) : (
                 <>
                   <option value="">{t('SELECT_TYPE')}</option>
-                  {props.expenseTypes.values?.map((type) => (
-                    <option
-                      key={type.value}
-                      value={type.value}
-                      selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                        props.expense?.type === type.value
-                      }
-                    >
-                      {type.value}
-                    </option>
-                  ))}
+                  {[...(props.expenseTypes?.values || [])]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((type) => (
+                      <option
+                        key={type.value}
+                        value={type.value}
+                        selected={
+                          (modeOfModal === 'edit' ||
+                            modeOfModal === 'preview') &&
+                          props.expense?.type === type.value
+                        }
+                      >
+                        {type.value}
+                      </option>
+                    ))}
                 </>
               )}
             </select>
@@ -963,18 +969,20 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               disabled={modeOfModal === 'preview'}
             >
               <option value="">{t('SELECT_MODE')}</option>
-              {props.expensePaymentModes?.values?.map((mode) => (
-                <option
-                  key={mode.value}
-                  value={mode.value}
-                  selected={
-                    (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                    props.expense?.modeOfPayment === mode.value
-                  }
-                >
-                  {mode.value}
-                </option>
-              ))}
+              {[...(props.expensePaymentModes?.values || [])]
+                .sort((a, b) => a.value.localeCompare(b.value))
+                .map((mode) => (
+                  <option
+                    key={mode.value}
+                    value={mode.value}
+                    selected={
+                      (modeOfModal === 'edit' || modeOfModal === 'preview') &&
+                      props.expense?.modeOfPayment === mode.value
+                    }
+                  >
+                    {mode.value}
+                  </option>
+                ))}
             </select>
           </InputLabelContainer>
           <InputLabelContainer>
@@ -1174,18 +1182,21 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               ) : (
                 <>
                   <option value="">{t('SELECT_CATEGORY')}</option>
-                  {props.expenseCategories?.values?.map((category) => (
-                    <option
-                      key={category.value}
-                      value={category.value}
-                      selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                        props.expense?.category === category.value
-                      }
-                    >
-                      {category.value}
-                    </option>
-                  ))}
+                  {[...(props.expenseCategories?.values || [])]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((category) => (
+                      <option
+                        key={category.value}
+                        value={category.value}
+                        selected={
+                          (modeOfModal === 'edit' ||
+                            modeOfModal === 'preview') &&
+                          props.expense?.category === category.value
+                        }
+                      >
+                        {category.value}
+                      </option>
+                    ))}
                 </>
               )}
             </select>

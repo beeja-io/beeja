@@ -396,11 +396,13 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       style={{ width: '400px' }}
                     >
                       <option value="">{t('Select Billing Type')}</option>
-                      {Object.values(ContractBillingType).map((type) => (
-                        <option key={type} value={type}>
-                          {ContractBillingTypeLabels[type]}
-                        </option>
-                      ))}
+                      {[...Object.values(ContractBillingType)]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((type) => (
+                          <option key={type} value={type}>
+                            {ContractBillingTypeLabels[type]}
+                          </option>
+                        ))}
                     </select>
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -440,11 +442,13 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       style={{ width: '400px' }}
                     >
                       <option value="">Select Contract</option>
-                      {Object.values(ContractType).map((type) => (
-                        <option key={type} value={type}>
-                          {ContractTypeLabels[type]}
-                        </option>
-                      ))}
+                      {[...Object.values(ContractType)]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((type) => (
+                          <option key={type} value={type}>
+                            {ContractTypeLabels[type]}
+                          </option>
+                        ))}
                     </select>
                     {errors.contractType && (
                       <ValidationText>{errors.contractType}</ValidationText>
@@ -524,11 +528,13 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       style={{ width: '400px' }}
                     >
                       <option value="">Select Currency</option>
-                      {Object.values(BillingCurrency).map((currency) => (
-                        <option key={currency} value={currency}>
-                          {BillingCurrencyLabels[currency]}
-                        </option>
-                      ))}
+                      {[...Object.values(BillingCurrency)]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((currency) => (
+                          <option key={currency} value={currency}>
+                            {BillingCurrencyLabels[currency]}
+                          </option>
+                        ))}
                     </select>
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -610,11 +616,13 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     style={{ width: '400px' }}
                   >
                     <option value="">{t('Select Project')}</option>
-                    {projectOptions?.map((project) => (
-                      <option key={project.projectId} value={project.name}>
-                        {project.name}
-                      </option>
-                    ))}
+                    {[...(projectOptions || [])]
+                      .sort((a, b) => a.name.localeCompare(b.name))
+                      .map((project) => (
+                        <option key={project.projectId} value={project.name}>
+                          {project.name}
+                        </option>
+                      ))}
                   </select>
                 </InputLabelContainer>
               </div>
@@ -636,7 +644,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         onChange={(
                           selected: MultiValue<{ value: string; label: string }>
                         ) => {
-                          const values = selected.map((opt) => opt.value);
+                          const values = [...(selected || [])]
+                            .sort((a, b) => a.value.localeCompare(b.value))
+                            .map((opt) => opt.value);
                           setFormData((prev) => ({
                             ...prev,
                             projectManagers: values,
@@ -732,9 +742,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
               <ResourceBlock>
                 <ResourceLabel>{t('All Resources')}</ResourceLabel>
                 <NameBubbleListContainer>
-                  {selectedResources.map((option) => (
-                    <NameBubble key={option.value}>{option.label}</NameBubble>
-                  ))}
+                  {[...(selectedResources || [])]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((option) => (
+                      <NameBubble key={option.value}>{option.label}</NameBubble>
+                    ))}
                 </NameBubbleListContainer>
               </ResourceBlock>
             )}

@@ -141,11 +141,13 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 required
               >
                 <option value="">{t('SELECT_DEVICE')}</option>
-                {props.deviceTypes.values?.map((deviceType) => (
-                  <option key={deviceType.value} value={deviceType.value}>
-                    {deviceType.value}
-                  </option>
-                ))}
+                {[...(props.deviceTypes?.values || [])]
+                  .sort((a, b) => a.value.localeCompare(b.value))
+                  .map((deviceType) => (
+                    <option key={deviceType.value} value={deviceType.value}>
+                      {deviceType.value}
+                    </option>
+                  ))}
               </select>
             </InputLabelContainer>
             {formData.device === 'Accessories' && (
@@ -162,9 +164,9 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                   required
                 >
                   <option value="">{t('SELECT_ACCESSORY_TYPE')}</option>
-                  <option value="Keyboard">{t('KEYBOARD')}</option>
                   <option value="Cable">{t('CABLE')}</option>
                   <option value="Headset">{t('HEADSET')}</option>
+                  <option value="Keyboard">{t('KEYBOARD')}</option>
                   <option value="Mouse">{t('MOUSE')}</option>
                   <option value="USB_sticks">{t('USB_STICKS')}</option>
                 </select>
@@ -215,8 +217,8 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 required
               >
                 <option value="">{t('SELECT_AVAILABILITY')}</option>
-                <option value="Yes">{t('YES')}</option>
                 <option value="No">{t('NO')}</option>
+                <option value="Yes">{t('YES')}</option>
               </select>
             </InputLabelContainer>
             <InputLabelContainer>
@@ -306,14 +308,16 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 required
               >
                 <option value="">{t('SELECT_INVENTORY_PROVIDER')}</option>
-                {props.inventoryProviders.values?.map((inventoryProvider) => (
-                  <option
-                    key={inventoryProvider.value}
-                    value={inventoryProvider.value}
-                  >
-                    {inventoryProvider.value}
-                  </option>
-                ))}
+                {[...(props.inventoryProviders?.values || [])]
+                  .sort((a, b) => a.value.localeCompare(b.value))
+                  .map((inventoryProvider) => (
+                    <option
+                      key={inventoryProvider.value}
+                      value={inventoryProvider.value}
+                    >
+                      {inventoryProvider.value}
+                    </option>
+                  ))}
               </select>
             </InputLabelContainer>
             <InputLabelContainer>

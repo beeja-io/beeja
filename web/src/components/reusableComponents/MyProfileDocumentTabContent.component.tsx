@@ -476,11 +476,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       onChange={handleDocumentTypeChange}
                       className="selectoption"
                     >
-                      {['Select a Type', ...documentType].map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
+                      <option value="">{t('Select a Type')}</option> {''}
+                      {[...documentType]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
                     </select>
                     {errors.emptyDocumentType && (
                       <ValidationText>
