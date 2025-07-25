@@ -156,11 +156,13 @@ export const OrganizationSettingsDateCurrency = ({
                   : ''
               }
             >
-              {Object.keys(DATE_FORMATS).map((key) => (
-                <option key={DATE_FORMATS[key]} value={key}>
-                  {DATE_FORMATS[key]}
-                </option>
-              ))}
+              {[...Object.keys(DATE_FORMATS)]
+                .sort((a, b) => a.localeCompare(b))
+                .map((key) => (
+                  <option key={DATE_FORMATS[key]} value={key}>
+                    {DATE_FORMATS[key]}
+                  </option>
+                ))}
             </Select>
           </Row>
           <Row>
@@ -175,11 +177,13 @@ export const OrganizationSettingsDateCurrency = ({
                   : ''
               }
             >
-              {Object.keys(TIME_ZONES).map((key) => (
-                <option key={TIME_ZONES[key]} value={key}>
-                  {TIME_ZONES[key]}
-                </option>
-              ))}
+              {[...Object.keys(TIME_ZONES)]
+                .sort((a, b) => a.localeCompare(b))
+                .map((key) => (
+                  <option key={TIME_ZONES[key]} value={key}>
+                    {TIME_ZONES[key]}
+                  </option>
+                ))}
             </Select>
           </Row>
         </Container>
@@ -234,11 +238,13 @@ export const OrganizationSettingsDateCurrency = ({
                   : ''
               }
             >
-              {Object.keys(CURRENCY_TYPES).map((key) => (
-                <option key={CURRENCY_TYPES[key]} value={key}>
-                  {CURRENCY_TYPES[key]}
-                </option>
-              ))}
+              {[...Object.keys(CURRENCY_TYPES)]
+                .sort((a, b) => a.localeCompare(b))
+                .map((key) => (
+                  <option key={CURRENCY_TYPES[key]} value={key}>
+                    {CURRENCY_TYPES[key]}
+                  </option>
+                ))}
             </Select>
           </Row>
         </Container>

@@ -121,7 +121,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
         }));
       }
     }
-  }, []);
+  }, [initialData]);
 
   const calendarRef = useRef<HTMLDivElement>(null);
 
@@ -224,11 +224,13 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
               }}
             >
               <option value="">Select Client</option>
-              {clientOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
+              {[...clientOptions]
+                .sort((a, b) => a.value.localeCompare(b.value))
+                .map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
             </SelectDropDown>
           </FormField>
 
@@ -246,7 +248,9 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 )}
                 options={managerOptions}
                 onChange={(selected) => {
-                  const values = selected.map((opt) => opt.value);
+                  const values = [...selected]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((opt) => opt.value);
                   setProjectFormData((prev) => ({
                     ...prev,
                     projectManagers: values,
@@ -272,7 +276,9 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 )}
                 options={resourceOptions}
                 onChange={(selected) => {
-                  const values = selected.map((opt) => opt.value);
+                  const values = [...selected]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((opt) => opt.value);
                   setProjectFormData((prev) => ({
                     ...prev,
                     projectResources: values,

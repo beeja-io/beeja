@@ -122,7 +122,7 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
     };
 
     fetchClientData();
-  }, [clientId]);
+  }, [clientId, t]);
 
   if (loading) return <SpinAnimation />;
 
