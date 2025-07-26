@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import MyProfileQuickDetailsComponent from '../components/reusableComponents/MyProfileQuickDetails.component';
+import MyProfileTabsContainerComponent from '../components/reusableComponents/MyProfileTabsContainer.component';
+import { useUser } from '../context/UserContext';
+import { EmployeeEntity } from '../entities/EmployeeEntity';
+import { fetchEmployeeDetailsByEmployeeId } from '../service/axiosInstance';
 import {
   MyProfileHeadingSection,
   MyProfileInformationContainer,
   MyProfileInnerContainer,
   MyProfileMainContainer,
 } from '../styles/MyProfile.style';
-import { EmployeeEntity } from '../entities/EmployeeEntity';
-import MyProfileQuickDetailsComponent from '../components/reusableComponents/MyProfileQuickDetails.component';
-import MyProfileTabsContainerComponent from '../components/reusableComponents/MyProfileTabsContainer.component';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
-import { fetchEmployeeDetailsByEmployeeId } from '../service/axiosInstance';
 
 const MyProfileScreen = () => {
   const [employee, setEmployee] = useState<EmployeeEntity>();
@@ -23,14 +23,16 @@ const MyProfileScreen = () => {
   useEffect(() => {
     setEmployeeId(location.state?.employeeId || user?.employeeId);
   }, [location, user]);
-  const fetchData = async () => {
+  const fetchData = async (newEmployeeId?: string) => {
     setIsUpdateResponseLoading(true);
     try {
-      if (employeeId) {
-        const response = await fetchEmployeeDetailsByEmployeeId(employeeId);
+      const idToUse = newEmployeeId || employeeId;
+      if (idToUse) {
+        const response = await fetchEmployeeDetailsByEmployeeId(idToUse);
         setEmployee(response.data);
-        setIsUpdateResponseLoading(false);
+        setEmployeeId(idToUse);
       }
+      setIsUpdateResponseLoading(false);
     } catch (error) {
       setIsUpdateResponseLoading(false);
       throw new Error('Error fetching data:' + error);
