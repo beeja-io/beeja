@@ -11,9 +11,6 @@ import { Loan } from '../../entities/LoanEntity';
 import CenterModalReject from './CenterModalReject';
 import { statusChange } from '../../service/axiosInstance';
 import ToastMessage from './ToastMessage.component';
-import { useUser } from '../../context/UserContext';
-import { LOAN_MODULE } from '../../constants/PermissionConstants';
-import { hasPermission } from '../../utils/permissionCheck';
 interface ActionProps {
   options: {
     title: string;
@@ -26,7 +23,6 @@ export const LoanAction: React.FC<ActionProps> = ({
   fetchLoans,
   currentLoan,
 }) => {
-  const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -100,13 +96,6 @@ export const LoanAction: React.FC<ActionProps> = ({
       setIsOpen(false);
     }
   };
-  const isUserNotAllowed = () => {
-    return (
-      user &&
-      hasPermission(user, LOAN_MODULE.STATUS_CHANGE) &&
-      currentLoan.employeeId === user.employeeId
-    );
-  };
   document.addEventListener('click', handleClickOutside);
 
   const handleDocumentClick = (e: MouseEvent) => {
@@ -121,13 +110,11 @@ export const LoanAction: React.FC<ActionProps> = ({
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
         <ActionMenu
           onClick={() => {
-            if (!isUserNotAllowed()) {
-              if (
-                currentLoan.status !== 'APPROVED' &&
-                currentLoan.status !== 'REJECTED'
-              ) {
-                openDropdown();
-              }
+            if (
+              currentLoan.status !== 'APPROVED' &&
+              currentLoan.status !== 'REJECTED'
+            ) {
+              openDropdown();
             }
           }}
         >
@@ -135,15 +122,11 @@ export const LoanAction: React.FC<ActionProps> = ({
             style={{
               opacity:
                 currentLoan.status === 'APPROVED' ||
-                currentLoan.status === 'REJECTED' ||
-                isUserNotAllowed() ||
                 currentLoan.status === 'REJECTED'
                   ? 0.3
                   : 1,
               cursor:
                 currentLoan.status === 'APPROVED' ||
-                currentLoan.status === 'REJECTED' ||
-                isUserNotAllowed() ||
                 currentLoan.status === 'REJECTED'
                   ? 'not-allowed'
                   : 'pointer',
