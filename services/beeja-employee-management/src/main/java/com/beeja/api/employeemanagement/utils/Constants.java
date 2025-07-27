@@ -53,4 +53,5 @@ public class Constants {
   public static final String NO_NUMERIC_FOUND = "No numeric part found in empId : ";
   public static final String ERROR_IN_EXTRACTING_EMP_NUMBER =
       "Failed to extract numeric employee number from empId: {}";
+  public static final String EMPLOYEE_ID_ALREADY_EXISTS = "Employee ID already exists";
 }

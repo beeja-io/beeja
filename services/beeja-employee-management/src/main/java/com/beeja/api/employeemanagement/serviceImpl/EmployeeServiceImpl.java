@@ -224,20 +224,7 @@ public class EmployeeServiceImpl implements EmployeeService {
       String currentEmployeeId = existingEmployee.getEmployeeId();
       String newEmployeeId = updatedEmployee.getEmployeeId();
 
-      if (newEmployeeId != null && !newEmployeeId.equals(currentEmployeeId)) {
-        Employee duplicateCheck =
-                employeeRepository.findByEmployeeIdAndOrganizationId(
-                        newEmployeeId, UserContext.getLoggedInUserOrganization().getId());
-        if (duplicateCheck != null) {
-          throw new ResourceAlreadyFound(
-                  BuildErrorMessage.buildErrorMessage(
-                          ErrorType.RESOURCE_EXISTS_ERROR,
-                          ErrorCode.RESOURCE_CREATING_ERROR,
-                          "Employee ID already exists"));
-        }
-        existingEmployee.setEmployeeId(newEmployeeId);
-      }
-
+      patchEmployeeId(existingEmployee, newEmployeeId);
 
       if (UserContext.getLoggedInUserPermissions().contains(UPDATE_ALL_EMPLOYEES)) {
         existingEmployee.setPosition(updatedEmployee.getPosition());
@@ -267,6 +254,38 @@ public class EmployeeServiceImpl implements EmployeeService {
       throw new ResourceNotFound(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.RESOURCE_NOT_FOUND_ERROR, ErrorCode.USER_NOT_FOUND, EMPLOYEE_NOT_FOUND));
+    }
+  }
+
+  private void patchEmployeeId(Employee existingEmployee, String newEmployeeId) {
+    String currentEmployeeId = existingEmployee.getEmployeeId();
+
+    if (newEmployeeId != null && !newEmployeeId.equals(currentEmployeeId)) {
+      newEmployeeId = newEmployeeId.trim();
+
+      if (!newEmployeeId.matches(".*[a-zA-Z].*")) {
+        log.warn("Employee ID '{}' is invalid: missing alphabet", newEmployeeId);
+        throw new BadRequestException("Employee ID must contain at least one letter");
+      }
+
+      if (!newEmployeeId.matches(".*\\d.*")) {
+        log.warn("Employee ID '{}' is invalid: missing number", newEmployeeId);
+        throw new BadRequestException("Employee ID must contain at least one number");
+      }
+
+      Employee duplicateCheck = employeeRepository.findByEmployeeIdAndOrganizationId(
+              newEmployeeId, UserContext.getLoggedInUserOrganization().getId());
+
+      if (duplicateCheck != null) {
+        log.warn("Duplicate Employee ID '{}' found for org '{}'", newEmployeeId, UserContext.getLoggedInUserOrganization().getId());
+        throw new ResourceAlreadyFound(
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.RESOURCE_EXISTS_ERROR,
+                        ErrorCode.RESOURCE_CREATING_ERROR,
+                        Constants.EMPLOYEE_ID_ALREADY_EXISTS));
+      }
+      log.info("Updating Employee ID from '{}' to '{}'", currentEmployeeId, newEmployeeId.toUpperCase());
+      existingEmployee.setEmployeeId(newEmployeeId.toUpperCase());
     }
   }
 
