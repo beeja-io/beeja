@@ -3,13 +3,7 @@ package com.beeja.api.employeemanagement.serviceImpl;
 import static com.beeja.api.employeemanagement.constants.PermissionConstants.CREATE_EMPLOYEE;
 import static com.beeja.api.employeemanagement.constants.PermissionConstants.READ_COMPLETE_EMPLOYEE_DETAILS;
 import static com.beeja.api.employeemanagement.constants.PermissionConstants.UPDATE_ALL_EMPLOYEES;
-import static com.beeja.api.employeemanagement.utils.Constants.EMAIL_ALREADY_REGISTERED;
-import static com.beeja.api.employeemanagement.utils.Constants.EMPLOYEE_NOT_FOUND;
-import static com.beeja.api.employeemanagement.utils.Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE;
-import static com.beeja.api.employeemanagement.utils.Constants.INVALID_PROFILE_PIC_FORMATS;
-import static com.beeja.api.employeemanagement.utils.Constants.SUCCESSFULLY_UPDATED_PROFILE_PHOTO;
-import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
-import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_TO_UPDATE_PROFILE_PIC;
+import static com.beeja.api.employeemanagement.utils.Constants.*;
 import static com.google.common.io.Files.getFileExtension;
 
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
@@ -224,7 +218,7 @@ public class EmployeeServiceImpl implements EmployeeService {
       String currentEmployeeId = existingEmployee.getEmployeeId();
       String newEmployeeId = updatedEmployee.getEmployeeId();
 
-      patchEmployeeId(existingEmployee, newEmployeeId);
+      updateEmployeeId(existingEmployee, newEmployeeId);
 
       if (UserContext.getLoggedInUserPermissions().contains(UPDATE_ALL_EMPLOYEES)) {
         existingEmployee.setPosition(updatedEmployee.getPosition());
@@ -257,20 +251,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
   }
 
-  private void patchEmployeeId(Employee existingEmployee, String newEmployeeId) {
+  private void updateEmployeeId(Employee existingEmployee, String newEmployeeId) {
     String currentEmployeeId = existingEmployee.getEmployeeId();
 
     if (newEmployeeId != null && !newEmployeeId.equals(currentEmployeeId)) {
       newEmployeeId = newEmployeeId.trim();
 
-      if (!newEmployeeId.matches(".*[a-zA-Z].*")) {
+      if (!CONTAINS_LETTER.matcher(newEmployeeId).find()) {
         log.warn("Employee ID '{}' is invalid: missing alphabet", newEmployeeId);
-        throw new BadRequestException("Employee ID must contain at least one letter");
+        throw new BadRequestException(Constants.NO_lETTER_FOUND);
       }
 
-      if (!newEmployeeId.matches(".*\\d.*")) {
+      if (!CONTAINS_DIGIT.matcher(newEmployeeId).find()) {
         log.warn("Employee ID '{}' is invalid: missing number", newEmployeeId);
-        throw new BadRequestException("Employee ID must contain at least one number");
+        throw new BadRequestException(Constants.NO_NUMERIC_FOUND);
       }
 
       Employee duplicateCheck = employeeRepository.findByEmployeeIdAndOrganizationId(
