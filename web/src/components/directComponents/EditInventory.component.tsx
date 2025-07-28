@@ -162,7 +162,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
         : null
     );
   }, [initialFormData]);
-
   return (
     <>
       <ExpenseAddFormMainContainer onSubmit={handleSubmitData}>
