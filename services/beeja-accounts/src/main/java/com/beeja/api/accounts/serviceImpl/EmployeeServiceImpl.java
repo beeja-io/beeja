@@ -34,10 +34,16 @@ import com.beeja.api.accounts.utils.SecretsGenerator;
 import com.beeja.api.accounts.utils.UserContext;
 import com.beeja.api.accounts.utils.methods.ServiceMethods;
 import feign.FeignException;
-
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.Objects;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Collectors;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -585,7 +591,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             .findAllByEmployeeIdInAndOrganizations_Id(ids, orgId);
 
     if (employees == null || employees.isEmpty()) {
-      log.warn("No employees found for IDs: {} in organization: {}", ids, orgId);
+      log.info("No employees found for IDs: {} in organization: {}", ids, orgId);
       return Collections.emptyList();
     }
     return employees.stream()

@@ -16,6 +16,7 @@ import com.beeja.api.projectmanagement.repository.ContractRepository;
 import com.beeja.api.projectmanagement.repository.ProjectRepository;
 import com.beeja.api.projectmanagement.request.ContractRequest;
 import com.beeja.api.projectmanagement.responses.ContractResponsesDTO;
+import com.beeja.api.projectmanagement.responses.ErrorResponse;
 import com.beeja.api.projectmanagement.responses.ResourceView;
 import com.beeja.api.projectmanagement.service.ContractService;
 import com.beeja.api.projectmanagement.utils.BuildErrorMessage;
@@ -144,11 +145,14 @@ public class ContractServiceImpl implements ContractService {
    */
   @Override
   public Contract getContractById(String contractId) {
+      log.info(Constants.CONTRACT_FETCHING, contractId);
+
       Contract contract = contractRepository.findByContractIdAndOrganizationId(
               contractId,
               UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
       if (contract == null) {
+          log.warn(Constants.CONTRACT_NOT_FOUND, contractId);
           throw new ResourceNotFoundException(
                   BuildErrorMessage.buildErrorMessage(
                           ErrorType.NOT_FOUND,
@@ -163,6 +167,7 @@ public class ContractServiceImpl implements ContractService {
                   .collect(Collectors.toList());
           try {
               List<EmployeeNameDTO> employeeDTOs = accountClient.getEmployeeNamesById(employeeIds);
+              log.info(Constants.RESOURCES_SIZE, employeeDTOs.size());
               List<EmployeeNameDTO> activeEmployees = employeeDTOs.stream()
                       .filter(EmployeeNameDTO::isActive)
                       .toList();
@@ -182,9 +187,11 @@ public class ContractServiceImpl implements ContractService {
               contract.setRawProjectResources(enrichedResources);
 
           } catch (FeignClientException e) {
-              log.error("Failed to fetch employee names: {}", e.getMessage(), e);
+              log.error(Constants.FEIGN_CLIENT_ERROR, e.getMessage(), e);
               throw new FeignClientException(Constants.SOMETHING_WENT_WRONG);
           }
+      }else{
+          log.info(Constants.NO_RESOURCE_FOUND, contractId);
       }
 
       return contract;
@@ -353,13 +360,12 @@ public class ContractServiceImpl implements ContractService {
         try {
             contracts = getAllContractsInOrganization(organizationId, pageNumber, pageSize, projectid, status);
         } catch (Exception e) {
-            throw new InternalServerErrorException(
-                    BuildErrorMessage.buildErrorMessage(
-                            ErrorType.DB_ERROR,
-                            ErrorCode.DATA_FETCH_ERROR,
-                            Constants.CONTRACT_NOT_FOUND + organizationId
-                    ).toString()
+            ErrorResponse error = BuildErrorMessage.buildErrorMessage(
+                    ErrorType.DB_ERROR,
+                    ErrorCode.DATA_FETCH_ERROR,
+                    Constants.CONTRACT_NOT_FOUND + organizationId
             );
+            throw new InternalServerErrorException(error.getMessage());
         }
         if (contracts == null || contracts.isEmpty()) {
             return Collections.emptyList();
