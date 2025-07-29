@@ -11,10 +11,11 @@ import {
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
 
+import { toast } from 'sonner';
 import AddContractForm from '../components/directComponents/AddContractForm.component';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { ContractDetails } from '../entities/ContractEntiy';
-import { getAllContracts } from '../service/axiosInstance';
+import { getAllContracts, getContractDetails } from '../service/axiosInstance';
 
 const ContractManagement = () => {
   const navigate = useNavigate();
@@ -26,6 +27,10 @@ const ContractManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [toastData, setToastData] = useState<{
+    heading: string;
+    body: string;
+  } | null>(null);
 
   const location = useLocation();
 
@@ -63,10 +68,37 @@ const ContractManagement = () => {
     setSelectedContractData(null);
   }, []);
 
-  const handleSuccessMessage = () => {
+  const handleSuccessMessage = (value: string, type: 'add' | 'edit') => {
+    if (type === 'add') {
+      setToastData({
+        heading: 'Contract Added Successfully.',
+        body: `New Contract has been added\nsuccessfully with "Contract ID: ${value}".`,
+      });
+    } else if (type === 'edit') {
+      setToastData({
+        heading: 'Contract Updated Successfully.',
+        body: value,
+      });
+    }
+
     setShowSuccessMessage(true);
-    setTimeout(() => setShowSuccessMessage(false), 2000);
+    setIsCreateModalOpen(false);
+
+    setTimeout(() => {
+      setShowSuccessMessage(false);
+    }, 3000);
+
     fetchData();
+  };
+
+  const handleEditContract = async (contract: ContractDetails) => {
+    try {
+      const { data } = await getContractDetails(contract.contractId);
+      setSelectedContractData(data);
+      setIsCreateModalOpen(true);
+    } catch (error) {
+      toast.error('Failed to fetch contract details');
+    }
   };
 
   return (
@@ -118,16 +150,17 @@ const ContractManagement = () => {
               contractList,
               isLoading,
               updateContractList: fetchData,
+              onEditContract: handleEditContract,
             }}
           />
         )}
       </ExpenseManagementMainContainer>
 
-      {showSuccessMessage && (
+      {showSuccessMessage && toastData && (
         <ToastMessage
           messageType="success"
-          messageBody="THE_CONTRACT_HAS_BEEN_ADDED"
-          messageHeading="SUCCESSFULLY_ADDED"
+          messageHeading={toastData.heading}
+          messageBody={toastData.body}
           handleClose={() => setShowSuccessMessage(false)}
         />
       )}

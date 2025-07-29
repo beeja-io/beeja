@@ -9,6 +9,7 @@ import {
   getAllProjects,
   getResourceManager,
   postContracts,
+  updateContract,
 } from '../../service/axiosInstance';
 import {
   AvailabilityInput,
@@ -56,6 +57,7 @@ import {
   UploadSVG,
 } from '../../svgs/ClientManagmentSvgs.svg';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
 import Calendar from '../reusableComponents/Calendar.component';
 import {
   BillingCurrency,
@@ -68,7 +70,7 @@ import {
 
 type AddContractFormProps = {
   handleClose: () => void;
-  handleSuccessMessage: (msg: string) => void;
+  handleSuccessMessage: (value: string, type: 'add' | 'edit') => void;
   initialData?: ContractDetails;
 };
 
@@ -89,13 +91,18 @@ export type ContractFormData = {
   description?: string;
   terms?: string;
   projectManagers: string[];
-  Resources: OptionType[];
+  rawProjectResources: {
+    value: string;
+    label: string;
+    availability: number;
+  }[];
   projectName: string;
 };
 
 const AddContractForm: React.FC<AddContractFormProps> = ({
   handleClose,
   handleSuccessMessage,
+  initialData,
 }) => {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<ContractFormData>({
@@ -109,7 +116,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     description: '',
     terms: '',
     projectManagers: [],
-    Resources: [],
+    rawProjectResources: [],
     projectName: '',
   });
   const [file, setFile] = useState<File | null>(null);
@@ -117,7 +124,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   const [resourceOptions, setResourceOptions] = useState<OptionType[]>([]);
   const [managerOptions, setManagerOptions] = useState<OptionType[]>([]);
   const [selectedResources, setSelectedResources] = useState<
-    { value: string; label: string; availability: string }[]
+    { value: string; label: string; availability: number }[]
   >([]);
 
   const [currentResource, setCurrentResource] = useState<string | null>(null);
@@ -137,6 +144,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     return date.toLocaleDateString('en-CA');
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formInitialized, setFormInitialized] = useState(false);
+
   useEffect(() => {
     getAllProjects()
       .then((response) => {
@@ -145,12 +155,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         if (Array.isArray(data)) {
           setProjectOptions(data);
         } else {
-          toast.error('Invalid project data received.');
+          toast.error(t('Invalid project data received.'));
         }
       })
       .catch((error) => {
         setProjectOptions([]);
-        toast.error('Failed to fetch project list.' + error);
+        toast.error(t('Failed to fetch project list.') + error);
       });
   }, []);
 
@@ -170,7 +180,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         const resourceOpts = users.map((user) => {
           const fullName = `${user.firstName} ${user.lastName}`;
           return {
-            value: fullName,
+            value: user.employeeId,
             label: fullName,
             availability: user.availabilityPercentage ?? 0,
           };
@@ -183,6 +193,54 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         toast.error('Error fetching resource managers:' + error);
       });
   }, []);
+  useEffect(() => {
+    if (
+      initialData &&
+      !formInitialized &&
+      managerOptions.length > 0 &&
+      resourceOptions.length > 0 &&
+      projectOptions.length > 0
+    ) {
+      const mappedManagers = managerOptions.filter((manager) =>
+        initialData.projectManagers?.includes(manager.value)
+      );
+
+      const mappedResources =
+        initialData.rawProjectResources?.map((r) => ({
+          value: r.employeeId,
+          label: r.name,
+          availability: r.allocationPercentage ?? 0,
+        })) || [];
+
+      const matchedProject = projectOptions.find(
+        (p) => p.projectId === initialData.projectId
+      );
+
+      setFormData({
+        contractTitle: initialData.contractTitle || '',
+        startDate: initialData.startDate || '',
+        endDate: initialData.endDate || '',
+        contractType: initialData.contractType || '',
+        billingType: initialData.billingType || '',
+        billingCurrency: initialData.billingCurrency || '',
+        contractValue: initialData.contractValue?.toString() || '',
+        description: initialData.description || '',
+        terms: '',
+        projectManagers: mappedManagers.map((m) => m.value),
+        rawProjectResources: mappedResources,
+        projectName: matchedProject?.name || '',
+      });
+
+      setSelectedResources(mappedResources);
+      setFormInitialized(true);
+    }
+  }, [
+    initialData,
+    managerOptions,
+    resourceOptions,
+    projectOptions,
+    formInitialized,
+  ]);
 
   const handleNextStep = () => setStep((prev) => prev + 1);
   const handlePreviousStep = () => setStep((prev) => prev - 1);
@@ -217,27 +275,40 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
   const handleSubmitData = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+    setIsSubmitting(true);
     try {
       const payload: any = {};
 
       Object.entries(formData).forEach(([key, value]) => {
         if (key === 'resourceAllocations' && Array.isArray(value)) {
-          payload.resourceAllocations = value.map((resource: any) => ({
-            value: resource.value,
-            availability: Number(resource.availability),
+          payload.projectResources = value.map((resource: any) => ({
+            employeeId: resource.value,
+            allocationPercentage: Number(resource.availability || 0),
           }));
         } else {
           payload[key] = value;
         }
       });
 
-      await postContracts(payload);
+      if (initialData?.contractId) {
+        await updateContract(initialData.contractId, payload);
+        handleSuccessMessage('Contract has been successfully updated.', 'edit');
+      } else {
+        const response = await postContracts(payload);
+        const contractId = response?.data?.contractId;
 
-      handleSuccessMessage('Contract saved successfully');
-      handleClose();
+        if (contractId) {
+          handleSuccessMessage(contractId, 'add');
+        } else {
+          toast.warning(
+            t('Contract created, but ID is missing in the response.')
+          );
+        }
+      }
     } catch (error) {
-      toast.error('Error submitting contract: ' + error);
+      toast.error(t('An error occurred while submitting the contract.'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -257,7 +328,40 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   };
 
   const { t } = useTranslation();
+  const isFormReady =
+    !initialData ||
+    (initialData &&
+      managerOptions.length > 0 &&
+      resourceOptions.length > 0 &&
+      projectOptions.length > 0 &&
+      formInitialized);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        setIsStartDateCalOpen(false);
+      }
+
+      if (
+        calendarEndRef.current &&
+        !calendarEndRef.current.contains(event.target as Node)
+      ) {
+        setIsEndDateCalOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  if (isSubmitting || !isFormReady) {
+    return <SpinAnimation />;
+  }
   return (
     <FormContainer>
       <>
@@ -298,6 +402,16 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
             >
               <FormInputsContainer>
                 <div>
+                  {initialData?.contractId && (
+                    <InputLabelContainer>
+                      <label>{t('Contract ID')}</label>
+                      <TextInput
+                        type="text"
+                        value={initialData.contractId}
+                        disabled
+                      />
+                    </InputLabelContainer>
+                  )}
                   <InputLabelContainer>
                     <label>
                       {t('Contract Name')}
@@ -358,7 +472,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           <Calendar
                             title="Start Date"
                             minDate={new Date('01-01-2000')}
-                            // maxDate={new Date()}
                             selectedDate={
                               formData.startDate
                                 ? new Date(formData.startDate)
@@ -696,7 +809,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           (r) => r.value === currentResource
                         )
                       ) {
-                        alert('This person is already added.');
+                        toast.warning('This person is already added.');
                         return;
                       }
 
@@ -712,7 +825,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
                         setFormData((form) => ({
                           ...form,
-                          Resources: updated,
+                          resourceAllocations: updated,
                         }));
 
                         return updated;
