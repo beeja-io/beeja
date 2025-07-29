@@ -26,6 +26,6 @@ public class ContractRequest {
   private ContractBillingCurrency billingCurrency;
   private ContractType contractType;
   private ContractBillingType billingType;
-  List<String> projectManagers;
-  List<ResourceAllocation> projectResources;
+  private List<String> projectManagers;
+  private List<ResourceAllocation> projectResources;
 }
