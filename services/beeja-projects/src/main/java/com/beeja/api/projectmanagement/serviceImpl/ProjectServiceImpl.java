@@ -24,6 +24,7 @@ import com.beeja.api.projectmanagement.utils.UserContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import jakarta.ws.rs.InternalServerErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -206,17 +207,15 @@ public class ProjectServiceImpl implements ProjectService {
     allEmployeeIds.addAll(contractManagerIds);
     allEmployeeIds.addAll(contractResourceIds);
 
-    List<String> activeEmployeeIds = validateAndFetchEmployees(new ArrayList<>(allEmployeeIds));
-
     Map<String, String> idToNameMap;
-    if (!activeEmployeeIds.isEmpty()) {
-      List<EmployeeNameDTO> employeeDetails = accountClient.getEmployeeNamesById(activeEmployeeIds);
+    if (!allEmployeeIds.isEmpty()) {
+      List<EmployeeNameDTO> employeeDetails = accountClient.getEmployeeNamesById(new ArrayList<>(allEmployeeIds));
+      log.info("Fetched employee details: {}", employeeDetails);
       idToNameMap = employeeDetails.stream()
               .collect(Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
     } else {
-        idToNameMap = new HashMap<>();
+      idToNameMap = new HashMap<>();
     }
-
     List<ProjectManagerView> projectManagerViews = projectManagerIds.stream()
             .map(id -> new ProjectManagerView(id, idToNameMap.getOrDefault(id, "N/A"), null))
             .collect(Collectors.toList());
@@ -482,11 +481,15 @@ public class ProjectServiceImpl implements ProjectService {
     try {
       projects = getAllProjectsInOrganization(organizationId, pageNumber, pageSize, projectId, status);
     } catch (Exception e) {
-      throw new ResourceNotFoundException(
-              BuildErrorMessage.buildErrorMessage(
+      log.error("Error fetching projects", e);
+      throw new InternalServerErrorException(
+              String.valueOf(BuildErrorMessage.buildErrorMessage(
                       ErrorType.DB_ERROR,
                       ErrorCode.DATA_FETCH_ERROR,
-                      Constants.ERROR_FETCHING_PROJECT));
+                      Constants.ERROR_FETCHING_PROJECT
+              ))
+      );
+
     }
     if (projects == null || projects.isEmpty()) {
       return Collections.emptyList();
