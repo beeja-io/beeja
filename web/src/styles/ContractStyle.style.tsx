@@ -31,3 +31,9 @@ export const IconItem = styled.div`
     fill: #333;
   }
 `;
+
+export const ContractTitleHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;

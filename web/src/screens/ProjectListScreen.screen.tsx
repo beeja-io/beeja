@@ -107,61 +107,61 @@ const ProjectList = ({
                         <td
                           onClick={() =>
                             handleProjectClick(
-                              project.projectId ?? '',
-                              project.clientId ?? ''
+                              project?.projectId ?? '',
+                              project?.clientId ?? ''
                             )
                           }
                         >
-                          {project.projectId ?? '-'}
+                          {project?.projectId ?? '-'}
                         </td>
                         <td
                           onClick={() =>
                             handleProjectClick(
-                              project.projectId ?? '',
-                              project.clientId ?? ''
+                              project?.projectId ?? '',
+                              project?.clientId ?? ''
                             )
                           }
                         >
-                          {project.name
+                          {project?.name
                             ? capitalizeFirstLetter(project.name)
                             : '-'}
                         </td>
                         <td
                           onClick={() =>
                             handleProjectClick(
-                              project.projectId ?? '',
-                              project.clientId ?? ''
+                              project?.projectId ?? '',
+                              project?.clientId ?? ''
                             )
                           }
                         >
-                          {project.clientName
-                            ? capitalizeFirstLetter(project.clientName)
+                          {project?.clientName
+                            ? capitalizeFirstLetter(project?.clientName)
                             : '-'}
                         </td>
                         <td
                           onClick={() =>
                             handleProjectClick(
-                              project.projectId ?? '',
-                              project.clientId ?? ''
+                              project?.projectId ?? '',
+                              project?.clientId ?? ''
                             )
                           }
                         >
-                          {project.projectManagerNames &&
-                            project.projectManagerNames[0]}
+                          {project?.projectManagerNames &&
+                            project?.projectManagerNames[0]}
                         </td>
                         <td>
-                          {project.projectStatus ? (
+                          {project?.projectStatus ? (
                             <StatusDropdown
-                              value={project.projectStatus}
+                              value={project?.projectStatus}
                               onChange={(newStatus) => {
                                 toast.promise(
                                   updateProjectStatus(
-                                    project.projectId,
+                                    project?.projectId,
                                     newStatus as ProjectStatus
                                   ).then(() => {
                                     setProjectList((prevList) =>
-                                      prevList.map((p) =>
-                                        p.projectId === project.projectId
+                                      prevList?.map((p) =>
+                                        p?.projectId === project?.projectId
                                           ? {
                                               ...p,
                                               projectStatus:

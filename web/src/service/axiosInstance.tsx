@@ -383,6 +383,12 @@ export const updateContractStatus = (
   );
 };
 
+export const updateContract = (
+  contractId: string,
+  data: any
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.put(`/projects/v1/contracts/${contractId}`, data);
+};
 export const getAllRolesInOrganization = (): Promise<AxiosResponse> => {
   return axiosInstance.get('/accounts/v1/roles');
 };
