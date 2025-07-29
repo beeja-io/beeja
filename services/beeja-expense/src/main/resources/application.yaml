@@ -21,6 +21,7 @@ eureka:
   instance:
     preferIpAddress: true
   client:
+    should-unregister-on-shutdown: false
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL}
 

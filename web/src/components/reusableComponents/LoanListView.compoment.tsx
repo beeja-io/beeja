@@ -21,6 +21,7 @@ import LoanPreview from '../directComponents/LoanPreview.component';
 import { Loan } from '../../entities/LoanEntity';
 import { LOAN_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 type LoanListViewProps = {
   handleIsApplyLoanScreen: () => void;
@@ -80,6 +81,16 @@ const LoanListView = (props: LoanListViewProps) => {
     fetchLoans();
   }, [user, fetchLoans]);
 
+  useEffect(() => {
+    if (isLoanPreviewModalOpen) {
+      disableBodyScroll();
+    } else {
+      enableBodyScroll();
+    }
+    return () => {
+      enableBodyScroll();
+    };
+  }, [isLoanPreviewModalOpen]);
   return (
     <>
       <PayrollMainContainer>

@@ -4,11 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+import com.beeja.api.projectmanagement.client.AccountClient;
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Project;
@@ -26,10 +27,15 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
+import static org.mockito.Mockito.verify;
+
 
 @ExtendWith(MockitoExtension.class)
 class ContractServiceImplTest {
@@ -43,6 +49,15 @@ class ContractServiceImplTest {
   private static Map<String, Object> orgMap;
 
   private static MockedStatic<UserContext> userContextMock;
+
+  @Mock
+  private MongoTemplate mongoTemplate;
+
+  @Mock
+  private AccountClient accountClient;
+
+  @Mock
+  private com.beeja.api.projectmanagement.repository.ClientRepository clientRepository;
 
   @BeforeAll
   static void init() {
@@ -221,4 +236,39 @@ class ContractServiceImplTest {
 
     assertTrue(exception.getMessage().contains("Failed to update contract"));
   }
+
+  @Test
+  void testGetAllContractsInOrganization_shouldReturnContractList() {
+    Contract contract = new Contract();
+    contract.setContractId("C101");
+    contract.setProjectId("P123");
+    contract.setOrganizationId("org123");
+    contract.setStatus(ProjectStatus.ACTIVE);
+
+    when(mongoTemplate.find(any(Query.class), eq(Contract.class)))
+            .thenReturn(List.of(contract));
+
+    List<Contract> result = contractService.getAllContractsInOrganization("org123", 1, 10, "P123", ProjectStatus.ACTIVE);
+
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    assertEquals("C101", result.get(0).getContractId());
+
+    ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+    verify(mongoTemplate).find(queryCaptor.capture(), eq(Contract.class));
+    Query builtQuery = queryCaptor.getValue();
+    assertTrue(builtQuery.getQueryObject().toString().contains("P123"));
+  }
+
+  @Test
+  void testGetTotalContractSize_shouldReturnCorrectCount() {
+    when(mongoTemplate.count(any(Query.class), eq(Contract.class)))
+            .thenReturn(7L);
+
+    Long result = contractService.getTotalContractSize("org123", "P123", ProjectStatus.ACTIVE);
+
+    assertEquals(7L, result);
+  }
+
+
 }

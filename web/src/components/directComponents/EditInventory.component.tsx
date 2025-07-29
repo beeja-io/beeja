@@ -162,7 +162,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
         : null
     );
   }, [initialFormData]);
-
   return (
     <>
       <ExpenseAddFormMainContainer onSubmit={handleSubmitData}>
@@ -182,7 +181,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
               >
                 <option value="">{t('SELECT_DEVICE')}</option>
                 {deviceTypes?.values?.map((device) => (
-                  <option key={device.value} value={device.value}>
+                  <option key={device.value} value={device.value.toUpperCase()}>
                     {device.description || device.value}
                   </option>
                 ))}
