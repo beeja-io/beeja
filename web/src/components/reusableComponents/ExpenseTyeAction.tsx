@@ -60,12 +60,8 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
 
   return (
     <ActionContainer className="dropdown-container" ref={dropdownRef}>
-      <ActionMenu onClick={openDropdown}>
-        <div style={{ marginTop: -8 }}>
-          {' '}
-          {/*this div make action button centered*/}
-          <ActionIcon />
-        </div>
+      <ActionMenu onClick={openDropdown} className="action-align">
+        <ActionIcon />
       </ActionMenu>
       {isOpen && (
         <ActionMenuContent>

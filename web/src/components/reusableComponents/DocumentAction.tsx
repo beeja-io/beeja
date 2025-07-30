@@ -225,12 +225,8 @@ export const DocumentAction: React.FC<ActionProps> = ({
   return (
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
-        <ActionMenu onClick={openDropdown}>
-          <div style={{ marginTop: +8 }}>
-            {' '}
-            {/*this div make action button centered*/}
-            <ActionIcon />
-          </div>
+        <ActionMenu className="action-align" onClick={openDropdown}>
+          <ActionIcon />
         </ActionMenu>
         {isOpen && (
           <ActionMenuContent>
