@@ -225,7 +225,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
   return (
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
-        <ActionMenu onClick={openDropdown}>
+        <ActionMenu className="action-align" onClick={openDropdown}>
           <ActionIcon />
         </ActionMenu>
         {isOpen && (
