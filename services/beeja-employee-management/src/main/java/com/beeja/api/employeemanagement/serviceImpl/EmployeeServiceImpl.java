@@ -3,7 +3,15 @@ package com.beeja.api.employeemanagement.serviceImpl;
 import static com.beeja.api.employeemanagement.constants.PermissionConstants.CREATE_EMPLOYEE;
 import static com.beeja.api.employeemanagement.constants.PermissionConstants.READ_COMPLETE_EMPLOYEE_DETAILS;
 import static com.beeja.api.employeemanagement.constants.PermissionConstants.UPDATE_ALL_EMPLOYEES;
-import static com.beeja.api.employeemanagement.utils.Constants.*;
+import static com.beeja.api.employeemanagement.utils.Constants.EMPLOYEE_NOT_FOUND;
+import static com.beeja.api.employeemanagement.utils.Constants.EMAIL_ALREADY_REGISTERED;
+import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
+import static com.beeja.api.employeemanagement.utils.Constants.CONTAINS_LETTER;
+import static com.beeja.api.employeemanagement.utils.Constants.CONTAINS_DIGIT;
+import static com.beeja.api.employeemanagement.utils.Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE;
+import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_TO_UPDATE_PROFILE_PIC;
+import static com.beeja.api.employeemanagement.utils.Constants.INVALID_PROFILE_PIC_FORMATS;
+import static com.beeja.api.employeemanagement.utils.Constants.SUCCESSFULLY_UPDATED_PROFILE_PHOTO;
 import static com.google.common.io.Files.getFileExtension;
 
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
@@ -214,11 +222,13 @@ public class EmployeeServiceImpl implements EmployeeService {
       Employee existingEmployee = existingEmployeeOptional.get();
       updatedEmployee.setId(existingEmployee.getId());
       updatedEmployee.setBeejaAccountId(existingEmployee.getBeejaAccountId());
+      String existingEmail = (String) accountDetails.get("email");
+      String existingFirstName = (String) accountDetails.get("firstName");
+      String existingLastName = (String) accountDetails.get("lastName");
 
       String currentEmployeeId = existingEmployee.getEmployeeId();
       String newEmployeeId = updatedEmployee.getEmployeeId();
 
-      updateEmployeeId(existingEmployee, newEmployeeId);
 
       if (UserContext.getLoggedInUserPermissions().contains(UPDATE_ALL_EMPLOYEES)) {
         existingEmployee.setPosition(updatedEmployee.getPosition());
@@ -229,11 +239,21 @@ public class EmployeeServiceImpl implements EmployeeService {
         updateJobDetails(existingEmployee, updatedEmployee.getJobDetails());
         updateContact(existingEmployee, updatedEmployee.getContact());
         updatePfDetails(existingEmployee, updatedEmployee.getPfDetails());
+        updateEmployeeId(existingEmployee, newEmployeeId);
 
-        if (updatedEmployee.getEmail() != null
-                || updatedEmployee.getFirstName() != null
-                || updatedEmployee.getLastName() != null
-                || (newEmployeeId != null && !newEmployeeId.equals(currentEmployeeId))) {
+        boolean emailChanged = updatedEmployee.getEmail() != null &&
+                !updatedEmployee.getEmail().equalsIgnoreCase(existingEmail);
+
+        boolean firstNameChanged = updatedEmployee.getFirstName() != null &&
+                !updatedEmployee.getFirstName().equalsIgnoreCase(existingFirstName);
+
+        boolean lastNameChanged = updatedEmployee.getLastName() != null &&
+                !updatedEmployee.getLastName().equalsIgnoreCase(existingLastName);
+
+        boolean employeeIdChanged = newEmployeeId != null &&
+                !newEmployeeId.equals(currentEmployeeId);
+
+        if (emailChanged || firstNameChanged || lastNameChanged || employeeIdChanged) {
           accountClient.updateUser(currentEmployeeId, updatedEmployee);
         }
 
