@@ -295,7 +295,11 @@ export const TotalAmount = styled.span`
   font-weight: 700;
 `;
 
-export const ActionMenu = styled.div``;
+export const ActionMenu = styled.div`
+  &.action-align {
+    margin-top: -12px;
+  }
+`;
 
 export const ExpenseFilterArea = styled.section`
   .filterValues {

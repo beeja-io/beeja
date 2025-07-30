@@ -67,7 +67,7 @@ const UserRoleListAction: React.FC<UserRoleListActionProps> = ({
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
         <ActionMenu
           onClick={openDropdown}
-          className="rolesAction"
+          className="rolesAction action-align"
           style={{
             cursor: role.name === 'Super Admin' ? 'not-allowed' : 'pointer',
           }}
