@@ -93,6 +93,8 @@
   "PRICE_VALUE_MUST_BE_GREATER_THAN_0": "Der Preiswert muss größer als 0 sein",
   "THE_INVENTORY_HAS_BEEN_UPDATED": "Das Inventar wurde erfolgreich aktualisiert",
   "THE_INVENTORY_HAS_BEEN_ADDED": "Das Inventar wurde erfolgreich hinzugefügt",
+  "EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT_GREATER_THAN_ZERO": "Der Ausgabenbetrag darf nicht null sein. Bitte geben Sie einen Betrag größer als null ein.",
+  "UPDATED_EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT": "Der aktualisierte Ausgabenbetrag darf nicht null sein. Bitte geben Sie einen gültigen Betrag ein.",
   "SUCCESSFULLY_UPDATED": "Erfolgreich aktualisiert",
   "SUCCESSFULLY_ADDED": "Erfolgreich hinzugefügt",
   "SELECT_EMI_TENURE": "EMI-Laufzeit auswählen",

@@ -231,7 +231,15 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         );
       }
       setIsResponseLoading(true);
-
+      const amount = Number(formData.get('amount'));
+      if (!amount || amount <= 0) {
+        setResponseErrorMessage(
+          'EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT_GREATER_THAN_ZERO'
+        );
+        handleShowErrorMessage();
+        setIsResponseLoading(false);
+        return;
+      }
       try {
         await createExpense(formData);
         handleShowSuccessMessage();
@@ -250,6 +258,12 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 'ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED'
               );
               handleShowErrorMessage();
+            } else if (
+              response.data.message === '[value must be greater than 0]'
+            ) {
+              setResponseErrorMessage(
+                'EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT_GREATER_THAN_ZERO'
+              );
             } else if (response.status === 403) {
               window.location.reload();
             } else if (response.status === 500) {
@@ -615,6 +629,15 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
 
       setIsResponseLoading(true);
+      const amount = Number(formData.get('amount'));
+      if (!amount || amount <= 0) {
+        setResponseErrorMessage(
+          'UPDATED_EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT'
+        );
+        handleShowErrorMessage();
+        setIsResponseLoading(false);
+        return;
+      }
       try {
         await updateExpense(props.expense?.id, formData);
         handleShowSuccessMessage();
@@ -634,6 +657,12 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 'ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED'
               );
               handleShowErrorMessage();
+            } else if (
+              response.data.message === '[value must be greater than 0]'
+            ) {
+              setResponseErrorMessage(
+                'UPDATED_EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT'
+              );
             } else if (response.status === 403) {
               window.location.reload();
             } else if (response.status === 500) {
