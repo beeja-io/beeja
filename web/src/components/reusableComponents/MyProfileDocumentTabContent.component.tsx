@@ -56,6 +56,8 @@ import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import Pagination from '../directComponents/Pagination.component';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
+
 type DocumentTabContentProps = {
   employee: EmployeeEntity;
 };
@@ -286,13 +288,13 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
   });
   useEffect(() => {
     if (isCreateDocumentModelOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
 
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isCreateDocumentModelOpen]);
 
@@ -586,6 +588,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       </Button>
                       <Button
                         className="submit"
+                        disabled={isResponseLoading}
                         style={{ cursor: isResponseLoading ? 'progress' : '' }}
                       >
                         Submit

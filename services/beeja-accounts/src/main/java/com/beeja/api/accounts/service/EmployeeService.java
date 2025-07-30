@@ -2,6 +2,7 @@ package com.beeja.api.accounts.service;
 
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import com.beeja.api.accounts.requests.AddEmployeeRequest;
 import com.beeja.api.accounts.requests.ChangeEmailAndPasswordRequest;
@@ -38,4 +39,10 @@ public interface EmployeeService {
   List<User> getUsersByEmployeeIds(List<String> employeeIds) throws Exception;
 
   String changeEmailAndPassword(ChangeEmailAndPasswordRequest changeEmailAndPasswordRequest);
+
+  List<String> checkEmployees(List<String> employeeIds);
+
+  List<EmployeeIdNameDTO> getAllEmployeeNameId();
+
+  List<EmployeeNameDTO> getEmployeeNamesById(List<String> ids);
 }

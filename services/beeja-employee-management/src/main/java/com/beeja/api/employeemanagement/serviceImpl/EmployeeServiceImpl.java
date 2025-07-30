@@ -12,6 +12,12 @@ import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCE
 import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_TO_UPDATE_PROFILE_PIC;
 import static com.google.common.io.Files.getFileExtension;
 
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeNameDTO;
+import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
+import com.beeja.api.employeemanagement.response.EmployeeValues;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.beeja.api.employeemanagement.client.AccountClient;
 import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.enums.ErrorCode;
@@ -95,20 +101,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     emp.setEmployeeId(((String) employee.get("employeeId")));
     emp.setEmployeeNumber(ExtractEmpNumUtil.extractEmpNumber(emp.getEmployeeId()));
     Object organizationsObject = employee.get("organizations");
-    if (organizationsObject instanceof Map) {
-      Map<String, Object> organizationsMap = (Map<String, Object>) organizationsObject;
-      emp.setOrganizationId((String) organizationsMap.get("id"));
+    try{
+      if (organizationsObject instanceof Map) {
+        Map<String, Object> organizationsMap = (Map<String, Object>) organizationsObject;
+        emp.setOrganizationId((String) organizationsMap.get("id"));
+      }
+    }catch (Exception e){
+      log.error("Error occurred while getting org Id: " + e.getMessage());
     }
 
-    if (employee.get("department") != null || employee.get("employmentType")!=null) {
-      JobDetails jobDetails = new JobDetails();
-      jobDetails.setDepartment(employee.get("department").toString());
-      jobDetails.setEmployementType(employee.get("employmentType").toString());
-      emp.setJobDetails(jobDetails);
+    try{
+      if (employee.get("department") != null || employee.get("employmentType")!=null) {
+        JobDetails jobDetails = new JobDetails();
+        jobDetails.setDepartment(employee.get("department").toString());
+        jobDetails.setEmployementType(employee.get("employmentType").toString());
+        emp.setJobDetails(jobDetails);
+      }
+    }catch (Exception e){
+      log.error("error occurred while mapping departments and jobdetails : " + e.getMessage());
     }
     try {
       return employeeRepository.save(emp);
     } catch (Exception e) {
+      log.error("Error while creating employee: " + e.getMessage());
       throw new Exception(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.DB_ERROR,
@@ -803,6 +818,52 @@ public class EmployeeServiceImpl implements EmployeeService {
     employeeValues.setDesignations(designations);
     employeeValues.setEmploymentTypes(employmentTypes);
     return employeeValues;
+  }
+
+  @Override
+  public List<EmployeeBasicInfo> getAllEmpInfo(List<String> designations) {
+
+    List<Employee> allEmployees;
+
+    if (designations != null && !designations.isEmpty()) {
+      allEmployees = employeeRepository.findAllByOrganizationIdAndJobDetailsDesignationIn(
+              UserContext.getLoggedInUserOrganization().getId(),
+              designations
+      );
+    } else {
+      allEmployees = employeeRepository.findAllByOrganizationId(
+              UserContext.getLoggedInUserOrganization().getId()
+      );
+    }
+
+    Set<String> allEmpIds = allEmployees.stream()
+            .map(Employee::getEmployeeId)
+            .collect(Collectors.toSet());
+
+    List<EmployeeNameDTO> employeeNamesList= Collections.emptyList();
+
+    try{
+      employeeNamesList = accountClient.getEmployeeNamesByIds(new ArrayList<>(allEmpIds));
+    }
+    catch (Exception e){
+      log.warn("failed to fetch employeeNames");
+    }
+
+    Map<String, String> idToNameMap = employeeNamesList.stream()
+            .collect(Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
+
+    List<EmployeeBasicInfo> result = allEmployees.stream()
+            .map(emp -> {
+              EmployeeBasicInfo dto = new EmployeeBasicInfo();
+              dto.setEmployeeId(emp.getEmployeeId());
+              dto.setJobDetails(emp.getJobDetails());
+              dto.setFullName(idToNameMap.getOrDefault(emp.getEmployeeId(), "Unknown"));
+              return dto;
+            })
+            .collect(Collectors.toList());
+
+    return result;
+
   }
 
   private String extractDuplicateKeyError(DuplicateKeyException e) {

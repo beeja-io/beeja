@@ -58,6 +58,7 @@ import { toast } from 'sonner';
 import CopyPasswordPopup from '../components/directComponents/CopyPasswordPopup.component';
 import { CreatedUserEntity } from '../entities/CreatedUserEntity';
 import { OrgDefaults } from '../entities/OrgDefaultsEntity';
+import { disableBodyScroll, enableBodyScroll } from '../constants/Utility';
 
 const EmployeeList = () => {
   const { t } = useTranslation();
@@ -134,7 +135,9 @@ const EmployeeList = () => {
             hasProfilePicture.add(employeeId);
           } catch (error) {
             imageUrls.set(employeeId, '');
-            throw new Error('Error fetching data:' + error);
+            throw new Error(
+              `Error fetching profile image for employee ${employeeId}:` + error
+            );
           }
         } else {
           imageUrls.set(employeeId, '');
@@ -281,13 +284,13 @@ const EmployeeList = () => {
   };
   useEffect(() => {
     if (isCreateEmployeeModelOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
 
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isCreateEmployeeModelOpen]);
   return (

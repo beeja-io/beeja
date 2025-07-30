@@ -11,7 +11,7 @@ spring:
       database: ${PROJECT_MONGODB_DATABASE}
   servlet:
     multipart:
-      max-file-size: 2MB
+      max-file-size: 5MB
       max-request-size: 10MB
 
 eureka:

@@ -5,6 +5,9 @@ import com.beeja.api.accounts.model.Organization.employeeSettings.OrgValues;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
 import com.beeja.api.accounts.utils.UserContext;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -298,5 +301,46 @@ public class OrgDefaultsGenerationImpl {
     } catch (DuplicateKeyException e) {
       log.error(String.valueOf(e.getMessage()));
     }
+  }
+  public void generateDocumentTypes() {
+    String orgId = UserContext.getLoggedInUserOrganization().getId();
+
+    OrgDefaults orgDocumentTypes =
+            orgDefaultsRepository.findByOrganizationIdAndKey(orgId, "documentTypes");
+
+    if (orgDocumentTypes == null) {
+      orgDocumentTypes = new OrgDefaults();
+      orgDocumentTypes.setOrganizationId(orgId);
+      orgDocumentTypes.setKey("documentTypes");
+      orgDocumentTypes.setValues(new HashSet<>());
+    } else if (orgDocumentTypes.getValues() == null) {
+      orgDocumentTypes.setValues(new HashSet<>());
+    }
+
+    Set<OrgValues> existingValues = orgDocumentTypes.getValues();
+    List<OrgValues> defaultTypes = List.of(
+            createOrgValue("Identity", "Identity Document"),
+            createOrgValue("PaySlip", "Salary Payslip"),
+            createOrgValue("NDA", "Non-Disclosure Agreement"),
+            createOrgValue("Appraisal Letter", "Employee Appraisal Letter"),
+            createOrgValue("Equipment Policy", "Company Equipment Policy"),
+            createOrgValue("Address Proof", "Address Verification Document"),
+            createOrgValue("Tax Exit Doc", "Tax Clearance or Exit Document")
+    );
+
+    existingValues.addAll(defaultTypes);
+
+    orgDocumentTypes.setValues(new HashSet<>(orgDocumentTypes.getValues()));
+    try {
+      orgDefaultsRepository.save(orgDocumentTypes);
+    } catch (DuplicateKeyException e) {
+      log.error(String.valueOf(e.getMessage()));
+    }
+  }
+  private OrgValues createOrgValue(String value, String description) {
+    OrgValues orgValue = new OrgValues();
+    orgValue.setValue(value);
+    orgValue.setDescription(description);
+    return orgValue;
   }
 }

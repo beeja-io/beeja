@@ -23,6 +23,22 @@ export const ExpenseHeadingSection = styled.section`
       cursor: pointer;
     }
   }
+  .separator {
+    transform: none !important;
+    font-weight: 400;
+    margin: 0 24px;
+    color: rgba(160, 174, 192, 1);
+  }
+  .nav_AddClient {
+    transform: none !important;
+    font-family: Nunito;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 130%;
+    letter-spacing: 0px;
+    color: #005792;
+    margin-left: 10px;
+  }
 `;
 
 export const ExpenseAddFormMainContainer = styled.form`

@@ -233,6 +233,7 @@
   "EXPENSE_IS_UNSUCCESFUL": "Expense is Unsuccessful",
   "THE_EXPENSE_HAS_BEEN_ADDED": "The Expense has been added successfully",
   "RECEIPT_PREVIEW": "Receipt Preview",
+  "PRICE_VALUE_MUST_BE_GREATER_THAN_0": "Price value must be greater than 0",
   "PRODUCT_ID_ALREADY_EXIST": "Product ID already exists",
   "INVENTORY_NOT_UPLOADED": "The Inventory hasn't been uploaded",
   "SELECT_DEVICE": "Select Device",
