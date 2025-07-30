@@ -3,13 +3,15 @@ package com.beeja.api.employeemanagement.serviceImpl;
 import static com.beeja.api.employeemanagement.constants.PermissionConstants.CREATE_EMPLOYEE;
 import static com.beeja.api.employeemanagement.constants.PermissionConstants.READ_COMPLETE_EMPLOYEE_DETAILS;
 import static com.beeja.api.employeemanagement.constants.PermissionConstants.UPDATE_ALL_EMPLOYEES;
-import static com.beeja.api.employeemanagement.utils.Constants.EMAIL_ALREADY_REGISTERED;
 import static com.beeja.api.employeemanagement.utils.Constants.EMPLOYEE_NOT_FOUND;
+import static com.beeja.api.employeemanagement.utils.Constants.EMAIL_ALREADY_REGISTERED;
+import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
+import static com.beeja.api.employeemanagement.utils.Constants.CONTAINS_LETTER;
+import static com.beeja.api.employeemanagement.utils.Constants.CONTAINS_DIGIT;
 import static com.beeja.api.employeemanagement.utils.Constants.ERROR_IN_FETCHING_DATA_FROM_ACCOUNT_SERVICE;
+import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_TO_UPDATE_PROFILE_PIC;
 import static com.beeja.api.employeemanagement.utils.Constants.INVALID_PROFILE_PIC_FORMATS;
 import static com.beeja.api.employeemanagement.utils.Constants.SUCCESSFULLY_UPDATED_PROFILE_PHOTO;
-import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_ACCESS;
-import static com.beeja.api.employeemanagement.utils.Constants.UNAUTHORISED_TO_UPDATE_PROFILE_PIC;
 import static com.google.common.io.Files.getFileExtension;
 
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
@@ -228,8 +230,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 
       Employee existingEmployee = existingEmployeeOptional.get();
       updatedEmployee.setId(existingEmployee.getId());
-      updatedEmployee.setEmployeeId(existingEmployee.getEmployeeId());
       updatedEmployee.setBeejaAccountId(existingEmployee.getBeejaAccountId());
+      String existingEmail = (String) accountDetails.get("email");
+      String existingFirstName = (String) accountDetails.get("firstName");
+      String existingLastName = (String) accountDetails.get("lastName");
+
+      String currentEmployeeId = existingEmployee.getEmployeeId();
+      String newEmployeeId = updatedEmployee.getEmployeeId();
+
 
       if (UserContext.getLoggedInUserPermissions().contains(UPDATE_ALL_EMPLOYEES)) {
         existingEmployee.setPosition(updatedEmployee.getPosition());
@@ -240,11 +248,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         updateJobDetails(existingEmployee, updatedEmployee.getJobDetails());
         updateContact(existingEmployee, updatedEmployee.getContact());
         updatePfDetails(existingEmployee, updatedEmployee.getPfDetails());
+        updateEmployeeId(existingEmployee, newEmployeeId);
 
-        if (updatedEmployee.getEmail() != null
-            || updatedEmployee.getFirstName() != null
-            || updatedEmployee.getLastName() != null) {
-          accountClient.updateUser(updatedEmployee.getEmployeeId(), updatedEmployee);
+        boolean emailChanged = updatedEmployee.getEmail() != null &&
+                !updatedEmployee.getEmail().equalsIgnoreCase(existingEmail);
+
+        boolean firstNameChanged = updatedEmployee.getFirstName() != null &&
+                !updatedEmployee.getFirstName().equalsIgnoreCase(existingFirstName);
+
+        boolean lastNameChanged = updatedEmployee.getLastName() != null &&
+                !updatedEmployee.getLastName().equalsIgnoreCase(existingLastName);
+
+        boolean employeeIdChanged = newEmployeeId != null &&
+                !newEmployeeId.equals(currentEmployeeId);
+
+        if (emailChanged || firstNameChanged || lastNameChanged || employeeIdChanged) {
+          accountClient.updateUser(currentEmployeeId, updatedEmployee);
         }
 
         return employeeRepository.save(existingEmployee);
@@ -258,6 +277,38 @@ public class EmployeeServiceImpl implements EmployeeService {
       throw new ResourceNotFound(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.RESOURCE_NOT_FOUND_ERROR, ErrorCode.USER_NOT_FOUND, EMPLOYEE_NOT_FOUND));
+    }
+  }
+
+  private void updateEmployeeId(Employee existingEmployee, String newEmployeeId) {
+    String currentEmployeeId = existingEmployee.getEmployeeId();
+
+    if (newEmployeeId != null && !newEmployeeId.equals(currentEmployeeId)) {
+      newEmployeeId = newEmployeeId.trim();
+
+      if (!CONTAINS_LETTER.matcher(newEmployeeId).find()) {
+        log.warn("Employee ID '{}' is invalid: missing alphabet", newEmployeeId);
+        throw new BadRequestException(Constants.NO_lETTER_FOUND);
+      }
+
+      if (!CONTAINS_DIGIT.matcher(newEmployeeId).find()) {
+        log.warn("Employee ID '{}' is invalid: missing number", newEmployeeId);
+        throw new BadRequestException(Constants.NO_NUMERIC_FOUND);
+      }
+
+      Employee duplicateCheck = employeeRepository.findByEmployeeIdAndOrganizationId(
+              newEmployeeId, UserContext.getLoggedInUserOrganization().getId());
+
+      if (duplicateCheck != null) {
+        log.warn("Duplicate Employee ID '{}' found for org '{}'", newEmployeeId, UserContext.getLoggedInUserOrganization().getId());
+        throw new ResourceAlreadyFound(
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.RESOURCE_EXISTS_ERROR,
+                        ErrorCode.RESOURCE_CREATING_ERROR,
+                        Constants.EMPLOYEE_ID_ALREADY_EXISTS));
+      }
+      log.info("Updating Employee ID from '{}' to '{}'", currentEmployeeId, newEmployeeId.toUpperCase());
+      existingEmployee.setEmployeeId(newEmployeeId.toUpperCase());
     }
   }
 
