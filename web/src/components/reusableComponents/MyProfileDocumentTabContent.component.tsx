@@ -594,7 +594,6 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                         className="submit"
                         disabled={isResponseLoading}
                         style={{ cursor: isResponseLoading ? 'progress' : '' }}
-                        disabled={isResponseLoading}
                       >
                         Submit
                       </Button>
