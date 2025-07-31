@@ -334,11 +334,13 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     <option value="">Select Position</option>
                     {jobTitles?.values &&
                       jobTitles?.values?.length > 0 &&
-                      jobTitles?.values.map((position, index) => (
-                        <option key={index} value={position.value}>
-                          {position.value}
-                        </option>
-                      ))}
+                      [...(jobTitles?.values || [])]
+                        .sort((a, b) => a.value.localeCompare(b.value))
+                        .map((position, index) => (
+                          <option key={index} value={position.value}>
+                            {position.value}
+                          </option>
+                        ))}
                   </select>
                 </InputLabelContainer>
                 <InputLabelContainer>

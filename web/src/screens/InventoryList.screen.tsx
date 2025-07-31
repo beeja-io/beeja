@@ -145,11 +145,13 @@ const InventoryList = ({
             }}
           >
             <option value="">Device</option>{' '}
-            {deviceTypes.values?.map((device) => (
-              <option key={device.value} value={device.value}>
-                {capitalizeFirstLetter(device.value)}
-              </option>
-            ))}
+            {[...(deviceTypes?.values || [])]
+              .sort((a, b) => a.value.localeCompare(b.value))
+              .map((device) => (
+                <option key={device.value} value={device.value}>
+                  {capitalizeFirstLetter(device.value)}
+                </option>
+              ))}
           </select>
           <select
             className="selectoption"
@@ -161,11 +163,13 @@ const InventoryList = ({
             }}
           >
             <option value="availability">Availability</option>{' '}
-            {inventoryOptions.availability.map((availability) => (
-              <option key={availability} value={availability}>
-                {availability}
-              </option>
-            ))}
+            {[...(inventoryOptions.availability || [])]
+              .sort((a, b) => a.localeCompare(b))
+              .map((availability) => (
+                <option key={availability} value={availability}>
+                  {availability}
+                </option>
+              ))}
           </select>
           {inventoryProviders && inventoryProviders.values && (
             <select
@@ -178,11 +182,13 @@ const InventoryList = ({
               }}
             >
               <option value="">Provider</option>{' '}
-              {inventoryProviders.values.map((provider) => (
-                <option key={provider.value} value={provider.value}>
-                  {provider.value}
-                </option>
-              ))}
+              {[...(inventoryProviders?.values || [])]
+                .sort((a, b) => a.value.localeCompare(b.value))
+                .map((provider) => (
+                  <option key={provider.value} value={provider.value}>
+                    {provider.value}
+                  </option>
+                ))}
             </select>
           )}
         </FilterSection>

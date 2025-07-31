@@ -443,11 +443,13 @@ const AddClientForm = (props: AddClientFormProps) => {
                       style={{ width: '400px' }}
                     >
                       <option value="">{t('Select type')}</option>
-                      {clientOptions.clientType.map((type) => (
-                        <option key={type} value={type}>
-                          {t(type)}
-                        </option>
-                      ))}
+                      {[...(clientOptions?.clientType || [])]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((type) => (
+                          <option key={type} value={type}>
+                            {t(type)}
+                          </option>
+                        ))}
                     </select>
                   </InputLabelContainer>
 
@@ -461,11 +463,13 @@ const AddClientForm = (props: AddClientFormProps) => {
                       style={{ width: '400px' }}
                     >
                       <option value="">{t('Select Industry')}</option>
-                      {clientOptions.industry.map((industry) => (
-                        <option key={industry} value={industry}>
-                          {t(industry)}
-                        </option>
-                      ))}
+                      {[...(clientOptions?.industry || [])]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((industry) => (
+                          <option key={industry} value={industry}>
+                            {t(industry)}
+                          </option>
+                        ))}
                     </select>
                   </InputLabelContainer>
 
@@ -547,11 +551,13 @@ const AddClientForm = (props: AddClientFormProps) => {
                       style={{ width: '400px' }}
                     >
                       <option value="">{t('Select category')}</option>
-                      {clientOptions.taxCategory.map((category) => (
-                        <option key={category} value={category}>
-                          {t(category)}
-                        </option>
-                      ))}
+                      {[...(clientOptions?.taxCategory || [])]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((category) => (
+                          <option key={category} value={category}>
+                            {t(category)}
+                          </option>
+                        ))}
                     </select>
                   </InputLabelContainer>
                 </div>
