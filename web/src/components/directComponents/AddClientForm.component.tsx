@@ -9,6 +9,7 @@ import {
   BasicOrganizationDetailsContainer,
   BrowseText,
   CheckBoxOuterContainer,
+  DotWrap,
   EditIconWrapper,
   FileName,
   FormContainer,
@@ -17,6 +18,7 @@ import {
   HeadingContainer,
   HeadingDiv,
   InfoBlock,
+  InfoGroup,
   InfoRow,
   InfoText,
   InputLabelContainer,
@@ -49,6 +51,7 @@ import {
   DotSVG,
   EditSVG,
   EmailSVG,
+  IndustrySVG,
   LineIcon,
   UploadSVG,
 } from '../../svgs/ClientManagmentSvgs.svg';
@@ -775,7 +778,7 @@ const AddClientForm = (props: AddClientFormProps) => {
               <SectionHeader>
                 {t('Basic Organisation Details')}
                 <EditIconWrapper>
-                  <EditSVG onClick={() => setStep(2)} />
+                  <EditSVG onClick={() => setStep(1)} />
                 </EditIconWrapper>
               </SectionHeader>
             </HeadingContainer>
@@ -796,13 +799,29 @@ const AddClientForm = (props: AddClientFormProps) => {
                   </InfoRow>
                   <InfoRow>
                     <SubHeadingDiv>Internal Type</SubHeadingDiv>
-                    <InfoText>{formData.industry}</InfoText>
-                    <DotSVG />
-                    <EmailSVG />
-                    <InfoText>{formData.email}</InfoText>
-                    <DotSVG />
-                    <CallSVG />
-                    <InfoText>{formData.contact}</InfoText>
+                    <DotWrap>
+                      <DotSVG />
+                    </DotWrap>
+                    <InfoGroup>
+                      <IndustrySVG />
+                      <InfoText>{formData.industry}</InfoText>
+                    </InfoGroup>
+                    <DotWrap>
+                      <DotSVG />
+                    </DotWrap>
+                    <InfoGroup>
+                      <EmailSVG />
+                      <InfoText>{formData.email}</InfoText>
+                    </InfoGroup>
+
+                    <DotWrap>
+                      <DotSVG />
+                    </DotWrap>
+
+                    <InfoGroup>
+                      <CallSVG />
+                      <InfoText>{formData.contact}</InfoText>
+                    </InfoGroup>
                   </InfoRow>
                 </div>
                 {logoPreviewUrl && (
@@ -839,7 +858,7 @@ const AddClientForm = (props: AddClientFormProps) => {
               <SectionHeader>
                 {t('Address')}
                 <EditIconWrapper>
-                  <EditSVG onClick={() => setStep(2)} />
+                  <EditSVG onClick={() => setStep(3)} />
                 </EditIconWrapper>
               </SectionHeader>
             </HeadingContainer>
