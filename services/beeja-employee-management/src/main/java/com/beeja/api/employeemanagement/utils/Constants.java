@@ -48,7 +48,7 @@ public class Constants {
   public static final String PAGE_SIZE_INVALID = "Page size must be greater than 0.";
   public static final String PAGE_SIZE_EXCEEDS_LIMIT = "Page size must not exceed 100.";
 
-  public static final String DOC_URL_RESOURCE_NOT_FOUND = "https://beeja-dev.techatcore.com/";
+  public static final String DOC_URL_RESOURCE_NOT_FOUND = "https://beeja-dev.techatcore.com/"; 
 
   public static final String INVALID_PROFILE_PIC_FORMATS =
       "Please provide valid file formats (jpeg, jpg, png)";
