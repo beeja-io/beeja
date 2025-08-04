@@ -586,7 +586,7 @@ public class EmployeeServiceImpl implements EmployeeService {
   @Override
   public List<EmployeeNameDTO> getEmployeeNamesById(List<String> ids) {
     String orgId = UserContext.getLoggedInUserOrganization().getId();
-
+    log.info("getEmployeeNamesById {} with org {}", ids, orgId);
     List<User> employees = userRepository
             .findAllByEmployeeIdInAndOrganizations_Id(ids, orgId);
 
