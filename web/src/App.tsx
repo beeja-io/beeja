@@ -116,14 +116,20 @@ function App() {
     }
   };
 
+  const storedTheme = localStorage.getItem('theme') || 'LIGHT';
+
   return (
     <ThemeProvider
       theme={
-        preferences
-          ? preferences.theme === 'LIGHT'
+        storedTheme
+          ? storedTheme === 'LIGHT'
             ? Theme.light
             : Theme.dark
-          : Theme.light
+          : preferences
+            ? preferences.theme === 'LIGHT'
+              ? Theme.light
+              : Theme.dark
+            : Theme.light
       }
     >
       <ApplicationContextProvider>

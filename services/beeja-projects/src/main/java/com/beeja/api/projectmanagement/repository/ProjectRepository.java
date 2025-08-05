@@ -2,6 +2,8 @@ package com.beeja.api.projectmanagement.repository;
 
 import com.beeja.api.projectmanagement.model.Project;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -45,4 +47,7 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
    */
   Project findByProjectIdAndClientIdAndOrganizationId(
       String projectId, String clientId, String organizationId);
+
+  Optional<Project> findByProjectId(String projectId, String organizationId);
+
 }

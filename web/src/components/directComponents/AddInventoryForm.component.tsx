@@ -1,4 +1,11 @@
+import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { DeviceDetails } from '../../entities/InventoryEntity';
+import { OrganizationValues } from '../../entities/OrgValueEntity';
+import { postInventory } from '../../service/axiosInstance';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import { Button } from '../../styles/CommonStyles.style';
 import {
   InputLabelContainer,
@@ -7,17 +14,10 @@ import {
 } from '../../styles/DocumentTabStyles.style';
 import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
-import Calendar from '../reusableComponents/Calendar.component';
-import { postInventory } from '../../service/axiosInstance';
-import ToastMessage from '../reusableComponents/ToastMessage.component';
-import { DeviceDetails } from '../../entities/InventoryEntity';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
-import axios from 'axios';
-import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
-import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import Calendar from '../reusableComponents/Calendar.component';
 import { Availability } from '../reusableComponents/InventoryEnums.component';
-import { OrganizationValues } from '../../entities/OrgValueEntity';
-import { useTranslation } from 'react-i18next';
+import ToastMessage from '../reusableComponents/ToastMessage.component';
 
 type AddInventoryFormProps = {
   handleClose: () => void;
@@ -85,7 +85,12 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
     } catch (error) {
       if (
         axios.isAxiosError(error) &&
-        error.response?.data.startsWith('Product ID already exists')
+        error.response?.data.message === '[value must be greater than 0]'
+      ) {
+        setErrorMessage('PRICE_VALUE_MUST_BE_GREATER_THAN_0');
+      } else if (
+        axios.isAxiosError(error) &&
+        error.response?.data.message.startsWith('Product ID already exists')
       ) {
         setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
       } else {
@@ -329,9 +334,16 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
             <InputLabelContainer>
               <label>
                 OS
-                {['Desktop', 'MUSIC_SYSTEM', 'Printer', 'Accessories'].includes(
-                  formData.device
-                ) ? null : (
+                {[
+                  'Desktop',
+                  'Laptop',
+                  'Mobile',
+                  'Tablet',
+                  'Desktops',
+                  'Laptops',
+                  'Mobiles',
+                  'Tablets',
+                ].includes(formData.device) && (
                   <ValidationText className="star">*</ValidationText>
                 )}
               </label>
@@ -339,37 +351,48 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 type="text"
                 name="os"
                 placeholder={t('EXAMPLE_MAC_OS')}
-                value={formData.os ? formData.os : ''}
-                className="largeInput"
+                value={formData.os || ''}
                 onChange={handleChange}
-                disabled={
-                  !(
-                    formData.device === 'Desktops' ||
-                    formData.device === 'Laptops' ||
-                    formData.device === 'Mobiles' ||
-                    formData.device === 'Tablets' ||
-                    formData.device === 'Desktop' ||
-                    formData.device === 'Laptop' ||
-                    formData.device === 'Mobile' ||
-                    formData.device === 'Tablet'
-                  )
-                }
-                required={
-                  ![
-                    'Printer',
-                    'MUSIC_SYSTEM',
-                    'Desktop',
-                    'Accessories',
-                  ].includes(formData.device)
-                }
+                disabled={Boolean(
+                  formData.device &&
+                    formData.device !== 'Select Device' &&
+                    ![
+                      'Desktop',
+                      'Laptop',
+                      'Mobile',
+                      'Tablet',
+                      'Desktops',
+                      'Laptops',
+                      'Mobiles',
+                      'Tablets',
+                    ].includes(formData.device)
+                )}
+                required={[
+                  'Desktop',
+                  'Laptop',
+                  'Mobile',
+                  'Tablet',
+                  'Desktops',
+                  'Laptops',
+                  'Mobiles',
+                  'Tablets',
+                ].includes(formData.device)}
+                className="largeInput"
               />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
                 {t('RAM')}
-                {['Desktop', 'MUSIC_SYSTEM', 'Printer', 'Accessories'].includes(
-                  formData.device
-                ) ? null : (
+                {[
+                  'Desktop',
+                  'Laptop',
+                  'Mobile',
+                  'Tablet',
+                  'Desktops',
+                  'Laptops',
+                  'Mobiles',
+                  'Tablets',
+                ].includes(formData.device) && (
                   <ValidationText className="star">*</ValidationText>
                 )}
               </label>
@@ -377,19 +400,34 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 type="text"
                 placeholder={t('ENTER_IN_GB')}
                 name="ram"
-                value={formData.ram ? formData.ram : ''}
+                value={formData.ram || ''}
                 className="largeInput"
                 onChange={handleChange}
-                disabled={formData.device === 'Accessories'}
                 autoComplete="off"
-                required={
-                  ![
-                    'Printer',
-                    'Desktop',
-                    'MUSIC_SYSTEM',
-                    'Accessories',
-                  ].includes(formData.device)
-                }
+                disabled={Boolean(
+                  formData.device &&
+                    formData.device !== 'Select Device' &&
+                    ![
+                      'Desktop',
+                      'Laptop',
+                      'Mobile',
+                      'Tablet',
+                      'Desktops',
+                      'Laptops',
+                      'Mobiles',
+                      'Tablets',
+                    ].includes(formData.device)
+                )}
+                required={[
+                  'Desktop',
+                  'Laptop',
+                  'Mobile',
+                  'Tablet',
+                  'Desktops',
+                  'Laptops',
+                  'Mobiles',
+                  'Tablets',
+                ].includes(formData.device)}
                 onKeyDown={(event) => {
                   const allowedCharacters = /^[0-9.-]+$/;
                   if (
@@ -404,6 +442,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 }}
               />
             </InputLabelContainer>
+
             <InputLabelContainer>
               <label>
                 {t('PRODUCT_ID_SERIAL_NUMBER')}

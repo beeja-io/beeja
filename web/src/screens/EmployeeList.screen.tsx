@@ -58,6 +58,7 @@ import { toast } from 'sonner';
 import CopyPasswordPopup from '../components/directComponents/CopyPasswordPopup.component';
 import { CreatedUserEntity } from '../entities/CreatedUserEntity';
 import { OrgDefaults } from '../entities/OrgDefaultsEntity';
+import { disableBodyScroll, enableBodyScroll } from '../constants/Utility';
 
 const EmployeeList = () => {
   const { t } = useTranslation();
@@ -134,7 +135,9 @@ const EmployeeList = () => {
             hasProfilePicture.add(employeeId);
           } catch (error) {
             imageUrls.set(employeeId, '');
-            throw new Error('Error fetching data:' + error);
+            throw new Error(
+              `Error fetching profile image for employee ${employeeId}:` + error
+            );
           }
         } else {
           imageUrls.set(employeeId, '');
@@ -161,7 +164,7 @@ const EmployeeList = () => {
 
   const fetchEmployeeTypes = async () => {
     try {
-      const response = await getOrganizationValuesByKey('employmentTypes');
+      const response = await getOrganizationValuesByKey('employeeTypes');
       setEmployeeTypes(response.data);
     } catch {
       setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES'));
@@ -172,6 +175,12 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('departments');
       setDepartmentOptions(response.data);
+      if (!response?.data?.values || response.data.values.length === 0) {
+        toast.error(
+          'Department list is empty. Please add at least one Department in Organization.'
+        );
+        return;
+      }
     } catch {
       setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
     }
@@ -265,7 +274,6 @@ const EmployeeList = () => {
   });
 
   const currentEmployees = finalEmpList;
-
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
@@ -276,13 +284,13 @@ const EmployeeList = () => {
   };
   useEffect(() => {
     if (isCreateEmployeeModelOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
 
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isCreateEmployeeModelOpen]);
   return (
@@ -638,6 +646,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         setLoading(true);
         const key = 'employeeTypes';
         const response = await getOrganizationValuesByKey(key);
+
+        if (!response?.data?.values || response.data.values.length === 0) {
+          toast.error(
+            'Employee type is empty. Please add at least one Employee Type in Organization.'
+          );
+          return null;
+        }
         setOrganizationValues(response.data);
       } catch (err) {
         toast.error(t('ERROR_OCCURRED_PLEASE_RELOAD'));
@@ -867,6 +882,10 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
             onChange={handleChange}
+            disabled={
+              !organizationValues?.values ||
+              organizationValues.values.length === 0
+            }
           >
             <option value="">{t('SELECT_EMPLOYMENT_TYPE')}</option>
             {organizationValues &&
@@ -899,6 +918,10 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
             onChange={handleChange}
+            disabled={
+              !props.departmentOptions?.values ||
+              props.departmentOptions.values.length === 0
+            }
           >
             <option value="">{t('SELECT_DEPARTMENT')}</option>
             {props.departmentOptions &&

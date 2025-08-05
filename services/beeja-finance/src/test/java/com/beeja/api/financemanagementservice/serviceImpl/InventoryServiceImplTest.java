@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.repository.InventoryRepository;
@@ -66,7 +65,7 @@ public class InventoryServiceImplTest {
     UserContext.setLoggedInUserOrganization(organizationMap);
     mongoTemplate.remove(new Query());
     Inventory inventory = new Inventory();
-    inventory.setDevice(Device.MOBILE);
+    inventory.setDevice("Mobile");
     inventory.setProvider("Google");
     inventory.setAvailability(Availability.NO);
     inventory.setOs("NA");
@@ -97,11 +96,11 @@ public class InventoryServiceImplTest {
   @Test
   public void testFilterInventory_Success() throws Exception {
     Inventory inventory = new Inventory();
-    inventory.setDevice(Device.MOBILE);
+    inventory.setDevice("Mobile");
     inventory.setProvider("Google");
     inventory.setAvailability(Availability.NO);
     inventory.setOs("NA");
-    inventory.setRAM("NA");
+    inventory.setRam("NA");
     List<Inventory> expectedInventories = new ArrayList<>();
     expectedInventories.add(inventory);
 
@@ -116,7 +115,7 @@ public class InventoryServiceImplTest {
     when(mongoTemplate.find(any(Query.class), eq(Inventory.class))).thenReturn(expectedInventories);
     List<Inventory> result =
         inventoryService.filterInventory(
-            1, 10, Device.MOBILE, "Google", Availability.NO, "NA", "NA", "NA");
+            1, 10, "Mobile", "Google", Availability.NO, "NA", "NA", "NA");
     verify(mongoTemplate).find(any(Query.class), eq(Inventory.class));
     assertNotNull(result);
     assertEquals(1, result.size());
@@ -157,7 +156,7 @@ public class InventoryServiceImplTest {
   @Test
   public void testDeleteExistingDeviceDetails_Success() throws Exception {
     Inventory inventory = new Inventory();
-    inventory.setDevice(Device.MOBILE);
+    inventory.setDevice("Mobile");
     inventory.setProvider("Google");
     inventory.setAvailability(Availability.NO);
     inventory.setOs("NA");
@@ -194,7 +193,7 @@ public class InventoryServiceImplTest {
 
   @Test
   void testGetTotalInventorySize_withAllFilters() {
-    Device device = Device.MOBILE;
+    String device = "Mobile";
     Availability availability = Availability.YES;
     String os = "Android";
     String organizationId = "org123";

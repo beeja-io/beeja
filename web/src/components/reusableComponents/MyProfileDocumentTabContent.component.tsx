@@ -54,6 +54,11 @@ import { hasPermission } from '../../utils/permissionCheck';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import Pagination from '../directComponents/Pagination.component';
+
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
+
 type DocumentTabContentProps = {
   employee: EmployeeEntity;
 };
@@ -284,13 +289,13 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
   });
   useEffect(() => {
     if (isCreateDocumentModelOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
 
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isCreateDocumentModelOpen]);
 
@@ -472,6 +477,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       }}
                       value={category}
                       onChange={handleDocumentTypeChange}
+                      disabled={isResponseLoading}
                       className="selectoption"
                     >
                       {['Select a Type', ...documentType].map((option) => (
@@ -494,6 +500,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       value={documentName}
                       placeholder="Ex: Pan Card /Aadhar Card /Voter Id/ Driving License"
                       onChange={(e) => setDocumentName(e.target.value)}
+                      disabled={isResponseLoading}
                     />
                   </InputLabelContainer>
 
@@ -504,6 +511,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       value={description}
                       placeholder="Ex: Pan Card front Image"
                       onChange={(e) => setDescription(e.target.value)}
+                      disabled={isResponseLoading}
                     />
                   </InputLabelContainer>
 
@@ -528,6 +536,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                         id="fileInput"
                         style={{ display: 'none' }}
                         onChange={handleFileChange}
+                        disabled={isResponseLoading}
                       />
                     </FileUploadField>
                     {selectedFileName && (
@@ -584,6 +593,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       <Button
                         className="submit"
                         style={{ cursor: isResponseLoading ? 'progress' : '' }}
+                        disabled={isResponseLoading}
                       >
                         Submit
                       </Button>
@@ -607,6 +617,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
           handleClose={handleUpdateToastMessage}
         />
       )}
+      {isResponseLoading && <SpinAnimation />}
     </>
   );
 };

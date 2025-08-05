@@ -110,14 +110,15 @@ public class InvoiceServiceImpl implements InvoiceService {
         String remittanceRef = prefix + invoice.getInvoiceId();
         invoice.setRemittanceRef(remittanceRef);
 
-        // setting TAX ID of a ORG
-        ResponseEntity<Object> orgResponse = accountClient.getOrganizationById(UserContext.getLoggedInUserOrganization().get("id").toString());
-        Map<String, Object> responseMap = objectMapper.convertValue(
-                orgResponse.getBody(),
-                new TypeReference<Map<String, Object>>() {}
-        );
-        Map<String, Object> accountsMap = (Map<String, Object>) responseMap.get("accounts");
-        String taxId = accountsMap.get("taxId").toString();
+    // setting TAX ID of a ORG
+    ResponseEntity<Object> orgResponse =
+        accountClient.getOrganizationById(
+            UserContext.getLoggedInUserOrganization().get("id").toString());
+    Map<String, Object> responseMap =
+        objectMapper.convertValue(
+            orgResponse.getBody(), new TypeReference<Map<String, Object>>() {});
+    Map<String, Object> accountsMap = (Map<String, Object>) responseMap.get("accounts");
+    String taxId = accountsMap.get("taxId").toString();
 
         invoice.setTaxId(taxId);
 

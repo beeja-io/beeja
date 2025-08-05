@@ -5,7 +5,6 @@ import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.exceptions.DuplicateDataException;
@@ -131,7 +130,7 @@ public class InventoryServiceImpl implements InventoryService {
   public List<Inventory> filterInventory(
       int pageNumber,
       int pageSize,
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
@@ -141,7 +140,7 @@ public class InventoryServiceImpl implements InventoryService {
 
       Query query = new Query();
 
-      if (device != null) {
+      if (device != null && !device.trim().isEmpty()) {
         query.addCriteria(Criteria.where("device").is(device));
       }
       if (provider != null && StringUtils.hasText(provider)) {
@@ -181,7 +180,7 @@ public class InventoryServiceImpl implements InventoryService {
 
   @Override
   public Long getTotalInventorySize(
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
@@ -190,7 +189,7 @@ public class InventoryServiceImpl implements InventoryService {
       String searchTerm) {
     Query query = new Query();
 
-    if (device != null) {
+    if (device != null && !device.isEmpty()) {
       query.addCriteria(Criteria.where("device").is(device));
     }
 

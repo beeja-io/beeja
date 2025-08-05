@@ -161,8 +161,28 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       setApiLoading(true);
       try {
         const response = await getOrganizationValuesByKey('jobTitles');
-        setJobTitles(response.data);
+        const data = response?.data;
+
+        if (!data || !Array.isArray(data.values)) {
+          setJobTitles({
+            organizationId: '',
+            key: 'jobTitles',
+            values: [],
+          });
+        } else {
+          setJobTitles(data);
+          if (data.values.length === 0) {
+            toast.info(
+              t('Job Titles is empty, Please update in Orginazation Settings')
+            );
+          }
+        }
       } catch {
+        setJobTitles({
+          organizationId: '',
+          key: 'jobTitles',
+          values: [],
+        });
         toast.error(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
       } finally {
         setApiLoading(false);
@@ -302,6 +322,9 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     id="positionAppliedFor"
                     onChange={handleChange}
                     required
+                    disabled={
+                      !jobTitles?.values || jobTitles.values.length === 0
+                    }
                     onKeyPress={(event) => {
                       if (event.key === 'Enter') {
                         event.preventDefault();
@@ -309,11 +332,13 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     }}
                   >
                     <option value="">Select Position</option>
-                    {jobTitles?.values.map((position, index) => (
-                      <option key={index} value={position.value}>
-                        {position.value}
-                      </option>
-                    ))}
+                    {jobTitles?.values &&
+                      jobTitles?.values?.length > 0 &&
+                      jobTitles?.values.map((position, index) => (
+                        <option key={index} value={position.value}>
+                          {position.value}
+                        </option>
+                      ))}
                   </select>
                 </InputLabelContainer>
                 <InputLabelContainer>

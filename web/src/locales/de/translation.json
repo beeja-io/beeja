@@ -90,6 +90,7 @@
   "INVENTORY_PREVIEW": "Inventarvorschau",
   "EDIT_INVENTORY": "Inventar bearbeiten",
   "ADD_INVENTORY": "Inventar hinzufügen",
+  "PRICE_VALUE_MUST_BE_GREATER_THAN_0": "Der Preiswert muss größer als 0 sein",
   "THE_INVENTORY_HAS_BEEN_UPDATED": "Das Inventar wurde erfolgreich aktualisiert",
   "THE_INVENTORY_HAS_BEEN_ADDED": "Das Inventar wurde erfolgreich hinzugefügt",
   "SUCCESSFULLY_UPDATED": "Erfolgreich aktualisiert",

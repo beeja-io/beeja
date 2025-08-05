@@ -29,7 +29,11 @@ const LoanManagementScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const goToPreviousPage = () => {
-    navigate(-1);
+    if (isApplyLoanScreen) {
+      setIsApplyLoanScreen(false);
+    } else {
+      navigate(-1);
+    }
   };
 
   const handleIsApplyLoanScreen = () => {
@@ -99,14 +103,16 @@ const LoanManagementScreen = () => {
             loading={loading}
             fetchLoans={fetchLoanData}
           />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(totalItems / itemsPerPage)}
-            handlePageChange={handlePageChange}
-            itemsPerPage={itemsPerPage}
-            handleItemsPerPage={handlePageSizeChange}
-            totalItems={totalItems}
-          />
+          {loansList.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(totalItems / itemsPerPage)}
+              handlePageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              handleItemsPerPage={handlePageSizeChange}
+              totalItems={totalItems}
+            />
+          )}
         </>
       )}
     </ExpenseManagementMainContainer>

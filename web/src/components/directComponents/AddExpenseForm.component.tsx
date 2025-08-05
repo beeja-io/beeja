@@ -91,8 +91,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   };
 
   const fileId: string =
-    props.expense?.fileId && props.expense?.files && props.expense?.files[0].id
-      ? props.expense?.fileId && props.expense?.files[0].id
+    props.expense?.fileId && props.expense?.files && props.expense?.files[0]?.id
+      ? props.expense?.fileId && props.expense?.files[0]?.id
       : '';
   const [images, setImages] = useState(null);
   const [fileExtension, setFileExtension] = useState<string>();
