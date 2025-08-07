@@ -429,9 +429,23 @@ export const InfoRow = styled.div`
   display: flex;
 `;
 
+export const DotWrap = styled.div`
+  margin: 0 4px 0 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+`;
 export const InfoText = styled.div`
   font-family: 'Nunito';
-  padding-left: 60px;
+  padding-right: 60px;
+  font-size: 14px;
+`;
+
+export const InfoGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
 `;
 
 export const InfoBlock = styled.div`
@@ -445,6 +459,7 @@ export const AddressBlock = styled.div`
   padding: 10px 0 10px 10px;
   display: flex;
 `;
+
 export const BasicOrganizationDetailsContainer = styled.div`
   margin-bottom: 5px;
   margin-top: 5px;
