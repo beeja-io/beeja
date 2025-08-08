@@ -24,8 +24,10 @@ import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { ClientResponse } from '../entities/ClientEntity';
 import { ContractDetails } from '../entities/ContractEntiy';
 import { ProjectEntity } from '../entities/ProjectEntity';
+import { AddInvoiceForm } from '../components/directComponents/AddInvoiceForm.component';
 import {
   downloadClientLogo,
+  generateInvoiceIdentifiers,
   getClient,
   getContractDetails,
   getProject,
@@ -49,16 +51,29 @@ import {
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { InfoText } from '../styles/ProjectStyles.style';
 import ContactTabSection from './ContractTabSection';
+import { CLIENT_MODULE } from '../constants/PermissionConstants';
+import { hasPermission } from '../utils/permissionCheck';
+import { useUser } from '../context/UserContext';
+import { InvoiceIdentifiers } from '../entities/Requests/InvoiceIdentifiersRequest';
+import { InvoiceInnerBigContainer } from '../styles/InvoiceManagementStyles.style';
+import CenterModalMain from '../components/reusableComponents/CenterModalMain.component';
 
 const ContractDetailsScreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const { id } = useParams();
+  const { user } = useUser();
   const [client, setClient] = useState<ClientResponse | null>(null);
   const [project, setProject] = useState<ProjectEntity | null>(null);
   const [contract, setContract] = useState<ContractDetails | null>(null);
 
   const [clientId, setClientId] = useState<string | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
+  const [generatedInvoiceData, setGeneratedInvoiceData] =
+    useState<InvoiceIdentifiers | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [contractId, setContractId] = useState<string | null>(null);
+  const [contractDetails, setContractDetails] = useState<any>(null);
+  const [clientDetails, setClientDetails] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -98,6 +113,7 @@ const ContractDetailsScreen: React.FC = () => {
         setContract(res?.data);
         setClientId(res?.data?.clientId);
         setProjectId(res?.data?.projectId);
+        setContractId(res?.data?.contractId);
       } catch (error) {
         toast.error(t('Failed to fetch contract'));
       } finally {
@@ -116,6 +132,8 @@ const ContractDetailsScreen: React.FC = () => {
         const clientRes = await getClient(clientId);
         setProject(projectRes?.data[0]);
         setClient(clientRes.data);
+        setClientDetails(clientRes.data);
+        setContractDetails(clientRes.data);
       } catch (error) {
         toast.error('Failed to fetch project/client: ');
       } finally {
@@ -124,6 +142,26 @@ const ContractDetailsScreen: React.FC = () => {
     };
     fetchProjectAndClient();
   }, [projectId, clientId]);
+
+  const handleIsCreateModalOpen = async (contractId: string) => {
+    if (!isCreateModalOpen) {
+      setIsLoading(true);
+      try {
+        const response = await generateInvoiceIdentifiers({ contractId });
+        setGeneratedInvoiceData(response.data);
+        setIsCreateModalOpen(true);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log('errr');
+        setGeneratedInvoiceData(null);
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      setGeneratedInvoiceData(null);
+    }
+    setIsCreateModalOpen(!isCreateModalOpen);
+  };
 
   if (isLoading) {
     return <SpinAnimation />;
@@ -184,6 +222,21 @@ const ContractDetailsScreen: React.FC = () => {
                 })}
             </ColumnItem>
           </RowWrapper>
+          <HorizontalLine />
+          <InvoiceInnerBigContainer>
+            {user && hasPermission(user, CLIENT_MODULE.GENERATE_INVOICE) && (
+              <button
+                className="button_element"
+                onClick={() => {
+                  if (contract?.contractId) {
+                    handleIsCreateModalOpen(contract.contractId);
+                  }
+                }}
+              >
+                {isLoading ? <SpinAnimation /> : 'Generate Invoice'}
+              </button>
+            )}
+          </InvoiceInnerBigContainer>
         </ClientInfo>
 
         {contract?.contractId && (
@@ -258,6 +311,33 @@ const ContractDetailsScreen: React.FC = () => {
           </RightSubSectionDiv>
         </RightSectionDiv>
       </RightSection>
+      {isCreateModalOpen && (
+        <CenterModalMain
+          heading="Generate Invoice"
+          modalClose={() => contractId && handleIsCreateModalOpen(contractId)}
+          actualContentContainer={
+            <AddInvoiceForm
+              handleClose={() =>
+                contractId && handleIsCreateModalOpen(contractId)
+              }
+              invoiceId={generatedInvoiceData?.invoiceId}
+              remittanceReferenceNumber={
+                generatedInvoiceData?.remittanceReferenceNumber
+              }
+              contractId={contractId ?? ''}
+              contractTitle={contractDetails?.contractTitle}
+              startDate={contractDetails?.startDate}
+              endDate={contractDetails?.endDate}
+              billingAddress={clientDetails?.billingAddress}
+              clientName={clientDetails?.clientName}
+              organizationId={contractDetails?.organizationId}
+              projectId={projectId ?? undefined}
+              status={project?.status}
+              clientId={clientDetails?.clientId}
+            />
+          }
+        />
+      )}
     </Container>
   );
 };

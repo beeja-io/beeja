@@ -1,4 +1,5 @@
 export interface IOrganization {
+  bankDetails: BankDetails;
   id: string;
   name: string;
   email: string;
@@ -24,7 +25,6 @@ export interface IPreferences {
   theme: string;
   currencyType: string;
 }
-
 export interface Address {
   addressOne: string;
   addressTwo: string;
@@ -33,7 +33,6 @@ export interface Address {
   pinCode: number;
   country: string;
 }
-
 export interface Accounts {
   id: string;
   pfNumber: string;
@@ -42,6 +41,7 @@ export interface Accounts {
   esiNumber: string;
   linNumber: string;
   gstNumber: string;
+  taxId: string;
 }
 
 export interface ILoanLimits {
@@ -51,4 +51,11 @@ export interface ILoanLimits {
   isPersonalLoanEnabled: boolean;
   salaryMultiplier: number;
   isSalaryMultiplierEnabled: boolean;
+}
+
+export interface BankDetails {
+  accountName: string;
+  bankName: string;
+  accountNumber: string;
+  ifscNumber: string;
 }
