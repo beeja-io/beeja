@@ -291,6 +291,7 @@ const InventoryList = ({
                               handleDeleteInventory={updateInventoryList}
                               updateInventoryList={updateInventoryList}
                               deviceTypes={deviceTypes}
+                              inventoryProviders={inventoryProviders}
                             />
                           </td>
                         </TableBodyRow>
@@ -336,6 +337,7 @@ const InventoryList = ({
               handleSuccessMessage={handleShowSuccessMessage}
               updateInventoryList={updateInventoryList}
               deviceTypes={deviceTypes}
+              inventoryProviders={inventoryProviders}
             />
           }
         />
