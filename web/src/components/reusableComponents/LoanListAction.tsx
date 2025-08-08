@@ -120,6 +120,7 @@ export const LoanAction: React.FC<ActionProps> = ({
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
         <ActionMenu
+          className="action-align"
           onClick={() => {
             if (!isUserNotAllowed()) {
               if (
