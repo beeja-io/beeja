@@ -7,6 +7,7 @@ import ExpenseManagement from '../screens/ExpenseManagement.screen';
 import ClientManagement from '../screens/ClientManagement.screen';
 import { useUser } from '../context/UserContext';
 import LoanManagementScreen from '../screens/LoanManagementScreen.screen';
+import TimeSheet from '../screens/TimeSheet';
 import {
   BULK_PAYSLIP_MODULE,
   EXPENSE_MODULE,
@@ -168,6 +169,17 @@ const AllRoutes = () => {
       </Route>
 
       <Route
+        path="/timeoff/timesheet"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <TimeSheet />
+          </CustomRoute>
+        }
+      />
+      <Route
         path="/payroll/deductions-loans"
         element={
           <CustomRoute
@@ -176,6 +188,17 @@ const AllRoutes = () => {
           >
             <LoanManagementScreen />
           </CustomRoute>
+        }
+      />
+
+      <Route
+        path="/projects/contracts"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+            children={undefined}
+          ></CustomRoute>
         }
       />
 

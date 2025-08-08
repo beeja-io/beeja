@@ -1,4 +1,36 @@
+import { t } from 'i18next';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
+import {
+  BULK_PAYSLIP_MODULE,
+  EXPENSE_MODULE,
+  FEATURE_TOGGLES_MODULE,
+  INVENTORY_MODULE,
+  LOAN_MODULE,
+  ORGANIZATION_MODULE,
+  RECRUITMENT_MODULE,
+} from '../../constants/PermissionConstants';
+import { useFeatureToggles } from '../../context/FeatureToggleContext';
+import { usePreferences } from '../../context/PreferencesContext';
+import { useUser } from '../../context/UserContext';
+import { EFeatureToggles } from '../../entities/FeatureToggle';
+import AllRoutes from '../../routes/allRoutes';
+import Error404Screen from '../../screens/Error404Screen.screen';
+import ServiceUnavailable from '../../screens/ServiceUnavailable.screen';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import { StyledNavLink } from '../../styles/CommonStyles.style';
+import {
+  DarkTheme,
+  DashBoardButton,
+  LeftNavList,
+  LightTheme,
+  NavBarContainer,
+  NavHeader,
+  RightSection,
+  ThemeToggler,
+} from '../../styles/NavBarStyles.style';
+import { UserBoxWithLinkSVG } from '../../svgs/CommonSvgs.svs';
 import {
   BeejaIconSvg,
   CardSendSVG,
@@ -14,41 +46,9 @@ import {
   TrendingUpSVG,
   ProjectsSVG,
 } from '../../svgs/NavBarSvgs.svg';
-import {
-  DarkTheme,
-  DashBoardButton,
-  LeftNavList,
-  LightTheme,
-  NavBarContainer,
-  NavHeader,
-  RightSection,
-  ThemeToggler,
-} from '../../styles/NavBarStyles.style';
-import TopNavBarComponent from './TopNavBar.component';
-import { useTranslation } from 'react-i18next';
-import AllRoutes from '../../routes/allRoutes';
-import { StyledNavLink } from '../../styles/CommonStyles.style';
-import { useLocation } from 'react-router-dom';
-import Error404Screen from '../../screens/Error404Screen.screen';
-import { useUser } from '../../context/UserContext';
-import {
-  BULK_PAYSLIP_MODULE,
-  EXPENSE_MODULE,
-  FEATURE_TOGGLES_MODULE,
-  INVENTORY_MODULE,
-  LOAN_MODULE,
-  ORGANIZATION_MODULE,
-  RECRUITMENT_MODULE,
-} from '../../constants/PermissionConstants';
-import ServiceUnavailable from '../../screens/ServiceUnavailable.screen';
-import { usePreferences } from '../../context/PreferencesContext';
-import { hasPermission } from '../../utils/permissionCheck';
 import { hasFeature } from '../../utils/featureCheck';
-import { useFeatureToggles } from '../../context/FeatureToggleContext';
-import { EFeatureToggles } from '../../entities/FeatureToggle';
-import { UserBoxWithLinkSVG } from '../../svgs/CommonSvgs.svs';
-import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
-import { t } from 'i18next';
+import { hasPermission } from '../../utils/permissionCheck';
+import TopNavBarComponent from './TopNavBar.component';
 
 const CompleteNavBar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -406,6 +406,7 @@ const CompleteNavBar = () => {
                       hasAdditionalSvg
                     />
                   )}
+
                   <ListItem
                     isSideBarOpen={sidebarOpen}
                     linkTo="#"
