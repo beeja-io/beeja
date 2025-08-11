@@ -4,8 +4,6 @@ import com.beeja.api.projectmanagement.client.AccountClient;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.JwtUtils;
 import com.beeja.api.projectmanagement.utils.UserContext;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,12 +21,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Authorization filter that intercepts incoming HTTP requests to validate JWT access tokens
- * and authenticate the user. If valid, user details are set in the {@link UserContext}.
+ * Authorization filter that intercepts incoming HTTP requests to validate JWT access tokens and
+ * authenticate the user. If valid, user details are set in the {@link UserContext}.
  */
 @Slf4j
 @Component
@@ -40,11 +37,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
   /**
    * Filters each incoming HTTP request to validate the JWT token and authenticate the user.
-   * @param request     the HTTP request
-   * @param response    the HTTP response
+   *
+   * @param request the HTTP request
+   * @param response the HTTP response
    * @param filterChain the filter chain
    * @throws ServletException if a servlet error occurs
-   * @throws IOException      if an I/O error occurs
+   * @throws IOException if an I/O error occurs
    */
   @Override
   protected void doFilterInternal(
@@ -74,6 +72,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
   /**
    * Validates the provided access token.
+   *
    * @param accessToken the JWT access token
    * @return {@code true} if the token is valid; {@code false} otherwise
    */
@@ -91,6 +90,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
   /**
    * Validates the JWT token by decoding its claims and checking user presence and active status.
+   *
    * @param accessToken the JWT access token
    * @return {@code true} if the token is valid and user is active; {@code false} otherwise
    * @throws Exception if an error occurs during JWT decoding
@@ -103,13 +103,14 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
   /**
    * Verifies if the user exists and is active in the system; sets the user context if valid.
-   * @param email       the user's email
+   *
+   * @param email the user's email
    * @param accessToken the JWT access token
    * @return {@code true} if user exists and is active; {@code false} otherwise
    */
   private boolean checkUserPresenceAndSetActive(String email, String accessToken) {
     ResponseEntity<LinkedHashMap<String, Object>> userIsPresent =
-            (ResponseEntity<LinkedHashMap<String, Object>>) accountClient.getEmployeeByEmail(email);
+        (ResponseEntity<LinkedHashMap<String, Object>>) accountClient.getEmployeeByEmail(email);
     LinkedHashMap<String, Object> responseBody = userIsPresent.getBody();
     if (userIsPresent.getStatusCode().is2xxSuccessful() && responseBody != null) {
       Boolean userIsActive = (Boolean) responseBody.get("active");
@@ -123,8 +124,9 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
   /**
    * Sets the authenticated user's details into the {@link UserContext}.
+   *
    * @param responseBody the response body containing user details
-   * @param accessToken  the JWT access token
+   * @param accessToken the JWT access token
    */
   private void setLoggedInUser(LinkedHashMap<String, Object> responseBody, String accessToken) {
     String email = responseBody.get("email").toString();
@@ -133,11 +135,12 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     Map<String, Object> userOrganization = getUserOrganization(responseBody);
     Set<String> permissions = getPermissions(responseBody);
     UserContext.setLoggedInUser(
-            email, firstName, employeeId, userOrganization, permissions, accessToken);
+        email, firstName, employeeId, userOrganization, permissions, accessToken);
   }
 
   /**
    * Extracts the user's organization details from the response.
+   *
    * @param responseBody the response body containing user details
    * @return a map containing organization details like id, name, and email
    */
@@ -156,13 +159,14 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
   /**
    * Extracts the user's permissions from the response.
+   *
    * @param responseBody the response body containing user roles and permissions
    * @return a set of permissions assigned to the user
    */
   private Set<String> getPermissions(LinkedHashMap<String, Object> responseBody) {
     Set<String> permissions = new HashSet<>();
     Collection<LinkedHashMap<String, Object>> roles =
-            (Collection<LinkedHashMap<String, Object>>) responseBody.get("roles");
+        (Collection<LinkedHashMap<String, Object>>) responseBody.get("roles");
     if (roles != null) {
       for (LinkedHashMap<String, Object> role : roles) {
         Collection<String> rolePermissions = (Collection<String>) role.get("permissions");

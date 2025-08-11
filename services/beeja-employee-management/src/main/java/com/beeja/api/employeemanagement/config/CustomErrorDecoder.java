@@ -4,11 +4,10 @@ import com.beeja.api.employeemanagement.exceptions.FeignClientException;
 import com.beeja.api.employeemanagement.exceptions.GlobalExceptionHandler;
 import feign.Response;
 import feign.codec.ErrorDecoder;
-import org.springframework.stereotype.Component;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import org.springframework.stereotype.Component;
 
 @Component
 public class CustomErrorDecoder implements ErrorDecoder {

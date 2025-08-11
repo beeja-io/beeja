@@ -69,7 +69,9 @@ export const ExpenseList = (props: ExpenseListProps) => {
   };
 
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
+  const departments = selectedDepartments.map(encodeURIComponent);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const categories = selectedCategories.map(encodeURIComponent);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [selectedPaymentModes, setSelectedPaymentModes] = useState<string[]>(
     []
@@ -276,12 +278,12 @@ export const ExpenseList = (props: ExpenseListProps) => {
       setFilteredResponseLoading(true);
       const queryParams = [];
 
-      if (selectedDepartments.length > 0) {
-        queryParams.push(`department=${selectedDepartments.join(',')}`);
+      if (departments.length > 0) {
+        queryParams.push(`department=${departments.join(',')}`);
       }
 
-      if (selectedCategories.length > 0) {
-        queryParams.push(`expenseCategory=${selectedCategories.join(',')}`);
+      if (categories.length > 0) {
+        queryParams.push(`expenseCategory=${categories.join(',')}`);
       }
 
       if (selectedTypes.length > 0) {
@@ -338,8 +340,6 @@ export const ExpenseList = (props: ExpenseListProps) => {
       throw new Error('Error fetching expenses:' + error);
     }
   }, [
-    selectedDepartments,
-    selectedCategories,
     selectedTypes,
     selectedPaymentModes,
     fromDate,
@@ -350,6 +350,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
     filterBasedOn,
     sortOrder,
     settlementStatusFilter,
+    categories,
+    departments,
   ]);
 
   useEffect(() => {
@@ -518,22 +520,24 @@ export const ExpenseList = (props: ExpenseListProps) => {
             </div>
             {dropdownOpen.department && (
               <div className="multi-select-options">
-                {props.expenseDepartments.values?.map((dept) => (
-                  <label key={dept.value} className="multi-select-option">
-                    <input
-                      type="checkbox"
-                      checked={selectedDepartments.includes(dept.value)}
-                      onChange={() =>
-                        handleMultiSelectChange(
-                          dept.value,
-                          selectedDepartments,
-                          setSelectedDepartments
-                        )
-                      }
-                    />
-                    {dept.value}
-                  </label>
-                ))}
+                {[...(props.expenseDepartments?.values || [])]
+                  .sort((a, b) => a.value.localeCompare(b.value))
+                  .map((dept) => (
+                    <label key={dept.value} className="multi-select-option">
+                      <input
+                        type="checkbox"
+                        checked={selectedDepartments.includes(dept.value)}
+                        onChange={() =>
+                          handleMultiSelectChange(
+                            dept.value,
+                            selectedDepartments,
+                            setSelectedDepartments
+                          )
+                        }
+                      />
+                      {dept.value}
+                    </label>
+                  ))}
               </div>
             )}
           </div>
@@ -553,22 +557,24 @@ export const ExpenseList = (props: ExpenseListProps) => {
             </div>
             {dropdownOpen.category && (
               <div className="multi-select-options">
-                {props.expenseCategories.values?.map((cat) => (
-                  <label key={cat.value} className="multi-select-option">
-                    <input
-                      type="checkbox"
-                      checked={selectedCategories.includes(cat.value)}
-                      onChange={() =>
-                        handleMultiSelectChange(
-                          cat.value,
-                          selectedCategories,
-                          setSelectedCategories
-                        )
-                      }
-                    />
-                    {cat.value}
-                  </label>
-                ))}
+                {[...(props.expenseCategories?.values || [])]
+                  .sort((a, b) => a.value.localeCompare(b.value))
+                  .map((cat) => (
+                    <label key={cat.value} className="multi-select-option">
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(cat.value)}
+                        onChange={() =>
+                          handleMultiSelectChange(
+                            cat.value,
+                            selectedCategories,
+                            setSelectedCategories
+                          )
+                        }
+                      />
+                      {cat.value}
+                    </label>
+                  ))}
               </div>
             )}
           </div>
@@ -587,22 +593,24 @@ export const ExpenseList = (props: ExpenseListProps) => {
             </div>
             {dropdownOpen.type && (
               <div className="multi-select-options">
-                {props.expenseTypes.values?.map((type) => (
-                  <label key={type.value} className="multi-select-option">
-                    <input
-                      type="checkbox"
-                      checked={selectedTypes.includes(type.value)}
-                      onChange={() =>
-                        handleMultiSelectChange(
-                          type.value,
-                          selectedTypes,
-                          setSelectedTypes
-                        )
-                      }
-                    />
-                    {type.value}
-                  </label>
-                ))}
+                {[...(props.expenseTypes?.values || [])]
+                  .sort((a, b) => a.value.localeCompare(b.value))
+                  .map((type) => (
+                    <label key={type.value} className="multi-select-option">
+                      <input
+                        type="checkbox"
+                        checked={selectedTypes.includes(type.value)}
+                        onChange={() =>
+                          handleMultiSelectChange(
+                            type.value,
+                            selectedTypes,
+                            setSelectedTypes
+                          )
+                        }
+                      />
+                      {type.value}
+                    </label>
+                  ))}
               </div>
             )}
           </div>
@@ -621,22 +629,24 @@ export const ExpenseList = (props: ExpenseListProps) => {
             </div>
             {dropdownOpen.paymentMode && (
               <div className="multi-select-options">
-                {props.expensePaymentModes.values?.map((mode) => (
-                  <label key={mode.value} className="multi-select-option">
-                    <input
-                      type="checkbox"
-                      checked={selectedPaymentModes.includes(mode.value)}
-                      onChange={() =>
-                        handleMultiSelectChange(
-                          mode.value,
-                          selectedPaymentModes,
-                          setSelectedPaymentModes
-                        )
-                      }
-                    />
-                    {mode.value}
-                  </label>
-                ))}
+                {[...(props.expensePaymentModes?.values || [])]
+                  .sort((a, b) => a.value.localeCompare(b.value))
+                  .map((mode) => (
+                    <label key={mode.value} className="multi-select-option">
+                      <input
+                        type="checkbox"
+                        checked={selectedPaymentModes.includes(mode.value)}
+                        onChange={() =>
+                          handleMultiSelectChange(
+                            mode.value,
+                            selectedPaymentModes,
+                            setSelectedPaymentModes
+                          )
+                        }
+                      />
+                      {mode.value}
+                    </label>
+                  ))}
               </div>
             )}
           </div>
@@ -654,8 +664,8 @@ export const ExpenseList = (props: ExpenseListProps) => {
             }}
           >
             <option value="">{t('SETTLEMENT_STATUS')}</option>
-            <option value="true">{t('SETTLED')}</option>
             <option value="false">{t('PENDING')}</option>
+            <option value="true">{t('SETTLED')}</option>
           </select>
         </FilterSection>
         <div className="right">
@@ -710,9 +720,9 @@ export const ExpenseList = (props: ExpenseListProps) => {
             <option value="expenseDate" selected>
               {t('EXPENSE_DATE')}
             </option>
-            <option value="requestedDate">{t('REQUESTED_DATE')}</option>
-            <option value="paymentSettled">{t('PAYMENT_DATE')}</option>
             <option value="created_at">{t('CREATED_DATE')}</option>
+            <option value="paymentSettled">{t('PAYMENT_DATE')}</option>
+            <option value="requestedDate">{t('REQUESTED_DATE')}</option>
           </select>
 
           <select
@@ -871,7 +881,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
               )}
             </TableList>
           )}
-          {totalPages && (
+          {expenses && expenses?.expenses?.length > 0 && totalPages && (
             <Pagination
               totalPages={totalPages}
               currentPage={currentPage}

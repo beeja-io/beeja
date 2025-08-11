@@ -2,10 +2,9 @@ package com.beeja.api.accounts.utils;
 
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Set;
 
 public class UserContext {
   @Getter @Setter private static String loggedInUserEmail;

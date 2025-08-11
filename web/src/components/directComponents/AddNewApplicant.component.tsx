@@ -2,7 +2,7 @@ import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { TextInput } from 'web-kit-components';
+import { TextInput } from '../../styles/InputStyles.style';
 import { RECRUITMENT_MODULE } from '../../constants/PermissionConstants';
 import { useUser } from '../../context/UserContext';
 import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
@@ -161,8 +161,28 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       setApiLoading(true);
       try {
         const response = await getOrganizationValuesByKey('jobTitles');
-        setJobTitles(response.data);
+        const data = response?.data;
+
+        if (!data || !Array.isArray(data.values)) {
+          setJobTitles({
+            organizationId: '',
+            key: 'jobTitles',
+            values: [],
+          });
+        } else {
+          setJobTitles(data);
+          if (data.values.length === 0) {
+            toast.info(
+              t('Job Titles is empty, Please update in Orginazation Settings')
+            );
+          }
+        }
       } catch {
+        setJobTitles({
+          organizationId: '',
+          key: 'jobTitles',
+          values: [],
+        });
         toast.error(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
       } finally {
         setApiLoading(false);
@@ -199,6 +219,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     id="firstName"
                     onChange={handleChange}
                     value={newApplicant.firstName}
+                    style={{ width: '400px' }}
                     required
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                       if (e.key === 'Enter') {
@@ -224,6 +245,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     name="lastName"
                     id="lastName"
                     onChange={handleChange}
+                    style={{ width: '400px' }}
                     required
                     autoComplete="off"
                     onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -252,6 +274,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     name="phoneNumber"
                     id="phoneNumber"
                     onChange={handleChange}
+                    style={{ width: '400px' }}
                     required
                     autoComplete="off"
                     maxLength={10}
@@ -278,6 +301,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     name="email"
                     id="email"
                     onChange={handleChange}
+                    style={{ width: '400px' }}
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$"
                     autoComplete="off"
                     required
@@ -298,6 +322,9 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     id="positionAppliedFor"
                     onChange={handleChange}
                     required
+                    disabled={
+                      !jobTitles?.values || jobTitles.values.length === 0
+                    }
                     onKeyPress={(event) => {
                       if (event.key === 'Enter') {
                         event.preventDefault();
@@ -305,11 +332,15 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     }}
                   >
                     <option value="">Select Position</option>
-                    {jobTitles?.values.map((position, index) => (
-                      <option key={index} value={position.value}>
-                        {position.value}
-                      </option>
-                    ))}
+                    {jobTitles?.values &&
+                      jobTitles?.values?.length > 0 &&
+                      [...(jobTitles?.values || [])]
+                        .sort((a, b) => a.value.localeCompare(b.value))
+                        .map((position, index) => (
+                          <option key={index} value={position.value}>
+                            {position.value}
+                          </option>
+                        ))}
                   </select>
                 </InputLabelContainer>
                 <InputLabelContainer>

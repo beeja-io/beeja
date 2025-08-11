@@ -1,5 +1,7 @@
 package com.beeja.api.employeemanagement.utils;
 
+import java.util.regex.Pattern;
+
 public class Constants {
   public static final String BEEJA = "BEEJA";
   public static final String UNAUTHORISED_TO_READ_OTHERS_DOCUMENTS =
@@ -46,10 +48,16 @@ public class Constants {
   public static final String PAGE_SIZE_INVALID = "Page size must be greater than 0.";
   public static final String PAGE_SIZE_EXCEEDS_LIMIT = "Page size must not exceed 100.";
 
-  public static final String DOC_URL_RESOURCE_NOT_FOUND = "https://beeja-dev.techatcore.com/";
+  public static final String DOC_URL_RESOURCE_NOT_FOUND = "https://beeja-dev.techatcore.com/"; 
 
   public static final String INVALID_PROFILE_PIC_FORMATS =
       "Please provide valid file formats (jpeg, jpg, png)";
   public static final String NO_NUMERIC_FOUND = "No numeric part found in empId : ";
-  public static final String ERROR_IN_EXTRACTING_EMP_NUMBER = "Failed to extract numeric employee number from empId: {}" ;
+  public static final String ERROR_IN_EXTRACTING_EMP_NUMBER =
+      "Failed to extract numeric employee number from empId: {}";
+  public static final String NO_lETTER_FOUND = "Employee ID must contain at least one letter";
+  public static final String EMPLOYEE_ID_ALREADY_EXISTS = "Employee ID already exists";
+  public static final Pattern CONTAINS_LETTER = Pattern.compile("[a-zA-Z]");
+  public static final Pattern CONTAINS_DIGIT = Pattern.compile("\\d");
+
 }

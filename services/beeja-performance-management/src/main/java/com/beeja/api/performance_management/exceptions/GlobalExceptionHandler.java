@@ -1,21 +1,20 @@
 package com.beeja.api.performance_management.exceptions;
 
+import static com.beeja.api.performance_management.utils.Constants.BEEJA;
+import static com.beeja.api.performance_management.utils.Constants.DOC_URL_RESOURCE_NOT_FOUND;
+
 import com.beeja.api.performance_management.enums.ErrorCode;
 import com.beeja.api.performance_management.enums.ErrorType;
 import com.beeja.api.performance_management.response.ErrorResponse;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.UUID;
-
-import static com.beeja.api.performance_management.utils.Constants.BEEJA;
-import static com.beeja.api.performance_management.utils.Constants.DOC_URL_RESOURCE_NOT_FOUND;
 
 @Slf4j
 @ControllerAdvice
@@ -71,7 +70,7 @@ public class GlobalExceptionHandler {
 
   @ExceptionHandler(DuplicateDataException.class)
   public ResponseEntity<ErrorResponse> handleDuplicateProductIdException(
-          DuplicateDataException e, WebRequest request) {
+      DuplicateDataException e, WebRequest request) {
     String[] errorMessage = convertStringToArray(e.getMessage());
     ErrorResponse errorResponse =
         new ErrorResponse(
@@ -88,7 +87,8 @@ public class GlobalExceptionHandler {
   @ExceptionHandler(Exception.class)
   public ResponseEntity<String> handleException(Exception e) {
     log.error(e.getMessage());
-    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error Occurred, please contact IT Support");
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body("Error Occurred, please contact IT Support");
   }
 
   private String[] convertStringToArray(String commaSeparatedString) {

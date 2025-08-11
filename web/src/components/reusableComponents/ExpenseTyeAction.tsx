@@ -32,6 +32,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
   const handleActionClick = (action: string) => {
     setSelectedOption(action);
     onActionClick(action, currentExpense);
+    setSelectedOption(null);
     setIsOpen(false);
   };
   const [isOpen, setIsOpen] = useState(false);
@@ -59,7 +60,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
 
   return (
     <ActionContainer className="dropdown-container" ref={dropdownRef}>
-      <ActionMenu onClick={openDropdown}>
+      <ActionMenu onClick={openDropdown} className="action-align">
         <ActionIcon />
       </ActionMenu>
       {isOpen && (

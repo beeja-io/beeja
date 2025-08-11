@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1")
 public class HelloWorld {
 
-    @GetMapping("/hello")
-    public String hello() {
-        return "Hello, " + UserContext.getLoggedInUserName();
-    }
+  @GetMapping("/hello")
+  public String hello() {
+    return "Hello, " + UserContext.getLoggedInUserName();
+  }
 }

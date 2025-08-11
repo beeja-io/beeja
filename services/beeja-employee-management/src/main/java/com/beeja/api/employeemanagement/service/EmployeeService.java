@@ -1,15 +1,15 @@
 package com.beeja.api.employeemanagement.service;
 
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
 import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.beeja.api.employeemanagement.response.GetLimitedEmployee;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface EmployeeService {
   Employee createEmployee(Map<String, Object> employee) throws Exception;
@@ -40,4 +40,6 @@ public interface EmployeeService {
   Employee uploadOrUpdateProfilePic(MultipartFile file, String employeeId) throws Exception;
 
   EmployeeValues getEmployeeValues() throws Exception;
+
+  List<EmployeeBasicInfo> getAllEmpInfo(List<String> designations);
 }

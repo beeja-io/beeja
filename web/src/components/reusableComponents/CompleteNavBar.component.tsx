@@ -13,6 +13,7 @@ import {
   SunSVG,
   TrendingUpSVG,
   TimeOffSVG
+  ProjectsSVG,
 } from '../../svgs/NavBarSvgs.svg';
 import {
   DarkTheme,
@@ -72,6 +73,7 @@ const CompleteNavBar = () => {
   const [activeTheme, setActiveTheme] = useState<'LIGHT' | 'DARK'>('LIGHT');
 
   const handleThemeClick = (theme: 'LIGHT' | 'DARK') => {
+    localStorage.setItem('theme', theme);
     setActiveTheme(theme);
     changeTheme(theme);
   };
@@ -261,6 +263,49 @@ const CompleteNavBar = () => {
                       />
                     )}
 
+                  {
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="#"
+                      tooltipName="Projects & Contracts"
+                      linkName="Projects & Contracts"
+                      svgIcon={
+                        <ProjectsSVG
+                          props={{
+                            isActive:
+                              openDropdown === 'projects & contracts' ||
+                              currentPath.startsWith('/clients') ||
+                              currentPath.startsWith('/projects') ||
+                              currentPath.startsWith('/contracts'),
+                          }}
+                        />
+                      }
+                      additionalSvgIcon={<ChevronDownSVG />}
+                      dropdownItems={[
+                        {
+                          name: 'Clients',
+                          link: '/clients/client-management',
+                        },
+                        {
+                          name: 'Projects',
+                          link: '/project-management',
+                        },
+                        {
+                          name: 'Contracts',
+                          link: '/contracts/contract-management',
+                        },
+                      ]}
+                      isDropdownOpen={openDropdown === 'Projects & Contracts'}
+                      setDropdownOpen={() => {
+                        setOpenDropdown((prev) =>
+                          prev === 'Projects & Contracts'
+                            ? null
+                            : 'Projects & Contracts'
+                        );
+                      }}
+                      hasAdditionalSvg
+                    />
+                  }
                   {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     hasFeature(
                       featureToggles.featureToggles,
@@ -458,8 +503,8 @@ const CompleteNavBar = () => {
                     additionalSvgIcon={<ChevronDownSVG />}
                     dropdownItems={[
                       {
-                        name: 'HOLIDAY_LIST',
-                        link: 'https://docs.google.com/spreadsheets/d/1bdXKR23gAemnA7vKfg_2OUmGm-alFE3v6Devo6b5nxM/edit?gid=387637465#gid=387637465',
+                        name: 'Beeja Docs',
+                        link: 'https://docs.beeja.io/',
                       },
                     ]}
                     isDropdownOpen={openDropdown === 'general'}

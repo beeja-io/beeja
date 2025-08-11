@@ -91,8 +91,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   };
 
   const fileId: string =
-    props.expense?.fileId && props.expense?.files && props.expense?.files[0].id
-      ? props.expense?.fileId && props.expense?.files[0].id
+    props.expense?.fileId && props.expense?.files && props.expense?.files[0]?.id
+      ? props.expense?.fileId && props.expense?.files[0]?.id
       : '';
   const [images, setImages] = useState(null);
   const [fileExtension, setFileExtension] = useState<string>();
@@ -241,7 +241,11 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         if (axios.isAxiosError(error)) {
           const { response } = error;
           if (response) {
-            if (response.data.startsWith('At least one receipt is required')) {
+            if (
+              response.data.message.startsWith(
+                'At least one receipt is required'
+              )
+            ) {
               setResponseErrorMessage(
                 'ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED'
               );
@@ -254,7 +258,9 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               );
               handleShowErrorMessage();
             } else if (response.status === 413) {
-              setResponseErrorMessage(response.data);
+              setResponseErrorMessage(
+                'File exceeds the 5 MB limit. Please upload a smaller file'
+              );
               handleShowErrorMessage();
             } else {
               setResponseErrorMessage('SOMETHING_ERROR_HAPPENED');
@@ -619,7 +625,11 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         if (axios.isAxiosError(error)) {
           const { response } = error;
           if (response) {
-            if (response.data.startsWith('At least one receipt is required')) {
+            if (
+              response.data.message.startsWith(
+                'At least one receipt is required'
+              )
+            ) {
               setResponseErrorMessage(
                 'ATLEAST_ONE_EXPENSE_RECEIPT_IS_REQUIRED'
               );
@@ -632,7 +642,9 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               );
               handleShowErrorMessage();
             } else if (response.status === 413) {
-              setResponseErrorMessage(response.data);
+              setResponseErrorMessage(
+                'File exceeds the 5 MB limit. Please upload a smaller file'
+              );
               handleShowErrorMessage();
             } else {
               setResponseErrorMessage('SOMETHING_ERROR_HAPPENED');
@@ -865,18 +877,21 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               ) : (
                 <>
                   <option value="">{t('SELECT_DEPARTMENT')}</option>
-                  {props.expenseDepartments.values.map((internalValue) => (
-                    <option
-                      key={internalValue.value}
-                      value={internalValue.value}
-                      selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                        props.expense?.department === internalValue.value
-                      }
-                    >
-                      {internalValue.value}
-                    </option>
-                  ))}
+                  {[...(props.expenseDepartments?.values || [])]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((internalValue) => (
+                      <option
+                        key={internalValue.value}
+                        value={internalValue.value}
+                        selected={
+                          (modeOfModal === 'edit' ||
+                            modeOfModal === 'preview') &&
+                          props.expense?.department === internalValue.value
+                        }
+                      >
+                        {internalValue.value}
+                      </option>
+                    ))}
                 </>
               )}
             </select>
@@ -910,18 +925,21 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               ) : (
                 <>
                   <option value="">{t('SELECT_TYPE')}</option>
-                  {props.expenseTypes.values?.map((type) => (
-                    <option
-                      key={type.value}
-                      value={type.value}
-                      selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                        props.expense?.type === type.value
-                      }
-                    >
-                      {type.value}
-                    </option>
-                  ))}
+                  {[...(props.expenseTypes?.values || [])]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((type) => (
+                      <option
+                        key={type.value}
+                        value={type.value}
+                        selected={
+                          (modeOfModal === 'edit' ||
+                            modeOfModal === 'preview') &&
+                          props.expense?.type === type.value
+                        }
+                      >
+                        {type.value}
+                      </option>
+                    ))}
                 </>
               )}
             </select>
@@ -951,18 +969,20 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               disabled={modeOfModal === 'preview'}
             >
               <option value="">{t('SELECT_MODE')}</option>
-              {props.expensePaymentModes?.values?.map((mode) => (
-                <option
-                  key={mode.value}
-                  value={mode.value}
-                  selected={
-                    (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                    props.expense?.modeOfPayment === mode.value
-                  }
-                >
-                  {mode.value}
-                </option>
-              ))}
+              {[...(props.expensePaymentModes?.values || [])]
+                .sort((a, b) => a.value.localeCompare(b.value))
+                .map((mode) => (
+                  <option
+                    key={mode.value}
+                    value={mode.value}
+                    selected={
+                      (modeOfModal === 'edit' || modeOfModal === 'preview') &&
+                      props.expense?.modeOfPayment === mode.value
+                    }
+                  >
+                    {mode.value}
+                  </option>
+                ))}
             </select>
           </InputLabelContainer>
           <InputLabelContainer>
@@ -1162,18 +1182,21 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               ) : (
                 <>
                   <option value="">{t('SELECT_CATEGORY')}</option>
-                  {props.expenseCategories?.values?.map((category) => (
-                    <option
-                      key={category.value}
-                      value={category.value}
-                      selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                        props.expense?.category === category.value
-                      }
-                    >
-                      {category.value}
-                    </option>
-                  ))}
+                  {[...(props.expenseCategories?.values || [])]
+                    .sort((a, b) => a.value.localeCompare(b.value))
+                    .map((category) => (
+                      <option
+                        key={category.value}
+                        value={category.value}
+                        selected={
+                          (modeOfModal === 'edit' ||
+                            modeOfModal === 'preview') &&
+                          props.expense?.category === category.value
+                        }
+                      >
+                        {category.value}
+                      </option>
+                    ))}
                 </>
               )}
             </select>

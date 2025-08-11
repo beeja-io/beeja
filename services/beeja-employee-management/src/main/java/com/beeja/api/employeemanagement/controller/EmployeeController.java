@@ -3,12 +3,16 @@ package com.beeja.api.employeemanagement.controller;
 import com.beeja.api.employeemanagement.annotations.HasPermission;
 import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
 import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.beeja.api.employeemanagement.service.EmployeeService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/v1/users")
 public class EmployeeController {
@@ -40,7 +40,7 @@ public class EmployeeController {
       @RequestParam(name = "department", required = false) String department,
       @RequestParam(name = "designation", required = false) String designation,
       @RequestParam(name = "employmentType", required = false) String employmentType,
-      @RequestParam(name = "status", defaultValue = "active") String status,
+      @RequestParam(name = "status", required = false) String status,
       @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
       @RequestParam(name = "pageSize", defaultValue = "10") int pageSize)
       throws Exception {
@@ -92,5 +92,12 @@ public class EmployeeController {
   @GetMapping("/employee-values")
   ResponseEntity<EmployeeValues> getEmployeeValues() throws Exception {
     return ResponseEntity.ok(employeeService.getEmployeeValues());
+  }
+
+  @GetMapping("/basic-info")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  ResponseEntity<List<EmployeeBasicInfo>> getAllEmployeeBasicInfo(
+          @RequestParam(name = "designations", required = false) List<String> designations){
+    return ResponseEntity.ok(employeeService.getAllEmpInfo(designations));
   }
 }

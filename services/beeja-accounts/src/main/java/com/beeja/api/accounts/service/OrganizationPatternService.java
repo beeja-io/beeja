@@ -2,7 +2,6 @@ package com.beeja.api.accounts.service;
 
 import com.beeja.api.accounts.model.Organization.OrganizationPattern;
 import com.beeja.api.accounts.requests.OrganizationPatternRequest;
-
 import java.util.List;
 
 public interface OrganizationPatternService {

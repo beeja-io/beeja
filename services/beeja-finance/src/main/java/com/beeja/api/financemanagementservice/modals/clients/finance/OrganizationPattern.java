@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrganizationPattern {
-    private String id;
-    private String patternType;
-    private String organizationId;
-    private int patternLength;
-    private String prefix;
-    private int initialSequence;
-    private String examplePattern;
-    private boolean active;
+  private String id;
+  private String patternType;
+  private String organizationId;
+  private int patternLength;
+  private String prefix;
+  private int initialSequence;
+  private String examplePattern;
+  private boolean active;
 }

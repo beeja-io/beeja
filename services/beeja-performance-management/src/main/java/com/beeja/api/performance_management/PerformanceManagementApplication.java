@@ -10,8 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableDiscoveryClient
 public class PerformanceManagementApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(PerformanceManagementApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(PerformanceManagementApplication.class, args);
+  }
 }

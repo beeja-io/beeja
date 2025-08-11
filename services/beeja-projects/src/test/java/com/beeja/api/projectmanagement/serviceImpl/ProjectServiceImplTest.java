@@ -1,6 +1,16 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.Project;
@@ -8,238 +18,276 @@ import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.repository.ProjectRepository;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.utils.UserContext;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.*;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 
 class ProjectServiceImplTest {
 
-    @InjectMocks
-    private ProjectServiceImpl projectService;
+  @InjectMocks private ProjectServiceImpl projectService;
 
-    @Mock
-    private ProjectRepository projectRepository;
+  @Mock private ProjectRepository projectRepository;
 
-    @Mock
-    private ClientRepository clientRepository;
+  @Mock private ClientRepository clientRepository;
 
-    private static Map<String, Object> orgMap;
-    private static MockedStatic<UserContext> userContextMock;
+  @Mock
+  private MongoTemplate mongoTemplate;
 
-    @BeforeAll
-    static void init() {
-        orgMap = new HashMap<>();
-        orgMap.put("id", "org123");
-    }
+  private static Map<String, Object> orgMap;
+  private static MockedStatic<UserContext> userContextMock;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        userContextMock = mockStatic(UserContext.class);
-        when(UserContext.getLoggedInUserOrganization()).thenReturn(orgMap);
-    }
+  @BeforeAll
+  static void init() {
+    orgMap = new HashMap<>();
+    orgMap.put("id", "org123");
+  }
 
-    @AfterEach
-    void closeStaticMock() {
-        userContextMock.close();
-    }
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
+    userContextMock = mockStatic(UserContext.class);
+    when(UserContext.getLoggedInUserOrganization()).thenReturn(orgMap);
+  }
 
-    @Test
-    void testCreateProjectForClient_success() {
-        ProjectRequest projectRequest = new ProjectRequest();
-        projectRequest.setName("Test Project");
-        projectRequest.setClientId("client123");
-        projectRequest.setDescription("Test Description");
+  @AfterEach
+  void closeStaticMock() {
+    userContextMock.close();
+  }
 
-        Client client = new Client();
-        client.setClientId("client123");
+  @Test
+  void testCreateProjectForClient_success() {
+    ProjectRequest projectRequest = new ProjectRequest();
+    projectRequest.setName("Test Project");
+    projectRequest.setClientId("client123");
+    projectRequest.setDescription("Test Description");
 
-        when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(client);
-        when(projectRepository.save(any(Project.class))).thenAnswer(invocation -> invocation.getArgument(0)); // no need to manually set description
+    Client client = new Client();
+    client.setClientId("client123");
 
-        Project result = projectService.createProjectForClient(projectRequest);
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
+        .thenReturn(client);
+    when(projectRepository.save(any(Project.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0)); // no need to manually set description
 
-        assertNotNull(result);
-        assertEquals("Test Project", result.getName());
-        assertEquals("Test Description", result.getDescription());
+    Project result = projectService.createProjectForClient(projectRequest);
 
-        verify(clientRepository, times(1)).findByClientIdAndOrganizationId(anyString(), anyString());
-        verify(projectRepository, times(1)).save(any(Project.class));
-    }
+    assertNotNull(result);
+    assertEquals("Test Project", result.getName());
+    assertEquals("Test Description", result.getDescription());
 
-    @Test
-    void testCreateProjectForClient_clientNotFound() {
-        ProjectRequest projectRequest = new ProjectRequest();
-        projectRequest.setName("Test Project");
-        projectRequest.setClientId("client123");
+    verify(clientRepository, times(1)).findByClientIdAndOrganizationId(anyString(), anyString());
+    verify(projectRepository, times(1)).save(any(Project.class));
+  }
 
-        when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(null);
+  @Test
+  void testCreateProjectForClient_clientNotFound() {
+    ProjectRequest projectRequest = new ProjectRequest();
+    projectRequest.setName("Test Project");
+    projectRequest.setClientId("client123");
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                () -> projectService.createProjectForClient(projectRequest));
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
+        .thenReturn(null);
 
-        assertTrue(exception.getMessage().contains("Client Not Found"));
-    }
+    ResourceNotFoundException exception =
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> projectService.createProjectForClient(projectRequest));
 
-    @Test
-    void testCreateProjectForClient_dbError() {
-        ProjectRequest projectRequest = new ProjectRequest();
-        projectRequest.setName("Test Project");
-        projectRequest.setClientId("client123");
+    assertTrue(exception.getMessage().contains("Client Not Found"));
+  }
 
-        Client client = new Client();
-        client.setClientId("client123");
+  @Test
+  void testCreateProjectForClient_dbError() {
+    ProjectRequest projectRequest = new ProjectRequest();
+    projectRequest.setName("Test Project");
+    projectRequest.setClientId("client123");
 
-        when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(client);
-        when(projectRepository.save(any(Project.class))).thenThrow(new RuntimeException("DB error"));
+    Client client = new Client();
+    client.setClientId("client123");
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                () -> projectService.createProjectForClient(projectRequest));
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
+        .thenReturn(client);
+    when(projectRepository.save(any(Project.class))).thenThrow(new RuntimeException("DB error"));
 
-        assertTrue(exception.getMessage().contains("Project Not Saved"));
-    }
+    ResourceNotFoundException exception =
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> projectService.createProjectForClient(projectRequest));
 
-    @Test
-    void testCreateProjectForClient_nullRequest_shouldThrowException() {
-        assertThrows(NullPointerException.class,
-                () -> projectService.createProjectForClient(null));
-    }
+    assertTrue(exception.getMessage().contains("Project Not Saved"));
+  }
 
-    @Test
-    void testGetProjectByIdAndClientId_success() {
-        Project project = new Project();
-        project.setProjectId("project123");
+  @Test
+  void testCreateProjectForClient_nullRequest_shouldThrowException() {
+    assertThrows(NullPointerException.class, () -> projectService.createProjectForClient(null));
+  }
 
-        when(projectRepository.findByProjectIdAndClientIdAndOrganizationId(anyString(), anyString(), anyString())).thenReturn(project);
+  @Test
+  void testGetProjectByIdAndClientId_success() {
+    Project project = new Project();
+    project.setProjectId("project123");
 
-        Project result = projectService.getProjectByIdAndClientId("project123", "client123");
+    when(projectRepository.findByProjectIdAndClientIdAndOrganizationId(
+            anyString(), anyString(), anyString()))
+        .thenReturn(project);
 
-        assertNotNull(result);
-        assertEquals("project123", result.getProjectId());
-    }
+    Project result = projectService.getProjectByIdAndClientId("project123", "client123");
 
-    @Test
-    void testGetProjectByIdAndClientId_projectNotFound() {
-        when(projectRepository.findByProjectIdAndClientIdAndOrganizationId(anyString(), anyString(), anyString())).thenReturn(null);
+    assertNotNull(result);
+    assertEquals("project123", result.getProjectId());
+  }
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                () -> projectService.getProjectByIdAndClientId("project123", "client123"));
+  @Test
+  void testGetProjectByIdAndClientId_projectNotFound() {
+    when(projectRepository.findByProjectIdAndClientIdAndOrganizationId(
+            anyString(), anyString(), anyString()))
+        .thenReturn(null);
 
-        assertTrue(exception.getMessage().contains("Project Not Found"));
-    }
+    ResourceNotFoundException exception =
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> projectService.getProjectByIdAndClientId("project123", "client123"));
 
-    @Test
-    void testGetProjectsByClientIdInOrganization_success() {
-        List<Project> projects = Arrays.asList(new Project(), new Project());
+    assertTrue(exception.getMessage().contains("Project Not Found"));
+  }
 
-        when(projectRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(projects);
+  @Test
+  void testGetProjectsByClientIdInOrganization_success() {
+    List<Project> projects = Arrays.asList(new Project(), new Project());
 
-        List<Project> result = projectService.getProjectsByClientIdInOrganization("client123");
+    when(projectRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
+        .thenReturn(projects);
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
-    }
+    List<Project> result = projectService.getProjectsByClientIdInOrganization("client123");
 
-    @Test
-    void testGetProjectsByClientIdInOrganization_projectsNotFound_returnsEmptyList() {
-        when(projectRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(List.of());
+    assertNotNull(result);
+    assertEquals(2, result.size());
+  }
 
-        List<Project> result = projectService.getProjectsByClientIdInOrganization("client123");
+  @Test
+  void testGetProjectsByClientIdInOrganization_projectsNotFound_returnsEmptyList() {
+    when(projectRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
+        .thenReturn(List.of());
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty(), "Expected an empty list when no projects are found");
-    }
+    List<Project> result = projectService.getProjectsByClientIdInOrganization("client123");
 
-    @Test
-    void testGetAllProjectsInOrganization_success() {
-        List<Project> projects = Arrays.asList(new Project(), new Project());
+    assertNotNull(result);
+    assertTrue(result.isEmpty(), "Expected an empty list when no projects are found");
+  }
 
-        when(projectRepository.findByOrganizationId(anyString())).thenReturn(projects);
+  @Test
+  void testGetAllProjectsInOrganization_success() {
+    List<Project> projects = Arrays.asList(new Project(), new Project());
 
-        List<Project> result = projectService.getAllProjectsInOrganization();
+    when(projectRepository.findByOrganizationId(anyString())).thenReturn(projects);
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
-    }
+    int pageNumber = 0;
+    int pageSize = 10;
+    String projectId = null;
+    ProjectStatus status = null;
 
-    @Test
-    void testGetAllProjectsInOrganization_noProjects_returnsEmptyList() {
-        when(projectRepository.findByOrganizationId(anyString())).thenReturn(List.of());
+    List<Project> result = projectService.getAllProjectsInOrganization(anyString(), eq(pageNumber), eq(pageSize), eq(projectId), eq(status));
 
-        List<Project> result = projectService.getAllProjectsInOrganization();
+    assertNotNull(result);
+    assertEquals(2, result.size());
+  }
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty(), "Expected empty list when no projects found");
-    }
+@Test
+void testGetAllProjectsInOrganization_noProjects_returnsEmptyList() {
+  String organizationId = "org123";
+  int pageNumber = 1;
+  int pageSize = 5;
+  String projectId = "proj001";
+  ProjectStatus status = ProjectStatus.ACTIVE;
 
-    @Test
-    void testUpdateProjectByProjectId_success() {
-        ProjectRequest projectRequest = new ProjectRequest();
-        projectRequest.setName("Updated Project");
-        projectRequest.setDescription("Updated Desc");
+  Project project = new Project();
+  project.setProjectId(projectId);
+  project.setOrganizationId(organizationId);
+  project.setStatus(status);
 
-        Project existingProject = new Project();
-        existingProject.setProjectId("project123");
+  List<Project> expectedProjects = List.of(project);
 
-        when(projectRepository.findByProjectIdAndOrganizationId(anyString(), anyString())).thenReturn(existingProject);
-        when(projectRepository.save(any(Project.class))).thenAnswer(invocation -> invocation.getArgument(0));
+  when(mongoTemplate.find(any(Query.class), eq(Project.class)))
+          .thenReturn(expectedProjects);
 
-        Project result = projectService.updateProjectByProjectId(projectRequest, "project123");
+  List<Project> actualProjects = projectService.getAllProjectsInOrganization(
+          organizationId, pageNumber, pageSize, projectId, status);
 
-        assertNotNull(result);
-        assertEquals("Updated Project", result.getName());
-        assertEquals("Updated Desc", result.getDescription());
+  assertNotNull(actualProjects);
+  assertEquals(1, actualProjects.size());
+  assertEquals(projectId, actualProjects.get(0).getProjectId());
 
-        verify(projectRepository, times(1)).findByProjectIdAndOrganizationId(anyString(), anyString());
-        verify(projectRepository, times(1)).save(any(Project.class));
-    }
+  ArgumentCaptor<Query> queryCaptor = ArgumentCaptor.forClass(Query.class);
+  verify(mongoTemplate).find(queryCaptor.capture(), eq(Project.class));
+  Query capturedQuery = queryCaptor.getValue();
 
+  assertTrue(capturedQuery.getQueryObject().toString().contains("organizationId"));
+  assertTrue(capturedQuery.getQueryObject().toString().contains("proj001"));
+  assertTrue(capturedQuery.getQueryObject().toString().contains("ACTIVE"));
+}
 
-    @Test
-    void testUpdateProjectByProjectId_projectNotFound() {
-        when(projectRepository.findByProjectIdAndOrganizationId(anyString(), anyString())).thenReturn(null);
+  @Test
+  void testUpdateProjectByProjectId_success() {
+    ProjectRequest projectRequest = new ProjectRequest();
+    projectRequest.setName("Updated Project");
+    projectRequest.setDescription("Updated Desc");
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                () -> projectService.updateProjectByProjectId(new ProjectRequest(), "project123"));
+    Project existingProject = new Project();
+    existingProject.setProjectId("project123");
 
-        assertTrue(exception.getMessage().contains("Project Not Found"));
-    }
+    when(projectRepository.findByProjectIdAndOrganizationId(anyString(), anyString()))
+        .thenReturn(existingProject);
+    when(projectRepository.save(any(Project.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0));
 
-    @Test
-    void testUpdateProjectByProjectId_dbError() {
-        ProjectRequest projectRequest = new ProjectRequest();
-        projectRequest.setName("Updated Project");
+    Project result = projectService.updateProjectByProjectId(projectRequest, "project123");
 
-        Project existingProject = new Project();
-        existingProject.setProjectId("project123");
+    assertNotNull(result);
+    assertEquals("Updated Project", result.getName());
+    assertEquals("Updated Desc", result.getDescription());
 
-        when(projectRepository.findByProjectIdAndOrganizationId(anyString(), anyString())).thenReturn(existingProject);
-        when(projectRepository.save(any(Project.class))).thenThrow(new RuntimeException("DB error"));
+    verify(projectRepository, times(1)).findByProjectIdAndOrganizationId(anyString(), anyString());
+    verify(projectRepository, times(1)).save(any(Project.class));
+  }
 
-        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                () -> projectService.updateProjectByProjectId(projectRequest, "project123"));
+  @Test
+  void testUpdateProjectByProjectId_projectNotFound() {
+    when(projectRepository.findByProjectIdAndOrganizationId(anyString(), anyString()))
+        .thenReturn(null);
 
-        assertTrue(exception.getMessage().contains("Project Not Updated"));
-    }
+    ResourceNotFoundException exception =
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> projectService.updateProjectByProjectId(new ProjectRequest(), "project123"));
+
+    assertTrue(exception.getMessage().contains("Project Not Found"));
+  }
+
+  @Test
+  void testUpdateProjectByProjectId_dbError() {
+    ProjectRequest projectRequest = new ProjectRequest();
+    projectRequest.setName("Updated Project");
+
+    Project existingProject = new Project();
+    existingProject.setProjectId("project123");
+
+    when(projectRepository.findByProjectIdAndOrganizationId(anyString(), anyString()))
+        .thenReturn(existingProject);
+    when(projectRepository.save(any(Project.class))).thenThrow(new RuntimeException("DB error"));
+
+    ResourceNotFoundException exception =
+        assertThrows(
+            ResourceNotFoundException.class,
+            () -> projectService.updateProjectByProjectId(projectRequest, "project123"));
+
+    assertTrue(exception.getMessage().contains("Project Not Updated"));
+  }
 }

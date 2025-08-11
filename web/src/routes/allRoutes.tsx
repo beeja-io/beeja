@@ -1,10 +1,10 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-// import DashboardScreen from '../screens/DashboardScreen.screen';
 import MyProfileScreen from '../screens/MyProfileScreen.screen';
 import EmployeeList from '../screens/EmployeeList.screen';
 import BulkPayslip from '../screens/BulkPayslipScreen.screen';
 import Error404Screen from '../screens/Error404Screen.screen';
 import ExpenseManagement from '../screens/ExpenseManagement.screen';
+import ClientManagement from '../screens/ClientManagement.screen';
 import { useUser } from '../context/UserContext';
 import LoanManagementScreen from '../screens/LoanManagementScreen.screen';
 import {
@@ -28,6 +28,15 @@ import AddNewApplicant from '../components/directComponents/AddNewApplicant.comp
 import EditApplicant from '../components/directComponents/EditApplicant.component';
 import ReferEmployeeScreen from '../screens/ReferEmployeeScreen.screen';
 import TimeSheet from '../screens/TimeSheet';
+import ClientDetailsScreen from '../screens/ClientDetailsScreen.screen';
+import ClientListWrapper from '../screens/ClientListWrapper';
+import ProjectManagement from '../screens/ProjectManagement.screen';
+import ContractManagement from '../screens/ContractManagement.screen';
+import ProjectListWrapper from '../screens/ProjectListWrapper';
+import ProjectDetailsSCreen from '../screens/ProjectDetailsScreen.screen';
+import ContractDetailsScreen from '../screens/ContractDetailedScreen';
+import ContractListWrapper from '../screens/ContractListWrapper';
+
 const AllRoutes = () => {
   return (
     <Routes>
@@ -80,6 +89,85 @@ const AllRoutes = () => {
           </CustomRoute>
         }
       />
+
+      <Route path="/clients/client-management" element={<ClientManagement />}>
+        <Route
+          index
+          element={
+            <CustomRoute
+              permission={INVENTORY_MODULE.READ_DEVICE}
+              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+            >
+              <ClientListWrapper />
+            </CustomRoute>
+          }
+        />
+        <Route
+          path=":id"
+          element={
+            <CustomRoute
+              permission={INVENTORY_MODULE.READ_DEVICE}
+              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+            >
+              <ClientDetailsScreen />
+            </CustomRoute>
+          }
+        />
+      </Route>
+
+      <Route path="/project-management" element={<ProjectManagement />}>
+        <Route
+          index
+          element={
+            <CustomRoute
+              permission={INVENTORY_MODULE.READ_DEVICE}
+              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+            >
+              <ProjectListWrapper />
+            </CustomRoute>
+          }
+        />
+        <Route
+          path=":projectId/:clientId"
+          element={
+            <CustomRoute
+              permission={INVENTORY_MODULE.READ_DEVICE}
+              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+            >
+              <ProjectDetailsSCreen />
+            </CustomRoute>
+          }
+        />
+      </Route>
+
+      <Route
+        path="/contracts/contract-management"
+        element={<ContractManagement />}
+      >
+        <Route
+          index
+          element={
+            <CustomRoute
+              permission={INVENTORY_MODULE.READ_DEVICE}
+              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+            >
+              <ContractListWrapper />
+            </CustomRoute>
+          }
+        />
+        <Route
+          path=":id"
+          element={
+            <CustomRoute
+              permission={INVENTORY_MODULE.READ_DEVICE}
+              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+            >
+              <ContractDetailsScreen />
+            </CustomRoute>
+          }
+        />
+      </Route>
+
       <Route
         path="/payroll/deductions-loans"
         element={

@@ -11,7 +11,7 @@ import {
   TableHead,
   TableBodyRow,
 } from '../../styles/DocumentTabStyles.style';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CalenderIcon } from '../../svgs/DocumentTabSvgs.svg';
 import { LoanAction } from './LoanListAction';
 import { useUser } from '../../context/UserContext';
@@ -21,6 +21,7 @@ import LoanPreview from '../directComponents/LoanPreview.component';
 import { Loan } from '../../entities/LoanEntity';
 import { LOAN_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 type LoanListViewProps = {
   handleIsApplyLoanScreen: () => void;
@@ -30,18 +31,13 @@ type LoanListViewProps = {
   setTotalApplicants: (total: number) => void;
   loansList: Loan[];
   loading: boolean;
-  fetchLoans?: () => void; // optional
+  fetchLoans: () => void;
 };
 
 const LoanListView = (props: LoanListViewProps) => {
   const { user } = useUser();
   const { t } = useTranslation();
-  const {
-    handleIsApplyLoanScreen,
-    loansList,
-    loading,
-    fetchLoans = () => {}, // 👈 default fallback function
-  } = props;
+  const { handleIsApplyLoanScreen, loansList, loading, fetchLoans } = props;
 
   const [isLoanPreviewModalOpen, setIsLoanPreviewModalOpen] = useState(false);
   const [loanToBePreviewed, setIsLoanToBePreviewed] = useState<Loan>();
@@ -81,6 +77,20 @@ const LoanListView = (props: LoanListViewProps) => {
 
   const Actions = [{ title: 'Approve' }, { title: 'Reject' }];
 
+  useEffect(() => {
+    fetchLoans();
+  }, [user, fetchLoans]);
+
+  useEffect(() => {
+    if (isLoanPreviewModalOpen) {
+      disableBodyScroll();
+    } else {
+      enableBodyScroll();
+    }
+    return () => {
+      enableBodyScroll();
+    };
+  }, [isLoanPreviewModalOpen]);
   return (
     <>
       <PayrollMainContainer>

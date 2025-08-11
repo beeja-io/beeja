@@ -31,9 +31,7 @@ public class Employee {
   @Id private String id;
   private String beejaAccountId;
   private String employeeId;
-  @JsonIgnore
-  private int employeeNumber;
-  private String employmentType;
+  @JsonIgnore private int employeeNumber;
   private String organizationId;
   private Address address;
   private PersonalInformation personalInformation;
