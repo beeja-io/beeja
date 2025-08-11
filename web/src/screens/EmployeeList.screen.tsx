@@ -58,6 +58,7 @@ import { toast } from 'sonner';
 import CopyPasswordPopup from '../components/directComponents/CopyPasswordPopup.component';
 import { CreatedUserEntity } from '../entities/CreatedUserEntity';
 import { OrgDefaults } from '../entities/OrgDefaultsEntity';
+import { disableBodyScroll, enableBodyScroll } from '../constants/Utility';
 
 const EmployeeList = () => {
   const { t } = useTranslation();
@@ -283,13 +284,13 @@ const EmployeeList = () => {
   };
   useEffect(() => {
     if (isCreateEmployeeModelOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
 
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isCreateEmployeeModelOpen]);
   return (

@@ -82,9 +82,9 @@ const ClientList = ({
               <tbody>
                 {isLoading ? (
                   <>
-                    {[...Array(6).keys()].map((rowIndex) => (
+                    {[...Array(6).keys()]?.map((rowIndex) => (
                       <TableBodyRow key={rowIndex}>
-                        {[...Array(4).keys()].map((cellIndex) => (
+                        {[...Array(4).keys()]?.map((cellIndex) => (
                           <td key={cellIndex}>
                             <div className="skeleton skeleton-text">&nbsp;</div>
                           </td>
@@ -93,19 +93,19 @@ const ClientList = ({
                     ))}
                   </>
                 ) : (
-                  clientList.map((client, index) => (
+                  clientList?.map((client, index) => (
                     <TableBodyRow key={index}>
-                      <td onClick={() => handleClientClick(client.clientId)}>
-                        {client.clientId ?? '-'}
+                      <td onClick={() => handleClientClick(client?.clientId)}>
+                        {client?.clientId ?? '-'}
                       </td>
-                      <td onClick={() => handleClientClick(client.clientId)}>
-                        {client.clientName
-                          ? capitalizeFirstLetter(client.clientName)
+                      <td onClick={() => handleClientClick(client?.clientId)}>
+                        {client?.clientName
+                          ? capitalizeFirstLetter(client?.clientName)
                           : '-'}
                       </td>
-                      <td onClick={() => handleClientClick(client.clientId)}>
-                        {client.clientType
-                          ? removeUnderScore(client.clientType)
+                      <td onClick={() => handleClientClick(client?.clientId)}>
+                        {client?.clientType
+                          ? removeUnderScore(client?.clientType)
                           : '-'}
                       </td>
 

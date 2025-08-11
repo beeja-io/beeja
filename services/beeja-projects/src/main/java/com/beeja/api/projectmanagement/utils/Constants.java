@@ -63,6 +63,13 @@ public class Constants {
   public static final String CONTRACT_NOT_FOUND = "Contract not found with given contractId";
   public static final String ERROR_SAVING_CONTRACT = "Failed to save contract";
   public static final String ERROR_UPDATING_CONTRACT = "Failed to update contract";
+  public static final String FEIGN_CLIENT_ERROR = "Failed to fetch employee names: {}";
+
+  //=========== Contract Log Messages =======
+
+  public static final String CONTRACT_FETCHING = "Fetching contract with ID: {}";
+  public static final String RESOURCES_SIZE = "Successfully fetched {} employee names";
+  public static final String NO_RESOURCE_FOUND = "No resource allocations found for contract ID: {}";
 
   // ========== File Service Errors ==========
   public static final String ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE =

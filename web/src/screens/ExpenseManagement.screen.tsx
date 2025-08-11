@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { getOrganizationValuesByKey } from '../service/axiosInstance';
 import { OrganizationValues } from '../entities/OrgValueEntity';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import { disableBodyScroll, enableBodyScroll } from '../constants/Utility';
 
 const ExpenseManagement = () => {
   const navigate = useNavigate();
@@ -99,12 +100,12 @@ const ExpenseManagement = () => {
   }, []);
   useEffect(() => {
     if (isCreateModalOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isCreateModalOpen]);
   return (
