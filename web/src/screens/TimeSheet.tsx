@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   TimesheetContainer,
   WeekContainer,
@@ -10,8 +10,10 @@ import {
   AddButton,
   Filters,
   Dropdown,
-  WeekSubContainer, WeekTitle,
-  WeeklyLogs, TotalWeekHoursContainer,
+  WeekSubContainer,
+  WeekTitle,
+  WeeklyLogs,
+  TotalWeekHoursContainer,
   MonthHoursContainer,
   MonthBox,
   HoursBox,
@@ -19,27 +21,33 @@ import {
   DayText,
   LoggedHours,
   DaysContainer,
-  SingleRowContainer, PaginationContainer, PaginationButton,
+  SingleRowContainer,
+  PaginationContainer,
+  PaginationButton,
   StyledTable,
   CloseButton,
   ButtonGroup,
   ButtonWrapper,
   SelectInput,
-  Input
-} from "../styles/TimeSheetStyles.style";
+  Input,
+} from '../styles/TimeSheetStyles.style';
 // import { getMonthLogs, getWeekDate, PostLogHours } from "../service/axiosInstance";
-import { ArrowDownSVG, EditWhitePenSVG } from "../svgs/CommonSvgs.svs";
-import { format, subMonths, addMonths } from "date-fns";
-import { useNavigate } from "react-router-dom";
+import { ArrowDownSVG, EditWhitePenSVG } from '../svgs/CommonSvgs.svs';
+import { format, subMonths, addMonths } from 'date-fns';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useUser } from '../context/UserContext';
-import { deleteLog, fetchMonthLogs, PostLogHours, updateLog } from "../service/axiosInstance";
-import LogAction from "../components/reusableComponents/LogAction";
-import SpinAnimation from "../components/loaders/SprinAnimation.loader";
-import { toast } from "sonner";
-import CenterModal from "../components/reusableComponents/CenterModal.component";
+import {
+  deleteLog,
+  fetchMonthLogs,
+  PostLogHours,
+  updateLog,
+} from '../service/axiosInstance';
+import LogAction from '../components/reusableComponents/LogAction';
+import SpinAnimation from '../components/loaders/SprinAnimation.loader';
+import { toast } from 'sonner';
+import CenterModal from '../components/reusableComponents/CenterModal.component';
 interface DailyLog {
-  Id: string
+  Id: string;
   logDate: string;
   projectId: string;
   description: string;
@@ -121,51 +129,52 @@ const Timesheet = () => {
   function adaptApiResponseToExpectedFormat(apiResponse: any): WeekLog[] {
     const weeks: WeekLog[] = [];
 
-    Object.entries(apiResponse).forEach(([weekKey, weekData]: [string, any]) => {
-      const weekNumber = parseInt(weekKey.replace('week-', ''), 10);
-      const startOfWeek = weekData.weekStartDate;
-      const endOfWeek = weekData.weekEndDate;
-      const totalWeekHours = weekData.totalHours || 0;
+    Object.entries(apiResponse).forEach(
+      ([weekKey, weekData]: [string, any]) => {
+        const weekNumber = parseInt(weekKey.replace('week-', ''), 10);
+        const startOfWeek = weekData.weekStartDate;
+        const endOfWeek = weekData.weekEndDate;
+        const totalWeekHours = weekData.totalHours || 0;
 
-      // Group logs by day (logDate) with sum of loggedHours per log
-      const dailyLogsMap: Record<string, DailyLog[]> = {};
+        // Group logs by day (logDate) with sum of loggedHours per log
+        const dailyLogsMap: Record<string, DailyLog[]> = {};
 
-      weekData.timesheets.forEach((ts: any) => {
-        const logDate = ts.startDate.slice(0, 10); // YYYY-MM-DD
-        const loggedHours = ts.timeInMinutes / 60; // convert minutes to hours
+        weekData.timesheets.forEach((ts: any) => {
+          const logDate = ts.startDate.slice(0, 10); // YYYY-MM-DD
+          const loggedHours = ts.timeInMinutes / 60; // convert minutes to hours
 
-        const dailyLog: DailyLog = {
+          const dailyLog: DailyLog = {
+            logDate,
+            loggedHours,
+            Id: ts.id,
+            projectId: ts.projectId || '',
+            contractId: ts.contractId || '',
+            description: ts.description || '',
+          };
 
-          logDate,
-          loggedHours,
-          Id: ts.id,
-          projectId: ts.projectId || "",
-          contractId: ts.contractId || "",
-          description: ts.description || "",
-        };
+          if (!dailyLogsMap[logDate]) {
+            dailyLogsMap[logDate] = [];
+          }
+          dailyLogsMap[logDate].push(dailyLog);
+        });
 
-        if (!dailyLogsMap[logDate]) {
-          dailyLogsMap[logDate] = [];
-        }
-        dailyLogsMap[logDate].push(dailyLog);
-      });
+        // Flatten daily logs into one array (optional: you can keep grouped if needed)
+        // Here we combine multiple logs on the same day as separate entries.
+        const dailyLogs = Object.values(dailyLogsMap).flat();
 
-      // Flatten daily logs into one array (optional: you can keep grouped if needed)
-      // Here we combine multiple logs on the same day as separate entries.
-      const dailyLogs = Object.values(dailyLogsMap).flat();
+        // Extract year from startOfWeek
+        const year = new Date(startOfWeek).getFullYear();
 
-      // Extract year from startOfWeek
-      const year = new Date(startOfWeek).getFullYear();
-
-      weeks.push({
-        startOfWeek,
-        endOfWeek,
-        totalWeekHours,
-        weekNumber,
-        year,
-        dailyLogs,
-      });
-    });
+        weeks.push({
+          startOfWeek,
+          endOfWeek,
+          totalWeekHours,
+          weekNumber,
+          year,
+          dailyLogs,
+        });
+      }
+    );
 
     // Sort weeks by weekNumber ascending
     weeks.sort((a, b) => a.weekNumber - b.weekNumber);
@@ -173,36 +182,36 @@ const Timesheet = () => {
     return weeks;
   }
 
-
-
   const [reloadFlag, setReloadFlag] = useState(false);
   const [expandedWeeks, setExpandedWeeks] = useState<ExpandedWeeksState>({});
   const [expandedDays, setExpandedDays] = useState<ExpandedDaysState>({});
   const [dailyLogs, setDailyLogs] = useState<DailyLogsState>({});
 
-  const [selectedProject, setSelectedProject] = useState<string>("All");
-  const [selectedContract, setSelectedContract] = useState<string>("All");
+  const [selectedProject, setSelectedProject] = useState<string>('All');
+  const [selectedContract, setSelectedContract] = useState<string>('All');
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
 
   const [logEntries, setLogEntries] = useState<any[]>([
     {
-      projectId: "",
-      contractId: "",
-      loghour: "",
-      description: "",
+      projectId: '',
+      contractId: '',
+      loghour: '',
+      description: '',
     },
   ]);
 
   function getWeekNumber(date: Date): number {
     const startOfYear = new Date(date.getFullYear(), 0, 1);
-    const days = Math.floor((date.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
+    const days = Math.floor(
+      (date.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000)
+    );
     return Math.ceil((days + startOfYear.getDay() + 1) / 7);
   }
 
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
   // const [currentWeekNumber, setCurrentWeekNumber] = useState(getWeekNumber(new Date()));
-  const [monthLogs, setMonthLogs] = useState(" ");
+  const [monthLogs, setMonthLogs] = useState(' ');
   const [totalMonthlyHours, setTotalMonthlyHours] = useState<number>(0);
 
   const generateWeekDays = (startDate: string) => {
@@ -211,11 +220,13 @@ const Timesheet = () => {
       let day = new Date(startDate);
       day.setDate(day.getDate() + i);
       days.push({
-        dateISO: day.toISOString().split("T")[0],
-        dayName: format(day, "EEE"),
-        formattedDate: format(day, "dd/MM/yy"),
+        dateISO: day.toISOString().split('T')[0],
+        dayName: format(day, 'EEE'),
+        formattedDate: format(day, 'dd/MM/yy'),
         isWeekend: day.getDay() === 6 || day.getDay() === 0,
-        isToday: day.toISOString().split("T")[0] === new Date().toISOString().split("T")[0],
+        isToday:
+          day.toISOString().split('T')[0] ===
+          new Date().toISOString().split('T')[0],
       });
     }
     return days;
@@ -225,11 +236,12 @@ const Timesheet = () => {
     setSelectedProject(event.target.value);
   };
 
-  const handleContractFilter = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleContractFilter = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setSelectedContract(event.target.value);
   };
 
-  const { user } = useUser();
   const handlePreviousMonth = () => {
     const newMonth = subMonths(currentMonth, 1);
     setCurrentMonth(newMonth);
@@ -250,7 +262,6 @@ const Timesheet = () => {
       // Set it to state
       setMonthLogs(readableMonth);
 
-
       const rawWeekData = res?.data?.weekTimesheets;
       if (!rawWeekData) {
         setWeeksData(getEmptyWeeksForMonth(currentMonth));
@@ -269,7 +280,6 @@ const Timesheet = () => {
   useEffect(() => {
     fetchMonthData();
   }, [currentMonth, reloadFlag]);
-
 
   const handleWeekClick = (
     weekNumber: number,
@@ -315,16 +325,15 @@ const Timesheet = () => {
       loghour: log.loggedHours,
       projectId: log.projectId,
       contractId: log.contractId,
-      description: log.description || "",
+      description: log.description || '',
     });
   };
-
 
   const handleDelete = async (id: string) => {
     try {
       setLoading(true);
       await deleteLog(id);
-      toast.success("Log deleted successfully");
+      toast.success('Log deleted successfully');
       setReloadFlag((prev) => !prev);
       // Remove deleted log locally
       setDailyLogs((prevLogs) => {
@@ -335,16 +344,19 @@ const Timesheet = () => {
         return updatedLogs;
       });
     } catch (error) {
-      toast.error("Failed to delete log");
+      toast.error('Failed to delete log');
     } finally {
       setLoading(false);
     }
   };
 
+  const [addButtonClicked, setAddButtonClicked] = useState<any>(false);
 
-  const [addButtonClicked, setAddButtonClicked] = useState<any>(false)
-
-  const handleInputChange = (index: number, field: keyof LogEntry, value: string) => {
+  const handleInputChange = (
+    index: number,
+    field: keyof LogEntry,
+    value: string
+  ) => {
     setLogEntries((prevEntries: any) => {
       const updatedEntries = [...prevEntries];
       updatedEntries[index] = { ...updatedEntries[index], [field]: value };
@@ -354,61 +366,67 @@ const Timesheet = () => {
 
   const addButtonEntries = () => {
     return (
-      logEntries.length > 0 &&
-      <FormContainer>
-        {Array.isArray(logEntries) &&
-          logEntries.map((entry, index) => (
-            <div key={index}>
-              <div className="Form_Row">
-                <select
-                  value={entry.projectId}
-                  onChange={(e) => handleInputChange(index, "projectId", e.target.value)}
-                >
-                  <option value="">Select Project</option>
-                  <option value="Beeja">Beeja</option>
-                  <option value="Project 2">Project 2</option>
-                  <option value="PROJ002">PROJ002</option>
-                </select>
-                <select
-                  value={entry.contractId}
-                  onChange={(e) => handleInputChange(index, "contractId", e.target.value)}
-                >
-                  <option value="">Select Contract</option>
-                  <option value="Contract ">Contract </option>
-                  <option value="Contract 2">Contract 2</option>
-                  <option value="CON002">CON002</option>
-                </select>
-                <select
-                  value={entry.loghour}
-                  onChange={(e) => handleInputChange(index, "loghour", e.target.value)}
-                >
-                  {[...Array(16)].map((_, i) => {
-                    const value = (i + 1) * 0.5;
-                    return (
-                      <option key={value} value={`${value}`}>
-                        {value} hrs
-                      </option>
-                    );
-                  })}
-                </select>
-                <input
-                  placeholder="Description"
-                  value={entry.description || ""}
-                  onChange={(e) => handleInputChange(index, "description", e.target.value)}
-                />
-                <div>
-                  {!addButtonClicked && <EditWhitePenSVG />}
+      logEntries.length > 0 && (
+        <FormContainer>
+          {Array.isArray(logEntries) &&
+            logEntries.map((entry, index) => (
+              <div key={index}>
+                <div className="Form_Row">
+                  <select
+                    value={entry.projectId}
+                    onChange={(e) =>
+                      handleInputChange(index, 'projectId', e.target.value)
+                    }
+                  >
+                    <option value="">Select Project</option>
+                    <option value="Beeja">Beeja</option>
+                    <option value="Project 2">Project 2</option>
+                    <option value="PROJ002">PROJ002</option>
+                  </select>
+                  <select
+                    value={entry.contractId}
+                    onChange={(e) =>
+                      handleInputChange(index, 'contractId', e.target.value)
+                    }
+                  >
+                    <option value="">Select Contract</option>
+                    <option value="Contract ">Contract </option>
+                    <option value="Contract 2">Contract 2</option>
+                    <option value="CON002">CON002</option>
+                  </select>
+                  <select
+                    value={entry.loghour}
+                    onChange={(e) =>
+                      handleInputChange(index, 'loghour', e.target.value)
+                    }
+                  >
+                    {[...Array(16)].map((_, i) => {
+                      const value = (i + 1) * 0.5;
+                      return (
+                        <option key={value} value={`${value}`}>
+                          {value} hrs
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <input
+                    placeholder="Description"
+                    value={entry.description || ''}
+                    onChange={(e) =>
+                      handleInputChange(index, 'description', e.target.value)
+                    }
+                  />
+                  <div>{!addButtonClicked && <EditWhitePenSVG />}</div>
                 </div>
+                <ButtonWrapper>
+                  <SaveButton onClick={handleSaveLogEntries}>Save</SaveButton>
+                </ButtonWrapper>
               </div>
-              <ButtonWrapper>
-                <SaveButton onClick={handleSaveLogEntries}>Save</SaveButton>
-              </ButtonWrapper>
-            </div>
-          ))}
-      </FormContainer>
-
+            ))}
+        </FormContainer>
+      )
     );
-  }
+  };
 
   const handleSaveLogEntries = async () => {
     const newEntries = logEntries.map((entry) => {
@@ -442,11 +460,10 @@ const Timesheet = () => {
         ],
       }));
       setLoading(false);
-      toast.success("Log Added Successfully")
+      toast.success('Log Added Successfully');
       return response;
     } catch (error) {
       setLoading(false);
-
     }
   };
 
@@ -461,7 +478,7 @@ const Timesheet = () => {
     logDate: string;
     index: number;
     loghour: number;
-    projectId: string
+    projectId: string;
     contractId: string;
     description: string;
   } | null>(null);
@@ -469,7 +486,8 @@ const Timesheet = () => {
   const handleSaveClick = async () => {
     if (!editingLog) return;
 
-    const { logDate, projectId, index, loghour, contractId, description } = editingLog;
+    const { logDate, projectId, index, loghour, contractId, description } =
+      editingLog;
     const log = dailyLogs[logDate][index];
 
     const updatedData = {
@@ -484,7 +502,7 @@ const Timesheet = () => {
       setLoading(true);
       await updateLog(log.Id, updatedData); // Make sure updateLog is defined and imported
       setLoading(false);
-      toast.success("Log updated");
+      toast.success('Log updated');
       setReloadFlag((prev) => !prev);
 
       // Update local state
@@ -502,14 +520,12 @@ const Timesheet = () => {
 
       setEditingLog(null);
     } catch (err) {
-      toast.error("Update failed");
+      toast.error('Update failed');
       setLoading(false);
     }
   };
 
-
   return (
-
     <>
       {loading ? (
         <SpinAnimation /> // <-- Replace with your actual spinner or loader
@@ -523,16 +539,24 @@ const Timesheet = () => {
           </div>
           <div className="TimesheetSubContainer">
             <div className="TimeSheet_Heading">
-              <p className="TimeSheetTitle underline">{t('List of Time Sheets')}</p>
+              <p className="TimeSheetTitle underline">
+                {t('List of Time Sheets')}
+              </p>
             </div>
             <div className="Filter_Container">
               <Filters>
-                <Dropdown onChange={handleProjectFilter} value={selectedProject}>
+                <Dropdown
+                  onChange={handleProjectFilter}
+                  value={selectedProject}
+                >
                   <option value="All">All Projects</option>
                   <option value="Project A">Project A</option>
                   <option value="Project B">Project B</option>
                 </Dropdown>
-                <Dropdown onChange={handleContractFilter} value={selectedContract}>
+                <Dropdown
+                  onChange={handleContractFilter}
+                  value={selectedContract}
+                >
                   <option value="All">All Contracts</option>
                   <option value="Contract1">Contract1</option>
                   <option value="Contract2">Contract2</option>
@@ -552,47 +576,84 @@ const Timesheet = () => {
               const isActive = expandedWeeks[weekData.weekNumber] || false;
               return (
                 <WeekContainer key={weekData.weekNumber}>
-                  <WeekSubContainer isActive={isActive} onClick={() => handleWeekClick(weekData.weekNumber, weekData.startOfWeek, weekData.dailyLogs)}>
+                  <WeekSubContainer
+                    isActive={isActive}
+                    onClick={() =>
+                      handleWeekClick(
+                        weekData.weekNumber,
+                        weekData.startOfWeek,
+                        weekData.dailyLogs
+                      )
+                    }
+                  >
                     <WeekTitle>
-                      {t('Week')} {weekData.weekNumber} ({weekData.startOfWeek} - {weekData.endOfWeek})
+                      {t('Week')} {weekData.weekNumber} ({weekData.startOfWeek}{' '}
+                      - {weekData.endOfWeek})
                     </WeekTitle>
                     <TotalWeekHoursContainer>
-                      <WeeklyLogs>{t('Weekly Logs')}: {weekData.totalWeekHours} hrs</WeeklyLogs>
-                      <RotateArrow isExpanded={expandedWeeks[weekData.weekNumber]}>
+                      <WeeklyLogs>
+                        {t('Weekly Logs')}: {weekData.totalWeekHours} hrs
+                      </WeeklyLogs>
+                      <RotateArrow
+                        isExpanded={expandedWeeks[weekData.weekNumber]}
+                      >
                         <ArrowDownSVG />
                       </RotateArrow>
                     </TotalWeekHoursContainer>
                   </WeekSubContainer>
-                  {
-                    expandedWeeks[weekData.weekNumber] && (
-                      <DaysContainer>
-                        {generateWeekDays(weekData.startOfWeek).map((day) => (
-                          <WeekdayRow key={day.dateISO}
+                  {expandedWeeks[weekData.weekNumber] && (
+                    <DaysContainer>
+                      {generateWeekDays(weekData.startOfWeek).map((day) => (
+                        <WeekdayRow key={day.dateISO}>
+                          <SingleRowContainer
+                            onClick={() => handleDayClick(day.dateISO)}
+                            style={{
+                              background: day.isToday
+                                ? 'rgba(52, 168, 83, 0.12)'
+                                : day.isWeekend
+                                  ? '#FFF4F4'
+                                  : '',
+                            }}
                           >
-                            <SingleRowContainer onClick={() => handleDayClick(day.dateISO)}
-                              style={{ background: day.isToday ? "rgba(52, 168, 83, 0.12)" : day.isWeekend ? "#FFF4F4" : "" }}>
-                              <Weekday>
-                                <DayText style={{ color: day.isWeekend ? "#E03137" : "" }}>{day.dayName}, {day.formattedDate}</DayText>
-                              </Weekday>
-                              <LoggedHours>{t('Logged hours')}: {dailyLogs[day.dateISO]?.reduce((sum, log) => sum + log.loggedHours, 0) || 0} hrs</LoggedHours>
-                            </SingleRowContainer>
-                            {expandedDays[day.dateISO] && (
-                              <DailyLogContainer>
-                                <StyledTable>
-                                  <thead>
-                                    <tr>
-                                      <th>Project</th>
-                                      <th>Contract</th>
-                                      <th>Log Hours</th>
-                                      <th>Description</th>
-                                      {/* Show Action column only if no row is being edited */}
-                                      <th>Action</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {dailyLogs[day.dateISO] && dailyLogs[day.dateISO].length > 0 ? (
-                                      dailyLogs[day.dateISO].map((log, logIndex) => {
-                                        const isEditing = editingLog?.logDate === day.dateISO && editingLog.index === logIndex;
+                            <Weekday>
+                              <DayText
+                                style={{
+                                  color: day.isWeekend ? '#E03137' : '',
+                                }}
+                              >
+                                {day.dayName}, {day.formattedDate}
+                              </DayText>
+                            </Weekday>
+                            <LoggedHours>
+                              {t('Logged hours')}:{' '}
+                              {dailyLogs[day.dateISO]?.reduce(
+                                (sum, log) => sum + log.loggedHours,
+                                0
+                              ) || 0}{' '}
+                              hrs
+                            </LoggedHours>
+                          </SingleRowContainer>
+                          {expandedDays[day.dateISO] && (
+                            <DailyLogContainer>
+                              <StyledTable>
+                                <thead>
+                                  <tr>
+                                    <th>Project</th>
+                                    <th>Contract</th>
+                                    <th>Log Hours</th>
+                                    <th>Description</th>
+                                    {/* Show Action column only if no row is being edited */}
+                                    <th>Action</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {dailyLogs[day.dateISO] &&
+                                  dailyLogs[day.dateISO].length > 0 ? (
+                                    dailyLogs[day.dateISO].map(
+                                      (log, logIndex) => {
+                                        const isEditing =
+                                          editingLog?.logDate === day.dateISO &&
+                                          editingLog.index === logIndex;
                                         return (
                                           <React.Fragment key={logIndex}>
                                             <tr>
@@ -602,14 +663,28 @@ const Timesheet = () => {
                                                     value={editingLog.projectId}
                                                     onChange={(e) =>
                                                       setEditingLog((prev) =>
-                                                        prev ? { ...prev, projectId: e.target.value } : null
+                                                        prev
+                                                          ? {
+                                                              ...prev,
+                                                              projectId:
+                                                                e.target.value,
+                                                            }
+                                                          : null
                                                       )
                                                     }
                                                   >
-                                                    <option value="">Select Project</option>
-                                                    <option value="PROJ001">PROJ001</option>
-                                                    <option value="PROJ002">PROJ002</option>
-                                                    <option value="PROJ003">PROJ003</option>
+                                                    <option value="">
+                                                      Select Project
+                                                    </option>
+                                                    <option value="PROJ001">
+                                                      PROJ001
+                                                    </option>
+                                                    <option value="PROJ002">
+                                                      PROJ002
+                                                    </option>
+                                                    <option value="PROJ003">
+                                                      PROJ003
+                                                    </option>
                                                   </SelectInput>
                                                 ) : (
                                                   log.projectId
@@ -619,17 +694,33 @@ const Timesheet = () => {
                                               <td>
                                                 {isEditing ? (
                                                   <SelectInput
-                                                    value={editingLog.contractId}
+                                                    value={
+                                                      editingLog.contractId
+                                                    }
                                                     onChange={(e) =>
                                                       setEditingLog((prev) =>
-                                                        prev ? { ...prev, contractId: e.target.value } : null
+                                                        prev
+                                                          ? {
+                                                              ...prev,
+                                                              contractId:
+                                                                e.target.value,
+                                                            }
+                                                          : null
                                                       )
                                                     }
                                                   >
-                                                    <option value="">Select Contract</option>
-                                                    <option value="Contract 1">Contract 1</option>
-                                                    <option value="Contract 2">Contract 2</option>
-                                                    <option value="CON002">CON002</option>
+                                                    <option value="">
+                                                      Select Contract
+                                                    </option>
+                                                    <option value="Contract 1">
+                                                      Contract 1
+                                                    </option>
+                                                    <option value="Contract 2">
+                                                      Contract 2
+                                                    </option>
+                                                    <option value="CON002">
+                                                      CON002
+                                                    </option>
                                                   </SelectInput>
                                                 ) : (
                                                   log.contractId
@@ -643,7 +734,14 @@ const Timesheet = () => {
                                                     value={editingLog.loghour}
                                                     onChange={(e) =>
                                                       setEditingLog((prev) =>
-                                                        prev ? { ...prev, loghour: Number(e.target.value) } : null
+                                                        prev
+                                                          ? {
+                                                              ...prev,
+                                                              loghour: Number(
+                                                                e.target.value
+                                                              ),
+                                                            }
+                                                          : null
                                                       )
                                                     }
                                                   />
@@ -655,10 +753,18 @@ const Timesheet = () => {
                                               <td>
                                                 {isEditing ? (
                                                   <Input
-                                                    value={editingLog.description}
+                                                    value={
+                                                      editingLog.description
+                                                    }
                                                     onChange={(e) =>
                                                       setEditingLog((prev) =>
-                                                        prev ? { ...prev, description: e.target.value } : null
+                                                        prev
+                                                          ? {
+                                                              ...prev,
+                                                              description:
+                                                                e.target.value,
+                                                            }
+                                                          : null
                                                       )
                                                     }
                                                   />
@@ -668,8 +774,16 @@ const Timesheet = () => {
                                               </td>
                                               <td className="Action">
                                                 <LogAction
-                                                  onDelete={() => handleDelete(log.Id)}
-                                                  onEdit={() => handleEditClick(day.dateISO, logIndex, log)}
+                                                  onDelete={() =>
+                                                    handleDelete(log.Id)
+                                                  }
+                                                  onEdit={() =>
+                                                    handleEditClick(
+                                                      day.dateISO,
+                                                      logIndex,
+                                                      log
+                                                    )
+                                                  }
                                                 />
                                               </td>
                                             </tr>
@@ -679,98 +793,138 @@ const Timesheet = () => {
                                                   <div
                                                     style={{
                                                       display: 'flex',
-                                                      justifyContent: 'flex-end',
+                                                      justifyContent:
+                                                        'flex-end',
                                                       gap: '10px',
                                                       paddingTop: '8px',
                                                       paddingRight: '10px',
                                                     }}
-                                                  ><ButtonGroup>
-                                                      <CloseButton onClick={() => setEditingLog(null)}>Cancel</CloseButton>
-                                                      <SaveButton onClick={() => setShowSaveConfirmation(true)}>Save</SaveButton>
+                                                  >
+                                                    <ButtonGroup>
+                                                      <CloseButton
+                                                        onClick={() =>
+                                                          setEditingLog(null)
+                                                        }
+                                                      >
+                                                        Cancel
+                                                      </CloseButton>
+                                                      <SaveButton
+                                                        onClick={() =>
+                                                          setShowSaveConfirmation(
+                                                            true
+                                                          )
+                                                        }
+                                                      >
+                                                        Save
+                                                      </SaveButton>
                                                     </ButtonGroup>
                                                   </div>
-
                                                 </td>
                                               </tr>
                                             )}
                                           </React.Fragment>
                                         );
-                                      })
-                                    ) : (
+                                      }
+                                    )
+                                  ) : (
+                                    <tr>
+                                      <td className="no-entries" colSpan={5}>
+                                        No entries yet.
+                                      </td>
+                                    </tr>
+                                  )}
+
+                                  {/* Add Button Row */}
+                                  <tr>
+                                    <td
+                                      colSpan={5}
+                                      style={{
+                                        textAlign: 'right',
+                                        paddingTop: '10px',
+                                        paddingRight: '10px',
+                                      }}
+                                    >
+                                      <AddButton
+                                        onClick={() => {
+                                          if (
+                                            selectedDate === day.dateISO &&
+                                            addButtonClicked
+                                          ) {
+                                            setAddButtonClicked(false);
+                                            setLogEntries([]);
+                                          } else {
+                                            setSelectedDate(day.dateISO);
+                                            setLogEntries([
+                                              {
+                                                projectId: '',
+                                                contractId: '',
+                                                loghour: '',
+                                                description: '',
+                                              },
+                                            ]);
+                                            setAddButtonClicked(true);
+                                          }
+                                        }}
+                                      >
+                                        +
+                                      </AddButton>
+                                    </td>
+                                  </tr>
+
+                                  {/* Add Entry Form Row */}
+                                  {selectedDate === day.dateISO &&
+                                    addButtonClicked && (
                                       <tr>
-                                        <td className="no-entries" colSpan={5}>
-                                          No entries yet.
+                                        <td colSpan={5}>
+                                          {addButtonEntries()}
                                         </td>
                                       </tr>
                                     )}
-
-                                    {/* Add Button Row */}
-                                    <tr>
-                                      <td colSpan={5} style={{ textAlign: 'right', paddingTop: '10px', paddingRight: '10px' }}>
-                                        <AddButton
-                                          onClick={() => {
-                                            if (selectedDate === day.dateISO && addButtonClicked) {
-                                              setAddButtonClicked(false);
-                                              setLogEntries([]);
-                                            } else {
-                                              setSelectedDate(day.dateISO);
-                                              setLogEntries([
-                                                { projectId: '', contractId: '', loghour: '', description: '' },
-                                              ]);
-                                              setAddButtonClicked(true);
-                                            }
-                                          }}
-                                        >
-                                          +
-                                        </AddButton>
-                                      </td>
-                                    </tr>
-
-                                    {/* Add Entry Form Row */}
-                                    {selectedDate === day.dateISO && addButtonClicked && (
-                                      <tr>
-                                        <td colSpan={5}>{addButtonEntries()}</td>
-                                      </tr>
-                                    )}
-                                  </tbody>
-                                </StyledTable>
-                                {showSaveConfirmation && (
-                                  <CenterModal
-                                    handleModalLeftButtonClick={() => setShowSaveConfirmation(false)} // Cancel
-                                    handleModalClose={() => setShowSaveConfirmation(false)}
-                                    handleModalSubmit={() => {
-                                      handleSaveClick(); // Your original save logic
-                                      setShowSaveConfirmation(false);
-                                    }}
-                                    modalHeading="Save Changes"
-                                  />
-                                )}
-                              </DailyLogContainer>
-                            )}
-
-                          </WeekdayRow>
-                        ))}
-                      </DaysContainer>
-                    )
-                  }
+                                </tbody>
+                              </StyledTable>
+                              {showSaveConfirmation && (
+                                <CenterModal
+                                  handleModalLeftButtonClick={() =>
+                                    setShowSaveConfirmation(false)
+                                  } // Cancel
+                                  handleModalClose={() =>
+                                    setShowSaveConfirmation(false)
+                                  }
+                                  handleModalSubmit={() => {
+                                    handleSaveClick(); // Your original save logic
+                                    setShowSaveConfirmation(false);
+                                  }}
+                                  modalHeading="Save Changes"
+                                />
+                              )}
+                            </DailyLogContainer>
+                          )}
+                        </WeekdayRow>
+                      ))}
+                    </DaysContainer>
+                  )}
                 </WeekContainer>
-              )
-            }
-            )
-            }
+              );
+            })}
 
             <PaginationContainer>
-              <PaginationButton onClick={handlePreviousMonth}><span className="leftArrow"><ArrowDownSVG /></span>{t('Previous')}</PaginationButton>
-              <PaginationButton
-                onClick={handleNextMonth}
-              >
-                {t('Next')} <span className="rightArrow"><ArrowDownSVG /></span>
+              <PaginationButton onClick={handlePreviousMonth}>
+                <span className="leftArrow">
+                  <ArrowDownSVG />
+                </span>
+                {t('Previous')}
+              </PaginationButton>
+              <PaginationButton onClick={handleNextMonth}>
+                {t('Next')}{' '}
+                <span className="rightArrow">
+                  <ArrowDownSVG />
+                </span>
               </PaginationButton>
             </PaginationContainer>
           </div>
-        </TimesheetContainer >)
-      }</>
-
+        </TimesheetContainer>
+      )}
+    </>
   );
 };
 

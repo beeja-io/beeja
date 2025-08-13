@@ -6,7 +6,7 @@ import {
   ActionMenuOption,
 } from '../../styles/DocumentTabStyles.style';
 import { ActionIcon } from '../../svgs/DocumentTabSvgs.svg';
-import CenterModal from './CenterModal.component'; 
+import CenterModal from './CenterModal.component';
 
 interface LogActionProps {
   onEdit: () => void;
@@ -15,7 +15,9 @@ interface LogActionProps {
 
 const LogAction: React.FC<LogActionProps> = ({ onEdit, onDelete }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [confirmModalType, setConfirmModalType] = useState<'delete' | null>(null);
+  const [confirmModalType, setConfirmModalType] = useState<'delete' | null>(
+    null
+  );
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

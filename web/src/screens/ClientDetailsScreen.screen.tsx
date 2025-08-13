@@ -161,24 +161,41 @@ const ClientDetailsScreen: React.FC = () => {
         <RightSectionDiv>
           <div>{t('Primary Address')}</div>
           <AddressDiv>
-            {client?.primaryAddress?.street},{client?.primaryAddress?.city},
-            {client?.primaryAddress?.state},{client?.primaryAddress?.country},
-            {client?.primaryAddress?.postalCode}
+            {[
+              client?.primaryAddress?.street,
+              client?.primaryAddress?.city,
+              client?.primaryAddress?.state,
+              client?.primaryAddress?.country,
+              client?.primaryAddress?.postalCode,
+            ]
+              .filter(Boolean)
+              .join(', ')}
           </AddressDiv>
         </RightSectionDiv>
         <RightSectionDiv>
           <div>{t('Billing Address')}</div>
-          <AddressDiv>
+          {/* <AddressDiv>
             {client?.primaryAddress?.street},{client?.primaryAddress?.city},
             {client?.primaryAddress?.state},{client?.primaryAddress?.country},
             {client?.primaryAddress?.postalCode}
+          </AddressDiv> */}
+          <AddressDiv>
+            {[
+              client?.primaryAddress?.street,
+              client?.primaryAddress?.city,
+              client?.primaryAddress?.state,
+              client?.primaryAddress?.country,
+              client?.primaryAddress?.postalCode,
+            ]
+              .filter(Boolean)
+              .join(', ')}
           </AddressDiv>
         </RightSectionDiv>
         <RightSectionDiv>
           <div>{t('Tax Details')}</div>
           <TaxDetailsWrapper>
             <TaxItem>
-              <TaxLabel>{t('VAT/ GAT Number')}:</TaxLabel>
+              <TaxLabel>{t('VAT/ GST Number')}:</TaxLabel>
               <TaxValue>{client?.taxDetails?.taxNumber ?? '-'}</TaxValue>
             </TaxItem>
             <TaxItem>
