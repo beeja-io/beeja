@@ -36,7 +36,7 @@ const ProjectManagement = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const isProjectDetailsRoute = matchPath(
-    '/clients/client-management/:id',
+    '/project-management/:id/:id',
     location.pathname
   );
 

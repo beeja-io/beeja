@@ -142,7 +142,13 @@ const ContractList = ({
                         >
                           {contract.clientName ?? '-'}
                         </td>
-                        <td>{contract.projectManagerNames?.[0]}</td>
+                        <td
+                          onClick={() =>
+                            handleContractClick(contract.contractId)
+                          }
+                        >
+                          {contract.projectManagerNames?.[0]}
+                        </td>
                         <td>
                           {contract.status ? (
                             <StatusDropdown

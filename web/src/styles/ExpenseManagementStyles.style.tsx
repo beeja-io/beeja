@@ -28,6 +28,7 @@ export const ExpenseHeadingSection = styled.section`
     font-weight: 400;
     margin: 0 24px;
     color: rgba(160, 174, 192, 1);
+    font-size: 22px;
   }
   .nav_AddClient {
     transform: none !important;

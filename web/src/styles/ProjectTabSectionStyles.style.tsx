@@ -6,6 +6,7 @@ export const Container = styled.div`
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  min-height: 312px;
 `;
 
 export const Tabs = styled.div`

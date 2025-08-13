@@ -4,14 +4,21 @@ export const FormContainer = styled.div`
   background-color: white;
   border-radius: 10px;
   border: 1px solid #f1f2f4;
-  padding: 2rem;
+
+  .formButtons {
+    display: flex;
+    justify-content: center;
+    padding-top: 25px;
+    gap: 40px;
+    width: 100%;
+  }
 `;
 
 export const StepsContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  width: 100%;
+  width: 85%;
   padding: 10px 0;
   margin-bottom: 20px;
 `;
@@ -70,12 +77,25 @@ export const Line = styled.div`
 
 export const FormInputsContainer = styled.div`
   display: flex;
-  justify-content: space-evenly;
-  gap: 10px;
+  justify-content: space-around;
+  align-items: center;
+  gap: 40px;
   width: 100%;
-  max-width: 1160px;
-  margin-left: 80px;
+`;
+
+export const SummaryAddressContainer = styled.div`
+  flex-wrap: wrap;
+  display: flex;
+
+  justify-content: space-around;
+  gap: 20px;
+`;
+
+export const SummaryAddressSubContainer = styled.div`
+  width: 100%;
   background-color: rgba(248, 249, 251, 1);
+  display: flex;
+  justify-content: start;
 `;
 
 export const FormResourceContainer = styled.div`
@@ -93,7 +113,13 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   gap: 10px;
 
   label {
+    font-family: Nunito;
+    font-weight: 600;
+    font-style: SemiBold;
     font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
   }
   input {
     cursor: text;
@@ -114,10 +140,10 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
     background-repeat: no-repeat;
     background-position: right 1rem center;
     background-size: 1em;
-    background-color: ${(props) => props.theme.colors.blackColors.white6};
-    color: ${(props) => props.theme.colors.blackColors.black1};
   }
-
+  .tax-container {
+    margin-right: 140px;
+  }
   .largeSelectOption {
     width: 491px;
   }
@@ -177,10 +203,29 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
     border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   }
 `;
-export const InputLabelLogoContainer = styled.div<{ Width?: string }>`
-  margin: 20px 0;
+
+export const HeadingContainer = styled.div`
   display: flex;
-  width: 1240px;
+  align-items: center;
+  justify-content: space-between;
+  font-family: Nunito;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  height: 26px;
+
+  margin: 8px;
+`;
+
+export const InputLabelLogoContainer = styled.div<{ Width?: string }>`
+  flex-wrap: wrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   label {
     font-size: 14px;
   }
@@ -217,7 +262,7 @@ export const LogoNameWrapper = styled.div`
 export const LogoContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 50px;
+  max-width: 820px;
 `;
 
 export const LogoLabel = styled.div`
@@ -226,8 +271,7 @@ export const LogoLabel = styled.div`
   font-weight: 600;
   text-align: left;
   width: 900px;
-  margin-left: 150px;
-  gap: 10px;
+  padding-bottom: 8px;
 `;
 
 export const LogoUploadContainer = styled.div`
@@ -240,8 +284,7 @@ export const LogoUploadContainer = styled.div`
   justify-content: center;
   position: relative;
   margin-bottom: 16px;
-  width: 920px;
-  margin-left: 150px;
+  width: 1024px;
   cursor: pointer;
 `;
 
@@ -290,6 +333,9 @@ export const FormButtons = styled.div`
 `;
 export const AddFormMainContainer = styled.form`
   width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   @media screen and (max-width: 1150px) {
     width: 70vw;
   }
@@ -306,6 +352,7 @@ export const AddFormMainContainer = styled.form`
     display: flex;
     justify-content: center;
     gap: 40px;
+    width: 100%;
   }
 
   .submitButton {
@@ -327,44 +374,55 @@ export const AddFormMainContainer = styled.form`
 `;
 
 export const AddClientButtons = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
-  margin: 80px;
+  padding: 20px 0;
 
   .leftAlign {
     position: absolute;
+    left: 0;
     display: flex;
-    justify-content: flex-start;
     color: #005792;
     font-weight: 700;
     font-size: 16px;
+    cursor: pointer;
   }
   .centerAlign {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
-    justify-content: center;
     gap: 12px;
-    padding-right: 60px;
   }
+`;
+export const ButtonGroup = styled.div`
+  display: flex;
+  gap: 12px;
 `;
 
 export const FormInputs = styled.div`
   display: flex;
   gap: 20px;
   margin-bottom: 100px;
-  width: 850px;
+
+  height: 254px;
   margin-left: 80px;
   margin-bottom: 20px;
+  &.tax-container {
+    gap: 40px;
+  }
 `;
+
 export const HeadingDiv = styled.div`
   font-family: 'Nunito';
   width: 850px;
   margin-left: 80px;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
 `;
 
 export const CheckBoxOuterContainer = styled.div`
@@ -379,8 +437,9 @@ export const StyledCheckbox = styled.input`
   width: 16px;
   height: 16px;
   color: rgba(0, 87, 146, 1);
-  align-items: center;
-  display: flex;
+  cursor: pointer;
+  border-width: 1px;
+  border: 1px solid #005792;
 `;
 
 export const LabelText = styled.div`
@@ -398,28 +457,21 @@ export const SubHeadingDiv = styled.div`
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
   color: #818181;
-  width: 100px;
-`;
-
-export const HeadingContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 16px;
-  margin-left: 60px;
+  width: 150px;
 `;
 
 export const SectionHeader = styled.div`
-  position: relative;
-  padding: 12px 16px;
   background-color: #fff;
-  border-bottom: 1px solid #eee;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 `;
 export const EditIconWrapper = styled.div`
-  position: absolute;
-  top: 12px;
-  left: 1130px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
 `;
 
 export const InfoRow = styled.div`
@@ -449,24 +501,85 @@ export const InfoGroup = styled.div`
 `;
 
 export const InfoBlock = styled.div`
-  width: 400px;
   padding-top: 20px;
   padding-left: 10px;
   padding-bottom: 20px;
+  &.address {
+    display: flex;
+    width: 50%;
+  }
+`;
+
+export const PrimaryContainer = styled.div`
+  flex: 1 1 48%;
+  background-color: rgba(248, 249, 251, 1);
+  gap: 10px;
+  h2 {
+    padding: 10px 0 10px 20px;
+  }
 `;
 export const AddressBlock = styled.div`
-  width: 400px;
-  padding: 10px 0 10px 10px;
+  padding: 10px 0 10px 18px;
+  margin-top: 5px;
   display: flex;
 `;
 
+export const AddressMainContainer = styled.form`
+  width: 1028;
+  height: 482;
+  angle: 0 deg;
+  opacity: 1;
+  padding-top: 24px;
+  padding-right: 64px;
+  padding-bottom: 24px;
+  padding-left: 64px;
+  gap: 16px;
+  border-radius: 10px;
+
+  .formButtons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 20px;
+  }
+`;
+
+export const ExpenseAddFormMainContainer = styled.form`
+  background: #ffffff;
+  angle: 0 deg;
+  opacity: 1;
+  padding-top: 24px;
+  padding-right: 64px;
+  padding-bottom: 24px;
+  padding-left: 64px;
+  border-radius: 10px;
+  border-width: 1px;
+  &.formBackground {
+    margin: 20px;
+    border: 1px solid #f1f2f4;
+  }
+  .formButtons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin: 20px;
+    border: 1px solid #f1f2f4;
+    color: red;
+  }
+`;
+
+export const SummarySubContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+`;
+
 export const BasicOrganizationDetailsContainer = styled.div`
-  margin-bottom: 5px;
-  margin-top: 5px;
-  width: 2200px;
+  padding-bottom: 9px;
+  padding-top: 5px;
+  width: 100%;
   display: flex;
   justify-content: space-between;
-  margin-left: 80px;
   background-color: rgba(248, 249, 251, 1);
 `;
 
@@ -474,6 +587,7 @@ export const ClientInfo = styled.div`
   display: flex;
   flex-direction: column;
   width: auto;
+  height: 215px;
   background-color: #ffffff;
   border-radius: 8px;
   padding: 20px;
@@ -519,16 +633,26 @@ export const TableContainer = styled.div`
 
 export const LeftSection = styled.div`
   flex: 3;
-  background-color: white;
   border-radius: 10px;
-  padding: 20px;
+  height: 539px;
 `;
 
 export const RightSection = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  height: 522px;
+  background: #ffffff;
+  width: 315px;
+
+  angle: 0 deg;
+  opacity: 1;
+  padding-top: 36px;
+  padding-right: 24px;
+  padding-bottom: 36px;
+  padding-left: 24px;
+  gap: 32px;
+  border-radius: 16px;
 `;
 
 export const Container = styled.div`
@@ -579,7 +703,8 @@ export const RightSectionDiv = styled.div`
   font-size: 16px;
   line-height: 160%;
   letter-spacing: 0.2px;
-  width: 320px;
+
+  widht: 90%;
   height: 128px;
   gap: 16px;
   padding: 16px;
@@ -597,9 +722,10 @@ export const AddressDiv = styled.div`
   letter-spacing: 0px;
   vertical-align: middle;
   color: #818181;
-  display: flex;
-  flex-direction: column;
-  padding-top: 20px;
+  display: block;
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 100%;
 `;
 
 export const nav_AddClient = styled.span`
