@@ -423,7 +423,11 @@ export const ActionMenuOption = styled.div`
   }
 `;
 
-export const ActionMenu = styled.div``;
+export const ActionMenu = styled.div`
+  &.action-align {
+    margin-top: +5px;
+  }
+`;
 
 export const FileUploadForm = styled.div`
   display: flex;

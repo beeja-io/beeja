@@ -195,7 +195,7 @@ const ClientDetailsScreen: React.FC = () => {
           <div>{t('Tax Details')}</div>
           <TaxDetailsWrapper>
             <TaxItem>
-              <TaxLabel>{t('VAT/ GAT Number')}:</TaxLabel>
+              <TaxLabel>{t('VAT/ GST Number')}:</TaxLabel>
               <TaxValue>{client?.taxDetails?.taxNumber ?? '-'}</TaxValue>
             </TaxItem>
             <TaxItem>

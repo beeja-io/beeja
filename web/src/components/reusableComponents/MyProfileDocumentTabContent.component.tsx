@@ -54,6 +54,9 @@ import { hasPermission } from '../../utils/permissionCheck';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import Pagination from '../directComponents/Pagination.component';
+
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+
 import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 type DocumentTabContentProps = {
@@ -474,13 +477,17 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       }}
                       value={category}
                       onChange={handleDocumentTypeChange}
+                      disabled={isResponseLoading}
                       className="selectoption"
                     >
-                      {['Select a Type', ...documentType].map((option) => (
-                        <option key={option} value={option}>
-                          {option}
-                        </option>
-                      ))}
+                      <option value="">{t('Select a Type')}</option> {''}
+                      {[...documentType]
+                        .sort((a, b) => a.localeCompare(b))
+                        .map((option) => (
+                          <option key={option} value={option}>
+                            {option}
+                          </option>
+                        ))}
                     </select>
                     {errors.emptyDocumentType && (
                       <ValidationText>
@@ -496,6 +503,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       value={documentName}
                       placeholder="Ex: Pan Card /Aadhar Card /Voter Id/ Driving License"
                       onChange={(e) => setDocumentName(e.target.value)}
+                      disabled={isResponseLoading}
                     />
                   </InputLabelContainer>
 
@@ -506,6 +514,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       value={description}
                       placeholder="Ex: Pan Card front Image"
                       onChange={(e) => setDescription(e.target.value)}
+                      disabled={isResponseLoading}
                     />
                   </InputLabelContainer>
 
@@ -530,6 +539,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                         id="fileInput"
                         style={{ display: 'none' }}
                         onChange={handleFileChange}
+                        disabled={isResponseLoading}
                       />
                     </FileUploadField>
                     {selectedFileName && (
@@ -585,8 +595,8 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       </Button>
                       <Button
                         className="submit"
-                        disabled={isResponseLoading}
                         style={{ cursor: isResponseLoading ? 'progress' : '' }}
+                        disabled={isResponseLoading}
                       >
                         Submit
                       </Button>
@@ -610,6 +620,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
           handleClose={handleUpdateToastMessage}
         />
       )}
+      {isResponseLoading && <SpinAnimation />}
     </>
   );
 };

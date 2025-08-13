@@ -12,6 +12,7 @@ import {
   SettingsSVG,
   SunSVG,
   TrendingUpSVG,
+  TimeOffSVG,
   ProjectsSVG,
 } from '../../svgs/NavBarSvgs.svg';
 import {
@@ -343,6 +344,94 @@ const CompleteNavBar = () => {
                         setDropdownOpen={() => {
                           setOpenDropdown((prev) =>
                             prev === 'payroll' ? null : 'payroll'
+                          );
+                        }}
+                        hasAdditionalSvg
+                      />
+                    )}
+                  {/* {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                    // hasFeature(
+                    //   featureToggles.featureToggles,
+                    //   EFeatureToggles.LOAN_MANAGEMENT
+                    // ) &&
+                     (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="#"
+                        tooltipName="Payroll"
+                        linkName="Time Off"  // check 
+                        svgIcon={
+                          <CardSendSVG
+                            props={{
+                              isActive:
+                                openDropdown === 'payroll' ||
+                                currentPath.startsWith('/Time sheet'),
+                            }}
+                          />
+                        }
+                        additionalSvgIcon={<ChevronDownSVG />}
+                        dropdownItems={[
+                          ...(hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.LOAN_MANAGEMENT
+                          )
+                            ? [
+                                {
+                                  name: 'Time sheet',
+                                  link: '/payroll/deductions-loans',
+                                },
+                              ]
+                            : []),
+                        ]}
+                        isDropdownOpen={openDropdown === 'payroll'}
+                        setDropdownOpen={() => {
+                          setOpenDropdown((prev) =>
+                            prev === 'payroll' ? null : 'payroll'
+                          );
+                        }}
+                        hasAdditionalSvg
+                      />
+                    )} */}
+                  {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                    hasFeature(
+                      featureToggles.featureToggles,
+                      EFeatureToggles.LOAN_MANAGEMENT
+                    ) && (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="#"
+                        tooltipName="Timeoff"
+                        linkName="Time Off"
+                        svgIcon={
+                          <TimeOffSVG
+                            isActive={
+                              openDropdown === 'timeoff' ||
+                              currentPath.startsWith('/timeoff')
+                            }
+                          />
+                          // props={{
+                          //   isActive:
+                          //     openDropdown === 'timeoff' ||
+                          //     currentPath.startsWith('/timeoff'),
+                          // }}
+                          // />
+                        }
+                        additionalSvgIcon={<ChevronDownSVG />}
+                        dropdownItems={[
+                          {
+                            name: 'Time Sheet',
+                            link: '/timeoff/timesheet',
+                          },
+                          {
+                            name: 'Performance & Feedback',
+                            link: '/timeoff/performance',
+                          },
+                        ]}
+                        isDropdownOpen={openDropdown === 'timeoff'}
+                        setDropdownOpen={() => {
+                          setOpenDropdown((prev) =>
+                            prev === 'timeoff' ? null : 'timeoff'
                           );
                         }}
                         hasAdditionalSvg
