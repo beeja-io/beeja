@@ -72,14 +72,23 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
     if (formData) {
       const errorMessages = [];
 
-      if (formData.device === undefined || formData.device === '') {
+      if (
+        formData.device === undefined ||
+        formData.device === null ||
+        formData.device === ''
+      ) {
         errorMessages.push('Device');
       }
-      if (formData.type === undefined || formData.type === '') {
+      if (
+        formData.type === undefined ||
+        formData.type === null ||
+        formData.type === ''
+      ) {
         errorMessages.push('Type');
       }
       if (
         formData.specifications === undefined ||
+        formData.specifications === null ||
         formData.specifications === ''
       ) {
         errorMessages.push('Specifications');
@@ -99,19 +108,39 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
       if (formData.price === undefined || formData.price === null) {
         errorMessages.push('Price');
       }
-      if (formData.provider === undefined || formData.provider === '') {
+      if (
+        formData.provider === undefined ||
+        formData.provider === null ||
+        formData.provider === ''
+      ) {
         errorMessages.push('Provider');
       }
-      if (formData.model === undefined || formData.model === '') {
+      if (
+        formData.model === undefined ||
+        formData.model === null ||
+        formData.model === ''
+      ) {
         errorMessages.push('Model');
       }
-      if (formData.os === undefined || formData.os === '') {
+      if (
+        formData.os === undefined ||
+        formData.os === null ||
+        formData.os === ''
+      ) {
         errorMessages.push('OS');
       }
-      if (formData.ram === undefined || formData.ram === '') {
+      if (
+        formData.ram === undefined ||
+        formData.ram === null ||
+        formData.ram === ''
+      ) {
         errorMessages.push('RAM');
       }
-      if (formData.productId === undefined || formData.productId === '') {
+      if (
+        formData.productId === undefined ||
+        formData.productId === null ||
+        formData.productId === ''
+      ) {
         errorMessages.push('Product ID/Serial No.');
       }
 

@@ -123,56 +123,88 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
 
       if (
         initialFormData.device === undefined ||
+        initialFormData.device === null ||
         deviceToUpdate.device === ''
       ) {
         errorMessages.push('Device');
       }
-      if (initialFormData.type === undefined || deviceToUpdate.type === '') {
+
+      if (
+        initialFormData.type === undefined ||
+        initialFormData.type === null ||
+        deviceToUpdate.type === ''
+      ) {
         errorMessages.push('Type');
       }
+
       if (
         initialFormData.specifications === undefined ||
+        initialFormData.specifications === null ||
         deviceToUpdate.specifications === ''
       ) {
         errorMessages.push('Specifications');
       }
+
       if (
         initialFormData.availability === undefined ||
+        initialFormData.availability === null ||
         deviceToUpdate.availability === null ||
         deviceToUpdate.availability === ''
       ) {
         errorMessages.push('Availability');
       }
+
       if (
         initialFormData.dateOfPurchase === undefined ||
         initialFormData.dateOfPurchase === null
       ) {
         errorMessages.push('Date of Purchase');
       }
+
       if (
         initialFormData.price === undefined ||
+        initialFormData.price === null ||
         deviceToUpdate.price === null ||
         deviceToUpdate.price === ''
       ) {
         errorMessages.push('Price');
       }
+
       if (
         initialFormData.provider === undefined ||
+        initialFormData.provider === null ||
         deviceToUpdate.provider === ''
       ) {
         errorMessages.push('Provider');
       }
-      if (initialFormData.model === undefined || deviceToUpdate.model === '') {
+
+      if (
+        initialFormData.model === undefined ||
+        initialFormData.model === null ||
+        deviceToUpdate.model === ''
+      ) {
         errorMessages.push('Model');
       }
-      if (initialFormData.os === undefined || deviceToUpdate.os === '') {
+
+      if (
+        initialFormData.os === undefined ||
+        initialFormData.os === null ||
+        deviceToUpdate.os === ''
+      ) {
         errorMessages.push('OS');
       }
-      if (initialFormData.ram === undefined || deviceToUpdate.ram === '') {
+
+      if (
+        initialFormData.ram === undefined ||
+        initialFormData.ram === null ||
+        deviceToUpdate.ram === ''
+      ) {
         errorMessages.push('RAM');
       }
+
       if (
         initialFormData.productId === undefined ||
+        initialFormData.productId === null ||
         deviceToUpdate.productId === ''
       ) {
         errorMessages.push('Product ID/Serial No.');
