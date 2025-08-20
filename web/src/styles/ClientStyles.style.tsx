@@ -1,14 +1,13 @@
 import styled from 'styled-components';
 
 export const FormContainer = styled.div`
-  background-color: white;
+  background: #ffffff;
   border-radius: 10px;
   border: 1px solid #f1f2f4;
 
   .formButtons {
     display: flex;
     justify-content: center;
-    padding-top: 25px;
     gap: 40px;
     width: 100%;
   }
@@ -18,9 +17,15 @@ export const StepsContainer = styled.div`
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  width: 85%;
-  padding: 10px 0;
-  margin-bottom: 20px;
+  max-width: 75%;
+  width: 100%;
+  margin: 20px 0 30px 20px;
+  padding-top: 15px;
+
+  @media screen and (max-width: 1200px) {
+    max-width: 30%;
+    margin: 10px 0;
+  }
 `;
 export const StepWrapper = styled.div`
   display: flex;
@@ -41,7 +46,7 @@ export const StepLabel = styled.div.withConfig({
   font-weight: ${(props) =>
     props.isActive || props.isCompleted ? 'bold' : 'normal'};
   color: ${(props) =>
-    props.isActive || props.isCompleted ? '#005792' : '#888'};
+    props.isActive || props.isCompleted ? '#005792' : '#9FAEC0'};
 
   .circle {
     width: 24px;
@@ -77,10 +82,12 @@ export const Line = styled.div`
 
 export const FormInputsContainer = styled.div`
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-  gap: 40px;
+  column-gap: 45px;
+  row-gap: 15px;
   width: 100%;
+  flex-wrap: wrap;
 `;
 
 export const SummaryAddressContainer = styled.div`
@@ -107,10 +114,13 @@ export const FormResourceContainer = styled.div`
 `;
 
 export const InputLabelContainer = styled.div<{ Width?: string }>`
-  margin: 20px 0;
+  flex: 1;
+  margin: 20px 0px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  max-width: 491px;
+  width: 100%;
 
   label {
     font-family: Nunito;
@@ -144,8 +154,9 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   .tax-container {
     margin-right: 140px;
   }
-  .largeSelectOption {
-    width: 491px;
+  .selectoption.largeSelectOption {
+    max-width: 491px;
+    box-sizing: border-box;
   }
 
   span.calendarField {
@@ -201,6 +212,37 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
     background-color: ${(props) => props.theme.colors.blackColors.white6};
 
     border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+  }
+`;
+
+export const TextInput = styled.input`
+  outline: none;
+  border-radius: 10px;
+  border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+  display: flex;
+  padding: 16px 20px;
+  align-items: flex-start;
+  gap: 20px;
+  align-self: stretch;
+  width: 100%;
+  color: ${(props) => props.theme.colors.blackColors.black1};
+  background-color: ${(props) => props.theme.colors.backgroundColors.primary};
+
+  &.largeInput {
+    max-width: 491px;
+  }
+
+  &.disabledBgWhite {
+    background-color: white;
+  }
+  &.grayText {
+    color: #8b8b8b;
+  }
+  &:-webkit-autofill {
+    box-shadow: 0 0 0 1000px
+      ${(props) => props.theme.colors.backgroundColors.primary} inset;
+    -webkit-text-fill-color: ${(props) =>
+      props.theme.colors.blackColors.black1};
   }
 `;
 
@@ -262,7 +304,10 @@ export const LogoNameWrapper = styled.div`
 export const LogoContainer = styled.div`
   display: flex;
   flex-direction: column;
-  max-width: 820px;
+  align-items: center;
+  justify-content: flex-start;
+  flex: 1 1 2;
+  width: 100%;
 `;
 
 export const LogoLabel = styled.div`
@@ -270,8 +315,10 @@ export const LogoLabel = styled.div`
   font-size: 14px;
   font-weight: 600;
   text-align: left;
-  width: 900px;
+
   padding-bottom: 8px;
+  max-width: 1024px;
+  width: 100%;
 `;
 
 export const LogoUploadContainer = styled.div`
@@ -284,7 +331,8 @@ export const LogoUploadContainer = styled.div`
   justify-content: center;
   position: relative;
   margin-bottom: 16px;
-  width: 1024px;
+  max-width: 1024px;
+  width: 100%;
   cursor: pointer;
 `;
 
@@ -318,13 +366,14 @@ export const UploadText = styled.span`
   font-weight: 400;
   font-size: 14px;
   color: #a0aec0;
-  padding-left: 10px;
+  padding-left: 18px;
 `;
 
 export const BrowseText = styled.span`
   font-weight: 700;
   text-decoration: underline;
   color: #005792;
+  padding-left: 6px;
 `;
 
 export const FormButtons = styled.div`
@@ -335,9 +384,9 @@ export const AddFormMainContainer = styled.form`
   width: 100%;
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
-  @media screen and (max-width: 1150px) {
-    width: 70vw;
+ 
   }
 
   .formInputs {
@@ -353,6 +402,7 @@ export const AddFormMainContainer = styled.form`
     justify-content: center;
     gap: 40px;
     width: 100%;
+    margin: 30px;
   }
 
   .submitButton {
@@ -380,7 +430,7 @@ export const AddClientButtons = styled.div`
   align-items: center;
   width: 100%;
   padding: 20px 0;
-
+  min-width: 520px;
   .leftAlign {
     position: absolute;
     left: 0;
@@ -398,18 +448,25 @@ export const AddClientButtons = styled.div`
 export const ButtonGroup = styled.div`
   display: flex;
   gap: 12px;
+  margin-bottom: 15px;
 `;
 
 export const FormInputs = styled.div`
   display: flex;
+  flex-wrap: nowrap;
   gap: 20px;
   margin-bottom: 100px;
-
   height: 254px;
   margin-left: 80px;
   margin-bottom: 20px;
   &.tax-container {
-    gap: 40px;
+    gap: 30px;
+
+    @media screen and (max-width: 1050px) {
+      flex-direction: column;
+      margin-left: 0;
+      height: auto;
+    }
   }
 `;
 
@@ -445,6 +502,7 @@ export const StyledCheckbox = styled.input`
 export const LabelText = styled.div`
   align-items: center;
   height: 100%;
+  width: 100%;
   font-family: 'Nunito';
 `;
 
@@ -462,7 +520,6 @@ export const SubHeadingDiv = styled.div`
 
 export const SectionHeader = styled.div`
   background-color: #fff;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -683,7 +740,6 @@ export const ClientTitle = styled.div`
   width: 40rem;
   height: 42px;
   color: #005792;
-  margin-bottom: 20px;
 `;
 
 export const ProjectInfo = styled.div`
@@ -765,4 +821,10 @@ export const DateIconWrapper = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
+`;
+
+export const ColumnWrapper = styled.div`
+  flex: 1 1 0;
+  max-width: 491px;
+  width: 100%;
 `;

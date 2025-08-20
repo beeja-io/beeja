@@ -174,11 +174,6 @@ const ClientDetailsScreen: React.FC = () => {
         </RightSectionDiv>
         <RightSectionDiv>
           <div>{t('Billing Address')}</div>
-          {/* <AddressDiv>
-            {client?.primaryAddress?.street},{client?.primaryAddress?.city},
-            {client?.primaryAddress?.state},{client?.primaryAddress?.country},
-            {client?.primaryAddress?.postalCode}
-          </AddressDiv> */}
           <AddressDiv>
             {[
               client?.primaryAddress?.street,

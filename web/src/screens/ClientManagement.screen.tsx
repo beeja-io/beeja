@@ -20,7 +20,11 @@ import { getAllClient, getClient } from '../service/axiosInstance';
 const ClientManagement = () => {
   const navigate = useNavigate();
   const goToPreviousPage = () => {
-    navigate(-1);
+    if (isCreateModalOpen) {
+      setIsCreateModalOpen(false);
+    } else {
+      navigate(-1);
+    }
   };
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);

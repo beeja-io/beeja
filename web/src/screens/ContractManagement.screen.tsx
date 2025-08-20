@@ -21,7 +21,13 @@ const ContractManagement = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const goToPreviousPage = () => navigate(-1);
+  const goToPreviousPage = () => {
+    if (isCreateModalOpen) {
+      setIsCreateModalOpen(false);
+    } else {
+      navigate(-1);
+    }
+  };
 
   const [contractList, setContractList] = useState<ContractDetails[]>([]);
   const [isLoading, setIsLoading] = useState(false);

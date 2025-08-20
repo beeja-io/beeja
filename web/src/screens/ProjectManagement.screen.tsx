@@ -36,12 +36,16 @@ const ProjectManagement = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const isProjectDetailsRoute = matchPath(
-    '/project-management/:id/:id',
+    '/projects/project-management/:id/:id',
     location.pathname
   );
 
   const goToPreviousPage = () => {
-    navigate(-1);
+    if (isCreateModalOpen) {
+      setIsCreateModalOpen(false);
+    } else {
+      navigate(-1);
+    }
   };
 
   const handleOpenCreateModal = useCallback(() => {

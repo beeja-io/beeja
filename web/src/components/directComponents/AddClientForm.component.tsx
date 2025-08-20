@@ -11,6 +11,7 @@ import {
   BrowseText,
   ButtonGroup,
   CheckBoxOuterContainer,
+  ColumnWrapper,
   DotWrap,
   EditIconWrapper,
   ExpenseAddFormMainContainer,
@@ -44,13 +45,11 @@ import {
   SummaryAddressContainer,
   SummaryAddressSubContainer,
   SummarySubContainer,
+  TextInput,
   UploadText,
 } from '../../styles/ClientStyles.style';
 import { Button } from '../../styles/CommonStyles.style';
-import {
-  TextInput,
-  ValidationText,
-} from '../../styles/DocumentTabStyles.style';
+import { ValidationText } from '../../styles/DocumentTabStyles.style';
 import {
   CallSVG,
   CheckIcon,
@@ -255,6 +254,12 @@ const AddClientForm = (props: AddClientFormProps) => {
     const { name, value } = event.target;
     const keys = name.split('.');
 
+    let newValue = value ?? '';
+
+    if (name === 'contact') {
+      newValue = newValue.replace(/\D/g, '').slice(0, 10);
+    }
+
     setFormData((prevState) => {
       if (keys.length === 2) {
         const [parentKey, childKey] = keys;
@@ -267,7 +272,7 @@ const AddClientForm = (props: AddClientFormProps) => {
             ...prevState,
             [parentKey]: {
               ...(prevState[parentKey] ?? {}),
-              [childKey]: value ?? '',
+              [childKey]: newValue,
             },
           };
         }
@@ -275,7 +280,7 @@ const AddClientForm = (props: AddClientFormProps) => {
 
       return {
         ...prevState,
-        [name]: value ?? '',
+        [name]: newValue,
       };
     });
   };
@@ -386,14 +391,13 @@ const AddClientForm = (props: AddClientFormProps) => {
 
         {step === 1 && (
           <AddFormMainContainer
-            className="formBackground"
             onSubmit={(e) => {
               e.preventDefault();
               handleNextStep();
             }}
           >
             <FormInputsContainer>
-              <div>
+              <ColumnWrapper>
                 <InputLabelContainer>
                   <label>
                     {t('Client Name')}
@@ -411,7 +415,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                 </InputLabelContainer>
                 <InputLabelContainer>
                   <label>
-                    {t('Email')}{' '}
+                    {t('Email')}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
@@ -427,16 +431,17 @@ const AddClientForm = (props: AddClientFormProps) => {
                 <InputLabelContainer>
                   <label>{t('Contact')}</label>
                   <TextInput
-                    type="text"
+                    type="tel"
                     name="contact"
                     placeholder={t('Enter Contact')}
                     className="largeInput"
+                    inputMode="numeric"
                     value={formData?.contact}
                     onChange={handleChange}
                   />
                 </InputLabelContainer>
-              </div>
-              <div>
+              </ColumnWrapper>
+              <ColumnWrapper>
                 <InputLabelContainer>
                   <label>
                     {t('Client Type')}
@@ -494,34 +499,34 @@ const AddClientForm = (props: AddClientFormProps) => {
                     onChange={handleChange}
                   />
                 </InputLabelContainer>
-              </div>
+              </ColumnWrapper>
+              <LogoContainer>
+                <LogoLabel>{t('Logo')}</LogoLabel>
+                <LogoUploadContainer
+                  onClick={() => document.getElementById('fileInput')?.click()}
+                >
+                  <input
+                    id="fileInput"
+                    type="file"
+                    accept=".png, .jpg, .jpeg"
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}
+                    name="logo"
+                  />
+                  <UploadSVG />
+                  <UploadText>
+                    {t('Upload your Logo')}
+                    <BrowseText>{t('Browse')}</BrowseText>
+                  </UploadText>
+                </LogoUploadContainer>
+                {file && (
+                  <LogoLabel>
+                    <FileName>{file.name}</FileName>
+                    <RemoveButton onClick={() => setFile(null)}>x</RemoveButton>
+                  </LogoLabel>
+                )}
+              </LogoContainer>
             </FormInputsContainer>
-            <LogoContainer>
-              <LogoLabel>{t('Logo')}</LogoLabel>
-              <LogoUploadContainer
-                onClick={() => document.getElementById('fileInput')?.click()}
-              >
-                <input
-                  id="fileInput"
-                  type="file"
-                  accept=".png, .jpg, .jpeg"
-                  style={{ display: 'none' }}
-                  onChange={handleFileChange}
-                  name="logo"
-                />
-                <UploadSVG />
-                <UploadText>
-                  {t('Upload your Logo')} <BrowseText>{t('Browse')}</BrowseText>
-                </UploadText>
-              </LogoUploadContainer>
-              {file && (
-                <LogoLabel>
-                  <FileName>{file.name}</FileName>
-                  <RemoveButton onClick={() => setFile(null)}>x</RemoveButton>
-                </LogoLabel>
-              )}
-            </LogoContainer>
-
             <div className="formButtons">
               <Button onClick={props.handleClose} type="button">
                 {t('Cancel')}
@@ -672,7 +677,7 @@ const AddClientForm = (props: AddClientFormProps) => {
             </FormInputs>
             <HeadingDiv>{t('Billing Address')}</HeadingDiv>
             <CheckBoxOuterContainer>
-              <InputLabelContainer>
+              <div>
                 <StyledCheckbox
                   type="checkbox"
                   name="usePrimaryAddress"
@@ -680,7 +685,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   checked={formData.usePrimaryAddress}
                   onChange={handleCheckboxChange}
                 />
-              </InputLabelContainer>
+              </div>
 
               <LabelText>
                 {t('Use Primary address as billing address')}
@@ -938,12 +943,14 @@ const AddClientForm = (props: AddClientFormProps) => {
       </>
       {step === 4 && (
         <div className="formButtons">
-          <Button onClick={props.handleClose} type="button">
-            {t('Skip')}
-          </Button>
-          <Button className="submit" type="submit" form="summaryForm">
-            {t('Save & Continue')}
-          </Button>
+          <ButtonGroup>
+            <Button onClick={props.handleClose} type="button">
+              {t('Skip')}
+            </Button>
+            <Button className="submit" type="submit" form="summaryForm">
+              {t('Save & Continue')}
+            </Button>
+          </ButtonGroup>
         </div>
       )}
     </FormContainer>

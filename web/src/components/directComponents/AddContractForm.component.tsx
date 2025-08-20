@@ -12,9 +12,11 @@ import {
   updateContract,
 } from '../../service/axiosInstance';
 import {
+  AvailabilityContainer,
   AvailabilityInput,
   NameBubble,
   NameBubbleListContainer,
+  PercentageSign,
   ResourceAllocationRow,
   ResourceBlock,
   ResourceLabel,
@@ -23,20 +25,13 @@ import {
   TextInput,
 } from '../../styles/AddContractFormStyles.style';
 import {
-  AddFormMainContainer,
   BrowseText,
   FileName,
   FormContainer,
-  FormInputsContainer,
-  FormResourceContainer,
-  InputLabelContainer,
   Line,
-  LogoContainer,
   LogoLabel,
-  LogoUploadContainer,
   RemoveButton,
   StepLabel,
-  StepsContainer,
   StepWrapper,
   UploadText,
 } from '../../styles/ClientStyles.style';
@@ -47,7 +42,6 @@ import {
   FormField,
   Label,
   RequiredAsterisk,
-  SelectWrapper,
   TextArea,
 } from '../../styles/ProjectStyles.style';
 import { ButtonContainer } from '../../styles/SettingsStyles.style';
@@ -67,6 +61,16 @@ import {
   ContractType,
   ContractTypeLabels,
 } from '../reusableComponents/ContractEnums.component';
+import {
+  AddFormMainContainer,
+  ColumnWrapper,
+  FormInputsContainer,
+  InputLabelContainer,
+  LogoUploadContainer,
+  StepsContainer,
+  FormResourceContainer,
+  RowWrapper,
+} from '../../styles/ContractStyle.style';
 
 type AddContractFormProps = {
   handleClose: () => void;
@@ -393,328 +397,352 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         </StepsContainer>
 
         {step === 1 && (
-          <AddFormMainContainer className="formBackground">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleNextStep();
-              }}
-            >
-              <FormInputsContainer>
-                <div>
-                  {initialData?.contractId && (
-                    <InputLabelContainer>
-                      <label>{t('Contract ID')}</label>
-                      <TextInput
-                        type="text"
-                        value={initialData.contractId}
-                        disabled
-                      />
-                    </InputLabelContainer>
-                  )}
+          <AddFormMainContainer
+            className="formBackground"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleNextStep();
+            }}
+          >
+            <FormInputsContainer className="step-one">
+              <ColumnWrapper>
+                {initialData?.contractId && (
                   <InputLabelContainer>
-                    <label>
-                      {t('Contract Name')}
-                      <ValidationText className="star">*</ValidationText>
-                    </label>
-                    <TextInput
-                      name="contractTitle"
-                      type="text"
-                      placeholder="Enter Contract Name"
-                      value={formData.contractTitle}
-                      onChange={(e) => {
-                        handleChange(e);
-                        if (errors.contractTitle) {
-                          setErrors((prev) => ({
-                            ...prev,
-                            contractTitle: undefined,
-                          }));
-                        }
-                      }}
-                      required
-                      style={{ width: '400px' }}
-                    />
-                    {errors.contractTitle && (
-                      <ValidationText>{errors.contractTitle}</ValidationText>
-                    )}
-                  </InputLabelContainer>
-
-                  <InputLabelContainer>
-                    <label>
-                      {t('Start Date')}
-                      <ValidationText className="star">*</ValidationText>
-                    </label>
-
-                    <DateInputWrapper ref={calendarRef}>
-                      <TextInput
-                        type="text"
-                        placeholder="Select Date"
-                        name="startDate"
-                        value={
-                          formData.startDate
-                            ? formatDate(formData.startDate)
-                            : ''
-                        }
-                        onFocus={() => setIsStartDateCalOpen(true)}
-                        onClick={() => setIsStartDateCalOpen(true)}
-                        readOnly
-                        autoComplete="off"
-                      />
-                      <span
-                        className="iconArea"
-                        onClick={() => setIsStartDateCalOpen(true)}
-                      >
-                        <CalenderIconDark />
-                      </span>
-
-                      <div className="calendarSpace">
-                        {isStartDateCalOpen && (
-                          <Calendar
-                            title="Start Date"
-                            minDate={new Date('01-01-2000')}
-                            selectedDate={
-                              formData.startDate
-                                ? new Date(formData.startDate)
-                                : null
-                            }
-                            handleDateInput={(date: Date | null) => {
-                              if (!date) return;
-                              setFormData((prev) => ({
-                                ...prev,
-                                startDate: date.toLocaleDateString('en-CA'),
-                              }));
-                              setErrors((prev) => ({
-                                ...prev,
-                                startDate: undefined,
-                              }));
-                              setIsStartDateCalOpen(false);
-                            }}
-                            handleCalenderChange={() => {}}
-                          />
-                        )}
-                      </div>
-                    </DateInputWrapper>
-                    {errors.startDate && (
-                      <ValidationText>{errors.startDate}</ValidationText>
-                    )}
-                  </InputLabelContainer>
-
-                  <InputLabelContainer>
-                    <label>{t('Billing Type')}</label>
-                    <select
-                      name="billingType"
-                      value={formData.billingType}
-                      onChange={handleChange}
-                      className="selectoption largeSelectOption"
-                      style={{ width: '400px' }}
-                    >
-                      <option value="">{t('Select Billing Type')}</option>
-                      {[...Object.values(ContractBillingType)]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((type) => (
-                          <option key={type} value={type}>
-                            {ContractBillingTypeLabels[type]}
-                          </option>
-                        ))}
-                    </select>
-                  </InputLabelContainer>
-                  <InputLabelContainer>
-                    <label>{t('Budget')}</label>
+                    <label>{t('Contract ID')}</label>
                     <TextInput
                       type="text"
-                      name="contractValue"
-                      placeholder="Enter Budget"
-                      value={formData.contractValue}
-                      onChange={handleChange}
-                      style={{ width: '400px' }}
+                      value={initialData.contractId}
+                      disabled
                     />
                   </InputLabelContainer>
-                </div>
-
-                <div>
-                  <InputLabelContainer>
-                    <label>
-                      {t('Contract Type')}
-                      <ValidationText className="star">*</ValidationText>
-                    </label>
-
-                    <select
-                      name="contractType"
-                      value={formData.contractType}
-                      onChange={(e) => {
-                        handleChange(e);
-                        if (errors.contractType) {
-                          setErrors((prev) => ({
-                            ...prev,
-                            contractType: undefined,
-                          }));
-                        }
-                      }}
-                      className="selectoption largeSelectOption"
-                      required
-                      style={{ width: '400px' }}
-                    >
-                      <option value="">Select Contract</option>
-                      {[...Object.values(ContractType)]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((type) => (
-                          <option key={type} value={type}>
-                            {ContractTypeLabels[type]}
-                          </option>
-                        ))}
-                    </select>
-                    {errors.contractType && (
-                      <ValidationText>{errors.contractType}</ValidationText>
-                    )}
-                  </InputLabelContainer>
-
-                  <InputLabelContainer>
-                    <label>
-                      {t('End Date')}
-                      <ValidationText className="star">*</ValidationText>
-                    </label>
-
-                    <DateInputWrapper ref={calendarEndRef}>
-                      <TextInput
-                        type="text"
-                        placeholder="Select Date"
-                        name="endDate"
-                        value={
-                          formData.endDate ? formatDate(formData.endDate) : ''
-                        }
-                        onFocus={() => setIsEndDateCalOpen(true)}
-                        onClick={() => setIsEndDateCalOpen(true)}
-                        readOnly
-                        autoComplete="off"
-                      />
-                      <span
-                        className="iconArea"
-                        onClick={() => setIsEndDateCalOpen(true)}
-                      >
-                        <CalenderIconDark />
-                      </span>
-
-                      <div className="calendarSpace">
-                        {isEndDateCalOpen && (
-                          <Calendar
-                            title="End Date"
-                            minDate={
-                              formData.startDate
-                                ? new Date(formData.startDate)
-                                : new Date('2000-01-01')
-                            }
-                            selectedDate={
-                              formData.endDate
-                                ? new Date(formData.endDate)
-                                : null
-                            }
-                            handleDateInput={(date: Date | null) => {
-                              if (!date) return;
-
-                              setFormData((prev) => ({
-                                ...prev,
-                                endDate: date.toLocaleDateString('en-CA'),
-                              }));
-                              setErrors((prev) => ({
-                                ...prev,
-                                endDate: undefined,
-                              }));
-                              setIsEndDateCalOpen(false);
-                            }}
-                            handleCalenderChange={() => {}}
-                          />
-                        )}
-                      </div>
-                    </DateInputWrapper>
-                    {errors.endDate && (
-                      <ValidationText>{errors.endDate}</ValidationText>
-                    )}
-                  </InputLabelContainer>
-
-                  <InputLabelContainer>
-                    <label>{t('Billing Currency')}</label>
-                    <select
-                      name="billingCurrency"
-                      value={formData.billingCurrency}
-                      onChange={handleChange}
-                      className="selectoption largeSelectOption"
-                      style={{ width: '400px' }}
-                    >
-                      <option value="">Select Currency</option>
-                      {[...Object.values(BillingCurrency)]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((currency) => (
-                          <option key={currency} value={currency}>
-                            {BillingCurrencyLabels[currency]}
-                          </option>
-                        ))}
-                    </select>
-                  </InputLabelContainer>
-                  <InputLabelContainer>
-                    <label>{t('Description')}</label>
-                    <TextArea
-                      name="description"
-                      placeholder="Enter Contract Description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      style={{ width: '400px' }}
-                    />
-                  </InputLabelContainer>
-                </div>
-              </FormInputsContainer>
-
-              <LogoContainer>
-                <LogoLabel>{t('Attachments')}</LogoLabel>
-                <LogoUploadContainer
-                  onClick={() =>
-                    document.getElementById('contractFile')?.click()
-                  }
-                >
-                  <input
-                    id="contractFile"
-                    type="file"
-                    accept=".pdf,.doc,.docx"
-                    style={{ display: 'none' }}
-                    onChange={handleFileChange}
-                  />
-                  <UploadSVG />
-                  <UploadText>
-                    {t('Drag and drop or')}{' '}
-                    <BrowseText>{t('Browse')}</BrowseText>
-                  </UploadText>
-                </LogoUploadContainer>
-                {file && (
-                  <LogoLabel>
-                    <FileName>{file.name}</FileName>
-                    <RemoveButton onClick={() => setFile(null)}>x</RemoveButton>
-                  </LogoLabel>
                 )}
-              </LogoContainer>
+                <InputLabelContainer>
+                  <label>
+                    {t('Contract Name')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <TextInput
+                    name="contractTitle"
+                    type="text"
+                    placeholder="Enter Contract Name"
+                    value={formData.contractTitle}
+                    onChange={(e) => {
+                      handleChange(e);
+                      if (errors.contractTitle) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          contractTitle: undefined,
+                        }));
+                      }
+                    }}
+                    required
+                  />
+                  {errors.contractTitle && (
+                    <ValidationText>{errors.contractTitle}</ValidationText>
+                  )}
+                </InputLabelContainer>
 
-              <div className="formButtons">
-                <Button onClick={handleClose} type="button">
-                  {t('Cancel')}
-                </Button>
-                <Button
-                  className="submit"
-                  type="button"
-                  onClick={() => {
-                    if (validateStepOne()) {
-                      handleNextStep();
-                    }
-                  }}
-                >
-                  {t('Save & Continue')}
-                </Button>
-              </div>
-            </form>
+                <InputLabelContainer>
+                  <label>
+                    {t('Start Date')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+
+                  <DateInputWrapper ref={calendarRef}>
+                    <TextInput
+                      type="text"
+                      placeholder="Select Date"
+                      name="startDate"
+                      value={
+                        formData.startDate ? formatDate(formData.startDate) : ''
+                      }
+                      onFocus={() => setIsStartDateCalOpen(true)}
+                      onClick={() => setIsStartDateCalOpen(true)}
+                      readOnly
+                      autoComplete="off"
+                    />
+                    <span
+                      className="iconArea"
+                      onClick={() => setIsStartDateCalOpen(true)}
+                    >
+                      <CalenderIconDark />
+                    </span>
+
+                    <div className="calendarSpace">
+                      {isStartDateCalOpen && (
+                        <Calendar
+                          title="Start Date"
+                          minDate={new Date('01-01-2000')}
+                          selectedDate={
+                            formData.startDate
+                              ? new Date(formData.startDate)
+                              : null
+                          }
+                          handleDateInput={(date: Date | null) => {
+                            if (!date) return;
+                            setFormData((prev) => ({
+                              ...prev,
+                              startDate: date.toLocaleDateString('en-CA'),
+                            }));
+                            setErrors((prev) => ({
+                              ...prev,
+                              startDate: undefined,
+                            }));
+                            setIsStartDateCalOpen(false);
+                          }}
+                          handleCalenderChange={() => {}}
+                        />
+                      )}
+                    </div>
+                  </DateInputWrapper>
+                  {errors.startDate && (
+                    <ValidationText>{errors.startDate}</ValidationText>
+                  )}
+                </InputLabelContainer>
+
+                <InputLabelContainer>
+                  <label>{t('Billing Type')}</label>
+                  <select
+                    name="billingType"
+                    value={formData.billingType}
+                    onChange={handleChange}
+                    className="selectoption largeSelectOption"
+                  >
+                    <option value="">{t('Select Billing Type')}</option>
+                    {[...Object.values(ContractBillingType)]
+                      .sort((a, b) => a.localeCompare(b))
+                      .map((type) => (
+                        <option key={type} value={type}>
+                          {ContractBillingTypeLabels[type]}
+                        </option>
+                      ))}
+                  </select>
+                </InputLabelContainer>
+                <InputLabelContainer>
+                  <label>{t('Budget')}</label>
+                  <TextInput
+                    type="text"
+                    name="contractValue"
+                    placeholder="Enter Budget"
+                    value={formData.contractValue}
+                    onChange={handleChange}
+                  />
+                </InputLabelContainer>
+
+                {!initialData?.contractId && (
+                  <div>
+                    <LogoLabel>{t('Attachments')}</LogoLabel>
+                    <LogoUploadContainer
+                      onClick={() =>
+                        document.getElementById('contractFile')?.click()
+                      }
+                    >
+                      <input
+                        id="contractFile"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                      />
+                      <UploadSVG />
+                      <UploadText>
+                        {t('Drag and drop or')}{' '}
+                        <BrowseText>{t('Browse')}</BrowseText>
+                      </UploadText>
+                    </LogoUploadContainer>
+                    {file && (
+                      <LogoLabel>
+                        <FileName>{file.name}</FileName>
+                        <RemoveButton onClick={() => setFile(null)}>
+                          x
+                        </RemoveButton>
+                      </LogoLabel>
+                    )}
+                  </div>
+                )}
+              </ColumnWrapper>
+
+              <ColumnWrapper>
+                <InputLabelContainer>
+                  <label>
+                    {t('Contract Type')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+
+                  <select
+                    name="contractType"
+                    value={formData.contractType}
+                    onChange={(e) => {
+                      handleChange(e);
+                      if (errors.contractType) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          contractType: undefined,
+                        }));
+                      }
+                    }}
+                    className="selectoption largeSelectOption"
+                    required
+                  >
+                    <option value="">Select Contract</option>
+                    {[...Object.values(ContractType)]
+                      .sort((a, b) => a.localeCompare(b))
+                      .map((type) => (
+                        <option key={type} value={type}>
+                          {ContractTypeLabels[type]}
+                        </option>
+                      ))}
+                  </select>
+                  {errors.contractType && (
+                    <ValidationText>{errors.contractType}</ValidationText>
+                  )}
+                </InputLabelContainer>
+
+                <InputLabelContainer>
+                  <label>
+                    {t('End Date')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+
+                  <DateInputWrapper ref={calendarEndRef}>
+                    <TextInput
+                      type="text"
+                      placeholder="Select Date"
+                      name="endDate"
+                      value={
+                        formData.endDate ? formatDate(formData.endDate) : ''
+                      }
+                      onFocus={() => setIsEndDateCalOpen(true)}
+                      onClick={() => setIsEndDateCalOpen(true)}
+                      readOnly
+                      autoComplete="off"
+                    />
+                    <span
+                      className="iconArea"
+                      onClick={() => setIsEndDateCalOpen(true)}
+                    >
+                      <CalenderIconDark />
+                    </span>
+
+                    <div className="calendarSpace">
+                      {isEndDateCalOpen && (
+                        <Calendar
+                          title="End Date"
+                          minDate={
+                            formData.startDate
+                              ? new Date(formData.startDate)
+                              : new Date('2000-01-01')
+                          }
+                          selectedDate={
+                            formData.endDate ? new Date(formData.endDate) : null
+                          }
+                          handleDateInput={(date: Date | null) => {
+                            if (!date) return;
+
+                            setFormData((prev) => ({
+                              ...prev,
+                              endDate: date.toLocaleDateString('en-CA'),
+                            }));
+                            setErrors((prev) => ({
+                              ...prev,
+                              endDate: undefined,
+                            }));
+                            setIsEndDateCalOpen(false);
+                          }}
+                          handleCalenderChange={() => {}}
+                        />
+                      )}
+                    </div>
+                  </DateInputWrapper>
+                  {errors.endDate && (
+                    <ValidationText>{errors.endDate}</ValidationText>
+                  )}
+                </InputLabelContainer>
+
+                <InputLabelContainer>
+                  <label>{t('Billing Currency')}</label>
+                  <select
+                    name="billingCurrency"
+                    value={formData.billingCurrency}
+                    onChange={handleChange}
+                    className="selectoption largeSelectOption"
+                  >
+                    <option value="">Select Currency</option>
+                    {[...Object.values(BillingCurrency)]
+                      .sort((a, b) => a.localeCompare(b))
+                      .map((currency) => (
+                        <option key={currency} value={currency}>
+                          {BillingCurrencyLabels[currency]}
+                        </option>
+                      ))}
+                  </select>
+                </InputLabelContainer>
+                <InputLabelContainer>
+                  <label>{t('Description')}</label>
+                  <TextArea
+                    name="description"
+                    placeholder="Enter Contract Description"
+                    value={formData.description}
+                    onChange={handleChange}
+                  />
+                </InputLabelContainer>
+                {initialData?.contractId && (
+                  <div>
+                    <LogoLabel>{t('Attachments')}</LogoLabel>
+                    <LogoUploadContainer
+                      onClick={() =>
+                        document.getElementById('contractFile')?.click()
+                      }
+                    >
+                      <input
+                        id="contractFile"
+                        type="file"
+                        accept=".pdf,.doc,.docx"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                      />
+                      <UploadSVG />
+                      <UploadText>
+                        {t('Drag and drop or')}{' '}
+                        <BrowseText>{t('Browse')}</BrowseText>
+                      </UploadText>
+                    </LogoUploadContainer>
+                    {file && (
+                      <LogoLabel>
+                        <FileName>{file.name}</FileName>
+                        <RemoveButton onClick={() => setFile(null)}>
+                          x
+                        </RemoveButton>
+                      </LogoLabel>
+                    )}
+                  </div>
+                )}
+              </ColumnWrapper>
+            </FormInputsContainer>
+
+            <div className="formButtons">
+              <Button onClick={handleClose} type="button">
+                {t('Cancel')}
+              </Button>
+              <Button
+                className="submit"
+                type="button"
+                onClick={() => {
+                  if (validateStepOne()) {
+                    handleNextStep();
+                  }
+                }}
+              >
+                {t('Save & Continue')}
+              </Button>
+            </div>
           </AddFormMainContainer>
         )}
 
         {step === 2 && (
           <form onSubmit={handleSubmitData}>
             <FormInputsContainer>
-              <div>
+              <RowWrapper>
                 <InputLabelContainer>
                   <label>
                     {t('Project Name')}
@@ -726,7 +754,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     onChange={handleProjectChange}
                     className="selectoption largeSelectOption"
                     required
-                    style={{ width: '400px' }}
                   >
                     <option value="">{t('Select Project')}</option>
                     {[...(projectOptions || [])]
@@ -738,129 +765,139 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       ))}
                   </select>
                 </InputLabelContainer>
-              </div>
-              <div>
+
                 <InputLabelContainer>
-                  <SelectWrapper>
-                    <FormField>
-                      <Label>
-                        {t('Project Managers')}
-                        <RequiredAsterisk>*</RequiredAsterisk>
-                      </Label>
-                      <Select
-                        isMulti
-                        name="projectManagers"
-                        value={managerOptions.filter((option) =>
-                          formData.projectManagers.includes(option.value)
-                        )}
-                        options={managerOptions}
-                        onChange={(
-                          selected: MultiValue<{ value: string; label: string }>
-                        ) => {
-                          const values = [...(selected || [])]
-                            .sort((a, b) => a.value.localeCompare(b.value))
-                            .map((opt) => opt.value);
-                          setFormData((prev) => ({
-                            ...prev,
-                            projectManagers: values,
-                          }));
-                        }}
-                        classNamePrefix="react-select"
-                        placeholder={t('Select Project Managers')}
-                      />
-                    </FormField>
-                  </SelectWrapper>
+                  <Label>
+                    {t('Project Managers')}
+                    <RequiredAsterisk>*</RequiredAsterisk>
+                  </Label>
+                  <Select
+                    isMulti
+                    name="projectManagers"
+                    value={managerOptions.filter((option) =>
+                      formData.projectManagers.includes(option.value)
+                    )}
+                    options={managerOptions}
+                    onChange={(
+                      selected: MultiValue<{ value: string; label: string }>
+                    ) => {
+                      const values = [...(selected || [])]
+                        .sort((a, b) => a.value.localeCompare(b.value))
+                        .map((opt) => opt.value);
+                      setFormData((prev) => ({
+                        ...prev,
+                        projectManagers: values,
+                      }));
+                    }}
+                    classNamePrefix="react-select"
+                    placeholder={t('Select Project Managers')}
+                  />
                 </InputLabelContainer>
-              </div>
+              </RowWrapper>
             </FormInputsContainer>
 
             <FormResourceContainer>
-              <FormField>
-                <Label>
-                  {t('Resources Allocation')}{' '}
-                  <RequiredAsterisk>*</RequiredAsterisk>
-                </Label>
+              <RowWrapper>
+                <FormField>
+                  <Label>
+                    {t('Resources Allocation')}
+                    <RequiredAsterisk>*</RequiredAsterisk>
+                  </Label>
 
-                <ResourceAllocationRow>
-                  <StyledResourceWrapper>
-                    <Select
-                      classNamePrefix="react-select"
-                      options={resourceOptions}
-                      value={
-                        resourceOptions.find(
-                          (opt) => opt.value === currentResource
-                        ) || null
-                      }
-                      onChange={(selected) =>
-                        setCurrentResource(selected?.value || null)
-                      }
-                      placeholder="Search People"
-                    />
-                  </StyledResourceWrapper>
+                  <ResourceAllocationRow>
+                    <StyledResourceWrapper>
+                      <Select
+                        classNamePrefix="react-select"
+                        className="react-select-container"
+                        options={resourceOptions}
+                        value={
+                          resourceOptions.find(
+                            (opt) => opt.value === currentResource
+                          ) || null
+                        }
+                        onChange={(selected) =>
+                          setCurrentResource(selected?.value || null)
+                        }
+                        placeholder="Search People"
+                      />
+                    </StyledResourceWrapper>
 
-                  <AvailabilityInput
-                    type="number"
-                    placeholder="Enter Percentage"
-                    value={currentAvailability}
-                    onChange={(e) => setCurrentAvailability(e.target.value)}
-                  />
+                    <AvailabilityContainer>
+                      <AvailabilityInput
+                        type="number"
+                        min="1"
+                        max="100"
+                        placeholder="Enter Percentage"
+                        value={currentAvailability}
+                        onChange={(e) => setCurrentAvailability(e.target.value)}
+                      />
+                      <PercentageSign>%</PercentageSign>
+                    </AvailabilityContainer>
 
-                  <SaveButton
-                    type="button"
-                    onClick={() => {
-                      if (!currentResource || !currentAvailability) return;
+                    <SaveButton
+                      type="button"
+                      onClick={() => {
+                        if (!currentResource || !currentAvailability) return;
 
-                      const label = resourceOptions.find(
-                        (r) => r.value === currentResource
-                      )?.label;
-
-                      if (
-                        selectedResources.some(
+                        const label = resourceOptions.find(
                           (r) => r.value === currentResource
-                        )
-                      ) {
-                        toast.warning('This person is already added.');
-                        return;
-                      }
+                        )?.label;
 
-                      setSelectedResources((prev: any) => {
-                        const updated = [
-                          ...prev,
-                          {
-                            value: currentResource,
-                            label: label || '',
-                            availability: Number(currentAvailability),
-                          },
-                        ];
+                        if (
+                          selectedResources.some(
+                            (r) => r.value === currentResource
+                          )
+                        ) {
+                          toast.warning('This person is already added.');
+                          return;
+                        }
 
-                        setFormData((form) => ({
-                          ...form,
-                          resourceAllocations: updated,
-                        }));
+                        setSelectedResources((prev: any) => {
+                          const updated = [
+                            ...prev,
+                            {
+                              value: currentResource,
+                              label: label || '',
+                              availability: Number(currentAvailability),
+                            },
+                          ];
 
-                        return updated;
-                      });
+                          setFormData((form) => ({
+                            ...form,
+                            resourceAllocations: updated,
+                          }));
 
-                      setCurrentResource(null);
-                      setCurrentAvailability('');
-                    }}
-                  >
-                    {t('Save')}
-                  </SaveButton>
-                </ResourceAllocationRow>
-              </FormField>
+                          return updated;
+                        });
+
+                        setCurrentResource(null);
+                        setCurrentAvailability('');
+                      }}
+                    >
+                      {t('Save')}
+                    </SaveButton>
+                  </ResourceAllocationRow>
+                </FormField>
+              </RowWrapper>
             </FormResourceContainer>
 
             {selectedResources.length > 0 && (
               <ResourceBlock>
-                <ResourceLabel>{t('All Resources')}</ResourceLabel>
-                <NameBubbleListContainer>
-                  {[...(selectedResources || [])]
-                    .sort((a, b) => a.value.localeCompare(b.value))
-                    .map((option) => (
-                      <NameBubble key={option.value}>{option.label}</NameBubble>
-                    ))}
-                </NameBubbleListContainer>
+                <RowWrapper>
+                  <ResourceLabel>{t('All Resources')}</ResourceLabel>
+                  <NameBubbleListContainer>
+                    {[...(selectedResources || [])]
+                      .sort((a, b) => a.value.localeCompare(b.value))
+                      .map((option) => (
+                        <NameBubble key={option.value}>
+                          <span className="name">{option.label}</span>
+                          <span className="availability">
+                            Availability: {option.availability}%
+                          </span>
+                        </NameBubble>
+                      ))}
+                  </NameBubbleListContainer>
+                </RowWrapper>
               </ResourceBlock>
             )}
 

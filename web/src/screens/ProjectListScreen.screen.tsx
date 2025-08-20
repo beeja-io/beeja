@@ -64,7 +64,7 @@ const ProjectList = ({
   }, []);
 
   const handleProjectClick = (projectId: string, clientId: string) => {
-    navigate(`/project-management/${projectId}/${clientId}`);
+    navigate(`/projects/project-management/${projectId}/${clientId}`);
   };
   return (
     <>
