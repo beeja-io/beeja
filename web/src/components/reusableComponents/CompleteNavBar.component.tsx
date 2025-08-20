@@ -12,7 +12,7 @@ import {
   SettingsSVG,
   SunSVG,
   TrendingUpSVG,
-  TimeOffSVG
+  TimeOffSVG,
   ProjectsSVG,
 } from '../../svgs/NavBarSvgs.svg';
 import {
@@ -349,7 +349,7 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )}
-                   {/* {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                  {/* {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     // hasFeature(
                     //   featureToggles.featureToggles,
                     //   EFeatureToggles.LOAN_MANAGEMENT
@@ -397,41 +397,46 @@ const CompleteNavBar = () => {
                     hasFeature(
                       featureToggles.featureToggles,
                       EFeatureToggles.LOAN_MANAGEMENT
-                    ) &&
-                    <ListItem
-                    isSideBarOpen={sidebarOpen}
-                    linkTo="#"
-                    tooltipName="Timeoff"
-                    linkName="Time Off"
-                    svgIcon={
-                      <TimeOffSVG isActive={openDropdown === 'timeoff' || currentPath.startsWith('/timeoff')} />
-                        // props={{
-                        //   isActive:
-                        //     openDropdown === 'timeoff' ||
-                        //     currentPath.startsWith('/timeoff'),
-                        // }}
-                      // />
-                    }
-                    additionalSvgIcon={<ChevronDownSVG />}
-                    dropdownItems={[
-                      {
-                        name: 'Time Sheet',
-                        link: '/timeoff/timesheet',
-                      },
-                      {
-                        name: 'Performance & Feedback',
-                        link: '/timeoff/performance',
-                      },
-                    ]}
-                    isDropdownOpen={openDropdown === 'timeoff'}
-                    setDropdownOpen={() => {
-                      setOpenDropdown((prev) =>
-                        prev === 'timeoff' ? null : 'timeoff'
-                      );
-                    }}
-                    hasAdditionalSvg
-                  />
-                  }
+                    ) && (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="#"
+                        tooltipName="Timeoff"
+                        linkName="Time Off"
+                        svgIcon={
+                          <TimeOffSVG
+                            isActive={
+                              openDropdown === 'timeoff' ||
+                              currentPath.startsWith('/timeoff')
+                            }
+                          />
+                          // props={{
+                          //   isActive:
+                          //     openDropdown === 'timeoff' ||
+                          //     currentPath.startsWith('/timeoff'),
+                          // }}
+                          // />
+                        }
+                        additionalSvgIcon={<ChevronDownSVG />}
+                        dropdownItems={[
+                          {
+                            name: 'Time Sheet',
+                            link: '/timeoff/timesheet',
+                          },
+                          {
+                            name: 'Performance & Feedback',
+                            link: '/timeoff/performance',
+                          },
+                        ]}
+                        isDropdownOpen={openDropdown === 'timeoff'}
+                        setDropdownOpen={() => {
+                          setOpenDropdown((prev) =>
+                            prev === 'timeoff' ? null : 'timeoff'
+                          );
+                        }}
+                        hasAdditionalSvg
+                      />
+                    )}
 
                   {hasFeature(
                     featureToggles.featureToggles,

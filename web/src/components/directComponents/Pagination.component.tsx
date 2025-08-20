@@ -6,6 +6,7 @@ import {
   PaginationButton,
   PaginationActionArea,
 } from '../../styles/StyledPagination.style';
+import { DropdownOrg } from '../reusableComponents/DropDownMenu.component';
 
 /**
  * @example https://www.freecodecamp.org/news/build-a-custom-pagination-component-in-react/
@@ -131,17 +132,17 @@ const Pagination = ({
           {Math.min(currentPage * itemsPerPage, totalItems)} {t('OF')}{' '}
           {totalItems} {t('ENTRIES')}
         </span>
-
-        <select
-          onChange={(e) => handleItemsPerPage(parseInt(e.target.value))}
-          defaultValue={itemsPerPage.toString()}
-        >
-          <option value="10">{t('SHOW 10')}</option>
-          <option value="25">{t('SHOW 25')}</option>
-          <option value="50">{t('SHOW 50')}</option>
-          <option value="75">{t('SHOW 75')}</option>
-          <option value="100">{t('SHOW 100')}</option>
-        </select>
+        <DropdownOrg
+          value={itemsPerPage.toString()}
+          onChange={(val) => handleItemsPerPage(parseInt(val ?? '10'))}
+          options={[
+            { label: t('SHOW 10'), value: '10' },
+            { label: t('SHOW 25'), value: '25' },
+            { label: t('SHOW 50'), value: '50' },
+            { label: t('SHOW 75'), value: '75' },
+            { label: t('SHOW 100'), value: '100' },
+          ]}
+        />
       </PaginationActionArea>
     </PaginationContainer>
   );

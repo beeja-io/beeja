@@ -60,6 +60,7 @@ import {
   TaxCategory,
 } from '../reusableComponents/ClientEnums.component';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type AddClientFormProps = {
   handleClose: () => void;
@@ -434,43 +435,59 @@ const AddClientForm = (props: AddClientFormProps) => {
                       {t('Client Type')}
                       <ValidationText className="star">*</ValidationText>
                     </label>
-                    <select
-                      className="selectoption largeSelectOption"
+                    <DropdownMenu
+                      label={t('Select type')}
                       name="clientType"
-                      value={formData?.clientType}
-                      onChange={handleChange}
+                      id="clientType"
+                      className="largeContainerBulk"
+                      value={formData?.clientType || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'clientType',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        handleChange(event);
+                      }}
                       required
                       style={{ width: '400px' }}
-                    >
-                      <option value="">{t('Select type')}</option>
-                      {[...(clientOptions?.clientType || [])]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((type) => (
-                          <option key={type} value={type}>
-                            {t(type)}
-                          </option>
-                        ))}
-                    </select>
+                      options={[
+                        { label: t('Select type'), value: '' },
+                        ...clientOptions.clientType.map((type) => ({
+                          label: t(type),
+                          value: type,
+                        })),
+                      ]}
+                    />
                   </InputLabelContainer>
 
                   <InputLabelContainer>
                     <label>{t('Industry')}</label>
-                    <select
-                      className="selectoption largeSelectOption"
+                    <DropdownMenu
+                      label={t('Select Industry')}
                       name="industry"
-                      value={formData?.industry}
-                      onChange={handleChange}
+                      id="industry"
+                      className="largeContainerBulk"
+                      value={formData?.industry || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'industry',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        handleChange(event);
+                      }}
                       style={{ width: '400px' }}
-                    >
-                      <option value="">{t('Select Industry')}</option>
-                      {[...(clientOptions?.industry || [])]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((industry) => (
-                          <option key={industry} value={industry}>
-                            {t(industry)}
-                          </option>
-                        ))}
-                    </select>
+                      options={[
+                        { label: t('Select Industry'), value: '' },
+                        ...clientOptions.industry.map((industry) => ({
+                          label: t(industry),
+                          value: industry,
+                        })),
+                      ]}
+                    />
                   </InputLabelContainer>
 
                   <InputLabelContainer>
@@ -543,22 +560,30 @@ const AddClientForm = (props: AddClientFormProps) => {
                 <div>
                   <InputLabelContainer>
                     <label>{t('Tax Category')}</label>
-                    <select
-                      className="selectoption largeSelectOption"
+                    <DropdownMenu
+                      label={t('Select category')}
                       name="taxDetails.taxCategory"
+                      id="taxDetails.taxCategory"
+                      className="largeContainerExp"
                       value={formData.taxDetails?.taxCategory ?? ''}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'taxDetails.taxCategory',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        handleChange(event);
+                      }}
                       style={{ width: '400px' }}
-                    >
-                      <option value="">{t('Select category')}</option>
-                      {[...(clientOptions?.taxCategory || [])]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((category) => (
-                          <option key={category} value={category}>
-                            {t(category)}
-                          </option>
-                        ))}
-                    </select>
+                      options={[
+                        { label: t('Select category'), value: '' },
+                        ...clientOptions.taxCategory.map((category) => ({
+                          label: t(category),
+                          value: category,
+                        })),
+                      ]}
+                    />
                   </InputLabelContainer>
                 </div>
                 <div>

@@ -36,6 +36,7 @@ import { InfoCircleSVG } from '../svgs/NavBarSvgs.svg';
 import { formatToINR } from '../utils/currencyFormattors';
 import { hasPermission } from '../utils/permissionCheck';
 import { OrganizationValues } from '../entities/OrgValueEntity';
+import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
 
 type ExpenseListProps = {
   expenseCategories: OrganizationValues;
@@ -650,23 +651,27 @@ export const ExpenseList = (props: ExpenseListProps) => {
               </div>
             )}
           </div>
-          <select
-            className="selectoption largeSelectOption"
+          <DropdownMenu
+            label="SETTLEMENT_STATUS"
+            className="largeContainerFil"
             name="settlementStatus"
+            options={[
+              { label: t('SETTLEMENT_STATUS'), value: '' },
+              { label: t('SETTLED'), value: 'true' },
+              { label: t('PENDING'), value: 'false' },
+            ]}
             value={
               settlementStatusFilter !== undefined
                 ? settlementStatusFilter.toString()
                 : ''
             }
             onChange={(e) => {
-              handleSettlementStatusChange(e);
+              handleSettlementStatusChange({
+                target: { value: e },
+              } as React.ChangeEvent<HTMLSelectElement>);
               setCurrentPage(1);
             }}
-          >
-            <option value="">{t('SETTLEMENT_STATUS')}</option>
-            <option value="false">{t('PENDING')}</option>
-            <option value="true">{t('SETTLED')}</option>
-          </select>
+          />
         </FilterSection>
         <div className="right">
           <DisplayFilters>
@@ -705,40 +710,40 @@ export const ExpenseList = (props: ExpenseListProps) => {
           <label>{t('SORT_BY')} </label>
         </DisplayFilters>
         <FilterSection>
-          <select
-            className="selectoption largeSelectOption"
+          <DropdownMenu
+            label={t('EXPENSE_DATE')}
             name="sortBy"
+            className="largeContainerFil"
+            options={[
+              { label: t('EXPENSE_DATE'), value: '' },
+              { label: t('REQUESTED_DATE'), value: 'requestedDate' },
+              { label: t('PAYMENT_DATE'), value: 'paymentSettled' },
+              { label: t('CREATED_DATE'), value: 'created_at' },
+            ]}
             value={sortBy}
             onChange={(e) => {
-              setSortBy(e.target.value != '' ? e.currentTarget.value : '');
-              setFilterBasedOn(
-                e.target.value != '' ? e.currentTarget.value : ''
-              );
+              const selectedValue = e ?? '';
+              setSortBy(selectedValue);
+              setFilterBasedOn(selectedValue);
               setCurrentPage(1);
             }}
-          >
-            <option value="expenseDate" selected>
-              {t('EXPENSE_DATE')}
-            </option>
-            <option value="created_at">{t('CREATED_DATE')}</option>
-            <option value="paymentSettled">{t('PAYMENT_DATE')}</option>
-            <option value="requestedDate">{t('REQUESTED_DATE')}</option>
-          </select>
-
-          <select
-            className="selectoption largeSelectOption"
+          />
+          <DropdownMenu
+            label={t('NEWEST_TO_OLDEST')}
             name="sortBy"
+            id="sortBy"
+            className="largeContainerFil"
             value={sortOrder}
             onChange={(e) => {
-              setSortOrder(e.target.value != '' ? e.currentTarget.value : '');
+              const selectedValue = e ?? '';
+              setSortOrder(selectedValue !== '' ? selectedValue : '');
               setCurrentPage(1);
             }}
-          >
-            <option value="false">{t('NEWEST_TO_OLDEST')}</option>
-            <option value="true" selected>
-              {t('OLDEST_TO_NEWEST')}
-            </option>
-          </select>
+            options={[
+              { label: t('NEWEST_TO_OLDEST'), value: 'false' },
+              { label: t('OLDEST_TO_NEWEST'), value: 'true' },
+            ]}
+          />
         </FilterSection>
         <br />
         {fromDate == null && toDate == null && (

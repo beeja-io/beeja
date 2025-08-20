@@ -18,6 +18,7 @@ import SpinAnimation from '../loaders/SprinAnimation.loader';
 import Calendar from '../reusableComponents/Calendar.component';
 import { Availability } from '../reusableComponents/InventoryEnums.component';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type AddInventoryFormProps = {
   handleClose: () => void;
@@ -69,6 +70,21 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
 
   const handleSubmitData = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
+    const errorMessages = [];
+    if (!formData.device) errorMessages.push('Device');
+    if (!formData.type) errorMessages.push('Type');
+    if (!formData.availability) errorMessages.push('Availability');
+    if (!formData.dateOfPurchase) errorMessages.push('Date of Purchase');
+    if (!formData.specifications) errorMessages.push('Specifications');
+    if (!formData.price) errorMessages.push('Price');
+    if (!formData.model) errorMessages.push('Model');
+    if (!formData.productId) errorMessages.push('Product ID');
+    if (errorMessages.length > 0) {
+      setErrorMessage('Please fill: ' + errorMessages.join(', '));
+      handleShowErrorMessage();
+      return;
+    }
+
     setIsResponseLoading(true);
     try {
       const data: DeviceDetails = {
@@ -133,22 +149,27 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 {t('DEVICE')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+              <DropdownMenu
+                label={t('SELECT_DEVICE')}
                 name="device"
                 value={formData.device}
-                onChange={handleChange}
-                required
-              >
-                <option value="">{t('SELECT_DEVICE')}</option>
-                {[...(props.deviceTypes?.values || [])]
-                  .sort((a, b) => a.value.localeCompare(b.value))
-                  .map((deviceType) => (
-                    <option key={deviceType.value} value={deviceType.value}>
-                      {deviceType.value}
-                    </option>
-                  ))}
-              </select>
+                required={true}
+                onChange={(e) => {
+                  handleChange({
+                    target: {
+                      name: 'device',
+                      value: e,
+                    },
+                  } as React.ChangeEvent<HTMLSelectElement>);
+                }}
+                options={[
+                  { label: t('SELECT_DEVICE'), value: '' },
+                  ...(props.deviceTypes.values || []).map((deviceType) => ({
+                    label: deviceType.value,
+                    value: deviceType.value,
+                  })),
+                ]}
+              />
             </InputLabelContainer>
             {formData.device === 'Accessories' && (
               <InputLabelContainer>
@@ -156,20 +177,27 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                   {t('ACCESSORY_TYPE')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <select
-                  className="selectoption largeSelectOption"
+                <DropdownMenu
+                  label={t('SELECT_ACCESSORY_TYPE')}
                   name="accessoryType"
                   value={formData.accessoryType}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">{t('SELECT_ACCESSORY_TYPE')}</option>
-                  <option value="Cable">{t('CABLE')}</option>
-                  <option value="Headset">{t('HEADSET')}</option>
-                  <option value="Keyboard">{t('KEYBOARD')}</option>
-                  <option value="Mouse">{t('MOUSE')}</option>
-                  <option value="USB_sticks">{t('USB_STICKS')}</option>
-                </select>
+                  onChange={(val) => {
+                    handleChange({
+                      target: {
+                        name: 'accessoryType',
+                        value: val,
+                      },
+                    } as React.ChangeEvent<HTMLSelectElement>);
+                  }}
+                  options={[
+                    { label: t('SELECT_ACCESSORY_TYPE'), value: '' },
+                    { label: t('KEYBOARD'), value: 'Keyboard' },
+                    { label: t('CABLE'), value: 'Cable' },
+                    { label: t('HEADSET'), value: 'Headset' },
+                    { label: t('MOUSE'), value: 'Mouse' },
+                    { label: t('USB_STICKS'), value: 'USB_sticks' },
+                  ]}
+                />
               </InputLabelContainer>
             )}
             <InputLabelContainer>
@@ -177,17 +205,25 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 {t('TYPE')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+              <DropdownMenu
+                label={t('SELECT_TYPE')}
                 name="type"
                 value={formData.type}
-                onChange={handleChange}
-                required
-              >
-                <option value="">{t('SELECT_TYPE')}</option>
-                <option value="New">{t('NEW')}</option>
-                <option value="Old">{t('OLD')}</option>
-              </select>
+                required={true}
+                onChange={(val) => {
+                  handleChange({
+                    target: {
+                      name: 'type',
+                      value: val,
+                    },
+                  } as React.ChangeEvent<HTMLSelectElement>);
+                }}
+                options={[
+                  { label: t('SELECT_TYPE'), value: '' },
+                  { label: t('NEW'), value: 'New' },
+                  { label: t('OLD'), value: 'Old' },
+                ]}
+              />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
@@ -209,17 +245,25 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 {t('AVAILABILITY')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+              <DropdownMenu
+                label={t('SELECT_AVAILABILITY')}
                 name="availability"
                 value={formData.availability}
-                onChange={handleChange}
-                required
-              >
-                <option value="">{t('SELECT_AVAILABILITY')}</option>
-                <option value="No">{t('NO')}</option>
-                <option value="Yes">{t('YES')}</option>
-              </select>
+                required={true}
+                onChange={(val) => {
+                  handleChange({
+                    target: {
+                      name: 'availability',
+                      value: val,
+                    },
+                  } as React.ChangeEvent<HTMLSelectElement>);
+                }}
+                options={[
+                  { label: t('SELECT_AVAILABILITY'), value: '' },
+                  { label: t('YES'), value: 'Yes' },
+                  { label: t('NO'), value: 'No' },
+                ]}
+              />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
@@ -300,25 +344,29 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 {t('PROVIDER')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+              <DropdownMenu
+                label={t('SELECT_INVENTORY_PROVIDER')}
                 name="provider"
                 value={formData.provider}
-                onChange={handleChange}
-                required
-              >
-                <option value="">{t('SELECT_INVENTORY_PROVIDER')}</option>
-                {[...(props.inventoryProviders?.values || [])]
-                  .sort((a, b) => a.value.localeCompare(b.value))
-                  .map((inventoryProvider) => (
-                    <option
-                      key={inventoryProvider.value}
-                      value={inventoryProvider.value}
-                    >
-                      {inventoryProvider.value}
-                    </option>
-                  ))}
-              </select>
+                required={true}
+                onChange={(val) => {
+                  handleChange({
+                    target: {
+                      name: 'provider',
+                      value: val,
+                    },
+                  } as React.ChangeEvent<HTMLSelectElement>);
+                }}
+                options={[
+                  { label: t('SELECT_INVENTORY_PROVIDER'), value: '' },
+                  ...(props.inventoryProviders.values?.map(
+                    (inventoryProvider) => ({
+                      label: inventoryProvider.value,
+                      value: inventoryProvider.value,
+                    })
+                  ) || []),
+                ]}
+              />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>

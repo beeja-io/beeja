@@ -58,6 +58,7 @@ import { toast } from 'sonner';
 import CopyPasswordPopup from '../components/directComponents/CopyPasswordPopup.component';
 import { CreatedUserEntity } from '../entities/CreatedUserEntity';
 import { OrgDefaults } from '../entities/OrgDefaultsEntity';
+import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
 import { disableBodyScroll, enableBodyScroll } from '../constants/Utility';
 
 const EmployeeList = () => {
@@ -370,7 +371,26 @@ const EmployeeList = () => {
           </EmployeeListFilterSection> */}
 
           <FilterSection>
-            {departmentOptions && (
+            <DropdownMenu
+              className="largecontainerfil"
+              name="EmployeeDepartment"
+              label="Department"
+              options={[
+                { label: t('Department'), value: '' },
+                ...(departmentOptions?.values?.map((department) => ({
+                  label: department.value,
+                  value: department.value,
+                })) || []),
+              ]}
+              value={departmentFilter}
+              onChange={(e) => {
+                handleDepartmentChange({
+                  target: { value: e },
+                } as React.ChangeEvent<HTMLSelectElement>);
+                setCurrentPage(1);
+              }}
+            />
+            {/* {departmentOptions && (
               <select
                 className="selectoption"
                 name="EmployeeDepartment"
@@ -390,8 +410,27 @@ const EmployeeList = () => {
                       </option>
                     ))}
               </select>
-            )}
-            {jobTitles && (
+            )} */}
+            <DropdownMenu
+              label="JobTitle"
+              className="largecontainerfil"
+              name="JobTitle"
+              options={[
+                { label: t('Job Title'), value: '' },
+                ...(jobTitles?.values?.map((jobTitle) => ({
+                  label: jobTitle.value,
+                  value: jobTitle.value,
+                })) || []),
+              ]}
+              value={JobTitleFilter}
+              onChange={(e) => {
+                handleJobTitleChange({
+                  target: { value: e },
+                } as React.ChangeEvent<HTMLSelectElement>);
+                setCurrentPage(1);
+              }}
+            />
+            {/* {jobTitles && (
               <select
                 className="selectoption"
                 name="JobTitle"
@@ -411,9 +450,27 @@ const EmployeeList = () => {
                       </option>
                     ))}
               </select>
-            )}
-
-            {employeeTypes && (
+            )} */}
+            <DropdownMenu
+              label="EmployementType"
+              className="largecontainerfil"
+              name="EmployementType"
+              options={[
+                { label: t('Employement Type'), value: '' },
+                ...(employeeTypes?.values?.map((employeeType) => ({
+                  label: employeeType.value,
+                  value: employeeType.value,
+                })) || []),
+              ]}
+              value={EmployeementTypeFilter}
+              onChange={(e) => {
+                handleEmploymentTypeChange({
+                  target: { value: e },
+                } as React.ChangeEvent<HTMLSelectElement>);
+                setCurrentPage(1);
+              }}
+            />
+            {/* {employeeTypes && (
               <select
                 className="selectoption"
                 name="EmployementType"
@@ -433,7 +490,7 @@ const EmployeeList = () => {
                       </option>
                     ))}
               </select>
-            )}
+            )} */}
 
             {user &&
               (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
@@ -444,19 +501,36 @@ const EmployeeList = () => {
                 ) ||
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES) ||
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_EMPLOYEE)) && (
-                <select
-                  className="selectoption"
+                <DropdownMenu
+                  label="Status"
+                  className="largecontainerfil"
                   name="employeeStatus"
+                  options={[
+                    { label: t('Status'), value: '' },
+                    { label: t('ACTIVE'), value: 'Active' },
+                    { label: t('INACTIVE'), value: 'Inactive' },
+                  ]}
                   value={EmployeeStatusFilter}
                   onChange={(e) => {
-                    handleEmployeeStatusChange(e);
+                    handleEmployeeStatusChange({
+                      target: { value: e },
+                    } as React.ChangeEvent<HTMLSelectElement>);
                     setCurrentPage(1);
                   }}
-                >
-                  <option value="">Status</option>{' '}
-                  <option value="Active">{t('ACTIVE')}</option>
-                  <option value="Inactive">{t('INACTIVE')}</option>
-                </select>
+                />
+                // <select
+                //   className="selectoption"
+                //   name="employeeStatus"
+                //   value={EmployeeStatusFilter}
+                //   onChange={(e) => {
+                //     handleEmployeeStatusChange(e);
+                //     setCurrentPage(1);
+                //   }}
+                // >
+                //   <option value="">Status</option>{' '}
+                //   <option value="Active">{t('ACTIVE')}</option>
+                //   <option value="Inactive">{t('INACTIVE')}</option>
+                // </select>
               )}
           </FilterSection>
           <br />
@@ -879,32 +953,33 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             {t('EMPLOYMENT_TYPE')}{' '}
             <ValidationText className="star">*</ValidationText>
           </label>
-          <select
-            className="selectoption"
+          <DropdownMenu
+            label={t('SELECT_EMPLOYMENT_TYPE')}
             name="employmentType"
             id="employmentType"
-            onKeyPress={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-              }
-            }}
-            onChange={handleChange}
+            className="selectcontainer"
+            onChange={(e) =>
+              handleChange({
+                target: { name: 'employmentType', value: e },
+              } as React.ChangeEvent<HTMLSelectElement>)
+            }
             disabled={
               !organizationValues?.values ||
               organizationValues.values.length === 0
             }
-          >
-            <option value="">{t('SELECT_EMPLOYMENT_TYPE')}</option>
-            {organizationValues &&
-              organizationValues.values &&
-              [...(organizationValues?.values || [])]
-                .sort((a, b) => a.value.localeCompare(b.value))
-                .map((type, index) => (
-                  <option key={index} value={type.value}>
-                    {t(type.value)}
-                  </option>
-                ))}
-          </select>
+            options={[
+              { label: t('SELECT_EMPLOYMENT_TYPE'), value: null },
+              ...(organizationValues?.values || []).map((type) => ({
+                label: t(type.value),
+                value: type.value,
+              })),
+            ]}
+          />
+          {errors.employmentType && (
+            <ValidationText>
+              <AlertISVG /> {errors.employmentType}
+            </ValidationText>
+          )}
           {errors.employmentType && (
             <ValidationText>
               <AlertISVG /> {errors.employmentType}
@@ -917,32 +992,28 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             {t('SELECT_DEPARTMENT')}{' '}
             <ValidationText className="star">*</ValidationText>
           </label>
-          <select
-            className="selectoption"
+          <DropdownMenu
+            label={t('SELECT_DEPARTMENT')}
+            className="selectcontainer"
             name="department"
             id="department"
-            onKeyPress={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-              }
-            }}
-            onChange={handleChange}
+            onChange={(e) =>
+              handleChange({
+                target: { name: 'department', value: e },
+              } as React.ChangeEvent<HTMLSelectElement>)
+            }
             disabled={
               !props.departmentOptions?.values ||
               props.departmentOptions.values.length === 0
             }
-          >
-            <option value="">{t('SELECT_DEPARTMENT')}</option>
-            {props.departmentOptions &&
-              props.departmentOptions.values &&
-              [...(props.departmentOptions?.values || [])]
-                .sort((a, b) => a.value.localeCompare(b.value))
-                .map((department, index) => (
-                  <option key={index} value={department.value}>
-                    {t(department.value)}
-                  </option>
-                ))}
-          </select>
+            options={[
+              { label: t('SELECT_DEPARTMENT'), value: null },
+              ...(props.departmentOptions?.values || []).map((department) => ({
+                label: t(department.value),
+                value: department.value,
+              })),
+            ]}
+          />
           {errors.employmentType && (
             <ValidationText>
               <AlertISVG /> {errors.employmentType}

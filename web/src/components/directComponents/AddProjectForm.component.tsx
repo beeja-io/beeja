@@ -1,6 +1,5 @@
 import { t } from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
-import Select from 'react-select';
 import { Client } from '../../entities/ClientEntity.tsx';
 import { Employee } from '../../entities/ProjectEntity.tsx';
 import {
@@ -20,7 +19,6 @@ import {
   Label,
   RequiredAsterisk,
   SectionTitle,
-  SelectDropDown,
   SelectWrapper,
   TextInput,
 } from '../../styles/ProjectStyles.style.tsx';
@@ -28,6 +26,9 @@ import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import SpinAnimation from '../loaders/SprinAnimation.loader.tsx';
 import Calendar from '../reusableComponents/Calendar.component';
 import { toast } from 'sonner';
+import DropdownMenu, {
+  MultiSelectDropdown,
+} from '../reusableComponents/DropDownMenu.component.tsx';
 
 interface AddProjectFormProps {
   handleClose: () => void;
@@ -206,11 +207,12 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
               {t('Client Name')}
               <RequiredAsterisk>*</RequiredAsterisk>
             </Label>
-            <SelectDropDown
+            <DropdownMenu
+              label="Select Client"
               name="clientName"
-              value={projectFormData.clientId}
-              onChange={(e) => {
-                const selectedValue = e.target.value;
+              id="clientName"
+              value={projectFormData.clientId ?? ''}
+              onChange={(selectedValue) => {
                 const selectedOption = clientOptions.find(
                   (opt) => opt.value === selectedValue
                 );
@@ -220,18 +222,22 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     clientId: selectedOption.value,
                     clientName: selectedOption.label,
                   }));
+                } else {
+                  setProjectFormData((prev) => ({
+                    ...prev,
+                    clientId: '',
+                    clientName: '',
+                  }));
                 }
               }}
-            >
-              <option value="">Select Client</option>
-              {[...clientOptions]
-                .sort((a, b) => a.value.localeCompare(b.value))
-                .map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-            </SelectDropDown>
+              options={[
+                { label: 'Select Client', value: '' },
+                ...clientOptions.map((opt) => ({
+                  label: opt.label,
+                  value: opt.value,
+                })),
+              ]}
+            />
           </FormField>
 
           <SelectWrapper>
@@ -240,24 +246,23 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 {t('Project Managers')}
                 <RequiredAsterisk>*</RequiredAsterisk>
               </Label>
-              <Select
-                isMulti
-                name="projectManagers"
+              <MultiSelectDropdown
+                options={managerOptions}
                 value={managerOptions.filter((option) =>
                   projectFormData.projectManagers.includes(option.value)
                 )}
-                options={managerOptions}
                 onChange={(selected) => {
                   const values = [...selected]
                     .sort((a, b) => a.value.localeCompare(b.value))
                     .map((opt) => opt.value);
+
                   setProjectFormData((prev) => ({
                     ...prev,
                     projectManagers: values,
                   }));
                 }}
-                classNamePrefix="react-select"
                 placeholder={t('Select Project Managers')}
+                searchable={true}
               />
             </FormField>
           </SelectWrapper>
@@ -268,13 +273,11 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 {t('Resources')}
                 <RequiredAsterisk>*</RequiredAsterisk>
               </Label>
-              <Select
-                isMulti
-                name="resources"
+              <MultiSelectDropdown
+                options={resourceOptions}
                 value={resourceOptions.filter((option) =>
                   projectFormData.projectResources.includes(option.value)
                 )}
-                options={resourceOptions}
                 onChange={(selected) => {
                   const values = [...selected]
                     .sort((a, b) => a.value.localeCompare(b.value))
@@ -284,8 +287,8 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     projectResources: values,
                   }));
                 }}
-                classNamePrefix="react-select"
                 placeholder={t('Select Resources')}
+                searchable={true}
               />
             </FormField>
           </SelectWrapper>

@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { useTranslation } from 'react-i18next';
-import Select, { MultiValue } from 'react-select';
 import { toast } from 'sonner';
 import { ContractDetails } from '../../entities/ContractEntiy';
 import { Employee, ProjectEntity } from '../../entities/ProjectEntity';
@@ -67,6 +66,9 @@ import {
   ContractType,
   ContractTypeLabels,
 } from '../reusableComponents/ContractEnums.component';
+import DropdownMenu, {
+  MultiSelectDropdown,
+} from '../reusableComponents/DropDownMenu.component';
 
 type AddContractFormProps = {
   handleClose: () => void;
@@ -501,22 +503,29 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
                   <InputLabelContainer>
                     <label>{t('Billing Type')}</label>
-                    <select
+                    <DropdownMenu
+                      label={t('Select Billing Type')}
                       name="billingType"
-                      value={formData.billingType}
-                      onChange={handleChange}
-                      className="selectoption largeSelectOption"
-                      style={{ width: '400px' }}
-                    >
-                      <option value="">{t('Select Billing Type')}</option>
-                      {[...Object.values(ContractBillingType)]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((type) => (
-                          <option key={type} value={type}>
-                            {ContractBillingTypeLabels[type]}
-                          </option>
-                        ))}
-                    </select>
+                      id="billingType"
+                      className="largeContainerBulk"
+                      value={formData.billingType || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'billingType',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        handleChange(event);
+                      }}
+                      options={[
+                        { label: t('Select Billing Type'), value: '' },
+                        ...Object.values(ContractBillingType).map((type) => ({
+                          label: ContractBillingTypeLabels[type],
+                          value: type,
+                        })),
+                      ]}
+                    />
                   </InputLabelContainer>
                   <InputLabelContainer>
                     <label>{t('Budget')}</label>
@@ -538,11 +547,22 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       <ValidationText className="star">*</ValidationText>
                     </label>
 
-                    <select
+                    <DropdownMenu
+                      label="Select Contract"
                       name="contractType"
-                      value={formData.contractType}
+                      id="contractType"
+                      className="largeContainerBulk"
+                      value={formData.contractType || ''}
                       onChange={(e) => {
-                        handleChange(e);
+                        const event = {
+                          target: {
+                            name: 'contractType',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+
+                        handleChange(event);
+
                         if (errors.contractType) {
                           setErrors((prev) => ({
                             ...prev,
@@ -550,19 +570,15 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           }));
                         }
                       }}
-                      className="selectoption largeSelectOption"
-                      required
-                      style={{ width: '400px' }}
-                    >
-                      <option value="">Select Contract</option>
-                      {[...Object.values(ContractType)]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((type) => (
-                          <option key={type} value={type}>
-                            {ContractTypeLabels[type]}
-                          </option>
-                        ))}
-                    </select>
+                      required={true}
+                      options={[
+                        { label: 'Select Contract', value: '' },
+                        ...Object.values(ContractType).map((type) => ({
+                          label: ContractTypeLabels[type],
+                          value: type,
+                        })),
+                      ]}
+                    />
                     {errors.contractType && (
                       <ValidationText>{errors.contractType}</ValidationText>
                     )}
@@ -633,22 +649,29 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
                   <InputLabelContainer>
                     <label>{t('Billing Currency')}</label>
-                    <select
+                    <DropdownMenu
+                      label="Select Currency"
                       name="billingCurrency"
-                      value={formData.billingCurrency}
-                      onChange={handleChange}
-                      className="selectoption largeSelectOption"
-                      style={{ width: '400px' }}
-                    >
-                      <option value="">Select Currency</option>
-                      {[...Object.values(BillingCurrency)]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((currency) => (
-                          <option key={currency} value={currency}>
-                            {BillingCurrencyLabels[currency]}
-                          </option>
-                        ))}
-                    </select>
+                      id="billingCurrency"
+                      className="largeContainerBulk"
+                      value={formData.billingCurrency || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'billingCurrency',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        handleChange(event);
+                      }}
+                      options={[
+                        { label: 'Select Currency', value: '' },
+                        ...Object.values(BillingCurrency).map((currency) => ({
+                          label: BillingCurrencyLabels[currency],
+                          value: currency,
+                        })),
+                      ]}
+                    />
                   </InputLabelContainer>
                   <InputLabelContainer>
                     <label>{t('Description')}</label>
@@ -720,23 +743,30 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     {t('Project Name')}
                     <ValidationText className="star">*</ValidationText>
                   </label>
-                  <select
+                  <DropdownMenu
+                    label={t('Select Project')}
                     name="projectName"
-                    value={formData.projectName}
-                    onChange={handleProjectChange}
-                    className="selectoption largeSelectOption"
-                    required
-                    style={{ width: '400px' }}
-                  >
-                    <option value="">{t('Select Project')}</option>
-                    {[...(projectOptions || [])]
-                      .sort((a, b) => a.name.localeCompare(b.name))
-                      .map((project) => (
-                        <option key={project.projectId} value={project.name}>
-                          {project.name}
-                        </option>
-                      ))}
-                  </select>
+                    id="projectName"
+                    className="largeContainerBulk"
+                    value={formData.projectName || ''}
+                    onChange={(e) => {
+                      const event = {
+                        target: {
+                          name: 'projectName',
+                          value: e,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleProjectChange(event);
+                    }}
+                    required={true}
+                    options={[
+                      { label: t('Select Project'), value: '' },
+                      ...(projectOptions?.map((project) => ({
+                        label: project.name,
+                        value: project.name,
+                      })) || []),
+                    ]}
+                  />
                 </InputLabelContainer>
               </div>
               <div>
@@ -747,17 +777,13 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         {t('Project Managers')}
                         <RequiredAsterisk>*</RequiredAsterisk>
                       </Label>
-                      <Select
-                        isMulti
-                        name="projectManagers"
+                      <MultiSelectDropdown
+                        options={managerOptions}
                         value={managerOptions.filter((option) =>
                           formData.projectManagers.includes(option.value)
                         )}
-                        options={managerOptions}
-                        onChange={(
-                          selected: MultiValue<{ value: string; label: string }>
-                        ) => {
-                          const values = [...(selected || [])]
+                        onChange={(selected) => {
+                          const values = [...selected]
                             .sort((a, b) => a.value.localeCompare(b.value))
                             .map((opt) => opt.value);
                           setFormData((prev) => ({
@@ -765,8 +791,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             projectManagers: values,
                           }));
                         }}
-                        classNamePrefix="react-select"
                         placeholder={t('Select Project Managers')}
+                        searchable={true}
                       />
                     </FormField>
                   </SelectWrapper>
@@ -783,18 +809,26 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
                 <ResourceAllocationRow>
                   <StyledResourceWrapper>
-                    <Select
-                      classNamePrefix="react-select"
-                      options={resourceOptions}
-                      value={
-                        resourceOptions.find(
-                          (opt) => opt.value === currentResource
-                        ) || null
-                      }
-                      onChange={(selected) =>
-                        setCurrentResource(selected?.value || null)
-                      }
-                      placeholder="Search People"
+                    <DropdownMenu
+                      label="Search People"
+                      name="currentResource"
+                      id="currentResource"
+                      value={currentResource || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'currentResource',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        setCurrentResource(event.target.value || null);
+                      }}
+                      options={[
+                        ...resourceOptions.map((opt) => ({
+                          label: opt.label,
+                          value: opt.value,
+                        })),
+                      ]}
                     />
                   </StyledResourceWrapper>
 
