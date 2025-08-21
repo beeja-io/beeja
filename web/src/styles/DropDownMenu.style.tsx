@@ -5,7 +5,6 @@ export const ContainerStyle = styled.div<{ Width?: string }>`
   overflow: visible;
   font-size: 0.875rem;
   font-weight: 500;
-  height: 54px;
   border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 0.75rem;
   padding: 1rem;

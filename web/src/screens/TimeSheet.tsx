@@ -36,7 +36,6 @@ import { ArrowDownSVG, EditWhitePenSVG } from '../svgs/CommonSvgs.svs';
 import { format, subMonths, addMonths } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useUser } from '../context/UserContext';
 import {
   deleteLog,
   fetchMonthLogs,
@@ -242,8 +241,6 @@ const Timesheet = () => {
   ) => {
     setSelectedContract(event.target.value);
   };
-
-  const { user } = useUser();
   const handlePreviousMonth = () => {
     const newMonth = subMonths(currentMonth, 1);
     setCurrentMonth(newMonth);

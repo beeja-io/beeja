@@ -372,7 +372,7 @@ const EmployeeList = () => {
 
           <FilterSection>
             <DropdownMenu
-              className="largecontainerfil"
+              className="largeContainerFil"
               name="EmployeeDepartment"
               label="Department"
               options={[
@@ -390,30 +390,9 @@ const EmployeeList = () => {
                 setCurrentPage(1);
               }}
             />
-            {/* {departmentOptions && (
-              <select
-                className="selectoption"
-                name="EmployeeDepartment"
-                value={departmentFilter}
-                onChange={(e) => {
-                  handleDepartmentChange(e);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="">Department</option>{' '}
-                {departmentOptions?.values &&
-                  [...departmentOptions.values]
-                    .sort((a, b) => a.value.localeCompare(b.value))
-                    .map((department) => (
-                      <option key={department.value} value={department.value}>
-                        {t(department.value)}
-                      </option>
-                    ))}
-              </select>
-            )} */}
             <DropdownMenu
               label="JobTitle"
-              className="largecontainerfil"
+              className="largeContainerFil"
               name="JobTitle"
               options={[
                 { label: t('Job Title'), value: '' },
@@ -430,30 +409,9 @@ const EmployeeList = () => {
                 setCurrentPage(1);
               }}
             />
-            {/* {jobTitles && (
-              <select
-                className="selectoption"
-                name="JobTitle"
-                value={JobTitleFilter}
-                onChange={(e) => {
-                  handleJobTitleChange(e);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="">Job Title</option>{' '}
-                {jobTitles?.values &&
-                  [...jobTitles.values]
-                    .sort((a, b) => a.value.localeCompare(b.value))
-                    .map((jobTitle) => (
-                      <option key={jobTitle.value} value={jobTitle.value}>
-                        {t(jobTitle.value)}
-                      </option>
-                    ))}
-              </select>
-            )} */}
             <DropdownMenu
               label="EmployementType"
-              className="largecontainerfil"
+              className="largeContainerFil"
               name="EmployementType"
               options={[
                 { label: t('Employement Type'), value: '' },
@@ -470,27 +428,6 @@ const EmployeeList = () => {
                 setCurrentPage(1);
               }}
             />
-            {/* {employeeTypes && (
-              <select
-                className="selectoption"
-                name="EmployementType"
-                value={EmployeementTypeFilter}
-                onChange={(e) => {
-                  handleEmploymentTypeChange(e);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="">Employement Type</option>
-                {departmentOptions?.values &&
-                  [...departmentOptions.values]
-                    .sort((a, b) => a.value.localeCompare(b.value))
-                    .map((department) => (
-                      <option key={department.value} value={department.value}>
-                        {t(department.value)}
-                      </option>
-                    ))}
-              </select>
-            )} */}
 
             {user &&
               (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
@@ -503,7 +440,7 @@ const EmployeeList = () => {
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_EMPLOYEE)) && (
                 <DropdownMenu
                   label="Status"
-                  className="largecontainerfil"
+                  className="largeContainerFil"
                   name="employeeStatus"
                   options={[
                     { label: t('Status'), value: '' },
@@ -518,19 +455,6 @@ const EmployeeList = () => {
                     setCurrentPage(1);
                   }}
                 />
-                // <select
-                //   className="selectoption"
-                //   name="employeeStatus"
-                //   value={EmployeeStatusFilter}
-                //   onChange={(e) => {
-                //     handleEmployeeStatusChange(e);
-                //     setCurrentPage(1);
-                //   }}
-                // >
-                //   <option value="">Status</option>{' '}
-                //   <option value="Active">{t('ACTIVE')}</option>
-                //   <option value="Inactive">{t('INACTIVE')}</option>
-                // </select>
               )}
           </FilterSection>
           <br />
