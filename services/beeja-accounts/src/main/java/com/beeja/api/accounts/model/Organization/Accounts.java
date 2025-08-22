@@ -16,7 +16,7 @@ public class Accounts {
   private String esiNumber;
   private String linNumber;
   private String gstNumber;
-  private String taxId;
+
   @Pattern(
           regexp = "^[A-Z]{4}[0-9]{6}$",
           message = "Tax Number must be in the format XXXX123456"
