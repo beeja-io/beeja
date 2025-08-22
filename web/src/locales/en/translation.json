@@ -149,6 +149,7 @@
   "NO": "No",
   "YES": "Yes",
   "COMPANY_INFO": "Company Info",
+  "ACCOUNT_INFO": "Account Info", 
   "COMPANY_LOGO": "Company Logo",
   "LOADING": "Loading...",
   "CLEAR_IMAGE": "Clear Image",
@@ -330,6 +331,7 @@
   "PF_NO.": "PF No.",
   "TAN_NO.": "TAN No.",
   "PAN_NO.": "PAN No.",
+  "TAX_NO.": "TAX No.",
   "ESI_NO.": "ESI No.",
   "LIN_NO.": "LIN No.",
   "GST_NO": "GST No.",
@@ -362,6 +364,12 @@
   "SETTLED": "Settled",
   "PENDING": "Pending",
   "LIST_OF_REFERRALS": "List of Referrals",
+  "BANK_INFO": "Bank Info",
+  "BANK_NAME": "Bank Name",
+  "ACCOUNT_NAME": "Account Name",
+  "ACCOUNT_NUMBER": "Account Number",
+  "IFSC_CODE": "IFSC Code",
+
   "errors": {
     "unsupported_format": "Unsupported file format. Please upload a valid receipt file(jpeg, png, pdf).",
     "single_file_exceeds": "File size exceeded 5MB, please upload a file below 5MB.",
