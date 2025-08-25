@@ -25,6 +25,7 @@ import SpinAnimation from '../loaders/SprinAnimation.loader.tsx';
 import Calendar from '../reusableComponents/Calendar.component';
 import { toast } from 'sonner';
 import { ValidationText } from '../../styles/DocumentTabStyles.style.tsx';
+import CenterModal from '../reusableComponents/CenterModal.component.tsx';
 
 interface AddProjectFormProps {
   handleClose: () => void;
@@ -75,6 +76,11 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   const [clientOptions, setClientOptions] = useState<OptionType[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+
+  const handleDiscardModalToggle = () => {
+    setIsDiscardModalOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     getResourceManager()
@@ -346,7 +352,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
             <SpinAnimation />
           ) : (
             <div className="formButtons">
-              <Button onClick={handleClose} type="button">
+              <Button onClick={handleDiscardModalToggle} type="button">
                 {t('Cancel')}
               </Button>
               <Button className="submit" type="submit">
@@ -356,6 +362,22 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
           )}
         </AddFormMainContainer>
       </>
+      {isDiscardModalOpen && (
+        <CenterModal
+          handleModalLeftButtonClick={handleDiscardModalToggle}
+          handleModalClose={handleDiscardModalToggle}
+          handleModalSubmit={handleClose}
+          modalHeading={t('Discard Changes?')}
+          modalContent={t('Are you sure you want to discard your changes?')}
+          modalType="discardModal"
+          modalLeftButtonClass="mobileBtn"
+          modalRightButtonClass="mobileBtn"
+          modalRightButtonBorderColor="black"
+          modalRightButtonTextColor="black"
+          modalLeftButtonText={t('No')}
+          modalRightButtonText={t('Discard')}
+        />
+      )}
     </FormContainer>
   );
 };

@@ -15,6 +15,7 @@ export interface ClientDetails {
   description: string;
   usePrimaryAddress: boolean;
   logo: string | File;
+  logoId?: string;
   taxDetails: {
     taxCategory: TaxCategory;
     taxNumber: string;

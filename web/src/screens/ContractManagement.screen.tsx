@@ -120,7 +120,11 @@ const ContractManagement = () => {
             {isCreateModalOpen && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Add Contract')}</span>
+                <span className="nav_AddClient">
+                  {selectedContractData
+                    ? t('Edit Contract')
+                    : t('Add Contract')}
+                </span>
               </>
             )}
 

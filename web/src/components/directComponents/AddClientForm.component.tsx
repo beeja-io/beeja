@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClientDetails } from '../../entities/ClientEntity';
-import { postClient, putClient } from '../../service/axiosInstance';
+import {
+  downloadClientLogo,
+  postClient,
+  putClient,
+} from '../../service/axiosInstance';
 import {
   AddClientButtons,
   AddFormMainContainer,
@@ -68,6 +72,7 @@ import {
   TaxCategory,
 } from '../reusableComponents/ClientEnums.component';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
+import CenterModal from '../reusableComponents/CenterModal.component';
 
 type AddClientFormProps = {
   handleClose: () => void;
@@ -119,6 +124,7 @@ const AddClientForm = (props: AddClientFormProps) => {
       contact: '',
       description: '',
       logo: '',
+      logoId: '',
       taxDetails: {
         taxCategory: '' as TaxCategory,
         taxNumber: '',
@@ -207,7 +213,45 @@ const AddClientForm = (props: AddClientFormProps) => {
 
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
+  const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+  const [errors, setErrors] = useState<{
+    taxCategory?: string;
+    taxNumber?: string;
+  }>({});
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+
+  const handleDiscardModalToggle = () => {
+    setIsDiscardModalOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const fetchLogoImage = async () => {
+      if (formData?.logoId && !logoPreviewUrl && !file) {
+        try {
+          const response = await downloadClientLogo(formData.logoId);
+
+          if (response?.data && response.data.size > 0) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const imageUrl = reader.result as string;
+              setLogoPreviewUrl(imageUrl);
+            };
+            reader.readAsDataURL(response.data);
+          }
+        } catch (error) {
+          throw Error('Error fetching logo:' + error);
+        }
+      }
+    };
+
+    fetchLogoImage();
+    return () => {
+      if (logoPreviewUrl) {
+        URL.revokeObjectURL(logoPreviewUrl);
+      }
+    };
+  }, [formData?.logoId]);
+
   useEffect(() => {
     return () => {
       if (logoPreviewUrl) {
@@ -260,6 +304,10 @@ const AddClientForm = (props: AddClientFormProps) => {
       newValue = newValue.replace(/\D/g, '').slice(0, 10);
     }
 
+    if (name === 'taxDetails.taxNumber') {
+      newValue = newValue.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 15);
+    }
+
     setFormData((prevState) => {
       if (keys.length === 2) {
         const [parentKey, childKey] = keys;
@@ -283,6 +331,27 @@ const AddClientForm = (props: AddClientFormProps) => {
         [name]: newValue,
       };
     });
+
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+
+      if (name === 'taxDetails.taxCategory' && newValue) {
+        delete newErrors.taxCategory;
+      }
+
+      if (name === 'taxDetails.taxNumber') {
+        if (
+          newValue &&
+          newValue.length >= 10 &&
+          newValue.length <= 15 &&
+          /^[A-Za-z0-9-]+$/.test(newValue)
+        ) {
+          delete newErrors.taxNumber;
+        }
+      }
+
+      return newErrors;
+    });
   };
 
   const validateStep1 = () => {
@@ -305,7 +374,28 @@ const AddClientForm = (props: AddClientFormProps) => {
     return isValid;
   };
   const validateStep2 = () => {
-    return true;
+    let isValid = true;
+
+    const newErrors: { taxNumber?: string; taxCategory?: string } = {};
+
+    if (!formData.taxDetails.taxCategory) {
+      isValid = false;
+      newErrors.taxCategory = 'Please select a Tax Category.';
+    }
+
+    const taxNumber: string = formData.taxDetails.taxNumber?.trim() || '';
+    if (
+      taxNumber === '' ||
+      taxNumber.length < 10 ||
+      taxNumber.length > 15 ||
+      !/^[A-Za-z0-9-]+$/.test(taxNumber)
+    ) {
+      isValid = false;
+      newErrors.taxNumber =
+        'Tax Number must be 10–15 characters. Example: GSTIN12345.';
+    }
+    setErrors(newErrors);
+    return isValid;
   };
 
   const validateStep3 = () => {
@@ -398,6 +488,12 @@ const AddClientForm = (props: AddClientFormProps) => {
           >
             <FormInputsContainer>
               <ColumnWrapper>
+                {formData?.clientId && (
+                  <InputLabelContainer>
+                    <label>{t('Client ID')}</label>
+                    <TextInput type="text" value={formData.clientId} disabled />
+                  </InputLabelContainer>
+                )}
                 <InputLabelContainer>
                   <label>
                     {t('Client Name')}
@@ -499,33 +595,105 @@ const AddClientForm = (props: AddClientFormProps) => {
                     onChange={handleChange}
                   />
                 </InputLabelContainer>
-              </ColumnWrapper>
-              <LogoContainer>
-                <LogoLabel>{t('Logo')}</LogoLabel>
-                <LogoUploadContainer
-                  onClick={() => document.getElementById('fileInput')?.click()}
-                >
-                  <input
-                    id="fileInput"
-                    type="file"
-                    accept=".png, .jpg, .jpeg"
-                    style={{ display: 'none' }}
-                    onChange={handleFileChange}
-                    name="logo"
-                  />
-                  <UploadSVG />
-                  <UploadText>
-                    {t('Upload your Logo')}
-                    <BrowseText>{t('Browse')}</BrowseText>
-                  </UploadText>
-                </LogoUploadContainer>
-                {file && (
-                  <LogoLabel>
-                    <FileName>{file.name}</FileName>
-                    <RemoveButton onClick={() => setFile(null)}>x</RemoveButton>
-                  </LogoLabel>
+                {formData?.clientId && (
+                  <InputLabelContainer className="logoEditContainer">
+                    <label>{t('Logo')}</label>
+                    <LogoUploadContainer
+                      onClick={() =>
+                        document.getElementById('fileInput')?.click()
+                      }
+                      className="edit-height"
+                    >
+                      <input
+                        id="fileInput"
+                        type="file"
+                        accept=".png, .jpg, .jpeg"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                        name="logo"
+                      />
+                      <UploadSVG />
+                      <UploadText>
+                        {t('Upload your Logo')}
+                        <BrowseText>{t('Browse')}</BrowseText>
+                      </UploadText>
+                    </LogoUploadContainer>
+                    {file && (
+                      <LogoLabel>
+                        <FileName>{file.name}</FileName>
+                        <RemoveButton
+                          onClick={() => {
+                            setFile(null);
+                            setLogoPreviewUrl(null);
+                            setFormData((prev) => ({
+                              ...prev,
+                              clientLogo: null,
+                            }));
+                          }}
+                        >
+                          x
+                        </RemoveButton>
+                      </LogoLabel>
+                    )}
+                    {!file && formData?.logoId && (
+                      <LogoLabel className="editLabel">
+                        <FileName>LogoId: {formData.logoId}</FileName>
+                        <RemoveButton
+                          onClick={() => {
+                            setFormData((prev) => ({ ...prev, logoId: '' }));
+                            setLogoPreviewUrl(null);
+                          }}
+                        >
+                          x
+                        </RemoveButton>
+                      </LogoLabel>
+                    )}
+                  </InputLabelContainer>
                 )}
-              </LogoContainer>
+              </ColumnWrapper>
+
+              {!formData?.clientId && (
+                <LogoContainer>
+                  <LogoLabel>{t('Logo')}</LogoLabel>
+                  <LogoUploadContainer
+                    className="add_height"
+                    onClick={() =>
+                      document.getElementById('fileInput')?.click()
+                    }
+                  >
+                    <input
+                      id="fileInput"
+                      type="file"
+                      accept=".png, .jpg, .jpeg"
+                      style={{ display: 'none' }}
+                      onChange={handleFileChange}
+                      name="logo"
+                    />
+                    <UploadSVG />
+                    <UploadText>
+                      {t('Upload your Logo')}
+                      <BrowseText>{t('Browse')}</BrowseText>
+                    </UploadText>
+                  </LogoUploadContainer>
+                  {file && (
+                    <LogoLabel>
+                      <FileName>{file.name}</FileName>
+                      <RemoveButton
+                        onClick={() => {
+                          setFile(null);
+                          setLogoPreviewUrl(null);
+                          setFormData((prev) => ({
+                            ...prev,
+                            clientLogo: null,
+                          }));
+                        }}
+                      >
+                        x
+                      </RemoveButton>
+                    </LogoLabel>
+                  )}
+                </LogoContainer>
+              )}
             </FormInputsContainer>
             <div className="formButtons">
               <Button onClick={props.handleClose} type="button">
@@ -553,11 +721,15 @@ const AddClientForm = (props: AddClientFormProps) => {
           >
             <FormInputs className="tax-container">
               <InputLabelContainer>
-                <label>{t('Tax Category')}</label>
+                <label>
+                  {t('Tax Category')}
+                  <ValidationText className="star">*</ValidationText>
+                </label>
                 <select
                   className="selectoption largeSelectOption"
                   name="taxDetails.taxCategory"
                   value={formData.taxDetails?.taxCategory ?? ''}
+                  required
                   onChange={handleChange}
                 >
                   <option value="">{t('Select category')}</option>
@@ -569,18 +741,35 @@ const AddClientForm = (props: AddClientFormProps) => {
                       </option>
                     ))}
                 </select>
+                {errors.taxCategory && (
+                  <ValidationText className="error">
+                    {errors.taxCategory}
+                  </ValidationText>
+                )}
               </InputLabelContainer>
 
               <InputLabelContainer>
-                <label>{t('Tax Number')}</label>
+                <label>
+                  {t('Tax Number')}
+                  <ValidationText className="star">*</ValidationText>
+                </label>
                 <TextInput
                   type="text"
                   name="taxDetails.taxNumber"
                   placeholder={t('Enter Tax Number')}
                   className="largeInput"
+                  required
+                  minLength={10}
+                  maxLength={15}
+                  pattern="^[A-Za-z0-9-]{10,15}$"
                   value={formData.taxDetails?.taxNumber ?? ''}
                   onChange={handleChange}
                 />
+                {errors.taxNumber && (
+                  <ValidationText className="error">
+                    {errors.taxNumber}
+                  </ValidationText>
+                )}
               </InputLabelContainer>
             </FormInputs>
             <AddClientButtons>
@@ -595,7 +784,9 @@ const AddClientForm = (props: AddClientFormProps) => {
                 <Button
                   className="submit"
                   type="button"
-                  onClick={handleNextStep}
+                  onClick={() => {
+                    handleNextStep();
+                  }}
                 >
                   {t('Save & Continue')}
                 </Button>
@@ -832,10 +1023,17 @@ const AddClientForm = (props: AddClientFormProps) => {
                       </InfoGroup>
                     </InfoRow>
                   </div>
-                  {logoPreviewUrl && (
+                  {(logoPreviewUrl || formData?.logoId) && (
                     <LogoNameWrapper>
                       <LogoPreview>
-                        <img src={logoPreviewUrl} alt="Client Logo" />
+                        <img
+                          src={
+                            logoPreviewUrl
+                              ? logoPreviewUrl
+                              : `/projects/v1/files/download/${formData.logoId}`
+                          }
+                          alt="Client Logo"
+                        />
                       </LogoPreview>
                     </LogoNameWrapper>
                   )}
@@ -944,14 +1142,30 @@ const AddClientForm = (props: AddClientFormProps) => {
       {step === 4 && (
         <div className="formButtons">
           <ButtonGroup>
-            <Button onClick={props.handleClose} type="button">
-              {t('Skip')}
+            <Button onClick={handleDiscardModalToggle} type="button">
+              {t('Cancel')}
             </Button>
             <Button className="submit" type="submit" form="summaryForm">
               {t('Save & Continue')}
             </Button>
           </ButtonGroup>
         </div>
+      )}
+      {isDiscardModalOpen && (
+        <CenterModal
+          handleModalLeftButtonClick={handleDiscardModalToggle}
+          handleModalClose={handleDiscardModalToggle}
+          handleModalSubmit={props.handleClose}
+          modalHeading={t('Discard Changes?')}
+          modalContent={t('Are you sure you want to discard your changes?')}
+          modalType="discardModal"
+          modalLeftButtonClass="mobileBtn"
+          modalRightButtonClass="mobileBtn"
+          modalRightButtonBorderColor="black"
+          modalRightButtonTextColor="black"
+          modalLeftButtonText={t('No')}
+          modalRightButtonText={t('Discard')}
+        />
       )}
     </FormContainer>
   );

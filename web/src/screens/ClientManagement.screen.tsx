@@ -108,7 +108,9 @@ const ClientManagement = () => {
             {isCreateModalOpen && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Add Client')}</span>
+                <span className="nav_AddClient">
+                  {isEditMode ? t('Edit Client') : t('Add Client')}
+                </span>
               </>
             )}
             {!isCreateModalOpen && isClientDetailsRoute && (
@@ -153,8 +155,16 @@ const ClientManagement = () => {
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody={t('The Client has been Added Successfully')}
-          messageHeading={t('Client Suceessfully Added.')}
+          messageBody={
+            isEditMode
+              ? t('The Client has been Updated Successfully')
+              : t('The Client has been Added Successfully')
+          }
+          messageHeading={
+            isEditMode
+              ? t('Client Successfully Updated.')
+              : t('Client Successfully Added.')
+          }
           handleClose={handleShowSuccessMessage}
         />
       )}

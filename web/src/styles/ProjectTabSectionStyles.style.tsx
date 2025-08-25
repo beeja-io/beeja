@@ -2,10 +2,10 @@ import styled from 'styled-components';
 
 export const Container = styled.div`
   margin-top: 30px;
-  background-color: white;
   border-radius: 10px;
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  background: ${(props) => props.theme.colors.blackColors.white6};
   min-height: 312px;
 `;
 
@@ -22,7 +22,10 @@ export const Tab = styled.div<{ active: boolean }>`
   cursor: pointer;
   border-bottom: 2px solid
     ${(props) => (props.active ? '#007bff' : 'transparent')};
-  color: ${(props) => (props.active ? '#007bff' : '#555')};
+  color: ${(props) =>
+    props.active
+      ? '#007bff'
+      : '${(props) => props.theme.colors.blackColors.white6}'};
   font-weight: ${(props) => (props.active ? '600' : '500')};
   &:hover {
     color: #007bff;
@@ -49,16 +52,17 @@ export const ProjectsTable = styled.table`
   }
 
   th {
-    background-color: #f9f9f9;
+    background: ${(props) => props.theme.colors.grayColors.gray6};
+    color: ${(props) => props.theme.colors.blackColors.black7};
     font-weight: 600;
   }
-
-  tbody tr:nth-child(even) {
-    background-color: #f7f9fa;
+  td {
+    color: ${(props) => props.theme.colors.blackColors.black7};
   }
 
   tbody tr:hover {
-    background-color: #eef2f6;
+    background-color: ${(props) =>
+      props.theme.colors.backgroundColors.blueShade};
   }
 `;
 

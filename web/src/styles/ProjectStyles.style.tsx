@@ -47,7 +47,7 @@ export const InfoText = styled.div`
   .name {
     font-size: 14px;
     font-weight: 600;
-    color: #111827 !important;
+    color: ${(props) => props.theme.colors.blackColors.black7};
 
     font-family: Nunito;
     font-weight: 600;
@@ -84,7 +84,7 @@ export const RightSectionDiv = styled.div`
 export const IconWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   margin-top: 12px;
   svg {
     width: 19px;
@@ -93,7 +93,8 @@ export const IconWrapper = styled.div`
 `;
 
 export const FormContainer = styled.div`
-  background: #ffffff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
+  border: 1px solid ${(props) => props.theme.colors.blackColors.white2};
   padding: 24px 32px;
   border-radius: 10px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
@@ -161,6 +162,24 @@ export const SelectWrapper = styled.div`
   }
 `;
 
+export const RightSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+  background: ${(props) => props.theme.colors.blackColors.white6};
+  width: 315px;
+
+  angle: 0 deg;
+  opacity: 1;
+  padding-top: 36px;
+  padding-right: 24px;
+  padding-bottom: 36px;
+  padding-left: 24px;
+  gap: 32px;
+  border-radius: 16px;
+`;
+
 export const TextArea = styled.textarea`
   max-width: 491px;
   height: 54px;
@@ -213,10 +232,12 @@ export const TextInput = styled.input`
   height: 54px;
   padding: 10px 14px;
   padding-right: 40px;
-  border: 1px solid #dcdcdc;
+  border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 8px;
   font-size: 14px;
   box-sizing: border-box;
+  color: ${(props) => props.theme.colors.blackColors.black1};
+  background-color: ${(props) => props.theme.colors.backgroundColors.primary};
 
   &:focus {
     border-color: #007bff;
@@ -299,7 +320,7 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
     outline: none;
     border-radius: 8px;
     border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
-    border: 1px solid #dcdcdc;
+    color: ${(props) => props.theme.colors.blackColors.black1};
     display: flex;
     padding: 16px 20px;
     gap: 10px;
@@ -320,13 +341,28 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
     max-width: 491px;
     box-sizing: border-box;
     height: 54px;
+    background: ${(props) => props.theme.colors.blackColors.white6};
   }
 
   .react-select__control {
     min-height: 54px !important;
     border-radius: 8px;
+    background: ${(props) => props.theme.colors.blackColors.white6};
+    color: ${(props) => props.theme.colors.blackColors.black1};
   }
 
+  .react-select__menu {
+    background: ${(props) => props.theme.colors.blackColors.white6};
+    border-radius: 8px;
+    z-index: 1000;
+  }
+
+  .react-select__option {
+    background: ${(props) => props.theme.colors.blackColors.white6} !important;
+    color: ${(props) => props.theme.colors.blackColors.black1} !important;
+    padding: 10px;
+    cursor: pointer;
+  }
   span.calendarField {
     position: relative;
     display: flex;

@@ -169,7 +169,7 @@ const ClientDetailsScreen: React.FC = () => {
               client?.primaryAddress?.postalCode,
             ]
               .filter(Boolean)
-              .join(', ')}
+              .join(', ') || '-'}
           </AddressDiv>
         </RightSectionDiv>
         <RightSectionDiv>
@@ -183,7 +183,7 @@ const ClientDetailsScreen: React.FC = () => {
               client?.primaryAddress?.postalCode,
             ]
               .filter(Boolean)
-              .join(', ')}
+              .join(', ') || '-'}
           </AddressDiv>
         </RightSectionDiv>
         <RightSectionDiv>
@@ -191,11 +191,11 @@ const ClientDetailsScreen: React.FC = () => {
           <TaxDetailsWrapper>
             <TaxItem>
               <TaxLabel>{t('VAT/ GST Number')}:</TaxLabel>
-              <TaxValue>{client?.taxDetails?.taxNumber ?? '-'}</TaxValue>
+              <TaxValue>{client?.taxDetails?.taxNumber || '-'}</TaxValue>
             </TaxItem>
             <TaxItem>
               <TaxLabel>{t('Tax Category')}:</TaxLabel>
-              <TaxValue>{client?.taxDetails?.taxCategory ?? '-'}</TaxValue>
+              <TaxValue>{client?.taxDetails?.taxCategory || '-'}</TaxValue>
             </TaxItem>
           </TaxDetailsWrapper>
         </RightSectionDiv>

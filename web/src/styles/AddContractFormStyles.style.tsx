@@ -143,9 +143,39 @@ export const ResourceBlock = styled.div`
 `;
 
 export const ResourceLabel = styled.label`
+  color: #111827;
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
   font-size: 14px;
-  font-weight: 500;
-  color: #333;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+
+  &.ManageResource {
+    border: 1px solid #e9eaec;
+    border-radius: 10px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 60%;
+    span {
+      margin: 30px;
+    }
+  }
+  .arrow {
+    font-size: 14px;
+    transition: transform 0.2s ease;
+    display: inline-block;
+    margin-left: 8px;
+    display: inline-block;
+    transition: transform 0.2s ease;
+    transform: rotate(-90deg);
+  }
+  .arrow.open {
+    transform: rotate(90deg);
+  }
 `;
 
 export const NameBubbleListContainer = styled.div`
@@ -157,6 +187,10 @@ export const NameBubbleListContainer = styled.div`
   background-color: white;
   width: 100%;
   flex-wrap: wrap;
+  &.manageResourceList {
+    border: none;
+    width: 60%;
+  }
 `;
 
 export const NameBubble = styled.div`
@@ -169,8 +203,44 @@ export const NameBubble = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 95%;
+  height: 32px;
   border-bottom-width: 1px;
   border-bottom: 1px solid #f1f2f4;
+
+  .percentageAvailability {
+    display: flex;
+    gap: 10px;
+  }
+  .availability {
+    display: flex;
+    align-items: center;
+    font-family: Nunito;
+    font-weight: 500px;
+    font-style: Medium;
+    font-size: 10px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    color: #11182766;
+    border: 1px solid #f8f8f8;
+    border-radius: 10px;
+    border-width: 1px;
+    padding: 5px 14px 5px 14px;
+    gap: 10px;
+  }
+  .remove-btn {
+    margin-left: 4px;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: #005792;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: red;
+    }
+  }
 `;
 
 export const ManageAllocationContainer = styled.div`
@@ -257,11 +327,12 @@ export const RightSectionDiv = styled.div`
   height: 424px;
   gap: 16px;
   padding: 16px;
-  border: 1px solid #f1f2f4;
+  border: 1px solid ${(props) => props.theme.colors.grayColors.gray10};
+  color: ${(props) => props.theme.colors.blackColors.black7};
+  background: ${(props) => props.theme.colors.blackColors.white6};
   align-items: flex-start;
   justify-content: flex-start;
   word-wrap: break-word;
-  background-color: #ffffff;
 `;
 
 export const ProjectSeactionHeading = styled.div`
@@ -287,7 +358,7 @@ export const RightSectionHeading = styled.div`
   leading-trim: NONE;
   line-height: 160%;
   letter-spacing: 0px;
-  color: rgba(17, 24, 39, 1);
+  color: ${(props) => props.theme.colors.blackColors.black7};
   margin-bottom: 20px;
 `;
 

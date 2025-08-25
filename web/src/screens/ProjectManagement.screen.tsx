@@ -88,8 +88,12 @@ const ProjectManagement = () => {
 
   const handleSuccessMessage = (projectId: string) => {
     setToastData({
-      heading: 'Project Added Successfully.',
-      body: `New Project has been Added\nsuccessfully with project: "${projectId}".`,
+      heading: isEditMode
+        ? 'Project Updated Successfully.'
+        : 'Project Added Successfully.',
+      body: isEditMode
+        ? `Project "${projectId}" has been updated successfully.`
+        : `New Project has been Added\nsuccessfully with project: "${projectId}".`,
     });
     setShowSuccessMessage(true);
     setIsCreateModalOpen(false);
@@ -131,7 +135,9 @@ const ProjectManagement = () => {
             {isCreateModalOpen && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Add Project')}</span>
+                <span className="nav_AddClient">
+                  {isEditMode ? t('Edit Project') : t('Add Project')}
+                </span>
               </>
             )}
             {!isCreateModalOpen && isProjectDetailsRoute && (

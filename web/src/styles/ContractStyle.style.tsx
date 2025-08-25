@@ -14,6 +14,40 @@ export const RowWrapper = styled.div`
   }
 `;
 
+export const ListWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+  max-width: 994px;
+  width: 100%;
+  gap: 8px;
+`;
+
+export const AddContractButtons = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+  min-width: 520px;
+  .leftAlign {
+    position: absolute;
+    left: 0;
+    padding-left: 15px;
+    display: flex;
+    color: ${(props) => props.theme.colors.brandColors.primary};
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .centerAlign {
+    display: flex;
+    gap: 12px;
+  }
+`;
+
 export const ColumnItem = styled.span`
   font-weight: 500;
 `;
@@ -70,9 +104,7 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   label {
     font-family: Nunito;
     font-weight: 600;
-    font-style: SemiBold;
     font-size: 14px;
-    leading-trim: NONE;
     line-height: 160%;
     letter-spacing: 0px;
     color: ${(props) => props.theme.colors.blackColors.black5};
@@ -88,7 +120,7 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
     padding: 16px 20px;
     gap: 10px;
     align-items: flex-start;
-    justify-content: space;
+    justify-content: space-between;
     align-self: stretch;
     min-height: 54px;
     width: ${(props) => (props.Width ? props.Width : '100%')};

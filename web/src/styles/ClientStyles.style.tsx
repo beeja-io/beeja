@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
 export const FormContainer = styled.div`
-  background: #ffffff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
+  border: 1px solid ${(props) => props.theme.colors.blackColors.white2};
   border-radius: 10px;
-  border: 1px solid #f1f2f4;
 
   .formButtons {
     display: flex;
@@ -93,6 +93,7 @@ export const FormInputsContainer = styled.div`
 export const SummaryAddressContainer = styled.div`
   flex-wrap: wrap;
   display: flex;
+  color: ${(props) => props.theme.colors.blackColors.black5};
 
   justify-content: space-around;
   gap: 20px;
@@ -134,10 +135,14 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   input {
     cursor: text;
   }
+  &.logoEditContainer {
+    position: relative;
+  }
   .selectoption {
     outline: none;
     border-radius: 10px;
     border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+    color: ${(props) => props.theme.colors.blackColors.black1};
     display: flex;
     padding: 16px 20px;
     gap: 10px;
@@ -157,6 +162,7 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   .selectoption.largeSelectOption {
     max-width: 491px;
     box-sizing: border-box;
+    background: ${(props) => props.theme.colors.blackColors.white6};
   }
 
   span.calendarField {
@@ -300,6 +306,7 @@ export const LogoNameWrapper = styled.div`
   align-items: center;
   margin-bottom: 20px;
   gap: 16px;
+  flex-shrink: 0;
 `;
 export const LogoContainer = styled.div`
   display: flex;
@@ -307,7 +314,7 @@ export const LogoContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex: 1 1 2;
-  width: 100%;
+  max-width: 80px;
 `;
 
 export const LogoLabel = styled.div`
@@ -315,25 +322,34 @@ export const LogoLabel = styled.div`
   font-size: 14px;
   font-weight: 600;
   text-align: left;
-
-  padding-bottom: 8px;
-  max-width: 1024px;
-  width: 100%;
+  width: fit-content;
+  &.editLabel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 4px;
+    z-index: 10;
+  }
 `;
 
 export const LogoUploadContainer = styled.div`
   box-sizing: border-box;
-  height: 54px;
   border: 1px dashed #d5d5d5;
+  height: 100%;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  margin-bottom: 16px;
   max-width: 1024px;
   width: 100%;
   cursor: pointer;
+  &.edit-height {
+    height: 50.74px;
+  }
+  &.add_height {
+    height: 54px;
+  }
 `;
 
 export const FileName = styled.span`
@@ -358,7 +374,7 @@ export const SubHeadingDivTwo = styled.div`
   text-align: left;
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
-  color: #818181;
+  color: ${(props) => props.theme.colors.grayColors.gray12};
   width: 90px;
 `;
 export const UploadText = styled.span`
@@ -435,7 +451,7 @@ export const AddClientButtons = styled.div`
     position: absolute;
     left: 0;
     display: flex;
-    color: #005792;
+    color: ${(props) => props.theme.colors.brandColors.primary};
     font-weight: 700;
     font-size: 16px;
     cursor: pointer;
@@ -480,6 +496,7 @@ export const HeadingDiv = styled.div`
   leading-trim: NONE;
   line-height: 160%;
   letter-spacing: 0px;
+  color: ${(props) => props.theme.colors.blackColors.black1};
 `;
 
 export const CheckBoxOuterContainer = styled.div`
@@ -514,12 +531,12 @@ export const SubHeadingDiv = styled.div`
   text-align: left;
   text-underline-position: from-font;
   text-decoration-skip-ink: none;
-  color: #818181;
+  color: ${(props) => props.theme.colors.grayColors.gray11};
   width: 150px;
 `;
 
 export const SectionHeader = styled.div`
-  background-color: #fff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -546,7 +563,7 @@ export const DotWrap = styled.div`
 `;
 export const InfoText = styled.div`
   font-family: 'Nunito';
-  padding-right: 60px;
+  padding-right: 30px;
   font-size: 14px;
 `;
 
@@ -569,7 +586,8 @@ export const InfoBlock = styled.div`
 
 export const PrimaryContainer = styled.div`
   flex: 1 1 48%;
-  background-color: rgba(248, 249, 251, 1);
+  background-color: ${(props) => props.theme.colors.grayColors.gray12};
+  color: ${(props) => props.theme.colors.blackColors.black5};
   gap: 10px;
   h2 {
     padding: 10px 0 10px 20px;
@@ -579,6 +597,7 @@ export const AddressBlock = styled.div`
   padding: 10px 0 10px 18px;
   margin-top: 5px;
   display: flex;
+  color: ${(props) => props.theme.colors.blackColors.black5};
 `;
 
 export const AddressMainContainer = styled.form`
@@ -602,7 +621,7 @@ export const AddressMainContainer = styled.form`
 `;
 
 export const ExpenseAddFormMainContainer = styled.form`
-  background: #ffffff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
   angle: 0 deg;
   opacity: 1;
   padding-top: 24px;
@@ -613,7 +632,7 @@ export const ExpenseAddFormMainContainer = styled.form`
   border-width: 1px;
   &.formBackground {
     margin: 20px;
-    border: 1px solid #f1f2f4;
+    border: 1px solid ${(props) => props.theme.colors.blackColors.white2};
   }
   .formButtons {
     display: flex;
@@ -636,8 +655,12 @@ export const BasicOrganizationDetailsContainer = styled.div`
   padding-top: 5px;
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  background-color: rgba(248, 249, 251, 1);
+  background: ${(props) => props.theme.colors.grayColors.gray12};
+  border: 1px solid ${(props) => props.theme.colors.grayColors.gray10};
+  color: ${(props) => props.theme.colors.blackColors.black5};
 `;
 
 export const ClientInfo = styled.div`
@@ -645,7 +668,7 @@ export const ClientInfo = styled.div`
   flex-direction: column;
   width: auto;
   height: 215px;
-  background-color: #ffffff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
@@ -699,7 +722,7 @@ export const RightSection = styled.div`
   display: flex;
   flex-direction: column;
   height: 522px;
-  background: #ffffff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
   width: 315px;
 
   angle: 0 deg;
@@ -764,7 +787,9 @@ export const RightSectionDiv = styled.div`
   height: 128px;
   gap: 16px;
   padding: 16px;
-  border: 1px solid #f1f2f4;
+  border: 1px solid ${(props) => props.theme.colors.grayColors.gray10};
+  color: ${(props) => props.theme.colors.blackColors.black7};
+  background: ${(props) => props.theme.colors.blackColors.white2};
   align-items: flex-start;
   justify-content: flex-start;
   word-wrap: break-word;
@@ -777,7 +802,7 @@ export const AddressDiv = styled.div`
   line-height: 160%;
   letter-spacing: 0px;
   vertical-align: middle;
-  color: #818181;
+  color: ${(props) => props.theme.colors.grayColors.gray11};
   display: block;
   white-space: normal;
   word-wrap: break-word;
@@ -799,7 +824,7 @@ export const CountBadge = styled.span`
 export const TaxDetailsWrapper = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 0.7rem;
   margin-top: 0.5rem;
 `;
 
@@ -809,12 +834,12 @@ export const TaxItem = styled.div`
   align-items: center;
 `;
 export const TaxLabel = styled.div`
-  color: #555;
+  color: ${(props) => props.theme.colors.grayColors.gray11};
 `;
 
 export const TaxValue = styled.div`
   font-weight: 600;
-  color: #222;
+  color: ${(props) => props.theme.colors.grayColors.gray11};
 `;
 
 export const DateIconWrapper = styled.span`

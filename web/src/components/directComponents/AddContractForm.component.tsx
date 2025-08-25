@@ -26,6 +26,7 @@ import {
 } from '../../styles/AddContractFormStyles.style';
 import {
   BrowseText,
+  ButtonGroup,
   FileName,
   FormContainer,
   Line,
@@ -44,7 +45,6 @@ import {
   RequiredAsterisk,
   TextArea,
 } from '../../styles/ProjectStyles.style';
-import { ButtonContainer } from '../../styles/SettingsStyles.style';
 import {
   CheckIcon,
   LineIcon,
@@ -70,7 +70,10 @@ import {
   StepsContainer,
   FormResourceContainer,
   RowWrapper,
+  ListWrapper,
+  AddContractButtons,
 } from '../../styles/ContractStyle.style';
+import CenterModal from '../reusableComponents/CenterModal.component';
 
 type AddContractFormProps = {
   handleClose: () => void;
@@ -147,9 +150,14 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-CA');
   };
-
+  const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
+  const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+
+  const handleDiscardModalToggle = () => {
+    setIsDiscardModalOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     getAllProjects()
@@ -687,7 +695,13 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   />
                 </InputLabelContainer>
                 {initialData?.contractId && (
-                  <div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '10px',
+                    }}
+                  >
                     <LogoLabel>{t('Attachments')}</LogoLabel>
                     <LogoUploadContainer
                       onClick={() =>
@@ -883,7 +897,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
             {selectedResources.length > 0 && (
               <ResourceBlock>
-                <RowWrapper>
+                <ListWrapper>
                   <ResourceLabel>{t('All Resources')}</ResourceLabel>
                   <NameBubbleListContainer>
                     {[...(selectedResources || [])]
@@ -891,28 +905,83 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       .map((option) => (
                         <NameBubble key={option.value}>
                           <span className="name">{option.label}</span>
-                          <span className="availability">
-                            Availability: {option.availability}%
-                          </span>
                         </NameBubble>
                       ))}
                   </NameBubbleListContainer>
-                </RowWrapper>
+                </ListWrapper>
+                <ListWrapper className="container">
+                  <ResourceLabel
+                    className="ManageResource"
+                    onClick={() => setIsOpen((prev) => !prev)}
+                  >
+                    <span>{t('Manage Resource Allocation')} </span>
+                    <span className={`arrow ${isOpen ? 'open' : ''}`}>❮</span>
+                  </ResourceLabel>
+                  {isOpen && (
+                    <NameBubbleListContainer className="manageResourceList">
+                      {[...(selectedResources || [])]
+                        .sort((a, b) => a.value.localeCompare(b.value))
+                        .map((option) => (
+                          <NameBubble key={option.value}>
+                            <span className="name">{option.label}</span>
+                            <span className="percentageAvailability">
+                              <span className="availability">
+                                Allocation: {option.availability}%
+                              </span>
+                              <button
+                                className="remove-btn"
+                                onClick={() =>
+                                  setSelectedResources((prev) =>
+                                    prev.filter(
+                                      (item) => item.value !== option.value
+                                    )
+                                  )
+                                }
+                              >
+                                ✕
+                              </button>
+                            </span>
+                          </NameBubble>
+                        ))}
+                    </NameBubbleListContainer>
+                  )}
+                </ListWrapper>
               </ResourceBlock>
             )}
 
-            <ButtonContainer>
-              <Button onClick={handlePreviousStep} className="leftAlign">
-                <span className="separator">{'<'}</span> &nbsp;
+            <AddContractButtons>
+              <div onClick={handlePreviousStep} className="leftAlign">
+                <span className="separator"> {'<'} </span> &nbsp;
                 {t('Previous')}
-              </Button>
-              <Button className="submit" type="submit">
-                {t('Submit')}
-              </Button>
-            </ButtonContainer>
+              </div>
+              <ButtonGroup>
+                <Button onClick={handleDiscardModalToggle} type="button">
+                  {t('Cancel')}
+                </Button>
+                <Button className="submit" type="submit">
+                  {t('Submit')}
+                </Button>
+              </ButtonGroup>
+            </AddContractButtons>
           </form>
         )}
       </>
+      {isDiscardModalOpen && (
+        <CenterModal
+          handleModalLeftButtonClick={handleDiscardModalToggle}
+          handleModalClose={handleDiscardModalToggle}
+          handleModalSubmit={handleClose}
+          modalHeading={t('Discard Changes?')}
+          modalContent={t('Are you sure you want to discard your changes?')}
+          modalType="discardModal"
+          modalLeftButtonClass="mobileBtn"
+          modalRightButtonClass="mobileBtn"
+          modalRightButtonBorderColor="black"
+          modalRightButtonTextColor="black"
+          modalLeftButtonText={t('No')}
+          modalRightButtonText={t('Discard')}
+        />
+      )}
     </FormContainer>
   );
 };
