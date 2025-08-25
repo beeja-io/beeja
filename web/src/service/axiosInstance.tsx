@@ -9,6 +9,7 @@ import {
   Employee,
 } from '../entities/ProjectEntity';
 import { ProjectFormData } from '../components/directComponents/AddProjectForm.component';
+import { ContractDetails } from '../entities/ContractEntiy';
 /* eslint-disable */
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -351,6 +352,16 @@ export const getProjectsByClientId = (
   clientId: string
 ): Promise<AxiosResponse<ProjectEntity[]>> => {
   return axiosInstance.get(`/projects/v1/projects/client/${clientId}`);
+};
+
+export const getProjectEmployees = (projectId: string) => {
+  return axiosInstance.get(`/projects/v1/projects/${projectId}/employees`);
+};
+
+export const getContractsByClientId = (
+  clientId: string
+): Promise<AxiosResponse<ContractDetails[]>> => {
+  return axiosInstance.get(`/projects/v1/contracts/client/${clientId}`);
 };
 
 export const updateProjectStatus = (

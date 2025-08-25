@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
-import { getProjectsByClientId } from '../service/axiosInstance';
+import {
+  getContractsByClientId,
+  getProjectsByClientId,
+} from '../service/axiosInstance';
 import { CountBadge, DateIconWrapper } from '../styles/ClientStyles.style';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import {
@@ -82,18 +85,17 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
             : [],
         }));
 
-        const mappedContracts: Contract[] = Array.isArray(entity.contracts)
-          ? entity.contracts.map((c: any) => ({
-              contractId: c?.contractId ?? 'N/A',
-              name: c?.name ?? 'N/A',
-              status: c?.status ?? 'N/A',
-              projectName: entity?.name ?? 'N/A',
-              projectManagers: Array.isArray(c?.projectManagers)
-                ? c.projectManagers.map((pm: any) => pm?.name ?? 'N/A')
-                : [],
-              startDate: c?.startDate?.split('T')[0] ?? 'N/A',
-            }))
-          : [];
+        const contractsRes = await getContractsByClientId(clientId);
+        const mappedContracts: Contract[] = contractsRes.data.map((c) => ({
+          contractId: c.contractId ?? 'N/A',
+          name: c.contractTitle ?? 'N/A',
+          status: c.status ?? 'N/A',
+          projectName: c.projectName ?? 'N/A',
+          projectManagers: c.projectManagerNames?.length
+            ? c.projectManagerNames
+            : [],
+          startDate: c.startDate?.split('T')[0] ?? 'N/A',
+        }));
 
         const resourceMap: Record<string, Resource> = {};
         Array.isArray(entity.resources) &&

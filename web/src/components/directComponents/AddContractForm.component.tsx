@@ -7,6 +7,7 @@ import { ContractDetails } from '../../entities/ContractEntiy';
 import { Employee, ProjectEntity } from '../../entities/ProjectEntity';
 import {
   getAllProjects,
+  getProjectEmployees,
   getResourceManager,
   postContracts,
   updateContract,
@@ -147,6 +148,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
 
+  const [isProjectLoading, setIsProjectLoading] = useState(false);
+
   useEffect(() => {
     getAllProjects()
       .then((response) => {
@@ -259,7 +262,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     }
   };
 
-  const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleProjectChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const selectedName = e.target.value;
     const selectedProject = projectOptions.find((p) => p.name === selectedName);
 
@@ -269,7 +274,33 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         projectName: selectedProject.name,
         projectId: selectedProject.projectId,
         clientId: selectedProject.clientId,
+        projectManagers: [],
+        rawProjectResources: [],
       }));
+
+      setIsProjectLoading(true);
+      try {
+        const response = await getProjectEmployees(selectedProject.projectId);
+
+        const managers = (response.data.managers || []).map((m: any) => ({
+          value: m.employeeId,
+          label: m.fullName,
+        }));
+
+        const resources = (response.data.resources || []).map((r: any) => ({
+          value: r.employeeId,
+          label: r.fullName,
+        }));
+
+        setManagerOptions(managers);
+        setResourceOptions(resources);
+      } catch (error) {
+        toast.error('Failed to fetch project employees');
+        setManagerOptions([]);
+        setResourceOptions([]);
+      } finally {
+        setIsProjectLoading(false);
+      }
     }
   };
 
@@ -739,39 +770,49 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </select>
                 </InputLabelContainer>
               </div>
-              <div>
-                <InputLabelContainer>
-                  <SelectWrapper>
-                    <FormField>
-                      <Label>
-                        {t('Project Managers')}
-                        <RequiredAsterisk>*</RequiredAsterisk>
-                      </Label>
-                      <Select
-                        isMulti
-                        name="projectManagers"
-                        value={managerOptions.filter((option) =>
-                          formData.projectManagers.includes(option.value)
-                        )}
-                        options={managerOptions}
-                        onChange={(
-                          selected: MultiValue<{ value: string; label: string }>
-                        ) => {
-                          const values = [...(selected || [])]
-                            .sort((a, b) => a.value.localeCompare(b.value))
-                            .map((opt) => opt.value);
-                          setFormData((prev) => ({
-                            ...prev,
-                            projectManagers: values,
-                          }));
-                        }}
-                        classNamePrefix="react-select"
-                        placeholder={t('Select Project Managers')}
-                      />
-                    </FormField>
-                  </SelectWrapper>
-                </InputLabelContainer>
-              </div>
+
+              {isProjectLoading ? (
+                <div>
+                  <SpinAnimation />
+                </div>
+              ) : (
+                <div>
+                  <InputLabelContainer>
+                    <SelectWrapper>
+                      <FormField>
+                        <Label>
+                          {t('Project Managers')}
+                          <RequiredAsterisk>*</RequiredAsterisk>
+                        </Label>
+                        <Select
+                          isMulti
+                          name="projectManagers"
+                          value={managerOptions.filter((option) =>
+                            formData.projectManagers.includes(option.value)
+                          )}
+                          options={managerOptions}
+                          onChange={(
+                            selected: MultiValue<{
+                              value: string;
+                              label: string;
+                            }>
+                          ) => {
+                            const values = [...(selected || [])]
+                              .sort((a, b) => a.value.localeCompare(b.value))
+                              .map((opt) => opt.value);
+                            setFormData((prev) => ({
+                              ...prev,
+                              projectManagers: values,
+                            }));
+                          }}
+                          classNamePrefix="react-select"
+                          placeholder={t('Select Project Managers')}
+                        />
+                      </FormField>
+                    </SelectWrapper>
+                  </InputLabelContainer>
+                </div>
+              )}
             </FormInputsContainer>
 
             <FormResourceContainer>
