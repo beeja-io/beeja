@@ -13,6 +13,7 @@ import {
   LogoPreview,
   RightSection,
   RightSectionDiv,
+  RowLine,
   TaxDetailsWrapper,
   TaxItem,
   TaxLabel,
@@ -26,7 +27,7 @@ import {
   IndustrySVG,
 } from '../svgs/ClientManagmentSvgs.svg';
 
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
@@ -91,7 +92,7 @@ const ClientDetailsScreen: React.FC = () => {
 
     fetchClient();
   }, [id]);
-
+  const { t } = useTranslation();
   if (loading) {
     return <SpinAnimation />;
   }
@@ -159,7 +160,7 @@ const ClientDetailsScreen: React.FC = () => {
 
       <RightSection>
         <RightSectionDiv>
-          <div>{t('Primary Address')}</div>
+          <div>{t('Primary_Address')}</div>
           <AddressDiv>
             {[
               client?.primaryAddress?.street,
@@ -172,8 +173,9 @@ const ClientDetailsScreen: React.FC = () => {
               .join(', ') || '-'}
           </AddressDiv>
         </RightSectionDiv>
+        <RowLine></RowLine>
         <RightSectionDiv>
-          <div>{t('Billing Address')}</div>
+          <div>{t('Billing_Address')}</div>
           <AddressDiv>
             {[
               client?.primaryAddress?.street,
@@ -186,15 +188,16 @@ const ClientDetailsScreen: React.FC = () => {
               .join(', ') || '-'}
           </AddressDiv>
         </RightSectionDiv>
+        <RowLine></RowLine>
         <RightSectionDiv>
-          <div>{t('Tax Details')}</div>
+          <div>{t('Tax_Details')}</div>
           <TaxDetailsWrapper>
             <TaxItem>
-              <TaxLabel>{t('VAT/ GST Number')}:</TaxLabel>
+              <TaxLabel>{t('VAT/ GST_Number')}:</TaxLabel>
               <TaxValue>{client?.taxDetails?.taxNumber || '-'}</TaxValue>
             </TaxItem>
             <TaxItem>
-              <TaxLabel>{t('Tax Category')}:</TaxLabel>
+              <TaxLabel>{t('Tax_Category')}:</TaxLabel>
               <TaxValue>{client?.taxDetails?.taxCategory || '-'}</TaxValue>
             </TaxItem>
           </TaxDetailsWrapper>

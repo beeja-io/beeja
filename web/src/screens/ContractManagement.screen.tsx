@@ -77,12 +77,12 @@ const ContractManagement = () => {
   const handleSuccessMessage = (value: string, type: 'add' | 'edit') => {
     if (type === 'add') {
       setToastData({
-        heading: 'Contract Added Successfully.',
-        body: `New Contract has been added\nsuccessfully with "Contract ID: ${value}".`,
+        heading: 'Contract_Added_Successfully.',
+        body: `New_Contract_has_been_added\nsuccessfully_with "Contract ID: ${value}".`,
       });
     } else if (type === 'edit') {
       setToastData({
-        heading: 'Contract Updated Successfully.',
+        heading: 'Contract_Updated_Successfully.',
         body: value,
       });
     }
@@ -103,7 +103,7 @@ const ContractManagement = () => {
       setSelectedContractData(data);
       setIsCreateModalOpen(true);
     } catch (error) {
-      toast.error('Failed to fetch contract details');
+      toast.error('Failed_to_fetch_contract_details');
     }
   };
 
@@ -115,15 +115,15 @@ const ContractManagement = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('Contract Management')}
+            {t('Contract_Management')}
 
             {isCreateModalOpen && (
               <>
                 <span className="separator"> {'>'} </span>
                 <span className="nav_AddClient">
                   {selectedContractData
-                    ? t('Edit Contract')
-                    : t('Add Contract')}
+                    ? t('Edit_Contract')
+                    : t('Add_Contract')}
                 </span>
               </>
             )}
@@ -131,7 +131,7 @@ const ContractManagement = () => {
             {!isCreateModalOpen && isContractDetailsRoute && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Contract Details')}</span>
+                <span className="nav_AddClient">{t('Contract_Details')}</span>
               </>
             )}
           </span>
@@ -143,7 +143,7 @@ const ContractManagement = () => {
               width="216px"
             >
               <AddNewPlusSVG />
-              {t('Add New Contract')}
+              {t('Add_New_Contract')}
             </Button>
           )}
         </ExpenseHeadingSection>

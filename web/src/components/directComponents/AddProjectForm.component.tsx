@@ -189,19 +189,19 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
         {isSuccess && <SpinAnimation />}
         <AddFormMainContainer onSubmit={handleSubmit}>
           <SectionContainer>
-            <h2>{t('Project Details')}</h2>
+            <h2>{t('Project_Details')}</h2>
           </SectionContainer>
           <FormInputsContainer>
             <ColumnWrapper>
               <InputLabelContainer>
                 <label>
-                  {t('Project Name')}
+                  {t('Project_Name')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <TextInput
                   type="text"
                   name="name"
-                  placeholder={t('Enter Project Name')}
+                  placeholder={t('Enter_Project_Name')}
                   className="largeInput"
                   value={projectFormData.name}
                   onChange={handleChange}
@@ -211,7 +211,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
 
               <InputLabelContainer>
                 <label>
-                  {t('Project Managers')}
+                  {t('Project_Managers')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <Select
@@ -231,19 +231,19 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     }));
                   }}
                   classNamePrefix="react-select"
-                  placeholder={t('Select Project Managers')}
+                  placeholder={t('Select_Project_Managers')}
                 />
               </InputLabelContainer>
 
               <InputLabelContainer>
                 <label>
-                  {t('Start Date')}
+                  {t('Start_Date')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <DateInputWrapper ref={calendarRef}>
                   <TextInput
                     type="text"
-                    placeholder="Select Date"
+                    placeholder="Select_Date"
                     name="startDate"
                     value={startDate ? formatDate(startDate) : ''}
                     onFocus={() => handleCalendarToggle(true)}
@@ -276,7 +276,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
             <ColumnWrapper>
               <InputLabelContainer>
                 <label>
-                  {t('Client Name')}
+                  {t('Client_Name')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <select
@@ -297,7 +297,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     }
                   }}
                 >
-                  <option value="">{t('Select Client')}</option>
+                  <option value="">{t('Select_Client')}</option>
                   {[...clientOptions]
                     .sort((a, b) => a.value.localeCompare(b.value))
                     .map((opt) => (
@@ -330,7 +330,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     }));
                   }}
                   classNamePrefix="react-select"
-                  placeholder={t('Select Resources')}
+                  placeholder={t('Select_Resources')}
                 />
               </InputLabelContainer>
 
@@ -339,7 +339,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 <TextInput
                   type="text"
                   name="description"
-                  placeholder={t('Add Project Description')}
+                  placeholder={t('Add_Project_Description')}
                   className="largeInput"
                   value={projectFormData.description}
                   onChange={handleChange}

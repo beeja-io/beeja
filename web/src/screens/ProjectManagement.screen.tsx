@@ -131,19 +131,19 @@ const ProjectManagement = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('Project Management')}
+            {t('Project_Management')}
             {isCreateModalOpen && (
               <>
                 <span className="separator"> {'>'} </span>
                 <span className="nav_AddClient">
-                  {isEditMode ? t('Edit Project') : t('Add Project')}
+                  {isEditMode ? t('Edit_Project') : t('Add_Project')}
                 </span>
               </>
             )}
             {!isCreateModalOpen && isProjectDetailsRoute && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Project Details')}</span>
+                <span className="nav_AddClient">{t('Project_Details')}</span>
               </>
             )}
           </span>
@@ -154,7 +154,7 @@ const ProjectManagement = () => {
               width="216px"
             >
               <AddNewPlusSVG />
-              {t('Add New Project')}
+              {t('Add_New_Project')}
             </Button>
           )}
         </ExpenseHeadingSection>

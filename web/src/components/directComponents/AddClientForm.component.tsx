@@ -451,8 +451,8 @@ const AddClientForm = (props: AddClientFormProps) => {
       <>
         <StepsContainer>
           {[
-            'Basic Organisation Details',
-            'Tax Details',
+            'Basic_Organisation_Details',
+            'Tax_Details',
             'Address',
             'Summary',
           ].map((label, index, arr) => {
@@ -466,7 +466,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <div className="circle">
                       {isCompleted ? <CheckIcon /> : index + 1}
                     </div>
-                    <div className="labelHead">{label}</div>
+                    <div className="labelHead">{t(label)}</div>
                   </StepLabel>
                 </StepWrapper>
                 {!isLast && (
@@ -490,13 +490,13 @@ const AddClientForm = (props: AddClientFormProps) => {
               <ColumnWrapper>
                 {formData?.clientId && (
                   <InputLabelContainer>
-                    <label>{t('Client ID')}</label>
+                    <label>{t('Client_ID')}</label>
                     <TextInput type="text" value={formData.clientId} disabled />
                   </InputLabelContainer>
                 )}
                 <InputLabelContainer>
                   <label>
-                    {t('Client Name')}
+                    {t('Client_Name')}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
@@ -511,7 +511,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                 </InputLabelContainer>
                 <InputLabelContainer>
                   <label>
-                    {t('Email')}
+                    {t('EMAIL')}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <TextInput
@@ -540,7 +540,7 @@ const AddClientForm = (props: AddClientFormProps) => {
               <ColumnWrapper>
                 <InputLabelContainer>
                   <label>
-                    {t('Client Type')}
+                    {t('Client_Type')}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <select
@@ -550,7 +550,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     onChange={handleChange}
                     required
                   >
-                    <option value="">{t('Select type')}</option>
+                    <option value="">{t('Select_type')}</option>
                     {[...(clientOptions?.clientType || [])]
                       .sort((a, b) => a.localeCompare(b))
                       .map((type) => (
@@ -573,7 +573,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     onChange={handleChange}
                     required
                   >
-                    <option value="">{t('Select Industry')}</option>
+                    <option value="">{t('Select_Industry')}</option>
                     {[...(clientOptions?.industry || [])]
                       .sort((a, b) => a.localeCompare(b))
                       .map((industry) => (
@@ -589,7 +589,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   <TextInput
                     type="text"
                     name="description"
-                    placeholder={t('Enter Client Description')}
+                    placeholder={t('Enter_Client_Description')}
                     className="largeInput"
                     value={formData?.description}
                     onChange={handleChange}
@@ -614,7 +614,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       />
                       <UploadSVG />
                       <UploadText>
-                        {t('Upload your Logo')}
+                        {t('Upload_your_Logo')}
                         <BrowseText>{t('Browse')}</BrowseText>
                       </UploadText>
                     </LogoUploadContainer>
@@ -651,7 +651,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                   </InputLabelContainer>
                 )}
               </ColumnWrapper>
-
               {!formData?.clientId && (
                 <LogoContainer>
                   <LogoLabel>{t('Logo')}</LogoLabel>
@@ -671,7 +670,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     />
                     <UploadSVG />
                     <UploadText>
-                      {t('Upload your Logo')}
+                      {t('Upload_your_Logo')}
                       <BrowseText>{t('Browse')}</BrowseText>
                     </UploadText>
                   </LogoUploadContainer>
@@ -722,7 +721,7 @@ const AddClientForm = (props: AddClientFormProps) => {
             <FormInputs className="tax-container">
               <InputLabelContainer>
                 <label>
-                  {t('Tax Category')}
+                  {t('Tax_Category')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <select
@@ -732,7 +731,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   required
                   onChange={handleChange}
                 >
-                  <option value="">{t('Select category')}</option>
+                  <option value="">{t('Select_category')}</option>
                   {[...(clientOptions?.taxCategory || [])]
                     .sort((a, b) => a.localeCompare(b))
                     .map((category) => (
@@ -750,13 +749,13 @@ const AddClientForm = (props: AddClientFormProps) => {
 
               <InputLabelContainer>
                 <label>
-                  {t('Tax Number')}
+                  {t('Tax_Number')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <TextInput
                   type="text"
                   name="taxDetails.taxNumber"
-                  placeholder={t('Enter Tax Number')}
+                  placeholder={t('Enter_Tax_Number')}
                   className="largeInput"
                   required
                   minLength={10}
@@ -801,7 +800,7 @@ const AddClientForm = (props: AddClientFormProps) => {
               handleNextStep();
             }}
           >
-            <HeadingDiv>{t('Primary Address')}</HeadingDiv>
+            <HeadingDiv>{t('Primary_Address')}</HeadingDiv>
             <FormInputs>
               <div style={{ fontFamily: 'Nunito' }}>
                 <InputLabelContainer>
@@ -843,7 +842,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <TextInput
                       type="text"
                       name="primaryAddress.postalCode"
-                      placeholder={t('Zip/Postal Code')}
+                      placeholder={t('Zip/Postal_Code')}
                       className="largeInput"
                       value={formData.primaryAddress?.postalCode ?? ''}
                       onChange={handleChange}
@@ -858,7 +857,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   <TextInput
                     type="text"
                     name="primaryAddress.country"
-                    placeholder={t('United States of America')}
+                    placeholder={t('United_States_of_America')}
                     className="largeInput"
                     value={formData.primaryAddress?.country}
                     onChange={handleChange}
@@ -866,7 +865,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                 </InputLabelContainer>
               </div>
             </FormInputs>
-            <HeadingDiv>{t('Billing Address')}</HeadingDiv>
+            <HeadingDiv>{t('Billing_Address')}</HeadingDiv>
             <CheckBoxOuterContainer>
               <div>
                 <StyledCheckbox
@@ -879,7 +878,7 @@ const AddClientForm = (props: AddClientFormProps) => {
               </div>
 
               <LabelText>
-                {t('Use Primary address as billing address')}
+                {t('Use_Primary_address_as_billing_address')}
               </LabelText>
             </CheckBoxOuterContainer>
             <FormInputs>
@@ -938,7 +937,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   <TextInput
                     type="text"
                     name="billingAddress.country"
-                    placeholder={t('United States of America')}
+                    placeholder={t('United_States_of_America')}
                     className="largeInput"
                     value={formData?.billingAddress?.country ?? ''}
                     onChange={handleChange}
@@ -975,7 +974,7 @@ const AddClientForm = (props: AddClientFormProps) => {
             <SummarySubContainer>
               <HeadingContainer>
                 <SectionHeader>
-                  {t('Basic Organisation Details')}
+                  {t('Basic_Organisation_Details')}
                   <EditIconWrapper>
                     <EditSVG onClick={() => setStep(1)} />
                   </EditIconWrapper>
@@ -985,19 +984,19 @@ const AddClientForm = (props: AddClientFormProps) => {
                 <BasicOrganizationDetailsContainer>
                   <div>
                     <InfoRow>
-                      <SubHeadingDiv>Client Name</SubHeadingDiv>
+                      <SubHeadingDiv>{t('Client_Name')}</SubHeadingDiv>
                       <InfoText>{formData.clientName}</InfoText>
                     </InfoRow>
                     <InfoRow>
-                      <SubHeadingDiv>Client Type</SubHeadingDiv>
+                      <SubHeadingDiv>{t('Client_Type')}</SubHeadingDiv>
                       <InfoText>{formData.clientType}</InfoText>
                     </InfoRow>
                     <InfoRow>
-                      <SubHeadingDiv>Description</SubHeadingDiv>
+                      <SubHeadingDiv>{t('Description')}</SubHeadingDiv>
                       <InfoText>{formData.description}</InfoText>
                     </InfoRow>
                     <InfoRow>
-                      <SubHeadingDiv>Internal Type</SubHeadingDiv>
+                      <SubHeadingDiv>{t('Internal_Type')}</SubHeadingDiv>
                       <DotWrap>
                         <DotSVG />
                       </DotWrap>
@@ -1051,11 +1050,11 @@ const AddClientForm = (props: AddClientFormProps) => {
               <SummaryAddressContainer>
                 <SummaryAddressSubContainer>
                   <InfoBlock className="address">
-                    <SubHeadingDiv>{t('Tax Category')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('Tax_Category')}</SubHeadingDiv>
                     <InfoText>{formData.taxDetails.taxCategory}</InfoText>
                   </InfoBlock>
                   <InfoBlock style={{ display: 'flex' }}>
-                    <SubHeadingDiv>{t('GST Number')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('GST_Number')}</SubHeadingDiv>
                     <InfoText>{formData.taxDetails.taxNumber}</InfoText>
                   </InfoBlock>
                 </SummaryAddressSubContainer>
@@ -1089,7 +1088,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <InfoText>{formData.primaryAddress.country}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Zip/postal Code')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('Zip/postal_Code')}</SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.postalCode}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1098,7 +1097,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   </AddressBlock>
                 </PrimaryContainer>
                 <PrimaryContainer>
-                  <h2>Billing Address</h2>
+                  <h2>{t('Billing_Address')}</h2>
                   <AddressBlock>
                     <SubHeadingDiv>{t('Street')}</SubHeadingDiv>
                     <InfoText>{formData.billingAddress.street}</InfoText>
@@ -1117,7 +1116,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <InfoText>{formData.billingAddress.country}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Zip/postal Code')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('Zip/postal_Code')}</SubHeadingDiv>
                     <InfoText>{formData.billingAddress.postalCode}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1156,8 +1155,8 @@ const AddClientForm = (props: AddClientFormProps) => {
           handleModalLeftButtonClick={handleDiscardModalToggle}
           handleModalClose={handleDiscardModalToggle}
           handleModalSubmit={props.handleClose}
-          modalHeading={t('Discard Changes?')}
-          modalContent={t('Are you sure you want to discard your changes?')}
+          modalHeading={t('Discard_Changes?')}
+          modalContent={t('Are_you_sure_you_want_to_discard_your_changes?')}
           modalType="discardModal"
           modalLeftButtonClass="mobileBtn"
           modalRightButtonClass="mobileBtn"

@@ -489,7 +489,7 @@ export const SectionContainer = styled.div`
     font-weight: 600;
     color: #005792;
     margin-bottom: 14px;
-    max-width: 490px;
+    max-width: 390px;
 
     height: 27.1px;
     display: flex;

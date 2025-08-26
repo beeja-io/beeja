@@ -305,7 +305,7 @@ export const LogoNameWrapper = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 20px;
-  gap: 16px;
+  gap: 5px;
   flex-shrink: 0;
 `;
 export const LogoContainer = styled.div`
@@ -314,7 +314,8 @@ export const LogoContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex: 1 1 2;
-  max-width: 80px;
+
+  width: 100%;
 `;
 
 export const LogoLabel = styled.div`
@@ -322,7 +323,8 @@ export const LogoLabel = styled.div`
   font-size: 14px;
   font-weight: 600;
   text-align: left;
-  width: fit-content;
+  max-width: 1024px;
+  width: 100%;
   &.editLabel {
     position: absolute;
     top: 100%;
@@ -782,19 +784,18 @@ export const RightSectionDiv = styled.div`
   font-size: 16px;
   line-height: 160%;
   letter-spacing: 0.2px;
-
-  widht: 90%;
   height: 128px;
   gap: 16px;
   padding: 16px;
   border: 1px solid ${(props) => props.theme.colors.grayColors.gray10};
   color: ${(props) => props.theme.colors.blackColors.black7};
-  background: ${(props) => props.theme.colors.blackColors.white2};
   align-items: flex-start;
   justify-content: flex-start;
   word-wrap: break-word;
 `;
-
+export const RowLine = styled.div`
+  border: 1px solid ${(props) => props.theme.colors.grayColors.gray10};
+`;
 export const AddressDiv = styled.div`
   font-family: Nunito;
   font-weight: 400;

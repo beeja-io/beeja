@@ -104,19 +104,19 @@ const ClientManagement = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('Client Management')}
+            {t('Client_Management')}
             {isCreateModalOpen && (
               <>
                 <span className="separator"> {'>'} </span>
                 <span className="nav_AddClient">
-                  {isEditMode ? t('Edit Client') : t('Add Client')}
+                  {isEditMode ? t('Edit_Client') : t('Add_Client')}
                 </span>
               </>
             )}
             {!isCreateModalOpen && isClientDetailsRoute && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Client Details')}</span>
+                <span className="nav_AddClient">{t('Client_Details')}</span>
               </>
             )}
           </span>
@@ -127,7 +127,7 @@ const ClientManagement = () => {
               width="216px"
             >
               <AddNewPlusSVG />
-              {t('Add New Client')}
+              {t('Add_New_Client')}
             </Button>
           )}
         </ExpenseHeadingSection>
@@ -157,13 +157,13 @@ const ClientManagement = () => {
           messageType="success"
           messageBody={
             isEditMode
-              ? t('The Client has been Updated Successfully')
-              : t('The Client has been Added Successfully')
+              ? t('The_Client_has_been_Updated_Successfully')
+              : t('The_Client_has_been_Added_Successfully')
           }
           messageHeading={
             isEditMode
-              ? t('Client Successfully Updated.')
-              : t('Client Successfully Added.')
+              ? t('Client_Successfully_Updated.')
+              : t('Client_Successfully_Added.')
           }
           handleClose={handleShowSuccessMessage}
         />

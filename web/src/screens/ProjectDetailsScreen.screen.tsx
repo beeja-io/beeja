@@ -31,6 +31,7 @@ import {
   StyledStatusDropdown,
 } from '../styles/ProjectStyles.style';
 import ProjectTabSection from './ProjectTabSection';
+import { t } from 'i18next';
 
 const ProjectDetailsSCreen: React.FC = () => {
   const { projectId, clientId } = useParams<{
@@ -49,7 +50,7 @@ const ProjectDetailsSCreen: React.FC = () => {
           const response = await downloadClientLogo(project.clientLogId);
 
           if (!response.data || response.data.size === 0) {
-            throw new Error('Received empty or invalid blob data');
+            throw new Error(t('Received_empty_or_invalid_blob_data'));
           }
 
           const reader = new FileReader();
@@ -58,7 +59,7 @@ const ProjectDetailsSCreen: React.FC = () => {
             setLogoUrl(imageUrl);
           };
           reader.onerror = () => {
-            throw new Error('Error converting blob to base64');
+            throw new Error(t('Error_converting_blob_to_base64'));
           };
 
           reader.readAsDataURL(response.data);
@@ -83,7 +84,7 @@ const ProjectDetailsSCreen: React.FC = () => {
         const projectRes = await getProject(projectId, clientId);
         setProject(projectRes.data[0]);
       } catch (error) {
-        throw new Error('Failed to fetch client:' + error);
+        throw new Error(t('Failed_to_fetch_client') + error);
       } finally {
         setLoading(false);
       }
@@ -141,7 +142,7 @@ const ProjectDetailsSCreen: React.FC = () => {
       </LeftSection>
 
       <RightSection>
-        <div>Client Details</div>
+        <div>{t('Client_Details')}</div>
 
         {project?.clientId && (
           <ClientInfoWrapper>

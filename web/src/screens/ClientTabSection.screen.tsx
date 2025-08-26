@@ -147,11 +147,11 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
           <ProjectsTable>
             <thead>
               <tr>
-                <th>{t('Project ID')}</th>
-                <th>{t('Project Name')}</th>
+                <th>{t('Project_ID')}</th>
+                <th>{t('Project_Name')}</th>
                 <th>{t('Status')}</th>
-                <th>{t('Project Manager(s)')}</th>
-                <th>{t('Start Date')}</th>
+                <th>{t('Project_Manager(s)')}</th>
+                <th>{t('Start_Date')}</th>
               </tr>
             </thead>
             <tbody>
