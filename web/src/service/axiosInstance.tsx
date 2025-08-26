@@ -9,6 +9,7 @@ import {
   Employee,
 } from '../entities/ProjectEntity';
 import { ProjectFormData } from '../components/directComponents/AddProjectForm.component';
+import { ContractDetails } from '../entities/ContractEntiy';
 /* eslint-disable */
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -368,6 +369,12 @@ export const updateProjectStatus = (
   );
 };
 
+export const getResourcesByClientId = (
+  clientId: string
+): Promise<AxiosResponse<ContractDetails[]>> => {
+  return axiosInstance.get(`/projects/v1/contracts/${clientId}/resources`);
+};
+
 export const updateContractStatus = (
   contractId: string,
   newStatus: ProjectStatus
@@ -519,19 +526,19 @@ export const updateOrganizationValues = (
   );
 };
 export const PostLogHours = (data: any): Promise<AxiosResponse> => {
-  return axiosInstance.post("projects/api/timesheets", data, {
-    headers: { "Content-Type": "application/json" },
+  return axiosInstance.post('projects/api/timesheets', data, {
+    headers: { 'Content-Type': 'application/json' },
   });
 };
 
-export const fetchMonthLogs=(date:any):Promise<AxiosResponse>=>{
+export const fetchMonthLogs = (date: any): Promise<AxiosResponse> => {
   return axiosInstance.get(`projects/api/timesheets?month=${date}`);
-}
+};
 
-export const deleteLog=(id:string):Promise<AxiosResponse>=>{
+export const deleteLog = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`projects/api/timesheets/${id}`);
-}
+};
 
-export const updateLog=(id:string,data:any):Promise<AxiosResponse>=>{
-  return axiosInstance.put(`projects/api/timesheets/${id}`,data);
-}
+export const updateLog = (id: string, data: any): Promise<AxiosResponse> => {
+  return axiosInstance.put(`projects/api/timesheets/${id}`, data);
+};

@@ -99,8 +99,9 @@ public class Constants {
       "Error in Updating File in File Service";
     public static final String ERROR_IN_VALIDATE_PROJECT_MANAGERS = "Error while validating project managers via account service" ;
   public static final String ERROR_IN_VALIDATE_PROJECT_RESOURCES = "Error while validating project resources via account service";
+    public static final String NO_RESOURCES_FOUND = "No resources found for contracts of clientId: {}";
 
-  // ========== Utility ==========
+    // ========== Utility ==========
   public static String format(String message, Object... args) {
     return String.format(message, args);
   }

@@ -538,4 +538,29 @@ public class ProjectServiceImpl implements ProjectService {
         return dto;
       }).collect(Collectors.toList());
   }
+
+    public List<EmployeeNameDTO> fetchEmployees(List<String> employeeIds, String projectId) {
+        if (employeeIds == null || employeeIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        try {
+            List<EmployeeNameDTO> employeeDTOs = accountClient.getEmployeeNamesById(employeeIds);
+
+            List<EmployeeNameDTO> activeEmployees = employeeDTOs.stream()
+                    .filter(EmployeeNameDTO::isActive)
+                    .collect(Collectors.toList());
+
+            Set<String> foundIds = employeeDTOs.stream()
+                    .map(EmployeeNameDTO::getEmployeeId)
+                    .collect(Collectors.toSet());
+            employeeIds.stream()
+                    .filter(id -> !foundIds.contains(id))
+                    .forEach(id -> log.warn("Employee ID {} not found or inactive for projectId {}", id, projectId));
+
+            return activeEmployees;
+        } catch (Exception e) {
+            log.error("Failed to fetch employees for projectId: {} with IDs: {}", projectId, employeeIds, e);
+            return Collections.emptyList();
+        }
+    }
 }
