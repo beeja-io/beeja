@@ -103,6 +103,12 @@ public class EmployeeServiceImpl implements EmployeeService {
     emp.setEmployeeId(((String) employee.get("employeeId")));
     emp.setEmployeeNumber(ExtractEmpNumUtil.extractEmpNumber(emp.getEmployeeId()));
     Object organizationsObject = employee.get("organizations");
+    String mobileNumber = (String) employee.get("mobileNumber");
+    if (mobileNumber != null && !mobileNumber.trim().isEmpty()) {
+      Contact contact = new Contact();
+      contact.setPhone(mobileNumber.trim());
+      emp.setContact(contact);
+    }
     try{
       if (organizationsObject instanceof Map) {
         Map<String, Object> organizationsMap = (Map<String, Object>) organizationsObject;
