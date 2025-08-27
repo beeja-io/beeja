@@ -51,7 +51,7 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
           <ProjectsTable>
             <thead>
               <tr>
-                <th>{t('Employee Id')}</th>
+                <th>{t('EMPLOYEE_ID')}</th>
                 <th>{t('Name')}</th>
                 <th>{t('Allocation')}</th>
               </tr>

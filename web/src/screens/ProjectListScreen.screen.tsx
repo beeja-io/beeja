@@ -70,24 +70,24 @@ const ProjectList = ({
     <>
       <StyledDiv>
         <ExpenseHeading>
-          <ExpenseTitle>{t('All Projects')}</ExpenseTitle>
+          <ExpenseTitle>{t('All_Projects')}</ExpenseTitle>
         </ExpenseHeading>
 
         <TableListContainer style={{ marginTop: 0 }}>
           {!isLoading && projectLists.length === 0 ? (
             <ZeroEntriesFound
-              heading="No Projects Found"
-              message="You Don't Have Any Projects"
+              heading="No_Projects_Found"
+              message="You_Don't_Have_Any_Projects"
             />
           ) : (
             <TableList>
               <TableHead>
                 <tr>
-                  <th>{t('Project ID')}</th>
-                  <th>{t('Project Name')}</th>
-                  <th>{t('Client Name')}</th>
-                  <th>{t('Project Manager(s)')}</th>
-                  <th>{t('Status')}</th>
+                  <th>{t('Project_ID')}</th>
+                  <th>{t('Project_Name')}</th>
+                  <th>{t('Client_Name')}</th>
+                  <th>{t('Project_Manager(s)')}</th>
+                  <th>{t('STATUS')}</th>
                   <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
