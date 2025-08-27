@@ -543,11 +543,11 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectEmployeeDTO getEmployeesByProjectId(String projectId) {
         String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
 
-        Project project = projectRepository.findByProjectId(projectId, organizationId)
-                .orElseThrow(() -> {
-                    log.error(Constants.PROJECT_NOT_FOUND);
-                    return new RuntimeException("Project not found with id: " + projectId);
-                });
+        Project project = projectRepository.findByProjectIdAndOrganizationId(projectId, organizationId);
+        if (project == null) {
+            log.error(Constants.PROJECT_NOT_FOUND);
+            throw new RuntimeException("Project not found with id: " + projectId);
+        }
 
         List<EmployeeNameDTO> managers = fetchEmployees(project.getProjectManagers(),  projectId);
         List<EmployeeNameDTO> resources = fetchEmployees(project.getProjectResources(), projectId);

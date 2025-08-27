@@ -3,7 +3,6 @@ package com.beeja.api.projectmanagement.service;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.request.ContractRequest;
-import com.beeja.api.projectmanagement.responses.ClientResourcesDTO;
 import com.beeja.api.projectmanagement.responses.ContractResponsesDTO;
 
 import java.util.List;
