@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 
-export const ContainerStyle = styled.div<{ Width?: string }>`
+export const ContainerStyle = styled.div<{
+  Width?: string;
+  hasValue?: boolean;
+}>`
   position: relative;
   overflow: visible;
   font-size: 0.875rem;
@@ -11,7 +14,10 @@ export const ContainerStyle = styled.div<{ Width?: string }>`
   transition: all 0.2s ease-in-out;
   width: ${(props) => props.Width ?? '100%'};
   background-color: ${(props) => props.theme.colors.blackColors.white6};
-  color: ${(props) => props.theme.colors.blackColors.black1};
+  color: ${({ hasValue, theme }) =>
+    hasValue
+      ? theme.colors.blackColors.black1
+      : theme.colors.grayColors.gray11};
   &.largeContainerFil {
     width: 200px;
   }
@@ -24,6 +30,9 @@ export const ContainerStyle = styled.div<{ Width?: string }>`
     width: 400px;
   }
 
+  &.largeContainerRes {
+    width: 550px;
+  }
   &.cursor-disabled {
     cursor: not-allowed !important;
     pointer-events: none;
@@ -37,7 +46,10 @@ export const ContainerStyle = styled.div<{ Width?: string }>`
       props.theme.colors.brandColors.primary};
   }
 `;
-export const ContainerStyleOrg = styled.div<{ Width?: string }>`
+export const ContainerStyleOrg = styled.div<{
+  Width?: string;
+  hasValue?: boolean;
+}>`
   position: relative;
   overflow: visible;
   font-size: 0.875rem;
@@ -48,7 +60,10 @@ export const ContainerStyleOrg = styled.div<{ Width?: string }>`
   transition: all 0.2s ease-in-out;
   width: ${(props) => props.Width ?? '100%'};
   background-color: ${(props) => props.theme.colors.blackColors.white6};
-  color: ${(props) => props.theme.colors.blackColors.black1};
+  color: ${({ hasValue, theme }) =>
+    hasValue
+      ? theme.colors.blackColors.black1
+      : theme.colors.grayColors.gray11};
   &.largeContainerFil {
     width: 200px;
   }
@@ -61,6 +76,9 @@ export const ContainerStyleOrg = styled.div<{ Width?: string }>`
     width: 400px;
   }
 
+  &.largeContainerRes {
+    width: 550px;
+  }
   &.cursor-disabled {
     cursor: not-allowed !important;
     pointer-events: none;
@@ -74,7 +92,10 @@ export const ContainerStyleOrg = styled.div<{ Width?: string }>`
       props.theme.colors.brandColors.primary};
   }
 `;
-export const ContainerStyleMulti = styled.div<{ Width?: string }>`
+export const ContainerStyleMulti = styled.div<{
+  Width?: string;
+  hasValue?: boolean;
+}>`
   position: relative;
   overflow: visible;
   font-size: 0.875rem;
@@ -86,7 +107,10 @@ export const ContainerStyleMulti = styled.div<{ Width?: string }>`
   transition: all 0.2s ease-in-out;
   width: ${(props) => props.Width ?? '100%'};
   background-color: ${(props) => props.theme.colors.blackColors.white6};
-  color: ${(props) => props.theme.colors.blackColors.black1};
+  color: ${({ hasValue, theme }) =>
+    hasValue
+      ? theme.colors.blackColors.black1
+      : theme.colors.grayColors.gray11};
   &.largeContainerFil {
     width: 200px;
   }
@@ -97,6 +121,10 @@ export const ContainerStyleMulti = styled.div<{ Width?: string }>`
 
   &.largeContainerBulk {
     width: 400px;
+  }
+
+  &.largeContainerRes {
+    width: 550px;
   }
 
   &.cursor-disabled {
@@ -143,6 +171,7 @@ export const DropdownItemStyle = styled.li<{ selected: boolean }>`
   padding: 0.5rem 1rem;
   cursor: pointer;
   z-index: 999;
+  color: ${(props) => props.theme.colors.blackColors.black1};
   background-color: ${(props) => props.theme.colors.blackColors.white6};
   font-weight: ${(props) => (props.selected ? 600 : 'normal')};
 

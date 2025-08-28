@@ -4,7 +4,8 @@ import { ProjectStatus } from '.././utils/projectStatus';
 
 const DropdownWrapper = styled.div`
   position: relative;
-  display: inline-block;
+  display: flex;
+  align-items: center;
 `;
 
 const Selected = styled.div<{ color: string; bgColor: string }>`
@@ -25,6 +26,15 @@ const Dot = styled.span<{ color: string }>`
   height: 8px;
   border-radius: 50%;
   background-color: ${({ color }) => color};
+`;
+
+const DropdownArrow = styled.div<{ open: boolean }>`
+  cursor: pointer;
+  margin-left: 8px;
+  color: #687588;
+  font-size: 10px;
+  transform: rotate(${(props) => (props.open ? '90deg' : '270deg')});
+  transition: transform 0.2s ease-in-out;
 `;
 
 const DropdownList = styled.div`
@@ -66,6 +76,11 @@ const StatusDropdown: React.FC<Props> = ({ value, onChange, disabled }) => {
   const [open, setOpen] = useState(false);
 
   const selected = ProjectStatus.find((s) => s.value === value);
+  const toggleDropdown = () => {
+    if (!disabled) {
+      setOpen(!open);
+    }
+  };
 
   return (
     <DropdownWrapper>
@@ -83,10 +98,15 @@ const StatusDropdown: React.FC<Props> = ({ value, onChange, disabled }) => {
         }}
       >
         <Dot color={selected?.color || '#000'} />
-        {selected?.label || 'Select'}
+        <span>{selected?.label || 'Select'}</span>
       </Selected>
+      {!disabled && (
+        <DropdownArrow open={open} onClick={toggleDropdown}>
+          &lt;
+        </DropdownArrow>
+      )}
 
-      {open && (
+      {open && !disabled && (
         <DropdownList>
           {ProjectStatus.map((status) => (
             <DropdownItem

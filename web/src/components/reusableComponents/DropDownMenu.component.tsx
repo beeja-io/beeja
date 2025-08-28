@@ -105,6 +105,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       <ContainerStyle
         ref={dropdownRef}
         onKeyDown={onKeyDown || handleKeyPress}
+        hasValue={!!selected}
         className={`${className || ''} ${required && touched && !selected ? 'error-border' : ''}`}
         style={style}
       >
@@ -211,6 +212,7 @@ export const DropdownOrg: React.FC<DropdownMenuProps> = ({
         ref={dropdownRef}
         onKeyDown={onKeyDown || handleKeyPress}
         className={className || ''}
+        hasValue={!!selected}
         style={style}
       >
         <ToggleButtonStyle
@@ -301,7 +303,7 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
 
   return (
     <div>
-      <ContainerStyleMulti ref={dropdownRef}>
+      <ContainerStyleMulti ref={dropdownRef} hasValue={value.length > 0}>
         <ClearButton onClick={(e) => e.stopPropagation()}>
           {value.length > 0 && (
             <button className="clear" onClick={clearAll}>

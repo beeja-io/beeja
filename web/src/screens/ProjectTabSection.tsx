@@ -131,14 +131,14 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
   return (
     <Container>
       <Tabs>
-        {['Project Managers', 'Contracts', 'Resources', 'Description'].map(
+        {['Project_Managers', 'Contracts', 'Resources', 'Description'].map(
           (tab) => (
             <Tab
               key={tab}
               active={activeTab === tab}
               onClick={() => setActiveTab(tab as any)}
             >
-              {tab}
+              {t(tab)}
             </Tab>
           )
         )}
@@ -149,7 +149,7 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           <ProjectsTable>
             <thead>
               <tr>
-                <th>{t('Employee ID')}</th>
+                <th>{t('Employee_ID')}</th>
                 <th>{t('Name')}</th>
                 <th>{t('Contract')}</th>
               </tr>
@@ -165,7 +165,7 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3}>{t('No Project Managers Available')}</td>
+                  <td colSpan={3}>{t('No_Project_Managers_Available')}</td>
                 </tr>
               )}
             </tbody>
@@ -176,11 +176,11 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           <ProjectsTable>
             <thead>
               <tr>
-                <th>{t('Contract ID')}</th>
-                <th>{t('Contract Name')}</th>
+                <th>{t('Contract_ID')}</th>
+                <th>{t('Contract_Name')}</th>
                 <th>{t('Status')}</th>
-                <th>{t('Project Manager')}</th>
-                <th>{t('Start Date')}</th>
+                <th>{t('Project_Manager')}</th>
+                <th>{t('Start_Date')}</th>
               </tr>
             </thead>
             <tbody>
@@ -219,9 +219,9 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           <ProjectsTable>
             <thead>
               <tr>
-                <th>{t('Employee ID')}</th>
+                <th>{t('Employee_ID')}</th>
                 <th>{t('Name')}</th>
-                <th>{t('Contract Name')}</th>
+                <th>{t('Contract_Name')}</th>
                 <th>{t('Allocation')}</th>
               </tr>
             </thead>

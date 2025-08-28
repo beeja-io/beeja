@@ -36,12 +36,16 @@ const ProjectManagement = () => {
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   const isProjectDetailsRoute = matchPath(
-    '/clients/client-management/:id',
+    '/projects/project-management/:id/:id',
     location.pathname
   );
 
   const goToPreviousPage = () => {
-    navigate(-1);
+    if (isCreateModalOpen) {
+      setIsCreateModalOpen(false);
+    } else {
+      navigate(-1);
+    }
   };
 
   const handleOpenCreateModal = useCallback(() => {
@@ -84,8 +88,12 @@ const ProjectManagement = () => {
 
   const handleSuccessMessage = (projectId: string) => {
     setToastData({
-      heading: 'Project Added Successfully.',
-      body: `New Project has been Added\nsuccessfully with project: "${projectId}".`,
+      heading: isEditMode
+        ? 'Project Updated Successfully.'
+        : 'Project Added Successfully.',
+      body: isEditMode
+        ? `Project "${projectId}" has been updated successfully.`
+        : `New Project has been Added\nsuccessfully with project: "${projectId}".`,
     });
     setShowSuccessMessage(true);
     setIsCreateModalOpen(false);
@@ -123,17 +131,19 @@ const ProjectManagement = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('Project Management')}
+            {t('Project_Management')}
             {isCreateModalOpen && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Add Project')}</span>
+                <span className="nav_AddClient">
+                  {isEditMode ? t('Edit_Project') : t('Add_Project')}
+                </span>
               </>
             )}
             {!isCreateModalOpen && isProjectDetailsRoute && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Project Details')}</span>
+                <span className="nav_AddClient">{t('Project_Details')}</span>
               </>
             )}
           </span>
@@ -144,7 +154,7 @@ const ProjectManagement = () => {
               width="216px"
             >
               <AddNewPlusSVG />
-              {t('Add New Project')}
+              {t('Add_New_Project')}
             </Button>
           )}
         </ExpenseHeadingSection>

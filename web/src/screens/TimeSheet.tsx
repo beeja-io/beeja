@@ -241,6 +241,7 @@ const Timesheet = () => {
   ) => {
     setSelectedContract(event.target.value);
   };
+
   const handlePreviousMonth = () => {
     const newMonth = subMonths(currentMonth, 1);
     setCurrentMonth(newMonth);
