@@ -254,7 +254,7 @@ export const CompanyProfile = () => {
     }
   if (updatedOrganization.accounts && updatedOrganization.accounts.taxNumber) {
   if (!isValidTaxNo(updatedOrganization.accounts.taxNumber.toUpperCase())) {
-    setTaxError("Tax number must be in format of XXXX123456"); // adjust format as per requirement
+      setTaxError(t("TAX_NUMBER_ERROR"));
     hasErrors = true;
   } else {
     setTaxError("");
@@ -904,7 +904,7 @@ if (
           <Input
            name="accounts.taxNumber"
            placeholder={
-          isEditModeOn ? 'Enter Tax Number (Ex: ABCD123456)' : '-'
+          isEditModeOn ? t("TAX_NO_PLACEHOLDER") : '-'
            }
       type="text"
       value={
@@ -1092,7 +1092,7 @@ if (
       <Input
         name="accountName"
         type="text"
-        placeholder={isEditModeOn ? 'Enter Account Name' : '-'}
+        placeholder={isEditModeOn ? t("ACCOUNT_NAME_PLACEHOLDER") : '-'}
         value={companyProfile.bankDetails?.accountName || ''}
          onChange={handleInputChange}
         disabled={!isEditModeOn}
@@ -1106,7 +1106,7 @@ if (
       <Input
         name="accountNumber"
         type="text"
-        placeholder={isEditModeOn ? 'Enter Account Number' : '-'}
+        placeholder={isEditModeOn ? t("ACCOUNT_NUMBER_PLACEHOLDER") : '-'}
         value={companyProfile.bankDetails?.accountNumber || ''}
         onChange={handleInputChange}
         disabled={!isEditModeOn}

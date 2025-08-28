@@ -19,7 +19,7 @@ public class Accounts {
 
   @Pattern(
           regexp = "^[A-Z]{4}[0-9]{6}$",
-          message = "Tax Number must be in the format XXXX123456"
+          message = "Tax number must be in the format XXXX123456"
   )
   private String taxNumber;
 }

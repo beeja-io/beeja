@@ -369,6 +369,14 @@
   "ACCOUNT_NAME": "Account Name",
   "ACCOUNT_NUMBER": "Account Number",
   "IFSC_CODE": "IFSC Code",
+  "TAX_NUMBER_ERROR": "Tax number must be in the format XXXX123456",
+  "TAX_NO_PLACEHOLDER": "Enter Tax Number (Ex: ABCD123456)",
+  "ACCOUNT_NAME_PLACEHOLDER": "Enter Account Name",
+  "ACCOUNT_NUMBER_PLACEHOLDER": "Enter Account Number",
+
+
+
+
 
   "errors": {
     "unsupported_format": "Unsupported file format. Please upload a valid receipt file(jpeg, png, pdf).",
