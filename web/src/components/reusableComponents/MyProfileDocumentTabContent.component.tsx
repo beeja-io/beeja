@@ -32,6 +32,7 @@ import {
 import { DocumentAction } from './DocumentAction';
 import {
   getAllFilesByEmployeeId,
+  getOrganizationValuesByKey,
   uploadEmployeeFiles,
 } from '../../service/axiosInstance';
 import { EmployeeEntity } from '../../entities/EmployeeEntity';
@@ -54,14 +55,14 @@ import { hasPermission } from '../../utils/permissionCheck';
 import useKeyCtrl from '../../service/keyboardShortcuts/onKeySave';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import Pagination from '../directComponents/Pagination.component';
-
+import { OrganizationValues } from '../../entities/OrgValueEntity';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
-
 import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 type DocumentTabContentProps = {
   employee: EmployeeEntity;
 };
+import DropdownMenu from './DropDownMenu.component';
 
 export const DocumentTabContent = (props: DocumentTabContentProps) => {
   const { t } = useTranslation();
@@ -82,17 +83,9 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     setErrors((prevErrors) => ({ ...prevErrors, emptyFile: '' }));
     setErrors((prevErrors) => ({ ...prevErrors, emptyDocumentType: '' }));
   };
-
-  const documentType = [
-    'Identity',
-    'Payslip',
-    'ADDRESS_PROOF',
-    'Education',
-    'NDA',
-    'Tax_Exit_Doc',
-    'Equipment_Policy',
-    'Appraisal Letter',
-  ];
+  const [documentType, setDocumentType] = useState<OrganizationValues>(
+    {} as OrganizationValues
+  );
   const Actions = [
     ...(user &&
     (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
@@ -208,6 +201,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
       setIsLoading(false);
     }
   }, [currentPage, itemsPerPage, entityId]);
+
+  useEffect(() => {
+    fetchDeviceTypes();
+  }, []);
+  const fetchDeviceTypes = async () => {
+    const responce = await getOrganizationValuesByKey('documentTypes');
+    setDocumentType(responce?.data);
+  };
 
   const [isUpdateToastMessage, setIsUpdateToastMessage] = useState(false);
   const handleUpdateToastMessage = () => {
@@ -471,24 +472,25 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       {t('DOCUMENT_TYPE')}{' '}
                       <ValidationText className="star">*</ValidationText>
                     </label>
-                    <select
+                    <DropdownMenu
+                      className=""
                       style={{
-                        borderColor: errors.emptyDocumentType ? 'red' : '',
+                        border: errors.emptyDocumentType ? '1px solid red' : '',
                       }}
                       value={category}
-                      onChange={handleDocumentTypeChange}
-                      disabled={isResponseLoading}
-                      className="selectoption"
-                    >
-                      <option value="">{t('Select a Type')}</option> {''}
-                      {[...documentType]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                    </select>
+                      onChange={(val) =>
+                        handleDocumentTypeChange({
+                          target: { value: val },
+                        } as React.ChangeEvent<HTMLSelectElement>)
+                      }
+                      options={[
+                        { label: t('Select a Type'), value: '' },
+                        ...(documentType?.values || []).map((opt) => ({
+                          label: opt.value,
+                          value: opt.value,
+                        })),
+                      ]}
+                    />
                     {errors.emptyDocumentType && (
                       <ValidationText>
                         <AlertISVG /> {errors.emptyDocumentType}

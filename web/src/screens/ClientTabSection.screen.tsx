@@ -5,6 +5,7 @@ import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import {
   getProjectsByClientId,
   getResourcesByClientId,
+  getContractsByClientId,
 } from '../service/axiosInstance';
 import { CountBadge, DateIconWrapper } from '../styles/ClientStyles.style';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
@@ -44,9 +45,13 @@ interface Resource {
 interface ClientTabsSectionProps {
   clientId: string;
   projectId?: string;
+  description?: string;
 }
 
-const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
+const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
+  clientId,
+  description = '',
+}) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<
     'Projects' | 'Contracts' | 'Resources' | 'Attachments' | 'Description'
@@ -55,8 +60,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(false);
-  const [description, setDescription] = useState<string>('');
-
   useEffect(() => {
     const fetchClientData = async () => {
       if (!clientId) return;
@@ -73,8 +76,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
           setLoading(false);
           return;
         }
-        setDescription(entity?.description ?? '');
-
         const mappedProjects: Project[] = res.data.map((entity) => ({
           projectId: entity.projectId ?? 'N/A',
           name: entity.name ?? 'N/A',
@@ -85,18 +86,17 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
             : [],
         }));
 
-        const mappedContracts: Contract[] = Array.isArray(entity.contracts)
-          ? entity.contracts.map((c: any) => ({
-              contractId: c?.contractId ?? 'N/A',
-              name: c?.name ?? 'N/A',
-              status: c?.status ?? 'N/A',
-              projectName: entity?.name ?? 'N/A',
-              projectManagers: Array.isArray(c?.projectManagers)
-                ? c.projectManagers.map((pm: any) => pm?.name ?? 'N/A')
-                : [],
-              startDate: c?.startDate?.split('T')[0] ?? 'N/A',
-            }))
-          : [];
+        const contractsRes = await getContractsByClientId(clientId);
+        const mappedContracts: Contract[] = contractsRes.data.map((c) => ({
+          contractId: c.contractId ?? 'N/A',
+          name: c.contractTitle ?? 'N/A',
+          status: c.status ?? 'N/A',
+          projectName: c.projectName ?? 'N/A',
+          projectManagers: c.projectManagerNames?.length
+            ? c.projectManagerNames
+            : [],
+          startDate: c.startDate?.split('T')[0] ?? 'N/A',
+        }));
 
         const resourcesRes = await getResourcesByClientId(clientId);
 
@@ -145,11 +145,11 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
           <ProjectsTable>
             <thead>
               <tr>
-                <th>{t('Project ID')}</th>
-                <th>{t('Project Name')}</th>
+                <th>{t('Project_ID')}</th>
+                <th>{t('Project_Name')}</th>
                 <th>{t('Status')}</th>
-                <th>{t('Project Manager(s)')}</th>
-                <th>{t('Start Date')}</th>
+                <th>{t('Project_Manager(s)')}</th>
+                <th>{t('Start_Date')}</th>
               </tr>
             </thead>
             <tbody>

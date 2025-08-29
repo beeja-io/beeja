@@ -470,5 +470,61 @@ public class ContractServiceImpl implements ContractService {
                     )
             );
         }
+
+    @Override
+    public List<ContractResponsesDTO> getContractsByClientId(String clientId) {
+        String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+
+        List<Contract> contracts = contractRepository.findByClientIdAndOrganizationId(clientId, organizationId);
+
+        if (contracts == null || contracts.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return contracts.stream().map(contract -> {
+            String projectId = contract.getProjectId();
+
+            Project project = projectRepository.findByProjectId(projectId, organizationId)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            BuildErrorMessage.buildErrorMessage(
+                                    ErrorType.NOT_FOUND,
+                                    ErrorCode.RESOURCE_NOT_FOUND,
+                                    Constants.PROJECT_NOT_FOUND + projectId
+                            )
+                    ));
+
+            List<String> pmIds = contract.getProjectManagers();
+            List<String> pmNames;
+            try {
+                pmNames = (pmIds != null && !pmIds.isEmpty())
+                        ? accountClient.getEmployeeNamesById(pmIds).stream()
+                        .map(EmployeeNameDTO::getFullName)
+                        .toList()
+                        : Collections.emptyList();
+            } catch (Exception e) {
+                throw new ResourceNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.FEIGN_CLIENT_ERROR,
+                                ErrorCode.RESOURCE_NOT_FOUND,
+                                Constants.FETCH_ERROR_FOR_PROJECT_MANAGERS + pmIds
+                        )
+                );
+            }
+
+            Client client = clientRepository.findByClientIdAndOrganizationId(contract.getClientId(), organizationId);
+            String clientName = (client != null) ? client.getClientName() : Constants.CLIENT_NOT_FOUND;
+
+            return ContractResponsesDTO.builder()
+                    .contractId(contract.getContractId())
+                    .projectId(contract.getProjectId())
+                    .contractTitle(contract.getContractTitle())
+                    .projectName(project.getName())
+                    .clientName(clientName)
+                    .projectManagerIds(pmIds)
+                    .projectManagerNames(pmNames)
+                    .status(contract.getStatus() != null ? contract.getStatus().name() : null)
+                    .startDate(contract.getStartDate())
+                    .build();
+        }).collect(Collectors.toList());
     }
 }

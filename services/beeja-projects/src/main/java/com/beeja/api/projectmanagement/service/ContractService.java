@@ -51,4 +51,7 @@ public interface ContractService {
   Contract changeContractStatus(String contractId, ProjectStatus status);
 
   List<ClientResourcesDTO> getClientResources(String clientId);
+
+    List<ContractResponsesDTO> getContractsByClientId(String clientId);
+
 }

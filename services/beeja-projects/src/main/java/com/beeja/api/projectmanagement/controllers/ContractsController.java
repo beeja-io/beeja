@@ -121,6 +121,12 @@ public class ContractsController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(resources);
+
+    @GetMapping("/client/{clientId}")
+    @HasPermission(PermissionConstants.GET_CONTRACT)
+    public ResponseEntity<List<ContractResponsesDTO>> getContractsByClientId(
+            @PathVariable String clientId) {
+        return ResponseEntity.ok(contractService.getContractsByClientId(clientId));
     }
 
 }

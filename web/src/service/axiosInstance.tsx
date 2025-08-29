@@ -354,6 +354,16 @@ export const getProjectsByClientId = (
   return axiosInstance.get(`/projects/v1/projects/client/${clientId}`);
 };
 
+export const getProjectEmployees = (projectId: string) => {
+  return axiosInstance.get(`/projects/v1/projects/${projectId}/employees`);
+};
+
+export const getContractsByClientId = (
+  clientId: string
+): Promise<AxiosResponse<ContractDetails[]>> => {
+  return axiosInstance.get(`/projects/v1/contracts/client/${clientId}`);
+};
+
 export const updateProjectStatus = (
   projectId: string,
   newStatus: ProjectStatus

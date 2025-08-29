@@ -539,6 +539,22 @@ public class ProjectServiceImpl implements ProjectService {
       }).collect(Collectors.toList());
   }
 
+    @Override
+    public ProjectEmployeeDTO getEmployeesByProjectId(String projectId) {
+        String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+
+        Project project = projectRepository.findByProjectIdAndOrganizationId(projectId, organizationId);
+        if (project == null) {
+            log.error(Constants.PROJECT_NOT_FOUND);
+            throw new RuntimeException("Project not found with id: " + projectId);
+        }
+
+        List<EmployeeNameDTO> managers = fetchEmployees(project.getProjectManagers(),  projectId);
+        List<EmployeeNameDTO> resources = fetchEmployees(project.getProjectResources(), projectId);
+
+        return new ProjectEmployeeDTO(managers, resources);
+    }
+
     public List<EmployeeNameDTO> fetchEmployees(List<String> employeeIds, String projectId) {
         if (employeeIds == null || employeeIds.isEmpty()) {
             return Collections.emptyList();
