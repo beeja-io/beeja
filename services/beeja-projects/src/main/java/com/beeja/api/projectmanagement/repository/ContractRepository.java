@@ -30,7 +30,4 @@ public interface ContractRepository extends MongoRepository<Contract, String> {
   List<Contract> findAllContractsByOrganizationId(String organizationId);
 
     List<Contract> findByClientIdAndOrganizationId(String clientId, String organizationId);
-
-
-
 }

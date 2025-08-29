@@ -379,6 +379,12 @@ export const updateProjectStatus = (
   );
 };
 
+export const getResourcesByClientId = (
+  clientId: string
+): Promise<AxiosResponse<ContractDetails[]>> => {
+  return axiosInstance.get(`/projects/v1/contracts/${clientId}/resources`);
+};
+
 export const updateContractStatus = (
   contractId: string,
   newStatus: ProjectStatus

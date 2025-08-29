@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import {
-  getContractsByClientId,
   getProjectsByClientId,
+  getResourcesByClientId,
+  getContractsByClientId,
 } from '../service/axiosInstance';
 import { CountBadge, DateIconWrapper } from '../styles/ClientStyles.style';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
@@ -97,25 +98,20 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           startDate: c.startDate?.split('T')[0] ?? 'N/A',
         }));
 
-        const resourceMap: Record<string, Resource> = {};
-        Array.isArray(entity.resources) &&
-          entity.resources.forEach((r: any) => {
-            const key = r?.employeeId ?? 'unknown';
-            if (!resourceMap[key]) {
-              resourceMap[key] = {
-                employeeId: r?.employeeId ?? 'N/A',
-                name: r?.name ?? 'N/A',
-                contractCount: 1,
-                allocation: `${r?.allocationPercentage ?? 0}%`,
-              };
-            } else {
-              resourceMap[key].contractCount += 1;
-            }
-          });
+        const resourcesRes = await getResourcesByClientId(clientId);
+
+        const mappedResources: Resource[] = Array.isArray(resourcesRes.data)
+          ? resourcesRes.data.map((r: any) => ({
+              employeeId: r.employeeId ?? 'N/A',
+              name: r.employeeName ?? 'N/A',
+              contractCount: r.numberOfContracts ?? 0,
+              allocation: `${r.totalAllocation ?? 0}%`,
+            }))
+          : [];
 
         setProjects(mappedProjects);
         setContracts(mappedContracts);
-        setResources(Object.values(resourceMap));
+        setResources(mappedResources);
       } catch (error) {
         toast.error(t('Failed to load project data'));
       } finally {
