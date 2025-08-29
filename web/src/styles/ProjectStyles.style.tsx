@@ -408,6 +408,7 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   }
   select:disabled {
     background-color: ${(props) => props.theme.colors.backgroundColors.primary};
+    cursor: not-allowed;
   }
   input:disabled {
     background-color: ${(props) => props.theme.colors.blackColors.white6};

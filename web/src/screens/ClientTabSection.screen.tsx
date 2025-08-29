@@ -41,9 +41,13 @@ interface Resource {
 interface ClientTabsSectionProps {
   clientId: string;
   projectId?: string;
+  description?: string;
 }
 
-const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
+const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
+  clientId,
+  description = '',
+}) => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<
     'Projects' | 'Contracts' | 'Resources' | 'Attachments' | 'Description'
@@ -52,8 +56,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(false);
-  const [description, setDescription] = useState<string>('');
-
   useEffect(() => {
     const fetchClientData = async () => {
       if (!clientId) return;
@@ -70,8 +72,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({ clientId }) => {
           setLoading(false);
           return;
         }
-        setDescription(entity?.description ?? '');
-
         const mappedProjects: Project[] = res.data.map((entity) => ({
           projectId: entity.projectId ?? 'N/A',
           name: entity.name ?? 'N/A',
