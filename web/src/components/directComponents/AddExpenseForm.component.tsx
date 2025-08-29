@@ -105,6 +105,10 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const handleIsExpenseReceiptPreviewModalOpen = () => {
     setIsExpenseReceiptPreviewModalOpen(!isExpenseReceiptPreviewModalOpen);
   };
+  const isAmountInvalid = (formData: FormData) => {
+    const amount = Number(formData.get('amount'));
+    return !amount || amount <= 0;
+  };
 
   const expenseReceiptPreview = async (
     fileName: string,
@@ -232,6 +236,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
       setIsResponseLoading(true);
 
+      if (isAmountInvalid(formData)) {
+        setResponseErrorMessage(
+          'EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT_GREATER_THAN_ZERO'
+        );
+        handleShowErrorMessage();
+        setIsResponseLoading(false);
+        return;
+      }
       try {
         await createExpense(formData);
         handleShowSuccessMessage();
@@ -615,6 +627,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
 
       setIsResponseLoading(true);
+      if (isAmountInvalid(formData)) {
+        setResponseErrorMessage(
+          'EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT_GREATER_THAN_ZERO'
+        );
+        handleShowErrorMessage();
+        setIsResponseLoading(false);
+        return;
+      }
       try {
         await updateExpense(props.expense?.id, formData);
         handleShowSuccessMessage();
