@@ -280,7 +280,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                   <ValidationText className="star">*</ValidationText>
                 </label>
                 <select
-                  className="selectoption largeSelectOption"
+                  className={`selectoption largeSelectOption ${isEditMode ? 'disabled' : ''}`}
                   name="clientName"
                   value={projectFormData.clientId}
                   onChange={(e) => {
@@ -296,6 +296,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       }));
                     }
                   }}
+                  disabled={isEditMode}
                 >
                   <option value="">{t('Select_Client')}</option>
                   {[...clientOptions]
