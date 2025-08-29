@@ -357,7 +357,20 @@ export const ExpenseList = (props: ExpenseListProps) => {
 
   useEffect(() => {
     fetchExpenses();
-  }, [fetchExpenses]);
+  }, [
+    selectedTypes.join(','),
+    selectedPaymentModes.join(','),
+    selectedDepartments.join(','),
+    selectedCategories.join(','),
+    fromDate?.toISOString(),
+    toDate?.toISOString(),
+    itemsPerPage,
+    currentPage,
+    sortBy,
+    filterBasedOn,
+    sortOrder,
+    settlementStatusFilter,
+  ]);
 
   const [maxToDate, setMaxToDate] = useState<Date | null>(new Date());
 

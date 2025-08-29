@@ -6,6 +6,7 @@ import { ContractDetails } from '../../entities/ContractEntiy';
 import { Employee, ProjectEntity } from '../../entities/ProjectEntity';
 import {
   getAllProjects,
+  getProjectEmployees,
   getResourceManager,
   postContracts,
   updateContract,
@@ -161,6 +162,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     setIsDiscardModalOpen((prev) => !prev);
   };
 
+  const [isProjectLoading, setIsProjectLoading] = useState(false);
+
   useEffect(() => {
     getAllProjects()
       .then((response) => {
@@ -273,7 +276,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     }
   };
 
-  const handleProjectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleProjectChange = async (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     const selectedName = e.target.value;
     const selectedProject = projectOptions.find((p) => p.name === selectedName);
 
@@ -283,7 +288,33 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         projectName: selectedProject.name,
         projectId: selectedProject.projectId,
         clientId: selectedProject.clientId,
+        projectManagers: [],
+        rawProjectResources: [],
       }));
+
+      setIsProjectLoading(true);
+      try {
+        const response = await getProjectEmployees(selectedProject.projectId);
+
+        const managers = (response.data.managers || []).map((m: any) => ({
+          value: m.employeeId,
+          label: m.fullName,
+        }));
+
+        const resources = (response.data.resources || []).map((r: any) => ({
+          value: r.employeeId,
+          label: r.fullName,
+        }));
+
+        setManagerOptions(managers);
+        setResourceOptions(resources);
+      } catch (error) {
+        toast.error('Failed to fetch project employees');
+        setManagerOptions([]);
+        setResourceOptions([]);
+      } finally {
+        setIsProjectLoading(false);
+      }
     }
   };
 
@@ -814,29 +845,38 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   />
                 </InputLabelContainer>
 
-                <InputLabelContainer>
-                  <Label>
-                    {t('Project Managers')}
-                    <RequiredAsterisk>*</RequiredAsterisk>
-                  </Label>
-                  <MultiSelectDropdown
-                    options={managerOptions}
-                    value={managerOptions.filter((option) =>
-                      formData.projectManagers.includes(option.value)
-                    )}
-                    onChange={(selected) => {
-                      const values = [...selected]
-                        .sort((a, b) => a.value.localeCompare(b.value))
-                        .map((opt) => opt.value);
-                      setFormData((prev) => ({
-                        ...prev,
-                        projectManagers: values,
-                      }));
-                    }}
-                    placeholder={t('Select Project Managers')}
-                    searchable={true}
-                  />
-                </InputLabelContainer>
+                {isProjectLoading ? (
+                  <div>
+                    <SpinAnimation />
+                  </div>
+                ) : (
+                  <div>
+                    <InputLabelContainer>
+                      <Label>
+                        {t('Project Managers')}
+                        <RequiredAsterisk>*</RequiredAsterisk>
+                      </Label>
+                      <MultiSelectDropdown
+                        options={managerOptions}
+                        value={managerOptions.filter((option) =>
+                          formData.projectManagers.includes(option.value)
+                        )}
+                        className="largeContainerExp"
+                        onChange={(selected) => {
+                          const values = [...selected]
+                            .sort((a, b) => a.value.localeCompare(b.value))
+                            .map((opt) => opt.value);
+                          setFormData((prev) => ({
+                            ...prev,
+                            projectManagers: values,
+                          }));
+                        }}
+                        placeholder={t('Select Project Managers')}
+                        searchable={true}
+                      />
+                    </InputLabelContainer>
+                  </div>
+                )}
               </RowWrapper>
             </FormInputsContainer>
 

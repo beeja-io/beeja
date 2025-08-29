@@ -284,6 +284,8 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                   label="Select Client"
                   name="clientName"
                   id="clientName"
+                  className={isEditMode ? 'cursor-disabled' : ''}
+                  disabled={isEditMode}
                   value={projectFormData.clientId ?? ''}
                   onChange={(selectedValue) => {
                     const selectedOption = clientOptions.find(

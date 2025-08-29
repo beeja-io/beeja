@@ -2,8 +2,10 @@ package com.beeja.api.projectmanagement.service;
 
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
+import com.beeja.api.projectmanagement.model.dto.EmployeeNameDTO;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
+import com.beeja.api.projectmanagement.responses.ProjectEmployeeDTO;
 import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 
 import java.util.List;
@@ -58,5 +60,7 @@ public interface ProjectService {
   Project changeProjectStatus(String projectId, ProjectStatus status);
 
   List<ProjectResponseDTO> getAllProjects(String organizationId, int pageNumber, int pageSize, String projectId, ProjectStatus status);
+
+    ProjectEmployeeDTO getEmployeesByProjectId(String projectId);
 
 }

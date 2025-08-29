@@ -259,6 +259,7 @@ interface MultiSelectDropdownProps {
   value: { label: string; value: string }[];
   placeholder?: string;
   searchable?: boolean;
+  className?: string | null;
   onChange: (values: { label: string; value: string }[]) => void;
 }
 
@@ -267,6 +268,7 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   value,
   placeholder = 'Select Client',
   onChange,
+  className = '',
   searchable = false,
 }) => {
   const [open, setOpen] = useState(false);
@@ -303,7 +305,11 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
 
   return (
     <div>
-      <ContainerStyleMulti ref={dropdownRef} hasValue={value.length > 0}>
+      <ContainerStyleMulti
+        ref={dropdownRef}
+        hasValue={value.length > 0}
+        className={className || ''}
+      >
         <ClearButton onClick={(e) => e.stopPropagation()}>
           {value.length > 0 && (
             <button className="clear" onClick={clearAll}>

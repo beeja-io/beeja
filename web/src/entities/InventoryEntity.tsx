@@ -26,9 +26,9 @@ export interface IUpdateDeviceDetails {
   os?: string | null;
   specifications?: string | null;
   ram?: string | null;
-  availability: Availability | null;
+  availability: null | string;
   productId: string | null;
-  price: number | null;
+  price: number | null | string;
   dateOfPurchase: Date | null;
   comments?: string | null;
   accessoryType?: string | null;

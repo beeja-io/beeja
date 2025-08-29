@@ -155,7 +155,12 @@ const ClientDetailsScreen: React.FC = () => {
             </ClientInfoRowItem>
           </ClientInfoSection>
         </ClientInfo>
-        {client?.clientId && <ClientTabsSection clientId={client.clientId} />}
+        {client?.clientId && (
+          <ClientTabsSection
+            clientId={client.clientId}
+            description={client.description}
+          />
+        )}
       </LeftSection>
 
       <RightSection>
@@ -177,15 +182,25 @@ const ClientDetailsScreen: React.FC = () => {
         <RightSectionDiv>
           <div>{t('Billing_Address')}</div>
           <AddressDiv>
-            {[
-              client?.primaryAddress?.street,
-              client?.primaryAddress?.city,
-              client?.primaryAddress?.state,
-              client?.primaryAddress?.country,
-              client?.primaryAddress?.postalCode,
-            ]
-              .filter(Boolean)
-              .join(', ') || '-'}
+            {client?.usePrimaryAsBillingAddress
+              ? [
+                  client?.primaryAddress?.street,
+                  client?.primaryAddress?.city,
+                  client?.primaryAddress?.state,
+                  client?.primaryAddress?.country,
+                  client?.primaryAddress?.postalCode,
+                ]
+                  .filter(Boolean)
+                  .join(', ') || '-'
+              : [
+                  client?.billingAddress?.street,
+                  client?.billingAddress?.city,
+                  client?.billingAddress?.state,
+                  client?.billingAddress?.country,
+                  client?.billingAddress?.postalCode,
+                ]
+                  .filter(Boolean)
+                  .join(', ') || '-'}
           </AddressDiv>
         </RightSectionDiv>
         <RowLine></RowLine>

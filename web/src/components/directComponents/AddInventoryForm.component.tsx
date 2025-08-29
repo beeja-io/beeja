@@ -70,53 +70,143 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
 
   const handleSubmitData = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    const errorMessages = [];
-    if (!formData.device) errorMessages.push('Device');
-    if (!formData.type) errorMessages.push('Type');
-    if (!formData.availability) errorMessages.push('Availability');
-    if (!formData.dateOfPurchase) errorMessages.push('Date of Purchase');
-    if (!formData.specifications) errorMessages.push('Specifications');
-    if (!formData.price) errorMessages.push('Price');
-    if (!formData.model) errorMessages.push('Model');
-    if (!formData.productId) errorMessages.push('Product ID');
-    if (errorMessages.length > 0) {
-      setErrorMessage('Please fill: ' + errorMessages.join(', '));
-      handleShowErrorMessage();
-      return;
-    }
+    if (formData) {
+      const errorMessages = [];
 
-    setIsResponseLoading(true);
-    try {
-      const data: DeviceDetails = {
-        ...formData,
-        device: formData.device.toUpperCase(),
-        type: formData.type.toUpperCase(),
-        availability: formData.availability.toUpperCase() as Availability,
-        accessoryType: formData.accessoryType?.toUpperCase(),
-        dateOfPurchase: formData.dateOfPurchase,
-      };
-      await postInventory(data);
-      setIsResponseLoading(false);
-      props.handleSuccessMessage();
-    } catch (error) {
       if (
-        axios.isAxiosError(error) &&
-        error.response?.data.message === '[value must be greater than 0]'
+        formData.device === undefined ||
+        formData.device === null ||
+        formData.device === ''
       ) {
-        setErrorMessage('PRICE_VALUE_MUST_BE_GREATER_THAN_0');
-      } else if (
-        axios.isAxiosError(error) &&
-        error.response?.data.message.startsWith('Product ID already exists')
-      ) {
-        setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
-      } else {
-        setErrorMessage('INVENTORY_NOT_UPLOADED');
+        errorMessages.push('Device');
       }
-      setIsResponseLoading(false);
-      handleShowErrorMessage();
+      if (
+        formData.type === undefined ||
+        formData.type === null ||
+        formData.type === ''
+      ) {
+        errorMessages.push('Type');
+      }
+      if (
+        formData.specifications === undefined ||
+        formData.specifications === null ||
+        formData.specifications === ''
+      ) {
+        errorMessages.push('Specifications');
+      }
+      if (
+        formData.availability === undefined ||
+        formData.availability === null
+      ) {
+        errorMessages.push('Availability');
+      }
+      if (
+        formData.dateOfPurchase === undefined ||
+        formData.dateOfPurchase === null
+      ) {
+        errorMessages.push('Date of Purchase');
+      }
+      if (formData.price === undefined || formData.price === null) {
+        errorMessages.push('Price');
+      }
+      if (
+        formData.provider === undefined ||
+        formData.provider === null ||
+        formData.provider === ''
+      ) {
+        errorMessages.push('Provider');
+      }
+      if (
+        formData.model === undefined ||
+        formData.model === null ||
+        formData.model === ''
+      ) {
+        errorMessages.push('Model');
+      }
+      if (
+        formData.os === undefined ||
+        formData.os === null ||
+        formData.os === ''
+      ) {
+        errorMessages.push('OS');
+      }
+      if (
+        formData.ram === undefined ||
+        formData.ram === null ||
+        formData.ram === ''
+      ) {
+        errorMessages.push('RAM');
+      }
+      if (
+        formData.productId === undefined ||
+        formData.productId === null ||
+        formData.productId === ''
+      ) {
+        errorMessages.push('Product ID/Serial No.');
+      }
+
+      if (errorMessages.length > 0) {
+        setErrorMessage('Please fill ' + errorMessages);
+        handleShowErrorMessage();
+        return;
+      }
+      const form = new FormData();
+      form.append('device', formData.device);
+      form.append('type', formData.type);
+      form.append('specifications', formData.specifications ?? '');
+      form.append('availability', formData.availability);
+      form.append(
+        'price',
+        formData.price != null ? formData.price.toString() : ''
+      );
+      form.append('provider', formData.provider);
+      form.append('model', formData.model);
+      form.append('os', formData.os ?? '');
+      form.append('ram', formData.ram ?? '');
+      if (formData.dateOfPurchase != null) {
+        form.append('dateOfPurchase', formData.dateOfPurchase.toString());
+      }
+      form.append('productId', formData.productId);
+      if (formData.comments !== undefined) {
+        form.append('comments', formData.comments);
+      } else {
+        form.append('comments', 'null');
+      }
+
+      setIsResponseLoading(true);
+      try {
+        const data: DeviceDetails = {
+          ...formData,
+          device: formData.device.toUpperCase(),
+          type: formData.type.toUpperCase(),
+          availability: formData.availability.toUpperCase() as Availability,
+          accessoryType: formData.accessoryType?.toUpperCase(),
+          dateOfPurchase: formData.dateOfPurchase,
+        };
+        await postInventory(data);
+        setIsResponseLoading(false);
+        props.handleSuccessMessage();
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.response?.data.message === '[value must be greater than 0]'
+        ) {
+          setErrorMessage(
+            'INVENTORY_PRICE_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_PRICE'
+          );
+        } else if (
+          axios.isAxiosError(error) &&
+          error.response?.data.message.startsWith('Product ID already exists')
+        ) {
+          setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
+        } else {
+          setErrorMessage('INVENTORY_NOT_UPLOADED');
+        }
+        setIsResponseLoading(false);
+        handleShowErrorMessage();
+      }
     }
   };
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -237,7 +327,6 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 className="largeInput"
                 value={formData.specifications}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -277,7 +366,6 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                   name="dateOfPurchase"
                   value={dateOfPurchase ? formatDate(dateOfPurchase) : ''}
                   onFocus={() => handleCalenderOpen(true)}
-                  required
                   autoComplete="off"
                 />
                 <span
@@ -334,7 +422,6 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                   }
                 }}
                 placeholder={t('ENTER_PRICE')}
-                required
               />
             </InputLabelContainer>
           </div>
@@ -380,7 +467,6 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 className="largeInput"
                 value={formData.model}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -507,7 +593,6 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 className="largeInput"
                 value={formData.productId}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>

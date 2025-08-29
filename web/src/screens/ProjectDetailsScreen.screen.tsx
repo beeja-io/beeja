@@ -135,6 +135,7 @@ const ProjectDetailsSCreen: React.FC = () => {
           <ProjectTabSection
             clientId={project.clientId}
             projectId={project.projectId}
+            description={project.description}
           />
         )}
 
