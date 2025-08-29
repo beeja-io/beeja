@@ -117,27 +117,164 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
 
   const handleSubmitData = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    setIsResponseLoading(true);
-    try {
-      await putInventory(initialFormData.id, deviceToUpdate);
-      handleSuccessMessage();
-      handleClose();
-      updateInventoryList();
-    } catch (error) {
+
+    if (initialFormData) {
+      const errorMessages = [];
+
       if (
-        axios.isAxiosError(error) &&
-        error.response?.data.startsWith('Product ID already exists')
+        initialFormData.device === undefined ||
+        initialFormData.device === null ||
+        deviceToUpdate.device === ''
       ) {
-        setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
-      } else {
-        setErrorMessage('INVENTORY_NOT_UPLOADED');
+        errorMessages.push('Device');
       }
-      setShowErrorMessage(true);
-    } finally {
-      setIsResponseLoading(false);
+
+      if (
+        initialFormData.type === undefined ||
+        initialFormData.type === null ||
+        deviceToUpdate.type === ''
+      ) {
+        errorMessages.push('Type');
+      }
+
+      if (
+        initialFormData.specifications === undefined ||
+        initialFormData.specifications === null ||
+        deviceToUpdate.specifications === ''
+      ) {
+        errorMessages.push('Specifications');
+      }
+
+      if (
+        initialFormData.availability === undefined ||
+        initialFormData.availability === null ||
+        deviceToUpdate.availability === null ||
+        deviceToUpdate.availability === ''
+      ) {
+        errorMessages.push('Availability');
+      }
+
+      if (
+        initialFormData.dateOfPurchase === undefined ||
+        initialFormData.dateOfPurchase === null
+      ) {
+        errorMessages.push('Date of Purchase');
+      }
+
+      if (
+        initialFormData.price === undefined ||
+        initialFormData.price === null ||
+        deviceToUpdate.price === null ||
+        deviceToUpdate.price === ''
+      ) {
+        errorMessages.push('Price');
+      }
+
+      if (
+        initialFormData.provider === undefined ||
+        initialFormData.provider === null ||
+        deviceToUpdate.provider === ''
+      ) {
+        errorMessages.push('Provider');
+      }
+
+      if (
+        initialFormData.model === undefined ||
+        initialFormData.model === null ||
+        deviceToUpdate.model === ''
+      ) {
+        errorMessages.push('Model');
+      }
+
+      if (
+        initialFormData.os === undefined ||
+        initialFormData.os === null ||
+        deviceToUpdate.os === ''
+      ) {
+        errorMessages.push('OS');
+      }
+
+      if (
+        initialFormData.ram === undefined ||
+        initialFormData.ram === null ||
+        deviceToUpdate.ram === ''
+      ) {
+        errorMessages.push('RAM');
+      }
+
+      if (
+        initialFormData.productId === undefined ||
+        initialFormData.productId === null ||
+        deviceToUpdate.productId === ''
+      ) {
+        errorMessages.push('Product ID/Serial No.');
+      }
+
+      if (errorMessages.length > 0) {
+        handleShowErrorMessage();
+        setErrorMessage('Please fill ' + errorMessages);
+        return;
+      }
+
+      const formData = new FormData();
+
+      formData.append('device', initialFormData.device);
+      formData.append('type', initialFormData.type);
+      formData.append('specifications', initialFormData.specifications ?? '');
+      formData.append('availability', initialFormData.availability);
+      formData.append(
+        'price',
+        initialFormData.price != null ? initialFormData.price.toString() : ''
+      );
+      formData.append('provider', initialFormData.provider);
+      formData.append('model', initialFormData.model);
+      formData.append('os', initialFormData.os ?? '');
+      formData.append('ram', initialFormData.ram ?? '');
+      if (initialFormData.dateOfPurchase != null) {
+        formData.append(
+          'dateOfPurchase',
+          initialFormData.dateOfPurchase.toString()
+        );
+      }
+      formData.append('productId', initialFormData.productId);
+      formData.append('comments', initialFormData.comments ?? '');
+
+      setIsResponseLoading(true);
+
+      const price = Number(deviceToUpdate.price);
+
+      if (!initialFormData.price || price <= 0) {
+        setErrorMessage('UPDATED_PRICE_MUST_BE_GREATER_THAN_ZERO');
+        handleShowErrorMessage();
+        setIsResponseLoading(false);
+        return;
+      }
+
+      try {
+        await putInventory(initialFormData.id, deviceToUpdate);
+        handleSuccessMessage();
+        handleClose();
+        updateInventoryList();
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.response?.data.message === '[value must be greater than 0]'
+        ) {
+          setErrorMessage('UPDATED_PRICE_MUST_BE_GREATER_THAN_ZERO');
+        } else if (
+          axios.isAxiosError(error) &&
+          error.response?.data.message.startsWith('Product ID already exists')
+        ) {
+          setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
+        } else {
+          setErrorMessage('INVENTORY_NOT_UPLOADED');
+        }
+        setShowErrorMessage(true);
+      } finally {
+        setIsResponseLoading(false);
+      }
     }
   };
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -222,7 +359,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 name="type"
                 value={formData.type}
                 onChange={handleChange}
-                required
               >
                 <option value="">{t('SELECT_TYPE')}</option>
                 <option value="NEW">{t('NEW')}</option>
@@ -241,7 +377,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 value={formData.specifications}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -254,7 +389,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 name="availability"
                 value={formData.availability}
                 onChange={handleChange}
-                required
               >
                 <option value="">{t('SELECT_AVAILABILITY')}</option>
                 <option value="NO">{t('NO')}</option>
@@ -274,7 +408,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                   name="dateOfPurchase"
                   value={dateOfPurchase ? formatDate(dateOfPurchase) : ''}
                   onFocus={() => handleCalenderOpen(true)}
-                  required
                   autoComplete="off"
                 />
                 <span
@@ -316,7 +449,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 value={formData.price}
                 onChange={handleChange}
                 placeholder={t('ENTER_PRICE')}
-                required
                 autoComplete="off"
                 onKeyDown={(event) => {
                   const allowedCharacters = /^[0-9.]+$/;
@@ -348,7 +480,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 value={formData.provider}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -363,7 +494,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 value={formData.model}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -455,7 +585,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 value={formData.productId}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
