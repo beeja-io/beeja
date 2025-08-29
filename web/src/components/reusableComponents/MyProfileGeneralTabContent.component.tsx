@@ -38,6 +38,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import Calendar from './Calendar.component';
 import ToastMessage from './ToastMessage.component';
+import { DropdownOrg } from './DropDownMenu.component';
 
 type GeneralDetailsTabProps = {
   heading: string;
@@ -557,35 +558,28 @@ export const GeneralDetailsTab = ({
                         label === 'Department' ||
                         label === 'Employment Type' ||
                         label === 'Designation' ? (
-                          <SelectInput
+                          <DropdownOrg
                             label={label}
-                            value={
-                              formData[label] !== undefined
-                                ? formData[label]
-                                : ''
-                            }
-                            options={
-                              label === 'Country'
-                                ? ['India', 'Germany', 'United States']
-                                : label === 'Nationality'
-                                  ? ['Indian', 'German', 'American']
-                                  : label === 'Department'
-                                    ? departmentList?.values?.map(
-                                        (department) => department.value
+                            selected={formData[label] ?? ''}
+                            options={(label === 'Country'
+                              ? ['India', 'Germany', 'United States']
+                              : label === 'Nationality'
+                                ? ['Indian', 'German', 'American']
+                                : label === 'Department'
+                                  ? departmentList?.values?.map((d) => d.value)
+                                  : label === 'Employment Type'
+                                    ? employmentTypes?.values?.map(
+                                        (e) => e.value
                                       )
-                                    : label === 'Employment Type'
-                                      ? employmentTypes?.values?.map(
-                                          (employmentType) =>
-                                            employmentType.value
-                                        )
-                                      : label === 'Designation'
-                                        ? jobTitles?.values?.map(
-                                            (jobTitle) => jobTitle.value
-                                          )
-                                        : []
-                            }
-                            onChange={(label, selectedValue) =>
-                              handleChange(label, selectedValue)
+                                    : label === 'Designation'
+                                      ? jobTitles?.values?.map((j) => j.value)
+                                      : []
+                            )?.map((value) => ({
+                              label: value,
+                              value: value,
+                            }))}
+                            onChange={(selectedValue) =>
+                              handleChange(label, selectedValue as string)
                             }
                           />
                         ) : label === 'Joining Date' ? (
@@ -735,21 +729,23 @@ export const GeneralDetailsTab = ({
                           label !== 'Employee Id')) ? (
                         <TabContentTableTd>
                           {label === 'Gender' || label === 'Marital Status' ? (
-                            <SelectInput
+                            <DropdownOrg
                               label={label}
-                              value={
+                              selected={
                                 formData[label] !== undefined
                                   ? formData[label]
                                   : ''
                               }
-                              options={
-                                label === 'Gender'
-                                  ? ['Male', 'Female']
-                                  : ['Married', 'Single']
-                              }
-                              onChange={(label, selectedValue) =>
-                                handleChange(label, selectedValue)
-                              }
+                              options={(label === 'Gender'
+                                ? ['Male', 'Female']
+                                : ['Married', 'Single']
+                              ).map((option) => ({
+                                label: option,
+                                value: option,
+                              }))}
+                              onChange={(selectedValue) => {
+                                handleChange(label, selectedValue ?? '');
+                              }}
                             />
                           ) : (
                             <InlineInput

@@ -18,6 +18,7 @@ import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import Calendar from '../reusableComponents/Calendar.component';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type EditInventoryFormProps = {
   initialFormData: DeviceDetails; // Initial data to populate the form
@@ -309,22 +310,25 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 {t('DEVICE')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+
+              <DropdownMenu
                 name="device"
+                className=""
                 value={formData.device}
-                onChange={handleChange}
-                required
-              >
-                <option value="">{t('SELECT_DEVICE')}</option>
-                {[...(deviceTypes?.values || [])]
-                  .sort((a, b) => a.value.localeCompare(b.value))
-                  .map((device) => (
-                    <option key={device.value} value={device.value}>
-                      {device.description || device.value}
-                    </option>
-                  ))}
-              </select>
+                required={true}
+                onChange={(val) =>
+                  handleChange({
+                    target: { value: val },
+                  } as React.ChangeEvent<HTMLSelectElement>)
+                }
+                options={[
+                  { label: t('SELECT_DEVICE'), value: '' },
+                  ...(deviceTypes?.values?.map((device) => ({
+                    label: device.description || device.value,
+                    value: device.value,
+                  })) ?? []),
+                ]}
+              />
             </InputLabelContainer>
 
             {formData.device === 'Accessories' && (
@@ -333,20 +337,25 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                   {t('ACCESSORY_TYPE')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <select
-                  className="selectoption largeSelectOption"
+                <DropdownMenu
                   name="accessoryType"
+                  className="largeContainerExp"
                   value={formData.accessoryType}
-                  onChange={handleChange}
                   required
-                >
-                  <option value="">{t('SELECT_ACCESSORY_TYPE')}</option>
-                  <option value="CABLE">Cable</option>
-                  <option value="HEADSET">Headset</option>
-                  <option value="KEYBOARD">Keyboard</option>
-                  <option value="MOUSE">Mouse</option>
-                  <option value="USB_STICKS">USB sticks</option>
-                </select>
+                  onChange={(val) =>
+                    handleChange({
+                      target: { value: val },
+                    } as React.ChangeEvent<HTMLSelectElement>)
+                  }
+                  options={[
+                    { label: t('SELECT_ACCESSORY_TYPE'), value: '' },
+                    { label: 'Keyboard', value: 'KEYBOARD' },
+                    { label: 'Cable', value: 'CABLE' },
+                    { label: 'Headset', value: 'HEADSET' },
+                    { label: 'Mouse', value: 'MOUSE' },
+                    { label: 'USB sticks', value: 'USB_STICKS' },
+                  ]}
+                />
               </InputLabelContainer>
             )}
             <InputLabelContainer>
@@ -354,16 +363,22 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 {t('TYPE')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+              <DropdownMenu
                 name="type"
+                className=""
                 value={formData.type}
-                onChange={handleChange}
-              >
-                <option value="">{t('SELECT_TYPE')}</option>
-                <option value="NEW">{t('NEW')}</option>
-                <option value="OLD">{t('OLD')}</option>
-              </select>
+                required={true}
+                onChange={(val) =>
+                  handleChange({
+                    target: { value: val },
+                  } as React.ChangeEvent<HTMLSelectElement>)
+                }
+                options={[
+                  { label: t('SELECT_TYPE'), value: '' },
+                  { label: t('NEW'), value: 'NEW' },
+                  { label: t('OLD'), value: 'OLD' },
+                ]}
+              />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
@@ -384,16 +399,22 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 {t('AVAILABILITY')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+              <DropdownMenu
                 name="availability"
+                className=""
+                required={true}
                 value={formData.availability}
-                onChange={handleChange}
-              >
-                <option value="">{t('SELECT_AVAILABILITY')}</option>
-                <option value="NO">{t('NO')}</option>
-                <option value="YES">{t('YES')}</option>
-              </select>
+                onChange={(val) =>
+                  handleChange({
+                    target: { value: val },
+                  } as React.ChangeEvent<HTMLSelectElement>)
+                }
+                options={[
+                  { label: t('SELECT_AVAILABILITY'), value: '' },
+                  { label: t('YES'), value: 'YES' },
+                  { label: t('NO'), value: 'NO' },
+                ]}
+              />
             </InputLabelContainer>
 
             <InputLabelContainer>

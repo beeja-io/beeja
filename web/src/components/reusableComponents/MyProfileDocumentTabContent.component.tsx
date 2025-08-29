@@ -62,6 +62,7 @@ import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 type DocumentTabContentProps = {
   employee: EmployeeEntity;
 };
+import DropdownMenu from './DropDownMenu.component';
 
 export const DocumentTabContent = (props: DocumentTabContentProps) => {
   const { t } = useTranslation();
@@ -471,24 +472,25 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       {t('DOCUMENT_TYPE')}{' '}
                       <ValidationText className="star">*</ValidationText>
                     </label>
-                    <select
+                    <DropdownMenu
+                      className=""
                       style={{
-                        borderColor: errors.emptyDocumentType ? 'red' : '',
+                        border: errors.emptyDocumentType ? '1px solid red' : '',
                       }}
                       value={category}
-                      onChange={handleDocumentTypeChange}
-                      disabled={isResponseLoading}
-                      className="selectoption"
-                    >
-                      <option value="">{t('Select a Type')}</option> {''}
-                      {[...documentType]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((option) => (
-                          <option key={option} value={option}>
-                            {option}
-                          </option>
-                        ))}
-                    </select>
+                      onChange={(val) =>
+                        handleDocumentTypeChange({
+                          target: { value: val },
+                        } as React.ChangeEvent<HTMLSelectElement>)
+                      }
+                      options={[
+                        { label: t('Select a Type'), value: '' },
+                        ...(documentType?.values || []).map((opt) => ({
+                          label: opt.value,
+                          value: opt.value,
+                        })),
+                      ]}
+                    />
                     {errors.emptyDocumentType && (
                       <ValidationText>
                         <AlertISVG /> {errors.emptyDocumentType}

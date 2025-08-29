@@ -1,6 +1,5 @@
 import { t } from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
-import Select from 'react-select';
 import { Client } from '../../entities/ClientEntity.tsx';
 import { Employee } from '../../entities/ProjectEntity.tsx';
 import {
@@ -26,6 +25,9 @@ import Calendar from '../reusableComponents/Calendar.component';
 import { toast } from 'sonner';
 import { ValidationText } from '../../styles/DocumentTabStyles.style.tsx';
 import CenterModal from '../reusableComponents/CenterModal.component.tsx';
+import DropdownMenu, {
+  MultiSelectDropdown,
+} from '../reusableComponents/DropDownMenu.component.tsx';
 
 interface AddProjectFormProps {
   handleClose: () => void;
@@ -214,24 +216,23 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                   {t('Project_Managers')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <Select
-                  isMulti
-                  name="projectManagers"
+                <MultiSelectDropdown
+                  options={managerOptions}
                   value={managerOptions.filter((option) =>
                     projectFormData.projectManagers.includes(option.value)
                   )}
-                  options={managerOptions}
                   onChange={(selected) => {
                     const values = [...selected]
                       .sort((a, b) => a.value.localeCompare(b.value))
                       .map((opt) => opt.value);
+
                     setProjectFormData((prev) => ({
                       ...prev,
                       projectManagers: values,
                     }));
                   }}
-                  classNamePrefix="react-select"
-                  placeholder={t('Select_Project_Managers')}
+                  placeholder={t('Select Project Managers')}
+                  searchable={true}
                 />
               </InputLabelContainer>
 
@@ -279,12 +280,14 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                   {t('Client_Name')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <select
-                  className={`selectoption largeSelectOption ${isEditMode ? 'disabled' : ''}`}
+                <DropdownMenu
+                  label="Select Client"
                   name="clientName"
-                  value={projectFormData.clientId}
-                  onChange={(e) => {
-                    const selectedValue = e.target.value;
+                  id="clientName"
+                  className={isEditMode ? 'cursor-disabled' : ''}
+                  disabled={isEditMode}
+                  value={projectFormData.clientId ?? ''}
+                  onChange={(selectedValue) => {
                     const selectedOption = clientOptions.find(
                       (opt) => opt.value === selectedValue
                     );
@@ -294,19 +297,22 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                         clientId: selectedOption.value,
                         clientName: selectedOption.label,
                       }));
+                    } else {
+                      setProjectFormData((prev) => ({
+                        ...prev,
+                        clientId: '',
+                        clientName: '',
+                      }));
                     }
                   }}
-                  disabled={isEditMode}
-                >
-                  <option value="">{t('Select_Client')}</option>
-                  {[...clientOptions]
-                    .sort((a, b) => a.value.localeCompare(b.value))
-                    .map((opt) => (
-                      <option key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                </select>
+                  options={[
+                    { label: 'Select Client', value: '' },
+                    ...clientOptions.map((opt) => ({
+                      label: opt.label,
+                      value: opt.value,
+                    })),
+                  ]}
+                />
               </InputLabelContainer>
 
               <InputLabelContainer>
@@ -314,13 +320,11 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                   {t('Resources')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <Select
-                  isMulti
-                  name="resources"
+                <MultiSelectDropdown
+                  options={resourceOptions}
                   value={resourceOptions.filter((option) =>
                     projectFormData.projectResources.includes(option.value)
                   )}
-                  options={resourceOptions}
                   onChange={(selected) => {
                     const values = [...selected]
                       .sort((a, b) => a.value.localeCompare(b.value))
@@ -330,8 +334,8 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       projectResources: values,
                     }));
                   }}
-                  classNamePrefix="react-select"
-                  placeholder={t('Select_Resources')}
+                  placeholder={t('Select Resources')}
+                  searchable={true}
                 />
               </InputLabelContainer>
 

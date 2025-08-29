@@ -73,6 +73,7 @@ import {
 } from '../reusableComponents/ClientEnums.component';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
 import CenterModal from '../reusableComponents/CenterModal.component';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type AddClientFormProps = {
   handleClose: () => void;
@@ -543,22 +544,29 @@ const AddClientForm = (props: AddClientFormProps) => {
                     {t('Client_Type')}
                     <ValidationText className="star">*</ValidationText>
                   </label>
-                  <select
-                    className="selectoption largeSelectOption"
+                  <DropdownMenu
+                    label={t('Select type')}
                     name="clientType"
-                    value={formData?.clientType}
-                    onChange={handleChange}
+                    id="clientType"
+                    value={formData?.clientType || ''}
+                    onChange={(e) => {
+                      const event = {
+                        target: {
+                          name: 'clientType',
+                          value: e,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleChange(event);
+                    }}
                     required
-                  >
-                    <option value="">{t('Select_type')}</option>
-                    {[...(clientOptions?.clientType || [])]
-                      .sort((a, b) => a.localeCompare(b))
-                      .map((type) => (
-                        <option key={type} value={type}>
-                          {t(type)}
-                        </option>
-                      ))}
-                  </select>
+                    options={[
+                      { label: t('Select type'), value: '' },
+                      ...clientOptions.clientType.map((type) => ({
+                        label: t(type),
+                        value: type,
+                      })),
+                    ]}
+                  />
                 </InputLabelContainer>
 
                 <InputLabelContainer>
@@ -566,22 +574,30 @@ const AddClientForm = (props: AddClientFormProps) => {
                     {t('Industry')}
                     <ValidationText className="star">*</ValidationText>
                   </label>
-                  <select
-                    className="selectoption largeSelectOption"
+                  <DropdownMenu
+                    label={t('Select Industry')}
                     name="industry"
-                    value={formData?.industry}
-                    onChange={handleChange}
+                    id="industry"
+                    className="largeContainerExp"
+                    value={formData?.industry || ''}
+                    onChange={(e) => {
+                      const event = {
+                        target: {
+                          name: 'industry',
+                          value: e,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleChange(event);
+                    }}
                     required
-                  >
-                    <option value="">{t('Select_Industry')}</option>
-                    {[...(clientOptions?.industry || [])]
-                      .sort((a, b) => a.localeCompare(b))
-                      .map((industry) => (
-                        <option key={industry} value={industry}>
-                          {t(industry)}
-                        </option>
-                      ))}
-                  </select>
+                    options={[
+                      { label: t('Select Industry'), value: '' },
+                      ...clientOptions.industry.map((industry) => ({
+                        label: t(industry),
+                        value: industry,
+                      })),
+                    ]}
+                  />
                 </InputLabelContainer>
 
                 <InputLabelContainer>
@@ -724,22 +740,30 @@ const AddClientForm = (props: AddClientFormProps) => {
                   {t('Tax_Category')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <select
-                  className="selectoption largeSelectOption"
+                <DropdownMenu
+                  label={t('Select category')}
                   name="taxDetails.taxCategory"
+                  id="taxDetails.taxCategory"
+                  className="largeContainerExp"
                   value={formData.taxDetails?.taxCategory ?? ''}
-                  required
-                  onChange={handleChange}
-                >
-                  <option value="">{t('Select_category')}</option>
-                  {[...(clientOptions?.taxCategory || [])]
-                    .sort((a, b) => a.localeCompare(b))
-                    .map((category) => (
-                      <option key={category} value={category}>
-                        {t(category)}
-                      </option>
-                    ))}
-                </select>
+                  onChange={(e) => {
+                    const event = {
+                      target: {
+                        name: 'taxDetails.taxCategory',
+                        value: e,
+                      },
+                    } as React.ChangeEvent<HTMLSelectElement>;
+                    handleChange(event);
+                  }}
+                  style={{ width: '400px' }}
+                  options={[
+                    { label: t('Select category'), value: '' },
+                    ...clientOptions.taxCategory.map((category) => ({
+                      label: t(category),
+                      value: category,
+                    })),
+                  ]}
+                />
                 {errors.taxCategory && (
                   <ValidationText className="error">
                     {errors.taxCategory}

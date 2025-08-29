@@ -178,7 +178,7 @@
   "COMMENTS": "Comments",
   "COMMENT": "Comment",
   "EMPLOYEE_NAME": "Mitarbeitername",
-    "ACCOUNT_INFO": "Kontoinformationen",
+  "ACCOUNT_INFO": "Kontoinformationen",
   "TAX_NO.": "Steuernummer",
   "BANK_INFO": "Bankinformationen",
   "BANK_NAME": "Bankname",
@@ -188,7 +188,7 @@
   "TAX_NUMBER_ERROR": "Die Steuernummer muss das Format XXXX123456 haben",
   "TAX_NO_PLACEHOLDER": "Steuernummer eingeben (z. B.: ABCD123456)",
   "ACCOUNT_NAME_PLACEHOLDER": "Kontoname eingeben",
-  "ACCOUNT_NUMBER_PLACEHOLDER": "Kontonummer eingeben", 
+  "ACCOUNT_NUMBER_PLACEHOLDER": "Kontonummer eingeben",
 
   "errors": {
     "unsupported_format": "Nicht unterstütztes Dateiformat. Bitte laden Sie eine gültige Belegdatei hoch.",

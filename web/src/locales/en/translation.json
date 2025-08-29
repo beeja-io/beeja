@@ -149,7 +149,7 @@
   "NO": "No",
   "YES": "Yes",
   "COMPANY_INFO": "Company Info",
-  "ACCOUNT_INFO": "Account Info", 
+  "ACCOUNT_INFO": "Account Info",
   "COMPANY_LOGO": "Company Logo",
   "LOADING": "Loading...",
   "CLEAR_IMAGE": "Clear Image",
@@ -376,10 +376,6 @@
   "TAX_NO_PLACEHOLDER": "Enter Tax Number (Ex: ABCD123456)",
   "ACCOUNT_NAME_PLACEHOLDER": "Enter Account Name",
   "ACCOUNT_NUMBER_PLACEHOLDER": "Enter Account Number",
-
-
-
-
 
   "errors": {
     "unsupported_format": "Unsupported file format. Please upload a valid receipt file(jpeg, png, pdf).",
