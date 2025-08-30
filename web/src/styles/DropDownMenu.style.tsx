@@ -18,6 +18,9 @@ export const ContainerStyle = styled.div<{
     hasValue
       ? theme.colors.blackColors.black1
       : theme.colors.grayColors.gray11};
+  &.smallContainerDed {
+    height: 45px;
+  }
   &.largeContainerFil {
     width: 200px;
   }
@@ -64,6 +67,7 @@ export const ContainerStyleOrg = styled.div<{
     hasValue
       ? theme.colors.blackColors.black1
       : theme.colors.grayColors.gray11};
+
   &.largeContainerFil {
     width: 200px;
   }

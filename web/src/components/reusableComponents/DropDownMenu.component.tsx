@@ -31,6 +31,7 @@ type DropdownMenuProps = {
   isMulti?: boolean;
   selected?: string;
   onValidationChange?: (isValid: boolean) => void;
+  listClassName?: string;
 };
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
@@ -46,6 +47,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   disabled = false,
   required = false,
   onValidationChange,
+  listClassName = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value);
@@ -118,7 +120,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         </ToggleButtonStyle>
 
         {isOpen && !disabled && (
-          <DropdownListStyle>
+          <DropdownListStyle className={`${listClassName || ''}`}>
             {sortedOptions.map((item, index) => {
               const isSelected = selected === item.value;
               return (
@@ -172,6 +174,7 @@ export const DropdownOrg: React.FC<DropdownMenuProps> = ({
   onChange,
   disabled = false,
   required,
+  listClassName = '',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value ?? null);
@@ -224,7 +227,7 @@ export const DropdownOrg: React.FC<DropdownMenuProps> = ({
         </ToggleButtonStyle>
 
         {isOpen && !disabled && (
-          <DropdownListStyle>
+          <DropdownListStyle className={`${listClassName || ''}`}>
             {options.map((item, index) => {
               const isSelected = selected === item.value;
               return (
