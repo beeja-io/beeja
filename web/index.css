@@ -92,3 +92,9 @@ input[type='checkbox'].radio::after {
     border-radius: 50%;
   }
 }
+
+.add-new-employee-heading {
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 700;
+}
