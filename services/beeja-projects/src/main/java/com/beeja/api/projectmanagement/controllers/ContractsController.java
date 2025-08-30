@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * REST controller for managing contracts within the project management system. Provides endpoints
@@ -84,17 +85,25 @@ public class ContractsController {
 
   @GetMapping
   @HasPermission(PermissionConstants.GET_CONTRACT)
-  public ResponseEntity<ContractResponseDTO> getAllContracts( @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
-                                                                     @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
-                                                                     @RequestParam(required = false) String projectId,
-                                                                     @RequestParam(required = false) ProjectStatus status) {
-    String organizationId = UserContext.getLoggedInUserOrganization()
-            .get(Constants.ID).toString();
-    HashMap<String, Object> metadata = new HashMap<>();
-    metadata.put(
-            "totalSize",
-            contractService.getTotalContractSize(organizationId,projectId, status)
-    );
+  public ResponseEntity<ContractResponseDTO> getAllContracts(
+          @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
+          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+          @RequestParam(required = false) String projectId,
+          @RequestParam(required = false) ProjectStatus status) {
+
+      String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+
+      long totalRecords = contractService.getTotalContractSize(organizationId, projectId, status);
+      int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+      if (pageNumber < 1 || pageSize < 1) {
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page number and size must be positive integers");
+      }
+
+      HashMap<String, Object> metadata = new HashMap<>();
+      metadata.put("totalRecords", totalRecords);
+      metadata.put("pageNumber", pageNumber);
+      metadata.put("pageSize", pageSize);
+      metadata.put("totalPages", totalPages);
 
     List<ContractResponsesDTO> contracts = contractService.getAllContracts(organizationId,pageNumber, pageSize, projectId, status);
     ContractResponseDTO response = new ContractResponseDTO();

@@ -5,18 +5,19 @@ import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.beeja.api.projectmanagement.utils.Constants;
+import com.beeja.api.projectmanagement.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for managing clients within an organization. Provides endpoints for adding,
@@ -79,10 +80,32 @@ public class ClientController {
    * @return A list of clients along with HTTP status 200 (OK).
    * @throws Exception If an error occurs while retrieving the clients.
    */
-  @GetMapping
+  @GetMapping("/clients")
   @HasPermission(PermissionConstants.GET_CLIENT)
-  public ResponseEntity<List<Client>> getAllClientsOfOrganization() throws Exception {
-    List<Client> clients = clientService.getAllClientsOfOrganization();
-    return new ResponseEntity<>(clients, HttpStatus.OK);
+  public ResponseEntity<Map<String, Object>> getAllClientsOfOrganization(
+          @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
+          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize) {
+
+      if (pageSize < 1 || pageNumber < 1) {
+          return ResponseEntity.badRequest().body(Map.of(
+                  "error", "Page number and page size must be positive integers."
+          ));
+      }
+
+      String organizationId = UserContext.getLoggedInUserOrganization()
+              .get(Constants.ID).toString();
+
+      Page<Client> page = clientService.getAllClientsOfOrganization(organizationId, pageNumber - 1, pageSize);
+
+      Map<String, Object> response = new HashMap<>();
+      response.put("metadata", Map.of(
+              "totalRecords", page.getTotalElements(),
+              "totalPages", page.getTotalPages(),
+              "pageNumber", pageNumber,
+              "pageSize", pageSize
+      ));
+      response.put("data", page.getContent());
+
+      return ResponseEntity.ok(response);
   }
 }

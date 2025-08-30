@@ -5,6 +5,7 @@ import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
 import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -41,7 +42,7 @@ public interface ProjectService {
    *
    * @return a list of all {@link Project} objects within the organization
    */
-  List<Project> getAllProjectsInOrganization(String organizationId,int pageNumber, int pageSize,String projectId, ProjectStatus status);
+  List<Project> getAllProjectsInOrganization(String organizationId, int pageNumber, int pageSize, String projectId, ProjectStatus status);
 
   Long getTotalProjectsInOrganization(String organizationId, String projectId, ProjectStatus status);
 

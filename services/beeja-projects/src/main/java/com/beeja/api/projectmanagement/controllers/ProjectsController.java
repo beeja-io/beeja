@@ -106,39 +106,36 @@ public class ProjectsController {
     Project updatedProject = projectService.updateProjectByProjectId(projectRequest, projectId);
     return ResponseEntity.ok(updatedProject);
   }
-  @PatchMapping("/{projectId}/status")
-  public ResponseEntity<Project> changeProjectStatus(
-          @PathVariable String projectId,
-          @RequestBody ProjectStatus status) {
 
-    Project updatedProject = projectService.changeProjectStatus(projectId, status);
-    return ResponseEntity.ok(updatedProject);
-  }
-
-  @GetMapping("/all-projects")
+  @GetMapping("/projects")
   @HasPermission(PermissionConstants.GET_PROJECT)
-  public ResponseEntity<Map<String, Object>> getAllProject(
+  public ResponseEntity<Map<String, Object>> getAllProjectOf(
           @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
           @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
           @RequestParam(required = false) String projectId,
           @RequestParam(required = false) ProjectStatus status) {
 
-    try {
+      if (pageNumber < 1 || pageSize < 1) {
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page number and size must be positive integers");
+      }
+      try {
       String organizationId = UserContext.getLoggedInUserOrganization()
               .get(Constants.ID).toString();
       List<ProjectResponseDTO> projects = projectService.getAllProjects(organizationId,
               pageNumber, pageSize, projectId, status
       );
 
-      long totalSize = projectService.getTotalProjectsInOrganization(organizationId, projectId, status);
+      long totalRecords = projectService.getTotalProjectsInOrganization(organizationId, projectId, status);
+      long totalPages = (long) Math.ceil((double) totalRecords / pageSize);
 
       Map<String, Object> response = new HashMap<>();
       response.put("metadata", Map.of(
-              "totalSize", totalSize,
+              "totalRecords", totalRecords,
               "pageNumber", pageNumber,
-              "pageSize", pageSize
+              "pageSize", pageSize,
+              "totalPages", totalPages
       ));
-      response.put("projects", projects);
+      response.put("data", projects);
 
       return ResponseEntity.ok(response);
     } catch (ResourceNotFoundException ex) {
@@ -147,7 +144,6 @@ public class ProjectsController {
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred", ex);
     }
   }
-
 }
 
 

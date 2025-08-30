@@ -23,6 +23,10 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -308,4 +312,15 @@ public class ClientServiceImpl implements ClientService {
     }
     return clientsInOrganization;
   }
+
+    @Override
+    public Page<Client> getAllClientsOfOrganization(String organizationId, int pageNumber, int pageSize) {
+
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100;
+
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("createdAt").descending());
+        return clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(organizationId, pageable);
+    }
 }

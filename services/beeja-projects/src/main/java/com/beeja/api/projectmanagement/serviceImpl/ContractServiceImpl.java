@@ -281,6 +281,7 @@ public class ContractServiceImpl implements ContractService {
         try {
             Query query = buildContractQuery(organizationId, projectId, status);
             int skip = (pageNumber - 1) * pageSize;
+            if (skip < 0) skip = 0;
             query.skip(skip).limit(pageSize);
             query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
 
