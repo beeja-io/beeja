@@ -18,8 +18,8 @@ public class Accounts {
   private String gstNumber;
 
   @Pattern(
-          regexp = "^[A-Z]{4}[0-9]{6}$",
-          message = "Tax number must be in the format XXXX123456"
+          regexp = "^[A-Za-z0-9-]{10,15}$",
+          message = "Tax number must be 10–15 characters, alphanumeric, and may include hyphen (-)"
   )
   private String taxNumber;
 }

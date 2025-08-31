@@ -182,10 +182,15 @@
   "ACCOUNT_NAME": "Kontoname",
   "ACCOUNT_NUMBER": "Kontonummer",
   "IFSC_CODE": "IFSC-Code",
-  "TAX_NUMBER_ERROR": "Die Steuernummer muss das Format XXXX123456 haben",
+   "TAX_NUMBER_ERROR": "Die Steuernummer muss mit Buchstaben beginnen, optional einen Bindestrich enthalten und mit Ziffern enden (10–15 Zeichen).", 
+
   "TAX_NO_PLACEHOLDER": "Steuernummer eingeben (z. B.: ABCD123456)",
   "ACCOUNT_NAME_PLACEHOLDER": "Kontoname eingeben",
-  "ACCOUNT_NUMBER_PLACEHOLDER": "Kontonummer eingeben", 
+   "ACCOUNT_NUMBER_PLACEHOLDER_DE": "Kontonummer eingeben (nur Zahlen)", 
+   "BANK_NAME_ERROR": "Geben Sie einen gültigen Banknamen ein",
+  "ACCOUNT_NAME_ERROR": "Geben Sie einen gültigen Kontonamen ein",
+  "ACCOUNT_NUMBER_ERROR": "Kontonummer muss numerisch und von gültiger Länge sein",
+  "IFSC_ERROR": "Geben Sie einen gültigen IFSC-Code ein, z. B.: ABCD0123456",
 
   "errors": {
     "unsupported_format": "Nicht unterstütztes Dateiformat. Bitte laden Sie eine gültige Belegdatei hoch.",

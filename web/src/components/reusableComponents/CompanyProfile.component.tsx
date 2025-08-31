@@ -47,6 +47,10 @@ import {
   isValidPanCardNo,
   isValidTANNumber,
   isValidURL,
+   isValidBankName , 
+   isValidAccountName,
+   isValidAccountNumber, 
+   isValidIFSCCode 
 } from '../../utils/formInputValidators';
 import { usePreferences } from '../../context/PreferencesContext';
 import { hasPermission } from '../../utils/permissionCheck';
@@ -67,6 +71,17 @@ export const CompanyProfile = () => {
   const [updatedOrganization, setUpdatedOrganization] = useState<IOrganization>(
     {} as IOrganization
   );
+  const [isBankEditModeOn, setIsBankEditModeOn] = useState(false);
+ 
+const handleBankIsEditModeOn = () => {
+    setIsBankEditModeOn(!isBankEditModeOn);
+  };
+ 
+  const handleCloseBankEditMode = () => {
+    setCompanyProfile(tempOrganization);
+    setUpdatedOrganization({} as IOrganization);
+    setIsBankEditModeOn(false);
+  };
 
   const [isUpdateResponseLoading, setIsUpdateResponseLoading] = useState(false);
 
@@ -208,11 +223,20 @@ export const CompanyProfile = () => {
   const [emailError, setEmailError] = useState<string>('');
   const [websiteError, setWebsiteError] = useState<string>('');
   const [pinError, setPINError] = useState<string>('');
+   const [accountNameError, setAccountNameError] =  useState<string>('');
+  const [bankNameError, setBankNameError] =  useState<string>('');
+  const [accountNumberError, setAccountNumberError] =  useState<string>('');
+  const [ifscError, setIFSCError] =  useState<string>('');
 
   const handleSubmitCompanyProfile = async () => {
     let hasErrors = false;
 
     // Reset error states
+    setAccountNameError(''); 
+     setBankNameError('');
+     setAccountNumberError(''); 
+     setIFSCError(''); 
+
     setNameError('');
     setPanError('');
     setTaxError('');
@@ -334,13 +358,57 @@ if (
   updatedOrganization.bankDetails?.accountNumber ||
   updatedOrganization.bankDetails?.ifscNumber
 ) {
-  updatedOrganization.bankDetails = {
-    accountName: updatedOrganization.bankDetails.accountName,
-    bankName: updatedOrganization.bankDetails.bankName,
-    accountNumber: updatedOrganization.bankDetails.accountNumber,
-    ifscNumber: updatedOrganization.bankDetails.ifscNumber,
-  };
+  if (updatedOrganization.bankDetails.accountName) {
+    if (!isValidAccountName(updatedOrganization.bankDetails.accountName)) {
+      setAccountNameError(t('ACCOUNT_NAME_ERROR'));
+      hasErrors = true;
+    } else {
+      setAccountNameError('');
+    }
+  }
+
+
+  if (updatedOrganization.bankDetails.bankName) {
+    if (!isValidBankName(updatedOrganization.bankDetails.bankName)) {
+      setBankNameError(t('BANK_NAME_ERROR'));
+      hasErrors = true;
+    } else {
+      setBankNameError('');
+    }
+  }
+
+
+  if (updatedOrganization.bankDetails.accountNumber) {
+    if (!isValidAccountNumber(updatedOrganization.bankDetails.accountNumber)) {
+      setAccountNumberError(
+        t('ACCOUNT_NUMBER_ERROR')
+      );
+      hasErrors = true;
+    } else {
+      setAccountNumberError('');
+    }
+  }
+
+
+  if (updatedOrganization.bankDetails.ifscNumber) {
+    if (!isValidIFSCCode(updatedOrganization.bankDetails.ifscNumber)) {
+        setIFSCError(t('IFSC_ERROR'));
+      hasErrors = true;
+    } else {
+      setIFSCError('');
+    }
+  }
+
+  if (!hasErrors) {
+    updatedOrganization.bankDetails = {
+      accountName: updatedOrganization.bankDetails.accountName,
+      bankName: updatedOrganization.bankDetails.bankName,
+      accountNumber: updatedOrganization.bankDetails.accountNumber,
+      ifscNumber: updatedOrganization.bankDetails.ifscNumber,
+    };
+  }
 }
+
  if (updatedOrganization.website) {
       if (!isValidURL(updatedOrganization.website)) {
         setWebsiteError('Invalid URL format, Ex: https://example.com');
@@ -384,6 +452,7 @@ if (
         success: () => {
           fetchOrganization();
           handleCloseEditMode();
+           handleCloseBankEditMode(); 
           setIsUpdateResponseLoading(false);
           setUpdatedOrganization({} as IOrganization);
           fetchOrgFile();
@@ -1041,35 +1110,46 @@ if (
         </Container>
         {isUpdateResponseLoading && <SpinAnimation />}
        </TabContentMainContainer>
+
+       <BorderDivLine width="100%" />
+      
 <TabContentMainContainer>
   <TabContentMainContainerHeading>
-    <h4>{t('BANK_INFO')}</h4>
-    {user &&
-      hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
-        <TabContentEditArea>
-          {!isEditModeOn ? (
-            <span onClick={handleIsEditModeOn}>
-              <EditWhitePenSVG />
-            </span>
-          ) : (
-            <span>
-              <span
-                title="Save Changes"
-                onClick={handleSubmitCompanyProfile}
-              >
-                <CheckBoxOnSVG />
-              </span>
-              <span
-                title="Discard Changes"
-                onClick={handleCloseEditMode}
-              >
-                <CrossMarkSVG />
-              </span>
-            </span>
-          )}
-        </TabContentEditArea>
-      )}
-</TabContentMainContainerHeading>
+<h4>{t('BANK_INFO')}</h4>
+ {user &&
+     hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
+              <TabContentEditArea>
+                   {!isBankEditModeOn ? (
+                  <span onClick={handleBankIsEditModeOn}>
+                    <EditWhitePenSVG />
+                  </span>
+                ) : (
+                  <span>
+                    <span
+                      title="Save Changes"
+                      onClick={handleSubmitCompanyProfile}
+                    >
+                      <CheckBoxOnSVG />
+                    </span>
+                    <span
+                      title="Discard Changes"
+                      onClick={() => {
+                      handleCloseBankEditMode(); 
+                        setFile(undefined);
+                      }}
+                    >
+                      <CrossMarkSVG />
+                    </span>
+                  </span>
+                )}
+              </TabContentEditArea>
+
+            )}
+        </TabContentMainContainerHeading>
+
+
+ 
+
  <BorderDivLine width="100%" />
 <Container>
   <Row>
@@ -1078,38 +1158,47 @@ if (
       <Input
         name="bankName"
         type="text"
-        placeholder={isEditModeOn ? 'Enter Bank Name' : '-'}
-        value={companyProfile.bankDetails?.bankName|| ''}
+        placeholder={isBankEditModeOn ? 'Enter Bank Name' : '-'}
+        value={companyProfile.bankDetails?.bankName || ''}
         onChange={handleInputChange}
-        disabled={!isEditModeOn}
+        disabled={!isBankEditModeOn} // <--- disable if edit mode off
         autoComplete="off"
       />
+      {bankNameError.length > 1 && (
+        <span style={{ color: 'red' }}>{bankNameError}</span>
+      )}
+    
     </div>
   </Row>
+
   <Row>
     <Label>{t('ACCOUNT_NAME')}</Label>
     <div>
       <Input
         name="accountName"
         type="text"
-        placeholder={isEditModeOn ? t("ACCOUNT_NAME_PLACEHOLDER") : '-'}
+        placeholder={isBankEditModeOn ? t("ACCOUNT_NAME_PLACEHOLDER") : '-'}
         value={companyProfile.bankDetails?.accountName || ''}
-         onChange={handleInputChange}
-        disabled={!isEditModeOn}
+        onChange={handleInputChange}
+        disabled={!isBankEditModeOn} // <--- disable if edit mode off
         autoComplete="off"
       />
+       {accountNameError.length > 1 && (
+        <span style={{ color: 'red' }}>{accountNameError}</span>
+      )}
     </div>
   </Row>
-    <Row>
+
+  <Row>
     <Label>{t('ACCOUNT_NUMBER')}</Label>
     <div>
       <Input
         name="accountNumber"
         type="text"
-        placeholder={isEditModeOn ? t("ACCOUNT_NUMBER_PLACEHOLDER") : '-'}
+        placeholder={isBankEditModeOn ? t("ACCOUNT_NUMBER_PLACEHOLDER") : '-'}
         value={companyProfile.bankDetails?.accountNumber || ''}
         onChange={handleInputChange}
-        disabled={!isEditModeOn}
+        disabled={!isBankEditModeOn} // <--- disable if edit mode off
         autoComplete="off"
         maxLength={18}
         onKeyDown={(event) => {
@@ -1118,20 +1207,22 @@ if (
             event.preventDefault();
           }
         }}
-      />
+      />{accountNumberError.length > 1 && (
+        <span style={{ color: 'red' }}>{accountNumberError}</span>
+      )}
+    
     </div>
   </Row>
-    <Row>
+  <Row>
     <Label>{t('IFSC_CODE')}</Label>
     <div>
       <Input
         name="ifscNumber"
         type="text"
-        placeholder={isEditModeOn ? 'Enter IFSC Code' : '-'}
-     
-       value={companyProfile.bankDetails?.ifscNumber || ''}
+        placeholder={isBankEditModeOn ? 'Enter IFSC Code' : '-'}
+        value={companyProfile.bankDetails?.ifscNumber || ''}
         onChange={handleInputChange}
-        disabled={!isEditModeOn}
+        disabled={!isBankEditModeOn} // <--- disable if edit mode off
         autoComplete="off"
         maxLength={11}
         onKeyDown={(event) => {
@@ -1141,6 +1232,9 @@ if (
           }
         }}
       />
+    {ifscError.length > 1 && (
+        <span style={{ color: 'red' }}>{ifscError}</span>
+      )}
     </div>
   </Row>
 </Container>
