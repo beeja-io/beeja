@@ -121,6 +121,7 @@ public class ContractsController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(resources);
+    }
 
     @GetMapping("/client/{clientId}")
     @HasPermission(PermissionConstants.GET_CONTRACT)
