@@ -149,7 +149,9 @@
   "NO": "No",
   "YES": "Yes",
   "COMPANY_INFO": "Company Info",
-  "ACCOUNT_INFO": "Account Info",
+
+  "ACCOUNT_INFO": "Account Info", 
+
   "COMPANY_LOGO": "Company Logo",
   "LOADING": "Loading...",
   "CLEAR_IMAGE": "Clear Image",
@@ -372,10 +374,20 @@
   "ACCOUNT_NAME": "Account Name",
   "ACCOUNT_NUMBER": "Account Number",
   "IFSC_CODE": "IFSC Code",
-  "TAX_NUMBER_ERROR": "Tax number must be in the format XXXX123456",
+
+  "TAX_NUMBER_ERROR": "Tax number must be 10–15 characters, alphanumeric, and may include hyphen (-)",
   "TAX_NO_PLACEHOLDER": "Enter Tax Number (Ex: ABCD123456)",
   "ACCOUNT_NAME_PLACEHOLDER": "Enter Account Name",
-  "ACCOUNT_NUMBER_PLACEHOLDER": "Enter Account Number",
+  "ACCOUNT_NUMBER_PLACEHOLDER": "Enter account number (numbers only)",
+  "BANK_NAME_ERROR": "Enter a valid bank name",
+  "ACCOUNT_NAME_ERROR": "Enter a valid account name",
+  "ACCOUNT_NUMBER_ERROR": "Account number must be numeric and of valid length",
+  "IFSC_ERROR": "Enter a valid IFSC code, Ex: ABCD0123456",
+
+
+
+
+
 
   "errors": {
     "unsupported_format": "Unsupported file format. Please upload a valid receipt file(jpeg, png, pdf).",

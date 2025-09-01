@@ -46,6 +46,10 @@ import {
   isValidPanCardNo,
   isValidTANNumber,
   isValidURL,
+   isValidBankName , 
+   isValidAccountName,
+   isValidAccountNumber, 
+   isValidIFSCCode 
 } from '../../utils/formInputValidators';
 import { usePreferences } from '../../context/PreferencesContext';
 import { hasPermission } from '../../utils/permissionCheck';
@@ -67,6 +71,17 @@ export const CompanyProfile = () => {
   const [updatedOrganization, setUpdatedOrganization] = useState<IOrganization>(
     {} as IOrganization
   );
+  const [isBankEditModeOn, setIsBankEditModeOn] = useState(false);
+ 
+const handleBankIsEditModeOn = () => {
+    setIsBankEditModeOn(!isBankEditModeOn);
+  };
+ 
+  const handleCloseBankEditMode = () => {
+    setCompanyProfile(tempOrganization);
+    setUpdatedOrganization({} as IOrganization);
+    setIsBankEditModeOn(false);
+  };
 
   const [isUpdateResponseLoading, setIsUpdateResponseLoading] = useState(false);
 
@@ -152,26 +167,28 @@ export const CompanyProfile = () => {
       );
       return;
     }
-    if (
-      ['accountName', 'bankName', 'accountNumber', 'ifscNumber'].includes(name)
-    ) {
-      setCompanyProfile((prevState) => ({
-        ...prevState,
-        bankDetails: {
-          ...prevState.bankDetails,
-          [name]: value,
-        },
-      }));
-      setUpdatedOrganization((prevState) => ({
-        ...prevState,
-        bankDetails: {
-          ...prevState.bankDetails,
-          [name]: value,
-        },
-      }));
-      return;
-    }
-    setCompanyProfile((prevState) => ({
+
+  if (
+    ['accountName', 'bankName', 'accountNumber', 'ifscNumber'].includes(name)
+  ) {
+    setCompanyProfile(prevState => ({
+      ...prevState,
+      bankDetails: {
+        ...prevState.bankDetails,
+        [name]: value,
+      },
+    }));
+    setUpdatedOrganization(prevState => ({
+      ...prevState,
+      bankDetails: {
+        ...prevState.bankDetails,
+        [name]: value,
+      },
+    }));
+    return;
+  }
+  setCompanyProfile((prevState) => ({
+
       ...prevState,
       [name]: value,
     }));
@@ -208,11 +225,20 @@ export const CompanyProfile = () => {
   const [emailError, setEmailError] = useState<string>('');
   const [websiteError, setWebsiteError] = useState<string>('');
   const [pinError, setPINError] = useState<string>('');
+   const [accountNameError, setAccountNameError] =  useState<string>('');
+  const [bankNameError, setBankNameError] =  useState<string>('');
+  const [accountNumberError, setAccountNumberError] =  useState<string>('');
+  const [ifscError, setIFSCError] =  useState<string>('');
 
   const handleSubmitCompanyProfile = async () => {
     let hasErrors = false;
 
     // Reset error states
+    setAccountNameError(''); 
+     setBankNameError('');
+     setAccountNumberError(''); 
+     setIFSCError(''); 
+
     setNameError('');
     setPanError('');
     setTaxError('');
@@ -252,6 +278,7 @@ export const CompanyProfile = () => {
         setPanError('');
       }
     }
+
     if (
       updatedOrganization.accounts &&
       updatedOrganization.accounts.taxNumber
@@ -263,6 +290,7 @@ export const CompanyProfile = () => {
         setTaxError('');
       }
     }
+
     if (updatedOrganization.accounts && updatedOrganization.accounts.pfNumber) {
       if (
         !isValidPFNumber(updatedOrganization.accounts.pfNumber.toUpperCase())
@@ -331,20 +359,67 @@ export const CompanyProfile = () => {
         setLINError('');
       }
     }
-    if (
-      updatedOrganization.bankDetails?.accountName ||
-      updatedOrganization.bankDetails?.bankName ||
-      updatedOrganization.bankDetails?.accountNumber ||
-      updatedOrganization.bankDetails?.ifscNumber
-    ) {
-      updatedOrganization.bankDetails = {
-        accountName: updatedOrganization.bankDetails.accountName,
-        bankName: updatedOrganization.bankDetails.bankName,
-        accountNumber: updatedOrganization.bankDetails.accountNumber,
-        ifscNumber: updatedOrganization.bankDetails.ifscNumber,
-      };
+
+if (
+  updatedOrganization.bankDetails?.accountName ||
+  updatedOrganization.bankDetails?.bankName ||
+  updatedOrganization.bankDetails?.accountNumber ||
+  updatedOrganization.bankDetails?.ifscNumber
+) {
+  if (updatedOrganization.bankDetails.accountName) {
+    if (!isValidAccountName(updatedOrganization.bankDetails.accountName)) {
+      setAccountNameError(t('ACCOUNT_NAME_ERROR'));
+      hasErrors = true;
+    } else {
+      setAccountNameError('');
     }
-    if (updatedOrganization.website) {
+  }
+
+
+  if (updatedOrganization.bankDetails.bankName) {
+    if (!isValidBankName(updatedOrganization.bankDetails.bankName)) {
+      setBankNameError(t('BANK_NAME_ERROR'));
+      hasErrors = true;
+    } else {
+      setBankNameError('');
+    }
+  }
+
+
+  if (updatedOrganization.bankDetails.accountNumber) {
+    if (!isValidAccountNumber(updatedOrganization.bankDetails.accountNumber)) {
+      setAccountNumberError(
+        t('ACCOUNT_NUMBER_ERROR')
+      );
+      hasErrors = true;
+    } else {
+      setAccountNumberError('');
+    }
+  }
+
+
+  if (updatedOrganization.bankDetails.ifscNumber) {
+    if (!isValidIFSCCode(updatedOrganization.bankDetails.ifscNumber)) {
+        setIFSCError(t('IFSC_ERROR'));
+      hasErrors = true;
+    } else {
+      setIFSCError('');
+    }
+  }
+
+  if (!hasErrors) {
+    updatedOrganization.bankDetails = {
+      accountName: updatedOrganization.bankDetails.accountName,
+      bankName: updatedOrganization.bankDetails.bankName,
+      accountNumber: updatedOrganization.bankDetails.accountNumber,
+      ifscNumber: updatedOrganization.bankDetails.ifscNumber,
+    };
+  }
+}
+
+ if (updatedOrganization.website) {
+
+   
       if (!isValidURL(updatedOrganization.website)) {
         setWebsiteError('Invalid URL format, Ex: https://example.com');
         hasErrors = true;
@@ -387,6 +462,7 @@ export const CompanyProfile = () => {
         success: () => {
           fetchOrganization();
           handleCloseEditMode();
+           handleCloseBankEditMode(); 
           setIsUpdateResponseLoading(false);
           setUpdatedOrganization({} as IOrganization);
           fetchOrgFile();
@@ -910,34 +986,36 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
-            <Label>{t('TAX_NO.')}</Label>
-            <div>
-              <Input
-                name="accounts.taxNumber"
-                placeholder={isEditModeOn ? t('TAX_NO_PLACEHOLDER') : '-'}
-                type="text"
-                value={
-                  companyProfile.accounts && companyProfile.accounts.taxNumber
-                    ? companyProfile.accounts.taxNumber.toUpperCase()
-                    : ''
-                }
-                onChange={handleInputChange}
-                disabled={!isEditModeOn}
-                maxLength={10}
-                autoComplete="off"
-                onKeyDown={(event) => {
-                  const allowedCharacters = /^[a-zA-Z0-9]+$/;
-                  if (
-                    !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace'
-                  ) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-              {taxError.length > 1 && <span>{taxError}</span>}
-            </div>
-          </Row>
+
+          <Label>{t('TAX_NO.')}</Label>
+          <div>
+          <Input
+           name="accounts.taxNumber"
+           placeholder={
+          isEditModeOn ? t('TAX_NO_PLACEHOLDER') : '-'
+           }
+      type="text"
+      value={
+        companyProfile.accounts && companyProfile.accounts.taxNumber
+          ? companyProfile.accounts.taxNumber.toUpperCase()
+          : ''
+      }
+      onChange={handleInputChange}
+      disabled={!isEditModeOn}
+      maxLength={10}
+      autoComplete="off"
+      onKeyDown={(event) => {
+        const allowedCharacters = /^[a-zA-Z0-9]+$/;
+        if (!allowedCharacters.test(event.key) && event.key !== 'Backspace') {
+          event.preventDefault();
+        }
+      }}
+    />
+     {taxError.length > 1 && <span>{taxError}</span>}
+    
+  </div>
+</Row>
+
           <Row>
             <Label>{t('ESI_NO.')}</Label>
             <div>
@@ -1051,15 +1129,20 @@ export const CompanyProfile = () => {
           </Row>
         </Container>
         {isUpdateResponseLoading && <SpinAnimation />}
-      </TabContentMainContainer>
-      <TabContentMainContainer>
-        <TabContentMainContainerHeading>
-          <h4>{t('BANK_INFO')}</h4>
-          {user &&
-            hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
+
+       </TabContentMainContainer>
+
+       <BorderDivLine width="100%" />
+      
+<TabContentMainContainer>
+  <TabContentMainContainerHeading>
+<h4>{t('BANK_INFO')}</h4>
+ {user &&
+     hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
               <TabContentEditArea>
-                {!isEditModeOn ? (
-                  <span onClick={handleIsEditModeOn}>
+                   {!isBankEditModeOn ? (
+                  <span onClick={handleBankIsEditModeOn}>
+
                     <EditWhitePenSVG />
                   </span>
                 ) : (
@@ -1070,96 +1153,129 @@ export const CompanyProfile = () => {
                     >
                       <CheckBoxOnSVG />
                     </span>
-                    <span title="Discard Changes" onClick={handleCloseEditMode}>
+
+                    <span
+                      title="Discard Changes"
+                      onClick={() => {
+                      handleCloseBankEditMode(); 
+                        setFile(undefined);
+                      }}
+                    >
+
                       <CrossMarkSVG />
                     </span>
                   </span>
                 )}
               </TabContentEditArea>
+
+
             )}
         </TabContentMainContainerHeading>
-        <BorderDivLine width="100%" />
-        <Container>
-          <Row>
-            <Label>{t('BANK_NAME')}</Label>
-            <div>
-              <Input
-                name="bankName"
-                type="text"
-                placeholder={isEditModeOn ? 'Enter Bank Name' : '-'}
-                value={companyProfile.bankDetails?.bankName || ''}
-                onChange={handleInputChange}
-                disabled={!isEditModeOn}
-                autoComplete="off"
-              />
-            </div>
-          </Row>
-          <Row>
-            <Label>{t('ACCOUNT_NAME')}</Label>
-            <div>
-              <Input
-                name="accountName"
-                type="text"
-                placeholder={isEditModeOn ? t('ACCOUNT_NAME_PLACEHOLDER') : '-'}
-                value={companyProfile.bankDetails?.accountName || ''}
-                onChange={handleInputChange}
-                disabled={!isEditModeOn}
-                autoComplete="off"
-              />
-            </div>
-          </Row>
-          <Row>
-            <Label>{t('ACCOUNT_NUMBER')}</Label>
-            <div>
-              <Input
-                name="accountNumber"
-                type="text"
-                placeholder={
-                  isEditModeOn ? t('ACCOUNT_NUMBER_PLACEHOLDER') : '-'
-                }
-                value={companyProfile.bankDetails?.accountNumber || ''}
-                onChange={handleInputChange}
-                disabled={!isEditModeOn}
-                autoComplete="off"
-                maxLength={18}
-                onKeyDown={(event) => {
-                  const allowedCharacters = /^[0-9]+$/;
-                  if (
-                    !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace'
-                  ) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-            </div>
-          </Row>
-          <Row>
-            <Label>{t('IFSC_CODE')}</Label>
-            <div>
-              <Input
-                name="ifscNumber"
-                type="text"
-                placeholder={isEditModeOn ? 'Enter IFSC Code' : '-'}
-                value={companyProfile.bankDetails?.ifscNumber || ''}
-                onChange={handleInputChange}
-                disabled={!isEditModeOn}
-                autoComplete="off"
-                maxLength={11}
-                onKeyDown={(event) => {
-                  const allowedCharacters = /^[a-zA-Z0-9]+$/;
-                  if (
-                    !allowedCharacters.test(event.key) &&
-                    event.key !== 'Backspace'
-                  ) {
-                    event.preventDefault();
-                  }
-                }}
-              />
-            </div>
-          </Row>
-        </Container>
-      </TabContentMainContainer>
+
+
+ 
+
+ <BorderDivLine width="100%" />
+<Container>
+  <Row>
+    <Label>{t('BANK_NAME')}</Label>
+    <div>
+      <Input
+        name="bankName"
+        type="text"
+        placeholder={isBankEditModeOn ? 'Enter Bank Name' : '-'}
+        value={companyProfile.bankDetails?.bankName || ''}
+        onChange={handleInputChange}
+        disabled={!isBankEditModeOn} // <--- disable if edit mode off
+        autoComplete="off"
+      />
+      {bankNameError.length > 1 && (
+        <span style={{ color: 'red' }}>{bankNameError}</span>
+      )}
+    
+    </div>
+  </Row>
+
+  <Row>
+    <Label>{t('ACCOUNT_NAME')}</Label>
+    <div>
+      <Input
+        name="accountName"
+        type="text"
+        placeholder={isBankEditModeOn ? t("ACCOUNT_NAME_PLACEHOLDER") : '-'}
+        value={companyProfile.bankDetails?.accountName || ''}
+        onChange={handleInputChange}
+        disabled={!isBankEditModeOn} // <--- disable if edit mode off
+        autoComplete="off"
+      />
+       {accountNameError.length > 1 && (
+        <span style={{ color: 'red' }}>{accountNameError}</span>
+      )}
+    </div>
+  </Row>
+
+  <Row>
+    <Label>{t('ACCOUNT_NUMBER')}</Label>
+    <div>
+      <Input
+        name="accountNumber"
+        type="text"
+        placeholder={isBankEditModeOn ? t("ACCOUNT_NUMBER_PLACEHOLDER") : '-'}
+        value={companyProfile.bankDetails?.accountNumber || ''}
+        onChange={handleInputChange}
+        disabled={!isBankEditModeOn} // <--- disable if edit mode off
+        autoComplete="off"
+        maxLength={18}
+        onKeyDown={(event) => {
+          const allowedCharacters = /^[0-9]+$/;
+          if (!allowedCharacters.test(event.key) && event.key !== 'Backspace') {
+            event.preventDefault();
+          }
+        }}
+      />{accountNumberError.length > 1 && (
+        <span style={{ color: 'red' }}>{accountNumberError}</span>
+      )}
+    
+    </div>
+  </Row>
+  <Row>
+    <Label>{t('IFSC_CODE')}</Label>
+    <div>
+      <Input
+        name="ifscNumber"
+        type="text"
+        placeholder={isBankEditModeOn ? 'Enter IFSC Code' : '-'}
+        value={companyProfile.bankDetails?.ifscNumber || ''}
+        onChange={handleInputChange}
+        disabled={!isBankEditModeOn} // <--- disable if edit mode off
+        autoComplete="off"
+        maxLength={11}
+        onKeyDown={(event) => {
+          const allowedCharacters = /^[a-zA-Z0-9]+$/;
+          if (!allowedCharacters.test(event.key) && event.key !== 'Backspace') {
+            event.preventDefault();
+          }
+        }}
+      />
+    {ifscError.length > 1 && (
+        <span style={{ color: 'red' }}>{ifscError}</span>
+      )}
+    </div>
+  </Row>
+</Container>
+</TabContentMainContainer>
+
+
+
+
+
+
+
+
+
+
+
+
     </>
   );
 };

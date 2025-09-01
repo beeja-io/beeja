@@ -51,9 +51,6 @@ export const isValidAccountNo = (accountNo: string): boolean => {
   return /^\d{1,17}$/.test(accountNo);
 };
 
-export const isValidIFSCCode = (ifscCode: string): boolean => {
-  return /^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifscCode);
-};
 
 export const isValidAadhaarNumber = (aadhaarNumber: string): boolean => {
   return /^\d{12}$/.test(aadhaarNumber);
@@ -62,7 +59,33 @@ export const isValidAadhaarNumber = (aadhaarNumber: string): boolean => {
 export const isValidPassportNumber = (passportNumber: string): boolean => {
   return /^[A-Z0-9]{12}$/.test(passportNumber);
 };
-export const isValidTaxNo = (tax: string): boolean => {
-  const regex = /^[A-Z]{4}[0-9]{6}$/;
-  return regex.test(tax);
+
+export const isValidBankName = (bankName: string): boolean => {
+  const regex = /^[A-Za-z ]+$/;
+  return regex.test(bankName.trim());
 };
+
+
+export const isValidAccountName = (accountName: string): boolean => {
+  const regex = /^[A-Za-z ]+$/;
+  return regex.test(accountName.trim());
+};
+
+
+export const isValidAccountNumber = (accountNumber: string): boolean => {
+  const regex = /^[0-9]{9,18}$/;
+  return regex.test(accountNumber.trim());
+};
+
+
+export const isValidIFSCCode = (ifscCode: string): boolean => {
+  const regex = /^[A-Z]{4}0[0-9A-Z]{6}$/;
+  return regex.test(ifscCode.trim());
+};
+
+
+export const isValidTaxNo = (taxNumber: string): boolean => {
+  const regex = /^[A-Z]{3,}[ -]?[0-9]{5,}$/;
+  return regex.test(taxNumber.trim());
+};
+
