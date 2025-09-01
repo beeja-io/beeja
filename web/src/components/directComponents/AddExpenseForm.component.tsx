@@ -152,38 +152,56 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const handleExpenseSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newExpense) {
-      // Checking undefined values and adding to list to display in toast!
-      const errorMessages = [];
-      if (newExpense.amount === undefined) {
-        errorMessages.push('Amount');
-      }
-      if (newExpense.department == undefined || newExpense.department == '') {
-        errorMessages.push('Department');
-      }
-      if (newExpense.category == undefined || newExpense.category == '') {
-        errorMessages.push('Category');
-      }
-      if (newExpense.type == undefined || newExpense.type == '') {
-        errorMessages.push('Type');
-      }
       if (
-        newExpense.modeOfPayment == undefined ||
-        newExpense.modeOfPayment == ''
+        newExpense.amount === undefined ||
+        newExpense.amount === null ||
+        newExpense.amount === ''
       ) {
-        errorMessages.push('Mode of Payment');
-      }
-      if (
-        newExpense.paymentMadeBy == undefined ||
-        newExpense.paymentMadeBy == ''
-      ) {
-        errorMessages.push('Payment Made By');
-      }
-      if (expenseDate == undefined || expenseDate == null) {
-        errorMessages.push('Expense Date');
-      }
-      if (errorMessages.length > 0) {
         handleShowErrorMessage();
-        setResponseErrorMessage('Please fill ' + errorMessages);
+        setResponseErrorMessage('Please fill Amount');
+        return;
+      }
+      if (Number(newExpense.amount) <= 0) {
+        handleShowErrorMessage();
+        setResponseErrorMessage(
+          'EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT_GREATER_THAN_ZERO'
+        );
+        return;
+      }
+
+      if (!newExpense.department || newExpense.department === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Department');
+        return;
+      }
+
+      if (!newExpense.category || newExpense.category === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Category');
+        return;
+      }
+
+      if (!newExpense.type || newExpense.type === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Type');
+        return;
+      }
+
+      if (!newExpense.modeOfPayment || newExpense.modeOfPayment === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Mode of Payment');
+        return;
+      }
+
+      if (!newExpense.paymentMadeBy || newExpense.paymentMadeBy === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Payment Made By');
+        return;
+      }
+
+      if (!expenseDate) {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Expense Date');
         return;
       }
       const formData = new FormData();
