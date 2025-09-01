@@ -259,6 +259,11 @@ export const GeneralDetailsTab = ({
 
     handleIsUpdateResponseLoading();
 
+    Object.keys(modifiedFields).forEach((fieldLabel) => {
+      if (!isFieldEditable(fieldLabel)) {
+        delete modifiedFields[fieldLabel];
+      }
+    });
     if (Object.keys(modifiedFields).length === 0) {
       // No fields are modified, So I'm not sending the request
       handleIsEditModeOn();
@@ -422,10 +427,16 @@ export const GeneralDetailsTab = ({
   const handleIsUpdateResponseLoading = () => {
     setIsUpdateResponseLoading(!isUpdateResponseLoading);
   };
-  const editableFieldsForLoggedInEmployee = [
-    'Alt Email Address',
-    'Alt Phone Number',
-  ];
+  const isFieldEditable = (label: string): boolean => {
+    if (allowFullEditingAccess) return true;
+    const editableFields = ['Alt Email Address', 'Alt Phone Number'];
+
+    return (
+      editableFields.includes(label) &&
+      user?.employeeId === employee?.account?.employeeId
+    );
+  };
+
   const allowFullEditingAccess =
     user && hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES);
 
@@ -470,8 +481,7 @@ export const GeneralDetailsTab = ({
         <TabContentMainContainer>
           <TabContentMainContainerHeading>
             <h4>{heading}</h4>
-            {allowFullEditingAccess &&
-            user.employeeId != employee.account.employeeId ? (
+            {allowFullEditingAccess ? (
               <TabContentEditArea>
                 {user &&
                   (allowFullEditingAccess ||
@@ -547,11 +557,7 @@ export const GeneralDetailsTab = ({
                 {firstColumn.map(({ label, value }) => (
                   <tr key={label}>
                     <TabContentTableTd>{t(label)}</TabContentTableTd>
-                    {isEditModeOn &&
-                    ((user?.employeeId === employee.account.employeeId &&
-                      editableFieldsForLoggedInEmployee.includes(label)) ||
-                      (allowFullEditingAccess &&
-                        user.employeeId !== employee.account.employeeId)) ? (
+                    {isEditModeOn && isFieldEditable(label) ? (
                       <TabContentTableTd>
                         {label === 'Country' ||
                         label === 'Nationality' ||
@@ -721,12 +727,7 @@ export const GeneralDetailsTab = ({
                   {secondColumn.map(({ label, value }) => (
                     <tr key={label}>
                       <TabContentTableTd>{t(label)}</TabContentTableTd>
-                      {isEditModeOn &&
-                      ((user?.employeeId === employee.account.employeeId &&
-                        editableFieldsForLoggedInEmployee.includes(label)) ||
-                        (allowFullEditingAccess &&
-                          user.employeeId !== employee.account.employeeId &&
-                          label !== 'Employee Id')) ? (
+                      {isEditModeOn && isFieldEditable(label) ? (        
                         <TabContentTableTd>
                           {label === 'Gender' || label === 'Marital Status' ? (
                             <DropdownOrg
