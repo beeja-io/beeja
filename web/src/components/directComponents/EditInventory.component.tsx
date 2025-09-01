@@ -26,6 +26,7 @@ type EditInventoryFormProps = {
   handleSuccessMessage: () => void;
   updateInventoryList: () => void;
   deviceTypes: OrganizationValues;
+  inventoryProviders: OrganizationValues;
 };
 
 const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
@@ -34,6 +35,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
   handleSuccessMessage,
   updateInventoryList,
   deviceTypes,
+  inventoryProviders,
 }) => {
   const calendarFromRef = useRef<HTMLDivElement>(null);
   const [formData, setFormData] = useState<DeviceDetails>(initialFormData);
@@ -494,14 +496,20 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 {t('PROVIDER')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <TextInput
-                type="text"
+              <select
+                className="selectoption largeSelectOption"
                 name="provider"
-                placeholder={t('EXAMPLE_APPLE')}
-                className="largeInput"
                 value={formData.provider}
                 onChange={handleChange}
-              />
+                required
+              >
+                <option value="">Select Provider</option>
+                {inventoryProviders?.values?.map((provider) => (
+                  <option key={provider.value} value={provider.value}>
+                    {provider.value}
+                  </option>
+                ))}
+              </select>
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
