@@ -34,5 +34,5 @@ export const PreviewReceiptError =
   'Our system is facing difficulties, try again later';
 export const DownloadReceiptError = 'Error Happened, please try again later';
 export const ForbiddenError = 'No permissions';
-
+// LOADING
 export const LOADING = 'Loading...';
