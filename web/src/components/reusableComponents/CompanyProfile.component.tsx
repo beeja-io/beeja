@@ -15,7 +15,6 @@ import {
 } from '../../svgs/CommonSvgs.svs';
 import {
   Input,
-  Select,
   Row,
   Label,
   Container,
@@ -56,6 +55,7 @@ import { usePreferences } from '../../context/PreferencesContext';
 import { hasPermission } from '../../utils/permissionCheck';
 import { ORGANIZATION_MODULE } from '../../constants/PermissionConstants';
 import { useTranslation } from 'react-i18next';
+import DropdownMenu from './DropDownMenu.component';
 
 export const CompanyProfile = () => {
   const [isEditModeOn, setEditModeOn] = useState(false);
@@ -167,6 +167,7 @@ const handleBankIsEditModeOn = () => {
       );
       return;
     }
+
   if (
     ['accountName', 'bankName', 'accountNumber', 'ifscNumber'].includes(name)
   ) {
@@ -187,6 +188,7 @@ const handleBankIsEditModeOn = () => {
     return;
   }
   setCompanyProfile((prevState) => ({
+
       ...prevState,
       [name]: value,
     }));
@@ -276,14 +278,19 @@ const handleBankIsEditModeOn = () => {
         setPanError('');
       }
     }
-  if (updatedOrganization.accounts && updatedOrganization.accounts.taxNumber) {
-  if (!isValidTaxNo(updatedOrganization.accounts.taxNumber.toUpperCase())) {
-      setTaxError(t("TAX_NUMBER_ERROR"));
-    hasErrors = true;
-  } else {
-    setTaxError("");
-  }
-}
+
+    if (
+      updatedOrganization.accounts &&
+      updatedOrganization.accounts.taxNumber
+    ) {
+      if (!isValidTaxNo(updatedOrganization.accounts.taxNumber.toUpperCase())) {
+        setTaxError(t('TAX_NUMBER_ERROR'));
+        hasErrors = true;
+      } else {
+        setTaxError('');
+      }
+    }
+
     if (updatedOrganization.accounts && updatedOrganization.accounts.pfNumber) {
       if (
         !isValidPFNumber(updatedOrganization.accounts.pfNumber.toUpperCase())
@@ -352,6 +359,7 @@ const handleBankIsEditModeOn = () => {
         setLINError('');
       }
     }
+
 if (
   updatedOrganization.bankDetails?.accountName ||
   updatedOrganization.bankDetails?.bankName ||
@@ -410,6 +418,8 @@ if (
 }
 
  if (updatedOrganization.website) {
+
+   
       if (!isValidURL(updatedOrganization.website)) {
         setWebsiteError('Invalid URL format, Ex: https://example.com');
         hasErrors = true;
@@ -716,22 +726,26 @@ if (
                 />
               </div>
               <div>
-                <Select
-                  name="address.state"
-                  value={
-                    companyProfile.address &&
-                    companyProfile.address.state != null
-                      ? companyProfile.address.state
-                      : ''
-                  }
-                  onChange={handleInputChange}
+                <DropdownMenu
+                  label={t('Select_State')}
+                  selected={companyProfile.address?.state ?? ''}
+                  className={'largeContainerFil drop'}
+                  options={[
+                    { label: t('SELECT_STATE'), value: '' },
+                    { label: t('TELANGANA'), value: 'Telangana' },
+                    { label: t('ANDHRA_PRADESH'), value: 'AP' },
+                    { label: t('DELHI'), value: 'Delhi' },
+                  ]}
                   disabled={!isEditModeOn}
-                >
-                  <option value={''}>{t('SELECT_STATE')}</option>
-                  <option value={'Telangana'}>{t('TELANGANA')}</option>
-                  <option value={'AP'}>{t('ANDHRA_PRADESH')}</option>
-                  <option value={'Delhi'}>{t('DELHI')}</option>
-                </Select>
+                  onChange={(value: string | null) => {
+                    handleInputChange({
+                      target: {
+                        name: 'address.state',
+                        value: value ?? '',
+                      },
+                    } as React.ChangeEvent<HTMLInputElement>);
+                  }}
+                />
               </div>
               <div>
                 <Input
@@ -774,21 +788,25 @@ if (
 
           <Row>
             <Label>{t('COUNTRY')}</Label>
-            <Select
-              name="address.country"
-              value={
-                companyProfile.address && companyProfile.address.country != null
-                  ? companyProfile.address.country
-                  : ''
-              }
-              onChange={handleInputChange}
+            <DropdownMenu
+              label={t('SELECT_COUNTRY')}
+              selected={companyProfile.address?.country ?? ''}
+              className={'drop'}
+              onChange={(value: string | null) => {
+                handleInputChange({
+                  target: {
+                    name: 'address.country',
+                    value: value ?? '',
+                  },
+                } as React.ChangeEvent<HTMLInputElement>);
+              }}
+              options={[
+                { label: t('INDIA'), value: 'India' },
+                { label: t('GERMANY'), value: 'Germany' },
+                { label: t('US'), value: 'US' },
+              ]}
               disabled={!isEditModeOn}
-            >
-              <option value={''}>{t('SELECT_COUNTRY')}</option>
-              <option value={'India'}>{t('INDIA')}</option>
-              <option value={'Germany'}>{t('GERMANY')}</option>
-              <option value={'US'}>{t('US')}</option>
-            </Select>
+            />
           </Row>
           <Row>
             <Label>{t('FILLING_ADDRESS')}</Label>
@@ -968,12 +986,13 @@ if (
             </div>
           </Row>
           <Row>
+
           <Label>{t('TAX_NO.')}</Label>
           <div>
           <Input
            name="accounts.taxNumber"
            placeholder={
-          isEditModeOn ? t("TAX_NO_PLACEHOLDER") : '-'
+          isEditModeOn ? t('TAX_NO_PLACEHOLDER') : '-'
            }
       type="text"
       value={
@@ -996,6 +1015,7 @@ if (
     
   </div>
 </Row>
+
           <Row>
             <Label>{t('ESI_NO.')}</Label>
             <div>
@@ -1109,6 +1129,7 @@ if (
           </Row>
         </Container>
         {isUpdateResponseLoading && <SpinAnimation />}
+
        </TabContentMainContainer>
 
        <BorderDivLine width="100%" />
@@ -1121,6 +1142,7 @@ if (
               <TabContentEditArea>
                    {!isBankEditModeOn ? (
                   <span onClick={handleBankIsEditModeOn}>
+
                     <EditWhitePenSVG />
                   </span>
                 ) : (
@@ -1131,6 +1153,7 @@ if (
                     >
                       <CheckBoxOnSVG />
                     </span>
+
                     <span
                       title="Discard Changes"
                       onClick={() => {
@@ -1138,11 +1161,13 @@ if (
                         setFile(undefined);
                       }}
                     >
+
                       <CrossMarkSVG />
                     </span>
                   </span>
                 )}
               </TabContentEditArea>
+
 
             )}
         </TabContentMainContainerHeading>
@@ -1239,6 +1264,7 @@ if (
   </Row>
 </Container>
 </TabContentMainContainer>
+
 
 
 

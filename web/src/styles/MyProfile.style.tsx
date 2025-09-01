@@ -452,7 +452,7 @@ export const TabContentTableTd = styled.td`
     font-weight: 400;
     line-height: 160%;
     text-overflow: ellipsis;
-    overflow: hidden;
+    overflow: visible;
     white-space: nowrap;
   }
 
@@ -464,7 +464,7 @@ export const TabContentTableTd = styled.td`
     font-weight: 400;
     line-height: 160%;
     text-overflow: ellipsis;
-    overflow: hidden;
+    overflow: visible;
     white-space: nowrap;
     padding: 3px 8px 10px 0;
   }

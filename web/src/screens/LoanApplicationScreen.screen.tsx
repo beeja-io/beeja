@@ -12,7 +12,7 @@ import {
   ChildDiv2,
 } from '../styles/LoanApplicationStyles.style';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { postLoan } from '../service/axiosInstance';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
@@ -36,6 +36,8 @@ import { hasPermission } from '../utils/permissionCheck';
 import { LOAN_MODULE } from '../constants/PermissionConstants';
 import useKeyCtrl from '../service/keyboardShortcuts/onKeySave';
 import { useTranslation } from 'react-i18next';
+import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
+
 interface LoanApplicationData {
   loanType: string;
   amount: string;
@@ -303,22 +305,26 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
                   {t('LOAN_TYPE')}{' '}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <select
-                  className="selectoption largeSelectOption"
+                <DropdownMenu
+                  label={t('SELECT_LOAN_TYPE')}
                   name="loanType"
+                  className="largeContainerExp"
                   id="loanType"
                   value={loanType}
-                  onChange={handleLoanTypeChange}
-                  onKeyPress={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                    }
+                  onChange={(val) => {
+                    handleLoanTypeChange({
+                      target: {
+                        name: 'loanType',
+                        value: val,
+                      },
+                    } as React.ChangeEvent<HTMLSelectElement>);
                   }}
-                >
-                  <option value="">{t('SELECT_LOAN_TYPE')}</option>
-                  <option value="MONITOR_LOAN">{t('MONITOR_LOAN')}</option>
-                  <option value="PERSONAL_LOAN">{t('PERSONAL_LOAN')}</option>
-                </select>
+                  options={[
+                    { label: t('SELECT_LOAN_TYPE'), value: '' },
+                    { label: t('MONITOR_LOAN'), value: 'MONITOR_LOAN' },
+                    { label: t('PERSONAL_LOAN'), value: 'PERSONAL_LOAN' },
+                  ]}
+                />
               </InputLabelContainer>
               <InputLabelContainer>
                 <label>
@@ -387,22 +393,26 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
                   {t('EMI_TENURE_MONTHS')}{' '}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <select
-                  className="selectoption largeSelectOption"
+                <DropdownMenu
+                  label={t('SELECT_EMI_TENURE')}
                   name="emiTenure"
+                  className={`largeContainerExp ${!isEmiTenureEnabled ? 'cursor-disabled' : ''}`}
                   id="emiTenure"
                   value={emiTenure}
-                  onChange={(e) => setEmiTenure(e.target.value)}
                   disabled={!isEmiTenureEnabled}
-                  onKeyPress={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                    }
+                  onChange={(val) => {
+                    setEmiTenure(val ?? '');
                   }}
-                >
-                  <option value="">{t('SELECT_EMI_TENURE')}</option>
-                  {renderEmiTenureOptions()}
-                </select>
+                  options={[
+                    { label: t('SELECT_EMI_TENURE'), value: '' },
+                    ...React.Children.toArray(renderEmiTenureOptions()).map(
+                      (option: any) => ({
+                        label: option.props.children,
+                        value: option.props.value,
+                      })
+                    ),
+                  ]}
+                />
               </InputLabelContainer>
 
               <InputLabelContainer>
@@ -410,21 +420,26 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
                   {t('EMI_START_FROM')}{' '}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <select
-                  className="selectoption largeSelectOption"
+                <DropdownMenu
+                  label={t('SELECT_MONTH')}
                   name="emiStartDate"
                   id="emiStartDate"
-                  onChange={handleEmiStartMonthChange}
-                  onKeyPress={(event) => {
-                    if (event.key === 'Enter') {
-                      event.preventDefault();
-                    }
+                  className="largeContainerExp"
+                  onChange={(val) => {
+                    const syntheticEvent = {
+                      target: {
+                        name: 'emiStartDate',
+                        value: val,
+                      },
+                    } as React.ChangeEvent<HTMLSelectElement>;
+                    handleEmiStartMonthChange(syntheticEvent);
                   }}
-                >
-                  <option value="">{t('SELECT_MONTH')}</option>
-                  <option value="CURRENT_MONTH">{t('CURRENT_MONTH')}</option>
-                  <option value="NEXT_MONTH">{t('NEXT_MONTH')}</option>
-                </select>
+                  options={[
+                    { label: t('SELECT_MONTH'), value: '' },
+                    { label: t('CURRENT_MONTH'), value: 'CURRENT_MONTH' },
+                    { label: t('NEXT_MONTH'), value: 'NEXT_MONTH' },
+                  ]}
+                />
               </InputLabelContainer>
             </ChildDiv2>
           </div>

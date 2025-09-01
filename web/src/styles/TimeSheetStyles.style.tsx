@@ -8,7 +8,7 @@ export const TimesheetContainer = styled.div`
   display: flex;
   flex-direction: column;
   margin: 24px 0;
-    
+
   .heading {
     font-size: 24px;
     font-weight: 550;
@@ -20,49 +20,49 @@ export const TimesheetContainer = styled.div`
       cursor: pointer;
     }
   }
-    
+
   .TimesheetSubContainer {
-    padding: 21px; 
+    padding: 21px;
     border-radius: 12px;
     background-color: ${(props) => props.theme.colors.backgroundColors.primary};
     margin-top: 16px;
-    }
-    .TimeSheet_Container{
-   padding-left: 42px;
-   }     
-  
+  }
+  .TimeSheet_Container {
+    padding-left: 42px;
+  }
+
   .TimeSheet_Heading {
     display: flex;
     justify-content: space-between;
     border-bottom: 1px solid
       ${(props) => props.theme.colors.grayColors.grayscale300};
-    padding-top: 15px 
-    }
+    padding-top: 15px;
+  }
   .TimeSheetTitle {
     padding: 12px 8px 2px 0px;
     color: #005792;
     font-size: 14px;
     font-weight: 700;
     text-align: center;
-    align-item: flex-end; 
+    align-item: flex-end;
   }
   .underline {
     border-bottom: 2px solid #005792;
   }
-  .Filter_Container{
+  .Filter_Container {
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  .Export{
+  .Export {
     padding: 10px;
     border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
     border-radius: 8px;
-    }
+  }
 `;
 export const SearchBox = styled.div`
   display: flex;
-  fontstyle : Nunito;
+  fontstyle: Nunito;
   padding: 8px 8px 8px 16px;
   align-items: center;
   justify-content: space-between;
@@ -144,7 +144,7 @@ export const MonthBox = styled.div`
   font-size: 16px;
   font-weight: 500;
   color: #333;
-  
+
   span {
     color: #0056b3;
     font-weight: 600;
@@ -161,15 +161,15 @@ export const DaysContainer = styled.div`
 
 export const SingleRowContainer = styled.div`
   width: 100%;
-   display: flex;
+  display: flex;
   align-items: center;
-  justify-content: space-between;  
-  padding: 12px 16px;  
-  border-bottom: 1px solid #ddd;  
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
 `;
 
 export const WeekdayRow = styled.div`
-  font-size: 14px;  
+  font-size: 14px;
 `;
 export const LoggedHours = styled.div`
   ffont-size: 14px;
@@ -189,7 +189,8 @@ export const TimesheetRow = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 10px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+  border-bottom: 1px solid
+    ${(props) => props.theme.colors.grayColors.grayscale300};
   align-items: center;
   background: #f8f9fa;
   padding: 12px 16px;
@@ -208,13 +209,14 @@ export const NavigationButtons = styled.div`
     border-radius: 8px;
     cursor: pointer;
     background-color: ${(props) => props.theme.colors.backgroundColors.primary};
-     border: 1px solid #F1F2F4
-    }
-    `;
+    border: 1px solid #f1f2f4;
+  }
+`;
 
 export const RotateArrow = styled.span<{ isExpanded: boolean }>`
   display: inline-block;
-  transform: ${({ isExpanded }) => (isExpanded ? "rotate(180deg)" : "rotate(0deg)")};
+  transform: ${({ isExpanded }) =>
+    isExpanded ? 'rotate(180deg)' : 'rotate(0deg)'};
   transition: transform 0.1s ease-in-out;
   opacity: 0.8;
   padding: 15px;
@@ -224,12 +226,12 @@ export const RotateArrow = styled.span<{ isExpanded: boolean }>`
 export const DailyLogContainer = styled.div`
   padding: 10px 15px;
   background: #fff;
-  width : 100%;
+  width: 100%;
   overflow-x: auto;
   table {
-  width: 100%;
-  border-collapse: collapse;
-}
+    width: 100%;
+    border-collapse: collapse;
+  }
 `;
 export const ButtonWrapper = styled.div`
   display: flex;
@@ -248,8 +250,9 @@ export const StyledTable = styled.table`
   border-collapse: collapse;
   background: white;
   text-align: left;
-  table-layout: fixed; 
-  th, td {
+  table-layout: fixed;
+  th,
+  td {
     padding: 12px;
     border-bottom: 1px solid #ddd;
     text-align: center;
@@ -307,7 +310,8 @@ export const WeekSubContainer = styled.div<{ isActive: boolean }>`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: ${({ isActive }) => (isActive ? 'rgba(0, 87, 146, 0.06);' : 'transparent')};
+  background-color: ${({ isActive }) =>
+    isActive ? 'rgba(0, 87, 146, 0.06);' : 'transparent'};
 `;
 
 export const TotalWeekHoursContainer = styled.div`
@@ -330,8 +334,8 @@ export const WeeklyLogs = styled.p`
 `;
 
 export const AddButton = styled.button`
- background: #555;
-  color: white;;
+  background: #555;
+  color: white;
   border: none;
   padding: 6px 12px;
   border-radius: 50%;
@@ -343,7 +347,6 @@ export const AddButton = styled.button`
   &:hover {
     background: #0056b3;
   }
-    
 `;
 export const EditButton = styled.button`
 background: transparent;
@@ -394,7 +397,7 @@ export const FormContainer = styled.div`
   background-color: #f8fafd;
   padding: 20px;
   border-radius: 8px;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
   .Form_Row {
     display: flex;
     align-items: center;
@@ -404,7 +407,8 @@ export const FormContainer = styled.div`
     margin-bottom: 10px;
     gap: 15px;
   }
-  select, input {
+  select,
+  input {
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
@@ -443,7 +447,7 @@ export const FormContainer = styled.div`
     padding: 5px;
   }
 `;
-export const SelectInput=styled.select`
+export const SelectInput = styled.select`
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
@@ -454,9 +458,9 @@ export const SelectInput=styled.select`
     background: #fff;
     outline: none;
   }
-`
+`;
 
-export const Input=styled.input`
+export const Input = styled.input`
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
@@ -467,7 +471,7 @@ export const Input=styled.input`
     background: #fff;
     outline: none;
   }
-`
+`;
 export const PaginationContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -487,7 +491,7 @@ export const PaginationButton = styled.button`
   gap: 8px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  
+
   &:hover {
     background: #f9f9f9;
     border-color: #ccc;
@@ -496,10 +500,10 @@ export const PaginationButton = styled.button`
     opacity: 0.5;
     cursor: not-allowed;
   }
-     .leftArrow {
-    transform: rotate(90deg); 
+  .leftArrow {
+    transform: rotate(90deg);
   }
   .rightArrow {
-    transform: rotate(-90deg); 
+    transform: rotate(-90deg);
   }
 `;

@@ -94,9 +94,15 @@ public class ClientServiceImpl implements ClientService {
     if (client.getPrimaryAddress() != null) {
       newClient.setPrimaryAddress(client.getPrimaryAddress());
     }
-    if (client.getBillingAddress() != null) {
-      newClient.setBillingAddress(client.getBillingAddress());
-    }
+      if (client.isUsePrimaryAsBillingAddress()) {
+          newClient.setUsePrimaryAsBillingAddress(true);
+          newClient.setBillingAddress(null);
+      } else {
+          newClient.setUsePrimaryAsBillingAddress(false);
+          if (client.getBillingAddress() != null) {
+              newClient.setBillingAddress(client.getBillingAddress());
+          }
+      }
     if (client.getIndustry() != null) {
       newClient.setIndustry(client.getIndustry());
     }
@@ -202,9 +208,17 @@ public class ClientServiceImpl implements ClientService {
     if (clientRequest.getPrimaryAddress() != null) {
       existingClient.setPrimaryAddress(clientRequest.getPrimaryAddress());
     }
-    if (clientRequest.getBillingAddress() != null) {
-      existingClient.setBillingAddress(clientRequest.getBillingAddress());
-    }
+      if (clientRequest.isUsePrimaryAsBillingAddress()) {
+          existingClient.setUsePrimaryAsBillingAddress(true);
+          existingClient.setBillingAddress(null);
+      } else {
+          existingClient.setUsePrimaryAsBillingAddress(false);
+          if (clientRequest.getBillingAddress() != null) {
+              existingClient.setBillingAddress(clientRequest.getBillingAddress());
+          } else {
+              existingClient.setBillingAddress(null);
+          }
+      }
     if (clientRequest.getIndustry() != null) {
       existingClient.setIndustry(clientRequest.getIndustry());
     }

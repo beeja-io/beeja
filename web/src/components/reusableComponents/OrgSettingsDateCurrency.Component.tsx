@@ -15,7 +15,7 @@ import {
   ProfileHeading,
   Row,
 } from '../../styles/OrganizationSettingsStyles.style';
-import { Label, Select } from '../../styles/OrganizationSettingsStyles.style';
+import { Label } from '../../styles/OrganizationSettingsStyles.style';
 import { IOrganization } from '../../entities/OrganizationEntity';
 import {
   CURRENCY_TYPES,
@@ -26,6 +26,7 @@ import { useUser } from '../../context/UserContext';
 import { hasPermission } from '../../utils/permissionCheck';
 import { ORGANIZATION_MODULE } from '../../constants/PermissionConstants';
 import { useTranslation } from 'react-i18next';
+import DropdownMenu from './DropDownMenu.component';
 
 type DateCurrencyType = {
   organization: IOrganization;
@@ -146,45 +147,45 @@ export const OrganizationSettingsDateCurrency = ({
         <Container>
           <Row>
             <Label>{t('DATE_FORMAT')}</Label>
-            <Select
-              name="preferences.dateFormat"
-              onChange={handleInputChange}
+            <DropdownMenu
+              label="Date Format"
+              className={'drop'}
+              selected={organization.preferences?.dateFormat || ''}
               disabled={!isEditDateFormatModeOn}
-              value={
-                organization.preferences && organization.preferences.dateFormat
-                  ? organization.preferences.dateFormat
-                  : ''
+              options={Object.keys(DATE_FORMATS).map((key) => ({
+                label: DATE_FORMATS[key],
+                value: key,
+              }))}
+              onChange={(selectedValue) =>
+                handleInputChange({
+                  target: {
+                    name: 'preferences.dateFormat',
+                    value: selectedValue || '',
+                  },
+                } as React.ChangeEvent<HTMLInputElement>)
               }
-            >
-              {[...Object.keys(DATE_FORMATS)]
-                .sort((a, b) => a.localeCompare(b))
-                .map((key) => (
-                  <option key={DATE_FORMATS[key]} value={key}>
-                    {DATE_FORMATS[key]}
-                  </option>
-                ))}
-            </Select>
+            />
           </Row>
           <Row>
             <Label>Time Zone</Label>
-            <Select
-              name="preferences.timeZone"
-              onChange={handleInputChange}
+            <DropdownMenu
+              label={t('Select Timezone')}
+              selected={organization.preferences?.timeZone ?? ''}
+              className={'drop'}
+              onChange={(value: string | null) => {
+                handleInputChange({
+                  target: {
+                    name: 'preferences.timeZone',
+                    value: value ?? '',
+                  },
+                } as React.ChangeEvent<HTMLInputElement>);
+              }}
+              options={Object.keys(TIME_ZONES).map((key) => ({
+                label: TIME_ZONES[key],
+                value: key,
+              }))}
               disabled={!isEditDateFormatModeOn}
-              value={
-                organization.preferences && organization.preferences.timeZone
-                  ? organization.preferences.timeZone
-                  : ''
-              }
-            >
-              {[...Object.keys(TIME_ZONES)]
-                .sort((a, b) => a.localeCompare(b))
-                .map((key) => (
-                  <option key={TIME_ZONES[key]} value={key}>
-                    {TIME_ZONES[key]}
-                  </option>
-                ))}
-            </Select>
+            />
           </Row>
         </Container>
       </TabContentMainContainer>
@@ -227,25 +228,27 @@ export const OrganizationSettingsDateCurrency = ({
         <Container>
           <Row>
             <Label>{t('CURRENCY_TYPE')}</Label>
-            <Select
-              name="preferences.currencyType"
+            <DropdownMenu
+              label="Currency Type"
+              className={'drop'}
+              selected={organization.preferences?.currencyType ?? ''}
               disabled={!isEditCurrencyModeOn}
-              onChange={handleInputChange}
-              value={
-                organization.preferences &&
-                organization.preferences.currencyType
-                  ? organization.preferences.currencyType
-                  : ''
-              }
-            >
-              {[...Object.keys(CURRENCY_TYPES)]
-                .sort((a, b) => a.localeCompare(b))
-                .map((key) => (
-                  <option key={CURRENCY_TYPES[key]} value={key}>
-                    {CURRENCY_TYPES[key]}
-                  </option>
-                ))}
-            </Select>
+              options={Object.keys(CURRENCY_TYPES).map((key) => ({
+                label: CURRENCY_TYPES[key],
+                value: key,
+              }))}
+              onChange={(value) => {
+                if (value !== null) {
+                  const event = {
+                    target: {
+                      name: 'preferences.currencyType',
+                      value,
+                    },
+                  } as React.ChangeEvent<HTMLSelectElement>;
+                  handleInputChange(event);
+                }
+              }}
+            />
           </Row>
         </Container>
       </TabContentMainContainer>

@@ -59,6 +59,7 @@ export const isValidAadhaarNumber = (aadhaarNumber: string): boolean => {
 export const isValidPassportNumber = (passportNumber: string): boolean => {
   return /^[A-Z0-9]{12}$/.test(passportNumber);
 };
+
 export const isValidBankName = (bankName: string): boolean => {
   const regex = /^[A-Za-z ]+$/;
   return regex.test(bankName.trim());
@@ -87,3 +88,4 @@ export const isValidTaxNo = (taxNumber: string): boolean => {
   const regex = /^[A-Z]{3,}[ -]?[0-9]{5,}$/;
   return regex.test(taxNumber.trim());
 };
+

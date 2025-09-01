@@ -28,10 +28,12 @@ export const ResourceAvailability = styled.small`
 
 export const ResourceAllocationRow = styled.div`
   display: flex;
-  gap: 10px;
-  height: 86px;
-  align-items: flex-start;
+  align-items: center;
+  height: 56px;
   margin-bottom: 20px;
+  max-width: 994px;
+  width: 100%;
+  gap: 20px;
 `;
 export const TextInput = styled.input`
   outline: none;
@@ -42,6 +44,7 @@ export const TextInput = styled.input`
   align-items: flex-start;
   gap: 10px;
   align-self: stretch;
+  height: 54px;
   width: 100%;
   color: ${(props) => props.theme.colors.blackColors.black1};
   background-color: ${(props) => props.theme.colors.backgroundColors.primary};
@@ -59,17 +62,24 @@ export const TextInput = styled.input`
 `;
 
 export const StyledResourceWrapper = styled.div`
-  width: 546px;
+  max-width: 630px;
+  margin-right: 20px;
+  width: 100%;
   height: 56px;
+  min-width: 0;
   .react-select__control {
     height: 56px;
-    min-height: 56px;
     border-radius: 10px;
     border: 1px solid #ccc;
     box-shadow: none;
+    width: 100%;
     &:hover {
       border-color: #999;
     }
+  }
+  .react-select-container {
+    width: 100%;
+    height: 100%;
   }
   .react-select__value-container {
     height: 56px;
@@ -81,39 +91,91 @@ export const StyledResourceWrapper = styled.div`
   }
 `;
 
-export const AvailabilityInput = styled.input`
-  width: 240px;
+export const AvailabilityContainer = styled.div`
+  display: flex;
+  align-items: center;
+  width: 300px;
   height: 56px;
-  padding: 8px;
   border: 1px solid #ccc;
   border-radius: 10px;
+  margin-right: 20px;
+`;
+
+export const AvailabilityInput = styled.input`
+  flex-grow: 1;
+  height: 100%;
+  padding: 8px;
+  border-radius: 10px 0 0 10px;
+  border: none;
+  outline: none;
+`;
+
+export const PercentageSign = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 16px;
+  font-weight: bold;
+  background: #f2f2f2f2;
+  height: 100%;
+  width: 40px;
 `;
 
 export const SaveButton = styled.button`
   height: 56px;
-  width: 120px;
+  max-width: 93px;
+  width: 100%;
   padding: 0 16px;
   background-color: #0056a6;
   color: #fff;
   border: none;
   border-radius: 10px;
   cursor: pointer;
+  margin-left: 10px;
 `;
 
 export const ResourceBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-top: 16px;
-  margin-left: 190px;
-  margin-bottom: 30px;
-  width: 900px;
+  align-items: center;
+  gap: 8px;
 `;
 
 export const ResourceLabel = styled.label`
+  color: #111827;
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
   font-size: 14px;
-  font-weight: 500;
-  color: #333;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+
+  &.ManageResource {
+    border: 1px solid #e9eaec;
+    border-radius: 10px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 60%;
+    span {
+      margin: 30px;
+    }
+  }
+  .arrow {
+    font-size: 14px;
+    transition: transform 0.2s ease;
+    display: inline-block;
+    margin-left: 8px;
+    display: inline-block;
+    transition: transform 0.2s ease;
+    transform: rotate(-90deg);
+  }
+  .arrow.open {
+    transform: rotate(90deg);
+  }
 `;
 
 export const NameBubbleListContainer = styled.div`
@@ -125,16 +187,60 @@ export const NameBubbleListContainer = styled.div`
   background-color: white;
   width: 100%;
   flex-wrap: wrap;
+  &.manageResourceList {
+    border: none;
+    width: 60%;
+  }
 `;
 
 export const NameBubble = styled.div`
   padding: 6px 12px;
-  border-radius: 20px;
-  background-color: #f3f3f3;
   color: #333;
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 95%;
+  height: 32px;
+  border-bottom-width: 1px;
+  border-bottom: 1px solid #f1f2f4;
+
+  .percentageAvailability {
+    display: flex;
+    gap: 10px;
+  }
+  .availability {
+    display: flex;
+    align-items: center;
+    font-family: Nunito;
+    font-weight: 500px;
+    font-style: Medium;
+    font-size: 10px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    color: #11182766;
+    border: 1px solid #f8f8f8;
+    border-radius: 10px;
+    border-width: 1px;
+    padding: 5px 14px 5px 14px;
+    gap: 10px;
+  }
+  .remove-btn {
+    margin-left: 4px;
+    background: transparent;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: #005792;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: red;
+    }
+  }
 `;
 
 export const ManageAllocationContainer = styled.div`
@@ -221,11 +327,12 @@ export const RightSectionDiv = styled.div`
   height: 424px;
   gap: 16px;
   padding: 16px;
-  border: 1px solid #f1f2f4;
+  border: 1px solid ${(props) => props.theme.colors.grayColors.gray10};
+  color: ${(props) => props.theme.colors.blackColors.black7};
+  background: ${(props) => props.theme.colors.blackColors.white6};
   align-items: flex-start;
   justify-content: flex-start;
   word-wrap: break-word;
-  background-color: #ffffff;
 `;
 
 export const ProjectSeactionHeading = styled.div`
@@ -251,7 +358,7 @@ export const RightSectionHeading = styled.div`
   leading-trim: NONE;
   line-height: 160%;
   letter-spacing: 0px;
-  color: rgba(17, 24, 39, 1);
+  color: ${(props) => props.theme.colors.blackColors.black7};
   margin-bottom: 20px;
 `;
 

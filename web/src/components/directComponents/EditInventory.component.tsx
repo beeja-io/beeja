@@ -18,6 +18,7 @@ import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import Calendar from '../reusableComponents/Calendar.component';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type EditInventoryFormProps = {
   initialFormData: DeviceDetails; // Initial data to populate the form
@@ -117,27 +118,164 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
 
   const handleSubmitData = async (event: { preventDefault: () => void }) => {
     event.preventDefault();
-    setIsResponseLoading(true);
-    try {
-      await putInventory(initialFormData.id, deviceToUpdate);
-      handleSuccessMessage();
-      handleClose();
-      updateInventoryList();
-    } catch (error) {
+
+    if (initialFormData) {
+      const errorMessages = [];
+
       if (
-        axios.isAxiosError(error) &&
-        error.response?.data.startsWith('Product ID already exists')
+        initialFormData.device === undefined ||
+        initialFormData.device === null ||
+        deviceToUpdate.device === ''
       ) {
-        setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
-      } else {
-        setErrorMessage('INVENTORY_NOT_UPLOADED');
+        errorMessages.push('Device');
       }
-      setShowErrorMessage(true);
-    } finally {
-      setIsResponseLoading(false);
+
+      if (
+        initialFormData.type === undefined ||
+        initialFormData.type === null ||
+        deviceToUpdate.type === ''
+      ) {
+        errorMessages.push('Type');
+      }
+
+      if (
+        initialFormData.specifications === undefined ||
+        initialFormData.specifications === null ||
+        deviceToUpdate.specifications === ''
+      ) {
+        errorMessages.push('Specifications');
+      }
+
+      if (
+        initialFormData.availability === undefined ||
+        initialFormData.availability === null ||
+        deviceToUpdate.availability === null ||
+        deviceToUpdate.availability === ''
+      ) {
+        errorMessages.push('Availability');
+      }
+
+      if (
+        initialFormData.dateOfPurchase === undefined ||
+        initialFormData.dateOfPurchase === null
+      ) {
+        errorMessages.push('Date of Purchase');
+      }
+
+      if (
+        initialFormData.price === undefined ||
+        initialFormData.price === null ||
+        deviceToUpdate.price === null ||
+        deviceToUpdate.price === ''
+      ) {
+        errorMessages.push('Price');
+      }
+
+      if (
+        initialFormData.provider === undefined ||
+        initialFormData.provider === null ||
+        deviceToUpdate.provider === ''
+      ) {
+        errorMessages.push('Provider');
+      }
+
+      if (
+        initialFormData.model === undefined ||
+        initialFormData.model === null ||
+        deviceToUpdate.model === ''
+      ) {
+        errorMessages.push('Model');
+      }
+
+      if (
+        initialFormData.os === undefined ||
+        initialFormData.os === null ||
+        deviceToUpdate.os === ''
+      ) {
+        errorMessages.push('OS');
+      }
+
+      if (
+        initialFormData.ram === undefined ||
+        initialFormData.ram === null ||
+        deviceToUpdate.ram === ''
+      ) {
+        errorMessages.push('RAM');
+      }
+
+      if (
+        initialFormData.productId === undefined ||
+        initialFormData.productId === null ||
+        deviceToUpdate.productId === ''
+      ) {
+        errorMessages.push('Product ID/Serial No.');
+      }
+
+      if (errorMessages.length > 0) {
+        handleShowErrorMessage();
+        setErrorMessage('Please fill ' + errorMessages);
+        return;
+      }
+
+      const formData = new FormData();
+
+      formData.append('device', initialFormData.device);
+      formData.append('type', initialFormData.type);
+      formData.append('specifications', initialFormData.specifications ?? '');
+      formData.append('availability', initialFormData.availability);
+      formData.append(
+        'price',
+        initialFormData.price != null ? initialFormData.price.toString() : ''
+      );
+      formData.append('provider', initialFormData.provider);
+      formData.append('model', initialFormData.model);
+      formData.append('os', initialFormData.os ?? '');
+      formData.append('ram', initialFormData.ram ?? '');
+      if (initialFormData.dateOfPurchase != null) {
+        formData.append(
+          'dateOfPurchase',
+          initialFormData.dateOfPurchase.toString()
+        );
+      }
+      formData.append('productId', initialFormData.productId);
+      formData.append('comments', initialFormData.comments ?? '');
+
+      setIsResponseLoading(true);
+
+      const price = Number(deviceToUpdate.price);
+
+      if (!initialFormData.price || price <= 0) {
+        setErrorMessage('UPDATED_PRICE_MUST_BE_GREATER_THAN_ZERO');
+        handleShowErrorMessage();
+        setIsResponseLoading(false);
+        return;
+      }
+
+      try {
+        await putInventory(initialFormData.id, deviceToUpdate);
+        handleSuccessMessage();
+        handleClose();
+        updateInventoryList();
+      } catch (error) {
+        if (
+          axios.isAxiosError(error) &&
+          error.response?.data.message === '[value must be greater than 0]'
+        ) {
+          setErrorMessage('UPDATED_PRICE_MUST_BE_GREATER_THAN_ZERO');
+        } else if (
+          axios.isAxiosError(error) &&
+          error.response?.data.message.startsWith('Product ID already exists')
+        ) {
+          setErrorMessage('PRODUCT_ID_ALREADY_EXIST');
+        } else {
+          setErrorMessage('INVENTORY_NOT_UPLOADED');
+        }
+        setShowErrorMessage(true);
+      } finally {
+        setIsResponseLoading(false);
+      }
     }
   };
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -172,22 +310,25 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 {t('DEVICE')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+
+              <DropdownMenu
                 name="device"
+                className=""
                 value={formData.device}
-                onChange={handleChange}
-                required
-              >
-                <option value="">{t('SELECT_DEVICE')}</option>
-                {[...(deviceTypes?.values || [])]
-                  .sort((a, b) => a.value.localeCompare(b.value))
-                  .map((device) => (
-                    <option key={device.value} value={device.value}>
-                      {device.description || device.value}
-                    </option>
-                  ))}
-              </select>
+                required={true}
+                onChange={(val) =>
+                  handleChange({
+                    target: { value: val },
+                  } as React.ChangeEvent<HTMLSelectElement>)
+                }
+                options={[
+                  { label: t('SELECT_DEVICE'), value: '' },
+                  ...(deviceTypes?.values?.map((device) => ({
+                    label: device.description || device.value,
+                    value: device.value,
+                  })) ?? []),
+                ]}
+              />
             </InputLabelContainer>
 
             {formData.device === 'Accessories' && (
@@ -196,20 +337,25 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                   {t('ACCESSORY_TYPE')}
                   <ValidationText className="star">*</ValidationText>
                 </label>
-                <select
-                  className="selectoption largeSelectOption"
+                <DropdownMenu
                   name="accessoryType"
+                  className="largeContainerExp"
                   value={formData.accessoryType}
-                  onChange={handleChange}
                   required
-                >
-                  <option value="">{t('SELECT_ACCESSORY_TYPE')}</option>
-                  <option value="CABLE">Cable</option>
-                  <option value="HEADSET">Headset</option>
-                  <option value="KEYBOARD">Keyboard</option>
-                  <option value="MOUSE">Mouse</option>
-                  <option value="USB_STICKS">USB sticks</option>
-                </select>
+                  onChange={(val) =>
+                    handleChange({
+                      target: { value: val },
+                    } as React.ChangeEvent<HTMLSelectElement>)
+                  }
+                  options={[
+                    { label: t('SELECT_ACCESSORY_TYPE'), value: '' },
+                    { label: 'Keyboard', value: 'KEYBOARD' },
+                    { label: 'Cable', value: 'CABLE' },
+                    { label: 'Headset', value: 'HEADSET' },
+                    { label: 'Mouse', value: 'MOUSE' },
+                    { label: 'USB sticks', value: 'USB_STICKS' },
+                  ]}
+                />
               </InputLabelContainer>
             )}
             <InputLabelContainer>
@@ -217,17 +363,22 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 {t('TYPE')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+              <DropdownMenu
                 name="type"
+                className=""
                 value={formData.type}
-                onChange={handleChange}
-                required
-              >
-                <option value="">{t('SELECT_TYPE')}</option>
-                <option value="NEW">{t('NEW')}</option>
-                <option value="OLD">{t('OLD')}</option>
-              </select>
+                required={true}
+                onChange={(val) =>
+                  handleChange({
+                    target: { value: val },
+                  } as React.ChangeEvent<HTMLSelectElement>)
+                }
+                options={[
+                  { label: t('SELECT_TYPE'), value: '' },
+                  { label: t('NEW'), value: 'NEW' },
+                  { label: t('OLD'), value: 'OLD' },
+                ]}
+              />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
@@ -241,7 +392,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 value={formData.specifications}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -249,17 +399,22 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 {t('AVAILABILITY')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+              <DropdownMenu
                 name="availability"
+                className=""
+                required={true}
                 value={formData.availability}
-                onChange={handleChange}
-                required
-              >
-                <option value="">{t('SELECT_AVAILABILITY')}</option>
-                <option value="NO">{t('NO')}</option>
-                <option value="YES">{t('YES')}</option>
-              </select>
+                onChange={(val) =>
+                  handleChange({
+                    target: { value: val },
+                  } as React.ChangeEvent<HTMLSelectElement>)
+                }
+                options={[
+                  { label: t('SELECT_AVAILABILITY'), value: '' },
+                  { label: t('YES'), value: 'YES' },
+                  { label: t('NO'), value: 'NO' },
+                ]}
+              />
             </InputLabelContainer>
 
             <InputLabelContainer>
@@ -274,7 +429,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                   name="dateOfPurchase"
                   value={dateOfPurchase ? formatDate(dateOfPurchase) : ''}
                   onFocus={() => handleCalenderOpen(true)}
-                  required
                   autoComplete="off"
                 />
                 <span
@@ -316,7 +470,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 value={formData.price}
                 onChange={handleChange}
                 placeholder={t('ENTER_PRICE')}
-                required
                 autoComplete="off"
                 onKeyDown={(event) => {
                   const allowedCharacters = /^[0-9.]+$/;
@@ -348,7 +501,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 value={formData.provider}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -363,7 +515,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 value={formData.model}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
@@ -455,7 +606,6 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 className="largeInput"
                 value={formData.productId}
                 onChange={handleChange}
-                required
               />
             </InputLabelContainer>
             <InputLabelContainer>
