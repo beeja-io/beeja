@@ -10,8 +10,11 @@ import com.beeja.api.accounts.utils.BuildErrorMessage;
 import com.beeja.api.accounts.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
+@Slf4j
 public class FeatureToggleServiceImpl implements FeatureToggleService {
 
   @Autowired FeatureToggleRepository featureToggleRepository;
@@ -33,7 +36,7 @@ public class FeatureToggleServiceImpl implements FeatureToggleService {
   @Override
   public FeatureToggle updateFeatureToggleByOrganizationId(
       String organizationId, FeatureToggle featureToggle) throws Exception {
-
+      log.info(Constants.UPDATE_FEATURE_TOGGLE, organizationId);
     FeatureToggle optionalFeatureToggle =
         featureToggleRepository.findByOrganizationId(organizationId);
     if (optionalFeatureToggle == null) {
