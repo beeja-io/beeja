@@ -199,7 +199,7 @@ const AllRoutes = () => {
         element={
           <CustomRoute
             permission={FEATURE_TOGGLES_MODULE.UPDATE_FEATURE}
-            featureToggle={EFeatureToggles.EMPLOYEE_MANAGEMENT}
+            featureToggle={EFeatureToggles.EMPLOYEES_MANAGEMENT}
           >
             <FeatureToggleScreen />
           </CustomRoute>

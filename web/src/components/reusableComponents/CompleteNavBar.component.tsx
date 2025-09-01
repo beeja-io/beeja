@@ -269,7 +269,7 @@ const CompleteNavBar = () => {
                   ) &&
                     hasFeature(
                       featureToggles.featureToggles,
-                      EFeatureToggles.ORGANIZATION_SETTINGS
+                      EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT
                     ) && (
                       <ListItem
                         isSideBarOpen={sidebarOpen}

@@ -471,6 +471,7 @@ public class ContractServiceImpl implements ContractService {
             );
         }
 
+    }
     @Override
     public List<ContractResponsesDTO> getContractsByClientId(String clientId) {
         String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
