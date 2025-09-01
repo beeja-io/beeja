@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../../styles/CommonStyles.style';
 import {
   FileUploadField,
@@ -423,10 +423,11 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       });
     }
   };
+  type InputLikeEvent =
+    | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    | { currentTarget: { name: string; value: string } };
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: InputLikeEvent) => {
     const fieldName = e.currentTarget.name;
     const fieldValue = e.currentTarget.value;
 
@@ -485,9 +486,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       prev.filter((id) => id !== fileId)
     );
   };
-  const handleUpdateChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+
+  const handleUpdateChange = (e: InputLikeEvent) => {
     const fieldName = e.currentTarget.name;
     const fieldValue = e.currentTarget.value;
 
@@ -705,22 +705,20 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const [categories, setCategories] = useState<string>('');
   const [types, setTypes] = useState<string>('');
 
-  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault();
-    const selectedDepartment = e.target.value;
-    setDepartments(selectedDepartment);
+  const handleDepartmentChange = ({
+    value,
+  }: {
+    name: string;
+    value: string;
+  }) => {
+    setDepartments(value);
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault();
-    const selectedCategory = e.target.value;
-    setCategories(selectedCategory);
+  const handleCategoryChange = ({ value }: { name: string; value: string }) => {
+    setCategories(value);
   };
-
-  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault();
-    const selectedType = e.target.value;
-    setTypes(selectedType);
+  const handleTypeChange = ({ value }: { name: string; value: string }) => {
+    setTypes(value);
   };
 
   // changing mode from props
@@ -899,30 +897,28 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
               name="department"
               id="department"
               className="largeContainerExp"
-              value={
-                modeOfModal === 'preview' && props.expense?.department === null
-                  ? '-'
-                  : departments
-              }
+              value={departments || ''}
               disabled={modeOfModal === 'preview'}
-              onChange={(e) => {
-                const syntheticvalue = {
-                  target: {
-                    name: 'department',
-                    value: e,
-                  },
-                } as React.ChangeEvent<HTMLSelectElement>;
-                handleDepartmentChange(syntheticvalue);
+              onChange={(val) => {
+                handleDepartmentChange({
+                  name: 'department',
+                  value: val ?? '',
+                });
+
                 props.mode === 'create'
-                  ? handleChange(syntheticvalue)
-                  : handleUpdateChange(syntheticvalue);
+                  ? handleChange({
+                      currentTarget: { name: 'department', value: val ?? '' },
+                    })
+                  : handleUpdateChange({
+                      currentTarget: { name: 'department', value: val ?? '' },
+                    });
               }}
               options={
                 modeOfModal === 'preview' && props.expense?.department === null
                   ? [{ label: '-', value: '-' }]
                   : [
                       { label: t('SELECT_DEPARTMENT'), value: '' },
-                      ...props.expenseDepartments.values.map(
+                      ...(props.expenseDepartments?.values || []).map(
                         (internalValue) => ({
                           label: internalValue.value,
                           value: internalValue.value,
@@ -963,18 +959,16 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                     value: type.value,
                   })),
                 ]}
-                onChange={(e) => {
-                  const syntheticEvent = {
-                    target: {
-                      name: 'type',
-                      value: e,
-                    },
-                  } as React.ChangeEvent<HTMLSelectElement>;
+                onChange={(val) => {
+                  handleTypeChange({ name: 'type', value: val ?? '' });
 
-                  handleTypeChange(syntheticEvent);
                   props.mode === 'create'
-                    ? handleChange(syntheticEvent)
-                    : handleUpdateChange(syntheticEvent);
+                    ? handleChange({
+                        currentTarget: { name: 'type', value: val ?? '' },
+                      })
+                    : handleUpdateChange({
+                        currentTarget: { name: 'type', value: val ?? '' },
+                      });
                 }}
               />
             )}
@@ -996,17 +990,20 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 (newExpense && newExpense.modeOfPayment) ||
                 ''
               }
-              onChange={(e) => {
-                const syntheticEvent = {
-                  target: {
-                    name: 'modeOfPayment',
-                    value: e,
-                  },
-                } as React.ChangeEvent<HTMLSelectElement>;
-
+              onChange={(val) => {
                 props.mode === 'create'
-                  ? handleChange(syntheticEvent)
-                  : handleUpdateChange(syntheticEvent);
+                  ? handleChange({
+                      currentTarget: {
+                        name: 'modeOfPayment',
+                        value: val ?? '',
+                      },
+                    })
+                  : handleUpdateChange({
+                      currentTarget: {
+                        name: 'modeOfPayment',
+                        value: val ?? '',
+                      },
+                    });
               }}
               disabled={modeOfModal === 'preview'}
               options={[
@@ -1035,17 +1032,20 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                   ? props.expense?.paymentMadeBy || ''
                   : ''
               }
-              onChange={(e) => {
-                const syntheticEvent = {
-                  target: {
-                    name: 'paymentMadeBy',
-                    value: e,
-                  },
-                } as React.ChangeEvent<HTMLSelectElement>;
-
+              onChange={(val) => {
                 props.mode === 'create'
-                  ? handleChange(syntheticEvent)
-                  : handleUpdateChange(syntheticEvent);
+                  ? handleChange({
+                      currentTarget: {
+                        name: 'paymentMadeBy',
+                        value: val ?? '',
+                      },
+                    })
+                  : handleUpdateChange({
+                      currentTarget: {
+                        name: 'paymentMadeBy',
+                        value: val ?? '',
+                      },
+                    });
               }}
               disabled={modeOfModal === 'preview'}
               options={[
@@ -1199,18 +1199,16 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                   ? '-'
                   : categories
               }
-              onChange={(e) => {
-                const syntheticEvent = {
-                  target: {
-                    name: 'category',
-                    value: e,
-                  },
-                } as React.ChangeEvent<HTMLSelectElement>;
+              onChange={(val) => {
+                handleCategoryChange({ name: 'category', value: val ?? '' });
 
-                handleCategoryChange(syntheticEvent);
                 props.mode === 'create'
-                  ? handleChange(syntheticEvent)
-                  : handleUpdateChange(syntheticEvent);
+                  ? handleChange({
+                      currentTarget: { name: 'category', value: val ?? '' },
+                    })
+                  : handleUpdateChange({
+                      currentTarget: { name: 'category', value: val ?? '' },
+                    });
               }}
               disabled={modeOfModal === 'preview'}
               options={
