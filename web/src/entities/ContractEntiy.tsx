@@ -5,10 +5,11 @@ enum ContractStatus {
   COMPLETED = 'COMPLETED',
 }
 
-type Resources = {
-  value: string;
-  label: string;
-  availability?: number;
+export type RawProjectResource = {
+  employeeId: string;
+  name: string;
+  contractName: string | null;
+  allocationPercentage: number;
 };
 
 export interface ContractDetails {
@@ -20,7 +21,6 @@ export interface ContractDetails {
   status: ContractStatus;
   projectManagerIds: string[];
   projectManagerNames: string[];
-  Resources: Resources[];
   billingType?: string;
   billingCurrency?: string;
   contractValue?: string;
@@ -29,4 +29,5 @@ export interface ContractDetails {
   startDate: string;
   endDate: string;
   projectManagers: string[];
+  rawProjectResources: RawProjectResource[];
 }

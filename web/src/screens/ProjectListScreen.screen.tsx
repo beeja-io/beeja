@@ -70,24 +70,24 @@ const ProjectList = ({
     <>
       <StyledDiv>
         <ExpenseHeading>
-          <ExpenseTitle>{t('All Projects')}</ExpenseTitle>
+          <ExpenseTitle>{t('All_Projects')}</ExpenseTitle>
         </ExpenseHeading>
 
         <TableListContainer style={{ marginTop: 0 }}>
           {!isLoading && projectLists.length === 0 ? (
             <ZeroEntriesFound
-              heading="No Projects Found"
-              message="You Don't Have Any Projects"
+              heading="No_Projects_Found"
+              message="You_Don't_Have_Any_Projects"
             />
           ) : (
             <TableList>
               <TableHead>
                 <tr>
-                  <th>{t('Project ID')}</th>
-                  <th>{t('Project Name')}</th>
-                  <th>{t('Client Name')}</th>
-                  <th>{t('Project Manager(s)')}</th>
-                  <th>{t('Status')}</th>
+                  <th>{t('Project_ID')}</th>
+                  <th>{t('Project_Name')}</th>
+                  <th>{t('Client_Name')}</th>
+                  <th>{t('Project_Manager(s)')}</th>
+                  <th>{t('STATUS')}</th>
                   <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
@@ -107,61 +107,61 @@ const ProjectList = ({
                         <td
                           onClick={() =>
                             handleProjectClick(
-                              project.projectId ?? '',
-                              project.clientId ?? ''
+                              project?.projectId ?? '',
+                              project?.clientId ?? ''
                             )
                           }
                         >
-                          {project.projectId ?? '-'}
+                          {project?.projectId ?? '-'}
                         </td>
                         <td
                           onClick={() =>
                             handleProjectClick(
-                              project.projectId ?? '',
-                              project.clientId ?? ''
+                              project?.projectId ?? '',
+                              project?.clientId ?? ''
                             )
                           }
                         >
-                          {project.name
+                          {project?.name
                             ? capitalizeFirstLetter(project.name)
                             : '-'}
                         </td>
                         <td
                           onClick={() =>
                             handleProjectClick(
-                              project.projectId ?? '',
-                              project.clientId ?? ''
+                              project?.projectId ?? '',
+                              project?.clientId ?? ''
                             )
                           }
                         >
-                          {project.clientName
-                            ? capitalizeFirstLetter(project.clientName)
+                          {project?.clientName
+                            ? capitalizeFirstLetter(project?.clientName)
                             : '-'}
                         </td>
                         <td
                           onClick={() =>
                             handleProjectClick(
-                              project.projectId ?? '',
-                              project.clientId ?? ''
+                              project?.projectId ?? '',
+                              project?.clientId ?? ''
                             )
                           }
                         >
-                          {project.projectManagerNames &&
-                            project.projectManagerNames[0]}
+                          {project?.projectManagerNames &&
+                            project?.projectManagerNames[0]}
                         </td>
                         <td>
-                          {project.projectStatus ? (
+                          {project?.projectStatus ? (
                             <StatusDropdown
-                              value={project.projectStatus}
+                              value={project?.projectStatus}
                               onChange={(newStatus) => {
                                 toast.promise(
                                   updateProjectStatus(
-                                    project.projectId,
+                                    project?.projectId,
                                     newStatus as ProjectStatus
                                   ).then(() => {
                                     setProjectList((prevList) =>
-                                      prevList.map((p) =>
-                                        p.projectId === project.projectId
+                                      prevList?.map((p) =>
+                                        p?.projectId === project?.projectId
                                           ? {
                                               ...p,
                                               projectStatus:

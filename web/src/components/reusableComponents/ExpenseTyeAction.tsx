@@ -60,7 +60,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
 
   return (
     <ActionContainer className="dropdown-container" ref={dropdownRef}>
-      <ActionMenu onClick={openDropdown}>
+      <ActionMenu onClick={openDropdown} className="action-align">
         <ActionIcon />
       </ActionMenu>
       {isOpen && (

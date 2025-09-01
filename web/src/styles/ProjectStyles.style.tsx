@@ -47,7 +47,7 @@ export const InfoText = styled.div`
   .name {
     font-size: 14px;
     font-weight: 600;
-    color: #111827 !important;
+    color: ${(props) => props.theme.colors.blackColors.black7};
 
     font-family: Nunito;
     font-weight: 600;
@@ -84,7 +84,7 @@ export const RightSectionDiv = styled.div`
 export const IconWrapper = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   margin-top: 12px;
   svg {
     width: 19px;
@@ -93,12 +93,13 @@ export const IconWrapper = styled.div`
 `;
 
 export const FormContainer = styled.div`
-  background: #fff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
+  border: 1px solid ${(props) => props.theme.colors.blackColors.white2};
   padding: 24px 32px;
   border-radius: 10px;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.08);
   width: 100%;
-  margin: 10px auto;
+  margin: 10px 10px;
 `;
 
 export const SectionTitle = styled.h2`
@@ -109,19 +110,14 @@ export const SectionTitle = styled.h2`
   leading-trim: NONE;
   line-height: 150%;
   letter-spacing: 0px;
+  margin-bottom: 25px;
+  height: 27px;
+  angle: 0 deg;
+  opacity: 1;
+  left: 60.09px;
   color: #005792;
-  font-size: 18px;
-  font-weight: 600;
-  margin: 40px 0 28px 190px;
-`;
-
-export const FormGrid = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto auto;
-  gap: 14px 22px;
-  max-width: 900px;
-  margin: 0 auto;
+  padding-left: 20px;
+  gap: 32px;
 `;
 
 export const FormField = styled.div`
@@ -131,9 +127,9 @@ export const FormField = styled.div`
 
 export const Label = styled.label`
   font-size: 14px;
-  font-weight: 500;
-  color: #1e1e1e;
-  margin-bottom: 8px;
+  font-weight: 600;
+  height: 24px;
+  color: ${(props) => props.theme.colors.blackColors.black5};
 `;
 
 export const RequiredAsterisk = styled.span`
@@ -143,7 +139,7 @@ export const RequiredAsterisk = styled.span`
 
 export const Input = styled.input`
   width: 433px;
-  height: 53px;
+  height: 54px;
   padding: 10px 14px;
   border: 1px solid #dcdcdc;
   border-radius: 8px;
@@ -151,31 +147,6 @@ export const Input = styled.input`
   &:focus {
     border-color: #007bff;
     outline: none;
-  }
-`;
-
-export const SelectDropDown = styled.select`
-  width: 433px;
-  height: 53px;
-  padding: 10px 14px;
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
-  font-size: 14px;
-  background-color: white;
-  max-width: 100%;
-  appearance: auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  cursor: pointer;
-
-  &:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-
-  &::-webkit-scrollbar {
-    display: none;
   }
 `;
 
@@ -184,16 +155,34 @@ export const SelectWrapper = styled.div`
   border-radius: 8px;
 
   .react-select__control {
-    min-height: 53px;
+    min-height: 54px;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
     box-shadow: none;
   }
 `;
 
+export const RightSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 250px;
+  background: ${(props) => props.theme.colors.blackColors.white6};
+  width: 315px;
+
+  angle: 0 deg;
+  opacity: 1;
+  padding-top: 36px;
+  padding-right: 24px;
+  padding-bottom: 36px;
+  padding-left: 24px;
+  gap: 32px;
+  border-radius: 16px;
+`;
+
 export const TextArea = styled.textarea`
-  width: 433px;
-  height: 53px;
+  max-width: 491px;
+  height: 54px;
   padding: 10px 14px;
   border: 1px solid #dcdcdc;
   border-radius: 8px;
@@ -238,25 +227,34 @@ export const SubmitButton = styled.button`
 `;
 
 export const TextInput = styled.input`
-  width: 433px;
-  height: 53px;
+  width: 100%;
+  max-width: 491px;
+  height: 54px;
   padding: 10px 14px;
-  padding-right: 40px; /* space for calendar icon */
-  border: 1px solid #dcdcdc;
+  padding-right: 40px;
+  border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 8px;
   font-size: 14px;
   box-sizing: border-box;
+  color: ${(props) => props.theme.colors.blackColors.black1};
+  background-color: ${(props) => props.theme.colors.backgroundColors.primary};
 
   &:focus {
     border-color: #007bff;
     outline: none;
   }
+  .selectoption.largeSelectOption {
+    width: 100%;
+    max-width: 491px;
+    box-sizing: border-box;
+  }
 `;
 
 export const DateInputWrapper = styled.div`
   position: relative;
-  width: 400px;
-  height: 53px;
+  max-width: 491px;
+  width: 100%;
+  height: 54px;
 
   .iconArea {
     position: absolute;
@@ -296,4 +294,210 @@ export const InfoRow = styled.div`
 
 export const StyledStatusDropdown = styled(StatusDropdown)`
   max-width: 150px;
+`;
+
+export const InputLabelContainer = styled.div<{ Width?: string }>`
+  flex: 1;
+  max-width: 491px;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  label {
+    font-family: Nunito;
+    font-weight: 600;
+    font-style: SemiBold;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+  }
+  input {
+    cursor: text;
+  }
+  .selectoption {
+    outline: none;
+    border-radius: 8px;
+    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+    color: ${(props) => props.theme.colors.blackColors.black1};
+    display: flex;
+    padding: 16px 20px;
+    gap: 10px;
+    align-items: flex-start;
+    justify-content: space;
+    align-self: stretch;
+    width: ${(props) => (props.Width ? props.Width : '100%')};
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+  }
+  .tax-container {
+    margin-right: 140px;
+  }
+  .selectoption.largeSelectOption {
+    max-width: 491px;
+    box-sizing: border-box;
+    height: 54px;
+    background: ${(props) => props.theme.colors.blackColors.white6};
+  }
+
+  .react-select__control {
+    min-height: 54px !important;
+    border-radius: 8px;
+    background: ${(props) => props.theme.colors.blackColors.white6};
+    color: ${(props) => props.theme.colors.blackColors.black1};
+  }
+
+  .react-select__menu {
+    background: ${(props) => props.theme.colors.blackColors.white6};
+    border-radius: 8px;
+    z-index: 1000;
+  }
+
+  .react-select__option {
+    background: ${(props) => props.theme.colors.blackColors.white6} !important;
+    color: ${(props) => props.theme.colors.blackColors.black1} !important;
+    padding: 10px;
+    cursor: pointer;
+  }
+  span.calendarField {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  span.calendarField .iconArea {
+    position: absolute;
+    right: 20px;
+  }
+  div.calendarSpace {
+    justify-self: flex-start;
+    align-self: flex-start;
+    position: absolute;
+    left: 0;
+    top: 55px;
+    z-index: 1;
+  }
+
+  &.fileInputSelected {
+    .selectedFilesMain {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      max-width: 491px;
+      column-gap: 10px;
+      font-size: 12px;
+    }
+
+    .redPointer {
+      cursor: pointer;
+    }
+  }
+
+  .fileFormatText {
+    color: #687588;
+    font-size: 12px;
+  }
+
+  .grayText {
+    color: #687588;
+    font-size: 12px;
+  }
+  select:disabled {
+    background-color: ${(props) => props.theme.colors.backgroundColors.primary};
+    cursor: not-allowed;
+  }
+  input:disabled {
+    background-color: ${(props) => props.theme.colors.blackColors.white6};
+  }
+  textarea:disabled {
+    background-color: ${(props) => props.theme.colors.blackColors.white6};
+
+    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+  }
+`;
+
+export const FormInputsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  flex-wrap: wrap;
+
+  @media screen and (max-width: 1050px) {
+    flex-direction: column;
+    gap: 24px;
+  }
+`;
+
+export const AddFormMainContainer = styled.form`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+
+  .formInputs {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+
+  .formButtons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+    margin: 35px;
+  }
+
+  .submitButton {
+    background-color: #005792;
+    color: #fff;
+    border: none;
+
+    display: flex;
+    width: 162px;
+    height: 56px;
+    padding: 18px 24px;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+  }
+`;
+
+export const ColumnWrapper = styled.div`
+  flex: 1 1 0;
+  max-width: 491px;
+  width: 100%;
+`;
+
+export const SectionContainer = styled.div`
+  width: 100%;
+  margin-bottom: 15px;
+
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #005792;
+    margin-bottom: 14px;
+    max-width: 390px;
+
+    height: 27.1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    @media screen and (max-width: 1490px) {
+      justify-content: flex-start;
+    }
+  }
 `;

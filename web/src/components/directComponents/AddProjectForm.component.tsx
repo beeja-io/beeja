@@ -1,6 +1,5 @@
 import { t } from 'i18next';
 import React, { useEffect, useRef, useState } from 'react';
-import Select from 'react-select';
 import { Client } from '../../entities/ClientEntity.tsx';
 import { Employee } from '../../entities/ProjectEntity.tsx';
 import {
@@ -11,23 +10,24 @@ import {
 } from '../../service/axiosInstance.tsx';
 import { Button } from '../../styles/CommonStyles.style';
 import {
-  ButtonContainer,
+  AddFormMainContainer,
+  ColumnWrapper,
   DateInputWrapper,
   FormContainer,
-  FormField,
-  FormGrid,
-  Input,
-  Label,
-  RequiredAsterisk,
-  SectionTitle,
-  SelectDropDown,
-  SelectWrapper,
+  FormInputsContainer,
+  InputLabelContainer,
+  SectionContainer,
   TextInput,
 } from '../../styles/ProjectStyles.style.tsx';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import SpinAnimation from '../loaders/SprinAnimation.loader.tsx';
 import Calendar from '../reusableComponents/Calendar.component';
 import { toast } from 'sonner';
+import { ValidationText } from '../../styles/DocumentTabStyles.style.tsx';
+import CenterModal from '../reusableComponents/CenterModal.component.tsx';
+import DropdownMenu, {
+  MultiSelectDropdown,
+} from '../reusableComponents/DropDownMenu.component.tsx';
 
 interface AddProjectFormProps {
   handleClose: () => void;
@@ -78,6 +78,11 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   const [clientOptions, setClientOptions] = useState<OptionType[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+
+  const handleDiscardModalToggle = () => {
+    setIsDiscardModalOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     getResourceManager()
@@ -121,7 +126,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
         }));
       }
     }
-  }, []);
+  }, [initialData]);
 
   const calendarRef = useRef<HTMLDivElement>(null);
 
@@ -182,170 +187,202 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
 
   return (
     <FormContainer>
-      <SectionTitle>{t('Project Details')}</SectionTitle>
-      {isSuccess && <SpinAnimation />}
-      <form onSubmit={handleSubmit}>
-        <FormGrid>
-          <FormField>
-            <Label htmlFor="name">
-              {t('Project Name')}
-              <RequiredAsterisk>*</RequiredAsterisk>
-            </Label>
-            <Input
-              type="text"
-              id="name"
-              name="name"
-              value={projectFormData.name}
-              onChange={handleChange}
-              placeholder={t('Enter Project Name')}
-              required
-            />
-          </FormField>
-          <FormField>
-            <Label htmlFor="clientName">
-              {t('Client Name')}
-              <RequiredAsterisk>*</RequiredAsterisk>
-            </Label>
-            <SelectDropDown
-              name="clientName"
-              value={projectFormData.clientId}
-              onChange={(e) => {
-                const selectedValue = e.target.value;
-                const selectedOption = clientOptions.find(
-                  (opt) => opt.value === selectedValue
-                );
-                if (selectedOption) {
-                  setProjectFormData((prev) => ({
-                    ...prev,
-                    clientId: selectedOption.value,
-                    clientName: selectedOption.label,
-                  }));
-                }
-              }}
-            >
-              <option value="">Select Client</option>
-              {clientOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </SelectDropDown>
-          </FormField>
+      <>
+        {isSuccess && <SpinAnimation />}
+        <AddFormMainContainer onSubmit={handleSubmit}>
+          <SectionContainer>
+            <h2>{t('Project_Details')}</h2>
+          </SectionContainer>
+          <FormInputsContainer>
+            <ColumnWrapper>
+              <InputLabelContainer>
+                <label>
+                  {t('Project_Name')}
+                  <ValidationText className="star">*</ValidationText>
+                </label>
+                <TextInput
+                  type="text"
+                  name="name"
+                  placeholder={t('Enter_Project_Name')}
+                  className="largeInput"
+                  value={projectFormData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </InputLabelContainer>
 
-          <SelectWrapper>
-            <FormField>
-              <Label>
-                {t('Project Managers')}
-                <RequiredAsterisk>*</RequiredAsterisk>
-              </Label>
-              <Select
-                isMulti
-                name="projectManagers"
-                value={managerOptions.filter((option) =>
-                  projectFormData.projectManagers.includes(option.value)
-                )}
-                options={managerOptions}
-                onChange={(selected) => {
-                  const values = selected.map((opt) => opt.value);
-                  setProjectFormData((prev) => ({
-                    ...prev,
-                    projectManagers: values,
-                  }));
-                }}
-                classNamePrefix="react-select"
-                placeholder={t('Select Project Managers')}
-              />
-            </FormField>
-          </SelectWrapper>
+              <InputLabelContainer>
+                <label>
+                  {t('Project_Managers')}
+                  <ValidationText className="star">*</ValidationText>
+                </label>
+                <MultiSelectDropdown
+                  options={managerOptions}
+                  value={managerOptions.filter((option) =>
+                    projectFormData.projectManagers.includes(option.value)
+                  )}
+                  onChange={(selected) => {
+                    const values = [...selected]
+                      .sort((a, b) => a.value.localeCompare(b.value))
+                      .map((opt) => opt.value);
 
-          <SelectWrapper>
-            <FormField>
-              <Label>
-                {t('Resources')}
-                <RequiredAsterisk>*</RequiredAsterisk>
-              </Label>
-              <Select
-                isMulti
-                name="resources"
-                value={resourceOptions.filter((option) =>
-                  projectFormData.projectResources.includes(option.value)
-                )}
-                options={resourceOptions}
-                onChange={(selected) => {
-                  const values = selected.map((opt) => opt.value);
-                  setProjectFormData((prev) => ({
-                    ...prev,
-                    projectResources: values,
-                  }));
-                }}
-                classNamePrefix="react-select"
-                placeholder={t('Select Resources')}
-              />
-            </FormField>
-          </SelectWrapper>
+                    setProjectFormData((prev) => ({
+                      ...prev,
+                      projectManagers: values,
+                    }));
+                  }}
+                  placeholder={t('Select Project Managers')}
+                  searchable={true}
+                />
+              </InputLabelContainer>
 
-          <FormField style={{ gridColumn: '1 / span 1' }}>
-            <Label htmlFor="description">{t('Description')}</Label>
-            <Input
-              id="description"
-              name="description"
-              value={projectFormData.description}
-              onChange={handleChange}
-              placeholder={t('Add Project Description')}
-            />
-          </FormField>
-
-          <FormField>
-            <Label htmlFor="startDate">
-              {t('Start Date')}
-              <RequiredAsterisk>*</RequiredAsterisk>
-            </Label>
-            <DateInputWrapper ref={calendarRef}>
-              <TextInput
-                type="text"
-                placeholder="Select Date"
-                name="startDate"
-                value={startDate ? formatDate(startDate) : ''}
-                onFocus={() => handleCalendarToggle(true)}
-                onClick={() => handleCalendarToggle(true)}
-                readOnly
-                autoComplete="off"
-              />
-              <span
-                className="iconArea"
-                onClick={() => handleCalendarToggle(true)}
-              >
-                <CalenderIconDark />
-              </span>
-              <div className="calendarSpace">
-                {isStartDateCalOpen && (
-                  <Calendar
-                    title="Start Date"
-                    minDate={new Date('01-01-2000')}
-                    maxDate={new Date()}
-                    selectedDate={startDate}
-                    handleDateInput={handleDateSelect}
-                    handleCalenderChange={() => {}}
+              <InputLabelContainer>
+                <label>
+                  {t('Start_Date')}
+                  <ValidationText className="star">*</ValidationText>
+                </label>
+                <DateInputWrapper ref={calendarRef}>
+                  <TextInput
+                    type="text"
+                    placeholder="Select_Date"
+                    name="startDate"
+                    value={startDate ? formatDate(startDate) : ''}
+                    onFocus={() => handleCalendarToggle(true)}
+                    onClick={() => handleCalendarToggle(true)}
+                    readOnly
+                    autoComplete="off"
                   />
-                )}
-              </div>
-            </DateInputWrapper>
-          </FormField>
-        </FormGrid>
+                  <span
+                    className="iconArea"
+                    onClick={() => handleCalendarToggle(true)}
+                  >
+                    <CalenderIconDark />
+                  </span>
+                  <div className="calendarSpace">
+                    {isStartDateCalOpen && (
+                      <Calendar
+                        title="Start Date"
+                        minDate={new Date('01-01-2000')}
+                        maxDate={new Date()}
+                        selectedDate={startDate}
+                        handleDateInput={handleDateSelect}
+                        handleCalenderChange={() => {}}
+                      />
+                    )}
+                  </div>
+                </DateInputWrapper>
+              </InputLabelContainer>
+            </ColumnWrapper>
 
-        {isSubmitting ? (
-          <SpinAnimation />
-        ) : (
-          <ButtonContainer>
-            <Button onClick={handleClose} type="button">
-              {t('Cancel')}
-            </Button>
-            <Button className="submit" type="submit">
-              {isEditMode ? t('Update') : t('Add')}
-            </Button>
-          </ButtonContainer>
-        )}
-      </form>
+            <ColumnWrapper>
+              <InputLabelContainer>
+                <label>
+                  {t('Client_Name')}
+                  <ValidationText className="star">*</ValidationText>
+                </label>
+                <DropdownMenu
+                  label="Select Client"
+                  name="clientName"
+                  id="clientName"
+                  className={isEditMode ? 'cursor-disabled' : ''}
+                  disabled={isEditMode}
+                  value={projectFormData.clientId ?? ''}
+                  onChange={(selectedValue) => {
+                    const selectedOption = clientOptions.find(
+                      (opt) => opt.value === selectedValue
+                    );
+                    if (selectedOption) {
+                      setProjectFormData((prev) => ({
+                        ...prev,
+                        clientId: selectedOption.value,
+                        clientName: selectedOption.label,
+                      }));
+                    } else {
+                      setProjectFormData((prev) => ({
+                        ...prev,
+                        clientId: '',
+                        clientName: '',
+                      }));
+                    }
+                  }}
+                  options={[
+                    { label: 'Select Client', value: '' },
+                    ...clientOptions.map((opt) => ({
+                      label: opt.label,
+                      value: opt.value,
+                    })),
+                  ]}
+                />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label>
+                  {t('Resources')}
+                  <ValidationText className="star">*</ValidationText>
+                </label>
+                <MultiSelectDropdown
+                  options={resourceOptions}
+                  value={resourceOptions.filter((option) =>
+                    projectFormData.projectResources.includes(option.value)
+                  )}
+                  onChange={(selected) => {
+                    const values = [...selected]
+                      .sort((a, b) => a.value.localeCompare(b.value))
+                      .map((opt) => opt.value);
+                    setProjectFormData((prev) => ({
+                      ...prev,
+                      projectResources: values,
+                    }));
+                  }}
+                  placeholder={t('Select Resources')}
+                  searchable={true}
+                />
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label>{t('Description')}</label>
+                <TextInput
+                  type="text"
+                  name="description"
+                  placeholder={t('Add_Project_Description')}
+                  className="largeInput"
+                  value={projectFormData.description}
+                  onChange={handleChange}
+                />
+              </InputLabelContainer>
+            </ColumnWrapper>
+          </FormInputsContainer>
+
+          {isSubmitting ? (
+            <SpinAnimation />
+          ) : (
+            <div className="formButtons">
+              <Button onClick={handleDiscardModalToggle} type="button">
+                {t('Cancel')}
+              </Button>
+              <Button className="submit" type="submit">
+                {isEditMode ? t('Update') : t('Add')}
+              </Button>
+            </div>
+          )}
+        </AddFormMainContainer>
+      </>
+      {isDiscardModalOpen && (
+        <CenterModal
+          handleModalLeftButtonClick={handleDiscardModalToggle}
+          handleModalClose={handleDiscardModalToggle}
+          handleModalSubmit={handleClose}
+          modalHeading={t('Discard Changes?')}
+          modalContent={t('Are you sure you want to discard your changes?')}
+          modalType="discardModal"
+          modalLeftButtonClass="mobileBtn"
+          modalRightButtonClass="mobileBtn"
+          modalRightButtonBorderColor="black"
+          modalRightButtonTextColor="black"
+          modalLeftButtonText={t('No')}
+          modalRightButtonText={t('Discard')}
+        />
+      )}
     </FormContainer>
   );
 };

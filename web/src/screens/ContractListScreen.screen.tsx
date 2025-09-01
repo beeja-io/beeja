@@ -78,24 +78,24 @@ const ContractList = ({
     <>
       <StyledDiv>
         <ExpenseHeading>
-          <ExpenseTitle>{t('All Contracts')}</ExpenseTitle>
+          <ExpenseTitle>{t('All_Contracts')}</ExpenseTitle>
         </ExpenseHeading>
 
         <TableListContainer>
           {!isLoading && contractLists.length === 0 ? (
             <ZeroEntriesFound
-              heading="No Contracts Found"
-              message="You Don't Have Any Contracts"
+              heading="No_Contracts_Found"
+              message="You_Don't_Have_Any_Contracts"
             />
           ) : (
             <TableList>
               <TableHead>
                 <tr>
-                  <th>{t('Contract ID')}</th>
-                  <th>{t('Contract Name')}</th>
+                  <th>{t('Contract_ID')}</th>
+                  <th>{t('Contract_Name')}</th>
                   <th>{t('Project')}</th>
                   <th>{t('Client')}</th>
-                  <th>{t('Project Manager')}</th>
+                  <th>{t('Project_Manager')}</th>
                   <th>{t('Status')}</th>
                   <th>{t('ACTION')}</th>
                 </tr>
@@ -142,7 +142,13 @@ const ContractList = ({
                         >
                           {contract.clientName ?? '-'}
                         </td>
-                        <td>{contract.projectManagerNames?.[0]}</td>
+                        <td
+                          onClick={() =>
+                            handleContractClick(contract.contractId)
+                          }
+                        >
+                          {contract.projectManagerNames?.[0]}
+                        </td>
                         <td>
                           {contract.status ? (
                             <StatusDropdown

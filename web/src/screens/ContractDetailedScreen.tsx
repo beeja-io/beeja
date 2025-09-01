@@ -41,10 +41,12 @@ import {
 } from '../styles/AddContractFormStyles.style';
 import {
   ColumnItem,
+  ContractTitleHeader,
   HorizontalLine,
   IconItem,
   RowWrapper,
 } from '../styles/ContractStyle.style';
+import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { InfoText } from '../styles/ProjectStyles.style';
 import ContactTabSection from './ContractTabSection';
 
@@ -65,7 +67,7 @@ const ContractDetailsScreen: React.FC = () => {
         try {
           const response = await downloadClientLogo(client.logoId);
           if (!response.data || response.data.size === 0) {
-            toast.error('Received empty or invalid blob data');
+            toast.error('Received_empty_or_invalid_blob_data');
           }
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -73,11 +75,11 @@ const ContractDetailsScreen: React.FC = () => {
             setLogoUrl(imageUrl);
           };
           reader.onerror = () => {
-            toast.error('Error converting blob to base64');
+            toast.error('Error_converting_blob_to_base64');
           };
           reader.readAsDataURL(response.data);
         } catch (error) {
-          toast.error(t('Error Fetching logo'));
+          toast.error(t('Error_Fetching_logo'));
         }
       }
     };
@@ -97,7 +99,7 @@ const ContractDetailsScreen: React.FC = () => {
         setClientId(res?.data?.clientId);
         setProjectId(res?.data?.projectId);
       } catch (error) {
-        toast.error(t('Failed to fetch contract'));
+        toast.error(t('Failed_to_fetch_contract'));
       } finally {
         setIsLoading(false);
       }
@@ -115,7 +117,7 @@ const ContractDetailsScreen: React.FC = () => {
         setProject(projectRes?.data[0]);
         setClient(clientRes.data);
       } catch (error) {
-        toast.error('Failed to fetch project/client: ');
+        toast.error('Failed_to_fetch_project/client: ');
       } finally {
         setIsLoading(false);
       }
@@ -131,7 +133,16 @@ const ContractDetailsScreen: React.FC = () => {
     <Container>
       <LeftSection>
         <ClientInfo>
-          <ClientTitle>{contract?.contractTitle}</ClientTitle>
+          <ContractTitleHeader>
+            <ClientTitle>{contract?.contractTitle}</ClientTitle>
+            {contract?.status && (
+              <StatusDropdown
+                value={contract.status}
+                onChange={() => {}}
+                disabled
+              />
+            )}
+          </ContractTitleHeader>
 
           <RowWrapper>
             <ColumnItem>
@@ -176,14 +187,18 @@ const ContractDetailsScreen: React.FC = () => {
         </ClientInfo>
 
         {contract?.contractId && (
-          <ContactTabSection contractId={contract?.contractId} />
+          <ContactTabSection
+            contractId={contract?.contractId}
+            rawProjectResources={contract?.rawProjectResources}
+            description={contract?.description || ''}
+          />
         )}
         <TableContainer />
       </LeftSection>
 
       <RightSection>
         <RightSectionDiv>
-          <RightSectionHeading>{t('Client Details')}</RightSectionHeading>
+          <RightSectionHeading>{t('Client_Details')}</RightSectionHeading>
           {client?.clientId && (
             <ClientInfoWrapper>
               <LogoPreview>
@@ -210,9 +225,17 @@ const ContractDetailsScreen: React.FC = () => {
           </IconWrapper>
           <HorizontalLine />
           <RightSubSectionDiv>
-            <RightSectionHeading>{t('Project Details')}</RightSectionHeading>
-            <ProjectSeactionHeading>{client?.industry}</ProjectSeactionHeading>
-
+            <RightSectionHeading>{t('Project_Details')}</RightSectionHeading>
+            <ContractTitleHeader>
+              <ProjectSeactionHeading>{project?.name}</ProjectSeactionHeading>
+              {project?.status && (
+                <StatusDropdown
+                  value={project.status}
+                  onChange={() => {}}
+                  disabled
+                />
+              )}
+            </ContractTitleHeader>
             {project?.projectId && (
               <>
                 <ClientInfoWrapper>

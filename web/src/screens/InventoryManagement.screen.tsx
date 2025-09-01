@@ -25,6 +25,7 @@ import { ExpenseFilterArea } from '../styles/ExpenseListStyles.style';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { OrganizationValues } from '../entities/OrgValueEntity';
+import { disableBodyScroll, enableBodyScroll } from '../constants/Utility';
 
 const InventoryManagement = () => {
   const navigate = useNavigate();
@@ -246,12 +247,12 @@ const InventoryManagement = () => {
   const { t } = useTranslation();
   useEffect(() => {
     if (isCreateModalOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isCreateModalOpen]);
   return (
