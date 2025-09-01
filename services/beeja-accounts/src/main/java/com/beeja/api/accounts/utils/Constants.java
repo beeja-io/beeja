@@ -112,7 +112,10 @@ public class Constants {
   public static final String ERROR_IN_CREATING_ROLE_TO_ORGANIZATION =
       "Error in Creating Role to Organization";
 
-  //  DOC URLS
+    public static final String UPDATE_FEATURE_TOGGLE = "Updating feature toggle for organizationId: {}";
+
+
+    //  DOC URLS
   public static final String DOC_URL_RESOURCE_NOT_FOUND = "https://beeja-dev.techatcore.com/";
   public static final String CAME_TO_PUBLIC_ROUTE = "Request came to public endpoint: ";
   public static final String NEW_USER_AND_ORG_CREATION_INITIATED =
