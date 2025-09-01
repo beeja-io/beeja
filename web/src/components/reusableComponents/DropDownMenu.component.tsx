@@ -97,7 +97,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   const sortedOptions = [...options].sort((a, b) => {
     if (!a.value) return -1;
     if (!b.value) return 1;
-    return a.label.localeCompare(b.label);
+    return String(a.label).localeCompare(String(b.label));
   });
 
   return (
