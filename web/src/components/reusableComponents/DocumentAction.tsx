@@ -29,6 +29,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import CenterModal from './CenterModal.component';
 import CenterModalMain from './CenterModalMain.component';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.js',
@@ -76,13 +77,13 @@ export const DocumentAction: React.FC<ActionProps> = ({
   };
   useEffect(() => {
     if (isDocumentPreviewModalOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
 
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isDocumentPreviewModalOpen]);
 
@@ -224,7 +225,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
   return (
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
-        <ActionMenu onClick={openDropdown}>
+        <ActionMenu className="action-align" onClick={openDropdown}>
           <ActionIcon />
         </ActionMenu>
         {isOpen && (

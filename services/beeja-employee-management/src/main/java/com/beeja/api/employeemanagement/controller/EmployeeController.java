@@ -3,6 +3,7 @@ package com.beeja.api.employeemanagement.controller;
 import com.beeja.api.employeemanagement.annotations.HasPermission;
 import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
@@ -91,5 +92,12 @@ public class EmployeeController {
   @GetMapping("/employee-values")
   ResponseEntity<EmployeeValues> getEmployeeValues() throws Exception {
     return ResponseEntity.ok(employeeService.getEmployeeValues());
+  }
+
+  @GetMapping("/basic-info")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  ResponseEntity<List<EmployeeBasicInfo>> getAllEmployeeBasicInfo(
+          @RequestParam(name = "designations", required = false) List<String> designations){
+    return ResponseEntity.ok(employeeService.getAllEmpInfo(designations));
   }
 }

@@ -22,6 +22,12 @@ export const Container = styled.div`
     display: flex;
     gap: 0 5px;
   }
+  .drop {
+    span {
+      color: ${(props) => props.theme.colors.blackColors.black1};
+      font-size: 14px;
+    }
+  }
 `;
 export const Row = styled.div`
   display: flex;

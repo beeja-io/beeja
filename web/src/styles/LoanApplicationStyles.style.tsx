@@ -133,14 +133,14 @@ export const StatusIndicator = styled.div<{ status: string }>`
       case 'APPLIED':
         return '#CE9900';
       case 'REJECTED':
-        return '#EB4335';
+        return '#E03137';
       case 'APPROVED':
       case 'HIRED':
         return '#005792';
       case 'INTERVIEW_SCHEDULED':
-        return '#000000';
+        return '#E6BB20';
       case 'SHORTLISTED':
-        return '#96d39d';
+        return '#8C62FF';
       default:
         return 'black';
     }
@@ -151,11 +151,13 @@ export const StatusIndicator = styled.div<{ status: string }>`
       case 'APPLIED':
         return '#FFF4D8';
       case 'REJECTED':
-        return '#F1C6C6';
+        return '#FFEDEC';
       case 'APPROVED':
         return '#A8CFEA';
       case 'INTERVIEW_SCHEDULED':
-        return '#8ed2eb93';
+        return '#FFF6D3';
+      case 'SHORTLISTED':
+        return '#F4F0FF';
       default:
         return 'rgba(0, 0, 0, 0.1)';
     }
