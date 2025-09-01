@@ -255,12 +255,13 @@ export const InputContainer = styled.div<{ isValueInvalid?: boolean }>`
 
 export const ButtonContainer = styled.div`
   display: flex;
-  justify-content: center; /* Center the buttons horizontally */
-  gap: 15px; /* Add space between the buttons */
+  justify-content: center;
+  gap: 15px;
+  margin: 25px;
 
   .close-button {
-    background-color: #f5f5f5; /* Light gray background */
-    color: #333; /* Dark text color */
+    background-color: #f5f5f5;
+    color: #333;
     border: 1px solid #ccc;
     padding: 10px 20px;
     border-radius: 8px;

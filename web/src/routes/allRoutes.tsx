@@ -115,7 +115,10 @@ const AllRoutes = () => {
         />
       </Route>
 
-      <Route path="/project-management" element={<ProjectManagement />}>
+      <Route
+        path="/projects/project-management"
+        element={<ProjectManagement />}
+      >
         <Route
           index
           element={

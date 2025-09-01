@@ -12,18 +12,6 @@ import {
 } from '../styles/ProjectTabSectionStyles.style';
 import { toast } from 'sonner';
 
-interface Project {
-  projectId: string;
-  name: string;
-  status: string;
-  startDate: string;
-  projectManagers: {
-    employeeId: string;
-    name: string;
-    contract: string;
-  }[];
-}
-
 interface Contract {
   contractId: string;
   name: string;
@@ -46,21 +34,18 @@ interface Resource {
 interface ClientTabsSectionProps {
   clientId: string;
   projectId?: string;
+  description?: string;
 }
 
 const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
   clientId,
   projectId,
+  description,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    | 'Project Managers'
-    | 'Contracts'
-    | 'Resources'
-    | 'Attachments'
-    | 'Description'
-  >('Project Managers');
+    'Contracts' | 'Resources' | 'Attachments' | 'Description'
+  >('Contracts');
 
-  const [project, setProject] = useState<Project | null>(null);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -77,18 +62,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           setLoading(false);
           return;
         }
-
-        const mappedProject: Project = {
-          projectId: entity?.projectId,
-          name: entity?.name,
-          status: entity?.status ?? 'N/A',
-          startDate: entity?.startDate?.split('T')[0] ?? '',
-          projectManagers: (entity?.projectManagers || []).map((pm: any) => ({
-            employeeId: pm?.employeeId ?? 'N/A',
-            name: pm?.name ?? 'N/A',
-            contract: pm?.contractName ?? 'N/A',
-          })),
-        };
 
         const mappedContracts: Contract[] = (entity?.contracts || []).map(
           (c: any) => ({
@@ -113,7 +86,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           })
         );
 
-        setProject(mappedProject);
         setContracts(mappedContracts);
         setResources(mappedResources);
       } catch (err: any) {
@@ -131,56 +103,27 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
   return (
     <Container>
       <Tabs>
-        {['Project Managers', 'Contracts', 'Resources', 'Description'].map(
-          (tab) => (
-            <Tab
-              key={tab}
-              active={activeTab === tab}
-              onClick={() => setActiveTab(tab as any)}
-            >
-              {tab}
-            </Tab>
-          )
-        )}
+        {['Contracts', 'Resources', 'Description'].map((tab) => (
+          <Tab
+            key={tab}
+            active={activeTab === tab}
+            onClick={() => setActiveTab(tab as any)}
+          >
+            {t(tab)}
+          </Tab>
+        ))}
       </Tabs>
 
       <TabContent>
-        {activeTab === 'Project Managers' && (
-          <ProjectsTable>
-            <thead>
-              <tr>
-                <th>{t('Employee ID')}</th>
-                <th>{t('Name')}</th>
-                <th>{t('Contract')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {project?.projectManagers?.length ? (
-                project.projectManagers.map((pm, idx) => (
-                  <tr key={idx}>
-                    <td>{pm?.employeeId}</td>
-                    <td>{pm?.name}</td>
-                    <td>{pm?.contract}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={3}>{t('No Project Managers Available')}</td>
-                </tr>
-              )}
-            </tbody>
-          </ProjectsTable>
-        )}
-
         {activeTab === 'Contracts' && (
           <ProjectsTable>
             <thead>
               <tr>
-                <th>{t('Contract ID')}</th>
-                <th>{t('Contract Name')}</th>
+                <th>{t('Contract_ID')}</th>
+                <th>{t('Contract_Name')}</th>
                 <th>{t('Status')}</th>
-                <th>{t('Project Manager')}</th>
-                <th>{t('Start Date')}</th>
+                <th>{t('Project_Manager')}</th>
+                <th>{t('Start_Date')}</th>
               </tr>
             </thead>
             <tbody>
@@ -219,9 +162,9 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           <ProjectsTable>
             <thead>
               <tr>
-                <th>{t('Employee ID')}</th>
+                <th>{t('Employee_ID')}</th>
                 <th>{t('Name')}</th>
-                <th>{t('Contract Name')}</th>
+                <th>{t('Contract_Name')}</th>
                 <th>{t('Allocation')}</th>
               </tr>
             </thead>
@@ -242,6 +185,15 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
               )}
             </tbody>
           </ProjectsTable>
+        )}
+        {activeTab === 'Description' && (
+          <div>
+            {description ? (
+              <p>{description}</p>
+            ) : (
+              <p>{t('No Description Available')}</p>
+            )}
+          </div>
         )}
       </TabContent>
     </Container>

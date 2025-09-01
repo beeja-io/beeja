@@ -12,6 +12,7 @@ export interface ProjectEntity {
   status: ProjectStatus;
   clientId: string;
   clientName: string;
+  clientLogId?: string;
   projectManagerIds: string[];
   projectManagerNames: string[];
   projectResourceIds: string[];
