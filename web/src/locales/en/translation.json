@@ -369,14 +369,14 @@
   "ACCOUNT_NAME": "Account Name",
   "ACCOUNT_NUMBER": "Account Number",
   "IFSC_CODE": "IFSC Code",
-  "TAX_NUMBER_ERROR": "Tax number must be 10–15 characters, alphanumeric, and may include hyphen (-)",
-  "TAX_NO_PLACEHOLDER": "Enter Tax Number (Ex: ABCD123456)",
-  "ACCOUNT_NAME_PLACEHOLDER": "Enter Account Name",
-  "ACCOUNT_NUMBER_PLACEHOLDER": "Enter account number (numbers only)",
-  "BANK_NAME_ERROR": "Enter a valid bank name",
-  "ACCOUNT_NAME_ERROR": "Enter a valid account name",
-  "ACCOUNT_NUMBER_ERROR": "Account number must be numeric and of valid length",
-  "IFSC_ERROR": "Enter a valid IFSC code, Ex: ABCD0123456",
+  "TAX_NUMBER_ERROR": "Tax Number must be 10–15 characters. Example: GSTIN12345",
+  "TAX_NO_PLACEHOLDER": "Enter TAX Number  (Ex: GSTIN12345)",
+  "ACCOUNT_NAME_PLACEHOLDER": "Enter account holder name (e.g., John Doe)",
+  "ACCOUNT_NUMBER_PLACEHOLDER": "Enter 8–20 digit account number (e.g., 123456789012)",
+  "BANK_NAME_ERROR": "Invalid Bank Name. Only letters are allowed. Example: State Bank of India.",
+  "ACCOUNT_NAME_ERROR": "Invalid Account Name. Only letters are allowed. Example: John Doe.",
+  "ACCOUNT_NUMBER_ERROR": "Invalid Account Number. Only numbers allowed (8–20 digits). Example: 123456789012.",
+  "IFSC_ERROR": "Invalid IFSC Code format. Example: SBIN0001234",
 
 
 

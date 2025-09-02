@@ -182,20 +182,19 @@
   "ACCOUNT_NAME": "Kontoname",
   "ACCOUNT_NUMBER": "Kontonummer",
   "IFSC_CODE": "IFSC-Code",
-   "TAX_NUMBER_ERROR": "Die Steuernummer muss mit Buchstaben beginnen, optional einen Bindestrich enthalten und mit Ziffern enden (10–15 Zeichen).", 
-
-  "TAX_NO_PLACEHOLDER": "Steuernummer eingeben (z. B.: ABCD123456)",
-  "ACCOUNT_NAME_PLACEHOLDER": "Kontoname eingeben",
-   "ACCOUNT_NUMBER_PLACEHOLDER_DE": "Kontonummer eingeben (nur Zahlen)", 
-   "BANK_NAME_ERROR": "Geben Sie einen gültigen Banknamen ein",
-  "ACCOUNT_NAME_ERROR": "Geben Sie einen gültigen Kontonamen ein",
-  "ACCOUNT_NUMBER_ERROR": "Kontonummer muss numerisch und von gültiger Länge sein",
+  "TAX_NUMBER_ERROR": "Steuernummer muss 10–15 Zeichen lang sein. Beispiel: GSTIN12345",
+  "TAX_NO_PLACEHOLDER": "Steuernummer eingeben (z. B.: GSTIN12345)",
+  "ACCOUNT_NAME_PLACEHOLDER": "Kontoinhabername eingeben (z. B.: John Doe)",
+   "ACCOUNT_NUMBER_PLACEHOLDER_DE": "Kontonummer mit 8–20 Ziffern eingeben (z. B.: 123456789012)", 
+   "BANK_NAME_ERROR": "Ungültiger Bankname. Es sind nur Buchstaben erlaubt. Beispiel: State Bank of India.",
+  "ACCOUNT_NAME_ERROR": "Ungültiger Kontoinhabername. Es sind nur Buchstaben erlaubt. Beispiel: John Doe.",
+  "ACCOUNT_NUMBER_ERROR": "Ungültige Kontonummer. Es sind nur Zahlen erlaubt (8–20 Ziffern). Beispiel: 123456789012.",
   "IFSC_ERROR": "Geben Sie einen gültigen IFSC-Code ein, z. B.: ABCD0123456",
 
   "errors": {
     "unsupported_format": "Nicht unterstütztes Dateiformat. Bitte laden Sie eine gültige Belegdatei hoch.",
     "single_file_exceeds": "Dateigröße überschreitet 5 MB. Bitte laden Sie eine kleinere Datei hoch.",
     "total_file_exceeds": "Die kombinierten Dateien überschreiten 20 MB. Bitte laden Sie kleinere Dateien hoch.",
-    "file_limit_exceeded": "Sie können maximal 3 Dateien hochladen."
+    "file_limit_exceeded": "Ungültiges IFSC-Code-Format. Beispiel: SBIN0001234"
   }
 }

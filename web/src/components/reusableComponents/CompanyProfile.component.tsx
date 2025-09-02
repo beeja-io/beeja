@@ -1158,7 +1158,7 @@ if (
       <Input
         name="bankName"
         type="text"
-        placeholder={isBankEditModeOn ? 'Enter Bank Name' : '-'}
+        placeholder={isBankEditModeOn ? 'Enter bank name' : '-'}
         value={companyProfile.bankDetails?.bankName || ''}
         onChange={handleInputChange}
         disabled={!isBankEditModeOn} // <--- disable if edit mode off
@@ -1219,7 +1219,7 @@ if (
       <Input
         name="ifscNumber"
         type="text"
-        placeholder={isBankEditModeOn ? 'Enter IFSC Code' : '-'}
+        placeholder={isBankEditModeOn ? 'Enter IFSC code (e.g., SBIN0001234)' : '-'}
         value={companyProfile.bankDetails?.ifscNumber || ''}
         onChange={handleInputChange}
         disabled={!isBankEditModeOn} // <--- disable if edit mode off
