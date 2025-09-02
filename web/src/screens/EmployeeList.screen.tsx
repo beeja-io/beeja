@@ -641,6 +641,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     lastName: '',
     email: '',
     employmentType: '',
+    department: '',
     employeeId: '',
   });
   const [emailMessage, setEmailMessage] = useState('');
@@ -700,13 +701,18 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             ? 'INVALID_EMAIL_FORMAT'
             : '',
       employmentType:
-        formData.employmentType === '' ? EMPLOYMENT_TYPRE_REQUIRED : '',
-      department: formData.department === '' ? 'DEPARTMENT_REQUIRED' : '',
+        formData.employmentType === '' || formData.employmentType === null
+          ? EMPLOYMENT_TYPRE_REQUIRED
+          : '',
+      department:
+        formData.department === '' || formData.department === null
+          ? 'Department Required'
+          : '',
       employeeId:
         formData.employeeId === ''
-          ? 'EMPLOYEE_ID_REQUIRED'
+          ? 'Employee ID Required'
           : formData.employeeId.length < 4
-            ? 'EMPLOYEE_ID_LENGTH'
+            ? 'Employee ID Length'
             : '',
     };
 
@@ -763,7 +769,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
   });
 
   const { t } = useTranslation();
-
   return (
     <StyledForm style={{ cursor: props.isResponseLoading ? 'progress' : '' }}>
       <div>
@@ -835,9 +840,9 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
           />
-          {errors.lastName && (
+          {errors.employeeId && (
             <ValidationText>
-              <AlertISVG /> {errors.lastName}
+              <AlertISVG /> {errors.employeeId}
             </ValidationText>
           )}
         </InputLabelContainer>
@@ -904,11 +909,6 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               <AlertISVG /> {errors.employmentType}
             </ValidationText>
           )}
-          {errors.employmentType && (
-            <ValidationText>
-              <AlertISVG /> {errors.employmentType}
-            </ValidationText>
-          )}
         </SelectOption>
 
         <SelectOption>
@@ -938,9 +938,9 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               })),
             ]}
           />
-          {errors.employmentType && (
+          {errors.department && (
             <ValidationText>
-              <AlertISVG /> {errors.employmentType}
+              <AlertISVG /> {errors.department}
             </ValidationText>
           )}
         </SelectOption>
