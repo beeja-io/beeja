@@ -983,7 +983,7 @@ if (
       }
       onChange={handleInputChange}
       disabled={!isEditModeOn}
-      maxLength={10}
+      maxLength={15}
       autoComplete="off"
       onKeyDown={(event) => {
         const allowedCharacters = /^[a-zA-Z0-9]+$/;
