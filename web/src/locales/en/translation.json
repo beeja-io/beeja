@@ -150,7 +150,7 @@
   "YES": "Yes",
   "COMPANY_INFO": "Company Info",
 
-  "ACCOUNT_INFO": "Account Info", 
+  "ACCOUNT_INFO": "Account Info",
 
   "COMPANY_LOGO": "Company Logo",
   "LOADING": "Loading...",
@@ -383,11 +383,6 @@
   "ACCOUNT_NAME_ERROR": "Enter a valid account name",
   "ACCOUNT_NUMBER_ERROR": "Account number must be numeric and of valid length",
   "IFSC_ERROR": "Enter a valid IFSC code, Ex: ABCD0123456",
-
-
-
-
-
 
   "errors": {
     "unsupported_format": "Unsupported file format. Please upload a valid receipt file(jpeg, png, pdf).",

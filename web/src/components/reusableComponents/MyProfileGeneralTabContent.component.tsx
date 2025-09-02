@@ -617,14 +617,16 @@ export const GeneralDetailsTab = ({
                         ) : (
                           <InlineInput
                             disabled={
-                              label === 'Employee Id' &&
-                              user &&
-                              user.employeeId !== employee.account.employeeId &&
-                              !user.roles.some((role) =>
-                                role.permissions.includes(
-                                  EMPLOYEE_MODULE.UPDATE_EMPLOYEE
-                                )
-                              )
+                              (label === 'Employee Id' &&
+                                user &&
+                                user.employeeId !==
+                                  employee.account.employeeId &&
+                                !user.roles.some((role) =>
+                                  role.permissions.includes(
+                                    EMPLOYEE_MODULE.UPDATE_EMPLOYEE
+                                  )
+                                )) ??
+                              false
                             }
                             type={
                               label === 'Date of Birth' ||
@@ -727,7 +729,7 @@ export const GeneralDetailsTab = ({
                   {secondColumn.map(({ label, value }) => (
                     <tr key={label}>
                       <TabContentTableTd>{t(label)}</TabContentTableTd>
-                      {isEditModeOn && isFieldEditable(label) ? (        
+                      {isEditModeOn && isFieldEditable(label) ? (
                         <TabContentTableTd>
                           {label === 'Gender' || label === 'Marital Status' ? (
                             <DropdownOrg
