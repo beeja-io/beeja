@@ -834,18 +834,24 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const [requestedDate, setRequestedDate] = useState<Date | null>();
   const [paymentDate, setPaymentDate] = useState<Date | null>();
   useEffect(() => {
-    if (modeOfModal == 'edit' && props.expense) {
-      setExpenseDate(
-        new Date(formatDateYYYYMMDD(props.expense?.expenseDate.toString()))
-      );
-      if (props.expense && props.expense.paymentDate) {
-        setPaymentDate(
-          new Date(formatDateYYYYMMDD(props.expense?.paymentDate.toString()))
+    if (modeOfModal === 'edit' && props.expense) {
+      if (props.expense.expenseDate) {
+        setExpenseDate(
+          new Date(formatDateYYYYMMDD(String(props.expense.expenseDate)))
         );
       }
-      setRequestedDate(
-        new Date(formatDateYYYYMMDD(props.expense?.requestedDate.toString()))
-      );
+
+      if (props.expense.paymentDate) {
+        setPaymentDate(
+          new Date(formatDateYYYYMMDD(String(props.expense.paymentDate)))
+        );
+      }
+
+      if (props.expense.requestedDate) {
+        setRequestedDate(
+          new Date(formatDateYYYYMMDD(String(props.expense.requestedDate)))
+        );
+      }
     }
   }, [modeOfModal, props.expense, props.expense?.expenseDate]);
 
