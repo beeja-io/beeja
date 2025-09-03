@@ -228,6 +228,18 @@ export const getAllLoans = (queryString = ''): Promise<AxiosResponse> => {
   return axiosInstance.get(`/finance/v1/loans${queryString}`);
 };
 
+export const getLoans = (
+  userId: string,
+  hasViewAll: boolean = false,
+  queryString = ''
+): Promise<AxiosResponse> => {
+  if (hasViewAll) {
+    return axiosInstance.get(`/finance/v1/loans${queryString}`);
+  } else {
+    return axiosInstance.get(`/finance/v1/loans/${userId}`);
+  }
+};
+
 export const statusChange = (
   Id: string,
   status: string,
