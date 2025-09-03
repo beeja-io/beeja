@@ -326,8 +326,8 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 options={[
                   { label: t('SELECT_DEVICE'), value: '' },
                   ...(deviceTypes?.values?.map((device) => ({
-                    label: device.description || device.value,
-                    value: device.value,
+                    label: device.value,
+                    value: device.value.toUpperCase(),
                   })) ?? []),
                 ]}
               />
@@ -496,20 +496,29 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 {t('PROVIDER')}
                 <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption largeSelectOption"
+              <DropdownMenu
+                label="Select Provider"
                 name="provider"
-                value={formData.provider}
-                onChange={handleChange}
+                id="provider"
+                className=""
+                value={formData.provider ?? ''}
                 required
-              >
-                <option value="">Select Provider</option>
-                {inventoryProviders?.values?.map((provider) => (
-                  <option key={provider.value} value={provider.value}>
-                    {provider.value}
-                  </option>
-                ))}
-              </select>
+                options={[
+                  { label: 'Select Provider', value: '' },
+                  ...(inventoryProviders?.values || []).map((provider) => ({
+                    label: provider.value,
+                    value: provider.value,
+                  })),
+                ]}
+                onChange={(val) => {
+                  handleChange({
+                    target: {
+                      name: 'provider',
+                      value: val ?? '',
+                    },
+                  } as React.ChangeEvent<HTMLSelectElement>);
+                }}
+              />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
