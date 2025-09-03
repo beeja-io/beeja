@@ -154,11 +154,14 @@ const LoanListView = (props: LoanListViewProps) => {
                         }}
                       >
                         <div>
-                          {loan.employeeName || 'Unknown'}
+                          {loan.employeeName ||
+                            `${user?.firstName || ''} ${user?.lastName || ''}` ||
+                            'Unknown'}
                           {user &&
-                            hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) && (
+                            (hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ||
+                              hasPermission(user, LOAN_MODULE.READ_LOAN)) && (
                               <div style={{ color: '#666', fontSize: '0.8em' }}>
-                                {loan.employeeId}
+                                {loan.employeeId || user?.employeeId}
                               </div>
                             )}
                         </div>
