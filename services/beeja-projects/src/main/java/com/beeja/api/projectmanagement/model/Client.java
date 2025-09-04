@@ -67,7 +67,7 @@ public class Client {
   @LastModifiedDate
   private Date updatedAt;
 
-  private boolean usePrimaryAsBillingAddress = true;
+  private boolean usePrimaryAsBillingAddress = false;
 
   public Address getBillingAddress() {
     return usePrimaryAsBillingAddress ? this.primaryAddress : this.billingAddress;

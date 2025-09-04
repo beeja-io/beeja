@@ -6,7 +6,6 @@ import {
   Container,
   LeftSection,
   LogoPreview,
-  RightSection,
   TableContainer,
 } from '../styles/ClientStyles.style';
 
@@ -28,10 +27,11 @@ import {
   IconWrapper,
   InfoRow,
   InfoText,
-  RightSectionDiv,
+  RightSection,
   StyledStatusDropdown,
 } from '../styles/ProjectStyles.style';
 import ProjectTabSection from './ProjectTabSection';
+import { t } from 'i18next';
 
 const ProjectDetailsSCreen: React.FC = () => {
   const { projectId, clientId } = useParams<{
@@ -45,12 +45,12 @@ const ProjectDetailsSCreen: React.FC = () => {
 
   useEffect(() => {
     const fetchLogoImage = async () => {
-      if (project?.logoId) {
+      if (project?.clientLogId) {
         try {
-          const response = await downloadClientLogo(project.logoId);
+          const response = await downloadClientLogo(project.clientLogId);
 
           if (!response.data || response.data.size === 0) {
-            throw new Error('Received empty or invalid blob data');
+            throw new Error(t('Received_empty_or_invalid_blob_data'));
           }
 
           const reader = new FileReader();
@@ -59,7 +59,7 @@ const ProjectDetailsSCreen: React.FC = () => {
             setLogoUrl(imageUrl);
           };
           reader.onerror = () => {
-            throw new Error('Error converting blob to base64');
+            throw new Error(t('Error_converting_blob_to_base64'));
           };
 
           reader.readAsDataURL(response.data);
@@ -74,7 +74,7 @@ const ProjectDetailsSCreen: React.FC = () => {
     return () => {
       setLogoUrl(null);
     };
-  }, [project?.logoId]);
+  }, [project?.clientLogId]);
 
   useEffect(() => {
     const fetchClient = async () => {
@@ -84,7 +84,7 @@ const ProjectDetailsSCreen: React.FC = () => {
         const projectRes = await getProject(projectId, clientId);
         setProject(projectRes.data[0]);
       } catch (error) {
-        throw new Error('Failed to fetch client:' + error);
+        throw new Error(t('Failed_to_fetch_client') + error);
       } finally {
         setLoading(false);
       }
@@ -135,6 +135,7 @@ const ProjectDetailsSCreen: React.FC = () => {
           <ProjectTabSection
             clientId={project.clientId}
             projectId={project.projectId}
+            description={project.description}
           />
         )}
 
@@ -142,36 +143,34 @@ const ProjectDetailsSCreen: React.FC = () => {
       </LeftSection>
 
       <RightSection>
-        <RightSectionDiv>
-          <div>Client Details</div>
+        <div>{t('Client_Details')}</div>
 
-          {project?.clientId && (
-            <ClientInfoWrapper>
-              <LogoPreview>
-                <img src={logoUrl || undefined} alt="Logo Preview" />
-              </LogoPreview>
-              <InfoText>
-                <div className="id">
-                  ID: <span>{project.clientId}</span>
-                </div>
-                <div className="name">{project.clientName}</div>
-                <div className="industry">{project.clientIndustries}</div>
-              </InfoText>
-            </ClientInfoWrapper>
-          )}
+        {project?.clientId && (
+          <ClientInfoWrapper>
+            <LogoPreview>
+              <img src={logoUrl || undefined} alt="Logo Preview" />
+            </LogoPreview>
+            <InfoText>
+              <div className="id">
+                ID: <span>{project.clientId}</span>
+              </div>
+              <div className="name">{project.clientName}</div>
+              <div className="industry">{project.clientIndustries}</div>
+            </InfoText>
+          </ClientInfoWrapper>
+        )}
 
-          <IconWrapper>
-            <div>
-              <CallSVG />
-              <span>{project?.clientContact || 'N/A'}</span>
-            </div>
-
-            <div>
-              <EmailSVG />
-              <span>{project?.clientEmail || 'N/A'}</span>
-            </div>
-          </IconWrapper>
-        </RightSectionDiv>
+        <IconWrapper>
+          <div>
+            <CallSVG /> &nbsp;
+            <span>{project?.clientContact || 'N/A'}</span>
+          </div>
+          &nbsp;
+          <div>
+            <EmailSVG /> &nbsp;
+            <span>{project?.clientEmail || 'N/A'}</span>
+          </div>
+        </IconWrapper>
       </RightSection>
     </Container>
   );

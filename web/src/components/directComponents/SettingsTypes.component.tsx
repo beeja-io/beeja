@@ -28,6 +28,7 @@ import { useUser } from '../../context/UserContext';
 import { useTranslation } from 'react-i18next';
 import { AlertISVG } from '../../svgs/CommonSvgs.svs';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import ZeroEntriesFound from '../reusableComponents/ZeroEntriesFound.compoment';
 
 export const SettingsTypes = ({
   keyvalue,
@@ -205,39 +206,43 @@ export const SettingsTypes = ({
       </TabContentMainContainerHeading>
       <Hr />
       {/* Table Section */}
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <tr className="table-row">
-              <th className="th-type">{type}</th>
-              <th className="th-description">Description</th>
-              <th className="th-action">Action</th>
-            </tr>
-          </TableHead>
-          <tbody>
-            {settingTypes
-              ?.filter((settingTypes) => settingTypes.orgValues.value)
-              .sort((a, b) =>
-                a.orgValues.value.localeCompare(b.orgValues.value)
-              )
-              .map((settingTypes) => (
-                <TableBodyRow key={settingTypes.index}>
-                  <td>{settingTypes.orgValues.value}</td>
-                  <td>{settingTypes.orgValues.description}</td>
-                  <td>
-                    <ExpenseTypeAction
-                      options={Actions}
-                      fetchExpenses={fetchSettingsTypes}
-                      currentExpense={settingTypes}
-                      onActionClick={handleAction}
-                    />
-                  </td>
-                </TableBodyRow>
-              ))}
-          </tbody>
-        </Table>
-      </TableContainer>
 
+      {settingTypes?.length === 0 ? (
+        <ZeroEntriesFound heading={`No ${type} found`} />
+      ) : (
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <tr className="table-row">
+                <th className="th-type">{type}</th>
+                <th className="th-description">Description</th>
+                <th className="th-action">Action</th>
+              </tr>
+            </TableHead>
+            <tbody>
+              {settingTypes
+                ?.filter((settingTypes) => settingTypes.orgValues.value)
+                .sort((a, b) =>
+                  a.orgValues.value.localeCompare(b.orgValues.value)
+                )
+                .map((settingTypes) => (
+                  <TableBodyRow key={settingTypes.index}>
+                    <td>{settingTypes.orgValues.value}</td>
+                    <td>{settingTypes.orgValues.description}</td>
+                    <td>
+                      <ExpenseTypeAction
+                        options={Actions}
+                        fetchExpenses={fetchSettingsTypes}
+                        currentExpense={settingTypes}
+                        onActionClick={handleAction}
+                      />
+                    </td>
+                  </TableBodyRow>
+                ))}
+            </tbody>
+          </Table>
+        </TableContainer>
+      )}
       {toastMessage && isCreatedToastMessage && (
         <ToastMessage
           messageType={toastMessage.type}
@@ -271,7 +276,7 @@ export const SettingsTypes = ({
               />
             </InputContainer>
             {isValueInvalid && (
-              <div style={{ paddingLeft: '150px' }}>
+              <div style={{ paddingLeft: '180px' }}>
                 <ValidationText>
                   <AlertISVG />
                   {t('THE_FIELD_IS_MANDATORY')}{' '}

@@ -115,7 +115,10 @@ const AllRoutes = () => {
         />
       </Route>
 
-      <Route path="/project-management" element={<ProjectManagement />}>
+      <Route
+        path="/projects/project-management"
+        element={<ProjectManagement />}
+      >
         <Route
           index
           element={
@@ -196,7 +199,7 @@ const AllRoutes = () => {
         element={
           <CustomRoute
             permission={FEATURE_TOGGLES_MODULE.UPDATE_FEATURE}
-            featureToggle={EFeatureToggles.EMPLOYEE_MANAGEMENT}
+            featureToggle={EFeatureToggles.EMPLOYEES_MANAGEMENT}
           >
             <FeatureToggleScreen />
           </CustomRoute>

@@ -12,7 +12,7 @@ import {
   SettingsSVG,
   SunSVG,
   TrendingUpSVG,
-  TimeOffSVG
+  TimeOffSVG,
   ProjectsSVG,
 } from '../../svgs/NavBarSvgs.svg';
 import {
@@ -263,49 +263,56 @@ const CompleteNavBar = () => {
                       />
                     )}
 
-                  {
-                    <ListItem
-                      isSideBarOpen={sidebarOpen}
-                      linkTo="#"
-                      tooltipName="Projects & Contracts"
-                      linkName="Projects & Contracts"
-                      svgIcon={
-                        <ProjectsSVG
-                          props={{
-                            isActive:
-                              openDropdown === 'projects & contracts' ||
-                              currentPath.startsWith('/clients') ||
-                              currentPath.startsWith('/projects') ||
-                              currentPath.startsWith('/contracts'),
-                          }}
-                        />
-                      }
-                      additionalSvgIcon={<ChevronDownSVG />}
-                      dropdownItems={[
-                        {
-                          name: 'Clients',
-                          link: '/clients/client-management',
-                        },
-                        {
-                          name: 'Projects',
-                          link: '/project-management',
-                        },
-                        {
-                          name: 'Contracts',
-                          link: '/contracts/contract-management',
-                        },
-                      ]}
-                      isDropdownOpen={openDropdown === 'Projects & Contracts'}
-                      setDropdownOpen={() => {
-                        setOpenDropdown((prev) =>
-                          prev === 'Projects & Contracts'
-                            ? null
-                            : 'Projects & Contracts'
-                        );
-                      }}
-                      hasAdditionalSvg
-                    />
-                  }
+                  {hasPermission(
+                    user,
+                    ORGANIZATION_MODULE.READ_ORGANIZATIONS
+                  ) &&
+                    hasFeature(
+                      featureToggles.featureToggles,
+                      EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT
+                    ) && (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="#"
+                        tooltipName="Projects & Contracts"
+                        linkName="Projects & Contracts"
+                        svgIcon={
+                          <ProjectsSVG
+                            props={{
+                              isActive:
+                                openDropdown === 'projects & contracts' ||
+                                currentPath.startsWith('/clients') ||
+                                currentPath.startsWith('/projects') ||
+                                currentPath.startsWith('/contracts'),
+                            }}
+                          />
+                        }
+                        additionalSvgIcon={<ChevronDownSVG />}
+                        dropdownItems={[
+                          {
+                            name: 'Clients',
+                            link: '/clients/client-management',
+                          },
+                          {
+                            name: 'Projects',
+                            link: '/projects/project-management',
+                          },
+                          {
+                            name: 'Contracts',
+                            link: '/contracts/contract-management',
+                          },
+                        ]}
+                        isDropdownOpen={openDropdown === 'Projects & Contracts'}
+                        setDropdownOpen={() => {
+                          setOpenDropdown((prev) =>
+                            prev === 'Projects & Contracts'
+                              ? null
+                              : 'Projects & Contracts'
+                          );
+                        }}
+                        hasAdditionalSvg
+                      />
+                    )}
                   {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     hasFeature(
                       featureToggles.featureToggles,
@@ -349,7 +356,7 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )}
-                   {/* {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                  {/* {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     // hasFeature(
                     //   featureToggles.featureToggles,
                     //   EFeatureToggles.LOAN_MANAGEMENT
@@ -397,41 +404,46 @@ const CompleteNavBar = () => {
                     hasFeature(
                       featureToggles.featureToggles,
                       EFeatureToggles.LOAN_MANAGEMENT
-                    ) &&
-                    <ListItem
-                    isSideBarOpen={sidebarOpen}
-                    linkTo="#"
-                    tooltipName="Timeoff"
-                    linkName="Time Off"
-                    svgIcon={
-                      <TimeOffSVG isActive={openDropdown === 'timeoff' || currentPath.startsWith('/timeoff')} />
-                        // props={{
-                        //   isActive:
-                        //     openDropdown === 'timeoff' ||
-                        //     currentPath.startsWith('/timeoff'),
-                        // }}
-                      // />
-                    }
-                    additionalSvgIcon={<ChevronDownSVG />}
-                    dropdownItems={[
-                      {
-                        name: 'Time Sheet',
-                        link: '/timeoff/timesheet',
-                      },
-                      {
-                        name: 'Performance & Feedback',
-                        link: '/timeoff/performance',
-                      },
-                    ]}
-                    isDropdownOpen={openDropdown === 'timeoff'}
-                    setDropdownOpen={() => {
-                      setOpenDropdown((prev) =>
-                        prev === 'timeoff' ? null : 'timeoff'
-                      );
-                    }}
-                    hasAdditionalSvg
-                  />
-                  }
+                    ) && (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="#"
+                        tooltipName="Timeoff"
+                        linkName="Time Off"
+                        svgIcon={
+                          <TimeOffSVG
+                            isActive={
+                              openDropdown === 'timeoff' ||
+                              currentPath.startsWith('/timeoff')
+                            }
+                          />
+                          // props={{
+                          //   isActive:
+                          //     openDropdown === 'timeoff' ||
+                          //     currentPath.startsWith('/timeoff'),
+                          // }}
+                          // />
+                        }
+                        additionalSvgIcon={<ChevronDownSVG />}
+                        dropdownItems={[
+                          {
+                            name: 'Time Sheet',
+                            link: '/timeoff/timesheet',
+                          },
+                          {
+                            name: 'Performance & Feedback',
+                            link: '/timeoff/performance',
+                          },
+                        ]}
+                        isDropdownOpen={openDropdown === 'timeoff'}
+                        setDropdownOpen={() => {
+                          setOpenDropdown((prev) =>
+                            prev === 'timeoff' ? null : 'timeoff'
+                          );
+                        }}
+                        hasAdditionalSvg
+                      />
+                    )}
 
                   {hasFeature(
                     featureToggles.featureToggles,

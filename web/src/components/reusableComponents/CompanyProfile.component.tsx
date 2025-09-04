@@ -15,7 +15,6 @@ import {
 } from '../../svgs/CommonSvgs.svs';
 import {
   Input,
-  Select,
   Row,
   Label,
   Container,
@@ -56,6 +55,7 @@ import { usePreferences } from '../../context/PreferencesContext';
 import { hasPermission } from '../../utils/permissionCheck';
 import { ORGANIZATION_MODULE } from '../../constants/PermissionConstants';
 import { useTranslation } from 'react-i18next';
+import DropdownMenu from './DropDownMenu.component';
 
 export const CompanyProfile = () => {
   const [isEditModeOn, setEditModeOn] = useState(false);
@@ -72,11 +72,9 @@ export const CompanyProfile = () => {
     {} as IOrganization
   );
   const [isBankEditModeOn, setIsBankEditModeOn] = useState(false);
- 
-const handleBankIsEditModeOn = () => {
+  const handleBankIsEditModeOn = () => {
     setIsBankEditModeOn(!isBankEditModeOn);
   };
- 
   const handleCloseBankEditMode = () => {
     setCompanyProfile(tempOrganization);
     setUpdatedOrganization({} as IOrganization);
@@ -223,19 +221,18 @@ const handleBankIsEditModeOn = () => {
   const [emailError, setEmailError] = useState<string>('');
   const [websiteError, setWebsiteError] = useState<string>('');
   const [pinError, setPINError] = useState<string>('');
-   const [accountNameError, setAccountNameError] =  useState<string>('');
-  const [bankNameError, setBankNameError] =  useState<string>('');
-  const [accountNumberError, setAccountNumberError] =  useState<string>('');
-  const [ifscError, setIFSCError] =  useState<string>('');
+  const [accountNameError, setAccountNameError] = useState<string>('');
+  const [bankNameError, setBankNameError] = useState<string>('');
+  const [accountNumberError, setAccountNumberError] = useState<string>('');
+  const [ifscError, setIFSCError] = useState<string>('');
 
   const handleSubmitCompanyProfile = async () => {
     let hasErrors = false;
+    setAccountNameError('');
+    setBankNameError('');
+    setAccountNumberError('');
+    setIFSCError('');
 
-    // Reset error states
-    setAccountNameError(''); 
-     setBankNameError('');
-     setAccountNumberError(''); 
-     setIFSCError(''); 
 
     setNameError('');
     setPanError('');
@@ -276,14 +273,17 @@ const handleBankIsEditModeOn = () => {
         setPanError('');
       }
     }
-  if (updatedOrganization.accounts && updatedOrganization.accounts.taxNumber) {
-  if (!isValidTaxNo(updatedOrganization.accounts.taxNumber.toUpperCase())) {
-      setTaxError(t("TAX_NUMBER_ERROR"));
-    hasErrors = true;
-  } else {
-    setTaxError("");
-  }
-}
+    if (
+      updatedOrganization.accounts &&
+      updatedOrganization.accounts.taxNumber
+    ) {
+      if (!isValidTaxNo(updatedOrganization.accounts.taxNumber.toUpperCase())) {
+        setTaxError(t('TAX_NUMBER_ERROR'));
+        hasErrors = true;
+      } else {
+        setTaxError('');
+      }
+    }
     if (updatedOrganization.accounts && updatedOrganization.accounts.pfNumber) {
       if (
         !isValidPFNumber(updatedOrganization.accounts.pfNumber.toUpperCase())
@@ -352,64 +352,61 @@ const handleBankIsEditModeOn = () => {
         setLINError('');
       }
     }
-if (
-  updatedOrganization.bankDetails?.accountName ||
-  updatedOrganization.bankDetails?.bankName ||
-  updatedOrganization.bankDetails?.accountNumber ||
-  updatedOrganization.bankDetails?.ifscNumber
-) {
-  if (updatedOrganization.bankDetails.accountName) {
-    if (!isValidAccountName(updatedOrganization.bankDetails.accountName)) {
-      setAccountNameError(t('ACCOUNT_NAME_ERROR'));
-      hasErrors = true;
-    } else {
-      setAccountNameError('');
+    if (
+      updatedOrganization.bankDetails?.accountName ||
+      updatedOrganization.bankDetails?.bankName ||
+      updatedOrganization.bankDetails?.accountNumber ||
+      updatedOrganization.bankDetails?.ifscNumber
+    ) {
+      if (updatedOrganization.bankDetails.accountName) {
+        if (!isValidAccountName(updatedOrganization.bankDetails.accountName)) {
+          setAccountNameError(t('ACCOUNT_NAME_ERROR'));
+          hasErrors = true;
+        } else {
+          setAccountNameError('');
+        }
+      }
+
+      if (updatedOrganization.bankDetails.bankName) {
+        if (!isValidBankName(updatedOrganization.bankDetails.bankName)) {
+          setBankNameError(t('BANK_NAME_ERROR'));
+          hasErrors = true;
+        } else {
+          setBankNameError('');
+        }
+      }
+
+      if (updatedOrganization.bankDetails.accountNumber) {
+        if (
+          !isValidAccountNumber(updatedOrganization.bankDetails.accountNumber)
+        ) {
+          setAccountNumberError(t('ACCOUNT_NUMBER_ERROR'));
+          hasErrors = true;
+        } else {
+          setAccountNumberError('');
+        }
+      }
+
+      if (updatedOrganization.bankDetails.ifscNumber) {
+        if (!isValidIFSCCode(updatedOrganization.bankDetails.ifscNumber)) {
+          setIFSCError(t('IFSC_ERROR'));
+          hasErrors = true;
+        } else {
+          setIFSCError('');
+        }
+      }
+
+      if (!hasErrors) {
+        updatedOrganization.bankDetails = {
+          accountName: updatedOrganization.bankDetails.accountName,
+          bankName: updatedOrganization.bankDetails.bankName,
+          accountNumber: updatedOrganization.bankDetails.accountNumber,
+          ifscNumber: updatedOrganization.bankDetails.ifscNumber,
+        };
+      }
     }
-  }
 
-
-  if (updatedOrganization.bankDetails.bankName) {
-    if (!isValidBankName(updatedOrganization.bankDetails.bankName)) {
-      setBankNameError(t('BANK_NAME_ERROR'));
-      hasErrors = true;
-    } else {
-      setBankNameError('');
-    }
-  }
-
-
-  if (updatedOrganization.bankDetails.accountNumber) {
-    if (!isValidAccountNumber(updatedOrganization.bankDetails.accountNumber)) {
-      setAccountNumberError(
-        t('ACCOUNT_NUMBER_ERROR')
-      );
-      hasErrors = true;
-    } else {
-      setAccountNumberError('');
-    }
-  }
-
-
-  if (updatedOrganization.bankDetails.ifscNumber) {
-    if (!isValidIFSCCode(updatedOrganization.bankDetails.ifscNumber)) {
-        setIFSCError(t('IFSC_ERROR'));
-      hasErrors = true;
-    } else {
-      setIFSCError('');
-    }
-  }
-
-  if (!hasErrors) {
-    updatedOrganization.bankDetails = {
-      accountName: updatedOrganization.bankDetails.accountName,
-      bankName: updatedOrganization.bankDetails.bankName,
-      accountNumber: updatedOrganization.bankDetails.accountNumber,
-      ifscNumber: updatedOrganization.bankDetails.ifscNumber,
-    };
-  }
-}
-
- if (updatedOrganization.website) {
+    if (updatedOrganization.website) {
       if (!isValidURL(updatedOrganization.website)) {
         setWebsiteError('Invalid URL format, Ex: https://example.com');
         hasErrors = true;
@@ -452,7 +449,7 @@ if (
         success: () => {
           fetchOrganization();
           handleCloseEditMode();
-           handleCloseBankEditMode(); 
+          handleCloseBankEditMode();
           setIsUpdateResponseLoading(false);
           setUpdatedOrganization({} as IOrganization);
           fetchOrgFile();
@@ -716,22 +713,26 @@ if (
                 />
               </div>
               <div>
-                <Select
-                  name="address.state"
-                  value={
-                    companyProfile.address &&
-                    companyProfile.address.state != null
-                      ? companyProfile.address.state
-                      : ''
-                  }
-                  onChange={handleInputChange}
+                <DropdownMenu
+                  label={t('Select_State')}
+                  selected={companyProfile.address?.state ?? ''}
+                  className={'largeContainerFil drop'}
+                  options={[
+                    { label: t('SELECT_STATE'), value: '' },
+                    { label: t('TELANGANA'), value: 'Telangana' },
+                    { label: t('ANDHRA_PRADESH'), value: 'AP' },
+                    { label: t('DELHI'), value: 'Delhi' },
+                  ]}
                   disabled={!isEditModeOn}
-                >
-                  <option value={''}>{t('SELECT_STATE')}</option>
-                  <option value={'Telangana'}>{t('TELANGANA')}</option>
-                  <option value={'AP'}>{t('ANDHRA_PRADESH')}</option>
-                  <option value={'Delhi'}>{t('DELHI')}</option>
-                </Select>
+                  onChange={(value: string | null) => {
+                    handleInputChange({
+                      target: {
+                        name: 'address.state',
+                        value: value ?? '',
+                      },
+                    } as React.ChangeEvent<HTMLInputElement>);
+                  }}
+                />
               </div>
               <div>
                 <Input
@@ -774,21 +775,25 @@ if (
 
           <Row>
             <Label>{t('COUNTRY')}</Label>
-            <Select
-              name="address.country"
-              value={
-                companyProfile.address && companyProfile.address.country != null
-                  ? companyProfile.address.country
-                  : ''
-              }
-              onChange={handleInputChange}
+            <DropdownMenu
+              label={t('SELECT_COUNTRY')}
+              selected={companyProfile.address?.country ?? ''}
+              className={'drop'}
+              onChange={(value: string | null) => {
+                handleInputChange({
+                  target: {
+                    name: 'address.country',
+                    value: value ?? '',
+                  },
+                } as React.ChangeEvent<HTMLInputElement>);
+              }}
+              options={[
+                { label: t('INDIA'), value: 'India' },
+                { label: t('GERMANY'), value: 'Germany' },
+                { label: t('US'), value: 'US' },
+              ]}
               disabled={!isEditModeOn}
-            >
-              <option value={''}>{t('SELECT_COUNTRY')}</option>
-              <option value={'India'}>{t('INDIA')}</option>
-              <option value={'Germany'}>{t('GERMANY')}</option>
-              <option value={'US'}>{t('US')}</option>
-            </Select>
+            />
           </Row>
           <Row>
             <Label>{t('FILLING_ADDRESS')}</Label>
@@ -968,6 +973,7 @@ if (
             </div>
           </Row>
           <Row>
+
           <Label>{t('TAX_NO.')}</Label>
           <div>
           <Input
@@ -996,6 +1002,7 @@ if (
     
   </div>
 </Row>
+
           <Row>
             <Label>{t('ESI_NO.')}</Label>
             <div>
@@ -1109,17 +1116,17 @@ if (
           </Row>
         </Container>
         {isUpdateResponseLoading && <SpinAnimation />}
-       </TabContentMainContainer>
+      </TabContentMainContainer>
 
-       <BorderDivLine width="100%" />
-      
-<TabContentMainContainer>
-  <TabContentMainContainerHeading>
-<h4>{t('BANK_INFO')}</h4>
- {user &&
-     hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
+      <BorderDivLine width="100%" />
+
+      <TabContentMainContainer>
+        <TabContentMainContainerHeading>
+          <h4>{t('BANK_INFO')}</h4>
+          {user &&
+            hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
               <TabContentEditArea>
-                   {!isBankEditModeOn ? (
+                {!isBankEditModeOn ? (
                   <span onClick={handleBankIsEditModeOn}>
                     <EditWhitePenSVG />
                   </span>
@@ -1134,7 +1141,7 @@ if (
                     <span
                       title="Discard Changes"
                       onClick={() => {
-                      handleCloseBankEditMode(); 
+                        handleCloseBankEditMode();
                         setFile(undefined);
                       }}
                     >
@@ -1161,7 +1168,7 @@ if (
         placeholder={isBankEditModeOn ? 'Enter bank name' : '-'}
         value={companyProfile.bankDetails?.bankName || ''}
         onChange={handleInputChange}
-        disabled={!isBankEditModeOn} // <--- disable if edit mode off
+        disabled={!isBankEditModeOn}
         autoComplete="off"
       />
       {bankNameError.length > 1 && (
@@ -1180,7 +1187,7 @@ if (
         placeholder={isBankEditModeOn ? t("ACCOUNT_NAME_PLACEHOLDER") : '-'}
         value={companyProfile.bankDetails?.accountName || ''}
         onChange={handleInputChange}
-        disabled={!isBankEditModeOn} // <--- disable if edit mode off
+        disabled={!isBankEditModeOn}
         autoComplete="off"
       />
        {accountNameError.length > 1 && (
@@ -1198,7 +1205,7 @@ if (
         placeholder={isBankEditModeOn ? t("ACCOUNT_NUMBER_PLACEHOLDER") : '-'}
         value={companyProfile.bankDetails?.accountNumber || ''}
         onChange={handleInputChange}
-        disabled={!isBankEditModeOn} // <--- disable if edit mode off
+        disabled={!isBankEditModeOn}
         autoComplete="off"
         maxLength={18}
         onKeyDown={(event) => {
@@ -1222,7 +1229,7 @@ if (
         placeholder={isBankEditModeOn ? 'Enter IFSC code (e.g., SBIN0001234)' : '-'}
         value={companyProfile.bankDetails?.ifscNumber || ''}
         onChange={handleInputChange}
-        disabled={!isBankEditModeOn} // <--- disable if edit mode off
+        disabled={!isBankEditModeOn}
         autoComplete="off"
         maxLength={11}
         onKeyDown={(event) => {
@@ -1239,17 +1246,6 @@ if (
   </Row>
 </Container>
 </TabContentMainContainer>
-
-
-
-
-
-
-
-
-
-
-
     </>
   );
 };

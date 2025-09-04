@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ClientDetails } from '../../entities/ClientEntity';
-import { postClient, putClient } from '../../service/axiosInstance';
+import {
+  downloadClientLogo,
+  postClient,
+  putClient,
+} from '../../service/axiosInstance';
 import {
   AddClientButtons,
   AddFormMainContainer,
   AddressBlock,
+  AddressMainContainer,
   BasicOrganizationDetailsContainer,
   BrowseText,
+  ButtonGroup,
   CheckBoxOuterContainer,
+  ColumnWrapper,
+  DotWrap,
   EditIconWrapper,
+  ExpenseAddFormMainContainer,
   FileName,
   FormContainer,
   FormInputs,
@@ -17,6 +26,7 @@ import {
   HeadingContainer,
   HeadingDiv,
   InfoBlock,
+  InfoGroup,
   InfoRow,
   InfoText,
   InputLabelContainer,
@@ -28,6 +38,7 @@ import {
   LogoNameWrapper,
   LogoPreview,
   LogoUploadContainer,
+  PrimaryContainer,
   RemoveButton,
   SectionHeader,
   StepLabel,
@@ -35,20 +46,21 @@ import {
   StepWrapper,
   StyledCheckbox,
   SubHeadingDiv,
+  SummaryAddressContainer,
+  SummaryAddressSubContainer,
+  SummarySubContainer,
+  TextInput,
   UploadText,
 } from '../../styles/ClientStyles.style';
 import { Button } from '../../styles/CommonStyles.style';
-import {
-  TextInput,
-  ValidationText,
-} from '../../styles/DocumentTabStyles.style';
-import { ExpenseAddFormMainContainer } from '../../styles/ExpenseManagementStyles.style';
+import { ValidationText } from '../../styles/DocumentTabStyles.style';
 import {
   CallSVG,
   CheckIcon,
   DotSVG,
   EditSVG,
   EmailSVG,
+  IndustrySVG,
   LineIcon,
   UploadSVG,
 } from '../../svgs/ClientManagmentSvgs.svg';
@@ -60,6 +72,8 @@ import {
   TaxCategory,
 } from '../reusableComponents/ClientEnums.component';
 import ToastMessage from '../reusableComponents/ToastMessage.component';
+import CenterModal from '../reusableComponents/CenterModal.component';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type AddClientFormProps = {
   handleClose: () => void;
@@ -111,6 +125,7 @@ const AddClientForm = (props: AddClientFormProps) => {
       contact: '',
       description: '',
       logo: '',
+      logoId: '',
       taxDetails: {
         taxCategory: '' as TaxCategory,
         taxNumber: '',
@@ -199,7 +214,45 @@ const AddClientForm = (props: AddClientFormProps) => {
 
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [file, setFile] = useState<File | null>(null);
+  const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+  const [errors, setErrors] = useState<{
+    taxCategory?: string;
+    taxNumber?: string;
+  }>({});
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
+
+  const handleDiscardModalToggle = () => {
+    setIsDiscardModalOpen((prev) => !prev);
+  };
+
+  useEffect(() => {
+    const fetchLogoImage = async () => {
+      if (formData?.logoId && !logoPreviewUrl && !file) {
+        try {
+          const response = await downloadClientLogo(formData.logoId);
+
+          if (response?.data && response.data.size > 0) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              const imageUrl = reader.result as string;
+              setLogoPreviewUrl(imageUrl);
+            };
+            reader.readAsDataURL(response.data);
+          }
+        } catch (error) {
+          throw Error('Error fetching logo:' + error);
+        }
+      }
+    };
+
+    fetchLogoImage();
+    return () => {
+      if (logoPreviewUrl) {
+        URL.revokeObjectURL(logoPreviewUrl);
+      }
+    };
+  }, [formData?.logoId]);
+
   useEffect(() => {
     return () => {
       if (logoPreviewUrl) {
@@ -211,9 +264,8 @@ const AddClientForm = (props: AddClientFormProps) => {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      // Validate file type and size
       const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
-      const maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
+      const maxSizeInBytes = 5 * 1024 * 1024;
       if (!validTypes.includes(selectedFile.type)) {
         alert(
           'Invalid file type. Please upload an image file (JPEG, PNG, GIF).'
@@ -247,6 +299,16 @@ const AddClientForm = (props: AddClientFormProps) => {
     const { name, value } = event.target;
     const keys = name.split('.');
 
+    let newValue = value ?? '';
+
+    if (name === 'contact') {
+      newValue = newValue.replace(/\D/g, '').slice(0, 10);
+    }
+
+    if (name === 'taxDetails.taxNumber') {
+      newValue = newValue.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 15);
+    }
+
     setFormData((prevState) => {
       if (keys.length === 2) {
         const [parentKey, childKey] = keys;
@@ -259,7 +321,7 @@ const AddClientForm = (props: AddClientFormProps) => {
             ...prevState,
             [parentKey]: {
               ...(prevState[parentKey] ?? {}),
-              [childKey]: value ?? '',
+              [childKey]: newValue,
             },
           };
         }
@@ -267,8 +329,29 @@ const AddClientForm = (props: AddClientFormProps) => {
 
       return {
         ...prevState,
-        [name]: value ?? '',
+        [name]: newValue,
       };
+    });
+
+    setErrors((prevErrors) => {
+      const newErrors = { ...prevErrors };
+
+      if (name === 'taxDetails.taxCategory' && newValue) {
+        delete newErrors.taxCategory;
+      }
+
+      if (name === 'taxDetails.taxNumber') {
+        if (
+          newValue &&
+          newValue.length >= 10 &&
+          newValue.length <= 15 &&
+          /^[A-Za-z0-9-]+$/.test(newValue)
+        ) {
+          delete newErrors.taxNumber;
+        }
+      }
+
+      return newErrors;
     });
   };
 
@@ -281,6 +364,9 @@ const AddClientForm = (props: AddClientFormProps) => {
     if (!formData.clientType) {
       isValid = false;
     }
+    if (!formData.industry) {
+      isValid = false;
+    }
     if (!formData.email.trim()) {
       isValid = false;
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -289,7 +375,28 @@ const AddClientForm = (props: AddClientFormProps) => {
     return isValid;
   };
   const validateStep2 = () => {
-    return true;
+    let isValid = true;
+
+    const newErrors: { taxNumber?: string; taxCategory?: string } = {};
+
+    if (!formData.taxDetails.taxCategory) {
+      isValid = false;
+      newErrors.taxCategory = 'Please select a Tax Category.';
+    }
+
+    const taxNumber: string = formData.taxDetails.taxNumber?.trim() || '';
+    if (
+      taxNumber === '' ||
+      taxNumber.length < 10 ||
+      taxNumber.length > 15 ||
+      !/^[A-Za-z0-9-]+$/.test(taxNumber)
+    ) {
+      isValid = false;
+      newErrors.taxNumber =
+        'Tax Number must be 10–15 characters. Example: GSTIN12345.';
+    }
+    setErrors(newErrors);
+    return isValid;
   };
 
   const validateStep3 = () => {
@@ -345,8 +452,8 @@ const AddClientForm = (props: AddClientFormProps) => {
       <>
         <StepsContainer>
           {[
-            'Basic Organisation Details',
-            'Tax Details',
+            'Basic_Organisation_Details',
+            'Tax_Details',
             'Address',
             'Summary',
           ].map((label, index, arr) => {
@@ -360,7 +467,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <div className="circle">
                       {isCompleted ? <CheckIcon /> : index + 1}
                     </div>
-                    <div className="labelHead">{label}</div>
+                    <div className="labelHead">{t(label)}</div>
                   </StepLabel>
                 </StepWrapper>
                 {!isLast && (
@@ -374,545 +481,675 @@ const AddClientForm = (props: AddClientFormProps) => {
         </StepsContainer>
 
         {step === 1 && (
-          <AddFormMainContainer className="formBackground">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleNextStep();
-              }}
-            >
-              <FormInputsContainer>
-                <div>
+          <AddFormMainContainer
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleNextStep();
+            }}
+          >
+            <FormInputsContainer>
+              <ColumnWrapper>
+                {formData?.clientId && (
                   <InputLabelContainer>
-                    <label>
-                      {t('Client Name')}
-                      <ValidationText className="star">*</ValidationText>
-                    </label>
-                    <TextInput
-                      type="text"
-                      name="clientName"
-                      placeholder={t('Enter Client Name')}
-                      className="largeInput"
-                      value={formData?.clientName}
-                      onChange={handleChange}
-                      required
-                      style={{ width: '400px' }}
-                    />
+                    <label>{t('Client_ID')}</label>
+                    <TextInput type="text" value={formData.clientId} disabled />
                   </InputLabelContainer>
-                  <InputLabelContainer>
-                    <label>
-                      {t('Email')}{' '}
-                      <ValidationText className="star">*</ValidationText>
-                    </label>
-                    <TextInput
-                      type="email"
-                      name="email"
-                      placeholder={t('Enter Email')}
-                      className="largeInput"
-                      value={formData?.email}
-                      onChange={handleChange}
-                      required
-                      style={{ width: '400px' }}
-                    />
-                  </InputLabelContainer>
-                  <InputLabelContainer>
-                    <label>{t('Contact')}</label>
-                    <TextInput
-                      type="text"
-                      name="contact"
-                      placeholder={t('Enter Contact')}
-                      className="largeInput"
-                      value={formData?.contact}
-                      onChange={handleChange}
-                      style={{ width: '400px' }}
-                    />
-                  </InputLabelContainer>
-                </div>
-                <div>
-                  <InputLabelContainer>
-                    <label>
-                      {t('Client Type')}
-                      <ValidationText className="star">*</ValidationText>
-                    </label>
-                    <select
-                      className="selectoption largeSelectOption"
-                      name="clientType"
-                      value={formData?.clientType}
-                      onChange={handleChange}
-                      required
-                      style={{ width: '400px' }}
-                    >
-                      <option value="">{t('Select type')}</option>
-                      {[...(clientOptions?.clientType || [])]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((type) => (
-                          <option key={type} value={type}>
-                            {t(type)}
-                          </option>
-                        ))}
-                    </select>
-                  </InputLabelContainer>
-
-                  <InputLabelContainer>
-                    <label>{t('Industry')}</label>
-                    <select
-                      className="selectoption largeSelectOption"
-                      name="industry"
-                      value={formData?.industry}
-                      onChange={handleChange}
-                      style={{ width: '400px' }}
-                    >
-                      <option value="">{t('Select Industry')}</option>
-                      {[...(clientOptions?.industry || [])]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((industry) => (
-                          <option key={industry} value={industry}>
-                            {t(industry)}
-                          </option>
-                        ))}
-                    </select>
-                  </InputLabelContainer>
-
-                  <InputLabelContainer>
-                    <label>{t('Description')}</label>
-                    <TextInput
-                      type="text"
-                      name="description"
-                      placeholder={t('Enter Client Description')}
-                      className="largeInput"
-                      value={formData?.description}
-                      onChange={handleChange}
-                      style={{ width: '400px' }}
-                    />
-                  </InputLabelContainer>
-                </div>
-              </FormInputsContainer>
-              <LogoContainer>
-                <LogoLabel>{t('Logo')}</LogoLabel>
-                <LogoUploadContainer
-                  onClick={() => document.getElementById('fileInput')?.click()}
-                >
-                  <input
-                    id="fileInput"
-                    type="file"
-                    accept=".png, .jpg, .jpeg"
-                    style={{ display: 'none' }}
-                    onChange={handleFileChange}
-                    name="logo"
-                  />
-                  <UploadSVG />
-                  <UploadText>
-                    {t('Upload your Logo')}{' '}
-                    <BrowseText>{t('Browse')}</BrowseText>
-                  </UploadText>
-                </LogoUploadContainer>
-                {file && (
-                  <LogoLabel>
-                    <FileName>{file.name}</FileName>
-                    <RemoveButton onClick={() => setFile(null)}>x</RemoveButton>
-                  </LogoLabel>
                 )}
-              </LogoContainer>
+                <InputLabelContainer>
+                  <label>
+                    {t('Client_Name')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <TextInput
+                    type="text"
+                    name="clientName"
+                    placeholder={t('Enter Client Name')}
+                    className="largeInput"
+                    value={formData?.clientName}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputLabelContainer>
+                <InputLabelContainer>
+                  <label>
+                    {t('EMAIL')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <TextInput
+                    type="email"
+                    name="email"
+                    placeholder={t('Enter Email')}
+                    className="largeInput"
+                    value={formData?.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputLabelContainer>
+                <InputLabelContainer>
+                  <label>{t('Contact')}</label>
+                  <TextInput
+                    type="tel"
+                    name="contact"
+                    placeholder={t('Enter Contact')}
+                    className="largeInput"
+                    inputMode="numeric"
+                    value={formData?.contact}
+                    onChange={handleChange}
+                  />
+                </InputLabelContainer>
+              </ColumnWrapper>
+              <ColumnWrapper>
+                <InputLabelContainer>
+                  <label>
+                    {t('Client_Type')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <DropdownMenu
+                    label={t('Select type')}
+                    name="clientType"
+                    id="clientType"
+                    value={formData?.clientType || ''}
+                    onChange={(e) => {
+                      const event = {
+                        target: {
+                          name: 'clientType',
+                          value: e,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleChange(event);
+                    }}
+                    required
+                    options={[
+                      { label: t('Select type'), value: '' },
+                      ...clientOptions.clientType.map((type) => ({
+                        label: t(type),
+                        value: type,
+                      })),
+                    ]}
+                  />
+                </InputLabelContainer>
 
-              <div className="formButtons">
+                <InputLabelContainer>
+                  <label>
+                    {t('Industry')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <DropdownMenu
+                    label={t('Select Industry')}
+                    name="industry"
+                    id="industry"
+                    className="largeContainerExp"
+                    value={formData?.industry || ''}
+                    onChange={(e) => {
+                      const event = {
+                        target: {
+                          name: 'industry',
+                          value: e,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleChange(event);
+                    }}
+                    required
+                    options={[
+                      { label: t('Select Industry'), value: '' },
+                      ...clientOptions.industry.map((industry) => ({
+                        label: t(industry),
+                        value: industry,
+                      })),
+                    ]}
+                  />
+                </InputLabelContainer>
+
+                <InputLabelContainer>
+                  <label>{t('Description')}</label>
+                  <TextInput
+                    type="text"
+                    name="description"
+                    placeholder={t('Enter_Client_Description')}
+                    className="largeInput"
+                    value={formData?.description}
+                    onChange={handleChange}
+                  />
+                </InputLabelContainer>
+                {formData?.clientId && (
+                  <InputLabelContainer className="logoEditContainer">
+                    <label>{t('Logo')}</label>
+                    <LogoUploadContainer
+                      onClick={() =>
+                        document.getElementById('fileInput')?.click()
+                      }
+                      className="edit-height"
+                    >
+                      <input
+                        id="fileInput"
+                        type="file"
+                        accept=".png, .jpg, .jpeg"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange}
+                        name="logo"
+                      />
+                      <UploadSVG />
+                      <UploadText>
+                        {t('Upload_your_Logo')}
+                        <BrowseText>{t('Browse')}</BrowseText>
+                      </UploadText>
+                    </LogoUploadContainer>
+                    {file && (
+                      <LogoLabel>
+                        <FileName>{file.name}</FileName>
+                        <RemoveButton
+                          onClick={() => {
+                            setFile(null);
+                            setLogoPreviewUrl(null);
+                            setFormData((prev) => ({
+                              ...prev,
+                              clientLogo: null,
+                            }));
+                          }}
+                        >
+                          x
+                        </RemoveButton>
+                      </LogoLabel>
+                    )}
+                    {!file && formData?.logoId && (
+                      <LogoLabel className="editLabel">
+                        <FileName>LogoId: {formData.logoId}</FileName>
+                        <RemoveButton
+                          onClick={() => {
+                            setFormData((prev) => ({ ...prev, logoId: '' }));
+                            setLogoPreviewUrl(null);
+                          }}
+                        >
+                          x
+                        </RemoveButton>
+                      </LogoLabel>
+                    )}
+                  </InputLabelContainer>
+                )}
+              </ColumnWrapper>
+              {!formData?.clientId && (
+                <LogoContainer>
+                  <LogoLabel>{t('Logo')}</LogoLabel>
+                  <LogoUploadContainer
+                    className="add_height"
+                    onClick={() =>
+                      document.getElementById('fileInput')?.click()
+                    }
+                  >
+                    <input
+                      id="fileInput"
+                      type="file"
+                      accept=".png, .jpg, .jpeg"
+                      style={{ display: 'none' }}
+                      onChange={handleFileChange}
+                      name="logo"
+                    />
+                    <UploadSVG />
+                    <UploadText>
+                      {t('Upload_your_Logo')}
+                      <BrowseText>{t('Browse')}</BrowseText>
+                    </UploadText>
+                  </LogoUploadContainer>
+                  {file && (
+                    <LogoLabel>
+                      <FileName>{file.name}</FileName>
+                      <RemoveButton
+                        onClick={() => {
+                          setFile(null);
+                          setLogoPreviewUrl(null);
+                          setFormData((prev) => ({
+                            ...prev,
+                            clientLogo: null,
+                          }));
+                        }}
+                      >
+                        x
+                      </RemoveButton>
+                    </LogoLabel>
+                  )}
+                </LogoContainer>
+              )}
+            </FormInputsContainer>
+            <div className="formButtons">
+              <Button onClick={props.handleClose} type="button">
+                {t('Cancel')}
+              </Button>
+              <Button
+                className="submit"
+                type="submit"
+                onClick={() => {
+                  handleNextStep();
+                }}
+              >
+                {t('Save & Continue')}
+              </Button>
+            </div>
+          </AddFormMainContainer>
+        )}
+        {step === 2 && (
+          <AddressMainContainer
+            className="formBackground"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleNextStep();
+            }}
+          >
+            <FormInputs className="tax-container">
+              <InputLabelContainer>
+                <label>
+                  {t('Tax_Category')}
+                  <ValidationText className="star">*</ValidationText>
+                </label>
+                <DropdownMenu
+                  label={t('Select category')}
+                  name="taxDetails.taxCategory"
+                  id="taxDetails.taxCategory"
+                  className="largeContainerExp"
+                  value={formData.taxDetails?.taxCategory ?? ''}
+                  onChange={(e) => {
+                    const event = {
+                      target: {
+                        name: 'taxDetails.taxCategory',
+                        value: e,
+                      },
+                    } as React.ChangeEvent<HTMLSelectElement>;
+                    handleChange(event);
+                  }}
+                  style={{ width: '400px' }}
+                  options={[
+                    { label: t('Select category'), value: '' },
+                    ...clientOptions.taxCategory.map((category) => ({
+                      label: t(category),
+                      value: category,
+                    })),
+                  ]}
+                />
+                {errors.taxCategory && (
+                  <ValidationText className="error">
+                    {errors.taxCategory}
+                  </ValidationText>
+                )}
+              </InputLabelContainer>
+
+              <InputLabelContainer>
+                <label>
+                  {t('Tax_Number')}
+                  <ValidationText className="star">*</ValidationText>
+                </label>
+                <TextInput
+                  type="text"
+                  name="taxDetails.taxNumber"
+                  placeholder={t('Enter_Tax_Number')}
+                  className="largeInput"
+                  required
+                  minLength={10}
+                  maxLength={15}
+                  pattern="^[A-Za-z0-9-]{10,15}$"
+                  value={formData.taxDetails?.taxNumber ?? ''}
+                  onChange={handleChange}
+                />
+                {errors.taxNumber && (
+                  <ValidationText className="error">
+                    {errors.taxNumber}
+                  </ValidationText>
+                )}
+              </InputLabelContainer>
+            </FormInputs>
+            <AddClientButtons>
+              <div onClick={handlePreviousStep} className="leftAlign">
+                <span className="separator"> {'<'} </span> &nbsp;
+                {t('Previous')}
+              </div>
+              <ButtonGroup>
                 <Button onClick={props.handleClose} type="button">
-                  {t('Cancel')}
+                  {t('Skip')}
                 </Button>
                 <Button
                   className="submit"
-                  type="submit"
+                  type="button"
                   onClick={() => {
                     handleNextStep();
                   }}
                 >
                   {t('Save & Continue')}
                 </Button>
-              </div>
-            </form>
-          </AddFormMainContainer>
-        )}
-        {step === 2 && (
-          <ExpenseAddFormMainContainer className="formBackground">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleNextStep();
-              }}
-            >
-              <FormInputs>
-                <div>
-                  <InputLabelContainer>
-                    <label>{t('Tax Category')}</label>
-                    <select
-                      className="selectoption largeSelectOption"
-                      name="taxDetails.taxCategory"
-                      value={formData.taxDetails?.taxCategory ?? ''}
-                      onChange={handleChange}
-                      style={{ width: '400px' }}
-                    >
-                      <option value="">{t('Select category')}</option>
-                      {[...(clientOptions?.taxCategory || [])]
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((category) => (
-                          <option key={category} value={category}>
-                            {t(category)}
-                          </option>
-                        ))}
-                    </select>
-                  </InputLabelContainer>
-                </div>
-                <div>
-                  <InputLabelContainer>
-                    <label>{t('Tax Number')}</label>
-                    <TextInput
-                      type="text"
-                      name="taxDetails.taxNumber"
-                      placeholder={t('Enter Tax Number')}
-                      className="largeInput"
-                      value={formData.taxDetails?.taxNumber ?? ''}
-                      onChange={handleChange}
-                      style={{ width: '400px' }}
-                    />
-                  </InputLabelContainer>
-                </div>
-              </FormInputs>
-              <AddClientButtons>
-                <div onClick={handlePreviousStep} className="leftAlign">
-                  <span className="separator"> {'<'} </span> &nbsp;
-                  {t('Previous')}
-                </div>
-                <div className="centerAlign">
-                  <Button onClick={props.handleClose} type="button">
-                    {t('Cancel')}
-                  </Button>
-                  <Button
-                    className="submit"
-                    type="button"
-                    onClick={handleNextStep}
-                  >
-                    {t('Save & Continue')}
-                  </Button>
-                </div>
-              </AddClientButtons>
-            </form>
-          </ExpenseAddFormMainContainer>
+              </ButtonGroup>
+            </AddClientButtons>
+          </AddressMainContainer>
         )}
         {step === 3 && (
-          <ExpenseAddFormMainContainer className="formBackground">
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleNextStep();
-              }}
-            >
-              <HeadingDiv>{t('Primary Address')}</HeadingDiv>
-              <FormInputs>
-                <div style={{ fontFamily: 'Nunito' }}>
-                  <InputLabelContainer>
-                    <label>{t('Street')}</label>
-                    <TextInput
-                      type="text"
-                      name="primaryAddress.street"
-                      placeholder={t('Street')}
-                      className="largeInput"
-                      value={formData.primaryAddress?.street ?? ''}
-                      onChange={handleChange}
-                      style={{ width: '420px' }}
-                    />
-                  </InputLabelContainer>
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <InputLabelContainer style={{ marginTop: '12px' }}>
-                      <TextInput
-                        type="text"
-                        name="primaryAddress.city"
-                        placeholder={t('City')}
-                        className="largeInput"
-                        value={formData.primaryAddress?.city ?? ''}
-                        onChange={handleChange}
-                        style={{ width: '133px' }}
-                      />
-                    </InputLabelContainer>
-                    <InputLabelContainer style={{ marginTop: '12px' }}>
-                      <TextInput
-                        type="text"
-                        name="primaryAddress.state"
-                        placeholder={t('State')}
-                        className="largeInput"
-                        value={formData.primaryAddress?.state ?? ''}
-                        onChange={handleChange}
-                        style={{ width: '133px' }}
-                      />
-                    </InputLabelContainer>
-                    <InputLabelContainer style={{ marginTop: '12px' }}>
-                      <TextInput
-                        type="text"
-                        name="primaryAddress.postalCode"
-                        placeholder={t('Zip/Postal Code')}
-                        className="largeInput"
-                        value={formData.primaryAddress?.postalCode ?? ''}
-                        onChange={handleChange}
-                        style={{ width: '133px' }}
-                      />
-                    </InputLabelContainer>
-                  </div>
-                </div>
-                <div>
-                  <InputLabelContainer>
-                    <label>{t('Country')}</label>
-                    <TextInput
-                      type="text"
-                      name="primaryAddress.country"
-                      placeholder={t('United States of America')}
-                      className="largeInput"
-                      value={formData.primaryAddress?.country}
-                      onChange={handleChange}
-                      style={{ width: '400px' }}
-                    />
-                  </InputLabelContainer>
-                </div>
-              </FormInputs>
-              <HeadingDiv>{t('Billing Address')}</HeadingDiv>
-              <CheckBoxOuterContainer>
-                <InputLabelContainer style={{ marginTop: '15px' }}>
-                  <StyledCheckbox
-                    type="checkbox"
-                    name="usePrimaryAddress"
-                    checked={formData.usePrimaryAddress}
-                    onChange={handleCheckboxChange}
+          <ExpenseAddFormMainContainer
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleNextStep();
+            }}
+          >
+            <HeadingDiv>{t('Primary_Address')}</HeadingDiv>
+            <FormInputs>
+              <div style={{ fontFamily: 'Nunito' }}>
+                <InputLabelContainer>
+                  <label>{t('Street')}</label>
+                  <TextInput
+                    type="text"
+                    name="primaryAddress.street"
+                    placeholder={t('Street')}
+                    className="largeInput"
+                    value={formData.primaryAddress?.street ?? ''}
+                    onChange={handleChange}
+                    style={{ width: '420px' }}
                   />
                 </InputLabelContainer>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <InputLabelContainer style={{ marginTop: '12px' }}>
+                    <TextInput
+                      type="text"
+                      name="primaryAddress.city"
+                      placeholder={t('City')}
+                      className="largeInput"
+                      value={formData.primaryAddress?.city ?? ''}
+                      onChange={handleChange}
+                      style={{ width: '133px' }}
+                    />
+                  </InputLabelContainer>
+                  <InputLabelContainer style={{ marginTop: '12px' }}>
+                    <TextInput
+                      type="text"
+                      name="primaryAddress.state"
+                      placeholder={t('State')}
+                      className="largeInput"
+                      value={formData.primaryAddress?.state ?? ''}
+                      onChange={handleChange}
+                      style={{ width: '133px' }}
+                    />
+                  </InputLabelContainer>
+                  <InputLabelContainer style={{ marginTop: '12px' }}>
+                    <TextInput
+                      type="text"
+                      name="primaryAddress.postalCode"
+                      placeholder={t('Zip/Postal_Code')}
+                      className="largeInput"
+                      value={formData.primaryAddress?.postalCode ?? ''}
+                      onChange={handleChange}
+                      style={{ width: '133px' }}
+                    />
+                  </InputLabelContainer>
+                </div>
+              </div>
+              <div>
+                <InputLabelContainer>
+                  <label>{t('Country')}</label>
+                  <TextInput
+                    type="text"
+                    name="primaryAddress.country"
+                    placeholder={t('United_States_of_America')}
+                    className="largeInput"
+                    value={formData.primaryAddress?.country}
+                    onChange={handleChange}
+                  />
+                </InputLabelContainer>
+              </div>
+            </FormInputs>
+            <HeadingDiv>{t('Billing_Address')}</HeadingDiv>
+            <CheckBoxOuterContainer>
+              <div>
+                <StyledCheckbox
+                  type="checkbox"
+                  name="usePrimaryAddress"
+                  style={{ cursor: 'pointer' }}
+                  checked={formData.usePrimaryAddress}
+                  onChange={handleCheckboxChange}
+                />
+              </div>
 
-                <LabelText>
-                  {t('Use Primary address as billing address')}
-                </LabelText>
-              </CheckBoxOuterContainer>
-              <FormInputs>
-                <div>
-                  <InputLabelContainer style={{ marginBottom: '1px' }}>
-                    <label>{t('Street')}</label>
+              <LabelText>
+                {t('Use_Primary_address_as_billing_address')}
+              </LabelText>
+            </CheckBoxOuterContainer>
+            <FormInputs>
+              <div>
+                <InputLabelContainer style={{ marginBottom: '1px' }}>
+                  <label>{t('Street')}</label>
+                  <TextInput
+                    type="text"
+                    name="billingAddress.street"
+                    placeholder={t('Street')}
+                    className="largeInput"
+                    value={formData?.billingAddress?.street ?? ''}
+                    onChange={handleChange}
+                    style={{ width: '420px' }}
+                  />
+                </InputLabelContainer>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <InputLabelContainer style={{ marginTop: '12px' }}>
                     <TextInput
                       type="text"
-                      name="billingAddress.street"
-                      placeholder={t('Street')}
+                      name="billingAddress.city"
+                      placeholder={t('City')}
                       className="largeInput"
-                      value={formData?.billingAddress?.street ?? ''}
+                      value={formData?.billingAddress?.city ?? ''}
                       onChange={handleChange}
-                      style={{ width: '420px' }}
+                      style={{ width: '133px' }}
                     />
                   </InputLabelContainer>
-                  <div style={{ display: 'flex', gap: '10px' }}>
-                    <InputLabelContainer style={{ marginTop: '12px' }}>
-                      <TextInput
-                        type="text"
-                        name="billingAddress.city"
-                        placeholder={t('City')}
-                        className="largeInput"
-                        value={formData?.billingAddress?.city ?? ''}
-                        onChange={handleChange}
-                        style={{ width: '133px' }}
-                      />
-                    </InputLabelContainer>
-                    <InputLabelContainer style={{ marginTop: '12px' }}>
-                      <TextInput
-                        type="text"
-                        name="billingAddress.state"
-                        placeholder={t('State')}
-                        className="largeInput"
-                        value={formData?.billingAddress?.state ?? ''}
-                        onChange={handleChange}
-                        style={{ width: '133px' }}
-                      />
-                    </InputLabelContainer>
-                    <InputLabelContainer style={{ marginTop: '12px' }}>
-                      <TextInput
-                        type="text"
-                        name="billingAddress.postalCode"
-                        placeholder={t('Zip/Postal Code')}
-                        className="largeInput"
-                        value={formData?.billingAddress?.postalCode ?? ''}
-                        onChange={handleChange}
-                        style={{ width: '133px' }}
-                      />
-                    </InputLabelContainer>
-                  </div>
-                </div>
-                <div>
-                  <InputLabelContainer>
-                    <label>{t('Country')}</label>
+                  <InputLabelContainer style={{ marginTop: '12px' }}>
                     <TextInput
                       type="text"
-                      name="billingAddress.country"
-                      placeholder={t('United States of America')}
+                      name="billingAddress.state"
+                      placeholder={t('State')}
                       className="largeInput"
-                      value={formData?.billingAddress?.country ?? ''}
+                      value={formData?.billingAddress?.state ?? ''}
                       onChange={handleChange}
-                      style={{ width: '400px' }}
+                      style={{ width: '133px' }}
+                    />
+                  </InputLabelContainer>
+                  <InputLabelContainer style={{ marginTop: '12px' }}>
+                    <TextInput
+                      type="text"
+                      name="billingAddress.postalCode"
+                      placeholder={t('Zip/Postal Code')}
+                      className="largeInput"
+                      value={formData?.billingAddress?.postalCode ?? ''}
+                      onChange={handleChange}
+                      style={{ width: '133px' }}
                     />
                   </InputLabelContainer>
                 </div>
-              </FormInputs>
-              <AddClientButtons>
-                <div onClick={handlePreviousStep} className="leftAlign">
-                  <span className="separator"> {'<'} </span> &nbsp;
-                  {t('Previous')}
-                </div>
-                <div className="centerAlign">
-                  <Button onClick={props.handleClose} type="button">
-                    {t('Cancel')}
-                  </Button>
-                  <Button
-                    className="submit"
-                    type="button"
-                    onClick={handleNextStep}
-                  >
-                    {t('Save & Continue')}
-                  </Button>
-                </div>
-              </AddClientButtons>
-            </form>
+              </div>
+              <div>
+                <InputLabelContainer>
+                  <label>{t('Country')}</label>
+                  <TextInput
+                    type="text"
+                    name="billingAddress.country"
+                    placeholder={t('United_States_of_America')}
+                    className="largeInput"
+                    value={formData?.billingAddress?.country ?? ''}
+                    onChange={handleChange}
+                  />
+                </InputLabelContainer>
+              </div>
+            </FormInputs>
+            <AddClientButtons>
+              <div onClick={handlePreviousStep} className="leftAlign">
+                <span className="separator"> {'<'} </span> &nbsp;
+                {t('Previous')}
+              </div>
+              <div className="centerAlign">
+                <Button onClick={props.handleClose} type="button">
+                  {t('Cancel')}
+                </Button>
+                <Button
+                  className="submit"
+                  type="button"
+                  onClick={handleNextStep}
+                >
+                  {t('Save & Continue')}
+                </Button>
+              </div>
+            </AddClientButtons>
           </ExpenseAddFormMainContainer>
         )}
         {step === 4 && (
           <ExpenseAddFormMainContainer
             className="formBackground"
             onSubmit={handleSubmitData}
+            id="summaryForm"
           >
-            <HeadingContainer>
-              <SectionHeader>
-                {t('Basic Organisation Details')}
-                <EditIconWrapper>
-                  <EditSVG onClick={() => setStep(2)} />
-                </EditIconWrapper>
-              </SectionHeader>
-            </HeadingContainer>
-            <InputLabelLogoContainer>
-              <BasicOrganizationDetailsContainer>
-                <div>
-                  <InfoRow>
-                    <SubHeadingDiv>Client Name</SubHeadingDiv>
-                    <InfoText>{formData.clientName}</InfoText>
-                  </InfoRow>
-                  <InfoRow>
-                    <SubHeadingDiv>Client Type</SubHeadingDiv>
-                    <InfoText>{formData.clientType}</InfoText>
-                  </InfoRow>
-                  <InfoRow>
-                    <SubHeadingDiv>Description</SubHeadingDiv>
-                    <InfoText>{formData.description}</InfoText>
-                  </InfoRow>
-                  <InfoRow>
-                    <SubHeadingDiv>Internal Type</SubHeadingDiv>
-                    <InfoText>{formData.industry}</InfoText>
-                    <DotSVG />
-                    <EmailSVG />
-                    <InfoText>{formData.email}</InfoText>
-                    <DotSVG />
-                    <CallSVG />
+            <SummarySubContainer>
+              <HeadingContainer>
+                <SectionHeader>
+                  {t('Basic_Organisation_Details')}
+                  <EditIconWrapper>
+                    <EditSVG onClick={() => setStep(1)} />
+                  </EditIconWrapper>
+                </SectionHeader>
+              </HeadingContainer>
+              <InputLabelLogoContainer>
+                <BasicOrganizationDetailsContainer>
+                  <div>
+                    <InfoRow>
+                      <SubHeadingDiv>{t('Client_Name')}</SubHeadingDiv>
+                      <InfoText>{formData.clientName}</InfoText>
+                    </InfoRow>
+                    <InfoRow>
+                      <SubHeadingDiv>{t('Client_Type')}</SubHeadingDiv>
+                      <InfoText>{formData.clientType}</InfoText>
+                    </InfoRow>
+                    <InfoRow>
+                      <SubHeadingDiv>{t('Description')}</SubHeadingDiv>
+                      <InfoText>{formData.description}</InfoText>
+                    </InfoRow>
+                    <InfoRow>
+                      <SubHeadingDiv>{t('Internal_Type')}</SubHeadingDiv>
+                      <DotWrap>
+                        <DotSVG />
+                      </DotWrap>
+                      <InfoGroup>
+                        <IndustrySVG />
+                        <InfoText>{formData.industry}</InfoText>
+                      </InfoGroup>
+                      <DotWrap>
+                        <DotSVG />
+                      </DotWrap>
+                      <InfoGroup>
+                        <EmailSVG />
+                        <InfoText>{formData.email}</InfoText>
+                      </InfoGroup>
+
+                      <DotWrap>
+                        <DotSVG />
+                      </DotWrap>
+
+                      <InfoGroup>
+                        <CallSVG />
+                        <InfoText>{formData.contact}</InfoText>
+                      </InfoGroup>
+                    </InfoRow>
+                  </div>
+                  {(logoPreviewUrl || formData?.logoId) && (
+                    <LogoNameWrapper>
+                      <LogoPreview>
+                        <img
+                          src={
+                            logoPreviewUrl
+                              ? logoPreviewUrl
+                              : `/projects/v1/files/download/${formData.logoId}`
+                          }
+                          alt="Client Logo"
+                        />
+                      </LogoPreview>
+                    </LogoNameWrapper>
+                  )}
+                </BasicOrganizationDetailsContainer>
+              </InputLabelLogoContainer>
+
+              <HeadingContainer>
+                <SectionHeader>
+                  {t('Details')}
+                  <EditIconWrapper>
+                    <EditSVG onClick={() => setStep(2)} />
+                  </EditIconWrapper>
+                </SectionHeader>
+              </HeadingContainer>
+              <SummaryAddressContainer>
+                <SummaryAddressSubContainer>
+                  <InfoBlock className="address">
+                    <SubHeadingDiv>{t('Tax_Category')}</SubHeadingDiv>
+                    <InfoText>{formData.taxDetails.taxCategory}</InfoText>
+                  </InfoBlock>
+                  <InfoBlock style={{ display: 'flex' }}>
+                    <SubHeadingDiv>{t('GST_Number')}</SubHeadingDiv>
+                    <InfoText>{formData.taxDetails.taxNumber}</InfoText>
+                  </InfoBlock>
+                </SummaryAddressSubContainer>
+              </SummaryAddressContainer>
+
+              <HeadingContainer>
+                <SectionHeader>
+                  {t('Address')}
+                  <EditIconWrapper>
+                    <EditSVG onClick={() => setStep(3)} />
+                  </EditIconWrapper>
+                </SectionHeader>
+              </HeadingContainer>
+              <SummaryAddressContainer>
+                <PrimaryContainer>
+                  <h2>Primary Address</h2>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('Street')}</SubHeadingDiv>
+                    <InfoText>{formData.primaryAddress.street}</InfoText>
+                  </AddressBlock>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('city')}</SubHeadingDiv>
+                    <InfoText>{formData.primaryAddress.city}</InfoText>
+                  </AddressBlock>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('State')}</SubHeadingDiv>
+                    <InfoText>{formData.primaryAddress.state}</InfoText>
+                  </AddressBlock>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('Country')}</SubHeadingDiv>
+                    <InfoText>{formData.primaryAddress.country}</InfoText>
+                  </AddressBlock>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('Zip/postal_Code')}</SubHeadingDiv>
+                    <InfoText>{formData.primaryAddress.postalCode}</InfoText>
+                  </AddressBlock>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('Contact')}</SubHeadingDiv>
                     <InfoText>{formData.contact}</InfoText>
-                  </InfoRow>
-                </div>
-                {logoPreviewUrl && (
-                  <LogoNameWrapper>
-                    <LogoPreview>
-                      <img src={logoPreviewUrl} alt="Client Logo" />
-                    </LogoPreview>
-                  </LogoNameWrapper>
-                )}
-              </BasicOrganizationDetailsContainer>
-            </InputLabelLogoContainer>
+                  </AddressBlock>
+                </PrimaryContainer>
+                <PrimaryContainer>
+                  <h2>{t('Billing_Address')}</h2>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('Street')}</SubHeadingDiv>
+                    <InfoText>{formData.billingAddress.street}</InfoText>
+                  </AddressBlock>
 
-            <HeadingContainer>
-              <SectionHeader>
-                {t('Details')}
-                <EditIconWrapper>
-                  <EditSVG onClick={() => setStep(2)} />
-                </EditIconWrapper>
-              </SectionHeader>
-            </HeadingContainer>
-            <FormInputsContainer>
-              <InfoBlock style={{ display: 'flex' }}>
-                <SubHeadingDiv style={{ width: '100px' }}>
-                  {t('Tax Category')}
-                </SubHeadingDiv>
-                <InfoText>{formData.taxDetails.taxCategory}</InfoText>
-              </InfoBlock>
-              <InfoBlock style={{ display: 'flex' }}>
-                <SubHeadingDiv>{t('GST Number')}</SubHeadingDiv>
-                <InfoText>{formData.taxDetails.taxNumber}</InfoText>
-              </InfoBlock>
-            </FormInputsContainer>
-            <HeadingContainer>
-              <SectionHeader>
-                {t('Address')}
-                <EditIconWrapper>
-                  <EditSVG onClick={() => setStep(2)} />
-                </EditIconWrapper>
-              </SectionHeader>
-            </HeadingContainer>
-            <FormInputsContainer>
-              <div>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('Street')}</SubHeadingDiv>
-                  <InfoText>{formData.primaryAddress.street}</InfoText>
-                </AddressBlock>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('city')}</SubHeadingDiv>
-                  <InfoText>{formData.primaryAddress.city}</InfoText>
-                </AddressBlock>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('State')}</SubHeadingDiv>
-                  <InfoText>{formData.primaryAddress.state}</InfoText>
-                </AddressBlock>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('Country')}</SubHeadingDiv>
-                  <InfoText>{formData.primaryAddress.country}</InfoText>
-                </AddressBlock>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('Zip/postal Code')}</SubHeadingDiv>
-                  <InfoText>{formData.primaryAddress.postalCode}</InfoText>
-                </AddressBlock>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('Contact')}</SubHeadingDiv>
-                  <InfoText>{formData.contact}</InfoText>
-                </AddressBlock>
-              </div>
-              <div>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('Street')}</SubHeadingDiv>
-                  <InfoText>{formData.billingAddress.street}</InfoText>
-                </AddressBlock>
-
-                <AddressBlock>
-                  <SubHeadingDiv>{t('city')}</SubHeadingDiv>
-                  <InfoText>{formData.billingAddress.city}</InfoText>
-                </AddressBlock>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('State')}</SubHeadingDiv>
-                  <InfoText>{formData.billingAddress.state}</InfoText>
-                </AddressBlock>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('Country')}</SubHeadingDiv>
-                  <InfoText>{formData.billingAddress.country}</InfoText>
-                </AddressBlock>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('Zip/postal Code')}</SubHeadingDiv>
-                  <InfoText>{formData.billingAddress.postalCode}</InfoText>
-                </AddressBlock>
-                <AddressBlock>
-                  <SubHeadingDiv>{t('Contact')}</SubHeadingDiv>
-                  <InfoText>{formData.contact}</InfoText>
-                </AddressBlock>
-              </div>
-            </FormInputsContainer>
-
-            <div className="formButtons">
-              <Button onClick={props.handleClose} type="button">
-                {t('Skip')}
-              </Button>
-              <Button className="submit" type="submit">
-                {t('Save & Continue')}
-              </Button>
-            </div>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('city')}</SubHeadingDiv>
+                    <InfoText>{formData.billingAddress.city}</InfoText>
+                  </AddressBlock>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('State')}</SubHeadingDiv>
+                    <InfoText>{formData.billingAddress.state}</InfoText>
+                  </AddressBlock>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('Country')}</SubHeadingDiv>
+                    <InfoText>{formData.billingAddress.country}</InfoText>
+                  </AddressBlock>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('Zip/postal_Code')}</SubHeadingDiv>
+                    <InfoText>{formData.billingAddress.postalCode}</InfoText>
+                  </AddressBlock>
+                  <AddressBlock>
+                    <SubHeadingDiv>{t('Contact')}</SubHeadingDiv>
+                    <InfoText>{formData.contact}</InfoText>
+                  </AddressBlock>
+                </PrimaryContainer>
+              </SummaryAddressContainer>
+            </SummarySubContainer>
           </ExpenseAddFormMainContainer>
         )}
         {showErrorMessage && (
@@ -925,6 +1162,34 @@ const AddClientForm = (props: AddClientFormProps) => {
         )}
         {isResponseLoading && <SpinAnimation />}
       </>
+      {step === 4 && (
+        <div className="formButtons">
+          <ButtonGroup>
+            <Button onClick={handleDiscardModalToggle} type="button">
+              {t('Cancel')}
+            </Button>
+            <Button className="submit" type="submit" form="summaryForm">
+              {t('Save & Continue')}
+            </Button>
+          </ButtonGroup>
+        </div>
+      )}
+      {isDiscardModalOpen && (
+        <CenterModal
+          handleModalLeftButtonClick={handleDiscardModalToggle}
+          handleModalClose={handleDiscardModalToggle}
+          handleModalSubmit={props.handleClose}
+          modalHeading={t('Discard_Changes?')}
+          modalContent={t('Are_you_sure_you_want_to_discard_your_changes?')}
+          modalType="discardModal"
+          modalLeftButtonClass="mobileBtn"
+          modalRightButtonClass="mobileBtn"
+          modalRightButtonBorderColor="black"
+          modalRightButtonTextColor="black"
+          modalLeftButtonText={t('No')}
+          modalRightButtonText={t('Discard')}
+        />
+      )}
     </FormContainer>
   );
 };

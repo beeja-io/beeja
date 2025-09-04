@@ -357,6 +357,7 @@ export const TabContentMainContainer = styled.section`
   height: fit-content;
   margin-top: 15px;
   padding: 10px;
+  padding-bottom: 85px;
   border-radius: 16px;
   border: 2px solid ${(props) => props.theme.colors.blackColors.white2};
   color: ${(props) => props.theme.colors.blackColors.black1};
@@ -452,7 +453,7 @@ export const TabContentTableTd = styled.td`
     font-weight: 400;
     line-height: 160%;
     text-overflow: ellipsis;
-    overflow: hidden;
+    overflow: visible;
     white-space: nowrap;
   }
 
@@ -464,7 +465,7 @@ export const TabContentTableTd = styled.td`
     font-weight: 400;
     line-height: 160%;
     text-overflow: ellipsis;
-    overflow: hidden;
+    overflow: visible;
     white-space: nowrap;
     padding: 3px 8px 10px 0;
   }
