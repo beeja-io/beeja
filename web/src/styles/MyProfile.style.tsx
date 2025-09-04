@@ -586,7 +586,7 @@ export const StyledCalendarIconDark = styled.div`
   align-items: center;
   width: 30px;
   height: 30px;
-  right: 50px;
+  right: 10px;
 `;
 
 export const CalendarContainer = styled.div`
