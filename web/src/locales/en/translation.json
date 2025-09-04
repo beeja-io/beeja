@@ -488,5 +488,16 @@
   "Project": "Project",
   "Client": "Client",
   "Clients": "Clients",
-  "Projects & Contracts": "Projects & Contracts"
+  "Projects & Contracts": "Projects & Contracts",
+  "EXCISE_TAX": "Excise TAX",
+  "SALES_TAX": "Sales TAX",
+  "INTERNAL": "Internal",
+  "INDIVIDUAL": "Individual",
+  "COMPANY": "Company",
+  "ORGANIZATION": "Organization",
+  "HRMS": "HRMS",
+  "SOCIALMEDIA": "Social Media",
+  "ECOMMERCE": "E-Commerce",
+  "ITSERVICES": "IT Services",
+  "GST_Number": "GST Number"
 }

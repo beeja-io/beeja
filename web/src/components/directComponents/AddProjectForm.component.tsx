@@ -8,7 +8,6 @@ import {
   postProjects,
   putProject,
 } from '../../service/axiosInstance.tsx';
-import { Button } from '../../styles/CommonStyles.style';
 import {
   AddFormMainContainer,
   ColumnWrapper,
@@ -18,6 +17,7 @@ import {
   InputLabelContainer,
   SectionContainer,
   TextInput,
+  Button,
 } from '../../styles/ProjectStyles.style.tsx';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 import SpinAnimation from '../loaders/SprinAnimation.loader.tsx';
@@ -129,25 +129,31 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   }, [initialData]);
 
   const calendarRef = useRef<HTMLDivElement>(null);
-
   const handleCalendarToggle = (state: boolean) => {
     setIsStartDateCalOpen(state);
   };
 
   const handleDateSelect = (date: Date | null) => {
     if (date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const formattedDate = `${year}-${month}-${day}`; // YYYY-MM-DD
+
       setStartDate(date);
       setProjectFormData((prev) => ({
         ...prev,
-        startDate: date.toISOString().split('T')[0],
+        startDate: formattedDate,
       }));
       setIsStartDateCalOpen(false);
     }
   };
 
-  const formatDate = (dateStr: string | Date) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-CA');
+  const formatDate = (date: Date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
 
   const handleChange = (
@@ -195,22 +201,77 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
           </SectionContainer>
           <FormInputsContainer>
             <ColumnWrapper>
-              <InputLabelContainer>
-                <label>
-                  {t('Project_Name')}
-                  <ValidationText className="star">*</ValidationText>
-                </label>
-                <TextInput
-                  type="text"
-                  name="name"
-                  placeholder={t('Enter_Project_Name')}
-                  className="largeInput"
-                  value={projectFormData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </InputLabelContainer>
+              {projectFormData?.projectId && (
+                <InputLabelContainer>
+                  <label>{t('Project ID')}</label>
+                  <TextInput
+                    className="disabled"
+                    type="text"
+                    value={projectFormData.projectId}
+                    disabled
+                  />
+                </InputLabelContainer>
+              )}
+              {!projectFormData?.projectId && (
+                <InputLabelContainer>
+                  <label>
+                    {t('Project_Name')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <TextInput
+                    type="text"
+                    name="name"
+                    placeholder={t('Enter_Project_Name')}
+                    className="largeInput"
+                    value={projectFormData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputLabelContainer>
+              )}
 
+              {projectFormData?.projectId && (
+                <InputLabelContainer>
+                  <label>
+                    {t('Client_Name')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+
+                  <DropdownMenu
+                    label="Select Client"
+                    name="clientName"
+                    id="clientName"
+                    className={isEditMode ? 'cursor-disabled' : ''}
+                    disabled={isEditMode}
+                    value={projectFormData.clientId ?? ''}
+                    onChange={(selectedValue) => {
+                      const selectedOption = clientOptions.find(
+                        (opt) => opt.value === selectedValue
+                      );
+                      if (selectedOption) {
+                        setProjectFormData((prev) => ({
+                          ...prev,
+                          clientId: selectedOption.value,
+                          clientName: selectedOption.label,
+                        }));
+                      } else {
+                        setProjectFormData((prev) => ({
+                          ...prev,
+                          clientId: '',
+                          clientName: '',
+                        }));
+                      }
+                    }}
+                    options={[
+                      { label: 'Select Client', value: '' },
+                      ...clientOptions.map((opt) => ({
+                        label: opt.label,
+                        value: opt.value,
+                      })),
+                    ]}
+                  />
+                </InputLabelContainer>
+              )}
               <InputLabelContainer>
                 <label>
                   {t('Project_Managers')}
@@ -235,85 +296,135 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                   searchable={true}
                 />
               </InputLabelContainer>
-
-              <InputLabelContainer>
-                <label>
-                  {t('Start_Date')}
-                  <ValidationText className="star">*</ValidationText>
-                </label>
-                <DateInputWrapper ref={calendarRef}>
-                  <TextInput
-                    type="text"
-                    placeholder="Select_Date"
-                    name="startDate"
-                    value={startDate ? formatDate(startDate) : ''}
-                    onFocus={() => handleCalendarToggle(true)}
-                    onClick={() => handleCalendarToggle(true)}
-                    readOnly
-                    autoComplete="off"
-                  />
-                  <span
-                    className="iconArea"
-                    onClick={() => handleCalendarToggle(true)}
-                  >
-                    <CalenderIconDark />
-                  </span>
-                  <div className="calendarSpace">
-                    {isStartDateCalOpen && (
-                      <Calendar
-                        title="Start Date"
-                        minDate={new Date('01-01-2000')}
-                        maxDate={new Date()}
-                        selectedDate={startDate}
-                        handleDateInput={handleDateSelect}
-                        handleCalenderChange={() => {}}
-                      />
-                    )}
-                  </div>
-                </DateInputWrapper>
-              </InputLabelContainer>
+              {!projectFormData?.projectId && (
+                <InputLabelContainer>
+                  <label>
+                    {t('Start_Date')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <DateInputWrapper ref={calendarRef}>
+                    <TextInput
+                      type="text"
+                      placeholder="Select_Date"
+                      name="startDate"
+                      value={startDate ? formatDate(startDate) : ''}
+                      onFocus={() => handleCalendarToggle(true)}
+                      onClick={() => handleCalendarToggle(true)}
+                      readOnly
+                      autoComplete="off"
+                    />
+                    <span
+                      className="iconArea"
+                      onClick={() => handleCalendarToggle(true)}
+                    >
+                      <CalenderIconDark />
+                    </span>
+                    <div className="calendarSpace">
+                      {isStartDateCalOpen && (
+                        <Calendar
+                          title="Start Date"
+                          minDate={new Date('01-01-2000')}
+                          selectedDate={startDate}
+                          handleDateInput={handleDateSelect}
+                          handleCalenderChange={() => {}}
+                        />
+                      )}
+                    </div>
+                  </DateInputWrapper>
+                </InputLabelContainer>
+              )}
             </ColumnWrapper>
 
             <ColumnWrapper>
-              <InputLabelContainer>
-                <label>
-                  {t('Client_Name')}
-                  <ValidationText className="star">*</ValidationText>
-                </label>
-                <DropdownMenu
-                  label="Select Client"
-                  name="clientName"
-                  id="clientName"
-                  className={isEditMode ? 'cursor-disabled' : ''}
-                  disabled={isEditMode}
-                  value={projectFormData.clientId ?? ''}
-                  onChange={(selectedValue) => {
-                    const selectedOption = clientOptions.find(
-                      (opt) => opt.value === selectedValue
-                    );
-                    if (selectedOption) {
-                      setProjectFormData((prev) => ({
-                        ...prev,
-                        clientId: selectedOption.value,
-                        clientName: selectedOption.label,
-                      }));
-                    } else {
-                      setProjectFormData((prev) => ({
-                        ...prev,
-                        clientId: '',
-                        clientName: '',
-                      }));
-                    }
-                  }}
-                  options={[
-                    { label: 'Select Client', value: '' },
-                    ...clientOptions.map((opt) => ({
-                      label: opt.label,
-                      value: opt.value,
-                    })),
-                  ]}
-                />
-              </InputLabelContainer>
+              {projectFormData?.projectId && (
+                <InputLabelContainer>
+                  <label>
+                    {t('Project_Name')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <TextInput
+                    type="text"
+                    name="name"
+                    placeholder={t('Enter_Project_Name')}
+                    className="largeInput"
+                    value={projectFormData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </InputLabelContainer>
+              )}
+              {projectFormData?.projectId && (
+                <InputLabelContainer>
+                  <label>
+                    {t('Start_Date')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <DateInputWrapper ref={calendarRef}>
+                    <TextInput
+                      type="text"
+                      placeholder="Select_Date"
+                      name="startDate"
+                      value={startDate ? formatDate(startDate) : ''}
+                      onFocus={() => handleCalendarToggle(true)}
+                      onClick={() => handleCalendarToggle(true)}
+                      readOnly
+                      autoComplete="off"
+                    />
+                    <span
+                      className="iconArea"
+                      onClick={() => handleCalendarToggle(true)}
+                    >
+                      <CalenderIconDark />
+                    </span>
+                    <div className="calendarSpace">
+                      {isStartDateCalOpen && (
+                        <Calendar
+                          title="Start Date"
+                          minDate={new Date('01-01-2000')}
+                          selectedDate={startDate}
+                          handleDateInput={handleDateSelect}
+                          handleCalenderChange={() => {}}
+                        />
+                      )}
+                    </div>
+                  </DateInputWrapper>
+                </InputLabelContainer>
+              )}
+              {!projectFormData?.projectId && (
+                <InputLabelContainer>
+                  <label>
+                    {t('Client_Name')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <select
+                    className="selectoption largeSelectOption"
+                    name="clientName"
+                    value={projectFormData.clientId}
+                    onChange={(e) => {
+                      const selectedValue = e.target.value;
+                      const selectedOption = clientOptions.find(
+                        (opt) => opt.value === selectedValue
+                      );
+                      if (selectedOption) {
+                        setProjectFormData((prev) => ({
+                          ...prev,
+                          clientId: selectedOption.value,
+                          clientName: selectedOption.label,
+                        }));
+                      }
+                    }}
+                  >
+                    <option value="">{t('Select_Client')}</option>
+                    {[...clientOptions]
+                      .sort((a, b) => a.value.localeCompare(b.value))
+                      .map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                  </select>
+                </InputLabelContainer>
+              )}
 
               <InputLabelContainer>
                 <label>
@@ -339,25 +450,46 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                 />
               </InputLabelContainer>
 
-              <InputLabelContainer>
+              {!projectFormData?.projectId && (
+                <InputLabelContainer>
+                  <label>{t('Description')}</label>
+                  <TextInput
+                    type="text"
+                    name="description"
+                    placeholder={t('Add_Project_Description')}
+                    className="largeInput"
+                    value={projectFormData.description}
+                    onChange={handleChange}
+                  />
+                </InputLabelContainer>
+              )}
+            </ColumnWrapper>
+          </FormInputsContainer>
+          {projectFormData?.projectId && (
+            <FormInputsContainer>
+              <InputLabelContainer className="editContainer">
                 <label>{t('Description')}</label>
                 <TextInput
                   type="text"
                   name="description"
                   placeholder={t('Add_Project_Description')}
-                  className="largeInput"
+                  className="editText"
                   value={projectFormData.description}
                   onChange={handleChange}
                 />
               </InputLabelContainer>
-            </ColumnWrapper>
-          </FormInputsContainer>
+            </FormInputsContainer>
+          )}
 
           {isSubmitting ? (
             <SpinAnimation />
           ) : (
             <div className="formButtons">
-              <Button onClick={handleDiscardModalToggle} type="button">
+              <Button
+                onClick={handleDiscardModalToggle}
+                type="button"
+                className="cancel"
+              >
                 {t('Cancel')}
               </Button>
               <Button className="submit" type="submit">

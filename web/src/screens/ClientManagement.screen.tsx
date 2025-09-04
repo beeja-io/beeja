@@ -31,6 +31,10 @@ const ClientManagement = () => {
   const [selectedClientData, setSelectedClientData] =
     useState<ClientDetails | null>(null);
   const [editLoading, setEditLoading] = useState(false);
+  const [toastData, setToastData] = useState<{
+    heading: string;
+    body: string;
+  } | null>(null);
   const handleOpenCreateModal = useCallback(() => {
     setIsEditMode(false);
     setSelectedClientData(null);
@@ -57,18 +61,32 @@ const ClientManagement = () => {
     }
   };
 
-  const handleSuccessMessage = () => {
-    handleShowSuccessMessage();
-    setIsCreateModalOpen(false);
-  };
-  const [loading, setLoading] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const handleShowSuccessMessage = () => {
+  const handleSuccessMessage = (value: string, type: 'add' | 'edit') => {
+    if (type === 'add') {
+      setToastData({
+        heading: 'Client_Added_Successfully.',
+        body: `New_Client_has_been_added\nsuccessfully_with "Client ID: ${value}".`,
+      });
+    } else if (type === 'edit') {
+      setToastData({
+        heading: 'Client_Updated_Successfully.',
+        body: value,
+      });
+    }
+
     setShowSuccessMessage(true);
+    setIsCreateModalOpen(false);
+
     setTimeout(() => {
       setShowSuccessMessage(false);
-    }, 2000);
+    }, 3000);
+
+    updateClientList();
   };
+
+  const [loading, setLoading] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
   const [allClients, setAllClients] = useState([]);
   const fetchData = useCallback(async () => {
     try {
@@ -120,7 +138,7 @@ const ClientManagement = () => {
               </>
             )}
           </span>
-          {!isCreateModalOpen && (
+          {!isCreateModalOpen && !isClientDetailsRoute && (
             <Button
               className="submit shadow"
               onClick={handleOpenCreateModal}
@@ -152,20 +170,12 @@ const ClientManagement = () => {
         {editLoading && <SpinAnimation />}
       </ExpenseManagementMainContainer>
 
-      {showSuccessMessage && (
+      {showSuccessMessage && toastData && (
         <ToastMessage
           messageType="success"
-          messageBody={
-            isEditMode
-              ? t('The_Client_has_been_Updated_Successfully')
-              : t('The_Client_has_been_Added_Successfully')
-          }
-          messageHeading={
-            isEditMode
-              ? t('Client_Successfully_Updated.')
-              : t('Client_Successfully_Added.')
-          }
-          handleClose={handleShowSuccessMessage}
+          messageHeading={toastData.heading}
+          messageBody={toastData.body}
+          handleClose={() => setShowSuccessMessage(false)}
         />
       )}
     </>
