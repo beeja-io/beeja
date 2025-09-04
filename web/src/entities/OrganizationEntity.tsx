@@ -14,9 +14,7 @@ export interface IOrganization {
   logoFileId?: string;
   loanLimit: ILoanLimits;
   dateFormat: string;
-
   currencyType: string;
-
   bankDetails?: {
     accountName?: string;
     bankName?: string;
@@ -50,7 +48,6 @@ export interface Accounts {
   esiNumber: string;
   linNumber: string;
   gstNumber: string;
-
   taxNumber: string;
   bankDetails: string;
 }
