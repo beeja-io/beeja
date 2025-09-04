@@ -401,10 +401,14 @@ const CompleteNavBar = () => {
                       />
                     )} */}
                   {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
-                    hasFeature(
+                    (hasFeature(
                       featureToggles.featureToggles,
-                      EFeatureToggles.LOAN_MANAGEMENT
-                    ) && (
+                      EFeatureToggles.TIME_SHEET
+                    ) ||
+                      hasFeature(
+                        featureToggles.featureToggles,
+                        EFeatureToggles.PERFORMANCE_AND_FEEDBACK_MANAGEMENT
+                      )) && (
                       <ListItem
                         isSideBarOpen={sidebarOpen}
                         linkTo="#"
@@ -417,23 +421,31 @@ const CompleteNavBar = () => {
                               currentPath.startsWith('/timeoff')
                             }
                           />
-                          // props={{
-                          //   isActive:
-                          //     openDropdown === 'timeoff' ||
-                          //     currentPath.startsWith('/timeoff'),
-                          // }}
-                          // />
                         }
                         additionalSvgIcon={<ChevronDownSVG />}
                         dropdownItems={[
-                          {
-                            name: 'Time Sheet',
-                            link: '/timeoff/timesheet',
-                          },
-                          {
-                            name: 'Performance & Feedback',
-                            link: '/timeoff/performance',
-                          },
+                          ...(hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.TIME_SHEET
+                          )
+                            ? [
+                                {
+                                  name: 'Time Sheet',
+                                  link: '/timeoff/timesheet',
+                                },
+                              ]
+                            : []),
+                          ...(hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.PERFORMANCE_AND_FEEDBACK_MANAGEMENT
+                          )
+                            ? [
+                                {
+                                  name: 'Performance & Feedback',
+                                  link: '/timeoff/performance',
+                                },
+                              ]
+                            : []),
                         ]}
                         isDropdownOpen={openDropdown === 'timeoff'}
                         setDropdownOpen={() => {
