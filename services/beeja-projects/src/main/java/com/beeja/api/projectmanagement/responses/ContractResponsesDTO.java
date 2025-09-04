@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -21,5 +22,6 @@ public class ContractResponsesDTO {
     private String status;
     private List<String> projectManagerIds;
     private List<String> projectManagerNames;
+    private Date startDate;
 
 }

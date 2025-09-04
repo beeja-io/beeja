@@ -24,6 +24,7 @@ import com.beeja.api.projectmanagement.utils.UserContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import jakarta.ws.rs.InternalServerErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -206,17 +207,15 @@ public class ProjectServiceImpl implements ProjectService {
     allEmployeeIds.addAll(contractManagerIds);
     allEmployeeIds.addAll(contractResourceIds);
 
-    List<String> activeEmployeeIds = validateAndFetchEmployees(new ArrayList<>(allEmployeeIds));
-
     Map<String, String> idToNameMap;
-    if (!activeEmployeeIds.isEmpty()) {
-      List<EmployeeNameDTO> employeeDetails = accountClient.getEmployeeNamesById(activeEmployeeIds);
+    if (!allEmployeeIds.isEmpty()) {
+      List<EmployeeNameDTO> employeeDetails = accountClient.getEmployeeNamesById(new ArrayList<>(allEmployeeIds));
+      log.info("Fetched employee details: {}", employeeDetails);
       idToNameMap = employeeDetails.stream()
               .collect(Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
     } else {
-        idToNameMap = new HashMap<>();
+      idToNameMap = new HashMap<>();
     }
-
     List<ProjectManagerView> projectManagerViews = projectManagerIds.stream()
             .map(id -> new ProjectManagerView(id, idToNameMap.getOrDefault(id, "N/A"), null))
             .collect(Collectors.toList());
@@ -482,11 +481,15 @@ public class ProjectServiceImpl implements ProjectService {
     try {
       projects = getAllProjectsInOrganization(organizationId, pageNumber, pageSize, projectId, status);
     } catch (Exception e) {
-      throw new ResourceNotFoundException(
-              BuildErrorMessage.buildErrorMessage(
+      log.error("Error fetching projects", e);
+      throw new InternalServerErrorException(
+              String.valueOf(BuildErrorMessage.buildErrorMessage(
                       ErrorType.DB_ERROR,
                       ErrorCode.DATA_FETCH_ERROR,
-                      Constants.ERROR_FETCHING_PROJECT));
+                      Constants.ERROR_FETCHING_PROJECT
+              ))
+      );
+
     }
     if (projects == null || projects.isEmpty()) {
       return Collections.emptyList();
@@ -535,4 +538,45 @@ public class ProjectServiceImpl implements ProjectService {
         return dto;
       }).collect(Collectors.toList());
   }
+
+    @Override
+    public ProjectEmployeeDTO getEmployeesByProjectId(String projectId) {
+        String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+
+        Project project = projectRepository.findByProjectIdAndOrganizationId(projectId, organizationId);
+        if (project == null) {
+            log.error(Constants.PROJECT_NOT_FOUND);
+            throw new RuntimeException("Project not found with id: " + projectId);
+        }
+
+        List<EmployeeNameDTO> managers = fetchEmployees(project.getProjectManagers(),  projectId);
+        List<EmployeeNameDTO> resources = fetchEmployees(project.getProjectResources(), projectId);
+
+        return new ProjectEmployeeDTO(managers, resources);
+    }
+
+    public List<EmployeeNameDTO> fetchEmployees(List<String> employeeIds, String projectId) {
+        if (employeeIds == null || employeeIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        try {
+            List<EmployeeNameDTO> employeeDTOs = accountClient.getEmployeeNamesById(employeeIds);
+
+            List<EmployeeNameDTO> activeEmployees = employeeDTOs.stream()
+                    .filter(EmployeeNameDTO::isActive)
+                    .collect(Collectors.toList());
+
+            Set<String> foundIds = employeeDTOs.stream()
+                    .map(EmployeeNameDTO::getEmployeeId)
+                    .collect(Collectors.toSet());
+            employeeIds.stream()
+                    .filter(id -> !foundIds.contains(id))
+                    .forEach(id -> log.warn("Employee ID {} not found or inactive for projectId {}", id, projectId));
+
+            return activeEmployees;
+        } catch (Exception e) {
+            log.error("Failed to fetch employees for projectId: {} with IDs: {}", projectId, employeeIds, e);
+            return Collections.emptyList();
+        }
+    }
 }

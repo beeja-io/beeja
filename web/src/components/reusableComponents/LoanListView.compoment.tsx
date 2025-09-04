@@ -21,6 +21,7 @@ import LoanPreview from '../directComponents/LoanPreview.component';
 import { Loan } from '../../entities/LoanEntity';
 import { LOAN_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 type LoanListViewProps = {
   handleIsApplyLoanScreen: () => void;
@@ -80,6 +81,16 @@ const LoanListView = (props: LoanListViewProps) => {
     fetchLoans();
   }, [user, fetchLoans]);
 
+  useEffect(() => {
+    if (isLoanPreviewModalOpen) {
+      disableBodyScroll();
+    } else {
+      enableBodyScroll();
+    }
+    return () => {
+      enableBodyScroll();
+    };
+  }, [isLoanPreviewModalOpen]);
   return (
     <>
       <PayrollMainContainer>
@@ -143,11 +154,14 @@ const LoanListView = (props: LoanListViewProps) => {
                         }}
                       >
                         <div>
-                          {loan.employeeName || 'Unknown'}
+                          {loan.employeeName ||
+                            `${user?.firstName || ''} ${user?.lastName || ''}` ||
+                            'Unknown'}
                           {user &&
-                            hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) && (
+                            (hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ||
+                              hasPermission(user, LOAN_MODULE.READ_LOAN)) && (
                               <div style={{ color: '#666', fontSize: '0.8em' }}>
-                                {loan.employeeId}
+                                {loan.employeeId || user?.employeeId}
                               </div>
                             )}
                         </div>

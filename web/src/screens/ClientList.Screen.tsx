@@ -60,7 +60,7 @@ const ClientList = ({
     <>
       <StyledDiv>
         <ExpenseHeading>
-          <ExpenseTitle>{t('All Clients')}</ExpenseTitle>
+          <ExpenseTitle>{t('All_Clients')}</ExpenseTitle>
         </ExpenseHeading>
 
         <TableListContainer style={{ marginTop: 0 }}>
@@ -73,18 +73,18 @@ const ClientList = ({
             <TableList>
               <TableHead>
                 <tr>
-                  <th>{t('Client ID')}</th>
-                  <th>{t('Client Name')}</th>
-                  <th>{t('Client Type')}</th>
+                  <th>{t('Client_ID')}</th>
+                  <th>{t('Client_Name')}</th>
+                  <th>{t('Client_Type')}</th>
                   <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
               <tbody>
                 {isLoading ? (
                   <>
-                    {[...Array(6).keys()].map((rowIndex) => (
+                    {[...Array(6).keys()]?.map((rowIndex) => (
                       <TableBodyRow key={rowIndex}>
-                        {[...Array(4).keys()].map((cellIndex) => (
+                        {[...Array(4).keys()]?.map((cellIndex) => (
                           <td key={cellIndex}>
                             <div className="skeleton skeleton-text">&nbsp;</div>
                           </td>
@@ -93,19 +93,19 @@ const ClientList = ({
                     ))}
                   </>
                 ) : (
-                  clientList.map((client, index) => (
+                  clientList?.map((client, index) => (
                     <TableBodyRow key={index}>
-                      <td onClick={() => handleClientClick(client.clientId)}>
-                        {client.clientId ?? '-'}
+                      <td onClick={() => handleClientClick(client?.clientId)}>
+                        {client?.clientId ?? '-'}
                       </td>
-                      <td onClick={() => handleClientClick(client.clientId)}>
-                        {client.clientName
-                          ? capitalizeFirstLetter(client.clientName)
+                      <td onClick={() => handleClientClick(client?.clientId)}>
+                        {client?.clientName
+                          ? capitalizeFirstLetter(client?.clientName)
                           : '-'}
                       </td>
-                      <td onClick={() => handleClientClick(client.clientId)}>
-                        {client.clientType
-                          ? removeUnderScore(client.clientType)
+                      <td onClick={() => handleClientClick(client?.clientId)}>
+                        {client?.clientType
+                          ? removeUnderScore(client?.clientType)
                           : '-'}
                       </td>
 

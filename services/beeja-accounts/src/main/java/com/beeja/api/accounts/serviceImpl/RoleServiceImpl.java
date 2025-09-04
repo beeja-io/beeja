@@ -1,5 +1,7 @@
 package com.beeja.api.accounts.serviceImpl;
 
+import com.beeja.api.accounts.constants.PermissionConstants;
+import com.beeja.api.accounts.constants.RoleConstants;
 import com.beeja.api.accounts.enums.ErrorCode;
 import com.beeja.api.accounts.enums.ErrorType;
 import com.beeja.api.accounts.exceptions.ConflictException;
@@ -17,12 +19,16 @@ import com.beeja.api.accounts.service.RoleService;
 import com.beeja.api.accounts.utils.BuildErrorMessage;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /** This class represents the business logic for managing roles within an organization. */
+@Slf4j
 @Service
 public class RoleServiceImpl implements RoleService {
 
@@ -63,7 +69,14 @@ public class RoleServiceImpl implements RoleService {
     if (newRole.getDescription() != null) {
       role.setDescription(newRole.getDescription());
     }
-    role.setPermissions(newRole.getPermissions());
+    Set<String> permissions = new HashSet<>(newRole.getPermissions());
+
+    if (RoleConstants.ROLE_EMPLOYEE.equalsIgnoreCase(newRole.getName())){
+      permissions.add(PermissionConstants.ACCESS_REFFERRAL);
+      log.info("Default permission '{}' added for role '{}'", PermissionConstants.ACCESS_REFFERRAL, newRole.getName());
+    }
+
+    role.setPermissions(permissions);
     role.setOrganizationId(organization.getId());
     try {
       return rolesRepository.save(role);

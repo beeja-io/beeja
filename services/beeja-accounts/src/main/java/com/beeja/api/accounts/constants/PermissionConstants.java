@@ -38,4 +38,6 @@ public class PermissionConstants {
   public static final String DELETE_HEALTH_INSURANCE = "DHIN";
 
   public static final String READ_LOAN = "RLON";
+
+  public static final String ACCESS_REFFERRAL = "ACREF";
 }

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Container,
   ProjectsTable,
@@ -6,13 +7,23 @@ import {
   TabContent,
   Tabs,
 } from '../styles/ProjectTabSectionStyles.style';
-import { useTranslation } from 'react-i18next';
+
+interface RawProjectResource {
+  employeeId: string;
+  name: string;
+  allocationPercentage: number;
+}
 
 interface ContactTabSectionProps {
   contractId: string;
+  description: string;
+  rawProjectResources: RawProjectResource[];
 }
 
-const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
+const ContactTabSection: React.FC<ContactTabSectionProps> = ({
+  description,
+  rawProjectResources,
+}) => {
   const [activeTab, setActiveTab] = useState<'Resources' | 'Description'>(
     'Resources'
   );
@@ -21,7 +32,7 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
   return (
     <Container>
       <Tabs>
-        {[t('resources'), t('description')].map((tabLabel, index) => {
+        {[t('Resources'), t('Description')].map((tabLabel, index) => {
           const tabKey = index === 0 ? 'Resources' : 'Description';
           return (
             <Tab
@@ -40,27 +51,32 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = () => {
           <ProjectsTable>
             <thead>
               <tr>
-                <th>{t('employeeId')}</th>
-                <th>{t('name')}</th>
-                <th>{t('contractName')}</th>
-                <th>{t('allocation')}</th>
+                <th>{t('EMPLOYEE_ID')}</th>
+                <th>{t('Name')}</th>
+                <th>{t('Allocation')}</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>{t('staticResourceTableNoData')}</td>
-              </tr>
+              {rawProjectResources && rawProjectResources.length > 0 ? (
+                rawProjectResources.map((resource, index) => (
+                  <tr key={index}>
+                    <td>{resource.employeeId}</td>
+                    <td>{resource.name}</td>
+                    <td>{resource.allocationPercentage}%</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={3} style={{ textAlign: 'center' }}>
+                    {t('No  Resources  Found')}
+                  </td>
+                </tr>
+              )}
             </tbody>
           </ProjectsTable>
         )}
 
-        {activeTab === 'Description' && (
-          <div>
-            <p>
-              <strong>{t('description')}:</strong> {t('No discription Found')}
-            </p>
-          </div>
-        )}
+        {activeTab === 'Description' && <div>{description}</div>}
       </TabContent>
     </Container>
   );

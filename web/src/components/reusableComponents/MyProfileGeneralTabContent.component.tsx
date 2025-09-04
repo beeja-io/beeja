@@ -38,6 +38,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import Calendar from './Calendar.component';
 import ToastMessage from './ToastMessage.component';
+import { DropdownOrg } from './DropDownMenu.component';
 
 type GeneralDetailsTabProps = {
   heading: string;
@@ -45,7 +46,7 @@ type GeneralDetailsTabProps = {
   isEditModeOn: boolean;
   handleIsEditModeOn: () => void;
   employee: EmployeeEntity;
-  fetchEmployeeAgain: () => void;
+  fetchEmployeeAgain: (employeeId: string) => void;
 };
 
 export const GeneralDetailsTab = ({
@@ -214,7 +215,28 @@ export const GeneralDetailsTab = ({
       handleIsFormEmailValid();
       return;
     }
+    const employeeId = 'Employee Id';
+    if (employeeId in modifiedFields) {
+      const empIdValue = formData[employeeId]?.trim();
+      const hasAlphabet = /[a-zA-Z]/.test(empIdValue);
+      const hasNumber = /\d/.test(empIdValue);
 
+      if (!empIdValue) {
+        setFormErrorToastHead('Error in updating profile');
+        setFormErrorToastMessage('Employee ID cannot be empty');
+        handleIsFormEmailValid();
+        return;
+      }
+
+      if (!hasAlphabet || !hasNumber) {
+        setFormErrorToastHead('Error in updating profile');
+        setFormErrorToastMessage(
+          'Employee ID must contain at least one letter and one number'
+        );
+        handleIsFormEmailValid();
+        return;
+      }
+    }
     const emailLabels = ['Email Address', 'Alt Email Address', 'Email'];
     for (const emailLabel of emailLabels) {
       const emailValue = formData[emailLabel] || originalFormData[emailLabel];
@@ -237,6 +259,11 @@ export const GeneralDetailsTab = ({
 
     handleIsUpdateResponseLoading();
 
+    Object.keys(modifiedFields).forEach((fieldLabel) => {
+      if (!isFieldEditable(fieldLabel)) {
+        delete modifiedFields[fieldLabel];
+      }
+    });
     if (Object.keys(modifiedFields).length === 0) {
       // No fields are modified, So I'm not sending the request
       handleIsEditModeOn();
@@ -244,12 +271,15 @@ export const GeneralDetailsTab = ({
       return;
     }
     try {
+      const originalEmployeeId = employee.account.employeeId;
+      const updatedEmployeeId = formData['Employee Id'] || originalEmployeeId;
+
       await updateEmployeeDetailsByEmployeeId(
-        employee.account.employeeId,
+        originalEmployeeId,
         mapFormDataToBackendStructure(modifiedFields)
       );
       resetFormData();
-      fetchEmployeeAgain();
+      fetchEmployeeAgain(updatedEmployeeId);
       handleUpdateToastMessage();
       setIsUpdateResponseLoading(false);
       setIsFormSubmitted(true);
@@ -263,12 +293,14 @@ export const GeneralDetailsTab = ({
       setModifiedFields({});
       handleIsEditModeOn();
     } catch (error: any) {
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data === 'Email is already registered'
-      ) {
+      const errorMessage = error?.response?.data?.message;
+
+      if (errorMessage === 'Email is already registered') {
         handleMailRegesteredError();
+      } else if (errorMessage === 'Employee ID already exists') {
+        setFormErrorToastHead('Update Failed');
+        setFormErrorToastMessage('Employee ID already exists');
+        handleIsFormEmailValid();
       } else {
         handleUpdateErrorOccured();
       }
@@ -309,6 +341,8 @@ export const GeneralDetailsTab = ({
 
   const handleFinalDataToBeSentToBackend = (label: string): string => {
     switch (label) {
+      case 'Employee Id':
+        return 'employeeId';
       case 'Full Name':
         return 'firstName';
       case 'Date of Birth':
@@ -393,10 +427,16 @@ export const GeneralDetailsTab = ({
   const handleIsUpdateResponseLoading = () => {
     setIsUpdateResponseLoading(!isUpdateResponseLoading);
   };
-  const editableFieldsForLoggedInEmployee = [
-    'Alt Email Address',
-    'Alt Phone Number',
-  ];
+  const isFieldEditable = (label: string): boolean => {
+    if (allowFullEditingAccess) return true;
+    const editableFields = ['Alt Email Address', 'Alt Phone Number'];
+
+    return (
+      editableFields.includes(label) &&
+      user?.employeeId === employee?.account?.employeeId
+    );
+  };
+
   const allowFullEditingAccess =
     user && hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES);
 
@@ -441,8 +481,7 @@ export const GeneralDetailsTab = ({
         <TabContentMainContainer>
           <TabContentMainContainerHeading>
             <h4>{heading}</h4>
-            {allowFullEditingAccess &&
-            user.employeeId != employee.account.employeeId ? (
+            {allowFullEditingAccess ? (
               <TabContentEditArea>
                 {user &&
                   (allowFullEditingAccess ||
@@ -518,46 +557,35 @@ export const GeneralDetailsTab = ({
                 {firstColumn.map(({ label, value }) => (
                   <tr key={label}>
                     <TabContentTableTd>{t(label)}</TabContentTableTd>
-                    {isEditModeOn &&
-                    ((user?.employeeId === employee.account.employeeId &&
-                      editableFieldsForLoggedInEmployee.includes(label)) ||
-                      (allowFullEditingAccess &&
-                        user.employeeId !== employee.account.employeeId)) ? (
+                    {isEditModeOn && isFieldEditable(label) ? (
                       <TabContentTableTd>
                         {label === 'Country' ||
                         label === 'Nationality' ||
                         label === 'Department' ||
                         label === 'Employment Type' ||
                         label === 'Designation' ? (
-                          <SelectInput
+                          <DropdownOrg
                             label={label}
-                            value={
-                              formData[label] !== undefined
-                                ? formData[label]
-                                : ''
-                            }
-                            options={
-                              label === 'Country'
-                                ? ['India', 'Germany', 'United States']
-                                : label === 'Nationality'
-                                  ? ['Indian', 'German', 'American']
-                                  : label === 'Department'
-                                    ? departmentList?.values?.map(
-                                        (department) => department.value
+                            selected={formData[label] ?? ''}
+                            options={(label === 'Country'
+                              ? ['India', 'Germany', 'United States']
+                              : label === 'Nationality'
+                                ? ['Indian', 'German', 'American']
+                                : label === 'Department'
+                                  ? departmentList?.values?.map((d) => d.value)
+                                  : label === 'Employment Type'
+                                    ? employmentTypes?.values?.map(
+                                        (e) => e.value
                                       )
-                                    : label === 'Employment Type'
-                                      ? employmentTypes?.values?.map(
-                                          (employmentType) =>
-                                            employmentType.value
-                                        )
-                                      : label === 'Designation'
-                                        ? jobTitles?.values?.map(
-                                            (jobTitle) => jobTitle.value
-                                          )
-                                        : []
-                            }
-                            onChange={(label, selectedValue) =>
-                              handleChange(label, selectedValue)
+                                    : label === 'Designation'
+                                      ? jobTitles?.values?.map((j) => j.value)
+                                      : []
+                            )?.map((value) => ({
+                              label: value,
+                              value: value,
+                            }))}
+                            onChange={(selectedValue) =>
+                              handleChange(label, selectedValue as string)
                             }
                           />
                         ) : label === 'Joining Date' ? (
@@ -588,7 +616,18 @@ export const GeneralDetailsTab = ({
                           </>
                         ) : (
                           <InlineInput
-                            disabled={label === 'Employee Id'}
+                            disabled={
+                              (label === 'Employee Id' &&
+                                user &&
+                                user.employeeId !==
+                                  employee.account.employeeId &&
+                                !user.roles.some((role) =>
+                                  role.permissions.includes(
+                                    EMPLOYEE_MODULE.UPDATE_EMPLOYEE
+                                  )
+                                )) ??
+                              false
+                            }
                             type={
                               label === 'Date of Birth' ||
                               label === 'Joining Date'
@@ -620,6 +659,7 @@ export const GeneralDetailsTab = ({
                                 'Phone',
                                 'Date of Birth',
                                 'Joining Date',
+                                'Employee Id',
                               ];
                               if (label === 'Postal Code') {
                                 const numericValue = inputValue.replace(
@@ -642,6 +682,8 @@ export const GeneralDetailsTab = ({
                                 );
                                 const validValue = numericValue.slice(0, 10);
                                 handleChange(label, validValue);
+                              } else if (label === 'Employee Id') {
+                                handleChange(label, inputValue.toUpperCase());
                               } else if (
                                 !labelsToExcludeFromStrictAlphabets.includes(
                                   label
@@ -687,28 +729,26 @@ export const GeneralDetailsTab = ({
                   {secondColumn.map(({ label, value }) => (
                     <tr key={label}>
                       <TabContentTableTd>{t(label)}</TabContentTableTd>
-                      {isEditModeOn &&
-                      ((user?.employeeId === employee.account.employeeId &&
-                        editableFieldsForLoggedInEmployee.includes(label)) ||
-                        (allowFullEditingAccess &&
-                          user.employeeId !== employee.account.employeeId)) ? (
+                      {isEditModeOn && isFieldEditable(label) ? (
                         <TabContentTableTd>
                           {label === 'Gender' || label === 'Marital Status' ? (
-                            <SelectInput
+                            <DropdownOrg
                               label={label}
-                              value={
+                              selected={
                                 formData[label] !== undefined
                                   ? formData[label]
                                   : ''
                               }
-                              options={
-                                label === 'Gender'
-                                  ? ['Male', 'Female']
-                                  : ['Married', 'Single']
-                              }
-                              onChange={(label, selectedValue) =>
-                                handleChange(label, selectedValue)
-                              }
+                              options={(label === 'Gender'
+                                ? ['Male', 'Female']
+                                : ['Married', 'Single']
+                              ).map((option) => ({
+                                label: option,
+                                value: option,
+                              }))}
+                              onChange={(selectedValue) => {
+                                handleChange(label, selectedValue ?? '');
+                              }}
                             />
                           ) : (
                             <InlineInput
@@ -836,11 +876,13 @@ export const SelectInput: React.FC<SelectInputProps> = ({
       }
     >
       <option value="">Select</option>
-      {options?.map((option) => (
-        <option key={option} value={option} selected={selected === option}>
-          {option}
-        </option>
-      ))}
+      {[...(options || [])]
+        .sort((a, b) => a.localeCompare(b))
+        .map((option) => (
+          <option key={option} value={option} selected={selected === option}>
+            {option}
+          </option>
+        ))}
     </Select>
   );
 };

@@ -92,8 +92,8 @@ const FeatureToggleScreen = () => {
                           checked={features.includes(key.toString())}
                           onChange={handleCheckboxChange}
                           disabled={
-                            key === EFeatureToggles.EMPLOYEE_MANAGEMENT ||
-                            key === EFeatureToggles.DOCUMENT_MANAGEMENT
+                            key === EFeatureToggles.EMPLOYEES_MANAGEMENT ||
+                            key === EFeatureToggles.EMPLOYEE_DOCUMENT_MANAGEMENT
                           }
                         />
                         <Slider />
