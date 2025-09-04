@@ -169,6 +169,7 @@ export const DropdownOrg: React.FC<DropdownMenuProps> = ({
   className = '',
   options,
   value = null,
+  selected: selectedProp,
   style,
   onKeyDown,
   onChange,
@@ -176,6 +177,7 @@ export const DropdownOrg: React.FC<DropdownMenuProps> = ({
   required,
   listClassName = '',
 }) => {
+  const initialValue = selectedProp ?? value ?? null;
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value ?? null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -194,8 +196,8 @@ export const DropdownOrg: React.FC<DropdownMenuProps> = ({
   }, []);
 
   useEffect(() => {
-    setSelected(value ?? null);
-  }, [value]);
+    setSelected(initialValue);
+  }, [initialValue]);
 
   const handleSelect = (item: { label: string; value: string | null }) => {
     setSelected(item.value);
