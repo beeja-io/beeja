@@ -83,4 +83,3 @@ export const isValidTaxNo = (taxNumber: string): boolean => {
   const regex = /^[A-Z]{3,}[ -]?[0-9]{5,}$/;
   return regex.test(taxNumber.trim());
 };
-
