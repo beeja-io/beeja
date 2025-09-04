@@ -91,6 +91,17 @@ const LoanListView = (props: LoanListViewProps) => {
       enableBodyScroll();
     };
   }, [isLoanPreviewModalOpen]);
+
+  const sortedLoans = [...loansList].sort((a, b) => {
+    const dateA = a.requestedDate
+      ? new Date(a.requestedDate).getTime()
+      : new Date(a.createdAt).getTime();
+    const dateB = b.requestedDate
+      ? new Date(b.requestedDate).getTime()
+      : new Date(b.createdAt).getTime();
+    return dateB - dateA;
+  });
+
   return (
     <>
       <PayrollMainContainer>
@@ -137,7 +148,7 @@ const LoanListView = (props: LoanListViewProps) => {
               </TableHead>
               <tbody>
                 {loansList &&
-                  loansList.map((loan: any, index: any) => (
+                  sortedLoans.map((loan: any, index: any) => (
                     <TableBodyRow key={index}>
                       <td
                         onClick={() => {
