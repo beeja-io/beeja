@@ -56,6 +56,12 @@ export const TextInput = styled.input`
   &.disabledBgWhite {
     background-color: white;
   }
+  &:disabled,
+  &.disabled {
+    background-color: ${(props) => props.theme.colors.grayColors.gray6};
+    cursor: not-allowed;
+    color: ${(props) => props.theme.colors.grayColors.gray11};
+  }
   &.grayText {
     color: #8b8b8b;
   }

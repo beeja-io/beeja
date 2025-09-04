@@ -190,17 +190,6 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
     color: #687588;
     font-size: 12px;
   }
-  select:disabled {
-    background-color: ${(props) => props.theme.colors.backgroundColors.primary};
-  }
-  input:disabled {
-    background-color: ${(props) => props.theme.colors.blackColors.white6};
-  }
-  textarea:disabled {
-    background-color: ${(props) => props.theme.colors.blackColors.white6};
-
-    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
-  }
 `;
 
 export const StepsContainer = styled.div`
