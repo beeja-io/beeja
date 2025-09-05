@@ -2,12 +2,15 @@ package com.beeja.api.projectmanagement.repository;
 
 import com.beeja.api.projectmanagement.model.Client;
 import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 /** Repository interface for performing CRUD operations on {@link Client} documents in MongoDB. */
 @Repository
-public interface ClientRepository extends MongoRepository<Client, String> {
+public interface    ClientRepository extends MongoRepository<Client, String> {
 
   /**
    * Retrieves a client by email and organization ID.
@@ -51,4 +54,13 @@ public interface ClientRepository extends MongoRepository<Client, String> {
    * @return a list of {@link Client} objects ordered by {@code createdAt} descending
    */
   List<Client> findAllByOrganizationIdOrderByCreatedAtDesc(String organizationId);
+
+    /**
+     * Retrieves a paginated list of clients for a given organization, ordered by creation date descending.
+     *
+     * @param organizationId the ID of the organization whose clients are to be retrieved
+     * @param pageable the pagination information (page number, page size, sorting)
+     * @return a {@link Page} of {@link Client} objects for the specified organization
+     */
+  Page<Client> findAllByOrganizationIdOrderByCreatedAtDesc(String organizationId, Pageable pageable);
 }

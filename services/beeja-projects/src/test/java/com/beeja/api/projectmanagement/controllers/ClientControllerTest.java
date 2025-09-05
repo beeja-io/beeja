@@ -10,15 +10,17 @@ import static org.mockito.Mockito.when;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
@@ -167,40 +169,54 @@ public class ClientControllerTest {
     assertEquals("Database error", exception.getMessage());
     verify(clientService, times(1)).getClientById(clientId);
   }
+    @Test
+    void getAllClientsOfOrganization_ClientsExist_ReturnsListOfClients() throws Exception {
 
-  @Test
-  void getAllClientsOfOrganization_ClientsExist_ReturnsListOfClients() throws Exception {
-    List<Client> clients = new ArrayList<>();
+        List<Client> clients = new ArrayList<>();
+        Client client1 = new Client();
+        client1.setClientId("1");
+        client1.setClientName("Client A");
 
-    Client client1 = new Client();
-    client1.setClientId("1");
-    client1.setClientName("Client A");
+        Client client2 = new Client();
+        client2.setClientId("2");
+        client2.setClientName("Client B");
 
-    Client client2 = new Client();
-    client2.setClientId("2");
-    client2.setClientName("Client B");
+        clients.add(client1);
+        clients.add(client2);
 
-    clients.add(client1);
-    clients.add(client2);
+        int pageNumber = 1;
+        int pageSize = 10;
+        long totalRecordsInDb = 25L;
+        Page<Client> pageClients = new PageImpl<>(clients, PageRequest.of(pageNumber - 1, pageSize), clients.size());
 
-    when(clientService.getAllClientsOfOrganization()).thenReturn(clients);
+        String orgId = "orgId";
+        when(clientService.getAllClientsOfOrganization(orgId, pageNumber, pageSize)).thenReturn(pageClients);
 
-    ResponseEntity<List<Client>> response = clientController.getAllClientsOfOrganization();
+        ResponseEntity<Map<String, Object>> response = clientController.getAllClientsOfOrganization(pageNumber, pageSize);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
-    assertEquals(2, response.getBody().size());
-    assertEquals("Client A", response.getBody().get(0).getClientName());
-    assertEquals("Client B", response.getBody().get(1).getClientName());
-    verify(clientService, times(1)).getAllClientsOfOrganization();
-  }
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
 
-  @Test
+        Map<String, Object> responseBody = response.getBody();
+
+        List<Client> clientList = (List<Client>) responseBody.get("clients");
+        Map<String, Object> metadata = (Map<String, Object>) responseBody.get("metadata");
+        Long totalRecords = (Long) metadata.get("totalRecords");
+
+        assertEquals(2, clientList.size());
+        assertEquals("Client A", clientList.get(0).getClientName());
+        assertEquals("Client B", clientList.get(1).getClientName());
+        assertEquals(25L, totalRecords);
+
+        verify(clientService, times(1)).getAllClientsOfOrganization(orgId, pageNumber, pageSize);
+    }
+
+    @Test
   void getAllClientsOfOrganization_NoClientsExist_ReturnsEmptyList() throws Exception {
-    List<Client> clients = Arrays.asList();
+    List<Client> clients = List.of();
     when(clientService.getAllClientsOfOrganization()).thenReturn(clients);
 
-    ResponseEntity<List<Client>> response = clientController.getAllClientsOfOrganization();
+    ResponseEntity<Map<String, Object>> response = clientController.getAllClientsOfOrganization(1,10);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
@@ -218,7 +234,7 @@ public class ClientControllerTest {
         assertThrows(
             RuntimeException.class,
             () -> {
-              clientController.getAllClientsOfOrganization();
+              clientController.getAllClientsOfOrganization(1,10);
             });
 
     assertEquals("Failed to retrieve clients", exception.getMessage());
