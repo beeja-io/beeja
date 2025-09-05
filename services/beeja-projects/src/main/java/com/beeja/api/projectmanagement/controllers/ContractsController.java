@@ -91,13 +91,14 @@ public class ContractsController {
           @RequestParam(required = false) String projectId,
           @RequestParam(required = false) ProjectStatus status) {
 
+      if (pageNumber < 1 || pageSize < 1) {
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page number and size must be positive integers");
+      }
+
       String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
 
       long totalRecords = contractService.getTotalContractSize(organizationId, projectId, status);
       int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-      if (pageNumber < 1 || pageSize < 1) {
-          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page number and size must be positive integers");
-      }
 
       HashMap<String, Object> metadata = new HashMap<>();
       metadata.put("totalRecords", totalRecords);
@@ -111,6 +112,7 @@ public class ContractsController {
     response.setContracts(contracts);
     return ResponseEntity.ok(response);
   }
+
   @PatchMapping("/{contractId}/status")
   @HasPermission(PermissionConstants.UPDATE_CONTRACT)
   public ResponseEntity<Contract> changeContractStatus(

@@ -14,6 +14,7 @@ import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -80,7 +81,7 @@ public class ClientController {
    * @return A list of clients along with HTTP status 200 (OK).
    * @throws Exception If an error occurs while retrieving the clients.
    */
-  @GetMapping("/clients")
+  @GetMapping
   @HasPermission(PermissionConstants.GET_CLIENT)
   public ResponseEntity<Map<String, Object>> getAllClientsOfOrganization(
           @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
@@ -96,7 +97,6 @@ public class ClientController {
               .get(Constants.ID).toString();
 
       Page<Client> page = clientService.getAllClientsOfOrganization(organizationId, pageNumber - 1, pageSize);
-
       Map<String, Object> response = new HashMap<>();
       response.put("metadata", Map.of(
               "totalRecords", page.getTotalElements(),
