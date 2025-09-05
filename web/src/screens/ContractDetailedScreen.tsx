@@ -67,7 +67,7 @@ const ContractDetailsScreen: React.FC = () => {
         try {
           const response = await downloadClientLogo(client.logoId);
           if (!response.data || response.data.size === 0) {
-            toast.error('Received empty or invalid blob data');
+            toast.error('Received_empty_or_invalid_blob_data');
           }
           const reader = new FileReader();
           reader.onloadend = () => {
@@ -75,11 +75,11 @@ const ContractDetailsScreen: React.FC = () => {
             setLogoUrl(imageUrl);
           };
           reader.onerror = () => {
-            toast.error('Error converting blob to base64');
+            toast.error('Error_converting_blob_to_base64');
           };
           reader.readAsDataURL(response.data);
         } catch (error) {
-          toast.error(t('Error Fetching logo'));
+          toast.error(t('Error_Fetching_logo'));
         }
       }
     };
@@ -99,7 +99,7 @@ const ContractDetailsScreen: React.FC = () => {
         setClientId(res?.data?.clientId);
         setProjectId(res?.data?.projectId);
       } catch (error) {
-        toast.error(t('Failed to fetch contract'));
+        toast.error(t('Failed_to_fetch_contract'));
       } finally {
         setIsLoading(false);
       }
@@ -117,7 +117,7 @@ const ContractDetailsScreen: React.FC = () => {
         setProject(projectRes?.data[0]);
         setClient(clientRes.data);
       } catch (error) {
-        toast.error('Failed to fetch project/client: ');
+        toast.error('Failed_to_fetch_project/client: ');
       } finally {
         setIsLoading(false);
       }
@@ -198,7 +198,7 @@ const ContractDetailsScreen: React.FC = () => {
 
       <RightSection>
         <RightSectionDiv>
-          <RightSectionHeading>{t('Client Details')}</RightSectionHeading>
+          <RightSectionHeading>{t('Client_Details')}</RightSectionHeading>
           {client?.clientId && (
             <ClientInfoWrapper>
               <LogoPreview>
@@ -225,7 +225,7 @@ const ContractDetailsScreen: React.FC = () => {
           </IconWrapper>
           <HorizontalLine />
           <RightSubSectionDiv>
-            <RightSectionHeading>{t('Project Details')}</RightSectionHeading>
+            <RightSectionHeading>{t('Project_Details')}</RightSectionHeading>
             <ContractTitleHeader>
               <ProjectSeactionHeading>{project?.name}</ProjectSeactionHeading>
               {project?.status && (

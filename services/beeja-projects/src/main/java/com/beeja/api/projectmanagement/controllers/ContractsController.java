@@ -6,6 +6,7 @@ import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ContractRequest;
+import com.beeja.api.projectmanagement.responses.ClientResourcesDTO;
 import com.beeja.api.projectmanagement.responses.ContractResponseDTO;
 import com.beeja.api.projectmanagement.responses.ContractResponsesDTO;
 import com.beeja.api.projectmanagement.service.ContractService;
@@ -122,5 +123,21 @@ public class ContractsController {
     Contract updatedContract = contractService.changeContractStatus(contractId, status);
     return ResponseEntity.ok(updatedContract);
   }
+
+    @GetMapping("/{clientId}/resources")
+    @HasPermission(PermissionConstants.GET_CONTRACT)
+    public ResponseEntity<List<ClientResourcesDTO>> getClientResources(@PathVariable String clientId) {
+        List<ClientResourcesDTO> resources = contractService.getClientResources(clientId);
+        if (resources.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(resources);
+
+    @GetMapping("/client/{clientId}")
+    @HasPermission(PermissionConstants.GET_CONTRACT)
+    public ResponseEntity<List<ContractResponsesDTO>> getContractsByClientId(
+            @PathVariable String clientId) {
+        return ResponseEntity.ok(contractService.getContractsByClientId(clientId));
+    }
 
 }

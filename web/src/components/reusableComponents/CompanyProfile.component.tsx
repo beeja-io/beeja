@@ -15,7 +15,6 @@ import {
 } from '../../svgs/CommonSvgs.svs';
 import {
   Input,
-  Select,
   Row,
   Label,
   Container,
@@ -38,6 +37,7 @@ import { toast } from 'sonner';
 import axios, { AxiosError } from 'axios';
 import {
   isValidESINumber,
+  isValidTaxNo,
   isValidEmail,
   isValidGSTNumber,
   isValidLINNumber,
@@ -51,6 +51,7 @@ import { usePreferences } from '../../context/PreferencesContext';
 import { hasPermission } from '../../utils/permissionCheck';
 import { ORGANIZATION_MODULE } from '../../constants/PermissionConstants';
 import { useTranslation } from 'react-i18next';
+import DropdownMenu from './DropDownMenu.component';
 
 export const CompanyProfile = () => {
   const [isEditModeOn, setEditModeOn] = useState(false);
@@ -151,6 +152,25 @@ export const CompanyProfile = () => {
       );
       return;
     }
+    if (
+      ['accountName', 'bankName', 'accountNumber', 'ifscNumber'].includes(name)
+    ) {
+      setCompanyProfile((prevState) => ({
+        ...prevState,
+        bankDetails: {
+          ...prevState.bankDetails,
+          [name]: value,
+        },
+      }));
+      setUpdatedOrganization((prevState) => ({
+        ...prevState,
+        bankDetails: {
+          ...prevState.bankDetails,
+          [name]: value,
+        },
+      }));
+      return;
+    }
     setCompanyProfile((prevState) => ({
       ...prevState,
       [name]: value,
@@ -179,6 +199,7 @@ export const CompanyProfile = () => {
 
   const [nameError, setNameError] = useState('');
   const [panError, setPanError] = useState('');
+  const [taxError, setTaxError] = useState<string>('');
   const [pfError, setPFError] = useState<string>('');
   const [tanError, setTANError] = useState<string>('');
   const [esiError, setESIError] = useState<string>('');
@@ -194,6 +215,7 @@ export const CompanyProfile = () => {
     // Reset error states
     setNameError('');
     setPanError('');
+    setTaxError('');
     setPFError('');
     setTANError('');
     setESIError('');
@@ -228,6 +250,17 @@ export const CompanyProfile = () => {
         hasErrors = true;
       } else {
         setPanError('');
+      }
+    }
+    if (
+      updatedOrganization.accounts &&
+      updatedOrganization.accounts.taxNumber
+    ) {
+      if (!isValidTaxNo(updatedOrganization.accounts.taxNumber.toUpperCase())) {
+        setTaxError(t('TAX_NUMBER_ERROR'));
+        hasErrors = true;
+      } else {
+        setTaxError('');
       }
     }
     if (updatedOrganization.accounts && updatedOrganization.accounts.pfNumber) {
@@ -297,6 +330,19 @@ export const CompanyProfile = () => {
       } else {
         setLINError('');
       }
+    }
+    if (
+      updatedOrganization.bankDetails?.accountName ||
+      updatedOrganization.bankDetails?.bankName ||
+      updatedOrganization.bankDetails?.accountNumber ||
+      updatedOrganization.bankDetails?.ifscNumber
+    ) {
+      updatedOrganization.bankDetails = {
+        accountName: updatedOrganization.bankDetails.accountName,
+        bankName: updatedOrganization.bankDetails.bankName,
+        accountNumber: updatedOrganization.bankDetails.accountNumber,
+        ifscNumber: updatedOrganization.bankDetails.ifscNumber,
+      };
     }
     if (updatedOrganization.website) {
       if (!isValidURL(updatedOrganization.website)) {
@@ -604,22 +650,26 @@ export const CompanyProfile = () => {
                 />
               </div>
               <div>
-                <Select
-                  name="address.state"
-                  value={
-                    companyProfile.address &&
-                    companyProfile.address.state != null
-                      ? companyProfile.address.state
-                      : ''
-                  }
-                  onChange={handleInputChange}
+                <DropdownMenu
+                  label={t('Select_State')}
+                  selected={companyProfile.address?.state ?? ''}
+                  className={'largeContainerFil drop'}
+                  options={[
+                    { label: t('SELECT_STATE'), value: '' },
+                    { label: t('TELANGANA'), value: 'Telangana' },
+                    { label: t('ANDHRA_PRADESH'), value: 'AP' },
+                    { label: t('DELHI'), value: 'Delhi' },
+                  ]}
                   disabled={!isEditModeOn}
-                >
-                  <option value={''}>{t('SELECT_STATE')}</option>
-                  <option value={'Telangana'}>{t('TELANGANA')}</option>
-                  <option value={'AP'}>{t('ANDHRA_PRADESH')}</option>
-                  <option value={'Delhi'}>{t('DELHI')}</option>
-                </Select>
+                  onChange={(value: string | null) => {
+                    handleInputChange({
+                      target: {
+                        name: 'address.state',
+                        value: value ?? '',
+                      },
+                    } as React.ChangeEvent<HTMLInputElement>);
+                  }}
+                />
               </div>
               <div>
                 <Input
@@ -662,21 +712,25 @@ export const CompanyProfile = () => {
 
           <Row>
             <Label>{t('COUNTRY')}</Label>
-            <Select
-              name="address.country"
-              value={
-                companyProfile.address && companyProfile.address.country != null
-                  ? companyProfile.address.country
-                  : ''
-              }
-              onChange={handleInputChange}
+            <DropdownMenu
+              label={t('SELECT_COUNTRY')}
+              selected={companyProfile.address?.country ?? ''}
+              className={'drop'}
+              onChange={(value: string | null) => {
+                handleInputChange({
+                  target: {
+                    name: 'address.country',
+                    value: value ?? '',
+                  },
+                } as React.ChangeEvent<HTMLInputElement>);
+              }}
+              options={[
+                { label: t('INDIA'), value: 'India' },
+                { label: t('GERMANY'), value: 'Germany' },
+                { label: t('US'), value: 'US' },
+              ]}
               disabled={!isEditModeOn}
-            >
-              <option value={''}>{t('SELECT_COUNTRY')}</option>
-              <option value={'India'}>{t('INDIA')}</option>
-              <option value={'Germany'}>{t('GERMANY')}</option>
-              <option value={'US'}>{t('US')}</option>
-            </Select>
+            />
           </Row>
           <Row>
             <Label>{t('FILLING_ADDRESS')}</Label>
@@ -856,6 +910,35 @@ export const CompanyProfile = () => {
             </div>
           </Row>
           <Row>
+            <Label>{t('TAX_NO.')}</Label>
+            <div>
+              <Input
+                name="accounts.taxNumber"
+                placeholder={isEditModeOn ? t('TAX_NO_PLACEHOLDER') : '-'}
+                type="text"
+                value={
+                  companyProfile.accounts && companyProfile.accounts.taxNumber
+                    ? companyProfile.accounts.taxNumber.toUpperCase()
+                    : ''
+                }
+                onChange={handleInputChange}
+                disabled={!isEditModeOn}
+                maxLength={10}
+                autoComplete="off"
+                onKeyDown={(event) => {
+                  const allowedCharacters = /^[a-zA-Z0-9]+$/;
+                  if (
+                    !allowedCharacters.test(event.key) &&
+                    event.key !== 'Backspace'
+                  ) {
+                    event.preventDefault();
+                  }
+                }}
+              />
+              {taxError.length > 1 && <span>{taxError}</span>}
+            </div>
+          </Row>
+          <Row>
             <Label>{t('ESI_NO.')}</Label>
             <div>
               <Input
@@ -968,6 +1051,114 @@ export const CompanyProfile = () => {
           </Row>
         </Container>
         {isUpdateResponseLoading && <SpinAnimation />}
+      </TabContentMainContainer>
+      <TabContentMainContainer>
+        <TabContentMainContainerHeading>
+          <h4>{t('BANK_INFO')}</h4>
+          {user &&
+            hasPermission(user, ORGANIZATION_MODULE.UPDATE_ORGANIZATION) && (
+              <TabContentEditArea>
+                {!isEditModeOn ? (
+                  <span onClick={handleIsEditModeOn}>
+                    <EditWhitePenSVG />
+                  </span>
+                ) : (
+                  <span>
+                    <span
+                      title="Save Changes"
+                      onClick={handleSubmitCompanyProfile}
+                    >
+                      <CheckBoxOnSVG />
+                    </span>
+                    <span title="Discard Changes" onClick={handleCloseEditMode}>
+                      <CrossMarkSVG />
+                    </span>
+                  </span>
+                )}
+              </TabContentEditArea>
+            )}
+        </TabContentMainContainerHeading>
+        <BorderDivLine width="100%" />
+        <Container>
+          <Row>
+            <Label>{t('BANK_NAME')}</Label>
+            <div>
+              <Input
+                name="bankName"
+                type="text"
+                placeholder={isEditModeOn ? 'Enter Bank Name' : '-'}
+                value={companyProfile.bankDetails?.bankName || ''}
+                onChange={handleInputChange}
+                disabled={!isEditModeOn}
+                autoComplete="off"
+              />
+            </div>
+          </Row>
+          <Row>
+            <Label>{t('ACCOUNT_NAME')}</Label>
+            <div>
+              <Input
+                name="accountName"
+                type="text"
+                placeholder={isEditModeOn ? t('ACCOUNT_NAME_PLACEHOLDER') : '-'}
+                value={companyProfile.bankDetails?.accountName || ''}
+                onChange={handleInputChange}
+                disabled={!isEditModeOn}
+                autoComplete="off"
+              />
+            </div>
+          </Row>
+          <Row>
+            <Label>{t('ACCOUNT_NUMBER')}</Label>
+            <div>
+              <Input
+                name="accountNumber"
+                type="text"
+                placeholder={
+                  isEditModeOn ? t('ACCOUNT_NUMBER_PLACEHOLDER') : '-'
+                }
+                value={companyProfile.bankDetails?.accountNumber || ''}
+                onChange={handleInputChange}
+                disabled={!isEditModeOn}
+                autoComplete="off"
+                maxLength={18}
+                onKeyDown={(event) => {
+                  const allowedCharacters = /^[0-9]+$/;
+                  if (
+                    !allowedCharacters.test(event.key) &&
+                    event.key !== 'Backspace'
+                  ) {
+                    event.preventDefault();
+                  }
+                }}
+              />
+            </div>
+          </Row>
+          <Row>
+            <Label>{t('IFSC_CODE')}</Label>
+            <div>
+              <Input
+                name="ifscNumber"
+                type="text"
+                placeholder={isEditModeOn ? 'Enter IFSC Code' : '-'}
+                value={companyProfile.bankDetails?.ifscNumber || ''}
+                onChange={handleInputChange}
+                disabled={!isEditModeOn}
+                autoComplete="off"
+                maxLength={11}
+                onKeyDown={(event) => {
+                  const allowedCharacters = /^[a-zA-Z0-9]+$/;
+                  if (
+                    !allowedCharacters.test(event.key) &&
+                    event.key !== 'Backspace'
+                  ) {
+                    event.preventDefault();
+                  }
+                }}
+              />
+            </div>
+          </Row>
+        </Container>
       </TabContentMainContainer>
     </>
   );

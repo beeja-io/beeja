@@ -60,7 +60,7 @@ const ClientList = ({
     <>
       <StyledDiv>
         <ExpenseHeading>
-          <ExpenseTitle>{t('All Clients')}</ExpenseTitle>
+          <ExpenseTitle>{t('All_Clients')}</ExpenseTitle>
         </ExpenseHeading>
 
         <TableListContainer style={{ marginTop: 0 }}>
@@ -73,9 +73,9 @@ const ClientList = ({
             <TableList>
               <TableHead>
                 <tr>
-                  <th>{t('Client ID')}</th>
-                  <th>{t('Client Name')}</th>
-                  <th>{t('Client Type')}</th>
+                  <th>{t('Client_ID')}</th>
+                  <th>{t('Client_Name')}</th>
+                  <th>{t('Client_Type')}</th>
                   <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
