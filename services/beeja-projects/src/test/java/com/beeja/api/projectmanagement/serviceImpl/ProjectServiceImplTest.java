@@ -17,6 +17,8 @@ import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.repository.ProjectRepository;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
+import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
+import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -139,7 +141,7 @@ class ProjectServiceImplTest {
             anyString(), anyString(), anyString()))
         .thenReturn(project);
 
-    Project result = projectService.getProjectByIdAndClientId("project123", "client123");
+        ProjectDetailViewResponseDTO result = projectService.getProjectByIdAndClientId("project123", "client123");
 
     assertNotNull(result);
     assertEquals("project123", result.getProjectId());
@@ -166,7 +168,7 @@ class ProjectServiceImplTest {
     when(projectRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
         .thenReturn(projects);
 
-    List<Project> result = projectService.getProjectsByClientIdInOrganization("client123");
+    List<ProjectResponseDTO> result = projectService.getProjectsByClientIdInOrganization("client123");
 
     assertNotNull(result);
     assertEquals(2, result.size());
@@ -177,7 +179,7 @@ class ProjectServiceImplTest {
     when(projectRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
         .thenReturn(List.of());
 
-    List<Project> result = projectService.getProjectsByClientIdInOrganization("client123");
+    List<ProjectResponseDTO> result = projectService.getProjectsByClientIdInOrganization("client123");
 
     assertNotNull(result);
     assertTrue(result.isEmpty(), "Expected an empty list when no projects are found");

@@ -21,9 +21,9 @@ import { DateIcon } from '../svgs/ClientManagmentSvgs.svg';
 interface Project {
   projectId: string;
   name: string;
-  status: string;
+  projectStatus: string;
   startDate: string;
-  projectManagers: string[];
+  projectManagerNames: string[];
 }
 
 interface Contract {
@@ -77,33 +77,31 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           return;
         }
         const mappedProjects: Project[] = res.data.map((entity) => ({
-          projectId: entity.projectId ?? 'N/A',
-          name: entity.name ?? 'N/A',
-          status: entity.status ?? 'N/A',
-          startDate: entity.startDate?.split('T')[0] ?? 'N/A',
-          projectManagers: Array.isArray(entity.projectManagers)
-            ? entity.projectManagers.map((pm: any) => pm?.name ?? 'N/A')
-            : [],
+          projectId: entity.projectId ?? '-',
+          name: entity.name ?? '-',
+          projectStatus: entity.projectStatus ?? '-',
+          startDate: entity.startDate?.split('T')[0] ?? '-',
+          projectManagerNames: entity.projectManagerNames ?? [],
         }));
 
         const contractsRes = await getContractsByClientId(clientId);
         const mappedContracts: Contract[] = contractsRes.data.map((c) => ({
-          contractId: c.contractId ?? 'N/A',
-          name: c.contractTitle ?? 'N/A',
-          status: c.status ?? 'N/A',
-          projectName: c.projectName ?? 'N/A',
+          contractId: c.contractId ?? '-',
+          name: c.contractTitle ?? '-',
+          status: c.status ?? '-',
+          projectName: c.projectName ?? '-',
           projectManagers: c.projectManagerNames?.length
             ? c.projectManagerNames
             : [],
-          startDate: c.startDate?.split('T')[0] ?? 'N/A',
+          startDate: c.startDate?.split('T')[0] ?? '-',
         }));
 
         const resourcesRes = await getResourcesByClientId(clientId);
 
         const mappedResources: Resource[] = Array.isArray(resourcesRes.data)
           ? resourcesRes.data.map((r: any) => ({
-              employeeId: r.employeeId ?? 'N/A',
-              name: r.employeeName ?? 'N/A',
+              employeeId: r.employeeId ?? '-',
+              name: r.employeeName ?? '-',
               contractCount: r.numberOfContracts ?? 0,
               allocation: `${r.totalAllocation ?? 0}%`,
             }))
@@ -160,15 +158,15 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
                     <td>{project.name}</td>
                     <td>
                       <StatusDropdown
-                        value={project.status}
+                        value={project.projectStatus}
                         disabled
                         onChange={() => {}}
                       />
                     </td>
                     <td>
-                      {project.projectManagers.length
-                        ? project.projectManagers.join(', ')
-                        : 'N/A'}
+                      {project.projectManagerNames.length
+                        ? project.projectManagerNames.join(', ')
+                        : '-'}
                     </td>
                     <td>
                       <DateIconWrapper>
@@ -216,7 +214,7 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
                     <td>
                       {c.projectManagers.length
                         ? c.projectManagers.join(', ')
-                        : 'N/A'}
+                        : '-'}
                     </td>
                     <td>{c.startDate}</td>
                   </tr>
