@@ -1,5 +1,4 @@
 export interface IOrganization {
-  bankDetails: BankDetails;
   id: string;
   name: string;
   email: string;
@@ -16,6 +15,12 @@ export interface IOrganization {
   loanLimit: ILoanLimits;
   dateFormat: string;
   currencyType: string;
+  bankDetails?: {
+    accountName?: string;
+    bankName?: string;
+    accountNumber?: string;
+    ifscNumber?: string;
+  };
 }
 export interface IPreferences {
   dateFormat: string;
@@ -41,6 +46,8 @@ export interface Accounts {
   esiNumber: string;
   linNumber: string;
   gstNumber: string;
+  taxNumber: string;
+  bankDetails: string;
   taxId: string;
 }
 

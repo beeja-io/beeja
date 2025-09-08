@@ -2,7 +2,7 @@ server:
   port: ${API_GATEWAY_PORT}
   reactive:
     session:
-      timeout: 20000m
+      timeout: 10000m
 
 spring:
   session:

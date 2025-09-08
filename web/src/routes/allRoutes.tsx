@@ -27,6 +27,7 @@ import RecruitmentManagementScreen from '../screens/RecruitmentManagementScreen.
 import AddNewApplicant from '../components/directComponents/AddNewApplicant.component';
 import EditApplicant from '../components/directComponents/EditApplicant.component';
 import ReferEmployeeScreen from '../screens/ReferEmployeeScreen.screen';
+import TimeSheet from '../screens/TimeSheet';
 import ClientDetailsScreen from '../screens/ClientDetailsScreen.screen';
 import ClientListWrapper from '../screens/ClientListWrapper';
 import ProjectManagement from '../screens/ProjectManagement.screen';
@@ -114,7 +115,10 @@ const AllRoutes = () => {
         />
       </Route>
 
-      <Route path="/project-management" element={<ProjectManagement />}>
+      <Route
+        path="/projects/project-management"
+        element={<ProjectManagement />}
+      >
         <Route
           index
           element={
@@ -178,13 +182,24 @@ const AllRoutes = () => {
           </CustomRoute>
         }
       />
+      <Route
+        path="/timeoff/timesheet"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <TimeSheet />
+          </CustomRoute>
+        }
+      />
 
       <Route
         path="/features"
         element={
           <CustomRoute
             permission={FEATURE_TOGGLES_MODULE.UPDATE_FEATURE}
-            featureToggle={EFeatureToggles.EMPLOYEE_MANAGEMENT}
+            featureToggle={EFeatureToggles.EMPLOYEES_MANAGEMENT}
           >
             <FeatureToggleScreen />
           </CustomRoute>

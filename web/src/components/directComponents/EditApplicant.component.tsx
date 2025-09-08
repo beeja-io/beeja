@@ -22,6 +22,7 @@ import {
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import CommentsSection from '../reusableComponents/CommentsSection.component';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 const EditApplicant = () => {
   const navigate = useNavigate();
@@ -82,11 +83,7 @@ const EditApplicant = () => {
     }
   };
 
-  const handleStatusChange = async (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newStatus = e.target.value;
-    e.preventDefault();
+  const handleStatusChange = async (newStatus: string) => {
     toast.promise(
       async () => await changeApplicationStatus(applicant.id, newStatus),
       {
@@ -230,52 +227,44 @@ const EditApplicant = () => {
                 <div>
                   <InputLabelContainer>
                     <label>{t('EXPERIENCE')}</label>
-                    <select
-                      className="selectoption"
+                    <DropdownMenu
+                      className="cursor-disabled"
                       name="experience"
                       id="experience"
-                      disabled
-                      onKeyPress={(event) => {
-                        if (event.key === 'Enter') {
-                          event.preventDefault();
-                        }
-                      }}
-                      style={{ cursor: 'not-allowed' }}
-                    >
-                      <option value="">
-                        {applicant.experience ? applicant.experience : '-'}
-                      </option>
-                    </select>
+                      value={applicant.experience ?? '-'}
+                      disabled={true}
+                      onChange={() => {}}
+                      options={[
+                        {
+                          label: applicant.experience ?? '-',
+                          value: applicant.experience ?? '-',
+                        },
+                      ]}
+                    />
                   </InputLabelContainer>
                   <InputLabelContainer>
                     <label>Status</label>
-                    <select
-                      className="selectoption largeSelectOption"
+                    <DropdownMenu
+                      className="largeContainerBulk"
                       name="department"
-                      onChange={handleStatusChange}
-                      onKeyPress={(event) => {
+                      value={applicant.status}
+                      onChange={(val) => handleStatusChange(val ?? '')}
+                      onKeyDown={(event) => {
                         if (event.key === 'Enter') {
                           event.preventDefault();
                         }
                       }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {[
+                      options={[
                         'APPLIED',
                         'SHORTLISTED',
                         'INTERVIEW_SCHEDULED',
                         'HIRED',
                         'REJECTED',
-                      ].map((status) => (
-                        <option
-                          key={status}
-                          value={status}
-                          selected={applicant.status === status}
-                        >
-                          {status.replace('_', ' ')}
-                        </option>
-                      ))}
-                    </select>
+                      ].map((status) => ({
+                        label: status.replace('_', ' '),
+                        value: status,
+                      }))}
+                    />
                   </InputLabelContainer>
                 </div>
               </form>

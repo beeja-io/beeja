@@ -150,69 +150,75 @@ const ApplicantsList = (props: ApplicantsListProps) => {
             <tbody>
               <>
                 {props.allApplicants &&
-                  props.allApplicants.map((applicant, index) => (
-                    <TableBodyRow key={index}>
-                      <td>{applicant.applicantId}</td>
-                      <td>
-                        {applicant.firstName} {applicant.lastName}
-                      </td>
-                      <td>{applicant.positionAppliedFor}</td>
-                      <td>{applicant.phoneNumber}</td>
-                      {!props.isReferral && (
+                  [...props.allApplicants]
+                    .sort(
+                      (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
+                    )
+                    .map((applicant, index) => (
+                      <TableBodyRow key={index}>
+                        <td>{applicant.applicantId}</td>
                         <td>
-                          {applicant.referredByEmployeeName
-                            ? applicant.referredByEmployeeName
-                            : '-'}
+                          {applicant.firstName} {applicant.lastName}
                         </td>
-                      )}
-                      <td>
-                        <StatusIndicator
-                          status={applicant.status}
-                          className="applicantStatus"
-                        >
-                          {removeUnderScore(applicant.status)}
-                        </StatusIndicator>
-                      </td>
-
-                      <td>
-                        <span
-                          style={{
-                            verticalAlign: 'middle',
-                            marginRight: '6px',
-                          }}
-                        >
-                          <CalenderIcon />
-                        </span>
-
-                        {formatDate(applicant.createdAt)}
-                      </td>
-                      <td>
-                        <span
-                          onClick={() =>
-                            handleDownloadResume(applicant.resumeId)
-                          }
-                        >
-                          <DownloadSVG />
-                        </span>
-                      </td>
-                      {!props.isReferral &&
-                      user?.roles.some((role) =>
-                        role.permissions.some(
-                          (permission) =>
-                            permission === RECRUITMENT_MODULE.UPDATE_APPLICANT
-                        )
-                      ) ? (
+                        <td>{applicant.positionAppliedFor}</td>
+                        <td>{applicant.phoneNumber}</td>
+                        {!props.isReferral && (
+                          <td>
+                            {applicant.referredByEmployeeName
+                              ? applicant.referredByEmployeeName
+                              : '-'}
+                          </td>
+                        )}
                         <td>
-                          <ApplicantListActions
-                            options={Actions}
-                            applicant={applicant}
-                          />
+                          <StatusIndicator
+                            status={applicant.status}
+                            className="applicantStatus"
+                          >
+                            {removeUnderScore(applicant.status)}
+                          </StatusIndicator>
                         </td>
-                      ) : (
-                        ''
-                      )}
-                    </TableBodyRow>
-                  ))}
+
+                        <td>
+                          <span
+                            style={{
+                              verticalAlign: 'middle',
+                              marginRight: '6px',
+                            }}
+                          >
+                            <CalenderIcon />
+                          </span>
+
+                          {formatDate(applicant.createdAt)}
+                        </td>
+                        <td>
+                          <span
+                            onClick={() =>
+                              handleDownloadResume(applicant.resumeId)
+                            }
+                          >
+                            <DownloadSVG />
+                          </span>
+                        </td>
+                        {!props.isReferral &&
+                        user?.roles.some((role) =>
+                          role.permissions.some(
+                            (permission) =>
+                              permission === RECRUITMENT_MODULE.UPDATE_APPLICANT
+                          )
+                        ) ? (
+                          <td>
+                            <ApplicantListActions
+                              options={Actions}
+                              applicant={applicant}
+                            />
+                          </td>
+                        ) : (
+                          ''
+                        )}
+                      </TableBodyRow>
+                    ))}
               </>
             </tbody>
           </TableList>

@@ -32,12 +32,6 @@ export const InvoiceAddFormSubContainer = styled.form`
   }
 `;
 export const InvoiceInnerBigContainer = styled.div`
-  //   border-radius: 8px;
-  //   border: 1px solid ${(props) =>
-    props.theme.colors.grayColors.grayscale300};
-  //   padding: 20px;
-  //   margin: 10px 0px;
-  //   width: 70%;
   .Project_Heading {
     display: flex;
     justify-content: space-between;
@@ -71,7 +65,8 @@ export const InvoiceInnerBigContainer = styled.div`
     padding: 10px;
     color: #fff;
     cursor: pointer;
-    margin: 20px 10px 0px 0px;
+    margin: 30px;
+    margin-left: 5px;
   }
 `;
 export const InvoiceInnersmallContainer = styled.div`

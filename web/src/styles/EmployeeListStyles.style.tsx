@@ -25,6 +25,12 @@ export const EmployeeListHeadSection = styled.div`
   align-items: center;
   flex-wrap: wrap;
 
+  h3 {
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 550;
+  }
+
   div {
     display: flex;
 

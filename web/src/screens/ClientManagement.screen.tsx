@@ -20,7 +20,11 @@ import { getAllClient, getClient } from '../service/axiosInstance';
 const ClientManagement = () => {
   const navigate = useNavigate();
   const goToPreviousPage = () => {
-    navigate(-1);
+    if (isCreateModalOpen) {
+      setIsCreateModalOpen(false);
+    } else {
+      navigate(-1);
+    }
   };
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -100,17 +104,19 @@ const ClientManagement = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('Client Management')}
+            {t('Client_Management')}
             {isCreateModalOpen && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Add Client')}</span>
+                <span className="nav_AddClient">
+                  {isEditMode ? t('Edit_Client') : t('Add_Client')}
+                </span>
               </>
             )}
             {!isCreateModalOpen && isClientDetailsRoute && (
               <>
                 <span className="separator"> {'>'} </span>
-                <span className="nav_AddClient">{t('Client Details')}</span>
+                <span className="nav_AddClient">{t('Client_Details')}</span>
               </>
             )}
           </span>
@@ -121,7 +127,7 @@ const ClientManagement = () => {
               width="216px"
             >
               <AddNewPlusSVG />
-              {t('Add New Client')}
+              {t('Add_New_Client')}
             </Button>
           )}
         </ExpenseHeadingSection>
@@ -149,8 +155,16 @@ const ClientManagement = () => {
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody={t('The Client has been Added Successfully')}
-          messageHeading={t('Client Suceessfully Added.')}
+          messageBody={
+            isEditMode
+              ? t('The_Client_has_been_Updated_Successfully')
+              : t('The_Client_has_been_Added_Successfully')
+          }
+          messageHeading={
+            isEditMode
+              ? t('Client_Successfully_Updated.')
+              : t('Client_Successfully_Added.')
+          }
           handleClose={handleShowSuccessMessage}
         />
       )}
