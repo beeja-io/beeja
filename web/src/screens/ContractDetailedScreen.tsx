@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  ContractInfo,
   ClientTitle,
   Container,
   LeftSection,
@@ -47,6 +46,7 @@ import {
   HorizontalLine,
   IconItem,
   RowWrapper,
+  ContractInfo,
 } from '../styles/ContractStyle.style';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { InfoText } from '../styles/ProjectStyles.style';

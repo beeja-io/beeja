@@ -854,14 +854,3 @@ export const ColumnWrapper = styled.div`
   max-width: 491px;
   width: 100%;
 `;
-
-export const ContractInfo = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: auto;
-  height: 289px;
-  background: ${(props) => props.theme.colors.blackColors.white6};
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-`;
