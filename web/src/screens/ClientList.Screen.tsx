@@ -15,6 +15,8 @@ import {
 } from '../styles/ExpenseListStyles.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter, removeUnderScore } from '../utils/stringUtils';
+import Pagination from '../components/directComponents/Pagination.component';
+import { useOutletContext } from "react-router-dom";
 
 interface Client {
   clientId: string;
@@ -23,19 +25,30 @@ interface Client {
   organizationId: string;
   id: string;
 }
-interface Props {
+type ClientOutletContext = {
   clientList: Client[];
   updateClientList: () => void;
   isLoading: boolean;
   onEditClient: (client: Client) => void;
-}
+  totalItems: number;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  itemsPerPage: number;
+  setItemsPerPage: (size: number) => void;
+};
 
-const ClientList = ({
-  clientList,
-  updateClientList,
-  isLoading,
-  onEditClient,
-}: Props) => {
+const ClientList = () => {
+  const {
+    clientList,
+    updateClientList,
+    isLoading,
+    onEditClient,
+    totalItems,
+    currentPage,
+    setCurrentPage,
+    itemsPerPage,
+    setItemsPerPage,
+  } = useOutletContext<ClientOutletContext>();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -54,6 +67,14 @@ const ClientList = ({
   const navigate = useNavigate();
   const handleClientClick = (id: string) => {
     navigate(`/clients/client-management/${id}`);
+  };
+    const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setItemsPerPage(newPageSize);
+    setCurrentPage(1);
   };
 
   return (
@@ -123,6 +144,14 @@ const ClientList = ({
             </TableList>
           )}
         </TableListContainer>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(totalItems / itemsPerPage)}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          handleItemsPerPage={handlePageSizeChange}
+          totalItems={totalItems}
+        />
       </StyledDiv>
       {showSuccessMessage && (
         <ToastMessage

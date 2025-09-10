@@ -23,6 +23,10 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -54,25 +58,25 @@ public class ClientServiceImpl implements ClientService {
   @Override
   public Client addClientToOrganization(ClientRequest client) throws Exception {
     Client existingClient =
-        clientRepository.findByEmailAndOrganizationId(
-            client.getEmail(),
-            UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+            clientRepository.findByEmailAndOrganizationId(
+                    client.getEmail(),
+                    UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
     if (existingClient != null) {
       throw new ResourceAlreadyFoundException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.CLIENT_ALREADY_FOUND,
-              ErrorCode.RESOURCE_ALREADY_EXISTS,
-              Constants.CLIENT_FOUND_EMAIL));
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.CLIENT_ALREADY_FOUND,
+                      ErrorCode.RESOURCE_ALREADY_EXISTS,
+                      Constants.CLIENT_FOUND_EMAIL));
     }
     if (client.getLogo() != null && !client.getLogo().isEmpty()) {
       String contentType = client.getLogo().getContentType();
       if (!logoValidator.getAllowedTypes().contains(contentType)) {
         throw new ValidationException(
-            new ErrorResponse(
-                ErrorType.VALIDATION_ERROR,
-                ErrorCode.VALIDATION_ERROR,
-                Constants.FILE_NOT_ALLOWED,
-                ""));
+                new ErrorResponse(
+                        ErrorType.VALIDATION_ERROR,
+                        ErrorCode.VALIDATION_ERROR,
+                        Constants.FILE_NOT_ALLOWED,
+                        ""));
       }
     }
     Client newClient = new Client();
@@ -94,15 +98,9 @@ public class ClientServiceImpl implements ClientService {
     if (client.getPrimaryAddress() != null) {
       newClient.setPrimaryAddress(client.getPrimaryAddress());
     }
-      if (client.isUsePrimaryAsBillingAddress()) {
-          newClient.setUsePrimaryAsBillingAddress(true);
-          newClient.setBillingAddress(null);
-      } else {
-          newClient.setUsePrimaryAsBillingAddress(false);
-          if (client.getBillingAddress() != null) {
-              newClient.setBillingAddress(client.getBillingAddress());
-          }
-      }
+    if (client.getBillingAddress() != null) {
+      newClient.setBillingAddress(client.getBillingAddress());
+    }
     if (client.getIndustry() != null) {
       newClient.setIndustry(client.getIndustry());
     }
@@ -112,13 +110,13 @@ public class ClientServiceImpl implements ClientService {
     if (client.getLogo() != null) {
       // TODO: Implement logo upload
       FileUploadRequest fileUploadRequest =
-          new FileUploadRequest(
-              client.getLogo(),
-              client.getLogo().getName(),
-              client.getDescription(),
-              Constants.FILE_TYPE_PROJECT,
-              Constants.ENTITY_TYPE_CLIENT,
-              Constants.ENTITY_TYPE_CLIENT);
+              new FileUploadRequest(
+                      client.getLogo(),
+                      client.getLogo().getName(),
+                      client.getDescription(),
+                      Constants.FILE_TYPE_PROJECT,
+                      Constants.ENTITY_TYPE_CLIENT,
+                      Constants.ENTITY_TYPE_CLIENT);
       try {
         ResponseEntity<?> response = fileClient.uploadFile(fileUploadRequest);
         Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
@@ -132,31 +130,31 @@ public class ClientServiceImpl implements ClientService {
 
     try {
       long existingClientsCount =
-          clientRepository.countByOrganizationId(
-              UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+              clientRepository.countByOrganizationId(
+                      UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
       if (existingClientsCount == 0) {
         newClient.setClientId(
-            UserContext.getLoggedInUserOrganization()
-                    .get("name")
-                    .toString()
-                    .substring(0, 3)
-                    .toUpperCase()
-                + "1");
+                UserContext.getLoggedInUserOrganization()
+                        .get("name")
+                        .toString()
+                        .substring(0, 3)
+                        .toUpperCase()
+                        + "1");
       } else {
         newClient.setClientId(
-            UserContext.getLoggedInUserOrganization()
-                    .get("name")
-                    .toString()
-                    .substring(0, 3)
-                    .toUpperCase()
-                + (existingClientsCount + 1));
+                UserContext.getLoggedInUserOrganization()
+                        .get("name")
+                        .toString()
+                        .substring(0, 3)
+                        .toUpperCase()
+                        + (existingClientsCount + 1));
       }
     } catch (Exception e) {
       log.error(Constants.ERROR_IN_GENERATING_CLIENT_ID, e.getMessage());
       throw new Exception(Constants.ERROR_IN_GENERATING_CLIENT_ID);
     }
     newClient.setOrganizationId(
-        UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+            UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
     try {
       newClient = clientRepository.save(newClient);
@@ -179,16 +177,16 @@ public class ClientServiceImpl implements ClientService {
    */
   @Override
   public Client updateClientOfOrganization(ClientRequest clientRequest, String clientId)
-      throws Exception {
+          throws Exception {
     Client existingClient =
-        clientRepository.findByClientIdAndOrganizationId(
-            clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+            clientRepository.findByClientIdAndOrganizationId(
+                    clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
     if (existingClient == null) {
       throw new ResourceNotFoundException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.CLIENT_NOT_FOUND,
-              ErrorCode.RESOURCE_NOT_FOUND,
-              Constants.CLIENT_NOT_FOUND));
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.CLIENT_NOT_FOUND,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.CLIENT_NOT_FOUND));
     }
     if (clientRequest.getClientName() != null) {
       existingClient.setClientName(clientRequest.getClientName());
@@ -208,17 +206,9 @@ public class ClientServiceImpl implements ClientService {
     if (clientRequest.getPrimaryAddress() != null) {
       existingClient.setPrimaryAddress(clientRequest.getPrimaryAddress());
     }
-      if (clientRequest.isUsePrimaryAsBillingAddress()) {
-          existingClient.setUsePrimaryAsBillingAddress(true);
-          existingClient.setBillingAddress(null);
-      } else {
-          existingClient.setUsePrimaryAsBillingAddress(false);
-          if (clientRequest.getBillingAddress() != null) {
-              existingClient.setBillingAddress(clientRequest.getBillingAddress());
-          } else {
-              existingClient.setBillingAddress(null);
-          }
-      }
+    if (clientRequest.getBillingAddress() != null) {
+      existingClient.setBillingAddress(clientRequest.getBillingAddress());
+    }
     if (clientRequest.getIndustry() != null) {
       existingClient.setIndustry(clientRequest.getIndustry());
     }
@@ -230,22 +220,22 @@ public class ClientServiceImpl implements ClientService {
       String contentType = clientRequest.getLogo().getContentType();
       if (!logoValidator.getAllowedTypes().contains(contentType)) {
         throw new ValidationException(
-            new ErrorResponse(
-                ErrorType.VALIDATION_ERROR,
-                ErrorCode.VALIDATION_ERROR,
-                Constants.FILE_NOT_ALLOWED,
-                ""));
+                new ErrorResponse(
+                        ErrorType.VALIDATION_ERROR,
+                        ErrorCode.VALIDATION_ERROR,
+                        Constants.FILE_NOT_ALLOWED,
+                        ""));
       }
       if (clientRequest.getLogo() != null) {
         String logoId = existingClient.getLogoId();
         FileUploadRequest fileUploadRequest =
-            new FileUploadRequest(
-                clientRequest.getLogo(),
-                clientRequest.getLogo().getName(),
-                clientRequest.getDescription(),
-                Constants.FILE_TYPE_PROJECT,
-                Constants.ENTITY_TYPE_CLIENT,
-                Constants.ENTITY_TYPE_CLIENT);
+                new FileUploadRequest(
+                        clientRequest.getLogo(),
+                        clientRequest.getLogo().getName(),
+                        clientRequest.getDescription(),
+                        Constants.FILE_TYPE_PROJECT,
+                        Constants.ENTITY_TYPE_CLIENT,
+                        Constants.ENTITY_TYPE_CLIENT);
         try {
           ResponseEntity<?> response;
           if (logoId != null && !logoId.isEmpty()) {
@@ -288,18 +278,18 @@ public class ClientServiceImpl implements ClientService {
     Client client;
     try {
       client =
-          clientRepository.findByClientIdAndOrganizationId(
-              clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+              clientRepository.findByClientIdAndOrganizationId(
+                      clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
     } catch (Exception e) {
       log.error(Constants.ERROR_IN_FETCHING_CLIENTS, e.getMessage());
       throw new Exception(Constants.ERROR_IN_FETCHING_CLIENTS);
     }
     if (client == null) {
       throw new ResourceNotFoundException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.CLIENT_NOT_FOUND,
-              ErrorCode.RESOURCE_NOT_FOUND,
-              Constants.CLIENT_NOT_FOUND));
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.CLIENT_NOT_FOUND,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.CLIENT_NOT_FOUND));
     }
     return client;
   }
@@ -312,14 +302,25 @@ public class ClientServiceImpl implements ClientService {
   @Override
   public List<Client> getAllClientsOfOrganization() {
     log.info("Fetching all clients for organization: {}",
-        UserContext.getLoggedInUserOrganization().get(Constants.ID));
+            UserContext.getLoggedInUserOrganization().get(Constants.ID));
     // TODO: Implement pagination
     List<Client> clientsInOrganization =
-        clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(
-            UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
+            clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(
+                    UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
     if (clientsInOrganization == null || clientsInOrganization.isEmpty()) {
       return List.of();
     }
     return clientsInOrganization;
   }
+
+  @Override
+  public Page<Client> getAllClientsOfOrganization(String organizationId, int pageNumber, int pageSize) {
+
+    if (pageSize < 1) pageSize = 10;
+    if (pageSize > 100) pageSize = 100;
+
+    Pageable pageable = PageRequest.of(pageNumber , pageSize, Sort.by("createdAt").descending());
+    return clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(organizationId, pageable);
+  }
 }
+
