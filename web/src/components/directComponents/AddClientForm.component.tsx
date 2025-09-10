@@ -425,6 +425,8 @@ const AddClientForm = (props: AddClientFormProps) => {
 
       if (file) {
         dataToSend.append('logo', file);
+      } else if (props.isEditMode && !formData.logoId) {
+        dataToSend.append('removeLogo', 'true');
       }
 
       if (isEditMode && formData.clientId) {
