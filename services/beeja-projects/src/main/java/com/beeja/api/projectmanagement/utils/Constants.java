@@ -15,6 +15,7 @@ public class Constants {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String FILE_TYPE_PROJECT = "project";
   public static final String ENTITY_TYPE_CLIENT = "client";
+    public static final String ENTITY_TYPE_CONTRACT = "contract";
 
   // ========== Success Messages ==========
   public static final String USER_SUCCESSFULLY_AUTHENTICATED = "User Successfully Authenticated";
