@@ -93,7 +93,7 @@ export const FormInputsContainer = styled.div`
 export const SummaryAddressContainer = styled.div`
   flex-wrap: wrap;
   display: flex;
-  color: ${(props) => props.theme.colors.blackColors.black5};
+  color: ${(props) => props.theme.colors.blackColors.black7};
 
   justify-content: space-around;
   gap: 20px;
@@ -101,7 +101,7 @@ export const SummaryAddressContainer = styled.div`
 
 export const SummaryAddressSubContainer = styled.div`
   width: 100%;
-  background-color: rgba(248, 249, 251, 1);
+  background-color: ${(props) => props.theme.colors.grayColors.gray10};
   display: flex;
   justify-content: start;
 `;
@@ -692,8 +692,8 @@ export const InfoBlock = styled.div`
 
 export const PrimaryContainer = styled.div`
   flex: 1 1 48%;
-  background-color: ${(props) => props.theme.colors.grayColors.gray12};
-  color: ${(props) => props.theme.colors.blackColors.black5};
+  background-color: ${(props) => props.theme.colors.grayColors.gray10};
+  color: ${(props) => props.theme.colors.blackColors.black7};
   gap: 10px;
   h2 {
     padding: 10px 0 10px 20px;
@@ -703,7 +703,7 @@ export const AddressBlock = styled.div`
   padding: 10px 0 10px 18px;
   margin-top: 5px;
   display: flex;
-  color: ${(props) => props.theme.colors.blackColors.black5};
+  color: ${(props) => props.theme.colors.blackColors.black7};
 `;
 
 export const AddressMainContainer = styled.form`
@@ -765,9 +765,9 @@ export const BasicOrganizationDetailsContainer = styled.div`
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  background: ${(props) => props.theme.colors.grayColors.gray12};
+  background: ${(props) => props.theme.colors.grayColors.gray10};
   border: 1px solid ${(props) => props.theme.colors.grayColors.gray10};
-  color: ${(props) => props.theme.colors.blackColors.black5};
+  color: ${(props) => props.theme.colors.blackColors.black7};
 `;
 
 export const ClientInfo = styled.div`

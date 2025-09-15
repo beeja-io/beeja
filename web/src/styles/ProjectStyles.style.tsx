@@ -194,7 +194,7 @@ export const Label = styled.label`
   font-size: 14px;
   font-weight: 600;
   height: 24px;
-  color: ${(props) => props.theme.colors.blackColors.black5};
+  color: ${(props) => props.theme.colors.blackColors.black7};
 `;
 
 export const RequiredAsterisk = styled.span`
@@ -315,6 +315,9 @@ export const TextInput = styled.input`
     background-color: ${(props) => props.theme.colors.grayColors.gray6};
     cursor: not-allowed;
     color: ${(props) => props.theme.colors.grayColors.gray11};
+  }
+  &.errorEnabledInput {
+    border-color: red;
   }
   &:focus {
     border-color: #007bff;

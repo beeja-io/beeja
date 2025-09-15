@@ -1185,7 +1185,7 @@ const AddClientForm = (props: AddClientFormProps) => {
 
               <HeadingContainer>
                 <SectionHeader>
-                  {t('Tax_Details')}
+                  {t('Tax Details')}
                   <EditIconWrapper>
                     <EditSVG onClick={() => setStep(2)} />
                   </EditIconWrapper>
@@ -1220,7 +1220,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <InfoText>{formData.primaryAddress.street}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('city')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('City')}</SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.city}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1232,7 +1232,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <InfoText>{formData.primaryAddress.country}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Zip/Postal_Code')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('Zip/Postal Code')}</SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.postalCode}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1248,7 +1248,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   </AddressBlock>
 
                   <AddressBlock>
-                    <SubHeadingDiv>{t('city')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('City')}</SubHeadingDiv>
                     <InfoText>{formData.billingAddress.city}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1260,7 +1260,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <InfoText>{formData.billingAddress.country}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Zip/Postal_Code')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('Zip/Postal Code')}</SubHeadingDiv>
                     <InfoText>{formData.billingAddress.postalCode}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1292,7 +1292,7 @@ const AddClientForm = (props: AddClientFormProps) => {
             {t('Cancel')}
           </Button>
           <Button className="submit" type="submit" form="summaryForm">
-            {t('Save & Continue')}
+            {t('Add')}
           </Button>
         </ButtonGroup>
       )}

@@ -365,7 +365,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     if (!formData.contractTitle)
       newErrors.contractTitle = 'Please enter contract Name';
     if (!formData.startDate) newErrors.startDate = 'Please select Start Date';
-    if (!formData.endDate) newErrors.endDate = 'Please select End Date';
     if (!formData.contractType)
       newErrors.contractType = 'Please select Contract Type';
 
@@ -762,10 +761,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 )}
 
                 <InputLabelContainer>
-                  <label>
-                    {t('End Date')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
+                  <label>{t('End Date')}</label>
 
                   <DateInputWrapper ref={calendarEndRef}>
                     <TextInput
@@ -984,6 +980,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             projectManagers: values,
                           }));
                         }}
+                        required
                         placeholder={t('Select Project Managers')}
                         searchable={true}
                       />

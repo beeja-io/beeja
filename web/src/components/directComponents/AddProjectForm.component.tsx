@@ -80,6 +80,12 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
 
+  const [errors, setErrors] = useState({
+    name: '',
+    clientName: '',
+    startDate: '',
+  });
+
   const handleDiscardModalToggle = () => {
     setIsDiscardModalOpen((prev) => !prev);
   };
@@ -148,6 +154,21 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
       setIsStartDateCalOpen(false);
     }
   };
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
+        setIsStartDateCalOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const formatDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, '0');
@@ -163,6 +184,22 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   ) => {
     const { name, value } = e.target;
     setProjectFormData((prev) => ({ ...prev, [name]: value }));
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
+  };
+  const handleAddProject = async (e: any) => {
+    e.preventDefault();
+    const newErrors = {
+      name:
+        projectFormData.name === '' || projectFormData.name === null
+          ? 'Project Name Required'
+          : '',
+      clientName:
+        projectFormData.clientId === '' || projectFormData.clientId === null
+          ? 'Client Name Required'
+          : '',
+      startDate: startDate === null ? 'Start Date Required' : '',
+    };
+    setErrors(newErrors);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -222,11 +259,14 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     type="text"
                     name="name"
                     placeholder={t('Enter_Project_Name')}
-                    className="largeInput"
+                    className={`largeInput ${errors.name ? 'errorEnabledInput' : ''}`}
                     value={projectFormData.name}
                     onChange={handleChange}
                     required
                   />
+                  {errors.name && (
+                    <ValidationText>{errors.name}</ValidationText>
+                  )}
                 </InputLabelContainer>
               )}
 
@@ -241,7 +281,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     label="Select Client"
                     name="clientName"
                     id="clientName"
-                    className={isEditMode ? 'cursor-disabled' : ''}
+                    className={`largeContainerHei ${isEditMode ? 'cursor-disabled' : ''}`}
                     disabled={isEditMode}
                     value={projectFormData.clientId ?? ''}
                     onChange={(selectedValue) => {
@@ -262,6 +302,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                         }));
                       }
                     }}
+                    required={true}
                     options={[
                       { label: 'Select Client', value: '' },
                       ...clientOptions.map((opt) => ({
@@ -292,6 +333,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       projectManagers: values,
                     }));
                   }}
+                  required
                   placeholder={t('Select Project Managers')}
                   searchable={true}
                 />
@@ -305,7 +347,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                   <DateInputWrapper ref={calendarRef}>
                     <TextInput
                       type="text"
-                      placeholder="Select_Date"
+                      placeholder="Select Date"
                       name="startDate"
                       value={startDate ? formatDate(startDate) : ''}
                       onFocus={() => handleCalendarToggle(true)}
@@ -331,6 +373,9 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       )}
                     </div>
                   </DateInputWrapper>
+                  {errors.startDate && (
+                    <ValidationText>{errors.startDate}</ValidationText>
+                  )}
                 </InputLabelContainer>
               )}
             </ColumnWrapper>
@@ -356,13 +401,13 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
               {projectFormData?.projectId && (
                 <InputLabelContainer>
                   <label>
-                    {t('Start_Date')}
+                    {t('Start Date')}
                     <ValidationText className="star">*</ValidationText>
                   </label>
                   <DateInputWrapper ref={calendarRef}>
                     <TextInput
                       type="text"
-                      placeholder="Select_Date"
+                      placeholder="Select Date"
                       name="startDate"
                       value={startDate ? formatDate(startDate) : ''}
                       onFocus={() => handleCalendarToggle(true)}
@@ -396,12 +441,14 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     {t('Client_Name')}
                     <ValidationText className="star">*</ValidationText>
                   </label>
-                  <select
-                    className="selectoption largeSelectOption"
+                  <DropdownMenu
+                    label="Select Client"
                     name="clientName"
-                    value={projectFormData.clientId}
-                    onChange={(e) => {
-                      const selectedValue = e.target.value;
+                    id="clientName"
+                    className={`largeContainerHei ${isEditMode ? 'cursor-disabled' : ''}`}
+                    disabled={isEditMode}
+                    value={projectFormData.clientId ?? ''}
+                    onChange={(selectedValue) => {
                       const selectedOption = clientOptions.find(
                         (opt) => opt.value === selectedValue
                       );
@@ -411,18 +458,23 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                           clientId: selectedOption.value,
                           clientName: selectedOption.label,
                         }));
+                      } else {
+                        setProjectFormData((prev) => ({
+                          ...prev,
+                          clientId: '',
+                          clientName: '',
+                        }));
                       }
                     }}
-                  >
-                    <option value="">{t('Select_Client')}</option>
-                    {[...clientOptions]
-                      .sort((a, b) => a.value.localeCompare(b.value))
-                      .map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                  </select>
+                    required={true}
+                    options={[
+                      { label: 'Select Client', value: '' },
+                      ...clientOptions.map((opt) => ({
+                        label: opt.label,
+                        value: opt.value,
+                      })),
+                    ]}
+                  />
                 </InputLabelContainer>
               )}
 
@@ -445,6 +497,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       projectResources: values,
                     }));
                   }}
+                  required
                   placeholder={t('Select Resources')}
                   searchable={true}
                 />
@@ -486,13 +539,17 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
           ) : (
             <div className="formButtons">
               <Button
-                onClick={handleDiscardModalToggle}
+                onClick={isEditMode ? handleDiscardModalToggle : handleClose}
                 type="button"
                 className="cancel"
               >
                 {t('Cancel')}
               </Button>
-              <Button className="submit" type="submit">
+              <Button
+                className="submit"
+                type="submit"
+                onClick={handleAddProject}
+              >
                 {isEditMode ? t('Update') : t('Add')}
               </Button>
             </div>

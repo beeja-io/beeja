@@ -119,6 +119,8 @@ const ProjectDetailsSCreen: React.FC = () => {
             <ClientInfoDiv>{project?.clientName}</ClientInfoDiv>
             <DotSVG />
             <ClientInfoDiv>
+              {' '}
+              Start Date: &nbsp;
               <DateIcon />
               &nbsp;
               {project?.startDate &&

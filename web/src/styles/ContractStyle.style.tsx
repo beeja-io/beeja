@@ -107,7 +107,7 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
     font-size: 14px;
     line-height: 160%;
     letter-spacing: 0px;
-    color: ${(props) => props.theme.colors.blackColors.black5};
+    color: ${(props) => props.theme.colors.blackColors.black7};
   }
   input {
     cursor: text;
