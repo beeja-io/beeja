@@ -7,6 +7,8 @@ import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
 import {
   getOrganizationValuesByKey,
   updateEmployeeDetailsByEmployeeId,
+  fetchMe, 
+  getEmployeeHistory, 
 } from '../../service/axiosInstance';
 import { Select } from '../../styles/CommonStyles.style';
 import {
@@ -21,6 +23,11 @@ import {
   TabContentMainContainerHeading,
   TabContentTable,
   TabContentTableTd,
+  EmploymentHistoryContainer, 
+  HistoryItem, 
+  HistoryContent, 
+  Dot , 
+  ViewHistoryLink, 
 } from '../../styles/MyProfile.style';
 import {
   CheckBoxOnSVG,
@@ -58,8 +65,14 @@ export const GeneralDetailsTab = ({
   fetchEmployeeAgain,
 }: GeneralDetailsTabProps) => {
   const { t } = useTranslation();
-  const { user } = useUser();
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
+useEffect(() => {
+  fetchMe().then((res) => setCurrentUser(res.data));
+}, []);
+
+  const { user } = useUser();
+  const [showEmploymentHistory, setShowEmploymentHistory] = useState(false);
   const [modifiedFields, setModifiedFields] = useState<{
     [key: string]: string;
   }>({});
@@ -161,8 +174,192 @@ export const GeneralDetailsTab = ({
 
   const [formErrorToastMessage, setFormErrorToastMessage] = useState('');
   const [formErrorToastHead, setFormErrorToastHead] = useState('');
+    const [previousJobDetails, setPreviousJobDetails] = useState<EmployeeEntity['employee']['jobDetails'] | null>(null);// save
+   const [employmentHistory, setEmploymentHistory] = useState<
+  EmployeeEntity['employee']['jobDetails'][]
+>([]);
+// ... inside GeneralDetailsTab component
 
-  const handleSubmit = async (e: React.FormEvent) => {
+// Inside the GeneralDetailsTab component function
+const [isAddingNew, setIsAddingNew] = useState(false);
+const [editingIndex, setEditingIndex] = useState<number | null>(null);
+const [historyFormData, setHistoryFormData] = useState({
+  designation: '',
+  employmentType: '',
+  startDate: '',
+  endDate: '',
+  specialization: '',
+});
+
+// A single handler for the form inputs
+const handleHistoryFormChange = (name: string, value: string) => {
+  setHistoryFormData(prev => ({ ...prev, [name]: value }));
+};
+
+const handleAddHistoryItem = () => {
+  setIsAddingNew(true);
+  setEditingIndex(null);
+  // Reset form to empty fields for a new entry
+  console.log("add"); 
+  setHistoryFormData({
+    designation: '',
+    employmentType: '',
+    startDate: '',
+    endDate: '',
+    specialization: '',
+  });
+};
+
+const handleEditHistoryItem = (index: number) => {
+  setEditingIndex(index);
+  setIsAddingNew(false);
+  // Populate form with data of the selected item
+  setHistoryFormData(history[index]);
+};
+
+const handleSubmitHistory = async () => {
+  try {
+    // You'll need to create a payload from historyFormData
+    const newHistoryEntry = {
+      ...historyFormData,
+      // You may need to add dates and other fields here
+      // For example: startDate: formatDateYYYYMMDD(new Date(historyFormData.startDate)),
+    };
+
+    // Construct the payload to send to the backend
+    const payload = {
+      jobDetails: {
+        ...employee.employee.jobDetails, // Keep existing job details
+        // Add the new or updated history entry
+        employmentHistory: isAddingNew
+          ? [...history, newHistoryEntry]
+          : history.map((item, index) =>
+              index === editingIndex ? newHistoryEntry : item
+            ),
+      },
+    };
+
+    // Call your update API
+    await updateEmployeeDetailsByEmployeeId(employee.account.employeeId, payload);
+    
+    // After a successful update, refresh the employee data
+    fetchEmployeeAgain(employee.account.employeeId);
+
+    // Reset state to hide the form
+    setIsAddingNew(false);
+    setEditingIndex(null);
+    setHistoryFormData({
+      designation: '',
+      employmentType: '',
+      startDate: '',
+      endDate: '',
+      specialization: '',
+    });
+    // show success message
+    handleUpdateToastMessage();
+  } catch (error) {
+    // Handle errors
+    handleUpdateErrorOccured();
+  }
+};
+
+const handleCancelAddOrEdit = () => {
+  setIsAddingNew(false);
+  setEditingIndex(null);
+};
+
+
+const [history, setHistory] = useState<any[]>([]);
+const originalEmployeeId = employee?.account?.employeeId;
+const [historyLoading, setHistoryLoading] = useState(false);
+
+useEffect(() => {
+  // ensure employee.jobDetails is available before fetching
+  const jdArray = Array.isArray(employee?.employee?.jobDetails)
+    ? employee.employee.jobDetails
+    : [employee?.employee?.jobDetails].filter(Boolean);
+
+  if (showEmploymentHistory && originalEmployeeId && jdArray.length > 0) {
+    fetchAndBuildHistory(originalEmployeeId);
+  }
+}, [showEmploymentHistory, originalEmployeeId, employee,historyLoading]);
+
+const fetchAndBuildHistory = async (employeeId: string) => {
+  try {
+    setHistoryLoading(true);
+    const historyResponse = await getEmployeeHistory(employeeId);
+    const prev = Array.isArray(historyResponse?.data) ? historyResponse.data : [];
+
+    // map previous items with default values
+    const prevItems = prev.map((item: any) => ({
+      designation: item.designation ?? '—',
+      employmentType: item.employementType ?? item.employmentType ?? '—',
+      department: item.department ?? '—',
+      startDate: item.joiningDate ? formatDateDDMMYYYY(item.joiningDate) : '—',
+      endDate: item.resignationDate ? formatDateDDMMYYYY(item.resignationDate) : 'Present',
+      updatedBy: item.updatedBy ?? '—',
+      updatedAt: item.updatedAt ? formatDateDDMMYYYY(item.updatedAt) : null,
+      _sortKey: item.updatedAt
+        ? new Date(item.updatedAt).getTime()
+        : item.resignationDate
+        ? new Date(item.resignationDate).getTime()
+        : item.joiningDate
+        ? new Date(item.joiningDate).getTime()
+        : 0,
+    }));
+
+    // current job from employee.jobDetails
+    const jdArray = Array.isArray(employee?.employee?.jobDetails)
+      ? employee.employee.jobDetails
+      : [employee?.employee?.jobDetails].filter(Boolean);
+
+    const currentJob = jdArray.find((job: any) => job.resignationDate === null);
+
+    const currentItem = currentJob
+      ? {
+          designation: currentJob.designation ?? '—',
+          employmentType: currentJob.employementType ?? currentJob.employmentType ?? '—',
+          department: currentJob.department ?? '—',
+          startDate: currentJob.joiningDate ? formatDateDDMMYYYY(currentJob.joiningDate) : '—',
+          endDate: 'Present',
+          updatedBy: currentJob.updatedBy ?? '—',
+          updatedAt: currentJob.updatedAt ? formatDateDDMMYYYY(currentJob.updatedAt) : null,
+          _sortKey: currentJob.updatedAt
+            ? new Date(currentJob.updatedAt).getTime()
+            : currentJob.joiningDate
+            ? new Date(currentJob.joiningDate).getTime()
+            : 0,
+        }
+      : null;
+
+    // only add current job if it doesn’t exist
+    if (
+      currentItem &&
+      !prevItems.some(
+        (item) =>
+          item.designation === currentItem.designation &&
+          item.startDate === currentItem.startDate &&
+          item.endDate === currentItem.endDate
+      )
+    ) {
+      prevItems.push(currentItem);
+    }
+
+    // sort newest first
+    prevItems.sort((a, b) => (b._sortKey ?? 0) - (a._sortKey ?? 0));
+
+    setHistory(prevItems);
+  } catch (err) {
+    console.error('Error fetching employment history:', err);
+    setHistory([]);
+  }
+  finally {
+    // Set loading to false whether the call succeeded or failed
+    setHistoryLoading(false);
+  }
+};
+
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     setJoiningDate(joiningDate);
@@ -271,19 +468,52 @@ export const GeneralDetailsTab = ({
       return;
     }
     try {
-      const originalEmployeeId = employee.account.employeeId;
-      const updatedEmployeeId = formData['Employee Id'] || originalEmployeeId;
+       const previousJobDetails = { ...employee.employee.jobDetails }
+       setPreviousJobDetails({ ...employee.employee.jobDetails });
 
-      await updateEmployeeDetailsByEmployeeId(
-        originalEmployeeId,
-        mapFormDataToBackendStructure(modifiedFields)
-      );
+      const updatedEmployeeId = formData['Employee Id'] || originalEmployeeId;
+     
+    console.log('Current user:', currentUser)
+const mapped = mapFormDataToBackendStructure(modifiedFields);
+
+const payload = {
+  jobDetails: {
+    ...mapped.jobDetails,   // ✅ flatten here
+    updatedBy: `${currentUser.firstName} ${currentUser.lastName}`,
+  }
+};
+
+await updateEmployeeDetailsByEmployeeId(originalEmployeeId, payload);
+
       resetFormData();
       fetchEmployeeAgain(updatedEmployeeId);
       handleUpdateToastMessage();
       setIsUpdateResponseLoading(false);
       setIsFormSubmitted(true);
+      /*await fetchAndBuildHistory(originalEmployeeId);*/
 
+    /* try {
+    const historyResponse = await getEmployeeHistory(originalEmployeeId);
+    console.log('Employment history 1:', historyResponse.data);
+    
+    const formattedHistory = historyResponse.data.map((item: any) => ({
+  designation: item.designation,                 // e.g. "Front End Developer"
+  employmentType: item.employementType,          // e.g. "Intern"
+  department: item.department,                   // e.g. "HR"
+  startDate: formatDateDDMMYYYY(item.joiningDate),
+  endDate: item.resignationDate
+    ? formatDateDDMMYYYY(item.resignationDate)
+    : 'Present',
+  updatedBy: item.updatedBy,
+  updatedAt: formatDateDDMMYYYY(item.updatedAt),
+}));
+
+   console.log("Formatted history:", formattedHistory);
+    setHistory(formattedHistory); // ✅ valid to call here
+  } catch (err) {
+    console.error('Error fetching employment history:', err);
+  }
+*/
       const defaultFormData: { [key: string]: string } = {};
       details.forEach(({ label, value }) => {
         defaultFormData[label] = value;
@@ -292,6 +522,21 @@ export const GeneralDetailsTab = ({
       setOriginalFormData(defaultFormData);
       setModifiedFields({});
       handleIsEditModeOn();
+     setEmploymentHistory((prev) => [
+  ...prev,
+  {
+    ...previousJobDetails,           // old snapshot
+    updatedBy: currentUser?.firstName || 'Unknown',
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    ...employee.employee.jobDetails, // updated snapshot
+    updatedBy: currentUser?.firstName || 'Unknown',
+    updatedAt: new Date().toISOString(),
+  },
+]);
+
+
     } catch (error: any) {
       const errorMessage = error?.response?.data?.message;
 
@@ -447,6 +692,7 @@ export const GeneralDetailsTab = ({
   const [employmentTypes, setEmploymentTypes] = useState<OrgDefaults>(
     {} as OrgDefaults
   );
+  
   const [isDefaultResponseLoading, setIsDefaultResponseLoading] =
     useState(false);
 
@@ -472,7 +718,44 @@ export const GeneralDetailsTab = ({
       fetchData();
     }
   }, [heading]);
-
+  /*const handleToggleHistory = async () => {
+  if (!showEmploymentHistory) {
+    try {
+      const historyResponse = await getEmployeeHistory(employee.account.employeeId);
+      const formattedHistory = historyResponse.data.map((item: any) => ({
+        designation: item.designation,
+        employmentType: item.employementType,
+        department: item.department,
+        startDate: formatDateDDMMYYYY(item.joiningDate),
+        endDate: item.resignationDate
+          ? formatDateDDMMYYYY(item.resignationDate)
+          : 'Present',
+        updatedBy: item.updatedBy,
+        updatedAt: formatDateDDMMYYYY(item.updatedAt),
+      }));
+      console.log("Iam in")
+      setHistory(formattedHistory);
+    } catch (err) {
+      console.error("Error fetching employment history:", err);
+    }
+  }
+  setShowEmploymentHistory((prev) => !prev);
+};*/
+const calculateDuration = (startDate:any, endDate:any) => {
+  if (!startDate) return "—";
+  const start = new Date(startDate);
+  const end = endDate === "Present" ? new Date() : new Date(endDate);
+  let years = end.getFullYear() - start.getFullYear();
+  let months = end.getMonth() - start.getMonth();
+  if (months < 0) {
+    years -= 1;
+    months += 12;
+  }
+  const yearString = years > 0 ? `${years} yr` : "";
+  const monthString = months > 0 ? `${months} mo` : "";
+  let durationString = [yearString, monthString].filter(Boolean).join(" ");
+  return durationString || "Less than a month";
+};
   return (
     <>
       {isDefaultResponseLoading ? (
@@ -713,9 +996,66 @@ export const GeneralDetailsTab = ({
                             {formatDate(value)}
                           </TabContentTableTd>
                         ) : (
-                          <TabContentTableTd>{t(value)}</TabContentTableTd>
-                        )}
-                      </>
+                          <TabContentTableTd>{t(value)}
+                            {label === 'Employment Type' && (
+   <ViewHistoryLink
+    href="#"
+    onClick={(e) => {
+      e.preventDefault();
+      setShowEmploymentHistory(!showEmploymentHistory);
+    }}
+  >
+    {showEmploymentHistory ? "Hide History" : "View History"}
+  </ViewHistoryLink>
+)}
+
+</TabContentTableTd>
+                          
+
+
+
+
+
+
+
+
+
+         )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        
+                </>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     )}
                   </tr>
                 ))}
@@ -793,6 +1133,99 @@ export const GeneralDetailsTab = ({
           </TabContentInnerContainer>
         </TabContentMainContainer>
       )}
+{showEmploymentHistory && (
+  <EmploymentHistoryContainer>
+    <div className="history-header"> {/* Use a div for alignment */}
+      <h3>Employment history</h3>
+      {isEditModeOn && (
+        <button className="add-history-button" onClick={handleAddHistoryItem}>
+          Add
+        </button>
+      )}
+    </div>
+    {history.length > 0 &&
+      [...history].map((job, index) => (
+        <HistoryItem key={index}>
+          <Dot />
+          <HistoryContent>
+            <p className="designation">
+              {job.designation || "—"}
+            </p>
+            {isEditModeOn && (
+              <span className="edit-history-icon" onClick={() => handleEditHistoryItem(index)}>
+                <EditWhitePenSVG />
+              </span>
+            )}
+            <div className="details-line">
+              {job.employmentType && (
+                <span className={`badge ${job.employmentType.toLowerCase().replace(/\s/g, '')}`}>
+                  {job.employmentType}
+                </span>
+              )}
+              <span className="duration">
+                {job.startDate || "—"} - {job.endDate || "Present"}
+                {job.startDate && (
+                  <>
+                    <span className="dot-divider">•</span>
+                    <span className="calculated-duration">
+                      {calculateDuration(job.startDate, job.endDate)}
+                    </span>
+                  </>
+                )}
+              </span>
+            </div>
+            {job.updatedBy && (
+              <p className="updated">
+                Updated by {job.updatedBy}{job.updatedRole ? ` (${job.updatedRole})` : ""}
+              </p>
+            )}
+            {job.specialization && (
+              <p className="specialization">{job.specialization}</p>
+            )}
+          </HistoryContent>
+        </HistoryItem>
+      ))}
+  </EmploymentHistoryContainer>
+)}
+
+// Corrected JSX for the form
+{(isAddingNew || editingIndex !== null) && (
+  <TabContentEditArea>
+    <TabContentInnerContainer>
+      <h3>{editingIndex !== null ? "Edit Job" : "Add New Job"}</h3>
+      <InlineInput
+        type="text"
+        name="designation"
+        placeholder="Designation"
+        value={historyFormData.designation} // Use historyFormData
+        onChange={(e) => handleHistoryFormChange('designation', e.target.value)}
+      />
+      <Select
+        name="employmentType"
+        value={historyFormData.employmentType} // Use historyFormData
+        onChange={(e) => handleHistoryFormChange('employmentType', e.target.value)}
+      >
+        <option value="">Select Type</option>
+        <option value="Full-time">Full-time</option>
+        <option value="Part-time">Part-time</option>
+        <option value="Contract">Contract</option>
+        <option value="Internship">Internship</option>
+      </Select>
+      {/* ... other inputs ... */}
+      <button onClick={handleSubmitHistory}>Save</button>
+      <button onClick={handleCancelAddOrEdit}>Cancel</button>
+    </TabContentInnerContainer>
+  </TabContentEditArea>
+)}
+
+
+
+
+
+
+
+
+
 
       {isEditModeOn && showCalendar ? (
         <CalendarContainer>

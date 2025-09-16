@@ -3,6 +3,7 @@ package com.beeja.api.employeemanagement.controller;
 import com.beeja.api.employeemanagement.annotations.HasPermission;
 import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.JobDetails;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
@@ -34,6 +35,14 @@ public class EmployeeController {
 
   @Autowired private EmployeeService employeeService;
 
+  // GET /employees/v1/users/{employeeId}/history
+  @GetMapping("/{employeeId}/history")
+  public ResponseEntity<List<JobDetails>> getEmploymentHistory(@PathVariable String employeeId) {
+    // fetch employee first
+    Employee employee = employeeService.getEmployeeById(employeeId); // create this method if not exists
+    List<JobDetails> history = employeeService.getEmploymentHistory(employee);
+    return ResponseEntity.ok(history);
+  }
   @GetMapping
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
   public ResponseEntity<EmployeeResponse> getAllEmployees(
