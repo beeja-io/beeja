@@ -56,15 +56,7 @@ import com.beeja.api.employeemanagement.utils.UserContext;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -519,14 +511,41 @@ public class EmployeeServiceImpl implements EmployeeService {
   }
 
 
-
+/*
   public void updateJobDetails(Employee existingEmployee, JobDetails updatedJobDetails) {
     if (updatedJobDetails != null) {
       JobDetails existingJobDetails = existingEmployee.getJobDetails();
       if (existingJobDetails == null) {
         existingJobDetails = new JobDetails();
         existingEmployee.setJobDetails(existingJobDetails);
+
       }
+
+      // Save previous job details into list
+      JobDetails previousJob = new JobDetails();
+      previousJob.setDesignation(existingJobDetails.getDesignation());
+      previousJob.setEmployementType(existingJobDetails.getEmployementType());
+      previousJob.setDepartment(existingJobDetails.getDepartment());
+      previousJob.setJoiningDate(existingJobDetails.getJoiningDate());
+      previousJob.setResignationDate(existingJobDetails.getResignationDate());
+      previousJob.setUpdatedBy(existingJobDetails.getUpdatedBy());
+      previousJob.setUpdatedAt(existingJobDetails.getUpdatedAt());
+
+      if (existingJobDetails.getPreviousJobDetailsList() == null) {
+        existingJobDetails.setPreviousJobDetailsList(new ArrayList<>());
+      }
+      existingJobDetails.getPreviousJobDetailsList().add(previousJob);
+
+
+
+
+
+
+
+
+
+
+
 
       if (updatedJobDetails.getDesignation() != null) {
         existingJobDetails.setDesignation(updatedJobDetails.getDesignation());
@@ -543,8 +562,73 @@ public class EmployeeServiceImpl implements EmployeeService {
       if (updatedJobDetails.getResignationDate() != null) {
         existingJobDetails.setResignationDate(updatedJobDetails.getResignationDate());
       }
+
+      // no fallback
+      if (updatedJobDetails.getUpdatedBy() != null) {
+        existingJobDetails.setUpdatedBy(updatedJobDetails.getUpdatedBy());
+      }
+      existingJobDetails.setUpdatedAt(new Date());
+
     }
   }
+*/
+public void updateJobDetails(Employee existingEmployee, JobDetails updatedJobDetails) {
+  if (updatedJobDetails != null) {
+    JobDetails existingJobDetails = existingEmployee.getJobDetails();
+    if (existingJobDetails == null) {
+      existingJobDetails = new JobDetails();
+      existingEmployee.setJobDetails(existingJobDetails);
+    } else {
+      // ✅ Save old job into history *before* overwriting it
+      JobDetails previousJob = new JobDetails();
+      previousJob.setDesignation(existingJobDetails.getDesignation());
+      previousJob.setEmployementType(existingJobDetails.getEmployementType());
+      previousJob.setDepartment(existingJobDetails.getDepartment());
+      previousJob.setJoiningDate(existingJobDetails.getJoiningDate());
+
+      // mark end date of previous job
+      previousJob.setResignationDate(new Date());
+
+      previousJob.setUpdatedBy(existingJobDetails.getUpdatedBy());
+      previousJob.setUpdatedAt(existingJobDetails.getUpdatedAt());
+
+      if (existingJobDetails.getPreviousJobDetailsList() == null) {
+        existingJobDetails.setPreviousJobDetailsList(new ArrayList<>());
+      }
+      existingJobDetails.getPreviousJobDetailsList().add(previousJob);
+    }
+
+    // ✅ Now update with new values from frontend payload
+    if (updatedJobDetails.getDesignation() != null) {
+      existingJobDetails.setDesignation(updatedJobDetails.getDesignation());
+    }
+    if (updatedJobDetails.getEmployementType() != null) {
+      existingJobDetails.setEmployementType(updatedJobDetails.getEmployementType());
+    }
+    if (updatedJobDetails.getDepartment() != null) {
+      existingJobDetails.setDepartment(updatedJobDetails.getDepartment());
+    }
+    if (updatedJobDetails.getJoiningDate() != null) {
+      existingJobDetails.setJoiningDate(updatedJobDetails.getJoiningDate());
+    }
+    if (updatedJobDetails.getResignationDate() != null) {
+      existingJobDetails.setResignationDate(updatedJobDetails.getResignationDate());
+    } else {
+      // ensure current job has no resignation date
+      existingJobDetails.setResignationDate(null);
+    }
+
+    // ✅ Always set updatedBy + updatedAt
+    if (updatedJobDetails.getUpdatedBy() != null) {
+      existingJobDetails.setUpdatedBy(updatedJobDetails.getUpdatedBy());
+    }
+    existingJobDetails.setUpdatedAt(new Date());
+  }
+}
+
+
+
+
 
   private void updateContact(Employee existingEmployee, Contact updatedContact) {
     if (updatedContact != null) {
@@ -935,4 +1019,25 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     return "Duplicate entry found.";
   }
+
+
+  @Override
+  public Employee getEmployeeById(String employeeId) {
+    return employeeRepository.findByEmployeeIdAndOrganizationId(
+            employeeId, UserContext.getLoggedInUserOrganization().getId()
+    );
+  }
+
+  @Override
+  public List<JobDetails> getEmploymentHistory(Employee employee) {
+    List<JobDetails> history = new ArrayList<>();
+    if (employee.getJobDetails() != null) {
+      if (employee.getJobDetails().getPreviousJobDetailsList() != null) {
+        history.addAll(employee.getJobDetails().getPreviousJobDetailsList());
+      }
+      history.add(employee.getJobDetails());
+    }
+    return history;
+  }
+
 }
