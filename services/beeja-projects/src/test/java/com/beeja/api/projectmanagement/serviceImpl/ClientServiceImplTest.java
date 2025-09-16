@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 class ClientServiceImplTest {
 
+
   @InjectMocks
   private ClientServiceImpl clientService;
 

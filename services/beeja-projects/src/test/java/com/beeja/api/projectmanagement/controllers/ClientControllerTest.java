@@ -116,6 +116,7 @@ class ClientControllerTest {
     clients.add(client1);
     clients.add(client2);
 
+
     int pageNumber = 1;
     int pageSize = 10;
     Page<Client> pageClients = new PageImpl<>(clients, PageRequest.of(pageNumber - 1, pageSize), 25L);

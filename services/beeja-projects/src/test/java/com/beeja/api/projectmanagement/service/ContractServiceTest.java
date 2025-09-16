@@ -30,6 +30,7 @@ import java.util.*;
 
 class ContractServiceTest {
 
+
     @InjectMocks
     private ContractServiceImpl contractService;
 

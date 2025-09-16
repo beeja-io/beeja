@@ -30,6 +30,7 @@ import org.springframework.core.io.ByteArrayResource;
 @ExtendWith(MockitoExtension.class)
 class FileServiceImplTest {
 
+
   @Mock private FileClient fileClient;
   @Spy private ObjectMapper objectMapper;
   @InjectMocks private FileServiceImpl fileService;

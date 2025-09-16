@@ -26,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 
 class ClientServiceTest {
 
+
     @InjectMocks
     private ClientServiceImpl clientService;
 

@@ -28,6 +28,7 @@ import org.springframework.data.mongodb.core.query.Query;
 @ExtendWith(MockitoExtension.class)
 class ContractServiceImplTest {
 
+
   @InjectMocks
   private ContractServiceImpl contractService;
 
