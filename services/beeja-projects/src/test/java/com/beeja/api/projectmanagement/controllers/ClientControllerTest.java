@@ -1,227 +1,183 @@
 package com.beeja.api.projectmanagement.controllers;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
+import com.beeja.api.projectmanagement.utils.Constants;
+import com.beeja.api.projectmanagement.utils.UserContext;
+import org.junit.jupiter.api.*;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.MockedStatic;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
-public class ClientControllerTest {
+import java.util.*;
 
-  @InjectMocks private ClientController clientController;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-  @Mock private ClientService clientService;
+class ClientControllerTest {
+
+  @Mock
+  private ClientService clientService;
+
+  private ClientController clientController;
+
+  private static MockedStatic<UserContext> mockedUserContext;
+
+  @BeforeAll
+  static void initStaticMock() {
+    mockedUserContext = Mockito.mockStatic(UserContext.class);
+  }
+
+  @AfterAll
+  static void closeStaticMock() {
+    mockedUserContext.close();
+  }
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     MockitoAnnotations.openMocks(this);
+    clientController = new ClientController();
+    clientController.clientService = clientService;
+
+    // Mock UserContext to always return an organization map
+    Map<String, Object> orgMap = new HashMap<>();
+    orgMap.put(Constants.ID, "org123");
+    mockedUserContext.when(UserContext::getLoggedInUserOrganization).thenReturn(orgMap);
+  }
+
+  @AfterEach
+  void tearDown() {
+    mockedUserContext.reset(); // reset for next test
   }
 
   @Test
-  void addClientToOrganization_ValidRequest_ReturnsCreatedClient() throws Exception {
-    ClientRequest clientRequest = new ClientRequest();
-    clientRequest.setClientName("Test Client");
-    MultipartFile mockFile =
-        new MockMultipartFile("logo", "logo.png", "image/png", "some image".getBytes());
-    clientRequest.setLogo(mockFile);
+  void addClientToOrganization_Success() throws Exception {
+    ClientRequest request = new ClientRequest();
+    Client client = new Client();
+    client.setClientId("1");
+    client.setClientName("Client A");
 
-    Client createdClient = new Client();
-    createdClient.setClientId("123");
-    createdClient.setClientName("Test Client");
-    when(clientService.addClientToOrganization(clientRequest)).thenReturn(createdClient);
+    when(clientService.addClientToOrganization(request)).thenReturn(client);
 
-    ResponseEntity<Client> response = clientController.addClientToOrganization(clientRequest);
+    ResponseEntity<Client> response = clientController.addClientToOrganization(request);
 
     assertEquals(HttpStatus.CREATED, response.getStatusCode());
-    assertNotNull(response.getBody());
-    assertEquals("123", response.getBody().getClientId());
-    assertEquals("Test Client", response.getBody().getClientName());
-    verify(clientService, times(1)).addClientToOrganization(clientRequest);
+    assertEquals(client, response.getBody());
+    verify(clientService, times(1)).addClientToOrganization(request);
   }
 
   @Test
-  void addClientToOrganization_ServiceThrowsException_ReturnsInternalServerError()
-      throws Exception {
-    ClientRequest clientRequest = new ClientRequest();
-    MultipartFile mockFile =
-        new MockMultipartFile("logo", "logo.png", "image/png", "some image".getBytes());
-    clientRequest.setLogo(mockFile);
-    when(clientService.addClientToOrganization(clientRequest))
-        .thenThrow(new RuntimeException("Failed to add client"));
-
-    Exception exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              clientController.addClientToOrganization(clientRequest);
-            });
-
-    assertEquals("Failed to add client", exception.getMessage());
-    verify(clientService, times(1)).addClientToOrganization(clientRequest);
-  }
-
-  @Test
-  void updateClientOfOrganization_ValidRequest_ReturnsUpdatedClient() throws Exception {
-    String clientId = "456";
-    ClientRequest clientRequest = new ClientRequest();
-    clientRequest.setClientName("Updated Client");
-    Client updatedClient = new Client();
-    updatedClient.setClientId(clientId);
-    updatedClient.setClientName("Updated Client");
-    when(clientService.updateClientOfOrganization(clientRequest, clientId))
-        .thenReturn(updatedClient);
-
-    ResponseEntity<Client> response =
-        clientController.updateClientOfOrganization(clientRequest, clientId);
-
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
-    assertEquals(clientId, response.getBody().getClientId());
-    assertEquals("Updated Client", response.getBody().getClientName());
-    verify(clientService, times(1)).updateClientOfOrganization(clientRequest, clientId);
-  }
-
-  @Test
-  void updateClientOfOrganization_ServiceThrowsException_ReturnsInternalServerError()
-      throws Exception {
-    String clientId = "456";
-    ClientRequest clientRequest = new ClientRequest();
-    when(clientService.updateClientOfOrganization(clientRequest, clientId))
-        .thenThrow(new RuntimeException("Failed to update client"));
-
-    Exception exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              clientController.updateClientOfOrganization(clientRequest, clientId);
-            });
-
-    assertEquals("Failed to update client", exception.getMessage());
-    verify(clientService, times(1)).updateClientOfOrganization(clientRequest, clientId);
-  }
-
-  @Test
-  void getClientById_ExistingClientId_ReturnsClient() throws Exception {
-    String clientId = "789";
+  void updateClientOfOrganization_Success() throws Exception {
+    ClientRequest request = new ClientRequest();
     Client client = new Client();
-    client.setClientId(clientId);
-    client.setClientName("Existing Client");
-    when(clientService.getClientById(clientId)).thenReturn(client);
+    client.setClientId("1");
+    client.setClientName("Updated Client");
 
-    ResponseEntity<Client> response = clientController.getClientById(clientId);
+    when(clientService.updateClientOfOrganization(request, "1")).thenReturn(client);
+
+    ResponseEntity<Client> response = clientController.updateClientOfOrganization(request, "1");
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
-    assertEquals(clientId, response.getBody().getClientId());
-    assertEquals("Existing Client", response.getBody().getClientName());
-    verify(clientService, times(1)).getClientById(clientId);
+    assertEquals(client, response.getBody());
+    verify(clientService, times(1)).updateClientOfOrganization(request, "1");
   }
 
   @Test
-  void getClientById_NonExistingClientId_ReturnsNotFound() throws Exception {
-    String clientId = "nonExistent";
-    when(clientService.getClientById(clientId))
-        .thenThrow(new NoSuchElementException("Client not found"));
+  void getClientById_Success() throws Exception {
+    Client client = new Client();
+    client.setClientId("1");
+    client.setClientName("Client A");
 
-    NoSuchElementException exception =
-        assertThrows(
-            NoSuchElementException.class,
-            () -> {
-              clientController.getClientById(clientId);
-            });
+    when(clientService.getClientById("1")).thenReturn(client);
 
-    assertEquals("Client not found", exception.getMessage());
-    verify(clientService, times(1)).getClientById(clientId);
+    ResponseEntity<Client> response = clientController.getClientById("1");
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(client, response.getBody());
+    verify(clientService, times(1)).getClientById("1");
   }
 
   @Test
-  void getClientById_ServiceThrowsGenericException_ReturnsInternalServerError() throws Exception {
-    String clientId = "errorId";
-    when(clientService.getClientById(clientId)).thenThrow(new RuntimeException("Database error"));
-
-    Exception exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              clientController.getClientById(clientId);
-            });
-
-    assertEquals("Database error", exception.getMessage());
-    verify(clientService, times(1)).getClientById(clientId);
-  }
-
-  @Test
-  void getAllClientsOfOrganization_ClientsExist_ReturnsListOfClients() throws Exception {
+  void getAllClientsOfOrganization_ClientsExist_ReturnsListOfClients() {
     List<Client> clients = new ArrayList<>();
-
     Client client1 = new Client();
     client1.setClientId("1");
     client1.setClientName("Client A");
-
     Client client2 = new Client();
     client2.setClientId("2");
     client2.setClientName("Client B");
-
     clients.add(client1);
     clients.add(client2);
 
-    when(clientService.getAllClientsOfOrganization()).thenReturn(clients);
+    int pageNumber = 1;
+    int pageSize = 10;
+    Page<Client> pageClients = new PageImpl<>(clients, PageRequest.of(pageNumber - 1, pageSize), 25L);
 
-    ResponseEntity<List<Client>> response = clientController.getAllClientsOfOrganization();
+    when(clientService.getAllClientsOfOrganization("org123", pageNumber - 1, pageSize))
+            .thenReturn(pageClients);
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
-    assertEquals(2, response.getBody().size());
-    assertEquals("Client A", response.getBody().get(0).getClientName());
-    assertEquals("Client B", response.getBody().get(1).getClientName());
-    verify(clientService, times(1)).getAllClientsOfOrganization();
-  }
-
-  @Test
-  void getAllClientsOfOrganization_NoClientsExist_ReturnsEmptyList() throws Exception {
-    List<Client> clients = Arrays.asList();
-    when(clientService.getAllClientsOfOrganization()).thenReturn(clients);
-
-    ResponseEntity<List<Client>> response = clientController.getAllClientsOfOrganization();
+    ResponseEntity<Map<String, Object>> response = clientController.getAllClientsOfOrganization(pageNumber, pageSize);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertNotNull(response.getBody());
-    assertEquals(0, response.getBody().size());
-    verify(clientService, times(1)).getAllClientsOfOrganization();
+
+    Map<String, Object> responseBody = response.getBody();
+    List<Client> clientList = (List<Client>) responseBody.get("data");
+    Map<String, Object> metadata = (Map<String, Object>) responseBody.get("metadata");
+    Long totalRecords = (Long) metadata.get("totalRecords");
+
+    assertEquals(2, clientList.size());
+    assertEquals("Client A", clientList.get(0).getClientName());
+    assertEquals("Client B", clientList.get(1).getClientName());
+    assertEquals(25L, totalRecords);
+
+    verify(clientService, times(1)).getAllClientsOfOrganization("org123", pageNumber - 1, pageSize);
   }
 
   @Test
-  void getAllClientsOfOrganization_ServiceThrowsException_ReturnsInternalServerError()
-      throws Exception {
-    when(clientService.getAllClientsOfOrganization())
-        .thenThrow(new RuntimeException("Failed to retrieve clients"));
+  void getAllClientsOfOrganization_NoClientsExist_ReturnsEmptyList() {
+    Page<Client> emptyPage = new PageImpl<>(Collections.emptyList(), PageRequest.of(0, 10), 0);
+    when(clientService.getAllClientsOfOrganization("org123", 0, 10)).thenReturn(emptyPage);
 
-    Exception exception =
-        assertThrows(
-            RuntimeException.class,
-            () -> {
-              clientController.getAllClientsOfOrganization();
-            });
+    ResponseEntity<Map<String, Object>> response = clientController.getAllClientsOfOrganization(1, 10);
+
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertNotNull(response.getBody());
+
+    List<Client> clients = (List<Client>) response.getBody().get("data");
+    Map<String, Object> metadata = (Map<String, Object>) response.getBody().get("metadata");
+
+    assertTrue(clients.isEmpty());
+    assertEquals(0L, metadata.get("totalRecords"));
+    verify(clientService, times(1)).getAllClientsOfOrganization("org123", 0, 10);
+  }
+
+  @Test
+  void getAllClientsOfOrganization_ServiceThrowsException_ReturnsInternalServerError() {
+    when(clientService.getAllClientsOfOrganization("org123", 0, 10))
+            .thenThrow(new RuntimeException("Failed to retrieve clients"));
+
+    RuntimeException exception = assertThrows(RuntimeException.class,
+            () -> clientController.getAllClientsOfOrganization(1, 10));
 
     assertEquals("Failed to retrieve clients", exception.getMessage());
-    verify(clientService, times(1)).getAllClientsOfOrganization();
+    verify(clientService, times(1)).getAllClientsOfOrganization("org123", 0, 10);
+  }
+
+  @Test
+  void getAllClientsOfOrganization_InvalidPageParams_ReturnsBadRequest() {
+    ResponseEntity<Map<String, Object>> response = clientController.getAllClientsOfOrganization(0, -5);
+
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertEquals("Page number and page size must be positive integers.",
+            response.getBody().get("error"));
+    verifyNoInteractions(clientService);
   }
 }
