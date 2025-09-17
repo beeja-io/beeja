@@ -300,5 +300,11 @@
   "Project": "Projekt",
   "Client": "Kunde",
   "Clients": "Kunden",
-  "Projects & Contracts": "Projekte & Verträge"
+  "Projects & Contracts": "Projekte & Verträge",
+  "New_Review_Cycle": "Neuer Überprüfungszyklus",
+  "Setup_Review_Form": "Formular zur Einrichtungsüberprüfung",
+  "Assign_Manager": "Weisen Sie den Manager zu",
+  "Review_Cycle_Name": "Überprüfen Sie den Zyklusnamen",
+  "Create_Review_Cycle": "Erstellen Sie einen Überprüfungszyklus",
+  "Add_New_Review_Cycle": "Neuen Überprüfungszyklus hinzufügen"
 }

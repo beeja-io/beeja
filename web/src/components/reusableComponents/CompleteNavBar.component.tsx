@@ -14,6 +14,7 @@ import {
   TrendingUpSVG,
   TimeOffSVG,
   ProjectsSVG,
+  PerformanceIcon,
 } from '../../svgs/NavBarSvgs.svg';
 import {
   DarkTheme,
@@ -456,6 +457,41 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )}
+                  {
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="#"
+                      tooltipName="Performance"
+                      linkName="Performance"
+                      svgIcon={
+                        <PerformanceIcon
+                          props={{
+                            isActive:
+                              openDropdown === 'performance' ||
+                              currentPath.startsWith('/performance'),
+                          }}
+                        />
+                      }
+                      additionalSvgIcon={<ChevronDownSVG />}
+                      dropdownItems={[
+                        {
+                          name: 'Create Review cycle',
+                          link: '/performance/create-review-cycle',
+                        },
+                        {
+                          name: 'Manage reviews',
+                          link: '/performance/manage-reviews',
+                        },
+                      ]}
+                      isDropdownOpen={openDropdown === 'performance'}
+                      setDropdownOpen={() => {
+                        setOpenDropdown((prev) =>
+                          prev === 'performance' ? null : 'performance'
+                        );
+                      }}
+                      hasAdditionalSvg
+                    />
+                  }
 
                   {hasFeature(
                     featureToggles.featureToggles,
