@@ -36,6 +36,7 @@ import ProjectListWrapper from '../screens/ProjectListWrapper';
 import ProjectDetailsSCreen from '../screens/ProjectDetailsScreen.screen';
 import ContractDetailsScreen from '../screens/ContractDetailedScreen';
 import ContractListWrapper from '../screens/ContractListWrapper';
+import CreateReviewCycleScreen from '../screens/CreateReviewCycle.screen';
 
 const AllRoutes = () => {
   return (
@@ -190,6 +191,17 @@ const AllRoutes = () => {
             featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
           >
             <TimeSheet />
+          </CustomRoute>
+        }
+      />
+      <Route
+        path="/performance/create-review-cycle"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <CreateReviewCycleScreen />
           </CustomRoute>
         }
       />

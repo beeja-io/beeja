@@ -488,5 +488,11 @@
   "Project": "Project",
   "Client": "Client",
   "Clients": "Clients",
-  "Projects & Contracts": "Projects & Contracts"
+  "Projects & Contracts": "Projects & Contracts",
+  "New_Review_Cycle": "New Review Cycle",
+  "Setup_Review_Form": "Setup Review Form",
+  "Assign_Manager": "Assign Manager",
+  "Review_Cycle_Name": "Review Cycle Name",
+  "Create_Review_Cycle": "Create Review Cycle",
+  "Add_New_Review_Cycle": "Add New Review Cycle"
 }
