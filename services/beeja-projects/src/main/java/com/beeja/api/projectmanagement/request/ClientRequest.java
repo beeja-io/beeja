@@ -40,4 +40,5 @@ public class ClientRequest {
   private Industry industry;
   private String description;
   private MultipartFile logo;
+  private boolean removeLogo = false;
 }
