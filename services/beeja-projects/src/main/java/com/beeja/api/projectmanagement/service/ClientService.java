@@ -2,10 +2,12 @@ package com.beeja.api.projectmanagement.service;
 
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.request.ClientRequest;
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 /** Service interface for managing {@link Client} entities within an organization. */
-public interface ClientService {
+public interface    ClientService {
 
   /**
    * Adds a new client to an organization.
@@ -41,4 +43,6 @@ public interface ClientService {
    * @return a list of {@link Client} objects for the organization
    */
   List<Client> getAllClientsOfOrganization();
+
+  Page<Client> getAllClientsOfOrganization(String organizationId, int pageNumber, int pageSize);
 }
