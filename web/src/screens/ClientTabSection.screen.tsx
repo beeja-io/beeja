@@ -72,7 +72,6 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           setProjects([]);
           setContracts([]);
           setResources([]);
-          toast.info(t('No project data available for this client'));
           setLoading(false);
           return;
         }

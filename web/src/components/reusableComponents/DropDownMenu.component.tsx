@@ -265,6 +265,7 @@ interface MultiSelectDropdownProps {
   placeholder?: string;
   searchable?: boolean;
   className?: string | null;
+  required?: boolean;
   onChange: (values: { label: string; value: string }[]) => void;
 }
 
@@ -275,8 +276,10 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   onChange,
   className = '',
   searchable = false,
+  required = false,
 }) => {
   const [open, setOpen] = useState(false);
+  const [touched, setTouched] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -287,6 +290,7 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setOpen(false);
+        setTouched(true);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -294,6 +298,7 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   }, []);
 
   const handleSelect = (option: { label: string; value: string }) => {
+    setTouched(true);
     if (value.some((v) => v.value === option.value)) {
       onChange(value.filter((v) => v.value !== option.value));
     } else {
@@ -306,14 +311,20 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
         item.label.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : options;
-  const clearAll = () => onChange([]);
+  const clearAll = () => {
+    setTouched(true);
+    onChange([]);
+  };
 
   return (
     <div>
       <ContainerStyleMulti
         ref={dropdownRef}
         hasValue={value.length > 0}
-        className={className || ''}
+        className={`${className || ''} ${
+          required && touched && value.length === 0 ? 'error-border' : ''
+        }
+        `}
       >
         <ClearButton onClick={(e) => e.stopPropagation()}>
           {value.length > 0 && (
@@ -374,6 +385,11 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
           </DropdownListStyle>
         )}
       </ContainerStyleMulti>
+      {required && touched && value.length === 0 && (
+        <div style={{ color: 'red', marginTop: '4px', fontSize: '12px' }}>
+          This field is required
+        </div>
+      )}
     </div>
   );
 };

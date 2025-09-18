@@ -21,6 +21,9 @@ export const ContainerStyle = styled.div<{
   &.smallContainerDed {
     height: 45px;
   }
+  &.largeContainerHei {
+    height: 54px;
+  }
   &.largeContainerFil {
     width: 200px;
   }
