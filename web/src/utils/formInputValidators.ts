@@ -27,7 +27,7 @@ export function isValidGSTNumber(gstNumber: string) {
 }
 
 export function isValidLINNumber(linNumber: string) {
-  const regex = /^[0-9]{10}$/;
+  const regex = /^[0-9]{17}$/;
   return regex.test(linNumber);
 }
 
@@ -65,7 +65,7 @@ export const isValidBankName = (bankName: string): boolean => {
 };
 
 export const isValidAccountName = (accountName: string): boolean => {
-  const regex = /^[A-Za-z ]+$/;
+  const regex = /^[A-Za-z\s&.]+$/;
   return regex.test(accountName.trim());
 };
 
