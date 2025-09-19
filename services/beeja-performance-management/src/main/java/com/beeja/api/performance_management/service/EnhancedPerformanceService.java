@@ -25,9 +25,7 @@ public class EnhancedPerformanceService extends PerformanceService {
         return super.createReviewCycle(reviewCycle);
     }
 
-
     private String getCurrentUserId() {
-        // integrate with Spring Security (SecurityContextHolder) in real-world
         return "current-user-id";
     }
 }
