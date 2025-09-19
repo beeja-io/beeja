@@ -236,6 +236,40 @@ const roleData = [
       // Add more subsections as needed
     ],
   },
+  {
+    heading: 'Client, Project & Contract Management',
+    labels: ['Full Access', 'Create', 'View', 'Edit', 'Delete'],
+    subsections: [
+      {
+        moduleName: 'Client Management',
+        permissions: [
+          { value: 'GCL', label: 'View' },
+          { value: 'CCL', label: 'Create' },
+          { value: 'UCL', label: 'Edit' },
+          { value: 'DCL', label: 'Delete' },
+        ],
+      },
+      {
+        moduleName: 'Project Management',
+        permissions: [
+          { value: 'GPT', label: 'View' },
+          { value: 'CPT', label: 'Create' },
+          { value: 'UPT', label: 'Edit' },
+          { value: 'DPT', label: 'Delete' },
+        ],
+      },
+      {
+        moduleName: 'Contract Management',
+        permissions: [
+          { value: 'GCON', label: 'View' },
+          { value: 'CCON', label: 'Create' },
+          { value: 'UCON', label: 'Edit' },
+          { value: 'DCON', label: 'Delete' },
+        ],
+      },
+      // Add more subsections as needed
+    ],
+  },
 ];
 
 export default roleData;
