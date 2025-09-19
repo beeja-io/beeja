@@ -71,7 +71,7 @@ class PerformanceServiceImplTest {
 
         Optional<ReviewCycle> result = performanceService.getReviewCycleById("INVALID");
 
-        assertThat(result).isEmpty();   // now correct
+        assertThat(result).isEmpty(); 
         verify(reviewCycleRepository, times(1)).findByCycleId("INVALID");
     }
 
@@ -132,7 +132,6 @@ class PerformanceServiceImplTest {
 
     @Test
     void getCurrentManagerId_ShouldReturnDefaultValue() {
-        // Subclass PerformanceService to expose the protected method
         class TestService extends PerformanceService {
             String exposeCurrentManagerId() {
                 return getCurrentManagerId();
