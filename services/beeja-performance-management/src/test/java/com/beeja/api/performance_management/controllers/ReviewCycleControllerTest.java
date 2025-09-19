@@ -66,8 +66,7 @@ class ReviewCycleControllerTest {
                 .createdBy("USER-001")
                 .build();
     }
-
-    // ========== LIST ALL ==========
+    
     @Test
     void list_ShouldReturnAllReviewCycles() throws Exception {
         List<ReviewCycle> cycles = Arrays.asList(sampleCycle);
@@ -79,7 +78,6 @@ class ReviewCycleControllerTest {
                 .andExpect(jsonPath("$[0].managerIds[0]").value("MGR-001"));
     }
 
-    // ========== GET BY ID ==========
     @Test
     void getReviewCycleById_WhenExists_ShouldReturnCycle() throws Exception {
         when(performanceService.getReviewCycleById("CYCLE-001")).thenReturn(Optional.of(sampleCycle));
@@ -97,17 +95,6 @@ class ReviewCycleControllerTest {
                         .content("{\"invalidField\":\"oops\"}"))
                 .andExpect(status().isBadRequest());
     }
-//
-//    @Test
-//    void updateReviewCycleById_WhenNotFound_ShouldReturn404() throws Exception {
-//        when(performanceService.updateReviewCycle(eq("INVALID"), any()))
-//                .thenReturn(null);
-//
-//        mockMvc.perform(put("/performance/v1/review-cycles/INVALID")
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(sampleCycle)))
-//                .andExpect(status().isNotFound());
-//    }
 
     @Test
     void getAllReviewCyclesbyManager_WhenEmpty_ShouldReturnEmptyList() throws Exception {
@@ -126,7 +113,6 @@ class ReviewCycleControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    // ========== CREATE ==========
     @Test
     void createReviewCycle_ShouldReturnCreatedCycle() throws Exception {
         when(performanceService.createReviewCycle(any(ReviewCycle.class))).thenReturn(sampleCycle);
@@ -136,10 +122,9 @@ class ReviewCycleControllerTest {
                         .content(objectMapper.writeValueAsString(sampleCycle)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.cycleId").value("CYCLE-001"));
-               // .andExpect(jsonPath("$.managerIds[0]").value("MGR-001"));
+               .andExpect(jsonPath("$.managerIds[0]").value("MGR-001"));
     }
 
-    // ========== UPDATE ==========
     @Test
     void updateReviewCycleById_ShouldReturnUpdatedCycle() throws Exception {
         ReviewCycle updatedCycle = sampleCycle;
@@ -152,9 +137,9 @@ class ReviewCycleControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updatedCycle)))
                 .andExpect(status().isOk());
-               // .andExpect(jsonPath("$.name").value("Updated Name"));
+               .andExpect(jsonPath("$.name").value("Updated Name"));
     }
-    // ========== GET BY MANAGER ==========
+    
     @Test
     void getAllReviewCyclesbyManager_ShouldReturnCycles() throws Exception {
         List<ReviewCycle> cycles = Arrays.asList(sampleCycle);
