@@ -29,39 +29,29 @@ const Pagination = ({
 }) => {
   const createPageNumbers = (): (number | string)[] => {
     const pageNumbers: (number | string)[] = [];
-    const maxPageToShow = 6;
-
-    if (totalPages <= maxPageToShow) {
-      for (let i = 1; i <= totalPages; i++) {
-        pageNumbers.push(i);
-      }
-      return pageNumbers;
-    }
+    const sidePages = 2;
+    const startPage = Math.max(2, currentPage - sidePages);
+    const endPage = Math.min(totalPages - 1, currentPage + sidePages);
 
     pageNumbers.push(1);
 
-    if (currentPage <= 3) {
-      pageNumbers.push(2, 3, 4, '...', totalPages);
-    } else if (currentPage >= totalPages - 2) {
-      pageNumbers.push(
-        '...',
-        totalPages - 3,
-        totalPages - 2,
-        totalPages - 1,
-        totalPages
-      );
-    } else {
-      pageNumbers.push(
-        '...',
-        currentPage - 1,
-        currentPage,
-        currentPage + 1,
-        '...',
-        totalPages
-      );
+    if (startPage > 2) {
+      pageNumbers.push('...');
     }
 
-    return pageNumbers;
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    if (endPage < totalPages - 1) {
+      pageNumbers.push('...');
+    }
+
+    if (totalPages > 1) {
+      pageNumbers.push(totalPages);
+    }
+
+    return Array.from(new Set(pageNumbers));
   };
 
   const pageNumbers = createPageNumbers();

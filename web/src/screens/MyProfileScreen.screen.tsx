@@ -19,6 +19,8 @@ const MyProfileScreen = () => {
   const { user } = useUser();
 
   const location = useLocation();
+  const from = location.state?.from;
+  const page = location.state?.page;
   const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
   useEffect(() => {
     setEmployeeId(location.state?.employeeId || user?.employeeId);
@@ -49,7 +51,11 @@ const MyProfileScreen = () => {
   const navigate = useNavigate();
 
   const goToPreviousPage = () => {
-    navigate(-1);
+    if (from === 'employeeList') {
+      navigate('/employees', { state: { page } });
+    } else {
+      navigate(-1);
+    }
   };
 
   const [tabName, setTabName] = useState('General');

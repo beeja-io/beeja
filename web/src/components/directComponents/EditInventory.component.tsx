@@ -194,10 +194,10 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
       }
 
       if (isOsRamEnabled(deviceToUpdate.device)) {
-        if (!deviceToUpdate.os) {
+        if (!(deviceToUpdate.os || formData.os)) {
           errorMessages.push('OS');
         }
-        if (!deviceToUpdate.ram) {
+        if (!(deviceToUpdate.ram || formData.ram)) {
           errorMessages.push('RAM');
         }
       }
@@ -216,28 +216,31 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
         return;
       }
 
-      const formData = new FormData();
+      const formPayload = new FormData();
 
-      formData.append('device', initialFormData.device);
-      formData.append('type', initialFormData.type);
-      formData.append('specifications', initialFormData.specifications ?? '');
-      formData.append('availability', initialFormData.availability);
-      formData.append(
+      formPayload.append('device', initialFormData.device);
+      formPayload.append('type', initialFormData.type);
+      formPayload.append(
+        'specifications',
+        initialFormData.specifications ?? ''
+      );
+      formPayload.append('availability', initialFormData.availability);
+      formPayload.append(
         'price',
         initialFormData.price != null ? initialFormData.price.toString() : ''
       );
-      formData.append('provider', initialFormData.provider);
-      formData.append('model', initialFormData.model);
-      formData.append('os', initialFormData.os ?? '');
-      formData.append('ram', initialFormData.ram ?? '');
+      formPayload.append('provider', initialFormData.provider);
+      formPayload.append('model', initialFormData.model);
+      formPayload.append('os', initialFormData.os ?? '');
+      formPayload.append('ram', initialFormData.ram ?? '');
       if (initialFormData.dateOfPurchase != null) {
-        formData.append(
+        formPayload.append(
           'dateOfPurchase',
           initialFormData.dateOfPurchase.toString()
         );
       }
-      formData.append('productId', initialFormData.productId);
-      formData.append('comments', initialFormData.comments ?? '');
+      formPayload.append('productId', initialFormData.productId);
+      formPayload.append('comments', initialFormData.comments ?? '');
 
       setIsResponseLoading(true);
 
