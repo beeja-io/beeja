@@ -274,7 +274,7 @@ const DeductionsTab = ({
         ? 'Quarterly'
         : formData['Instalment Type'] || '';
   return (
-    <TabContentMainContainer>
+    <TabContentMainContainer className="deductionContainer">
       <TabContentMainContainerHeading>
         <h4>{heading}</h4>
         {user &&
