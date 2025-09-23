@@ -140,7 +140,7 @@ const ContractManagement = () => {
             )}
           </span>
 
-          {!isCreateModalOpen && (
+          {!isCreateModalOpen && !isContractDetailsRoute && (
             <Button
               className="submit shadow"
               onClick={handleOpenCreateModal}

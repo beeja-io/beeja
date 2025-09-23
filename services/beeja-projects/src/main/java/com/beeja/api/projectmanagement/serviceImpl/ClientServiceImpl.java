@@ -1,7 +1,5 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
-import static com.beeja.api.projectmanagement.utils.Constants.ERROR_IN_LOGO_UPLOAD;
-
 import com.beeja.api.projectmanagement.client.FileClient;
 import com.beeja.api.projectmanagement.config.LogoValidator;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
@@ -29,6 +27,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import static com.beeja.api.projectmanagement.utils.Constants.*;
 
 /**
  * Implementation of the {@link ClientService} interface.
@@ -215,18 +214,30 @@ public class ClientServiceImpl implements ClientService {
     if (clientRequest.getDescription() != null) {
       existingClient.setDescription(clientRequest.getDescription());
     }
-    if (clientRequest.getLogo() != null) {
-      //            TODO: Implement logo upload
-      String contentType = clientRequest.getLogo().getContentType();
-      if (!logoValidator.getAllowedTypes().contains(contentType)) {
-        throw new ValidationException(
-                new ErrorResponse(
-                        ErrorType.VALIDATION_ERROR,
-                        ErrorCode.VALIDATION_ERROR,
-                        Constants.FILE_NOT_ALLOWED,
-                        ""));
-      }
-      if (clientRequest.getLogo() != null) {
+    if (clientRequest.isRemoveLogo()) {
+          String oldLogoId = existingClient.getLogoId();
+          if (oldLogoId != null && !oldLogoId.isEmpty()) {
+              try {
+                  fileClient.deleteFile(oldLogoId);
+                  log.info(DELETED_SUCCESSFULLY, oldLogoId);
+              } catch (Exception e) {
+                  log.error(ERROR_IN_DELETING_FILE_FROM_FILE_SERVICE);
+                  throw new FeignClientException(ERROR_IN_DELETING_FILE_FROM_FILE_SERVICE);
+              }
+          }
+          existingClient.setLogoId(null);
+
+      } else if (clientRequest.getLogo() != null) {
+        String contentType = clientRequest.getLogo().getContentType();
+          if (!logoValidator.getAllowedTypes().contains(contentType)) {
+              throw new ValidationException(
+                      new ErrorResponse(
+                              ErrorType.VALIDATION_ERROR,
+                              ErrorCode.VALIDATION_ERROR,
+                              Constants.FILE_NOT_ALLOWED,
+                              ""));
+          }
+
         String logoId = existingClient.getLogoId();
         FileUploadRequest fileUploadRequest =
                 new FileUploadRequest(
@@ -253,7 +264,7 @@ public class ClientServiceImpl implements ClientService {
           throw new FeignClientException(ERROR_IN_LOGO_UPLOAD);
         }
       }
-    }
+
     try {
       existingClient = clientRepository.save(existingClient);
     } catch (Exception e) {
@@ -313,14 +324,15 @@ public class ClientServiceImpl implements ClientService {
     return clientsInOrganization;
   }
 
-  @Override
-  public Page<Client> getAllClientsOfOrganization(String organizationId, int pageNumber, int pageSize) {
+    @Override
+    public Page<Client> getAllClientsOfOrganization(String organizationId, int pageNumber, int pageSize) {
 
-    if (pageSize < 1) pageSize = 10;
-    if (pageSize > 100) pageSize = 100;
+        if (pageNumber < 1) pageNumber = 1;
+        if (pageSize < 1) pageSize = 10;
+        if (pageSize > 100) pageSize = 100;
 
-    Pageable pageable = PageRequest.of(pageNumber , pageSize, Sort.by("createdAt").descending());
-    return clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(organizationId, pageable);
-  }
+        Pageable pageable = PageRequest.of(pageNumber - 1, pageSize, Sort.by("createdAt").descending());
+        return clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(organizationId, pageable);
+    }
 }
 

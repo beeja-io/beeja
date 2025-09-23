@@ -36,14 +36,13 @@ import {
   StepWrapper,
   UploadText,
 } from '../../styles/ClientStyles.style';
-import { Button } from '../../styles/CommonStyles.style';
 import { ValidationText } from '../../styles/DocumentTabStyles.style';
 import {
   DateInputWrapper,
   FormField,
   Label,
   RequiredAsterisk,
-  TextArea,
+  Button,
 } from '../../styles/ProjectStyles.style';
 import {
   CheckIcon,
@@ -149,9 +148,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     endDate?: string;
     contractType?: string;
   }>({});
-  const formatDate = (dateStr: string | Date) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-CA');
+
+  const formatDate = (date: Date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
   const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -363,7 +365,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     if (!formData.contractTitle)
       newErrors.contractTitle = 'Please enter contract Name';
     if (!formData.startDate) newErrors.startDate = 'Please select Start Date';
-    if (!formData.endDate) newErrors.endDate = 'Please select End Date';
     if (!formData.contractType)
       newErrors.contractType = 'Please select Contract Type';
 
@@ -453,35 +454,82 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     <TextInput
                       type="text"
                       value={initialData.contractId}
+                      className="disabled"
                       disabled
                     />
                   </InputLabelContainer>
                 )}
-                <InputLabelContainer>
-                  <label>
-                    {t('Contract Name')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
-                  <TextInput
-                    name="contractTitle"
-                    type="text"
-                    placeholder="Enter Contract Name"
-                    value={formData.contractTitle}
-                    onChange={(e) => {
-                      handleChange(e);
-                      if (errors.contractTitle) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          contractTitle: undefined,
-                        }));
-                      }
-                    }}
-                    required
-                  />
-                  {errors.contractTitle && (
-                    <ValidationText>{errors.contractTitle}</ValidationText>
-                  )}
-                </InputLabelContainer>
+                {!initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Contract Name')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+                    <TextInput
+                      name="contractTitle"
+                      type="text"
+                      placeholder="Enter Contract Name"
+                      value={formData.contractTitle}
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (errors.contractTitle) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractTitle: undefined,
+                          }));
+                        }
+                      }}
+                      required
+                    />
+                    {errors.contractTitle && (
+                      <ValidationText>{errors.contractTitle}</ValidationText>
+                    )}
+                  </InputLabelContainer>
+                )}
+                {initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Contract Type')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+
+                    <DropdownMenu
+                      label="Select Contract"
+                      name="contractType"
+                      id="contractType"
+                      className="largeContainerExp"
+                      value={formData.contractType || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'contractType',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+
+                        handleChange(event);
+
+                        if (errors.contractType) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractType: undefined,
+                          }));
+                        }
+                      }}
+                      required={true}
+                      options={[
+                        { label: 'Select Contract', value: '' },
+                        ...Object.values(ContractType).map((type) => ({
+                          label: ContractTypeLabels[type],
+                          value: type,
+                        })),
+                      ]}
+                    />
+                    {errors.contractType && (
+                      <ValidationText>{errors.contractType}</ValidationText>
+                    )}
+                  </InputLabelContainer>
+                )}
 
                 <InputLabelContainer>
                   <label>
@@ -495,7 +543,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       placeholder="Select Date"
                       name="startDate"
                       value={
-                        formData.startDate ? formatDate(formData.startDate) : ''
+                        formData.startDate
+                          ? formatDate(new Date(formData.startDate))
+                          : ''
                       }
                       onFocus={() => setIsStartDateCalOpen(true)}
                       onClick={() => setIsStartDateCalOpen(true)}
@@ -567,16 +617,30 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     ]}
                   />
                 </InputLabelContainer>
-                <InputLabelContainer>
-                  <label>{t('Budget')}</label>
-                  <TextInput
-                    type="text"
-                    name="contractValue"
-                    placeholder="Enter Budget"
-                    value={formData.contractValue}
-                    onChange={handleChange}
-                  />
-                </InputLabelContainer>
+                {initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>{t('Description')}</label>
+                    <TextInput
+                      name="description"
+                      placeholder="Enter Contract Description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      className="largeInput"
+                    />
+                  </InputLabelContainer>
+                )}
+                {!initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>{t('Budget')}</label>
+                    <TextInput
+                      type="text"
+                      name="contractValue"
+                      placeholder="Enter Budget"
+                      value={formData.contractValue}
+                      onChange={handleChange}
+                    />
+                  </InputLabelContainer>
+                )}
 
                 {!initialData?.contractId && (
                   <div>
@@ -612,54 +676,92 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
               </ColumnWrapper>
 
               <ColumnWrapper>
+                {initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Contract Name')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+                    <TextInput
+                      name="contractTitle"
+                      type="text"
+                      placeholder="Enter Contract Name"
+                      value={formData.contractTitle}
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (errors.contractTitle) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractTitle: undefined,
+                          }));
+                        }
+                      }}
+                      required
+                    />
+                    {errors.contractTitle && (
+                      <ValidationText>{errors.contractTitle}</ValidationText>
+                    )}
+                  </InputLabelContainer>
+                )}
+                {initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>{t('Budget')}</label>
+                    <TextInput
+                      type="text"
+                      name="contractValue"
+                      placeholder="Enter Budget"
+                      value={formData.contractValue}
+                      onChange={handleChange}
+                    />
+                  </InputLabelContainer>
+                )}
+                {!initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Contract Type')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+
+                    <DropdownMenu
+                      label="Select Contract"
+                      name="contractType"
+                      id="contractType"
+                      className="largeContainerExp"
+                      value={formData.contractType || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'contractType',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+
+                        handleChange(event);
+
+                        if (errors.contractType) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractType: undefined,
+                          }));
+                        }
+                      }}
+                      required={true}
+                      options={[
+                        { label: 'Select Contract', value: '' },
+                        ...Object.values(ContractType).map((type) => ({
+                          label: ContractTypeLabels[type],
+                          value: type,
+                        })),
+                      ]}
+                    />
+                    {errors.contractType && (
+                      <ValidationText>{errors.contractType}</ValidationText>
+                    )}
+                  </InputLabelContainer>
+                )}
+
                 <InputLabelContainer>
-                  <label>
-                    {t('Contract Type')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
-
-                  <DropdownMenu
-                    label="Select Contract"
-                    name="contractType"
-                    id="contractType"
-                    className="largeContainerExp"
-                    value={formData.contractType || ''}
-                    onChange={(e) => {
-                      const event = {
-                        target: {
-                          name: 'contractType',
-                          value: e,
-                        },
-                      } as React.ChangeEvent<HTMLSelectElement>;
-
-                      handleChange(event);
-
-                      if (errors.contractType) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          contractType: undefined,
-                        }));
-                      }
-                    }}
-                    required={true}
-                    options={[
-                      { label: 'Select Contract', value: '' },
-                      ...Object.values(ContractType).map((type) => ({
-                        label: ContractTypeLabels[type],
-                        value: type,
-                      })),
-                    ]}
-                  />
-                  {errors.contractType && (
-                    <ValidationText>{errors.contractType}</ValidationText>
-                  )}
-                </InputLabelContainer>
-
-                <InputLabelContainer>
-                  <label>
-                    {t('End Date')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
+                  <label>{t('End Date')}</label>
 
                   <DateInputWrapper ref={calendarEndRef}>
                     <TextInput
@@ -667,7 +769,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       placeholder="Select Date"
                       name="endDate"
                       value={
-                        formData.endDate ? formatDate(formData.endDate) : ''
+                        formData.startDate
+                          ? formatDate(new Date(formData.endDate))
+                          : ''
                       }
                       onFocus={() => setIsEndDateCalOpen(true)}
                       onClick={() => setIsEndDateCalOpen(true)}
@@ -742,15 +846,20 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     ]}
                   />
                 </InputLabelContainer>
-                <InputLabelContainer>
-                  <label>{t('Description')}</label>
-                  <TextArea
-                    name="description"
-                    placeholder="Enter Contract Description"
-                    value={formData.description}
-                    onChange={handleChange}
-                  />
-                </InputLabelContainer>
+
+                {!initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>{t('Description')}</label>
+                    <TextInput
+                      name="description"
+                      placeholder="Enter Contract Description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      className="largeInput"
+                    />
+                  </InputLabelContainer>
+                )}
+
                 {initialData?.contractId && (
                   <div
                     style={{
@@ -792,7 +901,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
             </FormInputsContainer>
 
             <div className="formButtons">
-              <Button onClick={handleClose} type="button">
+              <Button onClick={handleClose} type="button" className="cancel">
                 {t('Cancel')}
               </Button>
               <Button
@@ -871,6 +980,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             projectManagers: values,
                           }));
                         }}
+                        required
                         placeholder={t('Select Project Managers')}
                         searchable={true}
                       />
@@ -1033,7 +1143,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 {t('Previous')}
               </div>
               <ButtonGroup>
-                <Button onClick={handleDiscardModalToggle} type="button">
+                <Button
+                  onClick={handleDiscardModalToggle}
+                  type="button"
+                  className="cancel"
+                >
                   {t('Cancel')}
                 </Button>
                 <Button className="submit" type="submit">

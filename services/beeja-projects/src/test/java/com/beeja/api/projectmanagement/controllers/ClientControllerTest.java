@@ -169,51 +169,51 @@ public class ClientControllerTest {
     assertEquals("Database error", exception.getMessage());
     verify(clientService, times(1)).getClientById(clientId);
   }
+    @Test
+    void getAllClientsOfOrganization_ClientsExist_ReturnsListOfClients() throws Exception {
 
-  @Test
-  void getAllClientsOfOrganization_ClientsExist_ReturnsListOfClients() throws Exception {
+        List<Client> clients = new ArrayList<>();
+        Client client1 = new Client();
+        client1.setClientId("1");
+        client1.setClientName("Client A");
 
-    List<Client> clients = new ArrayList<>();
-    Client client1 = new Client();
-    client1.setClientId("1");
-    client1.setClientName("Client A");
+        Client client2 = new Client();
+        client2.setClientId("2");
+        client2.setClientName("Client B");
 
-    Client client2 = new Client();
-    client2.setClientId("2");
-    client2.setClientName("Client B");
+        clients.add(client1);
+        clients.add(client2);
 
-    clients.add(client1);
-    clients.add(client2);
+        int pageNumber = 1;
+        int pageSize = 10;
+        long totalRecordsInDb = 25L;
+        Page<Client> pageClients = new PageImpl<>(clients, PageRequest.of(pageNumber - 1, pageSize), clients.size());
 
-    int pageNumber = 1;
-    int pageSize = 10;
-    long totalRecordsInDb = 25L;
-    Page<Client> pageClients = new PageImpl<>(clients, PageRequest.of(pageNumber - 1, pageSize), clients.size());
+        String orgId = "orgId";
+        when(clientService.getAllClientsOfOrganization(orgId, pageNumber, pageSize)).thenReturn(pageClients);
 
-    String orgId = "orgId";
-    when(clientService.getAllClientsOfOrganization(orgId, pageNumber, pageSize)).thenReturn(pageClients);
+        ResponseEntity<Map<String, Object>> response = clientController.getAllClientsOfOrganization(pageNumber, pageSize);
 
-    ResponseEntity<Map<String, Object>> response = clientController.getAllClientsOfOrganization(pageNumber, pageSize);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
 
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertNotNull(response.getBody());
+        Map<String, Object> responseBody = response.getBody();
 
-    Map<String, Object> responseBody = response.getBody();
+        List<Client> clientList = (List<Client>) responseBody.get("clients");
+        Map<String, Object> metadata = (Map<String, Object>) responseBody.get("metadata");
+        Long totalRecords = (Long) metadata.get("totalRecords");
 
-    List<Client> clientList = (List<Client>) responseBody.get("clients");
-    Map<String, Object> metadata = (Map<String, Object>) responseBody.get("metadata");
-    Long totalRecords = (Long) metadata.get("totalRecords");
+        assertEquals(2, clientList.size());
+        assertEquals("Client A", clientList.get(0).getClientName());
+        assertEquals("Client B", clientList.get(1).getClientName());
+        assertEquals(25L, totalRecords);
 
-    assertEquals(2, clientList.size());
-    assertEquals("Client A", clientList.get(0).getClientName());
-    assertEquals("Client B", clientList.get(1).getClientName());
-    assertEquals(25L, totalRecords);
+        verify(clientService, times(1)).getAllClientsOfOrganization(orgId, pageNumber, pageSize);
+    }
 
-    verify(clientService, times(1)).getAllClientsOfOrganization(orgId, pageNumber, pageSize);
-  }
-  @Test
+    @Test
   void getAllClientsOfOrganization_NoClientsExist_ReturnsEmptyList() throws Exception {
-    List<Client> clients = Arrays.asList();
+    List<Client> clients = List.of();
     when(clientService.getAllClientsOfOrganization()).thenReturn(clients);
 
     ResponseEntity<Map<String, Object>> response = clientController.getAllClientsOfOrganization(1,10);

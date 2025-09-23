@@ -155,7 +155,7 @@ const ProjectManagement = () => {
               </>
             )}
           </span>
-          {!isCreateModalOpen && (
+          {!isCreateModalOpen && !isProjectDetailsRoute && (
             <Button
               className="submit shadow"
               onClick={handleOpenCreateModal}

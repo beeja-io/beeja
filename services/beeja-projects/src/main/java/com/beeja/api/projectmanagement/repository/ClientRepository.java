@@ -55,13 +55,13 @@ public interface    ClientRepository extends MongoRepository<Client, String> {
    */
   List<Client> findAllByOrganizationIdOrderByCreatedAtDesc(String organizationId);
 
-  /**
-   * Retrieves a paginated list of clients for a given organization, ordered by creation date descending.
-   *
-   * @param organizationId the ID of the organization whose clients are to be retrieved
-   * @param pageable the pagination information (page number, page size, sorting)
-   * @return a {@link Page} of {@link Client} objects for the specified organization
-   */
+    /**
+     * Retrieves a paginated list of clients for a given organization, ordered by creation date descending.
+     *
+     * @param organizationId the ID of the organization whose clients are to be retrieved
+     * @param pageable the pagination information (page number, page size, sorting)
+     * @return a {@link Page} of {@link Client} objects for the specified organization
+     */
   Page<Client> findAllByOrganizationIdOrderByCreatedAtDesc(String organizationId, Pageable pageable);
 }
 

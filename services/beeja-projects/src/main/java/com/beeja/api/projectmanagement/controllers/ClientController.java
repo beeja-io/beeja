@@ -87,25 +87,25 @@ public class ClientController {
           @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
           @RequestParam(name = "pageSize", defaultValue = "10") int pageSize) {
 
-    if (pageSize < 1 || pageNumber < 1) {
-      return ResponseEntity.badRequest().body(Map.of(
-              "error", "Page number and page size must be positive integers."
+      if (pageSize < 1 || pageNumber < 1) {
+          return ResponseEntity.badRequest().body(Map.of(
+                  "error", "Page number and page size must be positive integers."
+          ));
+      }
+
+      String organizationId = UserContext.getLoggedInUserOrganization()
+              .get(Constants.ID).toString();
+
+      Page<Client> page = clientService.getAllClientsOfOrganization(organizationId, pageNumber - 1, pageSize);
+      Map<String, Object> response = new HashMap<>();
+      response.put("metadata", Map.of(
+              "totalRecords", page.getTotalElements(),
+              "totalPages", page.getTotalPages(),
+              "pageNumber", pageNumber,
+              "pageSize", pageSize
       ));
-    }
+      response.put("data", page.getContent());
 
-    String organizationId = UserContext.getLoggedInUserOrganization()
-            .get(Constants.ID).toString();
-
-    Page<Client> page = clientService.getAllClientsOfOrganization(organizationId, pageNumber - 1, pageSize);
-    Map<String, Object> response = new HashMap<>();
-    response.put("metadata", Map.of(
-            "totalRecords", page.getTotalElements(),
-            "totalPages", page.getTotalPages(),
-            "pageNumber", pageNumber,
-            "pageSize", pageSize
-    ));
-    response.put("data", page.getContent());
-
-    return ResponseEntity.ok(response);
+      return ResponseEntity.ok(response);
   }
 }

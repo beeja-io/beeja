@@ -208,11 +208,11 @@ const ClientDetailsScreen: React.FC = () => {
           <div>{t('Tax_Details')}</div>
           <TaxDetailsWrapper>
             <TaxItem>
-              <TaxLabel>{t('VAT/ GST_Number')}:</TaxLabel>
+              <TaxLabel>{t('VAT/ GST_Number')}</TaxLabel>
               <TaxValue>{client?.taxDetails?.taxNumber || '-'}</TaxValue>
             </TaxItem>
             <TaxItem>
-              <TaxLabel>{t('Tax_Category')}:</TaxLabel>
+              <TaxLabel>{t('Tax_Category')}</TaxLabel>
               <TaxValue>{client?.taxDetails?.taxCategory || '-'}</TaxValue>
             </TaxItem>
           </TaxDetailsWrapper>

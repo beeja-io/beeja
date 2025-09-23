@@ -45,6 +45,20 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>('');
 
+  const isOsRamEnabled = (device: string | null | undefined) => {
+    const osRamDevices = [
+      'DESKTOP',
+      'LAPTOP',
+      'MOBILE',
+      'TABLET',
+      'DESKTOPS',
+      'LAPTOPS',
+      'MOBILES',
+      'TABLETS',
+    ];
+    return device ? osRamDevices.includes(device.toUpperCase()) : false;
+  };
+
   const [deviceToUpdate, setDeviceToUpdate] = useState<IUpdateDeviceDetails>(
     {} as IUpdateDeviceDetails
   );
@@ -79,35 +93,25 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = event.target;
-    if (
-      (name == 'device' && value == 'MUSIC_SYSTEM') ||
-      (name == 'device' && value == 'ACCESSORIES')
-    ) {
-      setFormData((prevState) => ({
-        ...prevState,
-        ram: '',
-        os: '',
-      }));
-    }
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-    if (
-      (name == 'device' && value == 'MUSIC_SYSTEM') ||
-      (name == 'device' && value == 'ACCESSORIES')
-    ) {
-      setDeviceToUpdate((prevState) => ({
-        ...prevState,
-        ram: '',
-        os: '',
-      }));
-    }
-    setDeviceToUpdate((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+
+    setFormData((prevState) => {
+      let updatedData = { ...prevState, [name]: value };
+      if (name === 'device' && !isOsRamEnabled(value)) {
+        updatedData = { ...updatedData, os: '', ram: '' };
+      }
+
+      return updatedData;
+    });
+
+    setDeviceToUpdate((prevState) => {
+      let updatedUpdate = { ...prevState, [name]: value };
+      if (name === 'device' && !isOsRamEnabled(value)) {
+        updatedUpdate = { ...updatedUpdate, os: '', ram: '' };
+      }
+      return updatedUpdate;
+    });
   };
+
   useEffect(() => {
     if (initialFormData.productId == deviceToUpdate.productId) {
       setDeviceToUpdate((prevState) => ({
@@ -189,20 +193,13 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
         errorMessages.push('Model');
       }
 
-      if (
-        initialFormData.os === undefined ||
-        initialFormData.os === null ||
-        deviceToUpdate.os === ''
-      ) {
-        errorMessages.push('OS');
-      }
-
-      if (
-        initialFormData.ram === undefined ||
-        initialFormData.ram === null ||
-        deviceToUpdate.ram === ''
-      ) {
-        errorMessages.push('RAM');
+      if (isOsRamEnabled(deviceToUpdate.device)) {
+        if (!deviceToUpdate.os) {
+          errorMessages.push('OS');
+        }
+        if (!deviceToUpdate.ram) {
+          errorMessages.push('RAM');
+        }
       }
 
       if (
@@ -320,7 +317,10 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 required={true}
                 onChange={(val) =>
                   handleChange({
-                    target: { value: val },
+                    target: {
+                      name: 'device',
+                      value: val,
+                    },
                   } as React.ChangeEvent<HTMLSelectElement>)
                 }
                 options={[
@@ -372,7 +372,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 required={true}
                 onChange={(val) =>
                   handleChange({
-                    target: { value: val },
+                    target: { name: 'type', value: val },
                   } as React.ChangeEvent<HTMLSelectElement>)
                 }
                 options={[
@@ -408,7 +408,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 value={formData.availability}
                 onChange={(val) =>
                   handleChange({
-                    target: { value: val },
+                    target: { name: 'availability', value: val },
                   } as React.ChangeEvent<HTMLSelectElement>)
                 }
                 options={[
@@ -537,9 +537,7 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
             <InputLabelContainer>
               <label>
                 {t('OS')}
-                {['DESKTOP', 'MUSIC_SYSTEM', 'PRINTER', 'ACCESSORIES'].includes(
-                  formData.device
-                ) ? null : (
+                {isOsRamEnabled(formData.device) && (
                   <ValidationText className="star">*</ValidationText>
                 )}
               </label>
@@ -550,34 +548,14 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 value={formData.os ? formData.os : ''}
                 className="largeInput"
                 onChange={handleChange}
-                disabled={
-                  ![
-                    'desktop',
-                    'desktops',
-                    'laptop',
-                    'laptops',
-                    'mobile',
-                    'mobiles',
-                    'tablet',
-                    'tablets',
-                  ].includes((formData.device || '').toLowerCase())
-                }
-                required={
-                  ![
-                    'PRINTER',
-                    'MUSIC_SYSTEM',
-                    'DESKTOP',
-                    'Accessories',
-                  ].includes(formData.device)
-                }
+                disabled={!isOsRamEnabled(formData.device)}
+                required={isOsRamEnabled(formData.device)}
               />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
                 {t('RAM')}
-                {['DESKTOP', 'MUSIC_SYSTEM', 'PRINTER', 'ACCESSORIES'].includes(
-                  formData.device
-                ) ? null : (
+                {isOsRamEnabled(formData.device) && (
                   <ValidationText className="star">*</ValidationText>
                 )}
               </label>
@@ -588,15 +566,8 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 value={formData.ram ? formData.ram : ''}
                 className="largeInput"
                 onChange={handleChange}
-                disabled={formData.device === 'Accessories'}
-                required={
-                  ![
-                    'PRINTER',
-                    'DESKTOP',
-                    'MUSIC_SYSTEM',
-                    'Accessories',
-                  ].includes(formData.device)
-                }
+                disabled={!isOsRamEnabled(formData.device)}
+                required={isOsRamEnabled(formData.device)}
                 onKeyDown={(event) => {
                   const allowedCharacters = /^[0-9.-]+$/;
                   if (

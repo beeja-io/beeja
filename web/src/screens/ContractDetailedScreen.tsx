@@ -163,7 +163,14 @@ const ContractDetailsScreen: React.FC = () => {
             <CompanyIcon />
             <ColumnItem>{client?.clientName}</ColumnItem>
             <DotSVG />
-            <ColumnItem>{project?.projectManagerNames}</ColumnItem>
+            <ColumnItem>
+              {(
+                project?.contracts?.flatMap(
+                  (contract) =>
+                    contract?.projectManagers?.map((item) => item?.name) ?? []
+                ) ?? []
+              ).join(', ')}
+            </ColumnItem>
             <DateIcon />
             <ColumnItem>
               {contract?.startDate &&
