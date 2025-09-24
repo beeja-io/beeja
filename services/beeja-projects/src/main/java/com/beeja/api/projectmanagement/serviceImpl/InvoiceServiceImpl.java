@@ -11,6 +11,7 @@ import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Invoice;
 import com.beeja.api.projectmanagement.model.PaymentDetails;
 import com.beeja.api.projectmanagement.model.dto.File;
+import com.beeja.api.projectmanagement.model.dto.InvoiceIdentifiersResponse;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.repository.ContractRepository;
 import com.beeja.api.projectmanagement.repository.InvoiceRepository;
@@ -34,6 +35,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+
 
 @Slf4j
 @Service
@@ -166,6 +177,26 @@ public class InvoiceServiceImpl implements InvoiceService {
           BuildErrorMessage.buildErrorMessage(
               ErrorType.DB_ERROR, ErrorCode.RESOURCE_NOT_FOUND, "Invoice not found"));
     }
+
+    @Override
+    public InvoiceIdentifiersResponse generateInvoiceIdentifiers(String contractId) { // contractId is optional based on your needs
+//        String invoiceId = "INV-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        LocalDate now = LocalDate.now();
+        String yearMonth = now.format(DateTimeFormatter.ofPattern("yyyyMM"));
+        String prefix = "INV-" + yearMonth + "-";
+
+        long count = invoiceRepository.countByInvoiceIdRegex("^" + prefix);
+
+        String serialNumber = String.format("%02d", count + 1);
+        String invoiceId = prefix + serialNumber;
+
+        String orgName = UserContext.getLoggedInUserOrganization().get("name").toString();
+        String orgPrefix = orgName.length() >= 3 ? orgName.substring(0, 3).toUpperCase() : orgName.toUpperCase();
+        String remittanceReferenceNumber = orgPrefix + invoiceId;
+
+        return new InvoiceIdentifiersResponse(invoiceId, remittanceReferenceNumber);
+        }
+
     return invoice;
   }
 
@@ -180,4 +211,5 @@ public class InvoiceServiceImpl implements InvoiceService {
     invoice.setStatus(InvoiceStatus.PAID);
     return invoiceRepository.save(invoice);
   }
+
 }
