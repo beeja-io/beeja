@@ -21,7 +21,6 @@ import {
   ResourceBlock,
   ResourceLabel,
   SaveButton,
-  StyledResourceWrapper,
   TextInput,
 } from '../../styles/AddContractFormStyles.style';
 import {
@@ -147,6 +146,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     startDate?: string;
     endDate?: string;
     contractType?: string;
+    billingType?: string;
+    billingCurrency?: string;
   }>({});
 
   const formatDate = (date: Date) => {
@@ -270,6 +271,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: undefined,
+    }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -367,6 +373,10 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     if (!formData.startDate) newErrors.startDate = 'Please select Start Date';
     if (!formData.contractType)
       newErrors.contractType = 'Please select Contract Type';
+    if (!formData.billingType)
+      newErrors.billingType = 'Please select Billing Type';
+    if (!formData.billingCurrency)
+      newErrors.billingCurrency = 'Please select Billing Currency';
 
     setErrors(newErrors);
 
@@ -497,7 +507,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       label="Select Contract"
                       name="contractType"
                       id="contractType"
-                      className="largeContainerExp"
+                      className="largeContainerExp largeContainerHei"
                       value={formData.contractType || ''}
                       onChange={(e) => {
                         const event = {
@@ -592,13 +602,18 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 </InputLabelContainer>
 
                 <InputLabelContainer>
-                  <label>{t('Billing Type')}</label>
+                  <label>
+                    {t('Billing Type')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+
                   <DropdownMenu
                     label={t('Select Billing Type')}
                     name="billingType"
                     id="billingType"
-                    className="largeContainerExp"
+                    className="largeContainerExp largeContainerHei"
                     value={formData.billingType || ''}
+                    required
                     onChange={(e) => {
                       const event = {
                         target: {
@@ -616,7 +631,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       })),
                     ]}
                   />
+                  {errors.billingType && (
+                    <ValidationText>{errors.billingType}</ValidationText>
+                  )}
                 </InputLabelContainer>
+
                 {initialData?.contractId && (
                   <InputLabelContainer>
                     <label>{t('Description')}</label>
@@ -726,7 +745,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       label="Select Contract"
                       name="contractType"
                       id="contractType"
-                      className="largeContainerExp"
+                      className="largeContainerExp largeContainerHei"
                       value={formData.contractType || ''}
                       onChange={(e) => {
                         const event = {
@@ -769,7 +788,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       placeholder="Select Date"
                       name="endDate"
                       value={
-                        formData.startDate
+                        formData.endDate
                           ? formatDate(new Date(formData.endDate))
                           : ''
                       }
@@ -821,13 +840,17 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 </InputLabelContainer>
 
                 <InputLabelContainer>
-                  <label>{t('Billing Currency')}</label>
+                  <label>
+                    {t('Billing Currency')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
                   <DropdownMenu
                     label="Select Currency"
                     name="billingCurrency"
                     id="billingCurrency"
-                    className="largeContainerExp"
+                    className="largeContainerExp largeContainerHei"
                     value={formData.billingCurrency || ''}
+                    required={true}
                     onChange={(e) => {
                       const event = {
                         target: {
@@ -845,6 +868,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       })),
                     ]}
                   />
+                  {errors.billingCurrency && (
+                    <ValidationText>{errors.billingCurrency}</ValidationText>
+                  )}
                 </InputLabelContainer>
 
                 {!initialData?.contractId && (
@@ -932,7 +958,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     label={t('Select Project')}
                     name="projectName"
                     id="projectName"
-                    className="largeContainerExp"
+                    className="largeContainerExp largeContainerHei"
                     value={formData.projectName || ''}
                     onChange={(e) => {
                       const event = {
@@ -999,30 +1025,28 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </Label>
 
                   <ResourceAllocationRow>
-                    <StyledResourceWrapper>
-                      <DropdownMenu
-                        label="Search People"
-                        name="currentResource"
-                        id="currentResource"
-                        className="largeContainerRes"
-                        value={currentResource || ''}
-                        onChange={(e) => {
-                          const event = {
-                            target: {
-                              name: 'currentResource',
-                              value: e,
-                            },
-                          } as React.ChangeEvent<HTMLSelectElement>;
-                          setCurrentResource(event.target.value || null);
-                        }}
-                        options={[
-                          ...resourceOptions.map((opt) => ({
-                            label: opt.label,
-                            value: opt.value,
-                          })),
-                        ]}
-                      />
-                    </StyledResourceWrapper>
+                    <DropdownMenu
+                      label="Search People"
+                      name="currentResource"
+                      id="currentResource"
+                      className="largeContainerRes largeContainerHei"
+                      value={currentResource || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'currentResource',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        setCurrentResource(event.target.value || null);
+                      }}
+                      options={[
+                        ...resourceOptions.map((opt) => ({
+                          label: opt.label,
+                          value: opt.value,
+                        })),
+                      ]}
+                    />
 
                     <AvailabilityContainer>
                       <AvailabilityInput

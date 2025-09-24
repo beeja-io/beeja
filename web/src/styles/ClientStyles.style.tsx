@@ -620,6 +620,9 @@ export const SubHeadingDiv = styled.div`
   &.spacing {
     width: 150px;
   }
+  &.tax-container {
+    padding-left: 10px;
+  }
 `;
 
 export const SectionHeader = styled.div`
@@ -670,6 +673,9 @@ export const InfoText = styled.div`
   white-space: normal;
   &.description {
     padding-right: 0px;
+  }
+  &.tax-details {
+    padding-left: 10px;
   }
 `;
 

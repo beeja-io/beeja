@@ -38,6 +38,10 @@ export const ContainerStyle = styled.div<{
 
   &.largeContainerRes {
     width: 550px;
+    flex: 0 0 auto;
+    @media (max-width: 1340px) {
+      width: 490px;
+    }
   }
   &.cursor-disabled {
     cursor: not-allowed !important;
