@@ -2,6 +2,8 @@ package com.beeja.api.projectmanagement.responses;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
 import lombok.Data;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -14,4 +16,5 @@ public class ProjectResponseDTO {
     private ProjectStatus projectStatus;
     private String clientName;
     private String clientId;
+    private Date startDate;
 }
