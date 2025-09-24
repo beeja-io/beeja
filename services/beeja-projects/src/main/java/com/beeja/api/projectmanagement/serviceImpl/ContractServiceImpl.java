@@ -1,6 +1,7 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
 import com.beeja.api.projectmanagement.client.AccountClient;
+import com.beeja.api.projectmanagement.client.FileClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
@@ -15,6 +16,7 @@ import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.repository.ContractRepository;
 import com.beeja.api.projectmanagement.repository.ProjectRepository;
 import com.beeja.api.projectmanagement.request.ContractRequest;
+import com.beeja.api.projectmanagement.request.FileUploadRequest;
 import com.beeja.api.projectmanagement.responses.ClientResourcesDTO;
 import com.beeja.api.projectmanagement.responses.ContractResponsesDTO;
 import com.beeja.api.projectmanagement.responses.ErrorResponse;
@@ -34,7 +36,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 
 /**
  * Implementation of the {@link ContractService} interface.
@@ -59,6 +64,7 @@ public class ContractServiceImpl implements ContractService {
 
 
     @Autowired ProjectServiceImpl projectServiceImpl;
+    @Autowired FileClient fileClient;
 
   /**
    * Creates a new {@link Contract} for a given {@link Project} and {@link ContractRequest}.
@@ -123,6 +129,30 @@ public class ContractServiceImpl implements ContractService {
               log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
               throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);
           }
+      }
+
+      if (request.getAttachments() != null && !request.getAttachments().isEmpty()) {
+          List<String> uploadedFileIds = new ArrayList<>();
+          for (MultipartFile file : request.getAttachments()) {
+              FileUploadRequest fileUploadRequest = new FileUploadRequest(
+                      file,
+                      file.getOriginalFilename(),
+                      request.getDescription(),
+                      Constants.FILE_TYPE_PROJECT,
+                      contract.getContractId(),
+                      Constants.ENTITY_TYPE_CONTRACT
+              );
+              try {
+                  ResponseEntity<?> response = fileClient.uploadFile(fileUploadRequest);
+                  Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+                  String fileId = responseBody.get(Constants.ID).toString();
+                  uploadedFileIds.add(fileId);
+              } catch (Exception e) {
+                  log.error(Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE, e);
+                  throw new FeignClientException(Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE);
+              }
+          }
+          contract.setAttachmentIds(uploadedFileIds);
       }
 
     try {
@@ -266,10 +296,52 @@ public class ContractServiceImpl implements ContractService {
           }
       }
 
+      Set<String> finalAttachmentIds = contract.getAttachmentIds() != null
+              ? new LinkedHashSet<>(contract.getAttachmentIds())
+              : new LinkedHashSet<>();
+      if (request.getAttachmentIds() != null) {
+          finalAttachmentIds.clear();
+          finalAttachmentIds.addAll(request.getAttachmentIds());
+      }
+      if (request.getAttachments() != null && !request.getAttachments().isEmpty()) {
+          for (MultipartFile file : request.getAttachments()) {
+              FileUploadRequest fileUploadRequest = new FileUploadRequest(
+                      file,
+                      file.getOriginalFilename(),
+                      request.getDescription(),
+                      Constants.FILE_TYPE_PROJECT,
+                      contract.getContractId(),
+                      Constants.ENTITY_TYPE_CONTRACT
+              );
+              try {
+                  ResponseEntity<?> response = fileClient.uploadFile(fileUploadRequest);
+                  Map<String, Object> responseBody = (Map<String, Object>) response.getBody();
+                  String fileId = responseBody.get(Constants.ID).toString();
+                  finalAttachmentIds.add(fileId);
+              } catch (Exception e) {
+                  log.error(Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE, e);
+                  throw new FeignClientException(Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE);
+              }
+          }
+      }
+      if (request.getAttachmentIds() != null && contract.getAttachmentIds() != null) {
+          List<String> attachmentsToDelete = contract.getAttachmentIds().stream()
+                  .filter(existingId -> !finalAttachmentIds.contains(existingId))
+                  .toList();
+          attachmentsToDelete.forEach(id -> {
+              try {
+                  fileClient.deleteFile(id);
+              } catch (Exception e) {
+                  log.error(Constants.ERROR_IN_DELETING_FILE_FROM_FILE_SERVICE, e);
+              }
+          });
+      }
+
+      contract.setAttachmentIds(new ArrayList<>(finalAttachmentIds));
     try {
       return contractRepository.save(contract);
     } catch (Exception e) {
-      log.error(Constants.ERROR_UPDATING_CONTRACT, e.getMessage());
+      log.error(Constants.ERROR_UPDATING_CONTRACT, e.getMessage(), e);
       throw new ResourceNotFoundException(
           BuildErrorMessage.buildErrorMessage(
               ErrorType.DB_ERROR,
