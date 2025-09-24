@@ -357,12 +357,14 @@ export const TabContentMainContainer = styled.section`
   height: fit-content;
   margin-top: 15px;
   padding: 10px;
-  padding-bottom: 85px;
+
   border-radius: 16px;
   border: 2px solid ${(props) => props.theme.colors.blackColors.white2};
   color: ${(props) => props.theme.colors.blackColors.black1};
   background: ${(props) => props.theme.colors.backgroundColors.primary};
-
+  &.deductionContainer {
+    padding-bottom: 85px;
+  }
   .checkBoxArea {
     display: flex;
     flex-wrap: wrap;
