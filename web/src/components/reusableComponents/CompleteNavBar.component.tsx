@@ -263,56 +263,52 @@ const CompleteNavBar = () => {
                       />
                     )}
 
-                  {hasPermission(
-                    user,
-                    ORGANIZATION_MODULE.READ_ORGANIZATIONS
-                  ) &&
-                    hasFeature(
-                      featureToggles.featureToggles,
-                      EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT
-                    ) && (
-                      <ListItem
-                        isSideBarOpen={sidebarOpen}
-                        linkTo="#"
-                        tooltipName="Projects & Contracts"
-                        linkName="Projects & Contracts"
-                        svgIcon={
-                          <ProjectsSVG
-                            props={{
-                              isActive:
-                                openDropdown === 'projects & contracts' ||
-                                currentPath.startsWith('/clients') ||
-                                currentPath.startsWith('/projects') ||
-                                currentPath.startsWith('/contracts'),
-                            }}
-                          />
-                        }
-                        additionalSvgIcon={<ChevronDownSVG />}
-                        dropdownItems={[
-                          {
-                            name: 'Clients',
-                            link: '/clients/client-management',
-                          },
-                          {
-                            name: 'Projects',
-                            link: '/projects/project-management',
-                          },
-                          {
-                            name: 'Contracts',
-                            link: '/contracts/contract-management',
-                          },
-                        ]}
-                        isDropdownOpen={openDropdown === 'Projects & Contracts'}
-                        setDropdownOpen={() => {
-                          setOpenDropdown((prev) =>
-                            prev === 'Projects & Contracts'
-                              ? null
-                              : 'Projects & Contracts'
-                          );
-                        }}
-                        hasAdditionalSvg
-                      />
-                    )}
+                  {hasFeature(
+                    featureToggles.featureToggles,
+                    EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT
+                  ) && (
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="#"
+                      tooltipName="Projects & Contracts"
+                      linkName="Projects & Contracts"
+                      svgIcon={
+                        <ProjectsSVG
+                          props={{
+                            isActive:
+                              openDropdown === 'projects & contracts' ||
+                              currentPath.startsWith('/clients') ||
+                              currentPath.startsWith('/projects') ||
+                              currentPath.startsWith('/contracts'),
+                          }}
+                        />
+                      }
+                      additionalSvgIcon={<ChevronDownSVG />}
+                      dropdownItems={[
+                        {
+                          name: 'Clients',
+                          link: '/clients/client-management',
+                        },
+                        {
+                          name: 'Projects',
+                          link: '/projects/project-management',
+                        },
+                        {
+                          name: 'Contracts',
+                          link: '/contracts/contract-management',
+                        },
+                      ]}
+                      isDropdownOpen={openDropdown === 'Projects & Contracts'}
+                      setDropdownOpen={() => {
+                        setOpenDropdown((prev) =>
+                          prev === 'Projects & Contracts'
+                            ? null
+                            : 'Projects & Contracts'
+                        );
+                      }}
+                      hasAdditionalSvg
+                    />
+                  )}
                   {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     hasFeature(
                       featureToggles.featureToggles,
