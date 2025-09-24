@@ -40,7 +40,7 @@ public class ClientController {
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @HasPermission(PermissionConstants.CREATE_CLIENT)
   public ResponseEntity<Client> addClientToOrganization(@ModelAttribute ClientRequest clientRequest)
-      throws Exception {
+          throws Exception {
     Client client = clientService.addClientToOrganization(clientRequest);
     return new ResponseEntity<>(client, HttpStatus.CREATED);
   }
@@ -56,7 +56,7 @@ public class ClientController {
   @PutMapping("/{clientId}")
   @HasPermission(PermissionConstants.UPDATE_CLIENT)
   public ResponseEntity<Client> updateClientOfOrganization(
-      ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
+          ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
     Client client = clientService.updateClientOfOrganization(clientRequest, clientId);
     return new ResponseEntity<>(client, HttpStatus.OK);
   }

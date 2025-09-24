@@ -40,7 +40,9 @@ const ClientManagement = () => {
     setSelectedClientData(null);
     setIsCreateModalOpen(true);
   }, []);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
   const handleCloseModal = useCallback(() => {
     setIsCreateModalOpen(false);
     setIsEditMode(false);
@@ -91,14 +93,18 @@ const ClientManagement = () => {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getAllClient();
-      setAllClients(res.data);
+      const res = await getAllClient(currentPage, itemsPerPage);
+      setAllClients(res.data.data || []);
+      const { totalRecords, pageNumber, pageSize } = res.data.metadata || {};
+      setTotalItems(totalRecords ?? 0);
+      setCurrentPage(pageNumber ?? 1);
+      setItemsPerPage(pageSize ?? 10);
       setLoading(false);
     } catch (error) {
       setLoading(false);
       toast.error('Error fetching client data');
     }
-  }, []);
+  }, [currentPage,itemsPerPage]);
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -164,6 +170,11 @@ const ClientManagement = () => {
               updateClientList,
               isLoading: loading,
               onEditClient,
+              totalItems,
+              currentPage,
+              setCurrentPage,
+              itemsPerPage,
+              setItemsPerPage,
             }}
           />
         )}

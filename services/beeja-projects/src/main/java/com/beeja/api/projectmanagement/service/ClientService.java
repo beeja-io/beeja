@@ -46,3 +46,4 @@ public interface    ClientService {
 
   Page<Client> getAllClientsOfOrganization(String organizationId, int pageNumber, int pageSize);
 }
+

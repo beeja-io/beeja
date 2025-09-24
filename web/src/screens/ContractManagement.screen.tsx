@@ -38,6 +38,10 @@ const ContractManagement = () => {
     body: string;
   } | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+
   const location = useLocation();
 
   const isContractDetailsRoute = matchPath(
@@ -48,14 +52,14 @@ const ContractManagement = () => {
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await getAllContracts();
-      const response = res?.data?.contracts;
-      setContractList(response);
+      const res = await getAllContracts(currentPage,itemsPerPage);
+      setContractList(res.data.contracts || []);
+      setTotalItems(res.data.metadata.totalSize ?? 0);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
     }
-  }, []);
+  }, [currentPage,itemsPerPage]);
 
   useEffect(() => {
     fetchData();
@@ -161,6 +165,11 @@ const ContractManagement = () => {
               isLoading,
               updateContractList: fetchData,
               onEditContract: handleEditContract,
+              totalItems,
+              currentPage,
+              setCurrentPage,
+              itemsPerPage,
+              setItemsPerPage,
             }}
           />
         )}

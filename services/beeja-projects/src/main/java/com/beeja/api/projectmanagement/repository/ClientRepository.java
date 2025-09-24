@@ -64,3 +64,4 @@ public interface    ClientRepository extends MongoRepository<Client, String> {
      */
   Page<Client> findAllByOrganizationIdOrderByCreatedAtDesc(String organizationId, Pageable pageable);
 }
+
