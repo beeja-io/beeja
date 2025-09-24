@@ -191,15 +191,6 @@ const MyProfileTabsContainerComponent = ({
           : '-',
     },
     {
-      label: 'Employment Type',
-      value:
-        employee &&
-        employee.employee.jobDetails &&
-        employee.employee.jobDetails.employementType
-          ? employee.employee.jobDetails.employementType
-          : '-',
-    },
-    {
       label: 'Joining Date',
       value:
         employee &&
@@ -207,6 +198,16 @@ const MyProfileTabsContainerComponent = ({
         employee.employee.jobDetails.joiningDate
           ? employee.employee.jobDetails.joiningDate
           : '-',
+    },
+    {
+      label: 'Employment Type',
+      value:
+        employee &&
+        employee.employee.jobDetails &&
+        employee.employee.jobDetails.employementType
+          ? employee.employee.jobDetails.employementType
+          : '-',
+        link: { text: 'View History', type: 'employmentHistory' },
     },
   ];
 

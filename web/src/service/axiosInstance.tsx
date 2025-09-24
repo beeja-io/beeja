@@ -56,6 +56,10 @@ export const fetchMe = (): Promise<AxiosResponse> => {
   return axiosInstance.get('/accounts/v1/users/me');
 };
 
+export const getEmployeeHistory = (employeeId: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/employees/v1/users/${employeeId}/history`);
+};
+
 export const updateEmployeeStatusByEmployeeId = (
   employeeId: string
 ): Promise<AxiosResponse> => {

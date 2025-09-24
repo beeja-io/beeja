@@ -36,4 +36,5 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
 
  List<Employee> findAllByOrganizationIdAndJobDetailsDesignationIn(String organizationId, List<String> designations);
 
+    Employee findByEmployeeId(String id);
 }

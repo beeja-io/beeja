@@ -46,6 +46,8 @@ export interface EmployeeEntity {
       department: string;
       joiningDate: string;
       resignationDate: string;
+      updatedBy: string ; 
+      updatedAt: string ; 
     };
     position: string;
     pfDetails: {
