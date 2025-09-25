@@ -21,17 +21,21 @@ public class FeatureToggleServiceImpl implements FeatureToggleService {
 
   @Override
   public FeatureToggle getFeatureToggleByOrganizationId(String organizationId) {
+    // Call the repository method once to get the feature toggle
     FeatureToggle featureToggle = featureToggleRepository.findByOrganizationId(organizationId);
+
     if (featureToggle != null) {
-      return featureToggleRepository.findByOrganizationId(organizationId);
+      return featureToggle; // Return the feature toggle if found
     } else {
+      // If no feature toggle is found, throw an exception
       throw new ResourceNotFoundException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.RESOURCE_NOT_FOUND_ERROR,
-              ErrorCode.FEATURES_ARE_NOT_FOUND,
-              Constants.RESOURCE_NOT_FOUND));
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                      ErrorCode.FEATURES_ARE_NOT_FOUND,
+                      Constants.RESOURCE_NOT_FOUND));
     }
   }
+
 
   @Override
   public FeatureToggle updateFeatureToggleByOrganizationId(

@@ -31,22 +31,30 @@ import org.springframework.util.StringUtils;
 
 @Service
 public class InventoryServiceImpl implements InventoryService {
-
   private final MongoOperations mongoOperations;
-  @Autowired private MongoTemplate mongoTemplate;
+  private final MongoTemplate mongoTemplate;
+  private final InventoryRepository inventoryRepository;
+  private final AccountClient accountClient;
 
   /**
    * Implementation of InventoryService providing CRUD operations for managing inventory devices.
+   * All dependencies are now injected via the constructor.
    */
   @Autowired
-  public InventoryServiceImpl(MongoOperations mongoOperations) {
+  public InventoryServiceImpl(
+          MongoOperations mongoOperations,
+          MongoTemplate mongoTemplate,
+          InventoryRepository inventoryRepository,
+          AccountClient accountClient) {
     this.mongoOperations = mongoOperations;
+    this.mongoTemplate = mongoTemplate;
+    this.inventoryRepository = inventoryRepository;
+    this.accountClient = accountClient;
   }
 
   @Autowired InventoryRepository inventoryRepository;
 
   @Autowired AccountClient accountClient;
-
   /**
    * Adds a new device to the inventory.
    *
@@ -188,7 +196,6 @@ public class InventoryServiceImpl implements InventoryService {
       String organizationId,
       String searchTerm) {
     Query query = new Query();
-
     if (device != null && !device.isEmpty()) {
       query.addCriteria(Criteria.where("device").is(device));
     }

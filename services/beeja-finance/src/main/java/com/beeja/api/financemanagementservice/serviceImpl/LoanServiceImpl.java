@@ -56,17 +56,19 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class LoanServiceImpl implements LoanService {
   private final MongoOperations mongoOperations;
+  private final FileClient fileClient;
+  private final LoanRepository loanRepository;
 
   @Autowired
-  public LoanServiceImpl(MongoOperations mongoOperations) {
+  public LoanServiceImpl(MongoOperations mongoOperations,LoanRepository loanRepository,FileClient fileClient) {
     this.mongoOperations = mongoOperations;
+    this.fileClient = fileClient;
+    this.loanRepository=loanRepository;
   }
 
-  @Autowired LoanRepository loanRepository;
 
   @Autowired AccountClient accountClient;
 
-  @Autowired FileClient fileClient;
 
   /**
    * Changes the status of a loan based on the provided loan ID.
@@ -166,6 +168,7 @@ public class LoanServiceImpl implements LoanService {
    * @return List of Loan entities.
    * @throws Exception If an error occurs while retrieving loans.
    */
+
   @Override
   public LoanResponse getLoansWithCount(
       int pageNumber, int pageSize, String sortBy, String sortDirection, LoanStatus status) {
@@ -174,7 +177,6 @@ public class LoanServiceImpl implements LoanService {
     Pageable pageable = PageRequest.of(validPage, pageSize, sort);
 
     String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
-
     List<LoanDTO> loans;
     long totalCount;
     try {
