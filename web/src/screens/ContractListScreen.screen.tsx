@@ -20,20 +20,33 @@ import {
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
+import Pagination from '../components/directComponents/Pagination.component';
+import { useOutletContext } from "react-router-dom";
 
-export interface ContractListProps {
+type ContractOutletContext = {
   contractList: ContractDetails[];
   updateContractList: () => void;
   isLoading: boolean;
   onEditContract: (contract: ContractDetails) => Promise<void>;
-}
+  totalItems: number;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  itemsPerPage: number;
+  setItemsPerPage: (size: number) => void;
+};
 
-const ContractList = ({
-  contractList,
-  updateContractList,
-  isLoading,
-  onEditContract,
-}: ContractListProps) => {
+const ContractList = () => {
+  const {
+    contractList,
+    updateContractList,
+    isLoading,
+    onEditContract,
+    totalItems,
+    currentPage,
+    setCurrentPage,
+    itemsPerPage,
+    setItemsPerPage,
+  } = useOutletContext<ContractOutletContext>();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [contractLists, setContractLists] = useState<ContractDetails[]>([]);
   const { t } = useTranslation();
@@ -72,6 +85,15 @@ const ContractList = ({
     } catch (error) {
       toast.error('Failed to update status');
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setItemsPerPage(newPageSize);
+    setCurrentPage(1);
   };
 
   return (
@@ -187,6 +209,14 @@ const ContractList = ({
             </TableList>
           )}
         </TableListContainer>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(totalItems / itemsPerPage)}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          handleItemsPerPage={handlePageSizeChange}
+          totalItems={totalItems}
+        />
       </StyledDiv>
     </>
   );

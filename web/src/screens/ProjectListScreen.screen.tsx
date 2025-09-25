@@ -23,20 +23,33 @@ import { updateProjectStatus } from '../service/axiosInstance';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
+import Pagination from '../components/directComponents/Pagination.component';
+import { useOutletContext } from "react-router-dom";
 
-interface Props {
+type ProjectOutletContext = {
   projectList: ProjectEntity[];
   updateProjectList: () => void;
   isLoading: boolean;
   onEditProject: (project: ProjectEntity) => void;
-}
+  totalItems: number;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  itemsPerPage: number;
+  setItemsPerPage: (size: number) => void;
+};
 
-const ProjectList = ({
-  projectList,
-  updateProjectList,
-  isLoading,
-  onEditProject,
-}: Props) => {
+const ProjectList = () => {
+  const {
+    projectList,
+    updateProjectList,
+    isLoading,
+    onEditProject,
+    totalItems,
+    currentPage,
+    setCurrentPage,
+    itemsPerPage,
+    setItemsPerPage,
+  } = useOutletContext<ProjectOutletContext>();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const { t } = useTranslation();
@@ -66,6 +79,15 @@ const ProjectList = ({
   const handleProjectClick = (projectId: string, clientId: string) => {
     navigate(`/projects/project-management/${projectId}/${clientId}`);
   };
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setItemsPerPage(newPageSize);
+    setCurrentPage(1);
+  };
+
   return (
     <>
       <StyledDiv>
@@ -206,6 +228,14 @@ const ProjectList = ({
             </TableList>
           )}
         </TableListContainer>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(totalItems / itemsPerPage)}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          handleItemsPerPage={handlePageSizeChange}
+          totalItems={totalItems}
+        />
       </StyledDiv>
 
       {showSuccessMessage && (

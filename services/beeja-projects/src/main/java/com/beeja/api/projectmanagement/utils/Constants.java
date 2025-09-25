@@ -109,4 +109,5 @@ public class Constants {
   public static final String ERROR_IN_LOGO_UPLOAD = "Error in uploading Logo";
   public static final String FILE_NOT_ALLOWED =
       "File type not allowed. Allowed types: image/jpeg, image/jpg, image/png, image/webp";
+  public static final String  DELETED_SUCCESSFULLY = "Deleted Successfully logo file with id {}";
 }

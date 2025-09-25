@@ -7,8 +7,6 @@ import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
-import com.beeja.api.projectmanagement.responses.ProjectEmployeeDTO;
-import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 import com.beeja.api.projectmanagement.service.ProjectService;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
@@ -73,7 +71,7 @@ class ProjectsControllerTest {
     ProjectDetailViewResponseDTO dto = new ProjectDetailViewResponseDTO();
     dto.setProjectId(projectId);
 
-    when(projectService.getProjectByIdAndClientId(projectId, clientId)).thenReturn(dto);
+    ResponseEntity<List<ProjectDetailViewResponseDTO>> responseEntity = projectsController.getProjectById(projectId, clientId);
 
     ResponseEntity<List<ProjectDetailViewResponseDTO>> response =
             projectsController.getProjectById(projectId, clientId);

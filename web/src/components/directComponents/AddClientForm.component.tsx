@@ -51,8 +51,8 @@ import {
   SummarySubContainer,
   TextInput,
   UploadText,
+  Button,
 } from '../../styles/ClientStyles.style';
-import { Button } from '../../styles/CommonStyles.style';
 import { ValidationText } from '../../styles/DocumentTabStyles.style';
 import {
   CallSVG,
@@ -77,7 +77,7 @@ import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type AddClientFormProps = {
   handleClose: () => void;
-  handleSuccessMessage: () => void;
+  handleSuccessMessage: (value: string, type: 'add' | 'edit') => void;
   isEditMode?: boolean;
   initialData?: ClientDetails;
   updateClientList: () => Promise<void>;
@@ -177,6 +177,19 @@ const AddClientForm = (props: AddClientFormProps) => {
     }
   }, [props.initialData, props.isEditMode]);
 
+  const normalize = (val?: string | null) => (val ?? '').trim();
+
+  const isSameAddress = (addr1: any, addr2: any) => {
+    if (!addr1 || !addr2) return false;
+    return (
+      normalize(addr1.street) === normalize(addr2.street) &&
+      normalize(addr1.city) === normalize(addr2.city) &&
+      normalize(addr1.state) === normalize(addr2.state) &&
+      normalize(addr1.postalCode) === normalize(addr2.postalCode) &&
+      normalize(addr1.country) === normalize(addr2.country)
+    );
+  };
+
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = event.target.checked;
     setFormData((prevState) => ({
@@ -184,7 +197,7 @@ const AddClientForm = (props: AddClientFormProps) => {
       usePrimaryAddress: isChecked,
       billingAddress: isChecked
         ? { ...prevState.primaryAddress }
-        : prevState.billingAddress,
+        : { ...prevState.billingAddress },
     }));
   };
   const [step, setStep] = useState(1);
@@ -425,16 +438,26 @@ const AddClientForm = (props: AddClientFormProps) => {
 
       if (file) {
         dataToSend.append('logo', file);
+      } else if (props.isEditMode && !formData.logoId) {
+        dataToSend.append('removeLogo', 'true');
       }
 
       if (isEditMode && formData.clientId) {
         await putClient(formData.clientId, dataToSend);
+        handleSuccessMessage('Client has been successfully updated.', 'edit');
       } else {
-        await postClient(dataToSend);
-      }
+        const response = await postClient(dataToSend);
+        const clientId = response?.data?.clientId;
 
+        if (clientId) {
+          handleSuccessMessage(clientId, 'add');
+        } else {
+          setErrorMessage(
+            t('Client created, but ID is missing in the response.')
+          );
+        }
+      }
       await updateClientList();
-      handleSuccessMessage();
       handleClose;
     } catch (error) {
       setErrorMessage('Failed to submit data.');
@@ -492,24 +515,62 @@ const AddClientForm = (props: AddClientFormProps) => {
                 {formData?.clientId && (
                   <InputLabelContainer>
                     <label>{t('Client_ID')}</label>
-                    <TextInput type="text" value={formData.clientId} disabled />
+                    <TextInput
+                      type="text"
+                      className="disabled"
+                      value={formData.clientId}
+                      disabled
+                    />
                   </InputLabelContainer>
                 )}
-                <InputLabelContainer>
-                  <label>
-                    {t('Client_Name')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
-                  <TextInput
-                    type="text"
-                    name="clientName"
-                    placeholder={t('Enter Client Name')}
-                    className="largeInput"
-                    value={formData?.clientName}
-                    onChange={handleChange}
-                    required
-                  />
-                </InputLabelContainer>
+                {formData?.clientId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Client_Type')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+                    <DropdownMenu
+                      label={t('Select type')}
+                      name="clientType"
+                      id="clientType"
+                      value={formData?.clientType || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'clientType',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        handleChange(event);
+                      }}
+                      required
+                      options={[
+                        { label: t('Select type'), value: '' },
+                        ...clientOptions.clientType.map((type) => ({
+                          label: t(type),
+                          value: type,
+                        })),
+                      ]}
+                    />
+                  </InputLabelContainer>
+                )}
+                {!formData?.clientId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Client_Name')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+                    <TextInput
+                      type="text"
+                      name="clientName"
+                      placeholder={t('Enter Client Name')}
+                      className="largeInput"
+                      value={formData?.clientName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </InputLabelContainer>
+                )}
                 <InputLabelContainer>
                   <label>
                     {t('EMAIL')}
@@ -525,92 +586,20 @@ const AddClientForm = (props: AddClientFormProps) => {
                     required
                   />
                 </InputLabelContainer>
-                <InputLabelContainer>
-                  <label>{t('Contact')}</label>
-                  <TextInput
-                    type="tel"
-                    name="contact"
-                    placeholder={t('Enter Contact')}
-                    className="largeInput"
-                    inputMode="numeric"
-                    value={formData?.contact}
-                    onChange={handleChange}
-                  />
-                </InputLabelContainer>
-              </ColumnWrapper>
-              <ColumnWrapper>
-                <InputLabelContainer>
-                  <label>
-                    {t('Client_Type')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
-                  <DropdownMenu
-                    label={t('Select type')}
-                    name="clientType"
-                    id="clientType"
-                    value={formData?.clientType || ''}
-                    onChange={(e) => {
-                      const event = {
-                        target: {
-                          name: 'clientType',
-                          value: e,
-                        },
-                      } as React.ChangeEvent<HTMLSelectElement>;
-                      handleChange(event);
-                    }}
-                    required
-                    options={[
-                      { label: t('Select type'), value: '' },
-                      ...clientOptions.clientType.map((type) => ({
-                        label: t(type),
-                        value: type,
-                      })),
-                    ]}
-                  />
-                </InputLabelContainer>
-
-                <InputLabelContainer>
-                  <label>
-                    {t('Industry')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
-                  <DropdownMenu
-                    label={t('Select Industry')}
-                    name="industry"
-                    id="industry"
-                    className="largeContainerExp"
-                    value={formData?.industry || ''}
-                    onChange={(e) => {
-                      const event = {
-                        target: {
-                          name: 'industry',
-                          value: e,
-                        },
-                      } as React.ChangeEvent<HTMLSelectElement>;
-                      handleChange(event);
-                    }}
-                    required
-                    options={[
-                      { label: t('Select Industry'), value: '' },
-                      ...clientOptions.industry.map((industry) => ({
-                        label: t(industry),
-                        value: industry,
-                      })),
-                    ]}
-                  />
-                </InputLabelContainer>
-
-                <InputLabelContainer>
-                  <label>{t('Description')}</label>
-                  <TextInput
-                    type="text"
-                    name="description"
-                    placeholder={t('Enter_Client_Description')}
-                    className="largeInput"
-                    value={formData?.description}
-                    onChange={handleChange}
-                  />
-                </InputLabelContainer>
+                {!formData?.clientId && (
+                  <InputLabelContainer>
+                    <label>{t('Contact')}</label>
+                    <TextInput
+                      type="tel"
+                      name="contact"
+                      placeholder={t('Enter Contact')}
+                      className="largeInput"
+                      inputMode="numeric"
+                      value={formData?.contact}
+                      onChange={handleChange}
+                    />
+                  </InputLabelContainer>
+                )}
                 {formData?.clientId && (
                   <InputLabelContainer className="logoEditContainer">
                     <label>{t('Logo')}</label>
@@ -667,6 +656,112 @@ const AddClientForm = (props: AddClientFormProps) => {
                   </InputLabelContainer>
                 )}
               </ColumnWrapper>
+              <ColumnWrapper>
+                {formData?.clientId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Client_Name')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+                    <TextInput
+                      type="text"
+                      name="clientName"
+                      placeholder={t('Enter Client Name')}
+                      className="largeInput"
+                      value={formData?.clientName}
+                      onChange={handleChange}
+                      required
+                    />
+                  </InputLabelContainer>
+                )}
+                {!formData?.clientId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Client_Type')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+                    <DropdownMenu
+                      label={t('Select type')}
+                      name="clientType"
+                      id="clientType"
+                      value={formData?.clientType || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'clientType',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        handleChange(event);
+                      }}
+                      required
+                      options={[
+                        { label: t('Select type'), value: '' },
+                        ...clientOptions.clientType.map((type) => ({
+                          label: t(type),
+                          value: type,
+                        })),
+                      ]}
+                    />
+                  </InputLabelContainer>
+                )}
+
+                <InputLabelContainer>
+                  <label>
+                    {t('Industry')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+                  <DropdownMenu
+                    label={t('Select Industry')}
+                    name="industry"
+                    id="industry"
+                    className="largeContainerExp"
+                    value={formData?.industry || ''}
+                    onChange={(e) => {
+                      const event = {
+                        target: {
+                          name: 'industry',
+                          value: e,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleChange(event);
+                    }}
+                    required
+                    options={[
+                      { label: t('Select Industry'), value: '' },
+                      ...clientOptions.industry.map((industry) => ({
+                        label: t(industry),
+                        value: industry,
+                      })),
+                    ]}
+                  />
+                </InputLabelContainer>
+                {formData?.clientId && (
+                  <InputLabelContainer>
+                    <label>{t('Contact')}</label>
+                    <TextInput
+                      type="tel"
+                      name="contact"
+                      placeholder={t('Enter Contact')}
+                      className="largeInput"
+                      inputMode="numeric"
+                      value={formData?.contact}
+                      onChange={handleChange}
+                    />
+                  </InputLabelContainer>
+                )}
+                <InputLabelContainer>
+                  <label>{t('Description')}</label>
+                  <TextInput
+                    type="text"
+                    name="description"
+                    placeholder={t('Enter_Client_Description')}
+                    className="largeInput"
+                    value={formData?.description}
+                    onChange={handleChange}
+                  />
+                </InputLabelContainer>
+              </ColumnWrapper>
               {!formData?.clientId && (
                 <LogoContainer>
                   <LogoLabel>{t('Logo')}</LogoLabel>
@@ -711,7 +806,11 @@ const AddClientForm = (props: AddClientFormProps) => {
               )}
             </FormInputsContainer>
             <div className="formButtons">
-              <Button onClick={props.handleClose} type="button">
+              <Button
+                onClick={props.handleClose}
+                type="button"
+                className="cancel"
+              >
                 {t('Cancel')}
               </Button>
               <Button
@@ -746,6 +845,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   id="taxDetails.taxCategory"
                   className="largeContainerExp"
                   value={formData.taxDetails?.taxCategory ?? ''}
+                  required
                   onChange={(e) => {
                     const event = {
                       target: {
@@ -755,10 +855,9 @@ const AddClientForm = (props: AddClientFormProps) => {
                     } as React.ChangeEvent<HTMLSelectElement>;
                     handleChange(event);
                   }}
-                  style={{ width: '400px' }}
                   options={[
-                    { label: t('Select category'), value: '' },
-                    ...clientOptions.taxCategory.map((category) => ({
+                    { label: 'Select', value: '' },
+                    ...(clientOptions?.taxCategory ?? []).map((category) => ({
                       label: t(category),
                       value: category,
                     })),
@@ -801,7 +900,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                 {t('Previous')}
               </div>
               <ButtonGroup>
-                <Button onClick={props.handleClose} type="button">
+                <Button
+                  onClick={props.handleClose}
+                  type="button"
+                  className="cancel"
+                >
                   {t('Skip')}
                 </Button>
                 <Button
@@ -827,7 +930,7 @@ const AddClientForm = (props: AddClientFormProps) => {
             <HeadingDiv>{t('Primary_Address')}</HeadingDiv>
             <FormInputs>
               <div style={{ fontFamily: 'Nunito' }}>
-                <InputLabelContainer>
+                <InputLabelContainer style={{ marginBottom: '1px' }}>
                   <label>{t('Street')}</label>
                   <TextInput
                     type="text"
@@ -885,6 +988,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     className="largeInput"
                     value={formData.primaryAddress?.country}
                     onChange={handleChange}
+                    style={{ width: '420px' }}
                   />
                 </InputLabelContainer>
               </div>
@@ -896,7 +1000,10 @@ const AddClientForm = (props: AddClientFormProps) => {
                   type="checkbox"
                   name="usePrimaryAddress"
                   style={{ cursor: 'pointer' }}
-                  checked={formData.usePrimaryAddress}
+                  checked={isSameAddress(
+                    formData.primaryAddress,
+                    formData.billingAddress
+                  )}
                   onChange={handleCheckboxChange}
                 />
               </div>
@@ -920,7 +1027,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   />
                 </InputLabelContainer>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <InputLabelContainer style={{ marginTop: '12px' }}>
+                  <InputLabelContainer>
                     <TextInput
                       type="text"
                       name="billingAddress.city"
@@ -931,7 +1038,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       style={{ width: '133px' }}
                     />
                   </InputLabelContainer>
-                  <InputLabelContainer style={{ marginTop: '12px' }}>
+                  <InputLabelContainer>
                     <TextInput
                       type="text"
                       name="billingAddress.state"
@@ -942,7 +1049,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       style={{ width: '133px' }}
                     />
                   </InputLabelContainer>
-                  <InputLabelContainer style={{ marginTop: '12px' }}>
+                  <InputLabelContainer>
                     <TextInput
                       type="text"
                       name="billingAddress.postalCode"
@@ -965,6 +1072,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     className="largeInput"
                     value={formData?.billingAddress?.country ?? ''}
                     onChange={handleChange}
+                    style={{ width: '420px' }}
                   />
                 </InputLabelContainer>
               </div>
@@ -975,8 +1083,12 @@ const AddClientForm = (props: AddClientFormProps) => {
                 {t('Previous')}
               </div>
               <div className="centerAlign">
-                <Button onClick={props.handleClose} type="button">
-                  {t('Cancel')}
+                <Button
+                  onClick={props.handleClose}
+                  className="cancel"
+                  type="button"
+                >
+                  {t('Skip')}
                 </Button>
                 <Button
                   className="submit"
@@ -1008,16 +1120,26 @@ const AddClientForm = (props: AddClientFormProps) => {
                 <BasicOrganizationDetailsContainer>
                   <div>
                     <InfoRow>
-                      <SubHeadingDiv>{t('Client_Name')}</SubHeadingDiv>
+                      <SubHeadingDiv className="spacing">
+                        {t('Client_Name')}
+                      </SubHeadingDiv>
                       <InfoText>{formData.clientName}</InfoText>
                     </InfoRow>
                     <InfoRow>
-                      <SubHeadingDiv>{t('Client_Type')}</SubHeadingDiv>
+                      <SubHeadingDiv className="spacing">
+                        {t('Client_Type')}
+                      </SubHeadingDiv>
                       <InfoText>{formData.clientType}</InfoText>
                     </InfoRow>
                     <InfoRow>
-                      <SubHeadingDiv>{t('Description')}</SubHeadingDiv>
-                      <InfoText>{formData.description}</InfoText>
+                      <SubHeadingDiv className="spacing">
+                        {t('Description')}
+                      </SubHeadingDiv>
+                      <InfoText className="description">
+                        {formData.description?.trim()
+                          ? formData.description
+                          : '-'}
+                      </InfoText>
                     </InfoRow>
                     <InfoRow>
                       <SubHeadingDiv>{t('Internal_Type')}</SubHeadingDiv>
@@ -1065,7 +1187,7 @@ const AddClientForm = (props: AddClientFormProps) => {
 
               <HeadingContainer>
                 <SectionHeader>
-                  {t('Details')}
+                  {t('Tax Details')}
                   <EditIconWrapper>
                     <EditSVG onClick={() => setStep(2)} />
                   </EditIconWrapper>
@@ -1100,7 +1222,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <InfoText>{formData.primaryAddress.street}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('city')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('City')}</SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.city}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1112,7 +1234,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <InfoText>{formData.primaryAddress.country}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Zip/postal_Code')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('Zip/Postal Code')}</SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.postalCode}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1128,7 +1250,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   </AddressBlock>
 
                   <AddressBlock>
-                    <SubHeadingDiv>{t('city')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('City')}</SubHeadingDiv>
                     <InfoText>{formData.billingAddress.city}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1140,7 +1262,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <InfoText>{formData.billingAddress.country}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Zip/postal_Code')}</SubHeadingDiv>
+                    <SubHeadingDiv>{t('Zip/Postal Code')}</SubHeadingDiv>
                     <InfoText>{formData.billingAddress.postalCode}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
@@ -1163,16 +1285,18 @@ const AddClientForm = (props: AddClientFormProps) => {
         {isResponseLoading && <SpinAnimation />}
       </>
       {step === 4 && (
-        <div className="formButtons">
-          <ButtonGroup>
-            <Button onClick={handleDiscardModalToggle} type="button">
-              {t('Cancel')}
-            </Button>
-            <Button className="submit" type="submit" form="summaryForm">
-              {t('Save & Continue')}
-            </Button>
-          </ButtonGroup>
-        </div>
+        <ButtonGroup>
+          <Button
+            onClick={handleDiscardModalToggle}
+            type="button"
+            className="cancel"
+          >
+            {t('Cancel')}
+          </Button>
+          <Button className="submit" type="submit" form="summaryForm">
+            {t('Add')}
+          </Button>
+        </ButtonGroup>
       )}
       {isDiscardModalOpen && (
         <CenterModal
