@@ -279,7 +279,25 @@ const MyProfileQuickDetailsComponent = ({
     setIsDragging(false);
     setStartDrag(null);
   };
-
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
+  const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      const file = files[0];
+      const validImageTypes = ['image/png', 'image/jpeg'];
+      if (!validImageTypes.includes(file.type)) {
+        alert('Please upload a .png or .jpg file.');
+        return;
+      }
+      setSelectedImage(file);
+    }
+  };
+  const handleDragLeave = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  };
   const handleFileUpload = () => {
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -411,6 +429,27 @@ const MyProfileQuickDetailsComponent = ({
   useKeyPress(27, () => {
     setIsActiveModalOpen(false);
   });
+  useEffect(() => {
+    const preventDefaultDrag = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    const preventDefaultDrop = (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    if (isUploadOpen) {
+      window.addEventListener('dragover', preventDefaultDrag);
+      window.addEventListener('drop', preventDefaultDrop);
+    }
+
+    return () => {
+      window.removeEventListener('dragover', preventDefaultDrag);
+      window.removeEventListener('drop', preventDefaultDrop);
+    };
+  }, [isUploadOpen]);
 
   return (
     <>
@@ -817,31 +856,42 @@ const MyProfileQuickDetailsComponent = ({
           editText="Edit Profile Picture"
         />
       )}
+
       {isUploadOpen && employee && (
-        <CenterModal
-          modalContent={
-            <div>
-              {croppedImage ? (
-                <img
-                  src={croppedImage}
-                  alt="Cropped Monogram"
-                  style={{ borderRadius: '50%' }}
-                />
-              ) : null}
-            </div>
-          }
-          handleModalClose={handleModalClose}
-          handleModalSubmit={handleModalClose}
-          handleModalLeftButtonClick={handleFileUpload}
-          modalRightButtonText="Cancel"
-          modalLeftButtonText="Browse"
-          isImageSelected={!!croppedImage}
-          isDashedBox={!croppedImage}
-          compactButtonStyle={true}
-          isExpanded={true}
-          editText="Edit Profile Picture"
-          dragText="Drag and drop or Browse"
-        />
+        <div
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          onDragLeave={handleDragLeave}
+          style={{
+            width: '100%',
+            height: '100%',
+          }}
+        >
+          <CenterModal
+            modalContent={
+              <div>
+                {croppedImage ? (
+                  <img
+                    src={croppedImage}
+                    alt="Cropped Monogram"
+                    style={{ borderRadius: '50%' }}
+                  />
+                ) : null}
+              </div>
+            }
+            handleModalClose={handleModalClose}
+            handleModalSubmit={handleModalClose}
+            handleModalLeftButtonClick={handleFileUpload}
+            modalRightButtonText="Cancel"
+            modalLeftButtonText="Browse"
+            isImageSelected={!!croppedImage}
+            isDashedBox={!croppedImage}
+            compactButtonStyle={true}
+            isExpanded={true}
+            editText="Edit Profile Picture"
+            dragText="Drag and drop or Browse"
+          />
+        </div>
       )}
 
       {selectedImage && employee && (
@@ -886,10 +936,10 @@ const MyProfileQuickDetailsComponent = ({
               </ZoomSliderContainer>
             </>
           }
-          handleModalSubmit={handleModalClose}
-          modalRightButtonText="Cancel"
-          modalLeftButtonText="Save"
-          handleModalLeftButtonClick={handleSaveAndUpload}
+          handleModalSubmit={handleSaveAndUpload}
+          modalRightButtonText="Save"
+          modalLeftButtonText="Cancel"
+          handleModalLeftButtonClick={handleModalClose}
           handleModalClose={handleModalClose}
           isImageSelected={!!selectedImage}
           isMonogramView={false}

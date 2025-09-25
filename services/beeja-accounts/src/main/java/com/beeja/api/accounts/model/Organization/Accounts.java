@@ -16,4 +16,10 @@ public class Accounts {
   private String esiNumber;
   private String linNumber;
   private String gstNumber;
+
+  @Pattern(
+          regexp = "^[A-Za-z0-9-]{10,15}$",
+          message = "Tax number must be 10–15 characters, alphanumeric, and may include hyphen (-)"
+  )
+  private String taxNumber;
 }

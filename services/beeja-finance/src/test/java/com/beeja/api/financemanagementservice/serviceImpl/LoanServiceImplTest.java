@@ -1,5 +1,17 @@
 package com.beeja.api.financemanagementservice.serviceImpl;
 
+import static com.beeja.api.financemanagementservice.Utils.Constants.GET_ALL_LOANS;
+import static com.beeja.api.financemanagementservice.enums.LoanType.PERSONAL_LOAN;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.client.AccountClient;
 import com.beeja.api.financemanagementservice.enums.LoanStatus;
@@ -9,6 +21,11 @@ import com.beeja.api.financemanagementservice.modals.clients.finance.Organizatio
 import com.beeja.api.financemanagementservice.repository.LoanRepository;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
 import com.beeja.api.financemanagementservice.requests.SubmitLoanRequest;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +41,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.ByteArrayOutputStream;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -51,7 +67,6 @@ class LoanServiceImplTest {
   @InjectMocks private LoanServiceImpl loanService;
 
   @Autowired MockMvc mockMvc;
-
 
   private UserContext userContext;
 
@@ -138,7 +153,6 @@ class LoanServiceImplTest {
         ResourceNotFoundException.class,
         () -> loanService.changeLoanStatus("invalidId", "APPROVE", null));
   }
-
 
   @Test
   public void testGetAllLoansByEmployeeIdWithoutPermission() throws Exception {

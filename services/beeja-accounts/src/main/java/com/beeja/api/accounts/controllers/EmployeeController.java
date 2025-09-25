@@ -4,6 +4,7 @@ import com.beeja.api.accounts.annotations.HasPermission;
 import com.beeja.api.accounts.constants.PermissionConstants;
 import com.beeja.api.accounts.exceptions.BadRequestException;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import com.beeja.api.accounts.repository.UserRepository;
 import com.beeja.api.accounts.requests.AddEmployeeRequest;
@@ -17,6 +18,9 @@ import com.beeja.api.accounts.service.EmployeeService;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
 import jakarta.validation.Valid;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +34,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/v1/users")
 public class EmployeeController {
@@ -45,18 +45,15 @@ public class EmployeeController {
   @GetMapping("/me")
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
   public ResponseEntity<User> getLoggedInUser() throws Exception {
-    User loggedInUser =
+    return ResponseEntity.ok(
         employeeService.getEmployeeByEmail(
-            UserContext.getLoggedInUserEmail(), UserContext.getLoggedInUserOrganization());
-    if (loggedInUser != null) {
-      return ResponseEntity.ok(loggedInUser);
-    } else {
-      return ResponseEntity.notFound().build();
-    }
+            UserContext.getLoggedInUserEmail(), UserContext.getLoggedInUserOrganization()));
   }
+
   @PostMapping("/names")
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
-  public ResponseEntity<List<EmployeeNameDTO>> getEmployeeNames(@RequestBody List<String> employeeIds) {
+  public ResponseEntity<List<EmployeeNameDTO>> getEmployeeNames(
+      @RequestBody List<String> employeeIds) {
     try {
       List<EmployeeNameDTO> employeeNames = employeeService.getEmployeeNamesByIds(employeeIds);
       return ResponseEntity.ok(employeeNames);
@@ -139,12 +136,12 @@ public class EmployeeController {
     employeeService.changeEmployeeStatus(employeeId);
     return new ResponseEntity<>(Constants.USER_STATUS_UPDATED, HttpStatus.OK);
   }
-  
+
   @PutMapping("/roles/{employeeId}")
   @HasPermission(PermissionConstants.UPDATE_ROLES_AND_PERMISSIONS)
   public ResponseEntity<?> updateUserRolesByEmployeeId(
-          @PathVariable String employeeId, @RequestBody UpdateUserRoleRequest newRoles)
-          throws Exception {
+      @PathVariable String employeeId, @RequestBody UpdateUserRoleRequest newRoles)
+      throws Exception {
     User updatedUser = employeeService.updateEmployeeRolesDyEmployeeId(employeeId, newRoles);
     return new ResponseEntity<>(updatedUser, HttpStatus.OK);
   }
@@ -188,5 +185,23 @@ public class EmployeeController {
   public ResponseEntity<String> changeEmailAndPassword(
       @Valid @RequestBody ChangeEmailAndPasswordRequest changeEmailAndPasswordRequest) {
     return ResponseEntity.ok(employeeService.changeEmailAndPassword(changeEmailAndPasswordRequest));
+  }
+
+  @PostMapping("/validate-employees")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public ResponseEntity<List<String>> checkEmployeesPresentOrNot(@RequestBody List<String> employeeIds)throws Exception{
+    List<String> validEmployeeIds = employeeService.checkEmployees(employeeIds);
+    return ResponseEntity.ok(validEmployeeIds);
+  }
+
+  @GetMapping("/names")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public ResponseEntity<List<EmployeeIdNameDTO>> getAllEmployeeNameId() throws Exception {
+    return new ResponseEntity<>(employeeService.getAllEmployeeNameId(), HttpStatus.OK);
+  }
+  @PostMapping("/details-by-ids")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public List<EmployeeNameDTO> getEmployeeDetailsById(@RequestBody List<String> ids) {
+    return employeeService.getEmployeeNamesById(ids);
   }
 }

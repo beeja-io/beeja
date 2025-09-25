@@ -1,5 +1,12 @@
 package com.beeja.api.accounts.controllers;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.when;
+
+import com.beeja.api.accounts.clients.EmployeeFeignClient;
 import com.beeja.api.accounts.exceptions.OrganizationExceptions;
 import com.beeja.api.accounts.exceptions.ResourceNotFoundException;
 import com.beeja.api.accounts.model.Organization.OrgDefaults;
@@ -8,6 +15,8 @@ import com.beeja.api.accounts.model.Organization.employeeSettings.OrgValues;
 import com.beeja.api.accounts.model.User;
 import com.beeja.api.accounts.response.OrganizationResponse;
 import com.beeja.api.accounts.service.OrganizationService;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -82,7 +91,6 @@ class OrganizationControllerTest {
                   null,
                   null);
 
-
   @Test
   void testGetAllEmployeesByOrganizationId_Success() throws Exception {
     // Arrange
@@ -129,8 +137,6 @@ class OrganizationControllerTest {
             });
   }
 
-
-
   @Test
   public void testGetOrganizationById() throws Exception {
     // Arrange
@@ -176,7 +182,6 @@ class OrganizationControllerTest {
       assertEquals("Internal Server Error", ex.getMessage());
     }
   }
-
 
   @Test
   void testUpdateOrganization_Success() throws Exception {
@@ -341,3 +346,4 @@ class OrganizationControllerTest {
 
 
 }
+

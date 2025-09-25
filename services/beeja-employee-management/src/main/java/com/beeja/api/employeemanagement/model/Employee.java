@@ -1,5 +1,6 @@
 package com.beeja.api.employeemanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,7 +31,7 @@ public class Employee {
   @Id private String id;
   private String beejaAccountId;
   private String employeeId;
-  private String employmentType;
+  @JsonIgnore private int employeeNumber;
   private String organizationId;
   private Address address;
   private PersonalInformation personalInformation;

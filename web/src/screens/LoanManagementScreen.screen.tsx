@@ -13,7 +13,7 @@ import { hasPermission } from '../utils/permissionCheck';
 import { LOAN_MODULE } from '../constants/PermissionConstants';
 import { useTranslation } from 'react-i18next';
 import Pagination from '../components/directComponents/Pagination.component';
-import { getAllLoans } from '../service/axiosInstance';
+import { getAllLoans, getLoans } from '../service/axiosInstance';
 
 const LoanManagementScreen = () => {
   const navigate = useNavigate();
@@ -29,7 +29,11 @@ const LoanManagementScreen = () => {
   const [loading, setLoading] = useState(false);
 
   const goToPreviousPage = () => {
-    navigate(-1);
+    if (isApplyLoanScreen) {
+      setIsApplyLoanScreen(false);
+    } else {
+      navigate(-1);
+    }
   };
 
   const handleIsApplyLoanScreen = () => {
@@ -55,18 +59,28 @@ const LoanManagementScreen = () => {
     try {
       setLoading(true);
       const queryString = `?pageNumber=${currentPage}&pageSize=${itemsPerPage}`;
-      const res = await getAllLoans(queryString);
-
-      setTotalItems(Number(res.data.totalRecords || 0));
-      const loans = res.data.loansList;
-      setLoansList(res.data.loansList);
-      setTotalApplicants(res.data.totalSize || loans.length);
+      let res;
+      if (user && hasPermission(user, LOAN_MODULE.GET_ALL_LOANS)) {
+        res = await getAllLoans(queryString);
+        const loans = res.data.loansList || [];
+        setLoansList(loans);
+        setTotalItems(Number(res.data.totalRecords || loans.length));
+        setTotalApplicants(res.data.totalSize || loans.length);
+      } else if (user && hasPermission(user, LOAN_MODULE.READ_LOAN)) {
+        res = await getLoans(user.employeeId);
+        const loans = res.data || [];
+        setLoansList(loans);
+        setTotalItems(loans.length);
+        setTotalApplicants(loans.length);
+      } else {
+        setLoansList([]);
+      }
     } catch (error) {
-      // console.error('Error fetching loan data:', error);
+      throw new Error('Error fetching loan data:' + error);
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, itemsPerPage, user]);
 
   useEffect(() => {
     fetchLoanData();
@@ -97,15 +111,18 @@ const LoanManagementScreen = () => {
             setTotalApplicants={setTotalApplicants}
             loansList={loansList}
             loading={loading}
+            fetchLoans={fetchLoanData}
           />
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(totalItems / itemsPerPage)}
-            handlePageChange={handlePageChange}
-            itemsPerPage={itemsPerPage}
-            handleItemsPerPage={handlePageSizeChange}
-            totalItems={totalItems}
-          />
+          {loansList.length > 0 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={Math.ceil(totalItems / itemsPerPage)}
+              handlePageChange={handlePageChange}
+              itemsPerPage={itemsPerPage}
+              handleItemsPerPage={handlePageSizeChange}
+              totalItems={totalItems}
+            />
+          )}
         </>
       )}
     </ExpenseManagementMainContainer>

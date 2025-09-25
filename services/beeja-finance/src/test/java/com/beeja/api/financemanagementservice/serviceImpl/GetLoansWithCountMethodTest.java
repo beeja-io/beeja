@@ -1,10 +1,14 @@
 package com.beeja.api.financemanagementservice.serviceImpl;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.enums.LoanStatus;
 import com.beeja.api.financemanagementservice.repository.LoanRepository;
 import com.beeja.api.financemanagementservice.response.LoanDTO;
 import com.beeja.api.financemanagementservice.response.LoanResponse;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,21 +21,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoOperations;
 
-import java.util.*;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class GetLoansWithCountMethodTest {
 
     private LoanServiceImpl loanService;
 
-    @Mock
-    private LoanRepository loanRepository;
+    @Mock private LoanRepository loanRepository;
 
-    @Mock
-    private MongoOperations mongoOperations;
+    @Mock private MongoOperations mongoOperations;
+
+    @BeforeEach
+    void setup() {
+        loanService = new LoanServiceImpl(mongoOperations);
+    }
 
     @Test
     void testGetLoansWithStatus() {
@@ -45,16 +47,19 @@ class GetLoansWithCountMethodTest {
         List<LoanDTO> mockLoans = List.of(new LoanDTO());
         long mockCount = 10;
 
-        try (MockedStatic<UserContext> userContextMockedStatic = Mockito.mockStatic(UserContext.class)) {
+        try (MockedStatic<UserContext> userContextMockedStatic =
+                     Mockito.mockStatic(UserContext.class)) {
             Map<String, Object> mockOrgMap = new HashMap<>();
             mockOrgMap.put("id", orgId);
             userContextMockedStatic.when(UserContext::getLoggedInUserOrganization).thenReturn(mockOrgMap);
 
             Pageable expectedPageable = PageRequest.of(0, pageSize, Sort.by(Sort.Direction.DESC, sortBy));
-            when(loanRepository.findAllByOrganizationIdAndStatus(orgId, status, expectedPageable)).thenReturn(mockLoans);
+            when(loanRepository.findAllByOrganizationIdAndStatus(orgId, status, expectedPageable))
+                    .thenReturn(mockLoans);
             when(loanRepository.countByOrganizationIdAndStatus(orgId, status)).thenReturn(mockCount);
 
-            LoanResponse response = loanService.getLoansWithCount(pageNumber, pageSize, sortBy, sortDirection, status);
+            LoanResponse response =
+                    loanService.getLoansWithCount(pageNumber, pageSize, sortBy, sortDirection, status);
 
             assertEquals(mockLoans, response.getLoansList());
             assertEquals(mockCount, response.getTotalRecords());
@@ -75,7 +80,8 @@ class GetLoansWithCountMethodTest {
         List<LoanDTO> mockLoans = List.of(new LoanDTO(), new LoanDTO());
         long mockCount = 20;
 
-        try (MockedStatic<UserContext> userContextMockedStatic = Mockito.mockStatic(UserContext.class)) {
+        try (MockedStatic<UserContext> userContextMockedStatic =
+                     Mockito.mockStatic(UserContext.class)) {
             Map<String, Object> mockOrgMap = new HashMap<>();
             mockOrgMap.put("id", orgId);
             userContextMockedStatic.when(UserContext::getLoggedInUserOrganization).thenReturn(mockOrgMap);
@@ -84,7 +90,8 @@ class GetLoansWithCountMethodTest {
             when(loanRepository.findAllByOrganizationId(orgId, expectedPageable)).thenReturn(mockLoans);
             when(loanRepository.countByOrganizationId(orgId)).thenReturn(mockCount);
 
-            LoanResponse response = loanService.getLoansWithCount(pageNumber, pageSize, sortBy, sortDirection, status);
+            LoanResponse response =
+                    loanService.getLoansWithCount(pageNumber, pageSize, sortBy, sortDirection, status);
 
             assertEquals(mockLoans, response.getLoansList());
             assertEquals(mockCount, response.getTotalRecords());
@@ -105,7 +112,8 @@ class GetLoansWithCountMethodTest {
         List<LoanDTO> mockLoans = List.of();
         long mockCount = 0;
 
-        try (MockedStatic<UserContext> userContextMockedStatic = Mockito.mockStatic(UserContext.class)) {
+        try (MockedStatic<UserContext> userContextMockedStatic =
+                     Mockito.mockStatic(UserContext.class)) {
             Map<String, Object> mockOrgMap = new HashMap<>();
             mockOrgMap.put("id", orgId);
             userContextMockedStatic.when(UserContext::getLoggedInUserOrganization).thenReturn(mockOrgMap);
@@ -114,7 +122,8 @@ class GetLoansWithCountMethodTest {
             when(loanRepository.findAllByOrganizationId(orgId, expectedPageable)).thenReturn(mockLoans);
             when(loanRepository.countByOrganizationId(orgId)).thenReturn(mockCount);
 
-            LoanResponse response = loanService.getLoansWithCount(pageNumber, pageSize, sortBy, sortDirection, status);
+            LoanResponse response =
+                    loanService.getLoansWithCount(pageNumber, pageSize, sortBy, sortDirection, status);
 
             assertEquals(0, response.getLoansList().size());
             assertEquals(mockCount, response.getTotalRecords());
@@ -131,12 +140,18 @@ class GetLoansWithCountMethodTest {
         String sortDirection = "ASC";
         LoanStatus status = null;
 
-        try (MockedStatic<UserContext> userContextMockedStatic = Mockito.mockStatic(UserContext.class)) {
-            userContextMockedStatic.when(UserContext::getLoggedInUserOrganization)
+        try (MockedStatic<UserContext> userContextMockedStatic =
+                     Mockito.mockStatic(UserContext.class)) {
+            userContextMockedStatic
+                    .when(UserContext::getLoggedInUserOrganization)
                     .thenThrow(new RuntimeException("DB Down"));
 
-            RuntimeException ex = assertThrows(RuntimeException.class, () ->
-                    loanService.getLoansWithCount(pageNumber, pageSize, sortBy, sortDirection, status));
+            RuntimeException ex =
+                    assertThrows(
+                            RuntimeException.class,
+                            () ->
+                                    loanService.getLoansWithCount(
+                                            pageNumber, pageSize, sortBy, sortDirection, status));
 
             assertEquals("Error fetching paginated loans.", ex.getMessage());
         }

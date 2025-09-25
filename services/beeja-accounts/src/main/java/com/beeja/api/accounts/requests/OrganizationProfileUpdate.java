@@ -2,6 +2,7 @@ package com.beeja.api.accounts.requests;
 
 import com.beeja.api.accounts.model.Organization.Accounts;
 import com.beeja.api.accounts.model.Organization.Address;
+import com.beeja.api.accounts.model.Organization.BankDetails;
 import com.beeja.api.accounts.model.Organization.Preferences;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -20,5 +21,6 @@ public class OrganizationProfileUpdate {
   private String website;
   private Address address;
   private Accounts accounts;
+  private BankDetails bankDetails;
   private Preferences preferences;
 }

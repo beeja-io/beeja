@@ -1,9 +1,12 @@
 package com.beeja.api.financemanagementservice.serviceImpl;
 
+import static com.beeja.api.financemanagementservice.Utils.Constants.GET_ALL_LOANS;
+
 import com.beeja.api.financemanagementservice.Utils.BuildErrorMessage;
 import com.beeja.api.financemanagementservice.Utils.Constants;
 import com.beeja.api.financemanagementservice.Utils.UserContext;
 import com.beeja.api.financemanagementservice.client.AccountClient;
+import com.beeja.api.financemanagementservice.client.FileClient;
 import com.beeja.api.financemanagementservice.enums.ErrorCode;
 import com.beeja.api.financemanagementservice.enums.ErrorType;
 import com.beeja.api.financemanagementservice.enums.LoanStatus;
@@ -13,14 +16,26 @@ import com.beeja.api.financemanagementservice.modals.clients.finance.EmployeeNam
 import com.beeja.api.financemanagementservice.modals.clients.finance.OrganizationPattern;
 import com.beeja.api.financemanagementservice.repository.LoanRepository;
 import com.beeja.api.financemanagementservice.requests.BulkPayslipRequest;
+import com.beeja.api.financemanagementservice.requests.FileUploadRequest;
 import com.beeja.api.financemanagementservice.requests.PdfMultipartFile;
 import com.beeja.api.financemanagementservice.requests.SubmitLoanRequest;
 import com.beeja.api.financemanagementservice.response.LoanDTO;
 import com.beeja.api.financemanagementservice.response.LoanResponse;
 import com.beeja.api.financemanagementservice.service.LoanService;
-import com.beeja.api.financemanagementservice.requests.FileUploadRequest;
-import com.beeja.api.financemanagementservice.client.FileClient;
 import feign.FeignException;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -32,19 +47,6 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.time.Instant;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
-import static com.beeja.api.financemanagementservice.Utils.Constants.GET_ALL_LOANS;
-import static com.beeja.api.financemanagementservice.Utils.Constants.PDF;
-import static com.beeja.api.financemanagementservice.Utils.Constants.zipFile;
 
 /**
  * Implementation of the LoanService interface providing operations for managing loan requests and
@@ -65,8 +67,7 @@ public class LoanServiceImpl implements LoanService {
   }
 
 
-  @Autowired
-  AccountClient accountClient;
+  @Autowired AccountClient accountClient;
 
 
   /**
@@ -131,12 +132,13 @@ public class LoanServiceImpl implements LoanService {
         log.warn("Failed to retrieve organization pattern, proceeding without prefix.");
       }
 
-      long existingLoanCount = loanRepository.countByOrganizationId(
-              UserContext.getLoggedInUserOrganization().get("id").toString()
-      );
+      long existingLoanCount =
+          loanRepository.countByOrganizationId(
+              UserContext.getLoggedInUserOrganization().get("id").toString());
 
       long newLoanNumber = existingLoanCount + 1;
-      String finalLoanNumber = (organizationPattern != null && organizationPattern.getPrefix() != null)
+      String finalLoanNumber =
+          (organizationPattern != null && organizationPattern.getPrefix() != null)
               ? organizationPattern.getPrefix() + newLoanNumber
               : String.valueOf(newLoanNumber);
 
@@ -166,59 +168,61 @@ public class LoanServiceImpl implements LoanService {
    * @return List of Loan entities.
    * @throws Exception If an error occurs while retrieving loans.
    */
-@Override
-public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortBy, String sortDirection, LoanStatus status) {
-  int validPage = pageNumber > 0 ? pageNumber - 1 : 0;
-  Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
-  Pageable pageable = PageRequest.of(validPage, pageSize, sort);
 
-  String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+  @Override
+  public LoanResponse getLoansWithCount(
+      int pageNumber, int pageSize, String sortBy, String sortDirection, LoanStatus status) {
+    int validPage = pageNumber > 0 ? pageNumber - 1 : 0;
+    Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+    Pageable pageable = PageRequest.of(validPage, pageSize, sort);
 
-  List<LoanDTO> loans;
-  long totalCount;
-  try {
-    if (status != null) {
-      loans = loanRepository.findAllByOrganizationIdAndStatus(orgId, status, pageable);
-      totalCount = loanRepository.countByOrganizationIdAndStatus(orgId, status);
-    } else {
-      loans = loanRepository.findAllByOrganizationId(orgId, pageable);
-      totalCount = loanRepository.countByOrganizationId(orgId);
-    }
-    Set<String> employeeIds = loans.stream()
-            .map(LoanDTO::getEmployeeId)
-            .collect(Collectors.toSet());
-
-    List<EmployeeNameDTO> employeeNamesList=null;
-
-    try{
-      employeeNamesList = accountClient.getEmployeeNamesByIds(new ArrayList<>(employeeIds));
-    }
-    catch (Exception e){
-      log.warn("failed to fetch employeeNames");
-    }
-    Map<String, String> employeeNamesMap = employeeNamesList.stream()
-            .collect(Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
-
-    for (LoanDTO loan : loans) {
-      String empId = loan.getEmployeeId();
-      if (empId != null && employeeNamesMap.containsKey(empId)) {
-        loan.setEmployeeName(employeeNamesMap.get(empId));
+    String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+    List<LoanDTO> loans;
+    long totalCount;
+    try {
+      if (status != null) {
+        loans = loanRepository.findAllByOrganizationIdAndStatus(orgId, status, pageable);
+        totalCount = loanRepository.countByOrganizationIdAndStatus(orgId, status);
+      } else {
+        loans = loanRepository.findAllByOrganizationId(orgId, pageable);
+        totalCount = loanRepository.countByOrganizationId(orgId);
       }
+      Set<String> employeeIds =
+          loans.stream().map(LoanDTO::getEmployeeId).collect(Collectors.toSet());
+
+      List<EmployeeNameDTO> employeeNamesList = null;
+
+      try {
+        employeeNamesList = accountClient.getEmployeeNamesByIds(new ArrayList<>(employeeIds));
+      } catch (Exception e) {
+        log.warn("failed to fetch employeeNames");
+      }
+      Map<String, String> employeeNamesMap =
+          employeeNamesList.stream()
+              .collect(
+                  Collectors.toMap(EmployeeNameDTO::getEmployeeId, EmployeeNameDTO::getFullName));
+
+      for (LoanDTO loan : loans) {
+        String empId = loan.getEmployeeId();
+        if (empId != null && employeeNamesMap.containsKey(empId)) {
+          loan.setEmployeeName(employeeNamesMap.get(empId));
+        }
+      }
+
+    } catch (Exception e) {
+      log.error("Error occurred while fetching loans or employee names: {}", e.getMessage(), e);
+      loans = Collections.emptyList();
+      totalCount = 0;
     }
 
-  } catch (Exception e) {
-    log.error("Error occurred while fetching loans or employee names: {}", e.getMessage(), e);
-    loans = Collections.emptyList();
-    totalCount = 0;
+    LoanResponse response = new LoanResponse();
+    response.setLoansList(loans);
+    response.setPageSize(pageSize);
+    response.setPageNumber(pageNumber);
+    response.setTotalRecords(totalCount);
+    return response;
   }
 
-  LoanResponse response = new LoanResponse();
-  response.setLoansList(loans);
-  response.setPageSize(pageSize);
-  response.setPageNumber(pageNumber);
-  response.setTotalRecords(totalCount);
-  return response;
-}
   /**
    * Retrieves all loans associated with a specific employee ID within the logged-in user's
    * organization.
@@ -247,19 +251,22 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
   /**
    * Uploads bulk payslips in a zip file asynchronously.
    *
-   * @param bulkPayslipRequest  The request object containing bulk payslip details.
+   * @param bulkPayslipRequest The request object containing bulk payslip details.
    * @param authorizationHeader Authorization header for API calls.
    * @throws Exception If an error occurs during bulk payslip upload.
    */
   @Override
-  public void uploadBulkPaySlips(BulkPayslipRequest bulkPayslipRequest, String authorizationHeader) {
+  public void uploadBulkPaySlips(
+      BulkPayslipRequest bulkPayslipRequest, String authorizationHeader) {
     MultipartFile zipFile = bulkPayslipRequest.getZipFile();
     List<String> successList = new ArrayList<>();
     List<String> failureList = new ArrayList<>();
 
     try (ZipInputStream zipInputStream = new ZipInputStream(zipFile.getInputStream())) {
 
-      for (ZipEntry entry = zipInputStream.getNextEntry(); entry != null; entry = zipInputStream.getNextEntry()) {
+      for (ZipEntry entry = zipInputStream.getNextEntry();
+          entry != null;
+          entry = zipInputStream.getNextEntry()) {
         String fileName = entry.getName();
 
         if (fileName == null || fileName.trim().isEmpty()) {
@@ -281,7 +288,13 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
             continue;
           }
 
-          String finalFileName = employeeId + "_" + bulkPayslipRequest.getMonth() + "_" + bulkPayslipRequest.getYear() + ".pdf";
+          String finalFileName =
+              employeeId
+                  + "_"
+                  + bulkPayslipRequest.getMonth()
+                  + "_"
+                  + bulkPayslipRequest.getYear()
+                  + ".pdf";
 
           MultipartFile payslipFile = new PdfMultipartFile(finalFileName, finalFileName, pdfBytes);
 
@@ -293,7 +306,8 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
           fileUploadRequest.setEntityId(employeeId);
           fileUploadRequest.setDescription("Payslip for employee " + employeeId);
 
-          ResponseEntity<?> response = fileClient.uploadFile(fileUploadRequest, authorizationHeader);
+          ResponseEntity<?> response =
+              fileClient.uploadFile(fileUploadRequest, authorizationHeader);
 
           successList.add(finalFileName + " - uploaded successfully.");
         } catch (Exception e) {
@@ -306,18 +320,21 @@ public LoanResponse getLoansWithCount(int pageNumber, int pageSize, String sortB
       log.warn("Failed to process zip file: {}", e.getMessage(), e);
     }
 
-    log.info("Payslip upload complete. Success: {}, Failures: {}", successList.size(), failureList.size());
+    log.info(
+        "Payslip upload complete. Success: {}, Failures: {}",
+        successList.size(),
+        failureList.size());
     successList.forEach(msg -> log.info("SUCCESS: " + msg));
     failureList.forEach(msg -> log.warn("FAILURE: " + msg));
   }
-
 
   private String extractEmployeeIdFromPdf(byte[] pdfBytes) throws IOException {
     try (PDDocument document = PDDocument.load(pdfBytes)) {
       PDFTextStripper stripper = new PDFTextStripper();
       String text = stripper.getText(document);
 
-      Pattern pattern = Pattern.compile("Employee Code\\s*[:\\-]?\\s*([A-Z]+\\d+)", Pattern.CASE_INSENSITIVE);
+      Pattern pattern =
+          Pattern.compile("Employee Code\\s*[:\\-]?\\s*([A-Z]+\\d+)", Pattern.CASE_INSENSITIVE);
       Matcher matcher = pattern.matcher(text);
       if (matcher.find()) {
         return matcher.group(1);

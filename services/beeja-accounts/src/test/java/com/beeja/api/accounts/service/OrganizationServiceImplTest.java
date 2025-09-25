@@ -1,9 +1,7 @@
 package com.beeja.api.accounts.service;
 
-import static org.bouncycastle.asn1.x509.X509ObjectIdentifiers.organization;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
 import com.beeja.api.accounts.clients.FileClient;
 import com.beeja.api.accounts.constants.PermissionConstants;
 import com.beeja.api.accounts.exceptions.BadRequestException;
@@ -30,6 +28,15 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+import com.beeja.api.accounts.repository.OrganizationRepository;
+import com.beeja.api.accounts.repository.UserRepository;
+import java.util.Optional;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 @ExtendWith(MockitoExtension.class)
 public class OrganizationServiceImplTest {
@@ -484,9 +491,5 @@ public class OrganizationServiceImplTest {
     assertThrows(Exception.class, () -> organizationService.updateOrganization(organizationId, fields, file));
     verify(organizationRepository, times(1)).save(any(Organization.class));
   }
-
-
-
-
-
 }
+

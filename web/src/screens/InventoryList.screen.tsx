@@ -31,6 +31,7 @@ import Pagination from '../components/directComponents/Pagination.component';
 import { inventoryOptions } from '../components/reusableComponents/InventoryEnums.component';
 import { useTranslation } from 'react-i18next';
 import { OrganizationValues } from '../entities/OrgValueEntity';
+import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
 
 interface Inventory extends DeviceDetails {
   deviceNumber: string;
@@ -135,55 +136,65 @@ const InventoryList = ({
           </SearchBox>
         </ExpenseHeading>
         <FilterSection>
-          <select
-            className="selectoption"
-            name="device"
+          <DropdownMenu
+            className="largeContainerFil"
+            name="Device"
+            label="Device"
+            options={[
+              { label: t('DEVICE'), value: null },
+              ...(deviceTypes.values?.map((device) => ({
+                label: capitalizeFirstLetter(device.value),
+                value: device.value,
+              })) || []),
+            ]}
             value={deviceFilter}
             onChange={(e) => {
-              onDeviceChange(e);
+              onDeviceChange({
+                target: { value: e },
+              } as React.ChangeEvent<HTMLSelectElement>);
               currentPage;
             }}
-          >
-            <option value="">Device</option>{' '}
-            {deviceTypes.values?.map((device) => (
-              <option key={device.value} value={device.value}>
-                {capitalizeFirstLetter(device.value)}
-              </option>
-            ))}
-          </select>
-          <select
-            className="selectoption"
+          />
+          <DropdownMenu
+            className="largeContainerFil"
             name="Availability"
+            label="Availability"
+            options={[
+              { label: t('Availability'), value: null },
+              ...(inventoryOptions.availability?.map((availability) => ({
+                label: capitalizeFirstLetter(availability),
+                value: availability,
+              })) || []),
+            ]}
             value={availabilityFilter}
             onChange={(e) => {
-              onAvailabilityChange(e);
+              onAvailabilityChange({
+                target: { value: e },
+              } as React.ChangeEvent<HTMLSelectElement>);
               currentPage;
             }}
-          >
-            <option value="availability">Availability</option>{' '}
-            {inventoryOptions.availability.map((availability) => (
-              <option key={availability} value={availability}>
-                {availability}
-              </option>
-            ))}
-          </select>
+          />
           {inventoryProviders && inventoryProviders.values && (
-            <select
-              className="selectoption"
+            <DropdownMenu
+              label="Provider"
               name="provider"
-              value={providerFilter}
-              onChange={(e) => {
-                onProviderChange(e);
+              id="provider"
+              className={'largeContainerFil'}
+              value={providerFilter || ''}
+              onChange={(selectedValue) => {
+                onProviderChange({
+                  target: { name: 'provider', value: selectedValue },
+                } as React.ChangeEvent<HTMLSelectElement>);
                 currentPage;
               }}
-            >
-              <option value="">Provider</option>{' '}
-              {inventoryProviders.values.map((provider) => (
-                <option key={provider.value} value={provider.value}>
-                  {provider.value}
-                </option>
-              ))}
-            </select>
+              options={[
+                { label: 'Provider', value: '' },
+                ...(inventoryProviders?.values || []).map((provider) => ({
+                  label: provider.value,
+                  value: provider.value,
+                })),
+              ]}
+            />
           )}
         </FilterSection>
         <div className="right">
@@ -285,6 +296,7 @@ const InventoryList = ({
                               handleDeleteInventory={updateInventoryList}
                               updateInventoryList={updateInventoryList}
                               deviceTypes={deviceTypes}
+                              inventoryProviders={inventoryProviders}
                             />
                           </td>
                         </TableBodyRow>
@@ -294,7 +306,7 @@ const InventoryList = ({
               </tbody>
             </TableList>
           )}
-          {totalPages && (
+          {inventoryList.length > 0 && totalPages && (
             <Pagination
               totalPages={totalPages}
               currentPage={currentPage}
@@ -330,6 +342,7 @@ const InventoryList = ({
               handleSuccessMessage={handleShowSuccessMessage}
               updateInventoryList={updateInventoryList}
               deviceTypes={deviceTypes}
+              inventoryProviders={inventoryProviders}
             />
           }
         />

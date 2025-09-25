@@ -1,8 +1,7 @@
 package com.beeja.api.employeemanagement.model;
 
-import lombok.Data;
-
 import java.util.Date;
+import lombok.Data;
 
 @Data
 public class PersonalInformation {
@@ -11,4 +10,5 @@ public class PersonalInformation {
   private String gender;
   private String maritalStatus;
   private NomineeDetails nomineeDetails;
+  private String personalTaxId;
 }

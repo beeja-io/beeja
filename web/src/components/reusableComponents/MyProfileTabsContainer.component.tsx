@@ -1,28 +1,29 @@
 import { useEffect, useState } from 'react';
-import {
-  MyProfileTabsDiv,
-  MyProfileTabsMainContainer,
-} from '../../styles/MyProfile.style';
-import { EmployeeEntity } from '../../entities/EmployeeEntity';
-import { useUser } from '../../context/UserContext';
-import { GeneralDetailsTab } from './MyProfileGeneralTabContent.component';
-import KycTabContent from './MyProfileKYCTabContent.component';
-import { DocumentTabContent } from './MyProfileDocumentTabContent.component';
-import DeductionsTab from '../directComponents/DeductionsTab.component';
+import { useTranslation } from 'react-i18next';
+import { LOADING } from '../../constants/Constants';
 import {
   DOCUMENT_MODULE,
   EMPLOYEE_MODULE,
   HEALTH_INSURANCE_MODULE,
   KYC_MODULE,
 } from '../../constants/PermissionConstants';
-import { hasPermission } from '../../utils/permissionCheck';
-import { hasFeature } from '../../utils/featureCheck';
 import { useFeatureToggles } from '../../context/FeatureToggleContext';
+import { useUser } from '../../context/UserContext';
+import { EmployeeEntity } from '../../entities/EmployeeEntity';
 import { EFeatureToggles } from '../../entities/FeatureToggle';
-import HappyBirthday from '../directComponents/HappyBirthday';
 import leafsAnimation from '../../images/birthdayAnimation.gif';
-import { LOADING } from '../../constants/Constants';
-import { useTranslation } from 'react-i18next';
+import {
+  MyProfileTabsDiv,
+  MyProfileTabsMainContainer,
+} from '../../styles/MyProfile.style';
+import { hasFeature } from '../../utils/featureCheck';
+import { hasPermission } from '../../utils/permissionCheck';
+import DeductionsTab from '../directComponents/DeductionsTab.component';
+import HappyBirthday from '../directComponents/HappyBirthday';
+import { DocumentTabContent } from './MyProfileDocumentTabContent.component';
+import { GeneralDetailsTab } from './MyProfileGeneralTabContent.component';
+import KycTabContent from './MyProfileKYCTabContent.component';
+import { useLocation } from 'react-router-dom';
 
 type MyProfileTabsContainerComponentProps = {
   employee: EmployeeEntity;
@@ -40,13 +41,18 @@ const MyProfileTabsContainerComponent = ({
   const [selectedTab, setSelectedTab] = useState('general');
   const [isActiveTab, setIsActiveTab] = useState('general');
   useEffect(() => {
-    setSelectedTab('general');
-  }, [employee]);
-
-  useEffect(() => {
     setSelectedTab(isActiveTab);
   }, [isActiveTab]);
 
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname === '/profile/me') {
+      handleTabChange('general');
+      handleIsActiveTab('general');
+      chooseTab('General');
+    }
+  }, [location.pathname]);
   const handleTabChange = (selectedTab: string) => {
     setSelectedTab(selectedTab);
     setIsActiveTab(selectedTab);
@@ -97,8 +103,15 @@ const MyProfileTabsContainerComponent = ({
           ? employee.employee.personalInformation.maritalStatus
           : '-',
     },
-    // FIXME - Update personal Tax ID
-    { label: 'Personal Tax ID', value: '-' },
+
+    {
+      label: 'Personal Tax ID',
+      value:
+        employee.employee.personalInformation &&
+        employee.employee.personalInformation.personalTaxId
+          ? employee.employee.personalInformation.personalTaxId
+          : '-',
+    },
     {
       label: 'Phone Number',
       value:

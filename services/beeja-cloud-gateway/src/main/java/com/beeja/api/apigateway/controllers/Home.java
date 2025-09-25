@@ -17,5 +17,6 @@ public class Home {
     return ResponseEntity.status(HttpStatus.TEMPORARY_REDIRECT)
         .location(URI.create(authProperties.getFrontEndUrl()))
         .build();
+    
   }
 }

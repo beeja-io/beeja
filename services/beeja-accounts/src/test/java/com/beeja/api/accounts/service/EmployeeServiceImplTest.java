@@ -1,5 +1,17 @@
 package com.beeja.api.accounts.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.beeja.api.accounts.clients.EmployeeFeignClient;
 import com.beeja.api.accounts.constants.PermissionConstants;
 import com.beeja.api.accounts.constants.RoleConstants;
@@ -31,6 +43,11 @@ import com.beeja.api.accounts.serviceImpl.EmployeeServiceImpl;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
 import feign.FeignException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -40,7 +57,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -73,7 +89,6 @@ public class EmployeeServiceImplTest {
 
   @Mock
   private PasswordEncoder passwordEncoder;
-
 
   @Mock private UserContext userContext;
 
@@ -280,11 +295,9 @@ public class EmployeeServiceImplTest {
     UserContext.setLoggedInUser(
         "test@example.com", "Test User", organization1, "empId123", Set.of(), null, "token123");
 
-    when(userRepository.findByEmployeeIdAndOrganizations(any(), any()))
-        .thenReturn(user1);
+    when(userRepository.findByEmployeeIdAndOrganizations(any(), any())).thenReturn(user1);
     when(roleRepository.findByNameAndOrganizationId("ROLE_HR", organization1.getId()))
         .thenReturn(role);
-
 
     user1.setRoles(Set.of(role));
     // Mock user save
@@ -329,8 +342,7 @@ public class EmployeeServiceImplTest {
     UserContext.setLoggedInUser(
         "test@example.com", "Test User", mockOrganization, "empId123", Set.of(), null, "token123");
 
-    when(userRepository.findByEmailAndOrganizations(any(), any()))
-        .thenReturn(null);
+    when(userRepository.findByEmailAndOrganizations(any(), any())).thenReturn(null);
 
     OrgDefaults orgDefaults = new OrgDefaults();
     orgDefaults.setKey("employeeTypes");
@@ -340,15 +352,21 @@ public class EmployeeServiceImplTest {
     orgDefaults.setValues(Set.of(orgValues));
     orgDefaults.setOrganizationId(organization1.getName());
 
-    when(orgDefaultsRepository.findByOrganizationIdAndKey(
-                    any(), any())).thenReturn(orgDefaults);
+    when(orgDefaultsRepository.findByOrganizationIdAndKey(any(), any())).thenReturn(orgDefaults);
 
     OrganizationPattern organizationPattern = new OrganizationPattern();
     organizationPattern.setActive(true);
     organizationPattern.setPatternLength(10);
     organizationPattern.setInitialSequence(3);
     organizationPattern.setPrefix("test");
-
+    
+    when(patternsRepository.findByOrganizationIdAndPatternTypeAndActive(
+            UserContext.getLoggedInUserOrganization().getId(),
+            String.valueOf(PatternType.EMPLOYEE_ID_PATTERN),
+            true))
+        .thenReturn(organizationPattern);
+    when(userRepository.countByOrganizationId(UserContext.getLoggedInUserOrganization().getId()))
+        .thenReturn(1L);
     when(roleRepository.findByNameAndOrganizationId(anyString(), eq(mockOrganization.getId())))
         .thenReturn(mockRole);
 
@@ -370,15 +388,15 @@ public class EmployeeServiceImplTest {
     // Arrange
     User user = new User();
     user.setEmail("abcd@gmail.com");
-    when(userRepository.findByEmailAndOrganizations(any(),any())).thenReturn(user);
+    when(userRepository.findByEmailAndOrganizations(any(), any())).thenReturn(user);
     AddEmployeeRequest addEmployeeRequest = new AddEmployeeRequest();
     addEmployeeRequest.setFirstName("Test");
     addEmployeeRequest.setLastName("User");
     // Act & Assert
-    assertThrows(ResourceAlreadyFoundException.class, () -> employeeServiceImpl.createEmployee(addEmployeeRequest));
+    assertThrows(
+        ResourceAlreadyFoundException.class,
+        () -> employeeServiceImpl.createEmployee(addEmployeeRequest));
   }
-
-
 
   @Test
   public void testUpdateEmployeeByEmployeeId() {

@@ -29,6 +29,7 @@ interface ActionProps {
   handleDeleteInventory: () => void;
   updateInventoryList: () => void;
   deviceTypes: OrganizationValues;
+  inventoryProviders: OrganizationValues;
 }
 
 export const InventoryListAction: React.FC<ActionProps> = ({
@@ -38,6 +39,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
   handleDeleteInventory,
   updateInventoryList,
   deviceTypes,
+  inventoryProviders,
 }) => {
   const { user } = useUser();
   const [isOpen, setIsOpen] = useState(false);
@@ -71,6 +73,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
       setConfirmDeleteModal(true);
     }
     setIsOpen(false);
+    setSelectedOption(null);
   };
   const deleteSelectedDevice = async () => {
     try {
@@ -112,6 +115,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
         <ActionMenu
+          className="action-align"
           onClick={() => {
             if (hasActionPermission) {
               openDropdown();
@@ -189,6 +193,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
                 handleSuccessMessage={handleSuccessMessage}
                 updateInventoryList={updateInventoryList}
                 deviceTypes={deviceTypes}
+                inventoryProviders={inventoryProviders}
               />
             }
           />

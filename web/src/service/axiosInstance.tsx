@@ -3,6 +3,13 @@ import { OriginURL, ProdOriginURL } from '../constants/UrlConstants';
 import { IFeatureToggle } from '../entities/FeatureToggle';
 import { IAssignedInterviewer } from '../entities/ApplicantEntity';
 import { OrganizationValues } from '../entities/OrgValueEntity';
+import {
+  ProjectEntity,
+  ProjectStatus,
+  Employee,
+} from '../entities/ProjectEntity';
+import { ProjectFormData } from '../components/directComponents/AddProjectForm.component';
+import { ContractDetails } from '../entities/ContractEntiy';
 /* eslint-disable */
 const axiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -221,6 +228,18 @@ export const getAllLoans = (queryString = ''): Promise<AxiosResponse> => {
   return axiosInstance.get(`/finance/v1/loans${queryString}`);
 };
 
+export const getLoans = (
+  userId: string,
+  hasViewAll: boolean = false,
+  queryString = ''
+): Promise<AxiosResponse> => {
+  if (hasViewAll) {
+    return axiosInstance.get(`/finance/v1/loans${queryString}`);
+  } else {
+    return axiosInstance.get(`/finance/v1/loans/${userId}`);
+  }
+};
+
 export const statusChange = (
   Id: string,
   status: string,
@@ -267,6 +286,166 @@ export const deleteInventory = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/finance/v1/inventory/${id}`);
 };
 
+export const downloadClientLogo = (
+  fileId: string
+): Promise<AxiosResponse<Blob>> => {
+  return axiosInstance.get(`/projects/v1/files/download/${fileId}`, {
+    responseType: 'blob',
+  });
+};
+export const postClient = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/clients`, data);
+};
+
+export const getClient = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/clients/${id}`);
+};
+
+export const getAllClient = (
+  pageNumber: number,
+  pageSize: number,
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/clients`,{
+    params: {
+      pageNumber,
+      pageSize,
+    },    
+  });
+};
+
+export const putClient = (
+  id: string,
+  data: FormData
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(`/projects/v1/clients/${id}`, data);
+};
+
+export const putProject = (
+  projectId: string,
+  data: ProjectFormData
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(`/projects/v1/projects/${projectId}`, data, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+};
+
+export const postProjects = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/projects`, data, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+};
+
+export const postContracts = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/contracts`, data);
+};
+
+export const getProjectDetails = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/projects/client/${id}`);
+};
+
+export const getContractDetails = (
+  contractId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/contracts/${contractId}`);
+};
+
+export const getResourceManager = (): Promise<AxiosResponse<Employee[]>> => {
+  return axiosInstance.get('/accounts/v1/users/names');
+};
+
+export const getAllProjects = (
+  pageNumber: number,
+  pageSize: number,
+  projectId?: string,
+  status?: string
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get('/projects/v1/projects/all-projects', {
+    params: {
+      pageNumber,
+      pageSize,
+      projectId,
+      status,
+    },
+  });
+};
+
+export const getProject = (
+  projectId: string,
+  clientId: string
+): Promise<AxiosResponse<ProjectEntity[]>> => {
+  return axiosInstance.get(`/projects/v1/projects/${projectId}/${clientId}`);
+};
+
+export const getAllContracts = (
+  pageNumber: number,
+  pageSize: number,
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get(`/projects/v1/contracts`,{
+    params: {
+      pageNumber,
+      pageSize
+    }
+  });
+};
+
+export const getProjectsByClientId = (
+  clientId: string
+): Promise<AxiosResponse<ProjectEntity[]>> => {
+  return axiosInstance.get(`/projects/v1/projects/client/${clientId}`);
+};
+
+export const getProjectEmployees = (projectId: string) => {
+  return axiosInstance.get(`/projects/v1/projects/${projectId}/employees`);
+};
+
+export const getContractsByClientId = (
+  clientId: string
+): Promise<AxiosResponse<ContractDetails[]>> => {
+  return axiosInstance.get(`/projects/v1/contracts/client/${clientId}`);
+};
+
+export const updateProjectStatus = (
+  projectId: string,
+  newStatus: ProjectStatus
+): Promise<AxiosResponse<ProjectEntity>> => {
+  return axiosInstance.patch(
+    `/projects/v1/projects/${projectId}/status`,
+    JSON.stringify(newStatus),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+};
+
+export const getResourcesByClientId = (
+  clientId: string
+): Promise<AxiosResponse<ContractDetails[]>> => {
+  return axiosInstance.get(`/projects/v1/contracts/${clientId}/resources`);
+};
+
+export const updateContractStatus = (
+  contractId: string,
+  newStatus: ProjectStatus
+): Promise<AxiosResponse<ProjectEntity>> => {
+  return axiosInstance.patch(
+    `/projects/v1/contracts/${contractId}/status`,
+    JSON.stringify(newStatus),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+};
+
+export const updateContract = (
+  contractId: string,
+  data: any
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.put(`/projects/v1/contracts/${contractId}`, data);
+};
 export const getAllRolesInOrganization = (): Promise<AxiosResponse> => {
   return axiosInstance.get('/accounts/v1/roles');
 };
@@ -311,8 +490,12 @@ export const deleteRole = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/accounts/v1/roles/${id}`);
 };
 
-export const getAllApplicantList = (): Promise<AxiosResponse> => {
-  return axiosInstance.get('/recruitments/v1/applicants');
+export const getAllApplicantList = (
+  queryString = ''
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/recruitments/v1/applicants/combinedApplicants${queryString}`
+  );
 };
 
 export const postApplicant = (data: FormData): Promise<AxiosResponse> => {
@@ -339,8 +522,8 @@ export const referApplicant = (data: FormData): Promise<AxiosResponse> => {
   return axiosInstance.post('/recruitments/v1/referrals', data);
 };
 
-export const getMyReferrals = (): Promise<AxiosResponse> => {
-  return axiosInstance.get('/recruitments/v1/referrals');
+export const getMyReferrals = (queryString = ''): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/recruitments/v1/referrals${queryString}`);
 };
 
 export const downloadReferralResume = (
@@ -391,4 +574,21 @@ export const updateOrganizationValues = (
     '/accounts/v1/organizations/update-values',
     orgDefaults
   );
+};
+export const PostLogHours = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post('projects/api/timesheets', data, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+};
+
+export const fetchMonthLogs = (date: any): Promise<AxiosResponse> => {
+  return axiosInstance.get(`projects/api/timesheets?month=${date}`);
+};
+
+export const deleteLog = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.delete(`projects/api/timesheets/${id}`);
+};
+
+export const updateLog = (id: string, data: any): Promise<AxiosResponse> => {
+  return axiosInstance.put(`projects/api/timesheets/${id}`, data);
 };

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { TextInput } from 'web-kit-components';
+import { TextInput } from '../../styles/InputStyles.style';
 import { IApplicant } from '../../entities/ApplicantEntity';
 import {
   changeApplicationStatus,
@@ -22,6 +22,7 @@ import {
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import CommentsSection from '../reusableComponents/CommentsSection.component';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 const EditApplicant = () => {
   const navigate = useNavigate();
@@ -41,11 +42,12 @@ const EditApplicant = () => {
   };
 
   const fetchApplicantById = () => {
+    setIsLoading(true);
     id &&
       getApplicantById(id)
         .then((res) => {
           setApplicant(res.data);
-          setIsLoading(true);
+          setIsLoading(false);
         })
         .catch((error) => {
           if (error instanceof AxiosError) {
@@ -60,7 +62,6 @@ const EditApplicant = () => {
   };
   useEffect(() => {
     fetchApplicantById();
-    setIsLoading(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -82,11 +83,7 @@ const EditApplicant = () => {
     }
   };
 
-  const handleStatusChange = async (
-    e: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    const newStatus = e.target.value;
-    e.preventDefault();
+  const handleStatusChange = async (newStatus: string) => {
     toast.promise(
       async () => await changeApplicationStatus(applicant.id, newStatus),
       {
@@ -99,7 +96,7 @@ const EditApplicant = () => {
 
   return (
     <>
-      {!isLoading ? (
+      {isLoading ? (
         <SpinAnimation />
       ) : (
         <ExpenseManagementMainContainer>
@@ -145,7 +142,7 @@ const EditApplicant = () => {
                       }}
                       placeholder={'Ex: John'}
                       autoComplete="off"
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -174,7 +171,7 @@ const EditApplicant = () => {
                         }
                       }}
                       placeholder={'Ex: Doe'}
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
@@ -206,7 +203,7 @@ const EditApplicant = () => {
                         }
                       }}
                       placeholder={'Enter Phone Number'}
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                   <InputLabelContainer>
@@ -223,59 +220,51 @@ const EditApplicant = () => {
                       required
                       disabled
                       placeholder={'Enter Email'}
-                      style={{ cursor: 'not-allowed' }}
+                      style={{ cursor: 'not-allowed', width: '400px' }}
                     />
                   </InputLabelContainer>
                 </div>
                 <div>
                   <InputLabelContainer>
                     <label>{t('EXPERIENCE')}</label>
-                    <select
-                      className="selectoption"
+                    <DropdownMenu
+                      className="cursor-disabled"
                       name="experience"
                       id="experience"
-                      disabled
-                      onKeyPress={(event) => {
-                        if (event.key === 'Enter') {
-                          event.preventDefault();
-                        }
-                      }}
-                      style={{ cursor: 'not-allowed' }}
-                    >
-                      <option value="">
-                        {applicant.experience ? applicant.experience : '-'}
-                      </option>
-                    </select>
+                      value={applicant.experience ?? '-'}
+                      disabled={true}
+                      onChange={() => {}}
+                      options={[
+                        {
+                          label: applicant.experience ?? '-',
+                          value: applicant.experience ?? '-',
+                        },
+                      ]}
+                    />
                   </InputLabelContainer>
                   <InputLabelContainer>
                     <label>Status</label>
-                    <select
-                      className="selectoption largeSelectOption"
+                    <DropdownMenu
+                      className="largeContainerBulk"
                       name="department"
-                      onChange={handleStatusChange}
-                      onKeyPress={(event) => {
+                      value={applicant.status}
+                      onChange={(val) => handleStatusChange(val ?? '')}
+                      onKeyDown={(event) => {
                         if (event.key === 'Enter') {
                           event.preventDefault();
                         }
                       }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {[
+                      options={[
                         'APPLIED',
                         'SHORTLISTED',
                         'INTERVIEW_SCHEDULED',
                         'HIRED',
                         'REJECTED',
-                      ].map((status) => (
-                        <option
-                          key={status}
-                          value={status}
-                          selected={applicant.status === status}
-                        >
-                          {status.replace('_', ' ')}
-                        </option>
-                      ))}
-                    </select>
+                      ].map((status) => ({
+                        label: status.replace('_', ' '),
+                        value: status,
+                      }))}
+                    />
                   </InputLabelContainer>
                 </div>
               </form>

@@ -1,5 +1,10 @@
 package com.beeja.api.employeemanagement.serviceImpl;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
 import com.beeja.api.employeemanagement.model.File;
 import com.beeja.api.employeemanagement.requests.FileUploadRequest;
 import com.beeja.api.employeemanagement.service.FileService;
@@ -15,114 +20,119 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
 @SpringBootTest
 @ActiveProfiles("test")
 class ProfilePicServiceImplTest {
 
-    @InjectMocks
-    private ProfilePicServiceImpl profilePicService;
+  @InjectMocks private ProfilePicServiceImpl profilePicService;
 
-    @MockBean
-    private FileService fileService;
+  @MockBean private FileService fileService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+  @BeforeEach
+  void setUp() {
+    MockitoAnnotations.openMocks(this);
+  }
 
-    @Test
-    public void testSaveProfilePicture() throws Exception {
-        FileUploadRequest fileUploadRequest = new FileUploadRequest();
-        fileUploadRequest.setFileType(null);
-        fileUploadRequest.setEntityType(null);
-        fileUploadRequest.setEntityId(null);
+  @Test
+  public void testSaveProfilePicture() throws Exception {
+    FileUploadRequest fileUploadRequest = new FileUploadRequest();
+    fileUploadRequest.setFileType(null);
+    fileUploadRequest.setEntityType(null);
+    fileUploadRequest.setEntityId(null);
 
-        File expectedFile = new File();
-        expectedFile.setId("12345");
+    File expectedFile = new File();
+    expectedFile.setId("12345");
 
-        when(fileService.uploadFile(any(FileUploadRequest.class))).thenReturn(expectedFile);
+    when(fileService.uploadFile(any(FileUploadRequest.class))).thenReturn(expectedFile);
 
-        File result = profilePicService.saveProfilePicture(fileUploadRequest);
+    File result = profilePicService.saveProfilePicture(fileUploadRequest);
 
-        assertNotNull(result);
-        assertEquals("12345", result.getId());
-        verify(fileService, times(1)).uploadFile(any(FileUploadRequest.class));
-    }
+    assertNotNull(result);
+    assertEquals("12345", result.getId());
+    verify(fileService, times(1)).uploadFile(any(FileUploadRequest.class));
+  }
 
-    @Test
-    void testSaveProfilePicture_Exception() throws Exception {
-        FileUploadRequest fileUploadRequest = new FileUploadRequest();
+  @Test
+  void testSaveProfilePicture_Exception() throws Exception {
+    FileUploadRequest fileUploadRequest = new FileUploadRequest();
 
-        when(fileService.uploadFile(any(FileUploadRequest.class))).thenThrow(new RuntimeException("File upload error"));
+    when(fileService.uploadFile(any(FileUploadRequest.class)))
+        .thenThrow(new RuntimeException("File upload error"));
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            profilePicService.saveProfilePicture(fileUploadRequest);
-        });
+    Exception exception =
+        assertThrows(
+            Exception.class,
+            () -> {
+              profilePicService.saveProfilePicture(fileUploadRequest);
+            });
 
-        Assertions.assertEquals(Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE, exception.getMessage());
-        verify(fileService, times(1)).uploadFile(fileUploadRequest);
-    }
+    Assertions.assertEquals(
+        Constants.ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE, exception.getMessage());
+    verify(fileService, times(1)).uploadFile(fileUploadRequest);
+  }
 
-    @Test
-    void testUpdateProfilePicture() throws Exception {
-        String fileId = "file123";
-        FileUploadRequest fileUploadRequest = new FileUploadRequest();
+  @Test
+  void testUpdateProfilePicture() throws Exception {
+    String fileId = "file123";
+    FileUploadRequest fileUploadRequest = new FileUploadRequest();
 
-        File expectedFile = new File();
-        when(fileService.updateFile(eq(fileId), any(FileUploadRequest.class))).thenReturn(expectedFile);
+    File expectedFile = new File();
+    when(fileService.updateFile(eq(fileId), any(FileUploadRequest.class))).thenReturn(expectedFile);
 
-        File result = profilePicService.updateProfilePicture(fileId, fileUploadRequest);
+    File result = profilePicService.updateProfilePicture(fileId, fileUploadRequest);
 
-        assertNotNull(result);
-        assertEquals(expectedFile, result);
-        verify(fileService, times(1)).updateFile(fileId, fileUploadRequest);
-    }
+    assertNotNull(result);
+    assertEquals(expectedFile, result);
+    verify(fileService, times(1)).updateFile(fileId, fileUploadRequest);
+  }
 
-    @Test
-    void testUpdateProfilePicture_Exception() throws Exception {
-        String fileId = "file123";
-        FileUploadRequest fileUploadRequest = new FileUploadRequest();
+  @Test
+  void testUpdateProfilePicture_Exception() throws Exception {
+    String fileId = "file123";
+    FileUploadRequest fileUploadRequest = new FileUploadRequest();
 
-        when(fileService.updateFile(eq(fileId), any(FileUploadRequest.class))).thenThrow(new RuntimeException("Update error"));
+    when(fileService.updateFile(eq(fileId), any(FileUploadRequest.class)))
+        .thenThrow(new RuntimeException("Update error"));
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            profilePicService.updateProfilePicture(fileId, fileUploadRequest);
-        });
+    Exception exception =
+        assertThrows(
+            Exception.class,
+            () -> {
+              profilePicService.updateProfilePicture(fileId, fileUploadRequest);
+            });
 
-        assertEquals(Constants.ERROR_IN_UPDATING_FILE_IN_FILE_SERVICE, exception.getMessage());
-        verify(fileService, times(1)).updateFile(fileId, fileUploadRequest);
-    }
+    assertEquals(Constants.ERROR_IN_UPDATING_FILE_IN_FILE_SERVICE, exception.getMessage());
+    verify(fileService, times(1)).updateFile(fileId, fileUploadRequest);
+  }
 
-    @Test
-    void testGetProfilePicById() throws Exception {
-        String fileId = "file123";
-        ByteArrayResource expectedResource = new ByteArrayResource("imageData".getBytes());
+  @Test
+  void testGetProfilePicById() throws Exception {
+    String fileId = "file123";
+    ByteArrayResource expectedResource = new ByteArrayResource("imageData".getBytes());
 
-        when(fileService.downloadFile(eq(fileId))).thenReturn(expectedResource);
+    when(fileService.downloadFile(eq(fileId))).thenReturn(expectedResource);
 
-        ByteArrayResource result = profilePicService.getProfilePicById(fileId);
+    ByteArrayResource result = profilePicService.getProfilePicById(fileId);
 
-        assertNotNull(result);
-        assertEquals(expectedResource, result);
-        verify(fileService, times(1)).downloadFile(fileId);
-    }
+    assertNotNull(result);
+    assertEquals(expectedResource, result);
+    verify(fileService, times(1)).downloadFile(fileId);
+  }
 
-    @Test
-    void testGetProfilePicById_Exception() throws Exception {
-        String fileId = "file123";
+  @Test
+  void testGetProfilePicById_Exception() throws Exception {
+    String fileId = "file123";
 
-        when(fileService.downloadFile(eq(fileId))).thenThrow(new RuntimeException("Download error"));
+    when(fileService.downloadFile(eq(fileId))).thenThrow(new RuntimeException("Download error"));
 
-        Exception exception = assertThrows(Exception.class, () -> {
-            profilePicService.getProfilePicById(fileId);
-        });
+    Exception exception =
+        assertThrows(
+            Exception.class,
+            () -> {
+              profilePicService.getProfilePicById(fileId);
+            });
 
-        assertEquals(Constants.ERROR_IN_DOWNLOADING_FILE_FROM_FILE_SERVICE, exception.getMessage());
-        verify(fileService, times(1)).downloadFile(fileId);
-    }
+    assertEquals(Constants.ERROR_IN_DOWNLOADING_FILE_FROM_FILE_SERVICE, exception.getMessage());
+    verify(fileService, times(1)).downloadFile(fileId);
+  }
 }
