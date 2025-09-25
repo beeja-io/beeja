@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   ActionIcon,
   ChevronLeftSVG,
@@ -6,30 +6,30 @@ import {
   DownloadIcon,
 } from '../../svgs/DocumentTabSvgs.svg';
 /* eslint-disable */
-import {
-  ActionContainer,
-  ActionMenuContent,
-  ActionMenuOption,
-  ActionMenu,
-} from '../../styles/DocumentTabStyles.style';
+import axios, { AxiosError } from 'axios';
+import { t } from 'i18next';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+import { DOCUMENT_MODULE } from '../../constants/PermissionConstants';
+import { useUser } from '../../context/UserContext';
+import { FileEntity } from '../../entities/FileEntity';
 import {
   deleteEmployeeFile,
   downloadEmployeeFile,
 } from '../../service/axiosInstance';
-import axios, { AxiosError } from 'axios';
-import { useUser } from '../../context/UserContext';
+import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import {
+  ActionContainer,
+  ActionMenu,
+  ActionMenuContent,
+  ActionMenuOption,
+} from '../../styles/DocumentTabStyles.style';
+import { hasPermission } from '../../utils/permissionCheck';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
 import CenterModal from './CenterModal.component';
 import CenterModalMain from './CenterModalMain.component';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import { Document, Page } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-import { pdfjs } from 'react-pdf';
-import { DOCUMENT_MODULE } from '../../constants/PermissionConstants';
-import { FileEntity } from '../../entities/FileEntity';
-import { hasPermission } from '../../utils/permissionCheck';
-import { t } from 'i18next';
-import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   'pdfjs-dist/build/pdf.worker.min.js',
@@ -75,6 +75,17 @@ export const DocumentAction: React.FC<ActionProps> = ({
   const handleIsDocumentPreviewModalOpen = () => {
     setIsDocumentPreviewModalOpen(!isDocumentPreviewModalOpen);
   };
+  useEffect(() => {
+    if (isDocumentPreviewModalOpen) {
+      disableBodyScroll();
+    } else {
+      enableBodyScroll();
+    }
+
+    return () => {
+      enableBodyScroll();
+    };
+  }, [isDocumentPreviewModalOpen]);
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
@@ -214,7 +225,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
   return (
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>
-        <ActionMenu onClick={openDropdown}>
+        <ActionMenu className="action-align" onClick={openDropdown}>
           <ActionIcon />
         </ActionMenu>
         {isOpen && (
@@ -265,7 +276,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
                   width: '145px',
                   height: '40px',
                   display: 'inline-flex',
-                  padding: '8px 28px 8px 38px',
+                  padding: '10px 10px 10px 10px',
                   justifyContent: 'flex-end',
                   alignItems: 'center',
                   borderRadius: '10px',

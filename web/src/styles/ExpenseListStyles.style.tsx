@@ -191,7 +191,9 @@ export const TableListContainer = styled.section`
   margin-top: 60px;
   display: relative;
 `;
-export const TableHead = styled.thead``;
+export const TableHead = styled.thead`
+  text-align: left;
+`;
 export const TableList = styled.table`
   border: 0;
   margin-top: 30px;
@@ -293,7 +295,11 @@ export const TotalAmount = styled.span`
   font-weight: 700;
 `;
 
-export const ActionMenu = styled.div``;
+export const ActionMenu = styled.div`
+  &.action-align {
+    margin-top: -12px;
+  }
+`;
 
 export const ExpenseFilterArea = styled.section`
   .filterValues {

@@ -16,7 +16,6 @@ import {
   CrossMarkSVG,
 } from '../../svgs/CommonSvgs.svs';
 import { useTranslation } from 'react-i18next';
-import { SelectInput } from '../reusableComponents/MyProfileGeneralTabContent.component';
 import { useEffect, useMemo, useState } from 'react';
 import {
   getHealthInsuranceDetails,
@@ -31,6 +30,7 @@ import { ValidationText } from '../../styles/DocumentTabStyles.style';
 import { HEALTH_INSURANCE_MODULE } from '../../constants/PermissionConstants';
 import { HealthInsurance } from '../../entities/HealthInsuranceEntity';
 import { hasPermission } from '../../utils/permissionCheck';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type DeductionTabProps = {
   heading: string;
@@ -267,14 +267,18 @@ const DeductionsTab = ({
       );
     }
   };
-
+  const currentValue =
+    formData['Instalment Type'] === 'MONTHLY'
+      ? 'Monthly'
+      : formData['Instalment Type'] === 'QUARTERLY'
+        ? 'Quarterly'
+        : formData['Instalment Type'] || '';
   return (
     <TabContentMainContainer>
       <TabContentMainContainerHeading>
         <h4>{heading}</h4>
         {user &&
-        hasPermission(user, HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE) &&
-        user.employeeId != employee.account.employeeId ? (
+        hasPermission(user, HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE) ? (
           <TabContentEditArea>
             {!isEditModeOn ? (
               <span
@@ -340,26 +344,44 @@ const DeductionsTab = ({
                     label != 'No. of Instalments' ? (
                       <TabContentTableTd>
                         {label === 'Instalment Type' ? (
-                          <SelectInput
+                          <DropdownMenu
                             label={label}
-                            value={formData[value]}
-                            options={['Monthly', 'Quarterly']}
-                            onChange={(label, selectedValue) =>
-                              handleChange(label, selectedValue)
-                            }
-                            selected={
-                              formData['Instalment Type'] == 'MONTHLY'
-                                ? 'Monthly'
-                                : formData['Instalment Type'] == 'QUARTERLY'
-                                  ? 'Quarterly'
-                                  : ''
-                            }
+                            name={label}
+                            id={label}
+                            value={currentValue}
+                            className="smallContainerDed"
+                            options={[
+                              { label: 'Select', value: '' },
+                              { label: 'Monthly', value: 'Monthly' },
+                              { label: 'Quarterly', value: 'Quarterly' },
+                            ]}
+                            onChange={(val) => {
+                              let selectedValue = '';
+
+                              if (typeof val === 'string') {
+                                selectedValue = val;
+                              } else if (
+                                val &&
+                                typeof (val as any).target?.value === 'string'
+                              ) {
+                                selectedValue = (
+                                  val as React.ChangeEvent<HTMLSelectElement>
+                                ).target.value;
+                              }
+
+                              handleChange(label, selectedValue);
+                            }}
                           />
                         ) : (
                           <InlineInput
                             type="text"
                             placeholder={'Enter Amount'}
                             value={formData[label] || ''}
+                            onFocus={(e) => {
+                              if (e.target.value === '-') {
+                                e.target.value = '';
+                              }
+                            }}
                             onChange={(e) => {
                               const inputValue = e.target.value;
                               const labelsWhichAllowOnlyNumbers = [

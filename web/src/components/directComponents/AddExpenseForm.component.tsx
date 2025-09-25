@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button } from '../../styles/CommonStyles.style';
 import {
   FileUploadField,
@@ -54,6 +54,7 @@ import {
   EXPENSE_RECEIPTS_TOTAL_REQUEST_SIZE,
 } from '../../constants/FileSizes';
 import { EXPENSE_RECEIPT_TYPES } from '../../constants/FileTypes';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type AddExpenseFormProps = {
   handleClose: () => void;
@@ -91,8 +92,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   };
 
   const fileId: string =
-    props.expense?.fileId && props.expense?.files && props.expense?.files[0].id
-      ? props.expense?.fileId && props.expense?.files[0].id
+    props.expense?.fileId && props.expense?.files && props.expense?.files[0]?.id
+      ? props.expense?.fileId && props.expense?.files[0]?.id
       : '';
   const [images, setImages] = useState(null);
   const [fileExtension, setFileExtension] = useState<string>();
@@ -104,6 +105,10 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   ] = useState(false);
   const handleIsExpenseReceiptPreviewModalOpen = () => {
     setIsExpenseReceiptPreviewModalOpen(!isExpenseReceiptPreviewModalOpen);
+  };
+  const isAmountInvalid = (formData: FormData) => {
+    const amount = Number(formData.get('amount'));
+    return !amount || amount <= 0;
   };
 
   const expenseReceiptPreview = async (
@@ -147,38 +152,56 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const handleExpenseSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newExpense) {
-      // Checking undefined values and adding to list to display in toast!
-      const errorMessages = [];
-      if (newExpense.amount === undefined) {
-        errorMessages.push('Amount');
-      }
-      if (newExpense.department == undefined || newExpense.department == '') {
-        errorMessages.push('Department');
-      }
-      if (newExpense.category == undefined || newExpense.category == '') {
-        errorMessages.push('Category');
-      }
-      if (newExpense.type == undefined || newExpense.type == '') {
-        errorMessages.push('Type');
-      }
       if (
-        newExpense.modeOfPayment == undefined ||
-        newExpense.modeOfPayment == ''
+        newExpense.amount === undefined ||
+        newExpense.amount === null ||
+        newExpense.amount === ''
       ) {
-        errorMessages.push('Mode of Payment');
-      }
-      if (
-        newExpense.paymentMadeBy == undefined ||
-        newExpense.paymentMadeBy == ''
-      ) {
-        errorMessages.push('Payment Made By');
-      }
-      if (expenseDate == undefined || expenseDate == null) {
-        errorMessages.push('Expense Date');
-      }
-      if (errorMessages.length > 0) {
         handleShowErrorMessage();
-        setResponseErrorMessage('Please fill ' + errorMessages);
+        setResponseErrorMessage('Please fill Amount');
+        return;
+      }
+      if (Number(newExpense.amount) <= 0) {
+        handleShowErrorMessage();
+        setResponseErrorMessage(
+          'EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT_GREATER_THAN_ZERO'
+        );
+        return;
+      }
+
+      if (!newExpense.department || newExpense.department === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Department');
+        return;
+      }
+
+      if (!newExpense.category || newExpense.category === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Category');
+        return;
+      }
+
+      if (!newExpense.type || newExpense.type === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Type');
+        return;
+      }
+
+      if (!newExpense.modeOfPayment || newExpense.modeOfPayment === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Mode of Payment');
+        return;
+      }
+
+      if (!newExpense.paymentMadeBy || newExpense.paymentMadeBy === '') {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Payment Made By');
+        return;
+      }
+
+      if (!expenseDate) {
+        handleShowErrorMessage();
+        setResponseErrorMessage('Please fill Expense Date');
         return;
       }
       const formData = new FormData();
@@ -232,6 +255,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
       setIsResponseLoading(true);
 
+      if (isAmountInvalid(formData)) {
+        setResponseErrorMessage(
+          'EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT_GREATER_THAN_ZERO'
+        );
+        handleShowErrorMessage();
+        setIsResponseLoading(false);
+        return;
+      }
       try {
         await createExpense(formData);
         handleShowSuccessMessage();
@@ -392,10 +423,11 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       });
     }
   };
+  type InputLikeEvent =
+    | React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    | { currentTarget: { name: string; value: string } };
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (e: InputLikeEvent) => {
     const fieldName = e.currentTarget.name;
     const fieldValue = e.currentTarget.value;
 
@@ -454,9 +486,8 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       prev.filter((id) => id !== fileId)
     );
   };
-  const handleUpdateChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+
+  const handleUpdateChange = (e: InputLikeEvent) => {
     const fieldName = e.currentTarget.name;
     const fieldValue = e.currentTarget.value;
 
@@ -615,6 +646,14 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
 
       setIsResponseLoading(true);
+      if (isAmountInvalid(formData)) {
+        setResponseErrorMessage(
+          'EXPENSE_AMOUNT_CANNOT_BE_ZERO_PLEASE_ENTER_A_VALID_AMOUNT_GREATER_THAN_ZERO'
+        );
+        handleShowErrorMessage();
+        setIsResponseLoading(false);
+        return;
+      }
       try {
         await updateExpense(props.expense?.id, formData);
         handleShowSuccessMessage();
@@ -666,22 +705,20 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const [categories, setCategories] = useState<string>('');
   const [types, setTypes] = useState<string>('');
 
-  const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault();
-    const selectedDepartment = e.target.value;
-    setDepartments(selectedDepartment);
+  const handleDepartmentChange = ({
+    value,
+  }: {
+    name: string;
+    value: string;
+  }) => {
+    setDepartments(value);
   };
 
-  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault();
-    const selectedCategory = e.target.value;
-    setCategories(selectedCategory);
+  const handleCategoryChange = ({ value }: { name: string; value: string }) => {
+    setCategories(value);
   };
-
-  const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    e.preventDefault();
-    const selectedType = e.target.value;
-    setTypes(selectedType);
+  const handleTypeChange = ({ value }: { name: string; value: string }) => {
+    setTypes(value);
   };
 
   // changing mode from props
@@ -797,18 +834,24 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const [requestedDate, setRequestedDate] = useState<Date | null>();
   const [paymentDate, setPaymentDate] = useState<Date | null>();
   useEffect(() => {
-    if (modeOfModal == 'edit' && props.expense) {
-      setExpenseDate(
-        new Date(formatDateYYYYMMDD(props.expense?.expenseDate.toString()))
-      );
-      if (props.expense && props.expense.paymentDate) {
-        setPaymentDate(
-          new Date(formatDateYYYYMMDD(props.expense?.paymentDate.toString()))
+    if (modeOfModal === 'edit' && props.expense) {
+      if (props.expense.expenseDate) {
+        setExpenseDate(
+          new Date(formatDateYYYYMMDD(String(props.expense.expenseDate)))
         );
       }
-      setRequestedDate(
-        new Date(formatDateYYYYMMDD(props.expense?.requestedDate.toString()))
-      );
+
+      if (props.expense.paymentDate) {
+        setPaymentDate(
+          new Date(formatDateYYYYMMDD(String(props.expense.paymentDate)))
+        );
+      }
+
+      if (props.expense.requestedDate) {
+        setRequestedDate(
+          new Date(formatDateYYYYMMDD(String(props.expense.requestedDate)))
+        );
+      }
     }
   }, [modeOfModal, props.expense, props.expense?.expenseDate]);
 
@@ -854,44 +897,42 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
-            <select
-              className="selectoption largeSelectOption"
+
+            <DropdownMenu
+              label={t('SELECT_DEPARTMENT')}
               name="department"
-              value={departments}
-              onChange={(e) => {
-                handleDepartmentChange(e);
-                props.mode === 'create'
-                  ? handleChange(e)
-                  : handleUpdateChange(e);
-              }}
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                }
-              }}
+              id="department"
+              className="largeContainerExp"
+              value={departments || ''}
               disabled={modeOfModal === 'preview'}
-            >
-              {modeOfModal === 'preview' &&
-              props.expense?.department === null ? (
-                <option value="-">-</option>
-              ) : (
-                <>
-                  <option value="">{t('SELECT_DEPARTMENT')}</option>
-                  {props.expenseDepartments.values.map((internalValue) => (
-                    <option
-                      key={internalValue.value}
-                      value={internalValue.value}
-                      selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                        props.expense?.department === internalValue.value
-                      }
-                    >
-                      {internalValue.value}
-                    </option>
-                  ))}
-                </>
-              )}
-            </select>
+              onChange={(val) => {
+                handleDepartmentChange({
+                  name: 'department',
+                  value: val ?? '',
+                });
+
+                props.mode === 'create'
+                  ? handleChange({
+                      currentTarget: { name: 'department', value: val ?? '' },
+                    })
+                  : handleUpdateChange({
+                      currentTarget: { name: 'department', value: val ?? '' },
+                    });
+              }}
+              options={
+                modeOfModal === 'preview' && props.expense?.department === null
+                  ? [{ label: '-', value: '-' }]
+                  : [
+                      { label: t('SELECT_DEPARTMENT'), value: '' },
+                      ...(props.expenseDepartments?.values || []).map(
+                        (internalValue) => ({
+                          label: internalValue.value,
+                          value: internalValue.value,
+                        })
+                      ),
+                    ]
+              }
+            />
           </InputLabelContainer>
           <InputLabelContainer>
             <label>
@@ -900,43 +941,43 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
-            <select
-              className="selectoption largeSelectOption"
-              name="type"
-              value={types}
-              onChange={(e) => {
-                handleTypeChange(e);
-                props.mode === 'create'
-                  ? handleChange(e)
-                  : handleUpdateChange(e);
-              }}
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                }
-              }}
-              disabled={modeOfModal === 'preview'}
-            >
-              {modeOfModal === 'preview' && props.expense?.type === null ? (
-                <option value="-">-</option>
-              ) : (
-                <>
-                  <option value="">{t('SELECT_TYPE')}</option>
-                  {props.expenseTypes.values?.map((type) => (
-                    <option
-                      key={type.value}
-                      value={type.value}
-                      selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                        props.expense?.type === type.value
-                      }
-                    >
-                      {type.value}
-                    </option>
-                  ))}
-                </>
-              )}
-            </select>
+            {modeOfModal === 'preview' && props.expense?.type === null ? (
+              <DropdownMenu
+                label="-"
+                name="type"
+                id="type"
+                value="-"
+                disabled={true}
+                options={[{ label: '-', value: '-' }]}
+              />
+            ) : (
+              <DropdownMenu
+                label={t('SELECT_TYPE')}
+                name="type"
+                id="type"
+                value={types}
+                className="largeContainerExp"
+                disabled={modeOfModal === 'preview'}
+                options={[
+                  { label: t('SELECT_TYPE'), value: null },
+                  ...(props.expenseTypes?.values || []).map((type) => ({
+                    label: type.value,
+                    value: type.value,
+                  })),
+                ]}
+                onChange={(val) => {
+                  handleTypeChange({ name: 'type', value: val ?? '' });
+
+                  props.mode === 'create'
+                    ? handleChange({
+                        currentTarget: { name: 'type', value: val ?? '' },
+                      })
+                    : handleUpdateChange({
+                        currentTarget: { name: 'type', value: val ?? '' },
+                      });
+                }}
+              />
+            )}
           </InputLabelContainer>
           <InputLabelContainer>
             <label>
@@ -945,37 +986,40 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
-            <select
-              className="selectoption largeSelectOption"
+            <DropdownMenu
+              label={t('SELECT_MODE')}
               name="modeOfPayment"
+              id="modeOfPayment"
+              className="largeContainerExp"
               value={
                 props.expense?.modeOfPayment ||
-                (newExpense && newExpense.modeOfPayment)
+                (newExpense && newExpense.modeOfPayment) ||
+                ''
               }
-              onChange={
-                props.mode === 'create' ? handleChange : handleUpdateChange
-              }
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                }
+              onChange={(val) => {
+                props.mode === 'create'
+                  ? handleChange({
+                      currentTarget: {
+                        name: 'modeOfPayment',
+                        value: val ?? '',
+                      },
+                    })
+                  : handleUpdateChange({
+                      currentTarget: {
+                        name: 'modeOfPayment',
+                        value: val ?? '',
+                      },
+                    });
               }}
               disabled={modeOfModal === 'preview'}
-            >
-              <option value="">{t('SELECT_MODE')}</option>
-              {props.expensePaymentModes?.values?.map((mode) => (
-                <option
-                  key={mode.value}
-                  value={mode.value}
-                  selected={
-                    (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                    props.expense?.modeOfPayment === mode.value
-                  }
-                >
-                  {mode.value}
-                </option>
-              ))}
-            </select>
+              options={[
+                { label: t('SELECT_MODE'), value: '' },
+                ...(props.expensePaymentModes?.values || []).map((mode) => ({
+                  label: mode.value,
+                  value: mode.value,
+                })),
+              ]}
+            />
           </InputLabelContainer>
           <InputLabelContainer>
             <label>
@@ -984,39 +1028,38 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
-            <select
-              className="selectoption largeSelectOption"
+            <DropdownMenu
+              label={t('SELECT')}
               name="paymentMadeBy"
-              onChange={
-                props.mode === 'create' ? handleChange : handleUpdateChange
+              id="paymentMadeBy"
+              className="largeContainerExp"
+              value={
+                modeOfModal === 'edit' || modeOfModal === 'preview'
+                  ? props.expense?.paymentMadeBy || ''
+                  : ''
               }
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                }
+              onChange={(val) => {
+                props.mode === 'create'
+                  ? handleChange({
+                      currentTarget: {
+                        name: 'paymentMadeBy',
+                        value: val ?? '',
+                      },
+                    })
+                  : handleUpdateChange({
+                      currentTarget: {
+                        name: 'paymentMadeBy',
+                        value: val ?? '',
+                      },
+                    });
               }}
-              disabled={modeOfModal === 'preview' && true}
-            >
-              <option value="">{t('SELECT')}</option>
-              <option
-                value="Accounts Manager"
-                selected={
-                  (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                  props.expense?.paymentMadeBy === 'Accounts Manager'
-                }
-              >
-                {t('ACCOUNTS_MANAGER')}
-              </option>
-              <option
-                value="Super Admin"
-                selected={
-                  (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                  props.expense?.paymentMadeBy === 'Super Admin'
-                }
-              >
-                {t('SUPER_ADMIN')}
-              </option>
-            </select>
+              disabled={modeOfModal === 'preview'}
+              options={[
+                { label: t('SELECT'), value: '' },
+                { label: t('ACCOUNTS_MANAGER'), value: 'Accounts Manager' },
+                { label: t('SUPER_ADMIN'), value: 'Super Admin' },
+              ]}
+            />
           </InputLabelContainer>
           <InputLabelContainer>
             <label>{t('REQUESTED_DATE')}</label>
@@ -1152,43 +1195,40 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                 <ValidationText className="star">*</ValidationText>
               )}
             </label>
-            <select
-              className="selectoption largeSelectOption"
+            <DropdownMenu
+              label={t('SELECT_CATEGORY')}
               name="category"
-              value={categories}
-              onChange={(e) => {
-                handleCategoryChange(e);
+              id="category"
+              className="largeContainerExp"
+              value={
+                modeOfModal === 'preview' && props.expense?.category === null
+                  ? '-'
+                  : categories
+              }
+              onChange={(val) => {
+                handleCategoryChange({ name: 'category', value: val ?? '' });
+
                 props.mode === 'create'
-                  ? handleChange(e)
-                  : handleUpdateChange(e);
-              }}
-              onKeyPress={(event) => {
-                if (event.key === 'Enter') {
-                  event.preventDefault();
-                }
+                  ? handleChange({
+                      currentTarget: { name: 'category', value: val ?? '' },
+                    })
+                  : handleUpdateChange({
+                      currentTarget: { name: 'category', value: val ?? '' },
+                    });
               }}
               disabled={modeOfModal === 'preview'}
-            >
-              {modeOfModal === 'preview' && props.expense?.category === null ? (
-                <option value="-">-</option>
-              ) : (
-                <>
-                  <option value="">{t('SELECT_CATEGORY')}</option>
-                  {props.expenseCategories?.values?.map((category) => (
-                    <option
-                      key={category.value}
-                      value={category.value}
-                      selected={
-                        (modeOfModal === 'edit' || modeOfModal === 'preview') &&
-                        props.expense?.category === category.value
-                      }
-                    >
-                      {category.value}
-                    </option>
-                  ))}
-                </>
-              )}
-            </select>
+              options={
+                modeOfModal === 'preview' && props.expense?.category === null
+                  ? [{ label: '-', value: '-' }]
+                  : [
+                      { label: t('SELECT_CATEGORY'), value: '' },
+                      ...(props.expenseCategories?.values?.map((category) => ({
+                        label: category.value,
+                        value: category.value,
+                      })) || []),
+                    ]
+              }
+            />
           </InputLabelContainer>
           <InputLabelContainer>
             <label>

@@ -10,4 +10,5 @@ public class PersonalInformation {
   private String gender;
   private String maritalStatus;
   private NomineeDetails nomineeDetails;
+  private String personalTaxId;
 }

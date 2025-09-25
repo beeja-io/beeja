@@ -57,11 +57,19 @@ public class Constants {
       "Error while fetching projects with provided clientId";
   public static final String ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION =
       "Error while fetching projects with provided organizationId";
+  public static final String FETCH_ERROR_FOR_PROJECT_MANAGERS = "Failed to fetch Project Manager names for IDs";
 
   // ========== Contract Errors ==========
   public static final String CONTRACT_NOT_FOUND = "Contract not found with given contractId";
   public static final String ERROR_SAVING_CONTRACT = "Failed to save contract";
   public static final String ERROR_UPDATING_CONTRACT = "Failed to update contract";
+  public static final String FEIGN_CLIENT_ERROR = "Failed to fetch employee names: {}";
+
+  //=========== Contract Log Messages =======
+
+  public static final String CONTRACT_FETCHING = "Fetching contract with ID: {}";
+  public static final String RESOURCES_SIZE = "Successfully fetched {} employee names";
+  public static final String NO_RESOURCE_FOUND = "No resource allocations found for contract ID: {}";
 
   // ========== File Service Errors ==========
   public static final String ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE =
@@ -89,8 +97,11 @@ public class Constants {
       "Received null response from file service for fileId: ";
   public static final String ERROR_IN_UPDATING_FILE_FROM_FILE_SERVICE =
       "Error in Updating File in File Service";
+    public static final String ERROR_IN_VALIDATE_PROJECT_MANAGERS = "Error while validating project managers via account service" ;
+  public static final String ERROR_IN_VALIDATE_PROJECT_RESOURCES = "Error while validating project resources via account service";
+    public static final String NO_RESOURCES_FOUND = "No resources found for contracts of clientId: {}";
 
-  // ========== Utility ==========
+    // ========== Utility ==========
   public static String format(String message, Object... args) {
     return String.format(message, args);
   }
@@ -98,4 +109,5 @@ public class Constants {
   public static final String ERROR_IN_LOGO_UPLOAD = "Error in uploading Logo";
   public static final String FILE_NOT_ALLOWED =
       "File type not allowed. Allowed types: image/jpeg, image/jpg, image/png, image/webp";
+  public static final String  DELETED_SUCCESSFULLY = "Deleted Successfully logo file with id {}";
 }

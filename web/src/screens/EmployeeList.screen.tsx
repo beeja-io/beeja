@@ -58,6 +58,8 @@ import { toast } from 'sonner';
 import CopyPasswordPopup from '../components/directComponents/CopyPasswordPopup.component';
 import { CreatedUserEntity } from '../entities/CreatedUserEntity';
 import { OrgDefaults } from '../entities/OrgDefaultsEntity';
+import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
+import { disableBodyScroll, enableBodyScroll } from '../constants/Utility';
 
 const EmployeeList = () => {
   const { t } = useTranslation();
@@ -134,7 +136,9 @@ const EmployeeList = () => {
             hasProfilePicture.add(employeeId);
           } catch (error) {
             imageUrls.set(employeeId, '');
-            throw new Error('Error fetching data:' + error);
+            throw new Error(
+              `Error fetching profile image for employee ${employeeId}:` + error
+            );
           }
         } else {
           imageUrls.set(employeeId, '');
@@ -161,7 +165,7 @@ const EmployeeList = () => {
 
   const fetchEmployeeTypes = async () => {
     try {
-      const response = await getOrganizationValuesByKey('employmentTypes');
+      const response = await getOrganizationValuesByKey('employeeTypes');
       setEmployeeTypes(response.data);
     } catch {
       setError(t('ERROR_WHILE_FETCHING_EMPLOYEE_TYPES'));
@@ -172,6 +176,12 @@ const EmployeeList = () => {
     try {
       const response = await getOrganizationValuesByKey('departments');
       setDepartmentOptions(response.data);
+      if (!response?.data?.values || response.data.values.length === 0) {
+        toast.error(
+          'Department list is empty. Please add at least one Department in Organization.'
+        );
+        return;
+      }
     } catch {
       setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
     }
@@ -265,7 +275,6 @@ const EmployeeList = () => {
   });
 
   const currentEmployees = finalEmpList;
-
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
@@ -274,15 +283,16 @@ const EmployeeList = () => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
   };
+
   useEffect(() => {
     if (isCreateEmployeeModelOpen) {
-      document.body.style.overflow = 'hidden';
+      disableBodyScroll();
     } else {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     }
 
     return () => {
-      document.body.style.overflow = '';
+      enableBodyScroll();
     };
   }, [isCreateEmployeeModelOpen]);
   return (
@@ -361,64 +371,63 @@ const EmployeeList = () => {
           </EmployeeListFilterSection> */}
 
           <FilterSection>
-            {departmentOptions && (
-              <select
-                className="selectoption"
-                name="EmployeeDepartment"
-                value={departmentFilter}
-                onChange={(e) => {
-                  handleDepartmentChange(e);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="">Department</option>{' '}
-                {departmentOptions?.values.map((department) => (
-                  <option key={department.value} value={department.value}>
-                    {t(department.value)}
-                  </option>
-                ))}
-              </select>
-            )}
-            {jobTitles && (
-              <select
-                className="selectoption"
-                name="JobTitle"
-                value={JobTitleFilter}
-                onChange={(e) => {
-                  handleJobTitleChange(e);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="">Job Title</option>{' '}
-                {jobTitles?.values.map((jobTitle) => (
-                  <option key={jobTitle.value} value={jobTitle.value}>
-                    {t(jobTitle.value)}
-                  </option>
-                ))}
-              </select>
-            )}
-
-            {employeeTypes && (
-              <select
-                className="selectoption"
-                name="EmployementType"
-                value={EmployeementTypeFilter}
-                onChange={(e) => {
-                  handleEmploymentTypeChange(e);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="">Employement Type</option>
-                {employeeTypes?.values.map((employementType) => (
-                  <option
-                    key={employementType.value}
-                    value={employementType.value}
-                  >
-                    {t(employementType.value)}
-                  </option>
-                ))}
-              </select>
-            )}
+            <DropdownMenu
+              className="largeContainerFil"
+              name="EmployeeDepartment"
+              label="Department"
+              options={[
+                { label: t('Department'), value: '' },
+                ...(departmentOptions?.values?.map((department) => ({
+                  label: department.value,
+                  value: department.value,
+                })) || []),
+              ]}
+              value={departmentFilter}
+              onChange={(e) => {
+                handleDepartmentChange({
+                  target: { value: e },
+                } as React.ChangeEvent<HTMLSelectElement>);
+                setCurrentPage(1);
+              }}
+            />
+            <DropdownMenu
+              label="JobTitle"
+              className="largeContainerFil"
+              name="JobTitle"
+              options={[
+                { label: t('Job Title'), value: '' },
+                ...(jobTitles?.values?.map((jobTitle) => ({
+                  label: jobTitle.value,
+                  value: jobTitle.value,
+                })) || []),
+              ]}
+              value={JobTitleFilter}
+              onChange={(e) => {
+                handleJobTitleChange({
+                  target: { value: e },
+                } as React.ChangeEvent<HTMLSelectElement>);
+                setCurrentPage(1);
+              }}
+            />
+            <DropdownMenu
+              label="EmployementType"
+              className="largeContainerFil"
+              name="EmployementType"
+              options={[
+                { label: t('Employement Type'), value: '' },
+                ...(employeeTypes?.values?.map((employeeType) => ({
+                  label: employeeType.value,
+                  value: employeeType.value,
+                })) || []),
+              ]}
+              value={EmployeementTypeFilter}
+              onChange={(e) => {
+                handleEmploymentTypeChange({
+                  target: { value: e },
+                } as React.ChangeEvent<HTMLSelectElement>);
+                setCurrentPage(1);
+              }}
+            />
 
             {user &&
               (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
@@ -429,19 +438,23 @@ const EmployeeList = () => {
                 ) ||
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_ALL_EMPLOYEES) ||
                 hasPermission(user, EMPLOYEE_MODULE.UPDATE_EMPLOYEE)) && (
-                <select
-                  className="selectoption"
+                <DropdownMenu
+                  label="Status"
+                  className="largeContainerFil"
                   name="employeeStatus"
+                  options={[
+                    { label: t('Status'), value: '' },
+                    { label: t('ACTIVE'), value: 'Active' },
+                    { label: t('INACTIVE'), value: 'Inactive' },
+                  ]}
                   value={EmployeeStatusFilter}
                   onChange={(e) => {
-                    handleEmployeeStatusChange(e);
+                    handleEmployeeStatusChange({
+                      target: { value: e },
+                    } as React.ChangeEvent<HTMLSelectElement>);
                     setCurrentPage(1);
                   }}
-                >
-                  <option value="">Status</option>{' '}
-                  <option value="Active">{t('ACTIVE')}</option>
-                  <option value="Inactive">{t('INACTIVE')}</option>
-                </select>
+                />
               )}
           </FilterSection>
           <br />
@@ -628,6 +641,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     lastName: '',
     email: '',
     employmentType: '',
+    department: '',
     employeeId: '',
   });
   const [emailMessage, setEmailMessage] = useState('');
@@ -638,6 +652,13 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         setLoading(true);
         const key = 'employeeTypes';
         const response = await getOrganizationValuesByKey(key);
+
+        if (!response?.data?.values || response.data.values.length === 0) {
+          toast.error(
+            'Employee type is empty. Please add at least one Employee Type in Organization.'
+          );
+          return null;
+        }
         setOrganizationValues(response.data);
       } catch (err) {
         toast.error(t('ERROR_OCCURRED_PLEASE_RELOAD'));
@@ -680,13 +701,18 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             ? 'INVALID_EMAIL_FORMAT'
             : '',
       employmentType:
-        formData.employmentType === '' ? EMPLOYMENT_TYPRE_REQUIRED : '',
-      department: formData.department === '' ? 'DEPARTMENT_REQUIRED' : '',
+        formData.employmentType === '' || formData.employmentType === null
+          ? EMPLOYMENT_TYPRE_REQUIRED
+          : '',
+      department:
+        formData.department === '' || formData.department === null
+          ? 'Department Required'
+          : '',
       employeeId:
         formData.employeeId === ''
-          ? 'EMPLOYEE_ID_REQUIRED'
+          ? 'Employee ID Required'
           : formData.employeeId.length < 4
-            ? 'EMPLOYEE_ID_LENGTH'
+            ? 'Employee ID Length'
             : '',
     };
 
@@ -743,11 +769,10 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
   });
 
   const { t } = useTranslation();
-
   return (
     <StyledForm style={{ cursor: props.isResponseLoading ? 'progress' : '' }}>
       <div>
-        <h3>{t('ADD_NEW_PROFILE')}</h3>
+        <h3 className="add-new-employee-heading">{t('ADD_NEW_PROFILE')}</h3>
         <InputLabelContainer>
           <label>
             {t('FIRST_NAME')}{' '}
@@ -815,9 +840,9 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
               }
             }}
           />
-          {errors.lastName && (
+          {errors.employeeId && (
             <ValidationText>
-              <AlertISVG /> {errors.lastName}
+              <AlertISVG /> {errors.employeeId}
             </ValidationText>
           )}
         </InputLabelContainer>
@@ -857,26 +882,28 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             {t('EMPLOYMENT_TYPE')}{' '}
             <ValidationText className="star">*</ValidationText>
           </label>
-          <select
-            className="selectoption"
+          <DropdownMenu
+            label={t('SELECT_EMPLOYMENT_TYPE')}
             name="employmentType"
             id="employmentType"
-            onKeyPress={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-              }
-            }}
-            onChange={handleChange}
-          >
-            <option value="">{t('SELECT_EMPLOYMENT_TYPE')}</option>
-            {organizationValues &&
-              organizationValues.values &&
-              organizationValues.values.map((type, index) => (
-                <option key={index} value={type.value}>
-                  {t(type.value)}
-                </option>
-              ))}
-          </select>
+            className="selectcontainer"
+            onChange={(e) =>
+              handleChange({
+                target: { name: 'employmentType', value: e },
+              } as React.ChangeEvent<HTMLSelectElement>)
+            }
+            disabled={
+              !organizationValues?.values ||
+              organizationValues.values.length === 0
+            }
+            options={[
+              { label: t('SELECT_EMPLOYMENT_TYPE'), value: null },
+              ...(organizationValues?.values || []).map((type) => ({
+                label: t(type.value),
+                value: type.value,
+              })),
+            ]}
+          />
           {errors.employmentType && (
             <ValidationText>
               <AlertISVG /> {errors.employmentType}
@@ -889,29 +916,31 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             {t('SELECT_DEPARTMENT')}{' '}
             <ValidationText className="star">*</ValidationText>
           </label>
-          <select
-            className="selectoption"
+          <DropdownMenu
+            label={t('SELECT_DEPARTMENT')}
+            className="selectcontainer"
             name="department"
             id="department"
-            onKeyPress={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault();
-              }
-            }}
-            onChange={handleChange}
-          >
-            <option value="">{t('SELECT_DEPARTMENT')}</option>
-            {props.departmentOptions &&
-              props.departmentOptions.values &&
-              props.departmentOptions.values.map((department, index) => (
-                <option key={index} value={department.value}>
-                  {t(department.value)}
-                </option>
-              ))}
-          </select>
-          {errors.employmentType && (
+            onChange={(e) =>
+              handleChange({
+                target: { name: 'department', value: e },
+              } as React.ChangeEvent<HTMLSelectElement>)
+            }
+            disabled={
+              !props.departmentOptions?.values ||
+              props.departmentOptions.values.length === 0
+            }
+            options={[
+              { label: t('SELECT_DEPARTMENT'), value: null },
+              ...(props.departmentOptions?.values || []).map((department) => ({
+                label: t(department.value),
+                value: department.value,
+              })),
+            ]}
+          />
+          {errors.department && (
             <ValidationText>
-              <AlertISVG /> {errors.employmentType}
+              <AlertISVG /> {errors.department}
             </ValidationText>
           )}
         </SelectOption>

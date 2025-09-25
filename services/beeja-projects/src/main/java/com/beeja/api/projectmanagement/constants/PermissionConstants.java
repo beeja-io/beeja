@@ -37,4 +37,5 @@ public class PermissionConstants {
   public static final String CREATE_ALL_DOCUMENT = "CALDCMT";
   public static final String DELETE_ALL_DOCUMENT = "DALDCMT";
   public static final String UPDATE_ALL_DOCUMENT = "UALDCMT";
+  
 }

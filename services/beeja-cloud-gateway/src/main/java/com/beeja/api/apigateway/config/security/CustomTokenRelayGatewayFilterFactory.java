@@ -54,5 +54,5 @@ public class CustomTokenRelayGatewayFilterFactory
     };
   }
 
-  public static class Config { }
+  public static class Config {}
 }

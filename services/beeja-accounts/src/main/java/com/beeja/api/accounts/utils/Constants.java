@@ -112,7 +112,10 @@ public class Constants {
   public static final String ERROR_IN_CREATING_ROLE_TO_ORGANIZATION =
       "Error in Creating Role to Organization";
 
-  //  DOC URLS
+    public static final String UPDATE_FEATURE_TOGGLE = "Updating feature toggle for organizationId: {}";
+
+
+    //  DOC URLS
   public static final String DOC_URL_RESOURCE_NOT_FOUND = "https://beeja-dev.techatcore.com/";
   public static final String CAME_TO_PUBLIC_ROUTE = "Request came to public endpoint: ";
   public static final String NEW_USER_AND_ORG_CREATION_INITIATED =
@@ -190,7 +193,6 @@ public class Constants {
       "Error in generating {} values for organization : {} ,";
   public static final String SUCCESSFULLY_GENERATED_DEFAULTS =
       "Successfully generated values for organization : {} ,";
-
   public static final String DUPLICATE_VALUE_EXIST =
       "Duplicate values found within the same document.";
   public static final String UPDATING_PERMISSIONS_FOR_ALL_SUPER_ADMINS =
@@ -209,4 +211,5 @@ public class Constants {
       "New Permissions entry created and saved for '{}'.";
   public static final String SUCCESSFULLY_UPDATED_PERMISSIONS_ENTRY =
       "Successfully Updated PErmissions Entry";
+  public static final String EMPLOYEE_ID_NOT_NULL = "Employee ID list must not be null or empty";
 }

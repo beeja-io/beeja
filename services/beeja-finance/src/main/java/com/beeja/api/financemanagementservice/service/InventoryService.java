@@ -1,7 +1,6 @@
 package com.beeja.api.financemanagementservice.service;
 
 import com.beeja.api.financemanagementservice.enums.Availability;
-import com.beeja.api.financemanagementservice.enums.Device;
 import com.beeja.api.financemanagementservice.modals.Inventory;
 import com.beeja.api.financemanagementservice.requests.DeviceDetails;
 import java.util.List;
@@ -15,7 +14,7 @@ public interface InventoryService {
   List<Inventory> filterInventory(
       int pageNumber,
       int pageSize,
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,
@@ -30,7 +29,7 @@ public interface InventoryService {
   List<Inventory> getAllDevicesByOrganizationId(String organizationId);
 
   Long getTotalInventorySize(
-      Device device,
+      String device,
       String provider,
       Availability availability,
       String os,

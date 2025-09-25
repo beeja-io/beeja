@@ -184,6 +184,7 @@ public class ApplicantServiceImpl implements ApplicantService {
                 Sort.by(Sort.Direction.DESC, sortBy != null ? sortBy : "createdAt"));
 
     List<Criteria> criteriaList = new ArrayList<>();
+    criteriaList.add(Criteria.where("organizationId").is(UserContext.getLoggedInUserOrganization().get("id").toString()));
 
     if (applicantId != null && !applicantId.isEmpty()) {
       criteriaList.add(Criteria.where("applicantId").is(applicantId));
@@ -253,6 +254,7 @@ public class ApplicantServiceImpl implements ApplicantService {
                         applicant.getPositionAppliedFor(),
                         applicant.getStatus(),
                         applicant.getExperience(),
+                        applicant.getResumeId(),
                         applicant.getReferredByEmployeeName(),
                         applicant.getCreatedAt()))
             .collect(Collectors.toList());

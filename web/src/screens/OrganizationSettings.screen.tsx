@@ -348,6 +348,12 @@ const OrganizationSettings = () => {
                           >
                             Departments
                           </li>
+                          <li
+                            className={`dropdown-item-thread ${activeTab === 'DocumentType' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('DocumentType')}
+                          >
+                            Document Types
+                          </li>
                         </ul>
                       )}
 
@@ -481,14 +487,14 @@ const OrganizationSettings = () => {
             {activeTab === 'EmployeeIdPattern' && (
               <OrgSettingsIDPatterns patternType="EMPLOYEE_ID_PATTERN" />
             )}
+            {activeTab === 'DocumentType' && (
+              <SettingsTypes keyvalue="documentTypes" type="Document Type" />
+            )}
             {activeTab === 'ExpenseType' && (
               <SettingsTypes keyvalue="expenseTypes" type="Expense Type" />
             )}
             {activeTab === 'ModeOfPayments' && (
-              <SettingsTypes
-                keyvalue="expensePaymentTypes"
-                type="Mode Of Payment"
-              />
+              <SettingsTypes keyvalue="paymentModes" type="Mode Of Payment" />
             )}
             {activeTab === 'ExpenseCategories' && (
               <SettingsTypes

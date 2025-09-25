@@ -26,6 +26,7 @@ import { formatFileSize } from '../utils/fileSizeFormatter';
 import { months } from '../utils/monthsConstants';
 import axios, { AxiosError } from 'axios';
 import { useTranslation } from 'react-i18next';
+import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
 
 const BulkPayslip = () => {
   const [selectedFile, setSelectedFile] = useState<File>();
@@ -154,60 +155,46 @@ const BulkPayslip = () => {
               <label>
                 {t('MONTH')} <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption"
+              <DropdownMenu
+                label="Select Month"
                 name="month"
-                onChange={(e) => handleMonthChange(e.target.value)}
-                onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
-                    event.preventDefault();
-                  }
-                }}
-              >
-                {getCurrentThreeMonths.map((mon, index) => (
-                  <option
-                    key={index}
-                    value={mon}
-                    selected={index === new Date().getMonth() + 1}
-                  >
-                    {mon}
-                  </option>
-                ))}
-              </select>
+                id="month"
+                className="largeContainerBulk"
+                onChange={(e) => handleMonthChange(e ?? '')}
+                options={getCurrentThreeMonths.map((mon, index) => ({
+                  label: mon,
+                  value: (index + 1).toString(),
+                }))}
+              />
             </InputLabelContainer>
             <InputLabelContainer Width="400px">
               <label>
                 {t('YEAR')} <ValidationText className="star">*</ValidationText>
               </label>
-              <select
-                className="selectoption"
+              <DropdownMenu
+                label="Select Year"
                 name="year"
-                onChange={(e) => handleYearChange(e.target.value)}
-                onKeyPress={(event) => {
-                  if (event.key === 'Enter') {
-                    event.preventDefault();
-                  }
-                }}
-              >
-                {months.slice(-3).includes(monthOfPayslips) &&
-                new Date().getFullYear().toString() === yearOfPayslips ? (
-                  <option>{new Date().getFullYear() - 1}</option>
-                ) : (
-                  getCurrentTwoYears().map((year) => (
-                    <option
-                      key={year}
-                      value={year}
-                      selected={year === new Date().getFullYear()}
-                      disabled={
-                        months.slice(0, 4).includes(monthOfPayslips) &&
-                        year < new Date().getFullYear()
-                      }
-                    >
-                      {year}
-                    </option>
-                  ))
-                )}
-              </select>
+                id="year"
+                className="largeContainerBulk"
+                onChange={(e) => handleYearChange(e ?? '')}
+                options={
+                  months.slice(-3).includes(monthOfPayslips) &&
+                  new Date().getFullYear().toString() === yearOfPayslips
+                    ? [
+                        {
+                          label: (new Date().getFullYear() - 1).toString(),
+                          value: (new Date().getFullYear() - 1).toString(),
+                        },
+                      ]
+                    : getCurrentTwoYears().map((year) => ({
+                        label: year.toString(),
+                        value: year.toString(),
+                        disabled:
+                          months.slice(0, 4).includes(monthOfPayslips) &&
+                          year < new Date().getFullYear(),
+                      }))
+                }
+              />
             </InputLabelContainer>
           </section>
 

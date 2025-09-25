@@ -32,6 +32,7 @@ import {
 import { hasPermission } from '../../utils/permissionCheck';
 import { noOfYearsExperience } from '../../utils/selectOptions';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
+import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 
 type AddNewApplicantProps = {
   isReferScreen: boolean;
@@ -161,8 +162,28 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       setApiLoading(true);
       try {
         const response = await getOrganizationValuesByKey('jobTitles');
-        setJobTitles(response.data);
+        const data = response?.data;
+
+        if (!data || !Array.isArray(data.values)) {
+          setJobTitles({
+            organizationId: '',
+            key: 'jobTitles',
+            values: [],
+          });
+        } else {
+          setJobTitles(data);
+          if (data.values.length === 0) {
+            toast.info(
+              t('Job Titles is empty, Please update in Orginazation Settings')
+            );
+          }
+        }
       } catch {
+        setJobTitles({
+          organizationId: '',
+          key: 'jobTitles',
+          values: [],
+        });
         toast.error(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
       } finally {
         setApiLoading(false);
@@ -296,46 +317,54 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     {t('POSITION_APPLIED_FOR')}{' '}
                     <ValidationText className="star">*</ValidationText>
                   </label>
-                  <select
-                    className="selectoption"
+                  <DropdownMenu
+                    className="largeContainerBulk"
                     name="positionAppliedFor"
                     id="positionAppliedFor"
-                    onChange={handleChange}
-                    required
-                    onKeyPress={(event) => {
-                      if (event.key === 'Enter') {
-                        event.preventDefault();
-                      }
-                    }}
-                  >
-                    <option value="">Select Position</option>
-                    {jobTitles?.values.map((position, index) => (
-                      <option key={index} value={position.value}>
-                        {position.value}
-                      </option>
-                    ))}
-                  </select>
+                    label="Select Position"
+                    onChange={(val) =>
+                      handleChange({
+                        target: {
+                          name: 'positionAppliedFor',
+                          value: val,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>)
+                    }
+                    disabled={
+                      !jobTitles?.values || jobTitles.values.length === 0
+                    }
+                    options={[
+                      { label: 'Select Position', value: '' },
+                      ...(jobTitles?.values?.map((position) => ({
+                        label: position.value,
+                        value: position.value,
+                      })) ?? []),
+                    ]}
+                  />
                 </InputLabelContainer>
                 <InputLabelContainer>
                   <label>{t('EXPERIENCE')}</label>
-                  <select
-                    className="selectoption"
+                  <DropdownMenu
+                    className="largeContainerBulk"
+                    label="Select Experience"
                     name="experience"
                     id="experience"
-                    onChange={handleChange}
-                    onKeyPress={(event) => {
-                      if (event.key === 'Enter') {
-                        event.preventDefault();
-                      }
-                    }}
-                  >
-                    <option value="">Select Experience</option>
-                    {noOfYearsExperience.map((number) => (
-                      <option key={number} value={number}>
-                        {number}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(val) =>
+                      handleChange({
+                        target: {
+                          name: 'experience',
+                          value: val,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>)
+                    }
+                    options={[
+                      { label: 'Select Experience', value: '' },
+                      ...noOfYearsExperience.map((number) => ({
+                        label: number,
+                        value: number,
+                      })),
+                    ]}
+                  />
                 </InputLabelContainer>
               </div>
 

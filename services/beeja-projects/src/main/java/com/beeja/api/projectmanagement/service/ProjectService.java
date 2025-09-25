@@ -1,7 +1,14 @@
 package com.beeja.api.projectmanagement.service;
 
+import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
+import com.beeja.api.projectmanagement.model.dto.EmployeeNameDTO;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
+import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
+import com.beeja.api.projectmanagement.responses.ProjectEmployeeDTO;
+import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 /** Service interface for managing {@link Project} entities. */
@@ -22,7 +29,7 @@ public interface ProjectService {
    * @param clientId the unique identifier of the client
    * @return the {@link Project} object corresponding to the given project ID and client ID
    */
-  Project getProjectByIdAndClientId(String projectId, String clientId);
+  ProjectDetailViewResponseDTO getProjectByIdAndClientId(String projectId, String clientId);
 
   /**
    * Retrieves a list of projects associated with a given client within an organization.
@@ -37,7 +44,10 @@ public interface ProjectService {
    *
    * @return a list of all {@link Project} objects within the organization
    */
-  List<Project> getAllProjectsInOrganization();
+  List<Project> getAllProjectsInOrganization(String organizationId, int pageNumber, int pageSize, String projectId, ProjectStatus status);
+
+  Long getTotalProjectsInOrganization(String organizationId, String projectId, ProjectStatus status);
+
 
   /**
    * Updates an existing project based on the provided project ID and project request.
@@ -47,4 +57,11 @@ public interface ProjectService {
    * @return the updated {@link Project} object
    */
   Project updateProjectByProjectId(ProjectRequest project, String projectId);
+
+  Project changeProjectStatus(String projectId, ProjectStatus status);
+
+  List<ProjectResponseDTO> getAllProjects(String organizationId, int pageNumber, int pageSize, String projectId, ProjectStatus status);
+
+    ProjectEmployeeDTO getEmployeesByProjectId(String projectId);
+
 }

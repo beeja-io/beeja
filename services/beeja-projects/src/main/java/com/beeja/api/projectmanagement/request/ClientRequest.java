@@ -35,9 +35,10 @@ public class ClientRequest {
   private Address primaryAddress;
 
   private Address billingAddress;
-  private boolean usePrimaryAsBillingAddress = true;
+  private boolean usePrimaryAsBillingAddress = false;
 
   private Industry industry;
   private String description;
   private MultipartFile logo;
+  private boolean removeLogo = false;
 }

@@ -21,6 +21,7 @@ import LoanPreview from '../directComponents/LoanPreview.component';
 import { Loan } from '../../entities/LoanEntity';
 import { LOAN_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 type LoanListViewProps = {
   handleIsApplyLoanScreen: () => void;
@@ -80,6 +81,27 @@ const LoanListView = (props: LoanListViewProps) => {
     fetchLoans();
   }, [user, fetchLoans]);
 
+  useEffect(() => {
+    if (isLoanPreviewModalOpen) {
+      disableBodyScroll();
+    } else {
+      enableBodyScroll();
+    }
+    return () => {
+      enableBodyScroll();
+    };
+  }, [isLoanPreviewModalOpen]);
+
+  const sortedLoans = [...loansList].sort((a, b) => {
+    const dateA = a.requestedDate
+      ? new Date(a.requestedDate).getTime()
+      : new Date(a.createdAt).getTime();
+    const dateB = b.requestedDate
+      ? new Date(b.requestedDate).getTime()
+      : new Date(b.createdAt).getTime();
+    return dateB - dateA;
+  });
+
   return (
     <>
       <PayrollMainContainer>
@@ -126,7 +148,7 @@ const LoanListView = (props: LoanListViewProps) => {
               </TableHead>
               <tbody>
                 {loansList &&
-                  loansList.map((loan: any, index: any) => (
+                  sortedLoans.map((loan: any, index: any) => (
                     <TableBodyRow key={index}>
                       <td
                         onClick={() => {
@@ -143,11 +165,14 @@ const LoanListView = (props: LoanListViewProps) => {
                         }}
                       >
                         <div>
-                          {loan.employeeName || 'Unknown'}
+                          {loan.employeeName ||
+                            `${user?.firstName || ''} ${user?.lastName || ''}` ||
+                            'Unknown'}
                           {user &&
-                            hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) && (
+                            (hasPermission(user, LOAN_MODULE.GET_ALL_LOANS) ||
+                              hasPermission(user, LOAN_MODULE.READ_LOAN)) && (
                               <div style={{ color: '#666', fontSize: '0.8em' }}>
-                                {loan.employeeId}
+                                {loan.employeeId || user?.employeeId}
                               </div>
                             )}
                         </div>

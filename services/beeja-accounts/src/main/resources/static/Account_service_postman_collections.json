@@ -543,7 +543,7 @@
 						"header": [
 							{
 								"key": "accessToken",
-								"value": "Bearer ya29.a0AfB_byAcwxp_MxSrtMFHNCUVdtxmEK00Wqe2zhqCFmu7ouNDNbJsKKRlhTCqMRnkLNtHuMkquewdtqPMwBG0HLqPMWws_BMkF7S_zPLAj-DA5at8pTg8_oAEp0Q5isv1kCx7MdUEd78v03GN42Z3oEszgDp3MI8dt8MaCgYKAYUSARESFQGOcNnCNr8epVfGp-u0pcbpOO4sHQ0170",
+								"value": "Bearer PLACE_ACTUAL_TOKEN",
 								"type": "text",
 								"disabled": true
 							}
