@@ -344,7 +344,7 @@ export const CompanyProfile = () => {
         !isValidLINNumber(updatedOrganization.accounts.linNumber.toUpperCase())
       ) {
         setLINError(
-          'LIN number must be a 10-digit numeric value, Ex: 1234567890'
+          'LIN number must be a 17-digit numeric value, Ex: 12345678901234567'
         );
         hasErrors = true;
       } else {
@@ -1047,7 +1047,7 @@ export const CompanyProfile = () => {
                 onChange={handleInputChange}
                 disabled={!isEditModeOn}
                 autoComplete="off"
-                maxLength={10}
+                maxLength={17}
                 onKeyDown={(event) => {
                   const allowedCharacters = /^[0-9]+$/;
                   if (
@@ -1063,7 +1063,7 @@ export const CompanyProfile = () => {
                   }
                   if (
                     companyProfile.accounts &&
-                    companyProfile.accounts.linNumber.toString().length >= 10 &&
+                    companyProfile.accounts.linNumber.toString().length >= 17 &&
                     event.key !== 'Backspace' &&
                     event.key !== 'ArrowLeft' &&
                     event.key !== 'ArrowRight'
@@ -1163,7 +1163,17 @@ export const CompanyProfile = () => {
                 value={companyProfile.bankDetails?.bankName || ''}
                 onChange={handleInputChange}
                 disabled={!isBankEditModeOn}
+                maxLength={50}
                 autoComplete="off"
+                onKeyDown={(event) => {
+                  const allowedCharacters = /^[A-Za-z\s]$/;
+                  if (
+                    !allowedCharacters.test(event.key) &&
+                    event.key !== 'Backspace'
+                  ) {
+                    event.preventDefault();
+                  }
+                }}
               />
               {bankNameError.length > 1 && (
                 <span style={{ color: 'red' }}>{bankNameError}</span>
@@ -1182,6 +1192,16 @@ export const CompanyProfile = () => {
                 }
                 value={companyProfile.bankDetails?.accountName || ''}
                 onChange={handleInputChange}
+                onKeyDown={(event) => {
+                  const allowedCharacters = /^[A-Za-z&.\s]$/;
+                  if (
+                    !allowedCharacters.test(event.key) &&
+                    event.key !== 'Backspace'
+                  ) {
+                    event.preventDefault();
+                  }
+                }}
+                maxLength={50}
                 disabled={!isBankEditModeOn}
                 autoComplete="off"
               />
