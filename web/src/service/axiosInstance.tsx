@@ -303,13 +303,13 @@ export const getClient = (id: string): Promise<AxiosResponse> => {
 
 export const getAllClient = (
   pageNumber: number,
-  pageSize: number,
+  pageSize: number
 ): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/projects/v1/clients`,{
+  return axiosInstance.get(`/projects/v1/clients`, {
     params: {
       pageNumber,
       pageSize,
-    },    
+    },
   });
 };
 
@@ -378,13 +378,13 @@ export const getProject = (
 
 export const getAllContracts = (
   pageNumber: number,
-  pageSize: number,
+  pageSize: number
 ): Promise<AxiosResponse<any>> => {
-  return axiosInstance.get(`/projects/v1/contracts`,{
+  return axiosInstance.get(`/projects/v1/contracts`, {
     params: {
       pageNumber,
-      pageSize
-    }
+      pageSize,
+    },
   });
 };
 

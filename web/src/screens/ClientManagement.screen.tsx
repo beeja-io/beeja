@@ -104,7 +104,7 @@ const ClientManagement = () => {
       setLoading(false);
       toast.error('Error fetching client data');
     }
-  }, [currentPage,itemsPerPage]);
+  }, [currentPage, itemsPerPage]);
   useEffect(() => {
     fetchData();
   }, [fetchData]);

@@ -16,16 +16,9 @@ import {
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter, removeUnderScore } from '../utils/stringUtils';
 import Pagination from '../components/directComponents/Pagination.component';
-import { useOutletContext } from "react-router-dom";
+import { Client } from '../entities/ClientEntity';
 
-interface Client {
-  clientId: string;
-  clientName: string;
-  clientType: string;
-  organizationId: string;
-  id: string;
-}
-type ClientOutletContext = {
+export type ClientListProps = {
   clientList: Client[];
   updateClientList: () => void;
   isLoading: boolean;
@@ -37,18 +30,17 @@ type ClientOutletContext = {
   setItemsPerPage: (size: number) => void;
 };
 
-const ClientList = () => {
-  const {
-    clientList,
-    updateClientList,
-    isLoading,
-    onEditClient,
-    totalItems,
-    currentPage,
-    setCurrentPage,
-    itemsPerPage,
-    setItemsPerPage,
-  } = useOutletContext<ClientOutletContext>();
+const ClientList = ({
+  clientList,
+  updateClientList,
+  isLoading,
+  onEditClient,
+  totalItems,
+  currentPage,
+  setCurrentPage,
+  itemsPerPage,
+  setItemsPerPage,
+}: ClientListProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -68,7 +60,7 @@ const ClientList = () => {
   const handleClientClick = (id: string) => {
     navigate(`/clients/client-management/${id}`);
   };
-    const handlePageChange = (newPage: number) => {
+  const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
   };
 

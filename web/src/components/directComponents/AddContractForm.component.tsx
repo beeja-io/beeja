@@ -113,6 +113,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   handleSuccessMessage,
   initialData,
 }) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<ContractFormData>({
     contractTitle: '',
@@ -167,7 +168,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   const [isProjectLoading, setIsProjectLoading] = useState(false);
 
   useEffect(() => {
-    getAllProjects()
+    // Provide default values for pageNumber and pageSize, e.g. 1 and 10
+    getAllProjects(1, 10)
       .then((response) => {
         const data = response.data.projects;
 
@@ -181,7 +183,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         setProjectOptions([]);
         toast.error(t('Failed to fetch project list.') + error);
       });
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     getResourceManager()
@@ -373,7 +375,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const { t } = useTranslation();
   const isFormReady =
     !initialData ||
     (initialData &&
