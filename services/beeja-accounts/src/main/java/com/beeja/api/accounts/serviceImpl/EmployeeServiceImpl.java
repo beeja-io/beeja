@@ -501,6 +501,7 @@ public class EmployeeServiceImpl implements EmployeeService {
   @Override
   public String changeEmailAndPassword(
       ChangeEmailAndPasswordRequest changeEmailAndPasswordRequest) {
+
     User user =
         userRepository.findByEmailAndOrganizations(
             UserContext.getLoggedInUserEmail(), UserContext.getLoggedInUserOrganization());
@@ -601,5 +602,4 @@ public class EmployeeServiceImpl implements EmployeeService {
                     emp.isActive()))
             .collect(Collectors.toList());
   }
-
 }

@@ -96,21 +96,26 @@ class HealthInsuranceControllerTest {
 
   @Test
   public void testSubmitHealthInsuranceCreationException() throws Exception {
+    // Arrange
     HealthInsuranceRequest healthInsuranceRequest = new HealthInsuranceRequest();
     when(bindingResult.hasErrors()).thenReturn(false);
+
     doThrow(new HealthInsuranceCreationException("Creation failed"))
-        .when(healthInsuranceService)
-        .saveHealthInsurance(any());
-    Exception exception =
-        assertThrows(
+            .when(healthInsuranceService)
+            .saveHealthInsurance(any());
+
+    // Act & Assert
+    Exception exception = assertThrows(
             HealthInsuranceCreationException.class,
-            () -> {
-              healthInsuranceController.submitHealthInsurance(
-                  healthInsuranceRequest, bindingResult);
-            });
+            () -> healthInsuranceController.submitHealthInsurance(healthInsuranceRequest, bindingResult)
+    );
+
     assertEquals("Creation failed", exception.getMessage());
     verify(healthInsuranceService).saveHealthInsurance(any());
   }
+
+
+
 
   @Test
   public void testSubmitHealthInsuranceGeneralException() throws Exception {
@@ -165,16 +170,18 @@ class HealthInsuranceControllerTest {
   @Test
   public void testDeleteHealthInsurance_NotFound() throws Exception {
     String employeeID = "123";
+
     when(healthInsuranceService.deleteByEmployeeIdAndOrganizationId(employeeID))
-        .thenThrow(new HealthInsuranceNotFoundException("Health insurance not found"));
+            .thenThrow(new HealthInsuranceNotFoundException("Health insurance not found"));
+
     HealthInsuranceNotFoundException exception =
-        assertThrows(
-            HealthInsuranceNotFoundException.class,
-            () -> {
-              healthInsuranceController.deleteHealthInsurance(employeeID);
-            });
+            assertThrows(
+                    HealthInsuranceNotFoundException.class,
+                    () -> healthInsuranceController.deleteHealthInsurance(employeeID));
+
     assertEquals("Health insurance not found", exception.getMessage());
   }
+
 
   @Test
   public void testUpdateHealthInsurance_Success() throws Exception {
