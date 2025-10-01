@@ -255,11 +255,11 @@ public class ContractServiceImpl implements ContractService {
 
               List<String> validatedEmployeeIds = projectServiceImpl.validateAndFetchEmployees(employeeIds);
 
-              List<ResourceAllocation> validProjectResources = request.getProjectResources().stream()
+              List<Object> validProjectResources = request.getProjectResources().stream()
                       .filter(resource -> validatedEmployeeIds.contains(resource.getEmployeeId()))
                       .collect(Collectors.toList());
 
-              contract.setProjectResources(validProjectResources);
+              contract.setRawProjectResources(validProjectResources);
           } catch (FeignClientException e){
               log.error(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES,e.getMessage(), e);
               throw new FeignClientException(Constants.ERROR_IN_VALIDATE_PROJECT_RESOURCES);

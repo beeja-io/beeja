@@ -350,7 +350,7 @@ const InventoryList = ({
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody="THE_INVENTORY_HAS_BEEN_ADDED"
+          messageBody="THE_INVENTORY_HAS_BEEN_UPDATED"
           messageHeading="SUCCESSFULLY_UPDATED"
           handleClose={handleShowSuccessMessage}
         />
