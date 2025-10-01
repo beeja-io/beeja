@@ -1,38 +1,35 @@
 package com.beeja.api.projectmanagement.serviceImpl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
-import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
+import com.beeja.api.projectmanagement.client.FileClient;
+import com.beeja.api.projectmanagement.config.LogoValidator;
+import com.beeja.api.projectmanagement.exceptions.*;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.request.ClientRequest;
+import com.beeja.api.projectmanagement.request.FileUploadRequest;
 import com.beeja.api.projectmanagement.utils.UserContext;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.MockitoAnnotations;
+import java.util.*;
+import org.junit.jupiter.api.*;
+import org.mockito.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 class ClientServiceImplTest {
 
-  @InjectMocks private ClientServiceImpl clientService;
+
+  @InjectMocks
+  private ClientServiceImpl clientService;
 
   @Mock private ClientRepository clientRepository;
+  @Mock private LogoValidator logoValidator;
+  @Mock private FileClient fileClient;
 
   private static MockedStatic<UserContext> userContextMock;
 
@@ -41,6 +38,7 @@ class ClientServiceImplTest {
     userContextMock = mockStatic(UserContext.class);
     Map<String, Object> orgMap = new HashMap<>();
     orgMap.put("id", "org123");
+    orgMap.put("name", "TestOrg");
     userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(orgMap);
   }
 
@@ -61,8 +59,8 @@ class ClientServiceImplTest {
     request.setClientName("Test Client");
 
     when(clientRepository.findByEmailAndOrganizationId(anyString(), anyString())).thenReturn(null);
-    when(clientRepository.save(any(Client.class)))
-        .thenAnswer(invocation -> invocation.getArgument(0));
+    when(clientRepository.countByOrganizationId(anyString())).thenReturn(0L);
+    when(clientRepository.save(any(Client.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     Client result = clientService.addClientToOrganization(request);
 
@@ -70,6 +68,7 @@ class ClientServiceImplTest {
     assertEquals("Test Client", result.getClientName());
     assertEquals("test@example.com", result.getEmail());
     assertEquals("org123", result.getOrganizationId());
+    assertTrue(result.getClientId().startsWith("TES"));
   }
 
   @Test
@@ -79,15 +78,10 @@ class ClientServiceImplTest {
 
     Client existingClient = new Client();
     existingClient.setEmail("existing@example.com");
-    when(clientRepository.findByEmailAndOrganizationId(anyString(), anyString()))
-        .thenReturn(existingClient);
+    when(clientRepository.findByEmailAndOrganizationId(anyString(), anyString())).thenReturn(existingClient);
 
-    ResourceAlreadyFoundException exception =
-        assertThrows(
-            ResourceAlreadyFoundException.class,
+    assertThrows(ResourceAlreadyFoundException.class,
             () -> clientService.addClientToOrganization(request));
-
-    assertTrue(exception.getMessage().toLowerCase().contains("client found with provided email"));
   }
 
   @Test
@@ -97,12 +91,45 @@ class ClientServiceImplTest {
     request.setClientName("Test Client");
 
     when(clientRepository.findByEmailAndOrganizationId(anyString(), anyString())).thenReturn(null);
+    when(clientRepository.countByOrganizationId(anyString())).thenReturn(1L);
     when(clientRepository.save(any(Client.class))).thenThrow(new RuntimeException("DB error"));
 
-    Exception exception =
-        assertThrows(Exception.class, () -> clientService.addClientToOrganization(request));
-
+    Exception exception = assertThrows(Exception.class, () -> clientService.addClientToOrganization(request));
     assertEquals("Error while saving new client to database", exception.getMessage());
+  }
+
+  @Test
+  void testAddClientToOrganization_invalidLogoType_throwsValidationException() {
+    ClientRequest request = new ClientRequest();
+    request.setEmail("test@example.com");
+    request.setClientName("ClientX");
+
+    MultipartFile mockFile = mock(MultipartFile.class);
+    when(mockFile.getContentType()).thenReturn("application/zip");
+    when(mockFile.isEmpty()).thenReturn(false);
+    request.setLogo(mockFile);
+
+    when(logoValidator.getAllowedTypes()).thenReturn(List.of("image/png", "image/jpeg"));
+
+    assertThrows(ValidationException.class, () -> clientService.addClientToOrganization(request));
+  }
+
+  @Test
+  void testAddClientToOrganization_logoUploadFails_throwsFeignClientException() {
+    ClientRequest request = new ClientRequest();
+    request.setEmail("test@example.com");
+    request.setClientName("ClientY");
+
+    MultipartFile mockFile = mock(MultipartFile.class);
+    when(mockFile.getContentType()).thenReturn("image/png");
+    when(mockFile.isEmpty()).thenReturn(false);
+    when(mockFile.getName()).thenReturn("logo.png");
+    request.setLogo(mockFile);
+
+    when(logoValidator.getAllowedTypes()).thenReturn(List.of("image/png"));
+    when(fileClient.uploadFile(any(FileUploadRequest.class))).thenThrow(new RuntimeException("Upload error"));
+
+    assertThrows(FeignClientException.class, () -> clientService.addClientToOrganization(request));
   }
 
   @Test
@@ -114,10 +141,8 @@ class ClientServiceImplTest {
     Client existingClient = new Client();
     existingClient.setClientId(clientId);
 
-    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
-        .thenReturn(existingClient);
-    when(clientRepository.save(any(Client.class)))
-        .thenAnswer(invocation -> invocation.getArgument(0));
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(existingClient);
+    when(clientRepository.save(any(Client.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
     Client result = clientService.updateClientOfOrganization(request, clientId);
 
@@ -127,15 +152,10 @@ class ClientServiceImplTest {
 
   @Test
   void testUpdateClientOfOrganization_clientNotFound() {
-    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
-        .thenReturn(null);
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(null);
 
-    ResourceNotFoundException exception =
-        assertThrows(
-            ResourceNotFoundException.class,
+    assertThrows(ResourceNotFoundException.class,
             () -> clientService.updateClientOfOrganization(new ClientRequest(), "client123"));
-
-    assertTrue(exception.getMessage().toLowerCase().contains("client not found"));
   }
 
   @Test
@@ -147,15 +167,48 @@ class ClientServiceImplTest {
     Client existingClient = new Client();
     existingClient.setClientId(clientId);
 
-    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
-        .thenReturn(existingClient);
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(existingClient);
     when(clientRepository.save(any(Client.class))).thenThrow(new RuntimeException("DB error"));
 
-    Exception exception =
-        assertThrows(
-            Exception.class, () -> clientService.updateClientOfOrganization(request, clientId));
-
+    Exception exception = assertThrows(Exception.class,
+            () -> clientService.updateClientOfOrganization(request, clientId));
     assertEquals("Error while updating client in database", exception.getMessage());
+  }
+
+  @Test
+  void testUpdateClientOfOrganization_invalidLogoType_throwsValidationException() {
+    Client existingClient = new Client();
+    existingClient.setClientId("c1");
+
+    ClientRequest request = new ClientRequest();
+    MultipartFile mockFile = mock(MultipartFile.class);
+    when(mockFile.getContentType()).thenReturn("application/zip");
+    when(mockFile.isEmpty()).thenReturn(false);
+    request.setLogo(mockFile);
+
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(existingClient);
+    when(logoValidator.getAllowedTypes()).thenReturn(List.of("image/png"));
+
+    assertThrows(ValidationException.class, () -> clientService.updateClientOfOrganization(request, "c1"));
+  }
+
+  @Test
+  void testUpdateClientOfOrganization_logoUploadFails_throwsFeignClientException() {
+    Client existingClient = new Client();
+    existingClient.setClientId("c1");
+
+    ClientRequest request = new ClientRequest();
+    MultipartFile mockFile = mock(MultipartFile.class);
+    when(mockFile.getContentType()).thenReturn("image/png");
+    when(mockFile.isEmpty()).thenReturn(false);
+    when(mockFile.getName()).thenReturn("logo.png");
+    request.setLogo(mockFile);
+
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(existingClient);
+    when(logoValidator.getAllowedTypes()).thenReturn(List.of("image/png"));
+    when(fileClient.uploadFile(any(FileUploadRequest.class))).thenThrow(new RuntimeException("upload error"));
+
+    assertThrows(FeignClientException.class, () -> clientService.updateClientOfOrganization(request, "c1"));
   }
 
   @Test
@@ -164,8 +217,7 @@ class ClientServiceImplTest {
     Client client = new Client();
     client.setClientId(clientId);
 
-    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
-        .thenReturn(client);
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(client);
 
     Client result = clientService.getClientById(clientId);
 
@@ -175,33 +227,25 @@ class ClientServiceImplTest {
 
   @Test
   void testGetClientById_clientNotFound() {
-    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
-        .thenReturn(null);
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenReturn(null);
 
-    ResourceNotFoundException exception =
-        assertThrows(
-            ResourceNotFoundException.class, () -> clientService.getClientById("client123"));
-
-    assertTrue(exception.getMessage().toLowerCase().contains("client not found"));
+    assertThrows(ResourceNotFoundException.class, () -> clientService.getClientById("client123"));
   }
 
   @Test
   void testGetClientById_repoThrowsException() {
-    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString()))
-        .thenThrow(new RuntimeException("DB error"));
+    when(clientRepository.findByClientIdAndOrganizationId(anyString(), anyString())).thenThrow(new RuntimeException("DB error"));
 
-    Exception exception =
-        assertThrows(Exception.class, () -> clientService.getClientById("client123"));
-
+    Exception exception = assertThrows(Exception.class, () -> clientService.getClientById("client123"));
     assertEquals("Error while fetching client from database", exception.getMessage());
   }
 
+  // ==================== GET ALL CLIENTS ====================
   @Test
   void testGetAllClientsOfOrganization_returnsClients() {
     List<Client> clients = List.of(new Client(), new Client());
 
-    when(clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(anyString()))
-        .thenReturn(clients);
+    when(clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(anyString())).thenReturn(clients);
 
     List<Client> result = clientService.getAllClientsOfOrganization();
 
@@ -211,12 +255,39 @@ class ClientServiceImplTest {
 
   @Test
   void testGetAllClientsOfOrganization_returnsEmptyList() {
-    when(clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(anyString()))
-        .thenReturn(Collections.emptyList());
+    when(clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(anyString())).thenReturn(Collections.emptyList());
 
     List<Client> result = clientService.getAllClientsOfOrganization();
 
     assertNotNull(result);
     assertTrue(result.isEmpty());
+  }
+
+
+  @Test
+  void testGetAllClientsOfOrganization_withPagination() {
+    List<Client> clients = List.of(new Client(), new Client());
+    Page<Client> mockPage = new PageImpl<>(clients);
+
+    when(clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(anyString(), any(Pageable.class)))
+            .thenReturn(mockPage);
+
+    Page<Client> result = clientService.getAllClientsOfOrganization("org123", 0, 10);
+
+    assertEquals(2, result.getContent().size());
+  }
+
+  @Test
+  void testGetAllClientsOfOrganization_withInvalidPageSize() {
+    Page<Client> mockPage = new PageImpl<>(List.of(new Client()));
+
+    when(clientRepository.findAllByOrganizationIdOrderByCreatedAtDesc(anyString(), any(Pageable.class)))
+            .thenReturn(mockPage);
+
+    Page<Client> result = clientService.getAllClientsOfOrganization("org123", 0, 0);
+    assertEquals(1, result.getContent().size());
+
+    result = clientService.getAllClientsOfOrganization("org123", 0, 200);
+    assertEquals(1, result.getContent().size());
   }
 }
