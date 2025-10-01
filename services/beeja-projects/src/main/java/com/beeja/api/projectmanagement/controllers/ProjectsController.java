@@ -70,9 +70,9 @@ public class ProjectsController {
    */
   @GetMapping("/client/{clientId}")
   @HasPermission(PermissionConstants.GET_PROJECT)
-  public ResponseEntity<List<Project>> getProjectsByClientId(@PathVariable String clientId) {
-    List<Project> projects = projectService.getProjectsByClientIdInOrganization(clientId);
-    return ResponseEntity.ok(projects);
+  public ResponseEntity<List<ProjectResponseDTO>> getProjectsByClientId(@PathVariable String clientId) {
+      List<ProjectResponseDTO> projects = projectService.getProjectsByClientIdInOrganization(clientId);
+      return ResponseEntity.ok(projects);
   }
 
   /**
