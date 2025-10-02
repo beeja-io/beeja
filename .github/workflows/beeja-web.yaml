@@ -1,0 +1,74 @@
+name: Web Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'web/**'
+permissions:
+  contents: read
+jobs:
+  Web:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint code
+        run: |
+          cd web
+          pwd
+          npm run lint
+      
+      - name: Build frontend
+        run: |
+          cd web
+          npm run build
+
+  # # Image Build and Scanning
+  # trivy-image-scan:
+  #   permissions:
+  #     contents: read 
+  #     security-events: write
+
+  #   runs-on: ubuntu-24.04
+
+  #   steps:
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
+
+  #     - name: Set up Java
+  #       uses: actions/setup-java@v3
+  #       with:
+  #         java-version: '17'
+  #         distribution: 'temurin'
+
+  #     - name: Build Docker Image
+  #       working-directory: web
+  #       run: docker build -t web-app:1.0 .
+  #       env:
+  #         DOCKER_BUILDKIT: 1
+
+  #     - name: Trivy Image Scanning for Vulnarability
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         image-ref: web-app:1.0
+  #         format: 'sarif'
+  #         output: 'trivy-docker.sarif'
+  #         ignore-unfixed: true
+  #         severity: 'CRITICAL,HIGH'
+
+  #     - name: Upload Trivy scan results to GitHub Security tab
+  #       uses: github/codeql-action/upload-sarif@v3
+  #       with:
+  #         sarif_file: 'trivy-docker.sarif'
