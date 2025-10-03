@@ -141,6 +141,52 @@ export const downloadEmployeeFile = (
   });
 };
 
+export const fetchEmployeeHistory = (employeeId: string): Promise<any> => {
+  return axiosInstance
+    .get(`/employees/v1/users/${employeeId}/history`)
+    .then((res: AxiosResponse) => res.data);
+};
+
+export const addEmployeeHistory = (
+  employeeId: string,
+  data: {
+    designation: string;
+    employementType?: string;
+    department?: string;
+    joiningDate?: string;
+    resignationDate?: string;
+    description?: string;
+  }
+): Promise<any> => {
+  return axiosInstance
+    .post(`/employees/v1/users/${employeeId}/history`, data)
+    .then((res: AxiosResponse) => res.data);
+};
+
+export const updateEmployeeHistory = (
+  employeeId: string,
+  jobId:String,
+  data: {
+    designation: string;
+    employementType?: string;
+    department?: string;
+    joiningDate?: string; 
+    resignationDate?: string;
+    description?: string;
+  }
+): Promise<any> => {
+  return axiosInstance
+    .put(`/employees/v1/users/${employeeId}/history/${jobId}`, data)
+    .then((res: AxiosResponse) => res.data);
+};
+ 
+export const deleteEmployeeHistory = (
+  employeeId: string,
+  id:String
+): Promise<AxiosResponse> => {
+  return axiosInstance.delete(`/employees/v1/users/${employeeId}/history/${id}`);
+};
+
 export const getAllSettingTypes = (key: String): Promise<AxiosResponse> => {
   return axiosInstance.get(`/accounts/v1/organizations/values/${key}`);
 };
