@@ -172,7 +172,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     // Provide default values for pageNumber and pageSize, e.g. 1 and 10
     getAllProjects(1, 10)
       .then((response) => {
-        const data = response.data.projects;
+        const data = response.data.data;
 
         if (Array.isArray(data)) {
           setProjectOptions(data);
