@@ -56,15 +56,7 @@ import com.beeja.api.employeemanagement.utils.UserContext;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -527,6 +519,27 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingJobDetails = new JobDetails();
         existingEmployee.setJobDetails(existingJobDetails);
       }
+      existingJobDetails.setUpdatedAt(new Date());
+      existingJobDetails.setUpdatedBy(UserContext.getLoggedInUserName());
+      if (updatedJobDetails.getEmployementType() != null &&
+              !updatedJobDetails.getEmployementType().equals(existingJobDetails.getEmployementType())) {
+
+        if (existingEmployee.getJobHistory() == null) {
+          existingEmployee.setJobHistory(new ArrayList<>());
+        }
+        JobDetails historyJob = new JobDetails();
+        historyJob.setDesignation(existingJobDetails.getDesignation());
+        historyJob.setEmployementType(existingJobDetails.getEmployementType());
+        historyJob.setDepartment(existingJobDetails.getDepartment());
+        historyJob.setJoiningDate(existingJobDetails.getJoiningDate());
+        historyJob.setResignationDate(new Date());
+        historyJob.setDescription(existingJobDetails.getDescription());
+        historyJob.setUpdatedBy(existingJobDetails.getUpdatedBy());
+        historyJob.setUpdatedAt(existingJobDetails.getUpdatedAt());
+        historyJob.setId(UUID.randomUUID().toString());
+        historyJob.setUpdatedBy(UserContext.getLoggedInUserName());
+        existingEmployee.getJobHistory().add(historyJob);
+      }
 
       if (updatedJobDetails.getDesignation() != null) {
         existingJobDetails.setDesignation(updatedJobDetails.getDesignation());
@@ -935,4 +948,105 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     return "Duplicate entry found.";
   }
+
+  private Employee getEmployeeById(String employeeId) throws Exception {
+    return employeeRepository.findByEmployeeId(employeeId)
+            .orElseThrow(() -> new Exception("Employee not found with id: " + employeeId));
+  }
+
+  private void validateJobDetails(JobDetails job) throws Exception {
+    if (job.getDesignation() == null || job.getDesignation().isBlank()) {
+      throw new Exception("Designation is mandatory");
+    }
+    if (job.getEmployementType() == null || job.getEmployementType().isBlank()) {
+      throw new Exception("Employment type is mandatory");
+    }
+    if (job.getJoiningDate() == null) {
+      throw new Exception("Joining date is mandatory");
+    }
+    if (job.getResignationDate() == null) {
+      throw new Exception("Resignation date is mandatory");
+    }
+  }
+
+  @Override
+  public Employee addJobHistory(String employeeId, JobDetails newJob) throws Exception {
+    Employee employee = getEmployeeById(employeeId);
+
+    newJob.setUpdatedBy(UserContext.getLoggedInUserName());
+    validateJobDetails(newJob);
+
+    if (employee.getJobHistory() == null) {
+      employee.setJobHistory(new ArrayList<>());
+    }
+
+    newJob.setUpdatedAt(new Date());
+    newJob.setId(UUID.randomUUID().toString());
+
+    employee.getJobHistory().add(newJob);
+
+    return employeeRepository.save(employee);
+  }
+
+  @Override
+  public Employee updateJobHistory(String employeeId, String jobId, JobDetails updatedJob) throws Exception {
+    Employee employee = getEmployeeById(employeeId);
+
+    if (employee.getJobHistory() == null || employee.getJobHistory().isEmpty()) {
+      throw new Exception("Job history is empty");
+    }
+
+    int jobIndex = -1;
+    for (int i = 0; i < employee.getJobHistory().size(); i++) {
+      if (employee.getJobHistory().get(i).getId().equals(jobId)) {
+        jobIndex = i;
+        break;
+      }
+    }
+
+    if (jobIndex == -1) {
+      throw new Exception("Job history not found with id: " + jobId);
+    }
+
+    updatedJob.setUpdatedAt(new Date());
+    validateJobDetails(updatedJob);
+    updatedJob.setId(jobId);
+    updatedJob.setUpdatedBy(UserContext.getLoggedInUserName());
+    employee.getJobHistory().set(jobIndex, updatedJob);
+
+    return employeeRepository.save(employee);
+  }
+
+  @Override
+  public Employee deleteJobHistory(String employeeId, String jobId) throws Exception {
+    Employee employee = getEmployeeById(employeeId);
+
+    JobDetails jobToRemove = employee.getJobHistory()
+            .stream()
+            .filter(job -> job.getId()!=null && job.getId().equals(jobId) )
+            .findFirst()
+            .orElseThrow(() -> new Exception("Job history not found with id: " + jobId));
+
+    employee.getJobHistory().remove(jobToRemove);
+
+    return employeeRepository.save(employee);
+  }
+
+  @Override
+  public List<JobDetails> getJobHistory(String employeeId) throws Exception {
+    Employee employee = getEmployeeById(employeeId);
+
+    List<JobDetails> history = new ArrayList<>();
+
+    if (employee.getJobHistory() != null && !employee.getJobHistory().isEmpty()) {
+      history.addAll(employee.getJobHistory());
+    }
+    if (employee.getJobDetails() != null) {
+      employee.getJobDetails().setId(UUID.randomUUID().toString());
+      employee.getJobDetails().setResignationDate(null);
+      history.add(employee.getJobDetails());
+    }
+    return history;
+  }
+
 }

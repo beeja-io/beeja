@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,6 +38,7 @@ public class Employee {
   private PersonalInformation personalInformation;
   private Contact contact;
   private JobDetails jobDetails;
+  private List<JobDetails> jobHistory;
   private String position;
   private PFDetails pfDetails;
   private KYCDetails kycDetails;
