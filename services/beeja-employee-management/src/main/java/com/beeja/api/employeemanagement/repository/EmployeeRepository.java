@@ -3,6 +3,8 @@ package com.beeja.api.employeemanagement.repository;
 import com.beeja.api.employeemanagement.model.Employee;
 import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -36,4 +38,5 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
 
  List<Employee> findAllByOrganizationIdAndJobDetailsDesignationIn(String organizationId, List<String> designations);
 
+ Optional<Employee> findByEmployeeId(String employeeId);
 }
