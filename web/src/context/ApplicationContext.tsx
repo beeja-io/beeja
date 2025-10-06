@@ -83,7 +83,7 @@ export const ApplicationContextProvider: React.FC<{ children: ReactNode }> = ({
           : undefined;
 
         setOrganizationDetails({
-          taxId: orgData.accounts?.taxId,
+          taxId: orgData.accounts?.taxNumber,
           currencyType: orgData.preferences?.currencyType,
           name: orgData.name,
           address: contextAddress,

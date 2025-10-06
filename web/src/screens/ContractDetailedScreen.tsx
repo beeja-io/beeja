@@ -147,12 +147,10 @@ const ContractDetailsScreen: React.FC = () => {
     if (!isCreateModalOpen) {
       setIsLoading(true);
       try {
-        const response = await generateInvoiceIdentifiers({ contractId });
+        const response = await generateInvoiceIdentifiers(contractId);
         setGeneratedInvoiceData(response.data);
         setIsCreateModalOpen(true);
       } catch (error) {
-        // eslint-disable-next-line no-console
-        console.log('errr');
         setGeneratedInvoiceData(null);
       } finally {
         setIsLoading(false);
@@ -244,6 +242,7 @@ const ContractDetailsScreen: React.FC = () => {
             contractId={contract?.contractId}
             rawProjectResources={contract?.rawProjectResources}
             description={contract?.description || ''}
+            contractName={contract?.contractTitle}
           />
         )}
         <TableContainer />
@@ -325,15 +324,16 @@ const ContractDetailsScreen: React.FC = () => {
                 generatedInvoiceData?.remittanceReferenceNumber
               }
               contractId={contractId ?? ''}
-              contractTitle={contractDetails?.contractTitle}
+              contractTitle={contract?.contractTitle}
               startDate={contractDetails?.startDate}
-              endDate={contractDetails?.endDate}
+              endDate={contract?.endDate}
               billingAddress={clientDetails?.billingAddress}
               clientName={clientDetails?.clientName}
               organizationId={contractDetails?.organizationId}
               projectId={projectId ?? undefined}
               status={project?.status}
               clientId={clientDetails?.clientId}
+              billingCurrency={contractDetails.billingCurrency}
             />
           }
         />

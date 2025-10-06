@@ -1,12 +1,12 @@
 interface Task {
-  name: string;
+  taskName: string;
   description: string;
   amount: number;
 }
 
 interface InvoicePeriod {
-  from: string;
-  to: string;
+  startDate: string;
+  endDate: string;
 }
 
 interface InvoiceRequest {
@@ -19,8 +19,10 @@ interface InvoiceRequest {
   clientId: string;
   projectId: string | null;
   remittanceRef: string | null;
+  invoiceId: string | null;
   vat: number;
   daysLeftForPayment: string;
   invoicePeriod: InvoicePeriod;
-  currencyType: string;
+  currency: string;
+  taxId: string | null;
 }

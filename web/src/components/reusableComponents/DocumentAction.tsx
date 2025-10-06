@@ -16,7 +16,9 @@ import { useUser } from '../../context/UserContext';
 import { FileEntity } from '../../entities/FileEntity';
 import {
   deleteEmployeeFile,
+  deleteContractFile,
   downloadEmployeeFile,
+  downloadContractFile,
 } from '../../service/axiosInstance';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import {
@@ -140,11 +142,12 @@ export const DocumentAction: React.FC<ActionProps> = ({
   const deleteFile = async (fileId: string) => {
     setIsLoading(true);
     try {
-      // Delete the file on the server
-      await deleteEmployeeFile(fileId);
-      // Update the list of files
+      if (file.entityType === 'invoice') {
+        await deleteContractFile(fileId);
+      } else {
+        await deleteEmployeeFile(fileId);
+      }
       fetchFiles();
-      setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       throw new Error('Error deleting file: ' + error);
@@ -194,7 +197,10 @@ export const DocumentAction: React.FC<ActionProps> = ({
     fileExtension: string
   ) => {
     try {
-      const response = await downloadEmployeeFile(fileId);
+      const response =
+        file.entityType === 'invoice'
+          ? await downloadContractFile(fileId)
+          : await downloadEmployeeFile(fileId);
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');

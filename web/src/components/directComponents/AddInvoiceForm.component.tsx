@@ -6,6 +6,7 @@ import {
   InvoiceAddFormMainContainer,
   InvoiceAddFormSubContainer,
   InvoiceAddressContainer,
+  InvoiceButton,
   InvoiceButtonContainer,
   InvoiceCalculationContainer,
   InvoiceDetails,
@@ -14,7 +15,7 @@ import {
   TableBodyRow,
   TableBodyRows,
   TableHead,
-  TableList,
+  TableHeadLabel,
   TableRow,
   Tablelist,
   TextInput,
@@ -30,7 +31,10 @@ import {
   RowProps,
 } from '../../entities/InvoiceGenerationEntity';
 import { Address } from '../../entities/OrganizationEntity';
-import { createInvoice } from '../../service/axiosInstance';
+import {
+  createInvoice,
+  downloadContractFile,
+} from '../../service/axiosInstance';
 import { Button } from '../../styles/CommonStyles.style';
 import {
   CheckBoxOnSVG,
@@ -47,30 +51,47 @@ import {
 } from '../../svgs/InvoiceSvgs.svg';
 import CenterModal from '../reusableComponents/CenterModal.component';
 import { toast } from 'sonner';
+import {
+  BillingCurrency,
+  BillingCurrencyLabels,
+} from '../reusableComponents/ContractEnums.component.tsx';
+import SpinAnimation from '../loaders/SprinAnimation.loader.tsx';
+import { t } from 'i18next';
+import { TableList } from '../../styles/DocumentTabStyles.style.tsx';
 
 export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
+  const getRemainingDueDays = (dueDate: Date | undefined): number => {
+    if (!dueDate || isNaN(dueDate.getTime())) {
+      return 0;
+    }
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    dueDate.setHours(0, 0, 0, 0);
+    const diffDays =
+      Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) +
+      1;
+    return diffDays;
+  };
   const generateDueRemarks = (
     endDate: Date | undefined,
-    dueDays: number | undefined
+    amount: number | undefined
   ): string => {
-    const genericMessage =
-      'Please Transfer the due amount to the following bank.';
-    const currentDate = new Date();
-    if (!endDate || isNaN(endDate.getTime())) {
-      return genericMessage;
+    const dueDays = getRemainingDueDays(endDate);
+    if (!endDate || dueDays <= 0) {
+      return t('The contract has ended.');
     }
-    if (dueDays === undefined) {
-      if (endDate < currentDate) {
-        return 'The contract has ended.';
-      }
-      return genericMessage;
+    const amountText = amount !== undefined ? `$${amount.toFixed(2)}` : '';
+    return `Please transfer the due amount to the following bank account with in next ${dueDays}${amountText} days.`;
+  };
+
+  const getBillingCurrency = (value?: string): BillingCurrency => {
+    if (
+      value &&
+      Object.values(BillingCurrency).includes(value as BillingCurrency)
+    ) {
+      return value as BillingCurrency;
     }
-    const dueDate = new Date(endDate);
-    dueDate.setDate(endDate.getDate() + dueDays);
-    if (dueDate < currentDate) {
-      return 'The contract has ended.';
-    }
-    return `Please Transfer the due amount to the following bank within ${dueDays} days`;
+    return BillingCurrency.EURO;
   };
   const { organizationDetails } = useContext(ApplicationContext);
   const [data, setData] = useState<RowProps[]>([]);
@@ -83,15 +104,10 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     pinCode: 0,
   });
 
-  const getCurrencySymbol = (currencyType?: string): string => {
-    const currencySymbols: Record<string, string> = {
-      DOLLER: '$',
-      INDIAN_RUPEE: '₹',
-      EURO: '€',
-    };
-    return currencyType && currencySymbols[currencyType]
-      ? currencySymbols[currencyType]
-      : '';
+  const getCurrencySymbol = (currency: BillingCurrency): string => {
+    const label = BillingCurrencyLabels[currency];
+    const match = label.match(/\((.*)\)/);
+    return match ? match[1] : '';
   };
   const [formData, setFormData] = useState<FormDataProps>({
     RemittanceNo: props.remittanceReferenceNumber || '',
@@ -101,16 +117,15 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     organization: organizationDetails?.name || '',
     organizationId: props.organizationId || '',
     projectId: props.projectId || '',
-    fromDate: props.startDate
-      ? new Date(props.startDate)
-      : new Date(2024, 2, 4),
-    toDate: props.endDate ? new Date(props.endDate) : new Date(2025, 2, 4),
+    fromDate: props.startDate ? new Date(props.startDate) : new Date(),
+    toDate: props.endDate ? new Date(props.endDate) : new Date(),
     contractName: props.contractTitle || '',
     contractId: props.contractId,
     clientName: props.clientName || '',
     clientId: props.clientId || '',
     status: props.status || '',
-    currencyType: organizationDetails?.currencyType || '',
+    currencyType: getBillingCurrency(props.billingCurrency),
+
     primaryAddress: organizationDetails?.address
       ? {
           addressOne: organizationDetails.address.addressOne || '',
@@ -154,7 +169,9 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       toDate: props.endDate ? new Date(props.endDate) : prevData.toDate,
       status: props.status || '',
       clientId: props.clientId || '',
-      currencyType: organizationDetails?.currencyType || '',
+      contractName: props.contractTitle || '',
+      currencyType: getBillingCurrency(props.billingCurrency),
+
       primaryAddress: organizationDetails?.address
         ? {
             addressOne: organizationDetails.address.addressOne || '',
@@ -180,15 +197,10 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       taxId: organizationDetails?.taxId || prevData.taxId,
       organization: organizationDetails?.name || '',
       paymentDetails: {
-        accountName:
-          organizationDetails?.bankDetails?.accountName ||
-          'TECHATCORE PRIVATE LIMITED',
-        bankName: organizationDetails?.bankDetails?.bankName || 'ICICI',
-        accountNumber:
-          organizationDetails?.bankDetails?.accountNumber ||
-          'DE63 1001 1001 2628 1900 12',
-        ifscNumber:
-          organizationDetails?.bankDetails?.ifscNumber || 'NTSBDEB1XXX',
+        accountName: organizationDetails?.bankDetails?.accountName || '-',
+        bankName: organizationDetails?.bankDetails?.bankName || '-',
+        accountNumber: organizationDetails?.bankDetails?.accountNumber || '-',
+        ifscNumber: organizationDetails?.bankDetails?.ifscNumber || '-',
       },
     }));
   }, [
@@ -200,7 +212,9 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     props.clientName,
     props.dueDays,
     props.clientId,
+    props.contractTitle,
     props.status,
+    props.billingCurrency,
     organizationDetails?.taxId,
     organizationDetails?.name,
     organizationDetails?.address?.addressOne,
@@ -213,7 +227,6 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     organizationDetails?.bankDetails?.bankName,
     organizationDetails?.bankDetails?.accountNumber,
     organizationDetails?.bankDetails?.ifscNumber,
-    organizationDetails?.currencyType,
   ]);
 
   const [isRemittanceRefEditModeOn, setIsRemittanceRefEditModeOn] =
@@ -254,6 +267,11 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
   const handleTaxClick = () => {
     setTaxFlag(!taxFlag);
   };
+  const [isCityEditModeOn, setIsCityEditModeOn] = useState(false);
+  const handleIsCityEditModeOn = () => setIsCityEditModeOn(!isCityEditModeOn);
+  const [cityValue, setCityValue] = useState(
+    organizationDetails?.address?.city || ''
+  );
   const calendarFromRef = useRef<HTMLDivElement>(null);
   const calendarToRef = useRef<HTMLDivElement>(null);
   const handleClickOutside = (event: MouseEvent) => {
@@ -363,7 +381,8 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     setData([...data.slice(0, id), ...data.slice(id + 1)]);
   };
   const subTotal = data.reduce((sum, item) => sum + Number(item.price), 0);
-  const Total = subTotal + formData.tax;
+  const gstAmount = (subTotal * formData.tax) / 100;
+  const Total = subTotal + gstAmount;
   const [confirmDeleteChanges, setConfirmDeleteChanges] = useState(false);
   const handleConfirmDeleteChanges = (
     e: React.MouseEvent<HTMLButtonElement>
@@ -371,56 +390,121 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     e.preventDefault();
     setConfirmDeleteChanges(true);
   };
-
   const [confirmSaveChanges, setConfirmSaveChanges] = useState(false);
+  const [isInvoiceSaved, setIsInvoiceSaved] = useState(false);
+  const [invoiceFileId, setInvoiceFileId] = useState<string | null>(null);
+  const [invoiceData, setInvoiceData] = useState<any>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleConfirmSaveChanges = async (e: {
-    preventDefault: () => void;
-  }) => {
+  const handleSaveButtonClick = (e: { preventDefault: () => void }) => {
     e.preventDefault();
+
+    if (
+      !formData.contractId ||
+      !formData.clientId ||
+      !Total ||
+      !formData.fromDate ||
+      !formData.toDate
+    ) {
+      return;
+    }
+    setConfirmSaveChanges(true);
+  };
+
+  const handleConfirmSaveChanges = async () => {
+    setIsLoading(true);
+    setConfirmSaveChanges(false);
     try {
-      if (
-        !formData.contractId ||
-        !formData.clientId ||
-        !Total ||
-        !formData.fromDate ||
-        !formData.toDate
-      ) {
-        return;
-      }
       const invoiceRequest: InvoiceRequest = {
         contractId: formData.contractId,
         billingDate: formData.fromDate.toISOString(),
         dueDate: formData.toDate.toISOString(),
         amount: Total,
-        currencyType: formData.currencyType,
+        currency: formData.currencyType,
         notes: [formData.remarksNote || '', formData.dueRemarks || ''].filter(
           Boolean
         ),
         tasks: data.map((item) => ({
-          name: item.contract,
+          taskName: item.contract,
           description: item.description,
           amount: Number(item.price),
         })),
         clientId: formData.clientId,
         projectId: formData.projectId || null,
         remittanceRef: formData.RemittanceNo || null,
+        invoiceId: formData.InvoiceNo || null,
+        taxId: formData.taxId || null,
         vat: formData.tax || 18,
         daysLeftForPayment: formData.dueRemarks.match(/\d+/)?.[0] || '30',
         invoicePeriod: {
-          from: formData.fromDate.toISOString(),
-          to: formData.toDate.toISOString(),
+          startDate: formData.fromDate.toISOString(),
+          endDate: formData.toDate.toISOString(),
         },
       };
 
-      await createInvoice(invoiceRequest);
+      const response = await createInvoice(invoiceRequest);
+      setInvoiceData(response.data);
+      setInvoiceFileId(response.data.invoiceFileId);
 
-      setConfirmSaveChanges(true);
+      toast.success(t('Invoice created successfully!'));
+      setIsInvoiceSaved(true);
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||
           'Failed to create invoice. Please try again.'
       );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDownloadInvoiceFile = async () => {
+    if (!invoiceFileId || !invoiceData || isDownloading) {
+      toast.error(t('Invoice file not available for download.'));
+      return;
+    }
+    setIsDownloading(true);
+    try {
+      const response = await downloadContractFile(invoiceFileId);
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute(
+        'download',
+        `${invoiceData.invoiceId} - ${formData.contractName}.pdf`
+      );
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success(t('Invoice download started'));
+    } catch (error) {
+      toast.error(t('Failed to download invoice. Please try again.'));
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  const handleSendInvoice = async () => {
+    if (!invoiceFileId || !invoiceData) {
+      toast.error(t('Invoice file not available to send.'));
+      return;
+    }
+
+    try {
+      const subject = encodeURIComponent(
+        `Invoice ${invoiceData.invoiceId} - ${formData.contractName}`
+      );
+      const body = encodeURIComponent(
+        `Dear ${formData.clientName},\n\nPlease find attached the invoice ${invoiceData.invoiceId}.\n\nBest Regards,\n${organizationDetails?.name}`
+      );
+
+      window.location.href = `mailto:?subject=${subject}&body=${body}`;
+
+      toast.success(t('Email client opened. Please attach the PDF manually.'));
+    } catch (error) {
+      toast.error(t('Failed to open email client.'));
     }
   };
 
@@ -443,30 +527,41 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     <>
       <InvoiceAddFormMainContainer>
         <InvoiceButtonContainer>
-          <Button
-            width="150px"
-            height="50px"
-            padding="12px 12px"
-            style={{ fontWeight: 'bold' }}
+          <InvoiceButton
+            variant="send"
+            disabled={!isInvoiceSaved}
+            onClick={handleSendInvoice}
+            title={
+              !isInvoiceSaved
+                ? t('Please generate an invoice Below to Send Invoice')
+                : ''
+            }
           >
             <MessageIconSVG />
-            Send Invoice
-          </Button>
-          <Button
-            width="150px"
-            height="50px"
-            padding="12px 12px"
-            style={{ fontWeight: 'bold' }}
+            {t('Send Invoice')}
+          </InvoiceButton>
+
+          <InvoiceButton
+            variant="download"
+            disabled={!isInvoiceSaved || isDownloading}
+            onClick={handleDownloadInvoiceFile}
+            title={
+              !isInvoiceSaved
+                ? t('Please generate an invoice Below to download')
+                : isDownloading
+                  ? t('Downloading in progress...')
+                  : ''
+            }
           >
             <DownloadSVG />
-            Download
-          </Button>
+            {isDownloading ? t('Downloading...') : t('Download')}
+          </InvoiceButton>
         </InvoiceButtonContainer>
         <InvoiceAddFormSubContainer onSubmit={handleConfirmSaveChanges}>
           <InvoiceAddressContainer>
             <div className="adjusting">
               <span className="applyStyle1">
-                Billing From
+                {t('Billing From')}
                 <span className="applyStyle2">{organizationDetails?.name}</span>
               </span>
               <span className="textFont">
@@ -484,7 +579,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             </div>
             <div className="adjusting">
               <span className="applyStyle1">
-                Billing To
+                {t('Billing To')}
                 <span className="applyStyle2">{formData.clientName}</span>
               </span>
               <span className="textFont">
@@ -500,7 +595,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
           </InvoiceAddressContainer>
           <InvoiceRemittance>
             <div className="spanElement length">
-              <label>Remittance Ref</label>
+              <label>{t('Remittance Ref :')} </label>
               {!isRemittanceRefEditModeOn ? (
                 <>
                   <span className="applyMargin"> {formData.RemittanceNo}</span>
@@ -514,12 +609,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   name="RemittanceNo"
                   value={formData.RemittanceNo}
                   onChange={handleChange}
+                  onBlur={handleIsRemittanceEditModeOn}
                   required
                 />
               )}
             </div>
             <div className="spanElement">
-              <label>TaxID</label>
+              <label>{t('TaxID :')}</label>
               {!isTaxIdEditModeOn ? (
                 <>
                   <span className="applyMargin">
@@ -533,9 +629,10 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               ) : (
                 <TextInput
                   type="text"
-                  name="TaxID"
+                  name="TaxId"
                   value={formData.taxId}
                   onChange={handleTaxIdChange}
+                  onBlur={handleIsTaxIdEditModeOn}
                   required
                 />
               )}
@@ -543,7 +640,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
           </InvoiceRemittance>
           <InvoiceDetails>
             <div className="spanElement fontSize">
-              <label>Invoice</label>
+              <label>{t('Invoice :')}</label>
               {!isInvoiceEditModeOn ? (
                 <>
                   <span className="applyMargin fontColor">
@@ -560,16 +657,17 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   name="InvoiceNo"
                   value={formData.InvoiceNo}
                   onChange={handleChange}
+                  onBlur={handleIsInvoiceEditModeOn}
                   required
                 />
               )}
             </div>
             <span className="applyMargin1 ">
-              {formData.contractId}- {formData.contractName}
+              {formData.contractId} - {formData.contractName}
             </span>
             <div className="dateSet">
-              <span style={{ fontSize: '13px' }}>Invoice Period</span>&nbsp;
-              <div ref={calendarFromRef} style={{ position: 'relative' }}>
+              <span>{t('Invoice Period')}</span>&nbsp;
+              <div ref={calendarFromRef}>
                 <DatePicker onClick={handleFromCalendarClick}>
                   <span className="dateName">
                     <span className="calenderIcon">
@@ -604,8 +702,8 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   </div>
                 )}
               </div>
-              <span style={{ fontSize: '12px' }}> To </span>&nbsp;
-              <div ref={calendarToRef} style={{ position: 'relative' }}>
+              <span> {t('To')} </span>&nbsp;
+              <div ref={calendarToRef}>
                 <DatePicker onClick={handleToCalendarClick}>
                   <span className="dateName">
                     <span className="calenderIcon">
@@ -630,6 +728,10 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                           setFormData((prevState) => ({
                             ...prevState,
                             toDate: selectedDate,
+                            dueRemarks: generateDueRemarks(
+                              selectedDate,
+                              props.dueDays
+                            ),
                           }));
                         }
                       }}
@@ -642,71 +744,66 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             </div>
             <div className="sub-invoicedetails">
               <div>
-                <span className="remarks">Remarks</span>
+                <span className="remarks">{t('Remarks')}</span>
                 {!isRemarksNoteEditModeOn ? (
                   <span className="remarksNote">
                     <span>"</span> {formData.remarksNote} <span>"</span>
-                    <span
-                      onClick={handleIsRemarksNoteEditModeOn}
-                      style={{ marginLeft: '5px' }}
-                    >
+                    <span onClick={handleIsRemarksNoteEditModeOn}>
                       <EditWhitePenSVG />
                     </span>
                   </span>
                 ) : (
                   <TextInput
                     className="remarksNote"
-                    style={{ width: '70%' }}
                     name="remarksNote"
                     value={formData.remarksNote}
                     onChange={handleChange}
+                    onBlur={handleIsRemarksNoteEditModeOn}
                     required
                   />
                 )}
               </div>
               <div>
-                <span className="remarks applyMargin">
-                  {organizationDetails?.address?.state},{' '}
-                  {formatCurrentDate(currentDate)}
-                </span>
-                <span>
-                  <EditWhitePenSVG />
-                </span>
+                {!isCityEditModeOn ? (
+                  <>
+                    <span className="remarks applyMargin">
+                      {cityValue}, {formatCurrentDate(currentDate)}
+                    </span>
+                    <span onClick={handleIsCityEditModeOn}>
+                      <EditWhitePenSVG />
+                    </span>
+                  </>
+                ) : (
+                  <TextInput
+                    type="text"
+                    value={cityValue}
+                    onChange={(e) => setCityValue(e.target.value)}
+                    onBlur={handleIsCityEditModeOn}
+                  />
+                )}
               </div>
             </div>
           </InvoiceDetails>
           <div>
             <TableList>
               <TableHead>
-                <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                  <th>Sno</th>
+                <tr>
+                  <th>{t('Sno')}</th>
                   <th>
-                    <label
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                      }}
-                    >
-                      <ValidationText>*</ValidationText> Task
-                    </label>
+                    <TableHeadLabel>
+                      <ValidationText>*</ValidationText> {t('Task')}
+                    </TableHeadLabel>
                   </th>
-                  <th>Description</th>
+                  <th>{t('Description')}</th>
                   <th>
-                    <label
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                      }}
-                    >
-                      <ValidationText>*</ValidationText>{' '}
-                      {'Price In ' +
-                        getCurrencySymbol(organizationDetails?.currencyType)}
-                    </label>
+                    <TableHeadLabel>
+                      <ValidationText>*</ValidationText>
+                      {'Price In ' + getCurrencySymbol(formData.currencyType)}
+                    </TableHeadLabel>
                   </th>
                 </tr>
               </TableHead>
+
               {data.map((project, index) => (
                 <TableBodyRow key={index}>
                   <td>{index + 1}</td>
@@ -727,21 +824,12 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                 style={{ cursor: 'pointer' }}
                 onClick={handleIsAddRowsEditModeOn}
               >
-                <Plus /> Add Row
+                <Plus /> {t('Add Row')}
               </span>
             ) : (
               <div className="rowsAlign">
                 <div className="rowItem">
-                  <input
-                    name="serialNo"
-                    value={data.length + 1}
-                    readOnly
-                    style={{
-                      backgroundColor: '#f0f0f0',
-                      cursor: 'not-allowed',
-                      width: '60px',
-                    }}
-                  />
+                  <input name="serialNo" value={data.length + 1} readOnly />
                 </div>
                 <div className="rowItem">
                   <input name="contract" onChange={handleChangeRows} />
@@ -791,14 +879,14 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             <Tablelist>
               <div className="borderCollapse">
                 <TableRow>
-                  <td style={{ paddingRight: '20px' }}>Sub Total</td>
-                  <td>{`${getCurrencySymbol(organizationDetails?.currencyType)} ${subTotal}`}</td>
+                  <td>{t('Sub Total')}</td>
+                  <td>{`${getCurrencySymbol(formData.currencyType)} ${subTotal}`}</td>
                 </TableRow>
                 <TableRow>
-                  <td>Tax</td>
+                  <td>{t('Tax')}</td>
                   {!taxFlag ? (
                     <td>
-                      {`${getCurrencySymbol(organizationDetails?.currencyType)} ${formData.tax}`}
+                      {`${getCurrencySymbol(formData.currencyType)} ${formData.tax}`}
                       <span onClick={handleTaxClick}>
                         {' '}
                         <EditWhitePenSVG />{' '}
@@ -808,20 +896,19 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                     <td>
                       ($)
                       <TextInput
-                        style={{ width: '40px' }}
                         name="tax"
                         value={formData.tax}
                         onChange={handleChange}
+                        onBlur={handleTaxClick}
                         required
                       />
                     </td>
                   )}
                 </TableRow>
                 <TableRow>
-                  <td>Total</td>
+                  <td>{t('Total')}</td>
                   <td>
-                    ({getCurrencySymbol(organizationDetails?.currencyType)}){' '}
-                    {Total}
+                    ({getCurrencySymbol(formData.currencyType)}) {Total}
                   </td>
                 </TableRow>
               </div>
@@ -829,20 +916,24 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
             <Tablelist>
               <TableRow>
-                <td>Amount In Words({organizationDetails?.currencyType}):</td>
-                <td style={{ fontWeight: 'bold' }}>
-                  {CapitalizeWords(toWords(Total))} Only/-
+                <td>
+                  {t('Amount In Words')}({formData.currencyType}):
+                </td>
+                <td>
+                  {CapitalizeWords(toWords(Total))} {t('Only/-')}
                 </td>
               </TableRow>
             </Tablelist>
           </InvoiceCalculationContainer>
-          <div style={{ margin: '0px 10px' }}>
-            <span className="remarks">NOTE:</span>
+          <div>
+            <span className="remarks">{t('NOTE: ')}</span>
             {isDueDaysEditModeOn ? (
               <TextInput
                 className="remarksNote"
-                style={{ width: '30%' }}
+                name="dueRemarks"
                 value={formData.dueRemarks}
+                onChange={handleChange}
+                onBlur={handleIsDueDaysEditModeOn}
                 required
               />
             ) : (
@@ -856,62 +947,69 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             )}
           </div>
           <InvoicePaymentContainer>
-            <span className="PayDet">Payment Details</span>
+            <span className="PayDet">{t('Payment Details')}</span>
             <div>
               <Tablelist>
                 <TableBodyRows>
-                  <td>Name :</td>
+                  <td>{t('Name :')}</td>
                   <td>{organizationDetails?.bankDetails?.accountName}</td>
                 </TableBodyRows>
                 <TableBodyRows>
-                  <td> Bank Name :</td>
+                  <td> {t('Bank Name :')}</td>
                   <td>{organizationDetails?.bankDetails?.bankName}</td>
                 </TableBodyRows>
                 <TableBodyRows>
-                  <td>Account Number :</td>
+                  <td>{t('Account Number :')}</td>
                   <td>{organizationDetails?.bankDetails?.accountNumber}</td>
                 </TableBodyRows>
                 <TableBodyRows>
-                  <td>IFSC :</td>
+                  <td>{t('IFSC :')}</td>
                   <td>{organizationDetails?.bankDetails?.ifscNumber}</td>
                 </TableBodyRows>
               </Tablelist>
             </div>
           </InvoicePaymentContainer>
-          <div style={{ margin: '0px 10px' }}>
-            <span className="remarks">Remarks</span>
+          <div>
+            <span className="remarks">{t('Remarks')}</span>
             {!isRemarksNoteEditModeOn ? (
               <span className="remarksNote">
                 <span>"</span> {formData.remarksNote} <span>"</span>
-                <span
-                  onClick={handleIsRemarksNoteEditModeOn}
-                  style={{ marginLeft: '5px' }}
-                >
+                <span onClick={handleIsRemarksNoteEditModeOn}>
                   <EditWhitePenSVG />
                 </span>
               </span>
             ) : (
               <TextInput
                 className="remarksNote"
-                style={{ width: '30%' }}
                 name="remarksNote"
                 value={formData.remarksNote}
                 onChange={handleChange}
+                onBlur={handleIsRemarksNoteEditModeOn}
                 required
               />
             )}
             <div className="spanSign">
-              <span className="remarksNote"> Best Regards </span>
+              <span className="remarksNote"> {t('Best Regards')} </span>
               <span className="remarks"> {organizationDetails?.name} </span>
             </div>
           </div>
           <div className="formButtons">
             <Button type="button" onClick={handleConfirmDeleteChanges}>
-              CANCEL
+              {t('CANCEL')}
             </Button>
-            <Button className="submit" type="submit">
-              SAVE
-            </Button>
+            <InvoiceButton
+              className="submit"
+              type="submit"
+              onClick={handleSaveButtonClick}
+              disabled={isInvoiceSaved}
+              title={
+                isInvoiceSaved
+                  ? t('Invoice already generated. Please download it above.')
+                  : ''
+              }
+            >
+              {t('Generate')}
+            </InvoiceButton>
           </div>
         </InvoiceAddFormSubContainer>
       </InvoiceAddFormMainContainer>
@@ -919,6 +1017,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
         <span style={{ cursor: 'default' }}>
           <CenterModal
             handleModalClose={() => setConfirmDeleteChanges(false)}
+            handleModalLeftButtonClick={() => setConfirmDeleteChanges(false)}
             handleModalSubmit={() => props.handleClose()}
             modalHeading="Invoice Changes"
             modalContent={'Are you sure to discard changes'}
@@ -929,11 +1028,17 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
         <span style={{ cursor: 'default' }}>
           <CenterModal
             handleModalClose={() => setConfirmSaveChanges(false)}
-            handleModalSubmit={() => props.handleClose()}
+            handleModalLeftButtonClick={() => setConfirmSaveChanges(false)}
+            handleModalSubmit={handleConfirmSaveChanges}
             modalHeading="Save Changes"
             modalContent={'Are you sure to save changes'}
           />
         </span>
+      )}
+      {isLoading && (
+        <div className="loader-overlay">
+          <SpinAnimation />
+        </div>
       )}
     </>
   );

@@ -4,10 +4,7 @@ import { IFeatureToggle } from '../entities/FeatureToggle';
 import { IAssignedInterviewer } from '../entities/ApplicantEntity';
 import { OrganizationValues } from '../entities/OrgValueEntity';
 import { Project } from '../entities/Projects';
-import {
-  GenerateInvoiceIdentifiersRequest,
-  InvoiceIdentifiers,
-} from '../entities/Requests/InvoiceIdentifiersRequest';
+import { InvoiceIdentifiers } from '../entities/Requests/InvoiceIdentifiersRequest';
 import {
   ProjectEntity,
   ProjectStatus,
@@ -571,11 +568,10 @@ export const updateLog = (id: string, data: any): Promise<AxiosResponse> => {
 };
 
 export const generateInvoiceIdentifiers = (
-  requestBody?: GenerateInvoiceIdentifiersRequest
+  contractId: string
 ): Promise<AxiosResponse<InvoiceIdentifiers>> => {
   return axiosInstance.post(
-    '/projects/v1/invoices/generate-identifiers',
-    requestBody
+    `/projects/v1/invoices/generate-identifiers/${contractId}`
   );
 };
 
@@ -602,4 +598,20 @@ export const createInvoice = (invoiceRequest: {
   [key: string]: any;
 }) => {
   return axiosInstance.post('/projects/v1/invoices', invoiceRequest);
+};
+
+export const downloadContractFile = (
+  fileId: string
+): Promise<AxiosResponse<Blob>> => {
+  return axiosInstance.get(`/projects/v1/files/download/${fileId}`, {
+    responseType: 'blob',
+  });
+};
+
+export const deleteContractFile = (fileId: string): Promise<AxiosResponse> => {
+  return axiosInstance.delete(`/projects/v1/files/${fileId}`);
+};
+
+export const getInvoicesBycontractId = (contractId: string) => {
+  return axiosInstance.get(`/projects/v1/invoices/contract/${contractId}`);
 };

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Button } from './CommonStyles.style';
 export const InvoiceManagementHeading = styled.div`
   margin: 20px;
   font-weight: bold;
@@ -65,7 +66,7 @@ export const InvoiceInnerBigContainer = styled.div`
     padding: 10px;
     color: #fff;
     cursor: pointer;
-    margin: 30px;
+    margin: 10px;
     margin-left: 5px;
   }
 `;
@@ -213,6 +214,7 @@ export const AddRowContainer = styled.div`
     justify-content: space-between;
     margin: 10px;
     padding: 10px;
+    flex-wrap: wrap;  
   }
   .alignButton {
     display: flex;
@@ -239,12 +241,23 @@ export const AddRowContainer = styled.div`
       border-radius: 6px;
       border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
     }
+    input[name="serialNo"] {
+      background-color: #ffffff;
+      cursor: not-allowed;
+      width: 60px;
+    }
   }
   .errorSpan {
     font-size: 12px;
     color: red;
     margin: 5px 0px;
   }
+  @media screen and (max-width: 768px) {
+    .rowsAlign {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
 `;
 export const ValidationText = styled.span`
   color: #e03137;
@@ -266,6 +279,29 @@ export const InvoiceButtonContainer = styled.div`
   justify-content: flex-end;
   gap: 10px;
   margin: 20px 0px;
+`;
+export const InvoiceButton = styled(Button)<{
+  disabled?: boolean;
+  variant?: 'send' | 'download';
+}>`
+  width: 150px;
+  height: 50px;
+  padding: 12px 12px;
+  font-weight: bold;
+
+  ${({ disabled, variant }) =>
+    disabled &&
+    `
+      background-color: ${variant === 'download' ? '#ecececff' : '#e8e8e8ff'};
+      color: #a0a0a0;
+      cursor: not-allowed;
+      border: 1px solid #ccc;
+  `}
+  &.submit {
+    background-color: ${({ disabled }) => (disabled ? '#e0e0e0' : undefined)};
+    color: ${({ disabled }) => (disabled ? '#a0a0a0' : undefined)};
+    cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  }
 `;
 export const InvoiceDetails = styled.div`
   border-radius: 6px;
@@ -314,27 +350,35 @@ export const TextInput = styled.input`
   width: 160px;
   margin: 0px 10px;
 `;
-export const TableHead = styled.thead``;
-export const TableList = styled.table`
-  border: 0;
-  margin: 10px;
-  width: 98%;
-  border-collapse: collapse;
-  thead {
-    background-color: ${(props) => props.theme.colors.blackColors.white3};
-    color: ${(props) => props.theme.colors.grayColors.gray7};
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 160%;
-    letter-spacing: 0.2px;
-    height: 56px;
-    tr th {
+// InvoiceManagementStyles.style.tsx
+
+export const TableHead = styled.thead`
+  background-color: ${(props) => props.theme.colors.blackColors.white3};
+  color: ${(props) => props.theme.colors.grayColors.gray7};
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 160%;
+  letter-spacing: 0.2px;
+  height: 56px;
+
+  tr {
+    text-align: left;
+    border-radius: 10px;
+
+    th {
       padding: 0 10px;
       font-size: 12px;
     }
   }
 `;
+
+export const TableHeadLabel = styled.label`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+`;
+
 export const TableBodyRow = styled.tr`
   height: 45px;
   border: 1px solid ${(props) => props.theme.colors.blackColors.white2};
@@ -407,4 +451,75 @@ export const InvoicePaymentContainer = styled.div`
     color: #005792;
     padding: 5px 10px;
   }
+`;
+export const InvoiceItem = styled.div`
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 8px;
+  gap: 12px;
+
+  width: 717px;
+  height: 64px;
+
+  background: #ffffff;
+  border-bottom: 1px solid #f1f2f4;
+  border-radius: 7px;
+
+  flex: none;
+  order: 0;
+  align-self: stretch;
+  flex-grow: 0;
+
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f9f9f9; /* optional */
+  }
+`;
+
+export const InvoiceTextContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+export const InvoiceId = styled.span`
+  width: 158px;
+  height: 22px;
+
+  font-family: 'Nunito', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 22px;
+  letter-spacing: 0.3px;
+
+  color: #121212;
+
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+`;
+
+export const ContractName = styled.span`
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  color: #6b6b6b; /* lighter color for secondary text */
+`;
+
+export const PdfCell = styled.td`
+  text-align: center;
+`;
+
+export const PdfWrapper = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+`;
+export const InvId = styled.span`
+  font-weight: 500;
+  font-size: 11px;
 `;

@@ -1,3 +1,5 @@
+import { BillingCurrency } from '../components/reusableComponents/ContractEnums.component';
+
 interface BillingAddress {
   street: string;
   city: string;
@@ -37,7 +39,7 @@ export interface AddInvoiceFormProps {
   bankDetails?: BankDetails;
   status?: string;
   clientId?: string;
-  currencyType?: string;
+  billingCurrency?: string;
 }
 
 export interface FormDataProps {
@@ -60,7 +62,7 @@ export interface FormDataProps {
   bankDetails: BankDetails;
   status: string;
   clientId: string;
-  currencyType: string;
+  currencyType: BillingCurrency;
 }
 
 export interface RowProps {
