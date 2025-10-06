@@ -24,9 +24,7 @@ import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
 import Pagination from '../components/directComponents/Pagination.component';
-import { useOutletContext } from "react-router-dom";
-
-type ProjectOutletContext = {
+export type ProjectListProps = {
   projectList: ProjectEntity[];
   updateProjectList: () => void;
   isLoading: boolean;
@@ -38,18 +36,17 @@ type ProjectOutletContext = {
   setItemsPerPage: (size: number) => void;
 };
 
-const ProjectList = () => {
-  const {
-    projectList,
-    updateProjectList,
-    isLoading,
-    onEditProject,
-    totalItems,
-    currentPage,
-    setCurrentPage,
-    itemsPerPage,
-    setItemsPerPage,
-  } = useOutletContext<ProjectOutletContext>();
+const ProjectList = ({
+  projectList,
+  updateProjectList,
+  isLoading,
+  onEditProject,
+  totalItems,
+  currentPage,
+  setCurrentPage,
+  itemsPerPage,
+  setItemsPerPage,
+}: ProjectListProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const { t } = useTranslation();

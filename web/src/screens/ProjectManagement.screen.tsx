@@ -37,7 +37,7 @@ const ProjectManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-  
+
   const isProjectDetailsRoute = matchPath(
     '/projects/project-management/:id/:id',
     location.pathname
@@ -118,10 +118,9 @@ const ProjectManagement = () => {
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      toast.error("Error Fetching Project data");
+      toast.error('Error Fetching Project data');
     }
   }, [currentPage, itemsPerPage]);
-
 
   useEffect(() => {
     fetchData();

@@ -107,7 +107,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   }, []);
 
   useEffect(() => {
-    getAllClient()
+    getAllClient(0, 10)
       .then((response) => {
         const clients: Client[] = response.data;
         const clientOpts: OptionType[] = clients.map((client) => ({
@@ -186,24 +186,19 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
     setProjectFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prevErrors) => ({ ...prevErrors, [name]: '' }));
   };
-  const handleAddProject = async (e: any) => {
-    e.preventDefault();
-    const newErrors = {
-      name:
-        projectFormData.name === '' || projectFormData.name === null
-          ? 'Project Name Required'
-          : '',
-      clientName:
-        projectFormData.clientId === '' || projectFormData.clientId === null
-          ? 'Client Name Required'
-          : '',
-      startDate: startDate === null ? 'Start Date Required' : '',
-    };
-    setErrors(newErrors);
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const newErrors = {
+      name: !projectFormData.name ? 'Project Name Required' : '',
+      clientName: !projectFormData.clientId ? 'Client Name Required' : '',
+      startDate: !startDate ? 'Start Date Required' : '',
+    };
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((err) => err !== '')) return;
+
     setIsSubmitting(true);
     try {
       const response =
@@ -215,9 +210,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
         handleSuccessMessage(response.data.projectId);
         setIsSuccess(true);
         await refreshProjectList();
-        setTimeout(() => {
-          handleClose();
-        }, 1500);
+        setTimeout(() => handleClose(), 1500);
       } else {
         toast.error('Project Submition Failed');
       }
@@ -545,11 +538,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
               >
                 {t('Cancel')}
               </Button>
-              <Button
-                className="submit"
-                type="submit"
-                onClick={handleAddProject}
-              >
+              <Button className="submit" type="submit">
                 {isEditMode ? t('Update') : t('Add')}
               </Button>
             </div>

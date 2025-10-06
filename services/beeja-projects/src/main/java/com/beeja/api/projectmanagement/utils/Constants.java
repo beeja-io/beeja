@@ -18,6 +18,7 @@ public class Constants {
   public static final String ENTITY_TYPE_INVOICE = "invoice";
   public static final String ORGANIZATION_MISSING = "Organization information is missing.";
   public static final String YEAR_MONTH = "yyyyMM";
+  public static final String ENTITY_TYPE_CONTRACT = "contract";
 
   // ========== Success Messages ==========
   public static final String USER_SUCCESSFULLY_AUTHENTICATED = "User Successfully Authenticated";

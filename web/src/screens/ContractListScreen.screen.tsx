@@ -21,9 +21,7 @@ import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
 import Pagination from '../components/directComponents/Pagination.component';
-import { useOutletContext } from "react-router-dom";
-
-type ContractOutletContext = {
+export type ContractListProps = {
   contractList: ContractDetails[];
   updateContractList: () => void;
   isLoading: boolean;
@@ -35,18 +33,17 @@ type ContractOutletContext = {
   setItemsPerPage: (size: number) => void;
 };
 
-const ContractList = () => {
-  const {
-    contractList,
-    updateContractList,
-    isLoading,
-    onEditContract,
-    totalItems,
-    currentPage,
-    setCurrentPage,
-    itemsPerPage,
-    setItemsPerPage,
-  } = useOutletContext<ContractOutletContext>();
+const ContractList = ({
+  contractList,
+  updateContractList,
+  isLoading,
+  onEditContract,
+  totalItems,
+  currentPage,
+  setCurrentPage,
+  itemsPerPage,
+  setItemsPerPage,
+}: ContractListProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [contractLists, setContractLists] = useState<ContractDetails[]>([]);
   const { t } = useTranslation();

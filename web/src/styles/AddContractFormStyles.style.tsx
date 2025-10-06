@@ -28,6 +28,7 @@ export const ResourceAvailability = styled.small`
 
 export const ResourceAllocationRow = styled.div`
   display: flex;
+  flex: 1;
   align-items: center;
   height: 56px;
   margin-bottom: 20px;

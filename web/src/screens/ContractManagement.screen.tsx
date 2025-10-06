@@ -52,14 +52,14 @@ const ContractManagement = () => {
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await getAllContracts(currentPage,itemsPerPage);
+      const res = await getAllContracts(currentPage, itemsPerPage);
       setContractList(res.data.contracts || []);
       setTotalItems(res.data.metadata.totalSize ?? 0);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
     }
-  }, [currentPage,itemsPerPage]);
+  }, [currentPage, itemsPerPage]);
 
   useEffect(() => {
     fetchData();
