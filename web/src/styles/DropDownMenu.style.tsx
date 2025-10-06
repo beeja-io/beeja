@@ -21,6 +21,9 @@ export const ContainerStyle = styled.div<{
   &.smallContainerDed {
     height: 45px;
   }
+  &.largeContainerHei {
+    height: 54px;
+  }
   &.largeContainerFil {
     width: 200px;
   }
@@ -35,6 +38,10 @@ export const ContainerStyle = styled.div<{
 
   &.largeContainerRes {
     width: 550px;
+    flex: 0 0 auto;
+    @media (max-width: 1340px) {
+      width: 490px;
+    }
   }
   &.cursor-disabled {
     cursor: not-allowed !important;
@@ -167,6 +174,25 @@ export const DropdownListStyle = styled.ul`
   box-shadow: 5px 5px 50px 0 rgba(26, 32, 44, 0.06);
   overflow-y: auto;
   z-index: 1000;
+  max-height: 200px;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #aaa #f1f1f1;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #aaa;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #888;
+  }
 `;
 export const DropdownItemStyle = styled.li<{ selected: boolean }>`
   display: flex;

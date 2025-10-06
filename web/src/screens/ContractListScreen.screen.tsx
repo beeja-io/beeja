@@ -20,19 +20,29 @@ import {
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
-
-export interface ContractListProps {
+import Pagination from '../components/directComponents/Pagination.component';
+export type ContractListProps = {
   contractList: ContractDetails[];
   updateContractList: () => void;
   isLoading: boolean;
   onEditContract: (contract: ContractDetails) => Promise<void>;
-}
+  totalItems: number;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  itemsPerPage: number;
+  setItemsPerPage: (size: number) => void;
+};
 
 const ContractList = ({
   contractList,
   updateContractList,
   isLoading,
   onEditContract,
+  totalItems,
+  currentPage,
+  setCurrentPage,
+  itemsPerPage,
+  setItemsPerPage,
 }: ContractListProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [contractLists, setContractLists] = useState<ContractDetails[]>([]);
@@ -72,6 +82,15 @@ const ContractList = ({
     } catch (error) {
       toast.error('Failed to update status');
     }
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setItemsPerPage(newPageSize);
+    setCurrentPage(1);
   };
 
   return (
@@ -187,6 +206,14 @@ const ContractList = ({
             </TableList>
           )}
         </TableListContainer>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(totalItems / itemsPerPage)}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          handleItemsPerPage={handlePageSizeChange}
+          totalItems={totalItems}
+        />
       </StyledDiv>
     </>
   );

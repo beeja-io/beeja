@@ -98,7 +98,7 @@ const ProjectDetailsSCreen: React.FC = () => {
   }
 
   return (
-    <Container>
+    <Container className="projectContainer">
       <LeftSection>
         <ClientInfo>
           <ClientTitleWrapper>
@@ -119,6 +119,8 @@ const ProjectDetailsSCreen: React.FC = () => {
             <ClientInfoDiv>{project?.clientName}</ClientInfoDiv>
             <DotSVG />
             <ClientInfoDiv>
+              {' '}
+              Start Date: &nbsp;
               <DateIcon />
               &nbsp;
               {project?.startDate &&
@@ -163,12 +165,12 @@ const ProjectDetailsSCreen: React.FC = () => {
         <IconWrapper>
           <div>
             <CallSVG /> &nbsp;
-            <span>{project?.clientContact || 'N/A'}</span>
+            <span>{project?.clientContact}</span>
           </div>
           &nbsp;
           <div>
             <EmailSVG /> &nbsp;
-            <span>{project?.clientEmail || 'N/A'}</span>
+            <span>{project?.clientEmail}</span>
           </div>
         </IconWrapper>
       </RightSection>

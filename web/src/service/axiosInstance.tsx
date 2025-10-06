@@ -303,8 +303,16 @@ export const getClient = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.get(`/projects/v1/clients/${id}`);
 };
 
-export const getAllClient = (): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/projects/v1/clients`);
+export const getAllClient = (
+  pageNumber: number,
+  pageSize: number
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/clients`, {
+    params: {
+      pageNumber,
+      pageSize,
+    },
+  });
 };
 
 export const putClient = (
@@ -347,8 +355,20 @@ export const getResourceManager = (): Promise<AxiosResponse<Employee[]>> => {
   return axiosInstance.get('/accounts/v1/users/names');
 };
 
-export const getAllProjects = (): Promise<AxiosResponse<any>> => {
-  return axiosInstance.get('/projects/v1/projects/all-projects');
+export const getAllProjects = (
+  pageNumber: number,
+  pageSize: number,
+  projectId?: string,
+  status?: string
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get('/projects/v1/projects/all-projects', {
+    params: {
+      pageNumber,
+      pageSize,
+      projectId,
+      status,
+    },
+  });
 };
 
 export const getProject = (
@@ -358,8 +378,16 @@ export const getProject = (
   return axiosInstance.get(`/projects/v1/projects/${projectId}/${clientId}`);
 };
 
-export const getAllContracts = (): Promise<AxiosResponse<any>> => {
-  return axiosInstance.get(`/projects/v1/contracts`);
+export const getAllContracts = (
+  pageNumber: number,
+  pageSize: number
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get(`/projects/v1/contracts`, {
+    params: {
+      pageNumber,
+      pageSize,
+    },
+  });
 };
 
 export const getProjectsByClientId = (

@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
+import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
 import com.beeja.api.projectmanagement.service.ProjectService;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
@@ -79,7 +80,7 @@ public class ProjectsControllerTest {
 
     when(projectService.getProjectByIdAndClientId(projectId, clientId)).thenReturn(project);
 
-    ResponseEntity<Project> responseEntity = projectsController.getProjectById(projectId, clientId);
+    ResponseEntity<List<ProjectDetailViewResponseDTO>> responseEntity = projectsController.getProjectById(projectId, clientId);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertEquals(project, responseEntity.getBody());

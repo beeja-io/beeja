@@ -18,8 +18,10 @@ import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * REST controller for managing contracts within the project management system. Provides endpoints
@@ -38,9 +40,9 @@ public class ContractsController {
    * @return a {@link ResponseEntity} containing the created contract and HTTP status {@code 201
    *     Created}
    */
-  @PostMapping
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @HasPermission(PermissionConstants.CREATE_CONTRACT)
-  public ResponseEntity<Contract> createContract(@RequestBody ContractRequest request) {
+  public ResponseEntity<Contract> createContract(@ModelAttribute  ContractRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED).body(contractService.createContract(request));
   }
 
@@ -76,26 +78,36 @@ public class ContractsController {
    * @param request the contract request containing updated contract details
    * @return a {@link ResponseEntity} containing the updated contract and HTTP status {@code 200 OK}
    */
-  @PutMapping("/{contractId}")
+  @PutMapping(value = "/{contractId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @HasPermission(PermissionConstants.UPDATE_CONTRACT)
   public ResponseEntity<Contract> updateContract(
-      @PathVariable String contractId, @RequestBody ContractRequest request) {
-    return ResponseEntity.ok(contractService.updateContract(contractId, request));
+          @PathVariable String contractId,
+          @ModelAttribute ContractRequest request) {
+      return ResponseEntity.ok(contractService.updateContract(contractId, request));
   }
 
   @GetMapping
   @HasPermission(PermissionConstants.GET_CONTRACT)
-  public ResponseEntity<ContractResponseDTO> getAllContracts( @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
-                                                                     @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
-                                                                     @RequestParam(required = false) String projectId,
-                                                                     @RequestParam(required = false) ProjectStatus status) {
-    String organizationId = UserContext.getLoggedInUserOrganization()
-            .get(Constants.ID).toString();
-    HashMap<String, Object> metadata = new HashMap<>();
-    metadata.put(
-            "totalSize",
-            contractService.getTotalContractSize(organizationId,projectId, status)
-    );
+  public ResponseEntity<ContractResponseDTO> getAllContracts(
+          @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
+          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
+          @RequestParam(required = false) String projectId,
+          @RequestParam(required = false) ProjectStatus status) {
+
+      if (pageNumber < 1 || pageSize < 1) {
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page number and size must be positive integers");
+      }
+
+      String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+
+      long totalRecords = contractService.getTotalContractSize(organizationId, projectId, status);
+      int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+      HashMap<String, Object> metadata = new HashMap<>();
+      metadata.put("totalRecords", totalRecords);
+      metadata.put("pageNumber", pageNumber);
+      metadata.put("pageSize", pageSize);
+      metadata.put("totalPages", totalPages);
 
     List<ContractResponsesDTO> contracts = contractService.getAllContracts(organizationId,pageNumber, pageSize, projectId, status);
     ContractResponseDTO response = new ContractResponseDTO();
@@ -103,6 +115,7 @@ public class ContractsController {
     response.setContracts(contracts);
     return ResponseEntity.ok(response);
   }
+
   @PatchMapping("/{contractId}/status")
   @HasPermission(PermissionConstants.UPDATE_CONTRACT)
   public ResponseEntity<Contract> changeContractStatus(

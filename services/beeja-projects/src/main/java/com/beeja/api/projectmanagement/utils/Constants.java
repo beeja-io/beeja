@@ -15,6 +15,7 @@ public class Constants {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String FILE_TYPE_PROJECT = "project";
   public static final String ENTITY_TYPE_CLIENT = "client";
+    public static final String ENTITY_TYPE_CONTRACT = "contract";
 
   // ========== Success Messages ==========
   public static final String USER_SUCCESSFULLY_AUTHENTICATED = "User Successfully Authenticated";
@@ -109,4 +110,5 @@ public class Constants {
   public static final String ERROR_IN_LOGO_UPLOAD = "Error in uploading Logo";
   public static final String FILE_NOT_ALLOWED =
       "File type not allowed. Allowed types: image/jpeg, image/jpg, image/png, image/webp";
+  public static final String  DELETED_SUCCESSFULLY = "Deleted Successfully logo file with id {}";
 }

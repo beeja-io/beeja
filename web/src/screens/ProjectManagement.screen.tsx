@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { matchPath, useLocation, useNavigate } from 'react-router-dom';
+import { matchPath, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import AddProjectForm, {
   ProjectFormData,
 } from '../components/directComponents/AddProjectForm.component';
@@ -10,7 +10,6 @@ import {
 } from '../styles/ExpenseManagementStyles.style';
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
-import { Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { ProjectEntity } from '../entities/ProjectEntity';
@@ -34,6 +33,10 @@ const ProjectManagement = () => {
     body: string;
   } | null>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
 
   const isProjectDetailsRoute = matchPath(
     '/projects/project-management/:id/:id',
@@ -106,14 +109,18 @@ const ProjectManagement = () => {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getAllProjects();
-      setAllProjects(res.data.projects);
+      const res = await getAllProjects(currentPage, itemsPerPage);
+      setAllProjects(res.data.projects || []);
+      const { totalSize, pageNumber, pageSize } = res.data.metadata || {};
+      setTotalItems(totalSize ?? 0);
+      setCurrentPage(pageNumber ?? 1);
+      setItemsPerPage(pageSize ?? 10);
       setLoading(false);
     } catch (error) {
       setLoading(false);
       toast.error('Error Fetching Project data');
     }
-  }, []);
+  }, [currentPage, itemsPerPage]);
 
   useEffect(() => {
     fetchData();
@@ -147,7 +154,7 @@ const ProjectManagement = () => {
               </>
             )}
           </span>
-          {!isCreateModalOpen && (
+          {!isCreateModalOpen && !isProjectDetailsRoute && (
             <Button
               className="submit shadow"
               onClick={handleOpenCreateModal}
@@ -174,6 +181,11 @@ const ProjectManagement = () => {
               isLoading: loading,
               updateProjectList,
               onEditProject,
+              totalItems,
+              currentPage,
+              setCurrentPage,
+              itemsPerPage,
+              setItemsPerPage,
             }}
           />
         )}

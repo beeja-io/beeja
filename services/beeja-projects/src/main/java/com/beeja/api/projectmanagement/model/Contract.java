@@ -46,6 +46,7 @@ public class Contract {
   private ContractBillingCurrency billingCurrency;
   private String signedBy;
   private Boolean isActive = true;
+  private List<String> attachmentIds;
 
   @CreatedDate private Date createdAt;
 
