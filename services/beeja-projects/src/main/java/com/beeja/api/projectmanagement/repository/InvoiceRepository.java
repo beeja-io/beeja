@@ -11,11 +11,8 @@ public interface InvoiceRepository extends MongoRepository<Invoice, String> {
 
     List<Invoice> findByContractId(String contractId);
     Invoice findByInvoiceIdAndOrganizationId(String invoiceId, String organizationId);
-    @Query(value = "{ 'invoiceId' : { $regex: ?0 } }", count = true)
-    long countByInvoiceIdRegex(String regex);
 
-  List<Invoice> findByContractId(String contractId);
+    long countByOrganizationIdAndInvoiceIdStartingWith(String organizationId, String prefix);
 
-  Invoice findByInvoiceIdAndOrganizationId(String invoiceId, String organizationId);
-
+    void deleteByInvoiceId(String invoiceId);
 }

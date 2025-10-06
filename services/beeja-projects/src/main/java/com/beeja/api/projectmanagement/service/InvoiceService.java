@@ -8,17 +8,14 @@ import java.util.List;
 public interface InvoiceService {
 
     Invoice generateInvoiceForContract(String contractId, InvoiceRequest invoiceRequest);
+
     Invoice getInvoiceById(String invoiceId);
+
     List<Invoice> getInvoicesByContractId(String contractId);
+
     Invoice markInvoiceAsPaid(String invoiceId);
+
     InvoiceIdentifiersResponse generateInvoiceIdentifiers(String contractId);
 
-  Invoice generateInvoiceForContract(String contractId, InvoiceRequest invoiceRequest);
-
-  Invoice getInvoiceById(String invoiceId);
-
-  List<Invoice> getInvoicesByContractId(String contractId);
-
-  Invoice markInvoiceAsPaid(String invoiceId);
 
 }

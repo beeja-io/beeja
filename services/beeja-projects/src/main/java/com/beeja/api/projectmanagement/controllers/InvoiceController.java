@@ -69,9 +69,10 @@ public class InvoiceController {
       log.warn("Invoice not found to mark as paid: {}", invoiceId);
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-
-    @PostMapping("/generate-identifiers")
-    public ResponseEntity<InvoiceIdentifiersResponse> generateInvoiceIdentifiers(@RequestBody String contractId) {
+}
+    @PostMapping("/generate-identifiers/{contractId}")
+    @HasPermission(PermissionConstants.CREATE_INVOICE)
+    public ResponseEntity<InvoiceIdentifiersResponse> generateInvoiceIdentifiers(@PathVariable String contractId) {
         try {
             InvoiceIdentifiersResponse response = invoiceService.generateInvoiceIdentifiers(contractId);
             return ResponseEntity.ok(response);
@@ -83,4 +84,4 @@ public class InvoiceController {
 
   }
 
-}
+

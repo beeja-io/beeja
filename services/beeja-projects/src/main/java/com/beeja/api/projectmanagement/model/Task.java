@@ -6,5 +6,5 @@ import lombok.Data;
 public class Task {
   String taskName;
   String description;
-  Double price;
+  Double amount;
 }

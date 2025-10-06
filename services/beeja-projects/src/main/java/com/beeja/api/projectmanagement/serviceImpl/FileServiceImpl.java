@@ -8,6 +8,7 @@ import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.exceptions.UnAuthorisedException;
 import com.beeja.api.projectmanagement.model.dto.File;
+import com.beeja.api.projectmanagement.repository.InvoiceRepository;
 import com.beeja.api.projectmanagement.request.FileUploadRequest;
 import com.beeja.api.projectmanagement.responses.FileDownloadResultMetaData;
 import com.beeja.api.projectmanagement.responses.FileResponse;
@@ -30,6 +31,9 @@ import org.springframework.stereotype.Service;
 public class FileServiceImpl implements FileService {
 
   @Autowired FileClient fileClient;
+
+    @Autowired
+    InvoiceRepository invoiceRepository;
 
   @Override
   public FileResponse listOfFileByEntityId(String entityId, int page, int size) {
@@ -85,13 +89,27 @@ public class FileServiceImpl implements FileService {
 
     ObjectMapper objectMapper = new ObjectMapper();
     File file = objectMapper.convertValue(responseBody, File.class);
-    if (!Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CLIENT)) {
-      throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
-    }
+      if (!Objects.equals(file.getEntityType(), Constants.FILE_TYPE_PROJECT) &&
+              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_INVOICE)) {
+          throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
+      }
     if (!UserContext.getLoggedInUserPermissions().contains(PermissionConstants.DELETE_ALL_DOCUMENT)
         && !Objects.equals(file.getCreatedBy(), UserContext.getLoggedInEmployeeId())) {
       throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
     }
+
+      if (Constants.ENTITY_TYPE_INVOICE.equalsIgnoreCase(file.getEntityType())) {
+          if (!UserContext.getLoggedInUserPermissions().contains(PermissionConstants.DELETE_INVOICE)) {
+              log.info(Constants.NOT_AUTHORIZED_TO_DELETE_INVOICE);
+              throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
+          }
+
+          String invoiceId = file.getEntityId();
+          if (invoiceId != null && !invoiceId.isEmpty()) {
+              invoiceRepository.deleteByInvoiceId(invoiceId);
+              log.info(Constants.INVOICE_DELETED_SUCCESSFULLY, invoiceId);
+          }
+      }
 
     ResponseEntity<?> deletedFile;
     try {
@@ -179,7 +197,8 @@ public class FileServiceImpl implements FileService {
           e.getMessage());
       throw new FeignClientException(Constants.FILE_NOT_FOUND + fileId);
     }
-    if (!Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CLIENT)) {
+    if (!Objects.equals(file.getEntityType(), Constants.FILE_TYPE_PROJECT) &&
+            !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_INVOICE)) {
       log.error(Constants.UNAUTHORISED_ACCESS);
       throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
     }
