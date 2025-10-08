@@ -49,6 +49,7 @@ import { useProfileImage } from '../../context/ProfileImageContext';
 import { LargeSVG, SmallSVG } from '../../svgs/profilePictureSvgs.svg';
 import { useTranslation } from 'react-i18next';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import { BlackText, GrayText } from '../../styles/CenterModalStyles.style';
 
 type QuickProfileProps = {
   employee: EmployeeEntity | undefined;
@@ -889,7 +890,12 @@ const MyProfileQuickDetailsComponent = ({
             compactButtonStyle={true}
             isExpanded={true}
             editText="Edit Profile Picture"
-            dragText="Drag and drop or Browse"
+            dragText={
+              <span>
+                <GrayText>{t('Drag and drop or')} </GrayText>
+                <BlackText>{t('browse')}</BlackText>
+              </span>
+            }
           />
         </div>
       )}
