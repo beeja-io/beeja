@@ -329,6 +329,7 @@ public class ProjectServiceImpl implements ProjectService {
 
       if (projects == null || projects.isEmpty()) {
           log.warn(Constants.PROJECT_NOT_FOUND_WITH_CLIENT);
+          return Collections.emptyList();
       }
 
       List<String> allManagerIds = projects.stream()
@@ -343,7 +344,7 @@ public class ProjectServiceImpl implements ProjectService {
               List<EmployeeNameDTO> managerDTOs = accountClient.getEmployeeNamesById(allManagerIds);
               managerDTOs.forEach(dto -> idToNameMap.put(dto.getEmployeeId(), dto.getFullName()));
           } catch (Exception e) {
-              log.error(Constants.FETCH_ERROR_FOR_PROJECT_MANAGERS);
+              log.error(Constants.FETCH_ERROR_FOR_PROJECT_MANAGERS, e);
           }
       }
 
