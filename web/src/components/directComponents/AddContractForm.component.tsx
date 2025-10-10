@@ -105,6 +105,7 @@ export type ContractFormData = {
     availability: number;
   }[];
   projectName: string;
+  attachments?: File[];
 };
 
 const AddContractForm: React.FC<AddContractFormProps> = ({
@@ -127,8 +128,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     projectManagers: [],
     rawProjectResources: [],
     projectName: '',
+    attachments: [],
   });
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [projectOptions, setProjectOptions] = useState<ProjectEntity[]>([]);
   const [resourceOptions, setResourceOptions] = useState<OptionType[]>([]);
   const [managerOptions, setManagerOptions] = useState<OptionType[]>([]);
@@ -251,6 +253,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         projectManagers: mappedManagers.map((m) => m.value),
         rawProjectResources: mappedResources,
         projectName: matchedProject?.name || '',
+        attachments: [],
       });
 
       setSelectedResources(mappedResources);
@@ -281,8 +284,10 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+      e.target.value = '';
     }
   };
 
@@ -331,25 +336,58 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   const handleSubmitData = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
     try {
-      const payload: any = {};
+      const formDataToSend = new FormData();
 
       Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'startDate' || key === 'endDate') {
+          return;
+        }
+
         if (key === 'resourceAllocations' && Array.isArray(value)) {
-          payload.projectResources = value.map((resource: any) => ({
-            employeeId: resource.value,
-            allocationPercentage: Number(resource.availability || 0),
-          }));
-        } else {
-          payload[key] = value;
+          value.forEach((resource: any, index: number) => {
+            formDataToSend.append(
+              `projectResources[${index}].employeeId`,
+              resource.value
+            );
+            formDataToSend.append(
+              `projectResources[${index}].allocationPercentage`,
+              String(Number(resource.availability || 0))
+            );
+          });
+        } else if (Array.isArray(value)) {
+          value.forEach((val: any) => {
+            formDataToSend.append(key, val);
+          });
+        } else if (value !== undefined && value !== null) {
+          formDataToSend.append(key, value as any);
         }
       });
+      if (files.length > 0) {
+        files.forEach((f) => {
+          formDataToSend.append('attachments', f);
+        });
+      }
+
+      if (formData.startDate) {
+        formDataToSend.append(
+          'startDate',
+          new Date(formData.startDate).toISOString().split('T')[0]
+        );
+      }
+      if (formData.endDate) {
+        formDataToSend.append(
+          'endDate',
+          new Date(formData.endDate).toISOString().split('T')[0]
+        );
+      }
 
       if (initialData?.contractId) {
-        await updateContract(initialData.contractId, payload);
+        await updateContract(initialData.contractId, formDataToSend);
         handleSuccessMessage('Contract has been successfully updated.', 'edit');
       } else {
-        const response = await postContracts(payload);
+        const response = await postContracts(formDataToSend);
         const contractId = response?.data?.contractId;
 
         if (contractId) {
@@ -674,6 +712,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         id="contractFile"
                         type="file"
                         accept=".pdf,.doc,.docx"
+                        multiple
                         style={{ display: 'none' }}
                         onChange={handleFileChange}
                       />
@@ -683,12 +722,22 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         <BrowseText>{t('Browse')}</BrowseText>
                       </UploadText>
                     </LogoUploadContainer>
-                    {file && (
+                    {files.length > 0 && (
                       <LogoLabel>
-                        <FileName>{file.name}</FileName>
-                        <RemoveButton onClick={() => setFile(null)}>
-                          x
-                        </RemoveButton>
+                        {files.map((f, idx) => (
+                          <FileName key={idx}>
+                            {f.name}
+                            <RemoveButton
+                              onClick={() =>
+                                setFiles((prev) =>
+                                  prev.filter((_, i) => i !== idx)
+                                )
+                              }
+                            >
+                              x
+                            </RemoveButton>
+                          </FileName>
+                        ))}
                       </LogoLabel>
                     )}
                   </div>
@@ -905,6 +954,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         id="contractFile"
                         type="file"
                         accept=".pdf,.doc,.docx"
+                        multiple
                         style={{ display: 'none' }}
                         onChange={handleFileChange}
                       />
@@ -914,12 +964,22 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         <BrowseText>{t('Browse')}</BrowseText>
                       </UploadText>
                     </LogoUploadContainer>
-                    {file && (
+                    {files.length > 0 && (
                       <LogoLabel>
-                        <FileName>{file.name}</FileName>
-                        <RemoveButton onClick={() => setFile(null)}>
-                          x
-                        </RemoveButton>
+                        {files.map((f, idx) => (
+                          <FileName key={idx}>
+                            {f.name}
+                            <RemoveButton
+                              onClick={() =>
+                                setFiles((prev) =>
+                                  prev.filter((_, i) => i !== idx)
+                                )
+                              }
+                            >
+                              x
+                            </RemoveButton>
+                          </FileName>
+                        ))}
                       </LogoLabel>
                     )}
                   </div>

@@ -17,6 +17,8 @@ import { FileEntity } from '../../entities/FileEntity';
 import {
   deleteEmployeeFile,
   downloadEmployeeFile,
+  downloadContractFile,
+  deleteContractFile,
 } from '../../service/axiosInstance';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import {
@@ -140,9 +142,11 @@ export const DocumentAction: React.FC<ActionProps> = ({
   const deleteFile = async (fileId: string) => {
     setIsLoading(true);
     try {
-      // Delete the file on the server
-      await deleteEmployeeFile(fileId);
-      // Update the list of files
+      if (file.entityType === 'invoice' || 'contract') {
+        await deleteContractFile(fileId);
+      } else {
+        await deleteEmployeeFile(fileId);
+      }
       fetchFiles();
       setIsLoading(false);
     } catch (error) {
@@ -194,7 +198,12 @@ export const DocumentAction: React.FC<ActionProps> = ({
     fileExtension: string
   ) => {
     try {
-      const response = await downloadEmployeeFile(fileId);
+      let response;
+      if (file.entityType === 'invoice' || file.entityType === 'contract') {
+        response = await downloadContractFile(fileId);
+      } else {
+        response = await downloadEmployeeFile(fileId);
+      }
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -211,10 +220,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
           alert('No permissions');
         } else {
           alert("Server Down! We'll come back soon");
-          console.error('Error downloading file:', axiosError);
         }
-      } else {
-        console.error('Error downloading file:', error);
       }
     }
   };
@@ -262,7 +268,6 @@ export const DocumentAction: React.FC<ActionProps> = ({
           handleModalSubmit={handleConfirmDelete}
           modalHeading="Delete"
           modalContent="Are you sure want to Delete the Document?"
-          // modalSVG={}
         />
       )}
       {isDocumentPreviewModalOpen && (
