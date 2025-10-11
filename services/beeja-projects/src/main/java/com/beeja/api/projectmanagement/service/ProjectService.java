@@ -37,7 +37,7 @@ public interface ProjectService {
    * @param clientId the unique identifier of the client
    * @return a list of {@link Project} objects associated with the given client ID
    */
-  List<Project> getProjectsByClientIdInOrganization(String clientId);
+  List<ProjectResponseDTO> getProjectsByClientIdInOrganization(String clientId);
 
   /**
    * Retrieves a list of all projects within an organization.
