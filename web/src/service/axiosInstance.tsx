@@ -359,7 +359,7 @@ export const getAllProjects = (
   projectId?: string,
   status?: string
 ): Promise<AxiosResponse<any>> => {
-  return axiosInstance.get('/projects/v1/projects/all-projects', {
+  return axiosInstance.get('/projects/v1/projects/projects', {
     params: {
       pageNumber,
       pageSize,

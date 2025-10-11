@@ -54,7 +54,7 @@ const ContractManagement = () => {
       setIsLoading(true);
       const res = await getAllContracts(currentPage, itemsPerPage);
       setContractList(res.data.contracts || []);
-      setTotalItems(res.data.metadata.totalSize ?? 0);
+      setTotalItems(res.data.metadata.totalRecords);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
