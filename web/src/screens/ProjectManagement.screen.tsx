@@ -111,10 +111,8 @@ const ProjectManagement = () => {
       setLoading(true);
       const res = await getAllProjects(currentPage, itemsPerPage);
       setAllProjects(res.data.data || []);
-      const { totalSize, pageNumber, pageSize } = res.data.metadata || {};
-      setTotalItems(totalSize ?? 0);
-      setCurrentPage(pageNumber ?? 1);
-      setItemsPerPage(pageSize ?? 10);
+      const { totalRecords} = res.data.metadata || {};
+      setTotalItems(totalRecords);
       setLoading(false);
     } catch (error) {
       setLoading(false);

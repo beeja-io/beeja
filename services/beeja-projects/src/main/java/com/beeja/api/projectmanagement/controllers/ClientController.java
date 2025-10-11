@@ -96,7 +96,7 @@ public class ClientController {
       String organizationId = UserContext.getLoggedInUserOrganization()
               .get(Constants.ID).toString();
 
-      Page<Client> page = clientService.getAllClientsOfOrganization(organizationId, pageNumber - 1, pageSize);
+      Page<Client> page = clientService.getAllClientsOfOrganization(organizationId, pageNumber, pageSize);
       Map<String, Object> response = new HashMap<>();
       response.put("metadata", Map.of(
               "totalRecords", page.getTotalElements(),
