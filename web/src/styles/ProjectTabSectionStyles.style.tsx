@@ -34,6 +34,10 @@ export const Tab = styled.div<{ active: boolean }>`
 
 export const TabContent = styled.div`
   overflow-x: auto;
+  overflow: visible;
+  position: relative;
+  z-index: 0;
+  margin-top: 18px;
 `;
 
 export const ProjectsTable = styled.table`
@@ -86,4 +90,63 @@ export const Avatar = styled.img`
   border-radius: 50%;
   border: 2px solid #fff;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.1);
+`;
+
+export const AttachmentList = styled.div`
+  margin-top: 1rem;
+`;
+
+export const AttachmentItem = styled.div`
+  overflow: visible !important;
+  z-index: 10;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+`;
+
+export const AttachmentInfo = styled.div`
+  display: flex;
+  align-items: center;
+
+  svg {
+    margin-right: 8px;
+  }
+`;
+
+export const FileDetails = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const FileName = styled.div`
+  font-weight: 500;
+`;
+
+export const FileMeta = styled.div`
+  font-size: 12px;
+  color: #666;
+`;
+
+export const MenuWrapper = styled.div`
+  position: relative;
+`;
+
+export const NoAttachments = styled.div`
+  text-align: center;
+  padding: 1rem;
+  color: #777;
+`;
+
+export const LoaderContainer = styled.div`
+  width: 100%;
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
