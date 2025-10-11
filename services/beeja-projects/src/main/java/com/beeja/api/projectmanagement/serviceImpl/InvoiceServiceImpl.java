@@ -11,6 +11,7 @@ import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Invoice;
 import com.beeja.api.projectmanagement.model.PaymentDetails;
 import com.beeja.api.projectmanagement.model.dto.File;
+import com.beeja.api.projectmanagement.model.dto.InvoiceIdentifiersResponse;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.repository.ContractRepository;
 import com.beeja.api.projectmanagement.repository.InvoiceRepository;
@@ -23,17 +24,23 @@ import com.beeja.api.projectmanagement.utils.InMemoryMultipartFile;
 import com.beeja.api.projectmanagement.utils.InvoicePDFGen;
 import com.beeja.api.projectmanagement.utils.PdfGenerationUtil;
 import com.beeja.api.projectmanagement.utils.UserContext;
+import com.beeja.api.projectmanagement.utils.Constants;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+
+
 
 @Slf4j
 @Service
@@ -57,9 +64,10 @@ public class InvoiceServiceImpl implements InvoiceService {
 
   @Override
   public Invoice generateInvoiceForContract(String contractId, InvoiceRequest request) {
+      String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
     Contract contract =
         contractRepository.findByContractIdAndOrganizationId(
-            contractId, UserContext.getLoggedInUserOrganization().get("id").toString());
+            contractId, orgId);
 
     if (contract == null) {
       throw new ResourceNotFoundException(
@@ -70,7 +78,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     Invoice invoice = new Invoice();
-    invoice.setInvoiceId(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+    invoice.setInvoiceId(request.getInvoiceId());
     invoice.setContractId(contractId);
     invoice.setOrganizationId(contract.getOrganizationId());
     invoice.setAmount(request.getAmount());
@@ -86,55 +94,48 @@ public class InvoiceServiceImpl implements InvoiceService {
     invoice.setVat(request.getVat());
     invoice.setDaysLeftForPayment(request.getDaysLeftForPayment());
     invoice.setInvoicePeriod(request.getInvoicePeriod());
+    invoice.setRemittanceRef(request.getRemittanceRef());
+    invoice.setCreatedByName(UserContext.getLoggedInUserName());
 
-    // taking Remittance Ref is ORG Name Prefix(3 letters) + invoiceId
-    String orgName = UserContext.getLoggedInUserOrganization().get("name").toString();
-    String prefix =
-        orgName.length() >= 3 ? orgName.substring(0, 3).toUpperCase() : orgName.toUpperCase();
-    String remittanceRef = prefix + invoice.getInvoiceId();
-    invoice.setRemittanceRef(remittanceRef);
 
     // setting TAX ID of a ORG
-    ResponseEntity<Object> orgResponse =
-        accountClient.getOrganizationById(
-            UserContext.getLoggedInUserOrganization().get("id").toString());
-    Map<String, Object> responseMap =
-        objectMapper.convertValue(
-            orgResponse.getBody(), new TypeReference<Map<String, Object>>() {});
-    Map<String, Object> accountsMap = (Map<String, Object>) responseMap.get("accounts");
-    String taxId = accountsMap.get("taxId").toString();
+    ResponseEntity<Object> orgResponse = accountClient.getOrganizationById(orgId);
 
-    invoice.setTaxId(taxId);
+
+   Map<String, Object> responseMap = objectMapper.convertValue(orgResponse.getBody(), new TypeReference<Map<String, Object>>() {});
+    Map<String, Object> accountsMap = (Map<String, Object>) responseMap.get("accounts");
+    String taxId = accountsMap.get("taxNumber").toString();
+        if (request.getTaxId() != null && !request.getTaxId().isBlank() && !request.getTaxId().equals(taxId)) {
+            invoice.setTaxId(request.getTaxId());
+            log.info(Constants.CUSTOMER_TAX_ID, request.getTaxId());
+        } else {
+            invoice.setTaxId(taxId);
+            log.info(Constants.ORG_TAX_ID, taxId);
+        }
 
     PaymentDetails invoicePaymentDetails = new PaymentDetails();
-    Map<String, Object> orgBankDetails =
-        (Map<String, Object>) UserContext.getLoggedInUserOrganization().get("bankDetails");
+    Map<String, Object> orgBankDetails = (Map<String, Object>) UserContext.getLoggedInUserOrganization().get("bankDetails");
     invoicePaymentDetails.setAccountName((String) orgBankDetails.get("accountName"));
     invoicePaymentDetails.setBankName((String) orgBankDetails.get("bankName"));
     invoicePaymentDetails.setAccountNumber((String) orgBankDetails.get("accountNumber"));
     invoicePaymentDetails.setIfscNumber((String) orgBankDetails.get("ifscNumber"));
-
     invoice.setPaymentDetails(invoicePaymentDetails);
 
     invoice = invoiceRepository.save(invoice);
 
-    Client client =
-        clientRepository.findByClientIdAndOrganizationId(
-            invoice.getClientId(),
-            UserContext.getLoggedInUserOrganization().get("id").toString()); // for Client Details
 
+        Client client = clientRepository.findByClientIdAndOrganizationId(invoice.getClientId(), orgId);
     try {
 
-      // byte[] pdfBytes = pdfGenerationUtil.generateInvoicePdf(invoice, contract);
-      byte[] invoicepdfBytes = invoicePDFGen.generatePDF(contract, invoice, client);
-      MultipartFile multipartFile = new InMemoryMultipartFile("invoice.pdf", invoicepdfBytes);
+      byte[] invoicePdfBytes = invoicePDFGen.generatePDF(contract, invoice, client);
+      MultipartFile multipartFile = new InMemoryMultipartFile("invoice.pdf", invoicePdfBytes);
 
       FileUploadRequest fileUpload = new FileUploadRequest();
       fileUpload.setFile(multipartFile);
       fileUpload.setName("invoice_" + invoice.getInvoiceId());
       fileUpload.setFileType("application/pdf");
       fileUpload.setEntityId(invoice.getInvoiceId());
-      fileUpload.setEntityType("project");
+      fileUpload.setEntityType(Constants.ENTITY_TYPE_INVOICE);
       fileUpload.setDescription("Invoice PDF for contract " + contractId);
 
       ResponseEntity<Object> uploadedFile = fileClient.uploadFile(fileUpload);
@@ -147,12 +148,12 @@ public class InvoiceServiceImpl implements InvoiceService {
 
       invoice = invoiceRepository.save(invoice);
     } catch (Exception e) {
-      log.error("Invoice PDF generation or upload failed: {}", e.getMessage());
+      log.error(Constants.INVOICE_PDF_FAILED, e.getMessage());
       throw new ResourceNotFoundException(
           BuildErrorMessage.buildErrorMessage(
-              ErrorType.API_ERROR, ErrorCode.VALIDATION_ERROR, "Failed to upload invoice PDF"));
+              ErrorType.API_ERROR, ErrorCode.VALIDATION_ERROR, Constants.INVOICE_PDF_FAILED));
     }
-
+    log.info(Constants.INVOICE_PDF_SUCCESS);
     return invoice;
   }
 
@@ -164,10 +165,55 @@ public class InvoiceServiceImpl implements InvoiceService {
     if (invoice == null) {
       throw new ResourceNotFoundException(
           BuildErrorMessage.buildErrorMessage(
-              ErrorType.DB_ERROR, ErrorCode.RESOURCE_NOT_FOUND, "Invoice not found"));
+              ErrorType.DB_ERROR, ErrorCode.RESOURCE_NOT_FOUND, Constants.INVOICE_NOT_FOUND));
     }
-    return invoice;
+      return invoice;
   }
+    @Override
+    public InvoiceIdentifiersResponse generateInvoiceIdentifiers(String contractId) {
+        try {
+            String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+            Contract contract = contractRepository.findByContractIdAndOrganizationId(contractId, organizationId);
+            if (contract == null) {
+                throw new ResourceNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.NOT_FOUND,
+                                ErrorCode.RESOURCE_NOT_FOUND,
+                                Constants.CONTRACT_NOT_FOUND
+                        )
+                );
+            }
+
+            if (contract.getEndDate() != null && contract.getEndDate().before(new Date())) {
+                log.warn(Constants.CONTRACT_ENDED, contractId, contract.getEndDate());
+                throw new IllegalStateException(Constants.CONTRACT_ENDED);
+            }
+            LocalDate now = LocalDate.now();
+            String yearMonth = now.format(DateTimeFormatter.ofPattern(Constants.YEAR_MONTH));
+            String prefix = Constants.INVOICE_PREFIX + yearMonth + "-";
+            Map<String, Object> org = UserContext.getLoggedInUserOrganization();
+            if (organizationId == null || org.get(Constants.NAME) == null) {
+                log.error(Constants.ORGANIZATION_MISSING);
+                throw new IllegalStateException(Constants.ORGANIZATION_MISSING);
+            }
+
+            String orgName = org.get(Constants.NAME).toString();
+            String orgPrefix = orgName.length() >= 3 ? orgName.substring(0, 3).toUpperCase() : orgName.toUpperCase();
+            long count = invoiceRepository.countByOrganizationIdAndInvoiceIdStartingWith(organizationId, prefix);
+            String serialNumber = String.format("%02d", count + 1);
+            String invoiceId = prefix + serialNumber;
+            String remittanceReferenceNumber = orgPrefix + "-" + invoiceId;
+
+            log.info(Constants.GEN_INVOICE_ID_REMITTANCE, invoiceId, remittanceReferenceNumber);
+
+            return new InvoiceIdentifiersResponse(invoiceId, remittanceReferenceNumber);
+
+        } catch (Exception e) {
+            log.error(Constants.GEN_INVOICE_ID_FAILED, contractId);
+            throw new RuntimeException(Constants.GEN_INVOICE_ID_FAILED + contractId);
+        }
+    }
+
 
   @Override
   public List<Invoice> getInvoicesByContractId(String contractId) {
@@ -180,4 +226,5 @@ public class InvoiceServiceImpl implements InvoiceService {
     invoice.setStatus(InvoiceStatus.PAID);
     return invoiceRepository.save(invoice);
   }
+
 }
