@@ -32,6 +32,7 @@ type DropdownMenuProps = {
   selected?: string;
   onValidationChange?: (isValid: boolean) => void;
   listClassName?: string;
+  sortOptions?: boolean;
 };
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
@@ -48,6 +49,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   required = false,
   onValidationChange,
   listClassName = '',
+  sortOptions = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value);
@@ -92,11 +94,13 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       event.preventDefault();
     }
   };
-  const sortedOptions = [...options].sort((a, b) => {
-    if (!a.value) return -1;
-    if (!b.value) return 1;
-    return String(a.label).localeCompare(String(b.label));
-  });
+  const sortedOptions = sortOptions
+    ? [...options].sort((a, b) => {
+        if (!a.value) return -1;
+        if (!b.value) return 1;
+        return String(a.label).localeCompare(String(b.label));
+      })
+    : options;
 
   return (
     <div>

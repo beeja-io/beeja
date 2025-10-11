@@ -303,6 +303,16 @@ export const MonogramArea = styled.div`
   margin-bottom: 40px;
   padding-top: 30px;
 `;
+
+export const GrayText = styled.span`
+  color: #a0aec0;
+  font-size: 24px;
+`;
+
+export const BlackText = styled.span`
+  color: #111111;
+  font-size: 24px;
+`;
 export const CenterModalTypeTwoInnerContainer = styled.section`
   display: flex;
   width: fit-content;
