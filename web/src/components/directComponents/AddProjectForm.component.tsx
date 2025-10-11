@@ -107,9 +107,9 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   }, []);
 
   useEffect(() => {
-    getAllClient(0, 10)
+    getAllClient(1, 10)
       .then((response) => {
-        const clients: Client[] = response.data;
+        const clients: Client[] = response.data.data;
         const clientOpts: OptionType[] = clients.map((client) => ({
           value: client.clientId,
           label: client.clientName,
