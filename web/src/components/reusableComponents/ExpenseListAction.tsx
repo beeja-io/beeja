@@ -152,6 +152,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
           handleClose={handleIsDeleteToastMessage}
         />
       )}
+      
       {isEditModalOpen && (
         <span style={{ cursor: 'default' }}>
           <CenterModalMain

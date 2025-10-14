@@ -914,6 +914,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
           )}
         </TableListContainer>
       </div>
+      
       {isExpensePreviewModalOpen && (
         <span style={{ cursor: 'default' }}>
           <CenterModalMain
