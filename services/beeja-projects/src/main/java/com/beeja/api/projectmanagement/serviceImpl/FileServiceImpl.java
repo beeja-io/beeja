@@ -90,7 +90,10 @@ public class FileServiceImpl implements FileService {
     ObjectMapper objectMapper = new ObjectMapper();
     File file = objectMapper.convertValue(responseBody, File.class);
       if (!Objects.equals(file.getEntityType(), Constants.FILE_TYPE_PROJECT) &&
-              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_INVOICE)) {
+              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_INVOICE) &&
+              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CLIENT) &&
+              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CONTRACT)) {
+          log.error(Constants.UNAUTHORISED_ACCESS);
           throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
       }
     if (!UserContext.getLoggedInUserPermissions().contains(PermissionConstants.DELETE_ALL_DOCUMENT)
@@ -197,8 +200,10 @@ public class FileServiceImpl implements FileService {
           e.getMessage());
       throw new FeignClientException(Constants.FILE_NOT_FOUND + fileId);
     }
-    if (!Objects.equals(file.getEntityType(), Constants.FILE_TYPE_PROJECT) &&
-            !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_INVOICE)) {
+      if (!Objects.equals(file.getEntityType(), Constants.FILE_TYPE_PROJECT) &&
+              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_INVOICE) &&
+              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CLIENT) &&
+              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CONTRACT)) {
       log.error(Constants.UNAUTHORISED_ACCESS);
       throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
     }

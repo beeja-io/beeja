@@ -7,6 +7,7 @@ import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
+import com.beeja.api.projectmanagement.responses.ProjectDropdownDTO;
 import com.beeja.api.projectmanagement.responses.ProjectEmployeeDTO;
 import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 import com.beeja.api.projectmanagement.service.ProjectService;
@@ -150,6 +151,13 @@ public class ProjectsController {
     @HasPermission(PermissionConstants.GET_PROJECT)
     public ResponseEntity<ProjectEmployeeDTO> getEmployeesByProjectId(@PathVariable String projectId) {
         return ResponseEntity.ok(projectService.getEmployeesByProjectId(projectId));
+    }
+
+    @GetMapping("/projects-dropdown")
+    @HasPermission(PermissionConstants.GET_PROJECT)
+    public List<ProjectDropdownDTO> getAllProjectsForDropdown() {
+        String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+        return projectService.getAllProjectsForDropdown(organizationId);
     }
 }
 
