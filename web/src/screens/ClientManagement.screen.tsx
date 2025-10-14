@@ -95,7 +95,7 @@ const ClientManagement = () => {
       setLoading(true);
       const res = await getAllClient(currentPage, itemsPerPage);
       setAllClients(res.data.data || []);
-      const { totalRecords} = res.data.metadata || {};
+      const { totalRecords } = res.data.metadata || {};
       setTotalItems(totalRecords);
       setLoading(false);
     } catch (error) {

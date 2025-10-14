@@ -29,6 +29,7 @@ const ContractManagement = () => {
     }
   };
 
+  const [isEditMode, setIsEditMode] = useState(false);
   const [contractList, setContractList] = useState<ContractDetails[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -69,11 +70,13 @@ const ContractManagement = () => {
     useState<ContractDetails | null>(null);
 
   const handleOpenCreateModal = useCallback(() => {
+    setIsEditMode(false);
     setIsCreateModalOpen(true);
     setSelectedContractData(null);
   }, []);
 
   const handleCloseModal = useCallback(() => {
+    setIsEditMode(false);
     setIsCreateModalOpen(false);
     setSelectedContractData(null);
   }, []);
@@ -105,6 +108,7 @@ const ContractManagement = () => {
     try {
       const { data } = await getContractDetails(contract.contractId);
       setSelectedContractData(data);
+      setIsEditMode(true);
       setIsCreateModalOpen(true);
     } catch (error) {
       toast.error('Failed_to_fetch_contract_details');
@@ -157,6 +161,7 @@ const ContractManagement = () => {
             handleClose={handleCloseModal}
             handleSuccessMessage={handleSuccessMessage}
             initialData={selectedContractData ?? undefined}
+            isEditMode={isEditMode}
           />
         ) : (
           <Outlet

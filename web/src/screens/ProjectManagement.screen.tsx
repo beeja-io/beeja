@@ -111,7 +111,7 @@ const ProjectManagement = () => {
       setLoading(true);
       const res = await getAllProjects(currentPage, itemsPerPage);
       setAllProjects(res.data.data || []);
-      const { totalRecords} = res.data.metadata || {};
+      const { totalRecords } = res.data.metadata || {};
       setTotalItems(totalRecords);
       setLoading(false);
     } catch (error) {
