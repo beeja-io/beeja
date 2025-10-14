@@ -794,7 +794,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                   {user &&
                     (hasPermission(user, EXPENSE_MODULE.UPDATE_EXPENSE) ||
                       hasPermission(user, EXPENSE_MODULE.DELETE_EXPENSE)) && (
-                      <th>{t('ACTION')}</th>
+                      <th>{t('ACTIONS')}</th>
                     )}
                 </tr>
               </TableHead>
