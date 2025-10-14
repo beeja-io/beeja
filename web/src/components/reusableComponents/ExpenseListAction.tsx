@@ -74,7 +74,10 @@ export const ExpenseAction: React.FC<ActionProps> = ({
       console.error('Error deleting expense:', error);
     }
   };
-
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const handleShowSuccessMessage = () => {
+    setShowSuccessMessage(!showSuccessMessage);
+  };
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
     if (option == 'Delete') {
@@ -157,6 +160,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
               <AddExpenseForm
                 handleClose={handleIsEditModalOpen}
                 handleLoadExpenses={fetchExpenses}
+                handleShowSuccessMessage={handleShowSuccessMessage}
                 mode="edit"
                 expense={currentExpense}
                 expenseCategories={expenseCategories}
