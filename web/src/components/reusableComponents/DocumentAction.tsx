@@ -142,7 +142,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
   const deleteFile = async (fileId: string) => {
     setIsLoading(true);
     try {
-      if (file.entityType === 'invoice' || 'contract') {
+      if (file.entityType === 'invoice' || file.entityType === 'contract') {
         await deleteContractFile(fileId);
       } else {
         await deleteEmployeeFile(fileId);
