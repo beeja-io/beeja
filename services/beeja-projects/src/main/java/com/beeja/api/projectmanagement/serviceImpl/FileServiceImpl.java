@@ -19,6 +19,8 @@ import com.beeja.api.projectmanagement.utils.UserContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 import java.util.Objects;
+import java.util.Set;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -35,7 +37,23 @@ public class FileServiceImpl implements FileService {
     @Autowired
     InvoiceRepository invoiceRepository;
 
-  @Override
+
+   private void validateEntityType(String entityType) {
+      Set<String> allowedTypes = Set.of(
+                Constants.FILE_TYPE_PROJECT,
+                Constants.ENTITY_TYPE_INVOICE,
+                Constants.ENTITY_TYPE_CLIENT,
+                Constants.ENTITY_TYPE_CONTRACT
+        );
+
+        if (!allowedTypes.contains(entityType)) {
+            log.error(Constants.UNAUTHORISED_ACCESS);
+            throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
+        }
+   }
+
+
+    @Override
   public FileResponse listOfFileByEntityId(String entityId, int page, int size) {
     if (UserContext.getLoggedInUserPermissions().contains(PermissionConstants.READ_ALL_DOCUMENTS)) {
       ResponseEntity<FileResponse> responseEntity;
@@ -89,13 +107,7 @@ public class FileServiceImpl implements FileService {
 
     ObjectMapper objectMapper = new ObjectMapper();
     File file = objectMapper.convertValue(responseBody, File.class);
-      if (!Objects.equals(file.getEntityType(), Constants.FILE_TYPE_PROJECT) &&
-              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_INVOICE) &&
-              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CLIENT) &&
-              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CONTRACT)) {
-          log.error(Constants.UNAUTHORISED_ACCESS);
-          throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
-      }
+    validateEntityType(file.getEntityType());
     if (!UserContext.getLoggedInUserPermissions().contains(PermissionConstants.DELETE_ALL_DOCUMENT)
         && !Objects.equals(file.getCreatedBy(), UserContext.getLoggedInEmployeeId())) {
       throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
@@ -200,13 +212,8 @@ public class FileServiceImpl implements FileService {
           e.getMessage());
       throw new FeignClientException(Constants.FILE_NOT_FOUND + fileId);
     }
-      if (!Objects.equals(file.getEntityType(), Constants.FILE_TYPE_PROJECT) &&
-              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_INVOICE) &&
-              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CLIENT) &&
-              !Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CONTRACT)) {
-      log.error(Constants.UNAUTHORISED_ACCESS);
-      throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
-    }
+
+    validateEntityType(file.getEntityType());
 
     try {
       ResponseEntity<byte[]> fileResponse = fileClient.downloadFile(fileId);
