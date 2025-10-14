@@ -36,7 +36,7 @@ export const TabContent = styled.div`
   overflow-x: auto;
   overflow: visible;
   position: relative;
-  z-index: 0;
+  z-index: 999;
   margin-top: 18px;
 `;
 
