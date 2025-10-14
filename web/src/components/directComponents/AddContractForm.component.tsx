@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { ContractDetails } from '../../entities/ContractEntiy';
 import { Employee, ProjectEntity } from '../../entities/ProjectEntity';
 import {
-  getAllProjects,
+  getProjectDropdown,
   getProjectEmployees,
   getResourceManager,
   postContracts,
@@ -106,6 +106,8 @@ export type ContractFormData = {
   }[];
   projectName: string;
   attachments?: File[];
+  projectId?: string;
+  clientId?: string;
 };
 
 const AddContractForm: React.FC<AddContractFormProps> = ({
@@ -128,6 +130,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     projectManagers: [],
     rawProjectResources: [],
     projectName: '',
+    projectId: '',
+    clientId: '',
     attachments: [],
   });
   const [files, setFiles] = useState<File[]>([]);
@@ -171,11 +175,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   const [isProjectLoading, setIsProjectLoading] = useState(false);
 
   useEffect(() => {
-    // Provide default values for pageNumber and pageSize, e.g. 1 and 10
-    getAllProjects(1, 10)
+    getProjectDropdown()
       .then((response) => {
-        const data = response.data.data;
-
+        const data = response.data;
         if (Array.isArray(data)) {
           setProjectOptions(data);
         } else {
@@ -306,7 +308,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         projectManagers: [],
         rawProjectResources: [],
       }));
-
+      setSelectedResources([]);
       setIsProjectLoading(true);
       try {
         const response = await getProjectEmployees(selectedProject.projectId);
@@ -422,6 +424,37 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
     return Object.keys(newErrors).length === 0;
   };
+
+  useEffect(() => {
+    if (initialData?.projectId && formInitialized) {
+      (async () => {
+        try {
+          setIsProjectLoading(true);
+          const response = await getProjectEmployees(initialData.projectId);
+
+          const managers = (response.data.managers || []).map((m: any) => ({
+            value: m.employeeId,
+            label: m.fullName,
+          }));
+
+          const resources = (response.data.resources || []).map((r: any) => ({
+            value: r.employeeId,
+            label: r.fullName,
+            availability: r.allocationPercentage ?? 0,
+          }));
+
+          setManagerOptions(managers);
+          setResourceOptions(resources);
+        } catch (error) {
+          toast.error('Failed to fetch project employees');
+          setManagerOptions([]);
+          setResourceOptions([]);
+        } finally {
+          setIsProjectLoading(false);
+        }
+      })();
+    }
+  }, [initialData?.projectId, formInitialized]);
 
   const isFormReady =
     !initialData ||

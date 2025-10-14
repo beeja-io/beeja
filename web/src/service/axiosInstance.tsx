@@ -110,7 +110,7 @@ export const uploadProfilePicture = (
   const formData = new FormData();
   formData.append('file', file);
   formData.append('entityId', entityId);
-  return axiosInstance.post('employees/v1/files/profile-pic', formData, {
+  return axiosInstance.post('/employees/v1/files/profile-pic', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -619,4 +619,12 @@ export const deleteLog = (id: string): Promise<AxiosResponse> => {
 
 export const updateLog = (id: string, data: any): Promise<AxiosResponse> => {
   return axiosInstance.put(`projects/api/timesheets/${id}`, data);
+};
+
+export const clientDropDown = () => {
+  return axiosInstance.get(`projects/v1/clients/clients-dropdown`);
+};
+
+export const getProjectDropdown = () => {
+  return axiosInstance.get(`projects/v1/projects/projects-dropdown`);
 };
