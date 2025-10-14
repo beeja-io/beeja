@@ -55,7 +55,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const [totalPages, setTotalPages] = useState<number | undefined>(
     Math.ceil(totalSize ? totalSize / 10 : 0)
   );
-
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const handleShowSuccessMessage = () => {
+    setShowSuccessMessage(!showSuccessMessage);
+  };
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -923,6 +926,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
               <AddExpenseForm
                 handleClose={handleIsExpensePreviewModalOpen}
                 handleLoadExpenses={fetchExpenses}
+                handleShowSuccessMessage={handleShowSuccessMessage}
                 mode="preview"
                 expense={expenseToBePreviewed}
                 handleModeOfModal={handleSetModeOfModal}

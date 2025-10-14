@@ -102,6 +102,10 @@ export const ExpenseAction: React.FC<ActionProps> = ({
       setIsOpen(false);
     }
   };
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const handleShowSuccessMessage = () => {
+    setShowSuccessMessage(!showSuccessMessage);
+  };
 
   window.addEventListener('click', handleDocumentClick);
   useKeyPress(27, () => {
@@ -157,6 +161,7 @@ export const ExpenseAction: React.FC<ActionProps> = ({
               <AddExpenseForm
                 handleClose={handleIsEditModalOpen}
                 handleLoadExpenses={fetchExpenses}
+                handleShowSuccessMessage={handleShowSuccessMessage}
                 mode="edit"
                 expense={currentExpense}
                 expenseCategories={expenseCategories}
