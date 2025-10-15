@@ -794,7 +794,7 @@ const AddClientForm = (props: AddClientFormProps) => {
               </ColumnWrapper>
               {!formData?.clientId && (
                 <LogoContainer>
-                  <LogoLabel>{t('Logos')}</LogoLabel>
+                  <LogoLabel>{t('Logo')}</LogoLabel>
                   <LogoUploadContainer
                     className="add_height"
                     onClick={() =>
