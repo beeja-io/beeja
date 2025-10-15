@@ -165,8 +165,16 @@ const ProjectList = ({
                             )
                           }
                         >
-                          {project?.projectManagerNames &&
-                            project?.projectManagerNames[0]}
+                          {Array.isArray(project?.projectManagerNames)
+                            ? project.projectManagerNames.map((name, index) => (
+                                <div key={index}>
+                                  {name}
+                                  {index <
+                                    project.projectManagerNames.length - 1 &&
+                                    ' ,'}
+                                </div>
+                              ))
+                            : project?.projectManagerNames}
                         </td>
                         <td>
                           {project?.projectStatus ? (

@@ -35,6 +35,7 @@ public class Constants {
   public static final String EXPENSE_CATEGORY_ALREADY_EXISTS =
       "Expense Category Type Already Exists";
   public static final String USER_ALREADY_FOUND = "User Already Found ";
+  public static final String EMAIL_ALREADY_EXISTS_IN_ANOTHER_ORG = "Email Already Exists In Another Organization";
   public static final String CANNOT_CREATE_ORGANIZATION_USER =
       "Cannot Create Organization User or Admin as it is already registered - please use different email";
   public static final String EMPLOYEE_WITH_ID_ALREADY_FOUND =
@@ -48,7 +49,7 @@ public class Constants {
   public static final String EMPLOYEE_FEIGN_CLIENT_ERROR = "Error in Employee EmployeeFeignClient";
   public static final String ERROR_IN_FETCHING_EMPLOYEE_COUNT = "Error in Fetching Employee Count";
   public static final String ERROR_IN_UPDATING_ORG_LOGO = "Error in Updating Organization Logo";
-
+  public static final String EMPLOYEE_ID_ALREADY_FOUND = "Given Employee Id already Existed";
   public static final String NO_REQUIRED_PERMISSIONS =
       "You have no required permissions to do this operation";
 
