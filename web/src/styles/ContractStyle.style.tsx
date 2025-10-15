@@ -85,6 +85,13 @@ export const FormInputsContainer = styled.div`
   gap: 40px;
   width: 100%;
   flex-wrap: wrap;
+
+  .infoText-contract {
+    color: ${(props) => props.theme.colors.grayColors.gray7};
+    font-size: 12px;
+
+    display: block;
+  }
 `;
 
 export const ColumnWrapper = styled.div`

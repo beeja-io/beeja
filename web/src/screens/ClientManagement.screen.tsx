@@ -66,12 +66,15 @@ const ClientManagement = () => {
   const handleSuccessMessage = (value: string, type: 'add' | 'edit') => {
     if (type === 'add') {
       setToastData({
-        heading: 'Client_Added_Successfully.',
-        body: `New_Client_has_been_added\nsuccessfully_with "Client ID: ${value}".`,
+        heading: t('Client Added Successfully.'),
+        body: t(
+          'New Client has been added\nsuccessfully with "Client ID: {{id}}".',
+          { id: value }
+        ),
       });
     } else if (type === 'edit') {
       setToastData({
-        heading: 'Client_Updated_Successfully.',
+        heading: t('Client Updated Successfully.'),
         body: value,
       });
     }

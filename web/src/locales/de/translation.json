@@ -205,6 +205,7 @@
   "Edit_Client": "Kunde bearbeiten",
   "Client_Details": "Kundendaten",
   "Add_New_Client": "Neuen Kunden hinzufügen",
+  "NEW_CLIENT_HAS_BEEN_ADDED\nSUCCESSFULLY_WITH": "Neuer Kunde wurde\nerfolgreich hinzugefügt mit",
   "The_Client_has_been_Updated_Successfully": "Der Client wurde erfolgreich aktualisiert",
   "The_Client_has_been_Added_Successfully": "Der Client wurde erfolgreich hinzugefügt",
   "Client_Successfully_Added.": "Client erfolgreich hinzugefügt.",
