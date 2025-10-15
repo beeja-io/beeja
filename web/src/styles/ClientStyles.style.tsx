@@ -362,9 +362,10 @@ export const LogoUploadContainer = styled.div`
   }
 `;
 
-export const FileName = styled.span`
-  font-size: 14px;
-  color: #333;
+export const FileName = styled.div`
+  display: block;
+  margin-top: 6px;
+  word-break: break-all;
 `;
 
 export const RemoveButton = styled.button`
@@ -375,6 +376,7 @@ export const RemoveButton = styled.button`
   cursor: pointer;
   line-height: 1;
   padding: 0;
+  margin-left: 15px;
 `;
 export const SubHeadingDivTwo = styled.div`
   font-family: 'Nunito';
@@ -620,6 +622,9 @@ export const SubHeadingDiv = styled.div`
   &.spacing {
     width: 150px;
   }
+  &.tax-container {
+    padding-left: 10px;
+  }
 `;
 
 export const SectionHeader = styled.div`
@@ -670,6 +675,9 @@ export const InfoText = styled.div`
   white-space: normal;
   &.description {
     padding-right: 0px;
+  }
+  &.tax-details {
+    padding-left: 10px;
   }
 `;
 

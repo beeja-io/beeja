@@ -476,6 +476,7 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
         <CenterModal
           handleModalClose={handleModalClose}
           handleModalSubmit={handleModalSubmit}
+          handleModalLeftButtonClick={handleModalClose}
           modalHeading="MAXIMUM_LOAN_LIMIT_REACHED"
           modalContent=""
           modalLeftButtonClass="changeAmountButton"

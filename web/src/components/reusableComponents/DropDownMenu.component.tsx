@@ -32,6 +32,7 @@ type DropdownMenuProps = {
   selected?: string;
   onValidationChange?: (isValid: boolean) => void;
   listClassName?: string;
+  sortOptions?: boolean;
 };
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
@@ -48,6 +49,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   required = false,
   onValidationChange,
   listClassName = '',
+  sortOptions = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value);
@@ -66,10 +68,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    setSelected(value ?? null);
-  }, [value]);
 
   useEffect(() => {
     setSelected(value ?? null);
@@ -96,11 +94,13 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       event.preventDefault();
     }
   };
-  const sortedOptions = [...options].sort((a, b) => {
-    if (!a.value) return -1;
-    if (!b.value) return 1;
-    return String(a.label).localeCompare(String(b.label));
-  });
+  const sortedOptions = sortOptions
+    ? [...options].sort((a, b) => {
+        if (!a.value) return -1;
+        if (!b.value) return 1;
+        return String(a.label).localeCompare(String(b.label));
+      })
+    : options;
 
   return (
     <div>
@@ -283,6 +283,10 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const markTouched = () => {
+    if (!touched) setTouched(true);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -290,7 +294,6 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setOpen(false);
-        setTouched(true);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -298,7 +301,7 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   }, []);
 
   const handleSelect = (option: { label: string; value: string }) => {
-    setTouched(true);
+    markTouched();
     if (value.some((v) => v.value === option.value)) {
       onChange(value.filter((v) => v.value !== option.value));
     } else {
@@ -312,7 +315,7 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
       )
     : options;
   const clearAll = () => {
-    setTouched(true);
+    markTouched();
     onChange([]);
   };
 
@@ -334,7 +337,12 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
               </CloseButtonStyle>
             </button>
           )}
-          <ToggleButtonStyle onClick={() => setOpen(!open)}>
+          <ToggleButtonStyle
+            onClick={() => {
+              markTouched();
+              setOpen(!open);
+            }}
+          >
             <span>
               {value.length > 0
                 ? value.map((opt) => opt.label).join(', ')

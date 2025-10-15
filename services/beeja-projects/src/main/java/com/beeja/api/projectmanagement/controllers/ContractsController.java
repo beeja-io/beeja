@@ -18,6 +18,7 @@ import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -39,9 +40,9 @@ public class ContractsController {
    * @return a {@link ResponseEntity} containing the created contract and HTTP status {@code 201
    *     Created}
    */
-  @PostMapping
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @HasPermission(PermissionConstants.CREATE_CONTRACT)
-  public ResponseEntity<Contract> createContract(@RequestBody ContractRequest request) {
+  public ResponseEntity<Contract> createContract(@ModelAttribute  ContractRequest request) {
     return ResponseEntity.status(HttpStatus.CREATED).body(contractService.createContract(request));
   }
 
@@ -77,11 +78,12 @@ public class ContractsController {
    * @param request the contract request containing updated contract details
    * @return a {@link ResponseEntity} containing the updated contract and HTTP status {@code 200 OK}
    */
-  @PutMapping("/{contractId}")
+  @PutMapping(value = "/{contractId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @HasPermission(PermissionConstants.UPDATE_CONTRACT)
   public ResponseEntity<Contract> updateContract(
-      @PathVariable String contractId, @RequestBody ContractRequest request) {
-    return ResponseEntity.ok(contractService.updateContract(contractId, request));
+          @PathVariable String contractId,
+          @ModelAttribute ContractRequest request) {
+      return ResponseEntity.ok(contractService.updateContract(contractId, request));
   }
 
   @GetMapping

@@ -28,6 +28,7 @@ export const ResourceAvailability = styled.small`
 
 export const ResourceAllocationRow = styled.div`
   display: flex;
+  flex: 1;
   align-items: center;
   height: 56px;
   margin-bottom: 20px;
@@ -392,4 +393,18 @@ export const RightSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+`;
+
+export const LogoLabel = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+`;
+
+export const FileName = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: #f5f5f5;
 `;

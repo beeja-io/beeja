@@ -5,6 +5,7 @@ import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.model.dto.EmployeeNameDTO;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
+import com.beeja.api.projectmanagement.responses.ProjectDropdownDTO;
 import com.beeja.api.projectmanagement.responses.ProjectEmployeeDTO;
 import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,7 @@ public interface ProjectService {
    * @param clientId the unique identifier of the client
    * @return a list of {@link Project} objects associated with the given client ID
    */
-  List<Project> getProjectsByClientIdInOrganization(String clientId);
+  List<ProjectResponseDTO> getProjectsByClientIdInOrganization(String clientId);
 
   /**
    * Retrieves a list of all projects within an organization.
@@ -63,5 +64,8 @@ public interface ProjectService {
   List<ProjectResponseDTO> getAllProjects(String organizationId, int pageNumber, int pageSize, String projectId, ProjectStatus status);
 
     ProjectEmployeeDTO getEmployeesByProjectId(String projectId);
+
+  List<ProjectDropdownDTO> getAllProjectsForDropdown(String organizationId);
+
 
 }

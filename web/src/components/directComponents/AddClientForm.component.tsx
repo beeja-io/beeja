@@ -165,7 +165,14 @@ const AddClientForm = (props: AddClientFormProps) => {
         },
       };
 
-      setFormData(mergedData);
+      const same = isSameAddress(
+        mergedData.primaryAddress,
+        mergedData.billingAddress
+      );
+      setFormData({
+        ...mergedData,
+        usePrimaryAddress: same,
+      });
 
       if (typeof props.initialData.logo === 'string') {
         setLogoPreviewUrl(props.initialData.logo);
@@ -177,16 +184,34 @@ const AddClientForm = (props: AddClientFormProps) => {
     }
   }, [props.initialData, props.isEditMode]);
 
-  const normalize = (val?: string | null) => (val ?? '').trim();
+  useEffect(() => {
+    if (formData.usePrimaryAddress) {
+      setFormData((prev) => ({
+        ...prev,
+        billingAddress: { ...prev.primaryAddress },
+      }));
+    }
+  }, [formData.primaryAddress, formData.usePrimaryAddress]);
+
+  const normalize = (value: any) =>
+    value?.toString().trim().toLowerCase() ?? '';
 
   const isSameAddress = (addr1: any, addr2: any) => {
     if (!addr1 || !addr2) return false;
+
+    const fields = ['street', 'city', 'state', 'postalCode', 'country'];
+    let hasValue = false;
+
     return (
-      normalize(addr1.street) === normalize(addr2.street) &&
-      normalize(addr1.city) === normalize(addr2.city) &&
-      normalize(addr1.state) === normalize(addr2.state) &&
-      normalize(addr1.postalCode) === normalize(addr2.postalCode) &&
-      normalize(addr1.country) === normalize(addr2.country)
+      fields.every((field) => {
+        const val1 = addr1[field];
+        const val2 = addr2[field];
+
+        if (!val1 || !val2) return true;
+
+        hasValue = true;
+        return normalize(val1) === normalize(val2);
+      }) && hasValue
     );
   };
 
@@ -534,6 +559,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       name="clientType"
                       id="clientType"
                       value={formData?.clientType || ''}
+                      className="largeContainerHei"
                       onChange={(e) => {
                         const event = {
                           target: {
@@ -685,6 +711,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       name="clientType"
                       id="clientType"
                       value={formData?.clientType || ''}
+                      className="largeContainerHei"
                       onChange={(e) => {
                         const event = {
                           target: {
@@ -715,7 +742,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     label={t('Select Industry')}
                     name="industry"
                     id="industry"
-                    className="largeContainerExp"
+                    className="largeContainerHei"
                     value={formData?.industry || ''}
                     onChange={(e) => {
                       const event = {
@@ -843,7 +870,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   label={t('Select category')}
                   name="taxDetails.taxCategory"
                   id="taxDetails.taxCategory"
-                  className="largeContainerExp"
+                  className="largeContainerHei"
                   value={formData.taxDetails?.taxCategory ?? ''}
                   required
                   onChange={(e) => {
@@ -1000,10 +1027,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   type="checkbox"
                   name="usePrimaryAddress"
                   style={{ cursor: 'pointer' }}
-                  checked={isSameAddress(
-                    formData.primaryAddress,
-                    formData.billingAddress
-                  )}
+                  checked={formData.usePrimaryAddress}
                   onChange={handleCheckboxChange}
                 />
               </div>
@@ -1019,6 +1043,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   <TextInput
                     type="text"
                     name="billingAddress.street"
+                    disabled={formData.usePrimaryAddress}
                     placeholder={t('Street')}
                     className="largeInput"
                     value={formData?.billingAddress?.street ?? ''}
@@ -1031,6 +1056,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <TextInput
                       type="text"
                       name="billingAddress.city"
+                      disabled={formData.usePrimaryAddress}
                       placeholder={t('City')}
                       className="largeInput"
                       value={formData?.billingAddress?.city ?? ''}
@@ -1042,6 +1068,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <TextInput
                       type="text"
                       name="billingAddress.state"
+                      disabled={formData.usePrimaryAddress}
                       placeholder={t('State')}
                       className="largeInput"
                       value={formData?.billingAddress?.state ?? ''}
@@ -1053,6 +1080,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     <TextInput
                       type="text"
                       name="billingAddress.postalCode"
+                      disabled={formData.usePrimaryAddress}
                       placeholder={t('Zip/Postal Code')}
                       className="largeInput"
                       value={formData?.billingAddress?.postalCode ?? ''}
@@ -1068,6 +1096,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   <TextInput
                     type="text"
                     name="billingAddress.country"
+                    disabled={formData.usePrimaryAddress}
                     placeholder={t('United_States_of_America')}
                     className="largeInput"
                     value={formData?.billingAddress?.country ?? ''}
@@ -1196,12 +1225,20 @@ const AddClientForm = (props: AddClientFormProps) => {
               <SummaryAddressContainer>
                 <SummaryAddressSubContainer>
                   <InfoBlock className="address">
-                    <SubHeadingDiv>{t('Tax_Category')}</SubHeadingDiv>
-                    <InfoText>{formData.taxDetails.taxCategory}</InfoText>
+                    <SubHeadingDiv className="spacing tax-container">
+                      {t('Tax_Category')}
+                    </SubHeadingDiv>
+                    <InfoText className="tax-details">
+                      {formData.taxDetails.taxCategory}
+                    </InfoText>
                   </InfoBlock>
-                  <InfoBlock style={{ display: 'flex' }}>
-                    <SubHeadingDiv>{t('GST_Number')}</SubHeadingDiv>
-                    <InfoText>{formData.taxDetails.taxNumber}</InfoText>
+                  <InfoBlock className="address">
+                    <SubHeadingDiv className="spacing tax-container">
+                      {t('GST_Number')}
+                    </SubHeadingDiv>
+                    <InfoText className="tax-details">
+                      {formData.taxDetails.taxNumber}
+                    </InfoText>
                   </InfoBlock>
                 </SummaryAddressSubContainer>
               </SummaryAddressContainer>
@@ -1218,55 +1255,79 @@ const AddClientForm = (props: AddClientFormProps) => {
                 <PrimaryContainer>
                   <h2>Primary Address</h2>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Street')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('Street')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.street}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('City')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('City')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.city}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('State')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('State')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.state}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Country')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('Country')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.country}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Zip/Postal Code')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('Zip/Postal Code')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.primaryAddress.postalCode}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Contact')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('Contact')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.contact}</InfoText>
                   </AddressBlock>
                 </PrimaryContainer>
                 <PrimaryContainer>
                   <h2>{t('Billing_Address')}</h2>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Street')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('Street')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.billingAddress.street}</InfoText>
                   </AddressBlock>
 
                   <AddressBlock>
-                    <SubHeadingDiv>{t('City')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('City')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.billingAddress.city}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('State')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('State')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.billingAddress.state}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Country')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('Country')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.billingAddress.country}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Zip/Postal Code')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('Zip/Postal Code')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.billingAddress.postalCode}</InfoText>
                   </AddressBlock>
                   <AddressBlock>
-                    <SubHeadingDiv>{t('Contact')}</SubHeadingDiv>
+                    <SubHeadingDiv className="spacing">
+                      {t('Contact')}
+                    </SubHeadingDiv>
                     <InfoText>{formData.contact}</InfoText>
                   </AddressBlock>
                 </PrimaryContainer>

@@ -32,7 +32,7 @@ import {
   LastNameRequired,
   ProfileCreationError,
 } from '../constants/Constants';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import React from 'react';
 import { useUser } from '../context/UserContext';
 import {
@@ -70,7 +70,6 @@ const EmployeeList = () => {
   const [employeeCount, setEmployeeCount] = useState<IEmployeeCount>();
   const [isLoadingData, setLoadingData] = useState(false);
 
-  const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +82,12 @@ const EmployeeList = () => {
   const [employeeTypes, setEmployeeTypes] = useState<OrgDefaults>();
   const [departmentOptions, setDepartmentOptions] = useState<OrgDefaults>();
   const [jobTitles, setJobTitles] = useState<OrgDefaults>();
+  const location = useLocation();
+  const initialPage =
+    Number(localStorage.getItem('employeeListCurrentPage')) ||
+    location.state?.page ||
+    1;
+  const [currentPage, setCurrentPage] = useState(initialPage);
 
   const handleDepartmentChange = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -260,7 +265,14 @@ const EmployeeList = () => {
   }, [fetchEmployees]);
 
   const handleNavigateToDetailedView = (employeeId: string) => {
-    navigate('/profile', { state: { employeeId } });
+    localStorage.setItem('employeeListCurrentPage', currentPage.toString());
+    navigate('/profile', {
+      state: {
+        employeeId: employeeId,
+        from: 'employeeList',
+        page: currentPage,
+      },
+    });
   };
 
   /*Below state used to set response loading when we click on Creat Profile Button
@@ -277,6 +289,7 @@ const EmployeeList = () => {
   const currentEmployees = finalEmpList;
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
+    localStorage.setItem('employeeListCurrentPage', newPage.toString());
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
@@ -284,6 +297,11 @@ const EmployeeList = () => {
     setCurrentPage(1);
   };
 
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('employeeListCurrentPage');
+    };
+  }, []);
   useEffect(() => {
     if (isCreateEmployeeModelOpen) {
       disableBodyScroll();

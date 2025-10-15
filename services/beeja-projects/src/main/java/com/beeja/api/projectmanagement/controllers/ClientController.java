@@ -96,7 +96,7 @@ public class ClientController {
       String organizationId = UserContext.getLoggedInUserOrganization()
               .get(Constants.ID).toString();
 
-      Page<Client> page = clientService.getAllClientsOfOrganization(organizationId, pageNumber - 1, pageSize);
+      Page<Client> page = clientService.getAllClientsOfOrganization(organizationId, pageNumber, pageSize);
       Map<String, Object> response = new HashMap<>();
       response.put("metadata", Map.of(
               "totalRecords", page.getTotalElements(),
@@ -108,4 +108,23 @@ public class ClientController {
 
       return ResponseEntity.ok(response);
   }
+
+    /**
+     * Retrieves a lightweight list of all clients (id & name) for populating dropdowns.
+     *
+     * @return A list of client IDs and names.
+     */
+    @GetMapping("/clients-dropdown")
+    @HasPermission(PermissionConstants.GET_CLIENT)
+    public ResponseEntity<List<Map<String, String>>> getClientsForDropdown() {
+        List<Client> clients = clientService.getAllClientsOfOrganization();
+        List<Map<String, String>> dropdownList = clients.stream()
+                .map(client -> Map.of(
+                        "clientId", client.getClientId(),
+                        "clientName", client.getClientName()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(dropdownList);
+    }
 }
