@@ -1018,6 +1018,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </div>
                 )}
               </ColumnWrapper>
+              <span className="infoText-contract">
+                File format : .pdf, .png, .jpeg
+              </span>
             </FormInputsContainer>
 
             <div className="formButtons">

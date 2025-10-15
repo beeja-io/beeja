@@ -831,6 +831,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   )}
                 </LogoContainer>
               )}
+              <span className="infoText">File format : .pdf, .png, .jpeg</span>
             </FormInputsContainer>
             <div className="formButtons">
               <Button

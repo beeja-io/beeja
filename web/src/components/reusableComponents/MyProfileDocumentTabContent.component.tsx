@@ -28,7 +28,7 @@ import {
   FormFileCloseIcon,
   NoDocsIcon,
   CalenderIcon,
-  EyeOnIcon
+  EyeOnIcon,
 } from '../../svgs/DocumentTabSvgs.svg';
 import { DocumentAction } from './DocumentAction';
 import {
@@ -562,6 +562,9 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                         <AlertISVG /> {errors.emptyFile}
                       </ValidationText>
                     )}
+                    <span className="infoText">
+                      File format : .pdf, .png, .jpeg (Maximum Size: 10MB)
+                    </span>
                   </InputLabelContainer>
                 </div>
                 <div>
@@ -606,9 +609,6 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                   </div>
                 </div>
                 <br />
-                <span className="infoText">
-                  File format : .pdf, .png, .jpeg (Maximum Size: 10MB)
-                </span>
               </form>
             </FileUploadForm>
           }

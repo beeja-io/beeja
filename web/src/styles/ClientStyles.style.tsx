@@ -325,6 +325,7 @@ export const LogoContainer = styled.div`
 `;
 
 export const LogoLabel = styled.div`
+  display: flex;
   font-family: Nunito;
   font-size: 14px;
   font-weight: 600;
@@ -377,6 +378,7 @@ export const RemoveButton = styled.button`
   line-height: 1;
   padding: 0;
   margin-left: 15px;
+  margin-top: 8px;
 `;
 export const SubHeadingDivTwo = styled.div`
   font-family: 'Nunito';
