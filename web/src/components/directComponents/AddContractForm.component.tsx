@@ -356,7 +356,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
       newErrors1.selectedResources =
         'Please add at least one Resource Allocation';
     }
+
     setErrorsSteptwo(newErrors1);
+
     return Object.keys(newErrors1).length === 0;
   };
 
@@ -1056,6 +1058,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         },
                       } as React.ChangeEvent<HTMLSelectElement>;
                       handleProjectChange(event);
+                      if (errorsSteptwo.projectName) {
+                        setErrorsSteptwo((prev) => ({
+                          ...prev,
+                          projectName: undefined,
+                        }));
+                      }
                     }}
                     options={[
                       { label: t('Select Project'), value: '' },
@@ -1065,7 +1073,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       })) || []),
                     ]}
                   />
-                  {errorsSteptwo.projectName && (
+                  {errorsSteptwo && errorsSteptwo?.projectName && (
                     <ValidationText>{errorsSteptwo.projectName}</ValidationText>
                   )}
                 </InputLabelContainer>
@@ -1095,11 +1103,17 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             ...prev,
                             projectManagers: values,
                           }));
+                          if (errorsSteptwo.projectManagers) {
+                            setErrorsSteptwo((prev) => ({
+                              ...prev,
+                              projectManagers: undefined,
+                            }));
+                          }
                         }}
                         placeholder={t('Select Project Managers')}
                         searchable={true}
                       />
-                      {errorsSteptwo.projectManagers && (
+                      {errorsSteptwo && errorsSteptwo?.projectManagers && (
                         <ValidationText>
                           {errorsSteptwo.projectManagers}
                         </ValidationText>
@@ -1133,6 +1147,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           },
                         } as React.ChangeEvent<HTMLSelectElement>;
                         setCurrentResource(event.target.value || null);
+                        if (errorsSteptwo.selectedResources) {
+                          setErrorsSteptwo((prev) => ({
+                            ...prev,
+                            selectedResources: undefined,
+                          }));
+                        }
                       }}
                       options={[
                         ...resourceOptions.map((opt) => ({
@@ -1197,7 +1217,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       {t('Save')}
                     </SaveButton>
                   </ResourceAllocationRow>
-                  {errorsSteptwo.selectedResources && (
+                  {errorsSteptwo && errorsSteptwo?.selectedResources && (
                     <ValidationText>
                       {errorsSteptwo.selectedResources}
                     </ValidationText>
