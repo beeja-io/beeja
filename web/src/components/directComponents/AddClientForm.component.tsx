@@ -679,6 +679,9 @@ const AddClientForm = (props: AddClientFormProps) => {
                         </RemoveButton>
                       </LogoLabel>
                     )}
+                    <span className="infoText">
+                      File format : .pdf, .png, .jpeg
+                    </span>
                   </InputLabelContainer>
                 )}
               </ColumnWrapper>
@@ -791,7 +794,7 @@ const AddClientForm = (props: AddClientFormProps) => {
               </ColumnWrapper>
               {!formData?.clientId && (
                 <LogoContainer>
-                  <LogoLabel>{t('Logo')}</LogoLabel>
+                  <LogoLabel>{t('Logos')}</LogoLabel>
                   <LogoUploadContainer
                     className="add_height"
                     onClick={() =>
@@ -829,9 +832,12 @@ const AddClientForm = (props: AddClientFormProps) => {
                       </RemoveButton>
                     </LogoLabel>
                   )}
+                  <br />
+                  <span className="infoText">
+                    File format : .pdf, .png, .jpeg
+                  </span>
                 </LogoContainer>
               )}
-              <span className="infoText">File format : .pdf, .png, .jpeg</span>
             </FormInputsContainer>
             <div className="formButtons">
               <Button
