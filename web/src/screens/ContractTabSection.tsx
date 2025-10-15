@@ -81,17 +81,11 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
   contractName,
 }) => {
   const { t } = useTranslation();
-
-  // Tabs state
   const [activeTab, setActiveTab] = useState<
     'Resources' | 'Invoices' | 'Attachments' | 'Description'
   >('Resources');
-
-  // Invoices state
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loadingInvoices, setLoadingInvoices] = useState(false);
-
-  // Attachments state
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loadingAttachments, setLoadingAttachments] = useState(false);
   const triggerRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
@@ -100,14 +94,10 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
     { title: 'Download', svg: <DownloadIcon /> },
     { title: 'Delete', svg: <DeleteIcon /> },
   ];
-
-  // Tabs switching logic
   useEffect(() => {
     if (activeTab === 'Invoices') fetchInvoices();
     if (activeTab === 'Attachments') fetchAttachments();
   }, [activeTab]);
-
-  // 📄 Fetch Invoices
   const fetchInvoices = async () => {
     setLoadingInvoices(true);
     try {
@@ -120,7 +110,6 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
     }
   };
 
-  // 📎 Fetch Attachments
   const fetchAttachments = async () => {
     setLoadingAttachments(true);
     try {
@@ -147,8 +136,6 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
       setLoadingAttachments(false);
     }
   };
-
-  // 🧠 Common Document Action handler (used for both invoice & attachments)
   const renderDocumentAction = (
     item: any,
     entityType: 'invoice' | 'contract',
@@ -216,7 +203,6 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
       </Tabs>
 
       <TabContent>
-        {/* Resources */}
         {activeTab === 'Resources' && (
           <ProjectsTable>
             <thead>
@@ -245,8 +231,6 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
             </tbody>
           </ProjectsTable>
         )}
-
-        {/* Invoices */}
         {activeTab === 'Invoices' && (
           <ProjectsTable>
             <thead>
@@ -293,7 +277,6 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
           </ProjectsTable>
         )}
 
-        {/* Attachments */}
         {activeTab === 'Attachments' && (
           <AttachmentList className="attachment-scroll-container">
             {loadingAttachments ? (
@@ -335,8 +318,6 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
             )}
           </AttachmentList>
         )}
-
-        {/* Description */}
         {activeTab === 'Description' && <div>{description}</div>}
       </TabContent>
     </Container>
