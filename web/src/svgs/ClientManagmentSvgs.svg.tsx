@@ -356,3 +356,24 @@ export const RupeeIcon = () => {
     </svg>
   );
 };
+
+export const StatusIcon: React.FC<{ open: boolean }> = ({ open }) => (
+  <svg
+    width="10"
+    height="6"
+    viewBox="0 0 8 5"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{
+      transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+      transition: 'transform 0.2s ease-in-out',
+    }}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M0.741035 0.646447C0.926999 0.451184 1.22851 0.451184 1.41447 0.646447L3.9349 3.29289L6.45532 0.646447C6.64128 0.451184 6.94279 0.451184 7.12876 0.646447C7.31472 0.841709 7.31472 1.15829 7.12876 1.35355L4.27161 4.35355C4.08565 4.54882 3.78414 4.54882 3.59818 4.35355L0.741035 1.35355C0.555072 1.15829 0.555072 0.841709 0.741035 0.646447Z"
+      fill="#111827"
+    />
+  </svg>
+);

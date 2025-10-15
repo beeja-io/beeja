@@ -663,6 +663,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
     employeeId: '',
   });
   const [emailMessage, setEmailMessage] = useState('');
+  const [employeeIdMessage, setEmployeeIdMessage] = useState('');
 
   useEffect(() => {
     const fetchOrganizationValues = async () => {
@@ -751,20 +752,30 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
       } catch (e) {
         if (axios.isAxiosError(e)) {
           const axiosError: AxiosError = e;
-          const responseData: string | undefined = (
-            axiosError.response?.data as { message?: string }
-          )?.message;
-          if (
-            responseData &&
-            responseData.startsWith('Employee With Given Id Is Already Found')
-          ) {
-            setResponseMessage('EMPLOYEE_ID_ALREADY_FOUND');
-          } else if (
-            responseData &&
-            responseData.startsWith('User Already Found')
-          ) {
+          const errorData = axiosError.response?.data as {
+            message?: string;
+            code?: string;
+          };
+
+          if (errorData?.code === 'EMPLOYEE_ID_ALREADY_FOUND') {
+            setResponseMessage(
+              'A profile with this Employee ID already exists'
+            );
+            setEmployeeIdMessage(
+              'A profile with this Employee ID already exists'
+            );
+          } else if (errorData?.code === 'EMPLOYEE_ALREADY_FOUND') {
             setResponseMessage('A profile with this email ID already exists');
             setEmailMessage('A profile with this email ID already exists');
+          } else if (
+            errorData?.code === 'EMAIL_ALREADY_EXISTS_IN_ANOTHER_ORG'
+          ) {
+            setResponseMessage(
+              'Email is already existed in another organization in Beeja'
+            );
+            setEmailMessage(
+              'Email is already existed in another organization in Beeja'
+            );
           } else {
             setResponseMessage(ProfileCreationError);
           }
@@ -774,6 +785,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
         setTimeout(() => {
           setResponseMessage('');
           setEmailMessage('');
+          setEmployeeIdMessage('');
         }, 5000);
       }
     }
@@ -861,6 +873,11 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           {errors.employeeId && (
             <ValidationText>
               <AlertISVG /> {errors.employeeId}
+            </ValidationText>
+          )}
+          {employeeIdMessage && (
+            <ValidationText>
+              <AlertISVG /> {employeeIdMessage}
             </ValidationText>
           )}
         </InputLabelContainer>

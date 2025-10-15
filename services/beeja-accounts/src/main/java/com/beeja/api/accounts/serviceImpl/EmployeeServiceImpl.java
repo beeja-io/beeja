@@ -97,6 +97,23 @@ public class EmployeeServiceImpl implements EmployeeService {
               Constants.USER_ALREADY_FOUND + userEmail));
     }
 
+      if (userRepository.findByEmail(userEmail) != null) {
+          throw new ResourceAlreadyFoundException(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.RESOURCE_EXISTS_ERROR,
+                          ErrorCode.EMAIL_ALREADY_EXISTS_IN_ANOTHER_ORG,
+                          Constants.EMAIL_ALREADY_EXISTS_IN_ANOTHER_ORG + userEmail));
+      }
+      String employeeId = addEmployeeRequest.getEmployeeId().toUpperCase();
+      if (userRepository.findByEmployeeIdAndOrganizations(
+              employeeId, UserContext.getLoggedInUserOrganization()) != null) {
+          throw new ResourceAlreadyFoundException(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.RESOURCE_EXISTS_ERROR,
+                          ErrorCode.EMPLOYEE_ID_ALREADY_FOUND,
+                          Constants.EMPLOYEE_ID_ALREADY_FOUND + employeeId));
+      }
+
     //    Checking for Employment Type
     OrgDefaults orgDefaults =
         orgDefaultsRepository.findByOrganizationIdAndKey(
