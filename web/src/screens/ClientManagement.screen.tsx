@@ -95,10 +95,8 @@ const ClientManagement = () => {
       setLoading(true);
       const res = await getAllClient(currentPage, itemsPerPage);
       setAllClients(res.data.data || []);
-      const { totalRecords, pageNumber, pageSize } = res.data.metadata || {};
-      setTotalItems(totalRecords ?? 0);
-      setCurrentPage(pageNumber ?? 1);
-      setItemsPerPage(pageSize ?? 10);
+      const { totalRecords } = res.data.metadata || {};
+      setTotalItems(totalRecords);
       setLoading(false);
     } catch (error) {
       setLoading(false);

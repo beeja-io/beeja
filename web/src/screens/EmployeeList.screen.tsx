@@ -83,7 +83,10 @@ const EmployeeList = () => {
   const [departmentOptions, setDepartmentOptions] = useState<OrgDefaults>();
   const [jobTitles, setJobTitles] = useState<OrgDefaults>();
   const location = useLocation();
-  const initialPage = location.state?.page || 1;
+  const initialPage =
+    Number(localStorage.getItem('employeeListCurrentPage')) ||
+    location.state?.page ||
+    1;
   const [currentPage, setCurrentPage] = useState(initialPage);
 
   const handleDepartmentChange = (
@@ -262,6 +265,7 @@ const EmployeeList = () => {
   }, [fetchEmployees]);
 
   const handleNavigateToDetailedView = (employeeId: string) => {
+    localStorage.setItem('employeeListCurrentPage', currentPage.toString());
     navigate('/profile', {
       state: {
         employeeId: employeeId,
@@ -285,6 +289,7 @@ const EmployeeList = () => {
   const currentEmployees = finalEmpList;
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
+    localStorage.setItem('employeeListCurrentPage', newPage.toString());
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
@@ -292,6 +297,11 @@ const EmployeeList = () => {
     setCurrentPage(1);
   };
 
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem('employeeListCurrentPage');
+    };
+  }, []);
   useEffect(() => {
     if (isCreateEmployeeModelOpen) {
       disableBodyScroll();

@@ -112,7 +112,7 @@ export const uploadProfilePicture = (
   const formData = new FormData();
   formData.append('file', file);
   formData.append('entityId', entityId);
-  return axiosInstance.post('employees/v1/files/profile-pic', formData, {
+  return axiosInstance.post('/employees/v1/files/profile-pic', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -295,6 +295,25 @@ export const downloadClientLogo = (
     responseType: 'blob',
   });
 };
+
+export const getAllAttachmentsByContractId = (
+  contractId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/files/${contractId}`);
+};
+
+export const deleteContractFile = (fileId: string): Promise<AxiosResponse> => {
+  return axiosInstance.delete(`/projects/v1/files/${fileId}`);
+};
+
+export const downloadContractFile = (
+  fileId: string
+): Promise<AxiosResponse<Blob>> => {
+  return axiosInstance.get(`/projects/v1/files/download/${fileId}`, {
+    responseType: 'blob',
+  });
+};
+
 export const postClient = (data: any): Promise<AxiosResponse> => {
   return axiosInstance.post(`/projects/v1/clients`, data);
 };
@@ -337,8 +356,12 @@ export const postProjects = (data: any): Promise<AxiosResponse> => {
   });
 };
 
-export const postContracts = (data: any): Promise<AxiosResponse> => {
-  return axiosInstance.post(`/projects/v1/contracts`, data);
+export const postContracts = (formData: FormData): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/contracts`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 };
 
 export const getProjectDetails = (id: string): Promise<AxiosResponse> => {
@@ -361,7 +384,7 @@ export const getAllProjects = (
   projectId?: string,
   status?: string
 ): Promise<AxiosResponse<any>> => {
-  return axiosInstance.get('/projects/v1/projects/all-projects', {
+  return axiosInstance.get('/projects/v1/projects/projects', {
     params: {
       pageNumber,
       pageSize,
@@ -444,10 +467,15 @@ export const updateContractStatus = (
 
 export const updateContract = (
   contractId: string,
-  data: any
-): Promise<AxiosResponse<any>> => {
-  return axiosInstance.put(`/projects/v1/contracts/${contractId}`, data);
+  formData: FormData
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(`/projects/v1/contracts/${contractId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 };
+
 export const getAllRolesInOrganization = (): Promise<AxiosResponse> => {
   return axiosInstance.get('/accounts/v1/roles');
 };
@@ -595,6 +623,14 @@ export const updateLog = (id: string, data: any): Promise<AxiosResponse> => {
   return axiosInstance.put(`projects/api/timesheets/${id}`, data);
 };
 
+export const clientDropDown = () => {
+  return axiosInstance.get(`projects/v1/clients/clients-dropdown`);
+};
+
+export const getProjectDropdown = () => {
+  return axiosInstance.get(`projects/v1/projects/projects-dropdown`);
+};
+
 export const generateInvoiceIdentifiers = (
   contractId: string
 ): Promise<AxiosResponse<InvoiceIdentifiers>> => {
@@ -626,18 +662,6 @@ export const createInvoice = (invoiceRequest: {
   [key: string]: any;
 }) => {
   return axiosInstance.post('/projects/v1/invoices', invoiceRequest);
-};
-
-export const downloadContractFile = (
-  fileId: string
-): Promise<AxiosResponse<Blob>> => {
-  return axiosInstance.get(`/projects/v1/files/download/${fileId}`, {
-    responseType: 'blob',
-  });
-};
-
-export const deleteContractFile = (fileId: string): Promise<AxiosResponse> => {
-  return axiosInstance.delete(`/projects/v1/files/${fileId}`);
 };
 
 export const getInvoicesBycontractId = (contractId: string) => {

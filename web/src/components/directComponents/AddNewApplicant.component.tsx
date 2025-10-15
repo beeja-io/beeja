@@ -349,6 +349,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     label="Select Experience"
                     name="experience"
                     id="experience"
+                    sortOptions={false}
                     onChange={(val) =>
                       handleChange({
                         target: {

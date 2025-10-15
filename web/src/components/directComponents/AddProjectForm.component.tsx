@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Client } from '../../entities/ClientEntity.tsx';
 import { Employee } from '../../entities/ProjectEntity.tsx';
 import {
-  getAllClient,
+  clientDropDown,
   getResourceManager,
   postProjects,
   putProject,
@@ -107,13 +107,14 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
   }, []);
 
   useEffect(() => {
-    getAllClient(0, 10)
+    clientDropDown()
       .then((response) => {
-        const clients: Client[] = response.data;
-        const clientOpts: OptionType[] = clients.map((client) => ({
-          value: client.clientId,
-          label: client.clientName,
-        }));
+        const clientOpts: OptionType[] = (response.data as Client[]).map(
+          (client) => ({
+            value: client.clientId,
+            label: client.clientName,
+          })
+        );
         setClientOptions(clientOpts);
       })
       .catch((error) => {

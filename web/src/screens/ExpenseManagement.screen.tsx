@@ -20,6 +20,7 @@ import { getOrganizationValuesByKey } from '../service/axiosInstance';
 import { OrganizationValues } from '../entities/OrgValueEntity';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { disableBodyScroll, enableBodyScroll } from '../constants/Utility';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 
 const ExpenseManagement = () => {
   const navigate = useNavigate();
@@ -34,6 +35,11 @@ const ExpenseManagement = () => {
     setIsCreateModalOpen(!isCreateModalOpen);
   };
 
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const handleShowSuccessMessage = () => {
+    setShowSuccessMessage(!showSuccessMessage);
+  };
+
   useKeyPress(78, () => {
     user &&
       hasPermission(user, EXPENSE_MODULE.CREATE_EXPENSE) &&
@@ -43,7 +49,6 @@ const ExpenseManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const forceRerender = () => {
-    toast.success('Expense added successfully');
     setKey((prevKey) => prevKey + 1);
   };
   const [expenseCategories, setExpenseCategories] =
@@ -180,6 +185,7 @@ const ExpenseManagement = () => {
                 <AddExpenseForm
                   handleClose={handleIsCreateModalOpen}
                   handleLoadExpenses={forceRerender}
+                  handleShowSuccessMessage={handleShowSuccessMessage}
                   mode="create"
                   expenseCategories={expenseCategories}
                   expenseTypes={expenseTypes}
@@ -187,6 +193,14 @@ const ExpenseManagement = () => {
                   expensePaymentModes={expensePaymentModes}
                 />
               }
+            />
+          )}
+          {showSuccessMessage && (
+            <ToastMessage
+              messageType="success"
+              messageBody={'THE_EXPENSE_HAS_BEEN_ADDED'}
+              messageHeading={'SUCCESSFULLY_ADDED'}
+              handleClose={handleShowSuccessMessage}
             />
           )}
         </>

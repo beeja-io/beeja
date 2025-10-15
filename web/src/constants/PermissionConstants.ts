@@ -65,6 +65,7 @@ export const CLIENT_MODULE = {
   UPDATE_CLIENT: 'UCL',
   READ_CLIENT: 'GCL',
   DELETE_CLIENT: 'DCL',
+  GENERATE_INVOICE: 'DEX',
 };
 
 export const CONTRACT_MODULE = {
@@ -112,8 +113,4 @@ export const KYC_MODULE = {
 export const PROFILE_PIC_MODULE = {
   UPDATE_PROFILE_PHOTO_SELF: 'UPPS',
   UPDATE_PROFILE_PHOTO_ALL: 'UPPA',
-};
-
-export const CLIENT_MODULE = {
-  GENERATE_INVOICE: 'DEX',
 };

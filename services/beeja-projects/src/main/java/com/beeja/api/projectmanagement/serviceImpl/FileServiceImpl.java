@@ -8,6 +8,7 @@ import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.exceptions.UnAuthorisedException;
 import com.beeja.api.projectmanagement.model.dto.File;
+import com.beeja.api.projectmanagement.repository.InvoiceRepository;
 import com.beeja.api.projectmanagement.request.FileUploadRequest;
 import com.beeja.api.projectmanagement.responses.FileDownloadResultMetaData;
 import com.beeja.api.projectmanagement.responses.FileResponse;
@@ -18,6 +19,8 @@ import com.beeja.api.projectmanagement.utils.UserContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.LinkedHashMap;
 import java.util.Objects;
+import java.util.Set;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -31,7 +34,26 @@ public class FileServiceImpl implements FileService {
 
   @Autowired FileClient fileClient;
 
-  @Override
+    @Autowired
+    InvoiceRepository invoiceRepository;
+
+
+   private void validateEntityType(String entityType) {
+      Set<String> allowedTypes = Set.of(
+                Constants.FILE_TYPE_PROJECT,
+                Constants.ENTITY_TYPE_INVOICE,
+                Constants.ENTITY_TYPE_CLIENT,
+                Constants.ENTITY_TYPE_CONTRACT
+        );
+
+        if (!allowedTypes.contains(entityType)) {
+            log.error(Constants.UNAUTHORISED_ACCESS);
+            throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
+        }
+   }
+
+
+    @Override
   public FileResponse listOfFileByEntityId(String entityId, int page, int size) {
     if (UserContext.getLoggedInUserPermissions().contains(PermissionConstants.READ_ALL_DOCUMENTS)) {
       ResponseEntity<FileResponse> responseEntity;
@@ -85,13 +107,24 @@ public class FileServiceImpl implements FileService {
 
     ObjectMapper objectMapper = new ObjectMapper();
     File file = objectMapper.convertValue(responseBody, File.class);
-    if (!Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CLIENT)) {
-      throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
-    }
+    validateEntityType(file.getEntityType());
     if (!UserContext.getLoggedInUserPermissions().contains(PermissionConstants.DELETE_ALL_DOCUMENT)
         && !Objects.equals(file.getCreatedBy(), UserContext.getLoggedInEmployeeId())) {
       throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
     }
+
+      if (Constants.ENTITY_TYPE_INVOICE.equalsIgnoreCase(file.getEntityType())) {
+          if (!UserContext.getLoggedInUserPermissions().contains(PermissionConstants.DELETE_INVOICE)) {
+              log.info(Constants.NOT_AUTHORIZED_TO_DELETE_INVOICE);
+              throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
+          }
+
+          String invoiceId = file.getEntityId();
+          if (invoiceId != null && !invoiceId.isEmpty()) {
+              invoiceRepository.deleteByInvoiceId(invoiceId);
+              log.info(Constants.INVOICE_DELETED_SUCCESSFULLY, invoiceId);
+          }
+      }
 
     ResponseEntity<?> deletedFile;
     try {
@@ -179,10 +212,8 @@ public class FileServiceImpl implements FileService {
           e.getMessage());
       throw new FeignClientException(Constants.FILE_NOT_FOUND + fileId);
     }
-    if (!Objects.equals(file.getEntityType(), Constants.ENTITY_TYPE_CLIENT)) {
-      log.error(Constants.UNAUTHORISED_ACCESS);
-      throw new UnAuthorisedException(Constants.UNAUTHORISED_ACCESS);
-    }
+
+    validateEntityType(file.getEntityType());
 
     try {
       ResponseEntity<byte[]> fileResponse = fileClient.downloadFile(fileId);

@@ -394,3 +394,17 @@ export const RightSection = styled.div`
   flex-direction: column;
   gap: 20px;
 `;
+
+export const LogoLabel = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+`;
+
+export const FileName = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: #f5f5f5;
+`;

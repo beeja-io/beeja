@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Container,
@@ -6,24 +6,41 @@ import {
   Tab,
   TabContent,
   Tabs,
+  AttachmentList,
+  AttachmentItem,
+  AttachmentInfo,
+  FileDetails,
+  FileName,
+  FileMeta,
+  NoAttachments,
+  LoaderContainer,
 } from '../styles/ProjectTabSectionStyles.style';
-import { PdfSVG } from '../svgs/InvoiceSvgs.svg';
-import { getInvoicesBycontractId } from '../service/axiosInstance';
-import { DeleteIcon, DownloadIcon } from '../svgs/DocumentTabSvgs.svg';
-import { DocumentAction } from '../components/reusableComponents/DocumentAction';
-import PulseLoader from '../components/loaders/PulseAnimation.loader';
 import {
   InvId,
   PdfCell,
   PdfWrapper,
 } from '../styles/InvoiceManagementStyles.style';
 import { toast } from 'sonner';
+import {
+  getAllAttachmentsByContractId,
+  getInvoicesBycontractId,
+} from '../service/axiosInstance.tsx';
+import {
+  PdfSVG,
+  ExcelIconSVG,
+  DownloadIcon,
+  DeleteIcon,
+} from '../svgs/DocumentTabSvgs.svg.tsx';
+import { FileEntity } from '../entities/FileEntity.tsx';
+import PulseLoader from '../components/loaders/PulseAnimation.loader';
+import { DocumentAction } from '../components/reusableComponents/DocumentAction.tsx';
 
 interface RawProjectResource {
   employeeId: string;
   name: string;
   allocationPercentage: number;
 }
+
 interface Invoice {
   contractId: string;
   organizationId: string;
@@ -35,12 +52,23 @@ interface Invoice {
   createdByName: string;
   invoiceFileId: string;
 }
+
+interface Attachment {
+  fileId: string;
+  name: string;
+  fileSize?: string;
+  uploadedBy?: string;
+  uploadedOn?: string;
+  createdBy?: string;
+}
+
 interface ContactTabSectionProps {
   contractId: string;
   description: string;
   rawProjectResources: RawProjectResource[];
   contractName: string;
 }
+
 interface ActionType {
   title: string;
   svg: React.ReactNode;
@@ -52,12 +80,115 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
   rawProjectResources,
   contractName,
 }) => {
-  const [activeTab, setActiveTab] = useState<
-    'Resources' | 'Invoices' | 'Description'
-  >('Resources');
   const { t } = useTranslation();
+
+  // Tabs state
+  const [activeTab, setActiveTab] = useState<
+    'Resources' | 'Invoices' | 'Attachments' | 'Description'
+  >('Resources');
+
+  // Invoices state
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loadingInvoices, setLoadingInvoices] = useState(false);
+
+  // Attachments state
+  const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [loadingAttachments, setLoadingAttachments] = useState(false);
+  const triggerRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
+
+  const commonActions: ActionType[] = [
+    { title: 'Download', svg: <DownloadIcon /> },
+    { title: 'Delete', svg: <DeleteIcon /> },
+  ];
+
+  // Tabs switching logic
+  useEffect(() => {
+    if (activeTab === 'Invoices') fetchInvoices();
+    if (activeTab === 'Attachments') fetchAttachments();
+  }, [activeTab]);
+
+  // 📄 Fetch Invoices
+  const fetchInvoices = async () => {
+    setLoadingInvoices(true);
+    try {
+      const response = await getInvoicesBycontractId(contractId);
+      setInvoices(response.data || []);
+    } catch {
+      toast.error(t('Failed to fetch the invoices'));
+    } finally {
+      setLoadingInvoices(false);
+    }
+  };
+
+  // 📎 Fetch Attachments
+  const fetchAttachments = async () => {
+    setLoadingAttachments(true);
+    try {
+      const response = await getAllAttachmentsByContractId(contractId);
+      const files =
+        response.data.files?.map((file: any) => ({
+          fileId: file.id,
+          name: file.name,
+          fileSize: file.fileSize || '',
+          uploadedBy: file.createdByName || '',
+          uploadedOn: file.createdAt
+            ? new Date(file.createdAt).toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })
+            : '',
+          createdBy: file.createdBy,
+        })) || [];
+      setAttachments(files);
+    } catch {
+      setAttachments([]);
+    } finally {
+      setLoadingAttachments(false);
+    }
+  };
+
+  // 🧠 Common Document Action handler (used for both invoice & attachments)
+  const renderDocumentAction = (
+    item: any,
+    entityType: 'invoice' | 'contract',
+    fetchCallback: () => void
+  ) => {
+    const fileObj: FileEntity = {
+      id: item.fileId || item.invoiceFileId,
+      entityId: item.contractId || contractId,
+      name: item.name || item.invoiceId,
+      organizationId: item.organizationId || '',
+      description: item.description || item.notes?.join(', ') || '',
+      entityType: entityType,
+      fileFormat: item.name?.split('.').pop() || 'pdf',
+      fileSize: item.fileSize || '',
+      fileType: entityType,
+      createdAt: item.createdAt || new Date().toISOString(),
+      createdBy: item.createdByName || item.uploadedBy || '',
+      createdByName: item.createdByName || item.uploadedBy || '',
+      modifiedAt: item.modifiedAt || new Date(),
+      modifiedBy: item.modifiedBy || item.createdByName || item.uploadedBy,
+    };
+
+    return (
+      <DocumentAction
+        options={commonActions}
+        fileId={fileObj.id}
+        fetchFiles={fetchCallback}
+        fileName={fileObj.name}
+        fileExtension={fileObj.fileFormat}
+        file={fileObj}
+      />
+    );
+  };
+
+  const getFileIcon = (fileName: string) => {
+    const ext = fileName.split('.').pop()?.toLowerCase();
+    if (ext === 'pdf') return <PdfSVG />;
+    if (ext === 'xls' || ext === 'xlsx') return <ExcelIconSVG />;
+    return <PdfSVG />;
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -68,89 +199,24 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
     });
   };
 
-  const Actions: ActionType[] = [
-    { title: 'Download', svg: <DownloadIcon /> },
-    { title: 'Delete', svg: <DeleteIcon /> },
-  ];
-
-  useEffect(() => {
-    if (activeTab === 'Invoices') {
-      fetchInvoices();
-    }
-  }, [activeTab]);
-
-  const fetchInvoices = async () => {
-    setLoadingInvoices(true);
-    try {
-      const response = await getInvoicesBycontractId(contractId);
-      setInvoices(response.data || []);
-    } catch (error) {
-      toast.error(t('Failed to fetch the invoices'));
-    } finally {
-      setLoadingInvoices(false);
-    }
-  };
-
-  const renderDocumentAction = (
-    item: any,
-    entityType: 'invoice' | 'contract',
-    fetchCallback: () => void,
-    options: ActionType[]
-  ) => {
-    const fileObj = {
-      id: item.fileId || item.invoiceFileId || item.attachmentId,
-      entityId: item.entityId || item.contractId || '',
-      name: item.name || item.fileName || item.invoiceId || '',
-      organizationId: item.organizationId || '',
-      description: item.description || item.notes?.join(', ') || '',
-      entityType: entityType,
-      fileFormat: item.fileFormat || 'pdf',
-      fileSize: item.fileSize || '',
-      fileType: item.fileType || entityType,
-      createdAt: item.createdAt || item.uploadedAt || '',
-      createdBy: item.createdByName || item.uploadedBy || '',
-      createdByName: item.createdByName || item.uploadedBy || '',
-      modifiedAt: item.modifiedAt || new Date(),
-      modifiedBy: item.modifiedBy || item.createdByName || item.uploadedBy,
-    };
-
-    return (
-      <DocumentAction
-        options={options}
-        fileId={fileObj.id}
-        fetchFiles={fetchCallback}
-        fileName={fileObj.name}
-        fileExtension={fileObj.fileFormat}
-        file={fileObj}
-      />
-    );
-  };
-
   return (
     <Container>
       <Tabs>
-        {[t('Resources'), t('Invoices'), t('Description')].map(
-          (tabLabel, index) => {
-            const tabKey =
-              index === 0
-                ? 'Resources'
-                : index === 1
-                  ? 'Invoices'
-                  : 'Description';
-            return (
-              <Tab
-                key={tabKey}
-                active={activeTab === tabKey}
-                onClick={() => setActiveTab(tabKey as any)}
-              >
-                {tabLabel}
-              </Tab>
-            );
-          }
+        {['Resources', 'Invoices', 'Attachments', 'Description'].map(
+          (tabKey) => (
+            <Tab
+              key={tabKey}
+              active={activeTab === tabKey}
+              onClick={() => setActiveTab(tabKey as any)}
+            >
+              {t(tabKey)}
+            </Tab>
+          )
         )}
       </Tabs>
 
       <TabContent>
+        {/* Resources */}
         {activeTab === 'Resources' && (
           <ProjectsTable>
             <thead>
@@ -161,18 +227,18 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
               </tr>
             </thead>
             <tbody>
-              {rawProjectResources && rawProjectResources.length > 0 ? (
-                rawProjectResources.map((resource, index) => (
-                  <tr key={index}>
-                    <td>{resource.employeeId}</td>
-                    <td>{resource.name}</td>
-                    <td>{resource.allocationPercentage}%</td>
+              {rawProjectResources.length ? (
+                rawProjectResources.map((r, idx) => (
+                  <tr key={idx}>
+                    <td>{r.employeeId}</td>
+                    <td>{r.name}</td>
+                    <td>{r.allocationPercentage}%</td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan={3} style={{ textAlign: 'center' }}>
-                    {t('No  Resources  Found')}
+                    {t('No Resources Found')}
                   </td>
                 </tr>
               )}
@@ -180,6 +246,7 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
           </ProjectsTable>
         )}
 
+        {/* Invoices */}
         {activeTab === 'Invoices' && (
           <ProjectsTable>
             <thead>
@@ -217,12 +284,7 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
                     <td>{invoice.createdByName || '-'}</td>
                     <td>{formatDate(invoice.createdAt)}</td>
                     <td>
-                      {renderDocumentAction(
-                        invoice,
-                        'invoice',
-                        fetchInvoices,
-                        Actions
-                      )}
+                      {renderDocumentAction(invoice, 'invoice', fetchInvoices)}
                     </td>
                   </tr>
                 ))
@@ -231,6 +293,50 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
           </ProjectsTable>
         )}
 
+        {/* Attachments */}
+        {activeTab === 'Attachments' && (
+          <AttachmentList className="attachment-scroll-container">
+            {loadingAttachments ? (
+              <LoaderContainer>
+                <PulseLoader />
+              </LoaderContainer>
+            ) : attachments.length ? (
+              attachments.map((attachment) => (
+                <AttachmentItem
+                  key={attachment.fileId}
+                  ref={(el) =>
+                    el
+                      ? triggerRefs.current.set(attachment.fileId, el)
+                      : triggerRefs.current.delete(attachment.fileId)
+                  }
+                >
+                  <AttachmentInfo>
+                    {getFileIcon(attachment.name)}
+                    <FileDetails>
+                      <FileName>{attachment.name}</FileName>
+                      <FileMeta>
+                        {attachment.fileSize}
+                        {attachment.uploadedBy &&
+                          ` Uploaded by ${attachment.uploadedBy}`}
+                        {attachment.uploadedOn &&
+                          ` on ${attachment.uploadedOn}`}
+                      </FileMeta>
+                    </FileDetails>
+                  </AttachmentInfo>
+                  {renderDocumentAction(
+                    attachment,
+                    'contract',
+                    fetchAttachments
+                  )}
+                </AttachmentItem>
+              ))
+            ) : (
+              <NoAttachments>{t('No Attachments Found')}</NoAttachments>
+            )}
+          </AttachmentList>
+        )}
+
+        {/* Description */}
         {activeTab === 'Description' && <div>{description}</div>}
       </TabContent>
     </Container>

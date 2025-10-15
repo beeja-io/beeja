@@ -15,7 +15,10 @@ public class Constants {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String FILE_TYPE_PROJECT = "project";
   public static final String ENTITY_TYPE_CLIENT = "client";
-    public static final String ENTITY_TYPE_CONTRACT = "contract";
+  public static final String ENTITY_TYPE_INVOICE = "invoice";
+  public static final String ORGANIZATION_MISSING = "Organization information is missing.";
+  public static final String YEAR_MONTH = "yyyyMM";
+  public static final String ENTITY_TYPE_CONTRACT = "contract";
 
   // ========== Success Messages ==========
   public static final String USER_SUCCESSFULLY_AUTHENTICATED = "User Successfully Authenticated";
@@ -111,4 +114,19 @@ public class Constants {
   public static final String FILE_NOT_ALLOWED =
       "File type not allowed. Allowed types: image/jpeg, image/jpg, image/png, image/webp";
   public static final String  DELETED_SUCCESSFULLY = "Deleted Successfully logo file with id {}";
+
+  //============ Invoice Constants =============//
+
+  public static final String INVOICE_PDF_SUCCESS = "Invoice generation completed successfully";
+  public static final String INVOICE_PDF_FAILED = "Invoice PDF generation or upload failed: {}";
+  public static final String CUSTOMER_TAX_ID = "Customer Tax ID set as Tax Id: {}";
+  public static final String ORG_TAX_ID = "Organization Tax ID set as Tax Id: {}";
+  public static final String INVOICE_NOT_FOUND = "Invoice not found with given invoiceId";
+  public static final String CONTRACT_ENDED = "Cannot generate invoice. Contract {} ended on {}";
+  public static final String INVOICE_PREFIX = "INV-";
+  public static final String GEN_INVOICE_ID_REMITTANCE = "Generated invoiceId: {}, remittanceReferenceNumber: {}";
+  public static final String GEN_INVOICE_ID_FAILED = "Failed to generate invoice Id for contractId: {}";
+  public static final String INVOICE_DELETED_SUCCESSFULLY = "Invoice deleted successfully for id: {}";
+  public static final String NOT_AUTHORIZED_TO_DELETE_INVOICE = "Not authorized to delete invoice";
+  public static final String LINE = "________________________________________________________________________________";
 }

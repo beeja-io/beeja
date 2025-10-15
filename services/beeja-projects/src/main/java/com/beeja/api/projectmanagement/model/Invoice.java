@@ -40,6 +40,7 @@ public class Invoice {
   private List<Task> tasks;
   private int vat;
   private String daysLeftForPayment;
+  private String createdByName;
   private InvoicePeriod invoicePeriod;
 
   @CreatedDate private Date createdAt;

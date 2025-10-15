@@ -16,8 +16,8 @@ import { useUser } from '../../context/UserContext';
 import { FileEntity } from '../../entities/FileEntity';
 import {
   deleteEmployeeFile,
-  deleteContractFile,
   downloadEmployeeFile,
+  deleteContractFile,
   downloadContractFile,
 } from '../../service/axiosInstance';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
@@ -142,7 +142,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
   const deleteFile = async (fileId: string) => {
     setIsLoading(true);
     try {
-      if (file.entityType === 'invoice') {
+      if (file.entityType === 'invoice' || file.entityType === 'contract') {
         await deleteContractFile(fileId);
       } else {
         await deleteEmployeeFile(fileId);
@@ -197,10 +197,12 @@ export const DocumentAction: React.FC<ActionProps> = ({
     fileExtension: string
   ) => {
     try {
-      const response =
-        file.entityType === 'invoice'
-          ? await downloadContractFile(fileId)
-          : await downloadEmployeeFile(fileId);
+      let response;
+      if (file.entityType === 'invoice' || file.entityType === 'contract') {
+        response = await downloadContractFile(fileId);
+      } else {
+        response = await downloadEmployeeFile(fileId);
+      }
 
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
@@ -217,10 +219,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
           alert('No permissions');
         } else {
           alert("Server Down! We'll come back soon");
-          console.error('Error downloading file:', axiosError);
         }
-      } else {
-        console.error('Error downloading file:', error);
       }
     }
   };
@@ -268,7 +267,6 @@ export const DocumentAction: React.FC<ActionProps> = ({
           handleModalSubmit={handleConfirmDelete}
           modalHeading="Delete"
           modalContent="Are you sure want to Delete the Document?"
-          // modalSVG={}
         />
       )}
       {isDocumentPreviewModalOpen && (
