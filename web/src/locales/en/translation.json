@@ -403,7 +403,7 @@
   "Billing_Address": "Billing Address",
   "Tax_Details": "Tax Details",
   "VAT/ GST_Number": "VAT/ GST Number",
-  "Tax_Category": "Tax Category",
+
   "Projects": "Projects",
   "Contracts": "Contracts",
   "Resources": "Resources",
@@ -490,8 +490,13 @@
   "Client": "Client",
   "Clients": "Clients",
   "Projects & Contracts": "Projects & Contracts",
-  "EXCISE_TAX": "Excise TAX",
-  "SALES_TAX": "Sales TAX",
+  "Tax_Category": "Tax Category",
+  "TaxCategory": {
+    "EXCISE_TAX": "Excise Tax",
+    "SALES_TAX": "Sales Tax",
+    "GST": "GST",
+    "VAT": "VAT"
+  },
   "INTERNAL": "Internal",
   "INDIVIDUAL": "Individual",
   "COMPANY": "Company",

@@ -892,7 +892,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   options={[
                     { label: 'Select', value: '' },
                     ...(clientOptions?.taxCategory ?? []).map((category) => ({
-                      label: t(category),
+                      label: t(`TaxCategory.${category}`),
                       value: category,
                     })),
                   ]}
@@ -1236,7 +1236,18 @@ const AddClientForm = (props: AddClientFormProps) => {
                       {t('Tax_Category')}
                     </SubHeadingDiv>
                     <InfoText className="tax-details">
-                      {formData.taxDetails.taxCategory}
+                      {formData.taxDetails?.taxCategory
+                        ? t(
+                            `TaxCategory.${formData.taxDetails.taxCategory.toUpperCase()}`,
+                            {
+                              defaultValue:
+                                formData.taxDetails.taxCategory.replace(
+                                  /_/g,
+                                  ' '
+                                ),
+                            }
+                          )
+                        : '-'}
                     </InfoText>
                   </InfoBlock>
                   <InfoBlock className="address">
