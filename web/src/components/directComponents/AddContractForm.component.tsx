@@ -80,6 +80,7 @@ type AddContractFormProps = {
   handleClose: () => void;
   handleSuccessMessage: (value: string, type: 'add' | 'edit') => void;
   initialData?: ContractDetails;
+  isEditMode?: boolean;
 };
 
 type OptionType = {
@@ -114,6 +115,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   handleClose,
   handleSuccessMessage,
   initialData,
+  isEditMode,
 }) => {
   const { t } = useTranslation();
   const [step, setStep] = useState(1);
@@ -156,7 +158,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     billingType?: string;
     billingCurrency?: string;
   }>({});
-
+  const [errorsSteptwo, setErrorsSteptwo] = useState<{
+    projectName?: string;
+    selectedResources?: string;
+    projectManagers?: string;
+  }>({});
   const formatDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, '0');
     const month = date.toLocaleString('en-US', { month: 'short' });
@@ -331,11 +337,38 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
       } finally {
         setIsProjectLoading(false);
       }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        projectName: '',
+        projectManagers: [],
+      }));
     }
+  };
+
+  const validateStepTwo = () => {
+    const newErrors1: typeof errorsSteptwo = {};
+    if (!formData.projectName || formData.projectName === null) {
+      newErrors1.projectName = 'Please select a Project';
+    }
+    if (!formData.projectManagers || formData.projectManagers.length === 0) {
+      newErrors1.projectManagers = 'Please select at least one Project Manager';
+    }
+    if (!selectedResources || selectedResources.length === 0) {
+      newErrors1.selectedResources =
+        'Please add at least one Resource Allocation';
+    }
+
+    setErrorsSteptwo(newErrors1);
+
+    return Object.keys(newErrors1).length === 0;
   };
 
   const handleSubmitData = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!validateStepTwo()) {
+      return;
+    }
     setIsSubmitting(true);
 
     try {
@@ -597,7 +630,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           }));
                         }
                       }}
-                      required={true}
                       options={[
                         { label: 'Select Contract', value: '' },
                         ...Object.values(ContractType).map((type) => ({
@@ -684,7 +716,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     id="billingType"
                     className="largeContainerExp largeContainerHei"
                     value={formData.billingType || ''}
-                    required
                     onChange={(e) => {
                       const event = {
                         target: {
@@ -849,7 +880,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           }));
                         }
                       }}
-                      required={true}
                       options={[
                         { label: 'Select Contract', value: '' },
                         ...Object.values(ContractType).map((type) => ({
@@ -935,7 +965,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     id="billingCurrency"
                     className="largeContainerExp largeContainerHei"
                     value={formData.billingCurrency || ''}
-                    required={true}
                     onChange={(e) => {
                       const event = {
                         target: {
@@ -1067,8 +1096,13 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         },
                       } as React.ChangeEvent<HTMLSelectElement>;
                       handleProjectChange(event);
+                      if (errorsSteptwo?.projectName) {
+                        setErrorsSteptwo((prev) => ({
+                          ...prev,
+                          projectName: undefined,
+                        }));
+                      }
                     }}
-                    required={true}
                     options={[
                       { label: t('Select Project'), value: '' },
                       ...(projectOptions?.map((project) => ({
@@ -1077,6 +1111,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       })) || []),
                     ]}
                   />
+                  {errorsSteptwo && errorsSteptwo?.projectName && (
+                    <ValidationText>{errorsSteptwo.projectName}</ValidationText>
+                  )}
                 </InputLabelContainer>
 
                 {isProjectLoading ? (
@@ -1104,11 +1141,23 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             ...prev,
                             projectManagers: values,
                           }));
+                          if (errorsSteptwo?.projectManagers) {
+                            setErrorsSteptwo((prev) => ({
+                              ...prev,
+                              projectManagers: undefined,
+                            }));
+                          }
                         }}
-                        required
                         placeholder={t('Select Project Managers')}
                         searchable={true}
                       />
+                      {errorsSteptwo &&
+                        !errorsSteptwo?.projectName &&
+                        errorsSteptwo?.projectManagers && (
+                          <ValidationText>
+                            {errorsSteptwo.projectManagers}
+                          </ValidationText>
+                        )}
                     </InputLabelContainer>
                   </div>
                 )}
@@ -1138,6 +1187,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           },
                         } as React.ChangeEvent<HTMLSelectElement>;
                         setCurrentResource(event.target.value || null);
+                        if (errorsSteptwo?.selectedResources) {
+                          setErrorsSteptwo((prev) => ({
+                            ...prev,
+                            selectedResources: undefined,
+                          }));
+                        }
                       }}
                       options={[
                         ...resourceOptions.map((opt) => ({
@@ -1202,6 +1257,13 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       {t('Save')}
                     </SaveButton>
                   </ResourceAllocationRow>
+                  {errorsSteptwo &&
+                    !errorsSteptwo?.projectName &&
+                    errorsSteptwo?.selectedResources && (
+                      <ValidationText>
+                        {errorsSteptwo.selectedResources}
+                      </ValidationText>
+                    )}
                 </FormField>
               </RowWrapper>
             </FormResourceContainer>
@@ -1222,13 +1284,20 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             </span>
                             <button
                               className="remove-btn"
-                              onClick={() =>
-                                setSelectedResources((prev) =>
-                                  prev.filter(
+                              onClick={() => {
+                                setSelectedResources((prev) => {
+                                  const updated = prev.filter(
                                     (item) => item.value !== option.value
-                                  )
-                                )
-                              }
+                                  );
+
+                                  setFormData((form) => ({
+                                    ...form,
+                                    resourceAllocations: updated,
+                                  }));
+
+                                  return updated;
+                                });
+                              }}
                             >
                               ✕
                             </button>
@@ -1253,7 +1322,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   {t('Cancel')}
                 </Button>
                 <Button className="submit" type="submit">
-                  {t('Submit')}
+                  {isEditMode ? t('Update') : t('Add')}
                 </Button>
               </ButtonGroup>
             </AddContractButtons>
