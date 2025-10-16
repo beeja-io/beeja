@@ -84,6 +84,8 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
     name: '',
     clientName: '',
     startDate: '',
+    projectResources: '',
+    projectManagers: '',
   });
 
   const handleDiscardModalToggle = () => {
@@ -154,6 +156,12 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
       }));
       setIsStartDateCalOpen(false);
     }
+    if (errors.startDate) {
+      setErrors((prev) => ({
+        ...prev,
+        startDate: '',
+      }));
+    }
   };
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -195,6 +203,14 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
       name: !projectFormData.name ? 'Project Name Required' : '',
       clientName: !projectFormData.clientId ? 'Client Name Required' : '',
       startDate: !startDate ? 'Start Date Required' : '',
+      projectManagers:
+        projectFormData.projectManagers.length === 0
+          ? 'Select at least one Project Manager'
+          : '',
+      projectResources:
+        projectFormData.projectResources.length === 0
+          ? 'Select at least one Resource'
+          : '',
     };
     setErrors(newErrors);
 
@@ -256,9 +272,8 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     className={`largeInput ${errors.name ? 'errorEnabledInput' : ''}`}
                     value={projectFormData.name}
                     onChange={handleChange}
-                    required
                   />
-                  {errors.name && (
+                  {errors && errors?.name && (
                     <ValidationText>{errors.name}</ValidationText>
                   )}
                 </InputLabelContainer>
@@ -295,8 +310,13 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                           clientName: '',
                         }));
                       }
+                      if (errors?.clientName) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          clientName: '',
+                        }));
+                      }
                     }}
-                    required={true}
                     options={[
                       { label: 'Select Client', value: '' },
                       ...clientOptions.map((opt) => ({
@@ -305,6 +325,9 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       })),
                     ]}
                   />
+                  {errors && errors?.clientName && (
+                    <ValidationText>{errors.clientName}</ValidationText>
+                  )}
                 </InputLabelContainer>
               )}
               <InputLabelContainer>
@@ -326,11 +349,19 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       ...prev,
                       projectManagers: values,
                     }));
+                    if (errors?.projectManagers) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        projectManagers: '',
+                      }));
+                    }
                   }}
-                  required
                   placeholder={t('Select Project Managers')}
                   searchable={true}
                 />
+                {errors && errors?.projectManagers && (
+                  <ValidationText>{errors.projectManagers}</ValidationText>
+                )}
               </InputLabelContainer>
               {!projectFormData?.projectId && (
                 <InputLabelContainer>
@@ -367,7 +398,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       )}
                     </div>
                   </DateInputWrapper>
-                  {errors.startDate && (
+                  {errors && errors.startDate && (
                     <ValidationText>{errors.startDate}</ValidationText>
                   )}
                 </InputLabelContainer>
@@ -388,8 +419,10 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     className="largeInput"
                     value={projectFormData.name}
                     onChange={handleChange}
-                    required
                   />
+                  {errors && errors?.name && (
+                    <ValidationText>{errors.name}</ValidationText>
+                  )}
                 </InputLabelContainer>
               )}
               {projectFormData?.projectId && (
@@ -459,8 +492,13 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                           clientName: '',
                         }));
                       }
+                      if (errors?.clientName) {
+                        setErrors((prev) => ({
+                          ...prev,
+                          clientName: '',
+                        }));
+                      }
                     }}
-                    required={true}
                     options={[
                       { label: 'Select Client', value: '' },
                       ...clientOptions.map((opt) => ({
@@ -469,6 +507,9 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       })),
                     ]}
                   />
+                  {errors && errors?.clientName && (
+                    <ValidationText>{errors.clientName}</ValidationText>
+                  )}
                 </InputLabelContainer>
               )}
 
@@ -490,11 +531,19 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       ...prev,
                       projectResources: values,
                     }));
+                    if (errors?.projectResources) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        projectResources: '',
+                      }));
+                    }
                   }}
-                  required
                   placeholder={t('Select Resources')}
                   searchable={true}
                 />
+                {errors && errors?.projectResources && (
+                  <ValidationText>{errors.projectResources}</ValidationText>
+                )}
               </InputLabelContainer>
 
               {!projectFormData?.projectId && (
