@@ -1377,6 +1377,14 @@ const AddClientForm = (props: AddClientFormProps) => {
           </Button>
         </ButtonGroup>
       )}
+      {showErrorMessage && (
+        <ToastMessage
+          messageType="error"
+          messageBody="Email Already Exists"
+          messageHeading="Error Occured"
+          handleClose={handleShowErrorMessage}
+        />
+      )}
       {isDiscardModalOpen && (
         <CenterModal
           handleModalLeftButtonClick={handleDiscardModalToggle}
