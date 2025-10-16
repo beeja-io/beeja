@@ -72,16 +72,14 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       1;
     return diffDays;
   };
-  const generateDueRemarks = (
-    endDate: Date | undefined,
-    amount: number | undefined
-  ): string => {
+  const generateDueRemarks = (endDate: Date | undefined): string => {
     const dueDays = getRemainingDueDays(endDate);
     if (!endDate || dueDays <= 0) {
       return t('The contract has ended.');
     }
-    const amountText = amount !== undefined ? `$${amount.toFixed(2)}` : '';
-    return `Please transfer the due amount to the following bank account with in next ${dueDays}${amountText} days.`;
+    return t(
+      `Please transfer the due amount to the following bank account with in next ${dueDays} days.`
+    );
   };
 
   const getBillingCurrency = (value?: string): BillingCurrency => {
@@ -150,8 +148,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       ifscNumber: organizationDetails?.bankDetails?.ifscNumber || '',
     },
     dueRemarks: generateDueRemarks(
-      props.endDate ? new Date(props.endDate) : undefined,
-      props.dueDays
+      props.endDate ? new Date(props.endDate) : undefined
     ),
     remarksNote: 'Thank you so much for the great opportunity as always',
   });
@@ -191,8 +188,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       },
       clientName: props.clientName || '',
       dueRemarks: generateDueRemarks(
-        props.endDate ? new Date(props.endDate) : undefined,
-        props.dueDays
+        props.endDate ? new Date(props.endDate) : undefined
       ),
       taxId: organizationDetails?.taxId || prevData.taxId,
       organization: organizationDetails?.name || '',
@@ -349,7 +345,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     if (!rowData.contract.trim()) {
       setErrors((prevState) => ({
         ...prevState,
-        contract: '* Contract name should not be empty',
+        contract: t('* Task name should not be empty'),
         description: '',
         price: '',
       }));
@@ -360,7 +356,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
         ...prevState,
         contract: '',
         description: '',
-        price: '* price should not be empty',
+        price: t('* price should not be empty'),
       }));
       return;
     }
@@ -399,6 +395,15 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
   const handleSaveButtonClick = (e: { preventDefault: () => void }) => {
     e.preventDefault();
+
+    if (data.length === 0) {
+      toast.error(
+        t(
+          'Please add at least one Task and Price before generating the invoice.'
+        )
+      );
+      return;
+    }
 
     if (
       !formData.contractId ||
@@ -728,10 +733,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                           setFormData((prevState) => ({
                             ...prevState,
                             toDate: selectedDate,
-                            dueRemarks: generateDueRemarks(
-                              selectedDate,
-                              props.dueDays
-                            ),
+                            dueRemarks: generateDueRemarks(selectedDate),
                           }));
                         }
                       }}

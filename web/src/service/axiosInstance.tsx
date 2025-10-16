@@ -606,29 +606,29 @@ export const updateOrganizationValues = (
   );
 };
 export const PostLogHours = (data: any): Promise<AxiosResponse> => {
-  return axiosInstance.post('projects/api/timesheets', data, {
+  return axiosInstance.post('/projects/api/timesheets', data, {
     headers: { 'Content-Type': 'application/json' },
   });
 };
 
 export const fetchMonthLogs = (date: any): Promise<AxiosResponse> => {
-  return axiosInstance.get(`projects/api/timesheets?month=${date}`);
+  return axiosInstance.get(`/projects/api/timesheets?month=${date}`);
 };
 
 export const deleteLog = (id: string): Promise<AxiosResponse> => {
-  return axiosInstance.delete(`projects/api/timesheets/${id}`);
+  return axiosInstance.delete(`/projects/api/timesheets/${id}`);
 };
 
 export const updateLog = (id: string, data: any): Promise<AxiosResponse> => {
-  return axiosInstance.put(`projects/api/timesheets/${id}`, data);
+  return axiosInstance.put(`/projects/api/timesheets/${id}`, data);
 };
 
 export const clientDropDown = () => {
-  return axiosInstance.get(`projects/v1/clients/clients-dropdown`);
+  return axiosInstance.get(`/projects/v1/clients/clients-dropdown`);
 };
 
 export const getProjectDropdown = () => {
-  return axiosInstance.get(`projects/v1/projects/projects-dropdown`);
+  return axiosInstance.get(`/projects/v1/projects/projects-dropdown`);
 };
 
 export const generateInvoiceIdentifiers = (
