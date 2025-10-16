@@ -193,7 +193,7 @@ export const NameBubbleListContainer = styled.div`
   padding: 8px 12px;
   border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 10px;
-  width: 100%;
+  width: 50%;
   flex-wrap: wrap;
   &.manageResourceList {
     border: none;
@@ -213,7 +213,8 @@ export const NameBubble = styled.div`
   width: 95%;
   height: 32px;
   border-bottom-width: 1px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.blackColors.white2};
+  // border-bottom: 1px solid ${(props) =>
+    props.theme.colors.blackColors.white2};
 
   .percentageAvailability {
     display: flex;
@@ -223,9 +224,9 @@ export const NameBubble = styled.div`
     display: flex;
     align-items: center;
     font-family: Nunito;
-    font-weight: 500px;
-    font-style: Medium;
-    font-size: 10px;
+    font-weight: 700px;
+    font-style: large;
+    font-size: 13px;
     leading-trim: NONE;
     line-height: 160%;
     letter-spacing: 0px;

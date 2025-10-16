@@ -163,7 +163,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     const year = date.getFullYear();
     return `${day}-${month}-${year}`;
   };
-  const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
@@ -1018,6 +1017,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </div>
                 )}
               </ColumnWrapper>
+              <span className="infoText-contract">
+                File format : .pdf, .png, .jpeg
+              </span>
             </FormInputsContainer>
 
             <div className="formButtons">
@@ -1211,50 +1213,29 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       .map((option) => (
                         <NameBubble key={option.value}>
                           <span className="name">{option.label}</span>
+                          <span className="percentageAvailability">
+                            <span className="availability">
+                              Allocation: {option.availability}%
+                            </span>
+                            <button
+                              className="remove-btn"
+                              onClick={() =>
+                                setSelectedResources((prev) =>
+                                  prev.filter(
+                                    (item) => item.value !== option.value
+                                  )
+                                )
+                              }
+                            >
+                              ✕
+                            </button>
+                          </span>
                         </NameBubble>
                       ))}
                   </NameBubbleListContainer>
                 </ListWrapper>
-                <ListWrapper className="container">
-                  <ResourceLabel
-                    className="ManageResource"
-                    onClick={() => setIsOpen((prev) => !prev)}
-                  >
-                    <span>{t('Manage Resource Allocation')} </span>
-                    <span className={`arrow ${isOpen ? 'open' : ''}`}>❮</span>
-                  </ResourceLabel>
-                  {isOpen && (
-                    <NameBubbleListContainer className="manageResourceList">
-                      {[...(selectedResources || [])]
-                        .sort((a, b) => a.value.localeCompare(b.value))
-                        .map((option) => (
-                          <NameBubble key={option.value}>
-                            <span className="name">{option.label}</span>
-                            <span className="percentageAvailability">
-                              <span className="availability">
-                                Allocation: {option.availability}%
-                              </span>
-                              <button
-                                className="remove-btn"
-                                onClick={() =>
-                                  setSelectedResources((prev) =>
-                                    prev.filter(
-                                      (item) => item.value !== option.value
-                                    )
-                                  )
-                                }
-                              >
-                                ✕
-                              </button>
-                            </span>
-                          </NameBubble>
-                        ))}
-                    </NameBubbleListContainer>
-                  )}
-                </ListWrapper>
               </ResourceBlock>
             )}
-
             <AddContractButtons>
               <div onClick={handlePreviousStep} className="leftAlign">
                 <span className="separator"> {'<'} </span> &nbsp;
