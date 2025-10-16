@@ -16,7 +16,6 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/questionnaires")
-@CrossOrigin(origins = "*")
 public class QuestionnaireController {
 
     @Autowired
@@ -35,20 +34,14 @@ public class QuestionnaireController {
     }
 
     /**
-     * Retrieves all questionnaires, optionally filtered by department.
+     * Retrieves all questionnaires.
+     * Note: Department filtering has been removed.
      *
-     * @param department (Optional) Department name to filter questionnaires.
-     * @return A list of questionnaires.
+     * @return A list of all questionnaires.
      */
     @GetMapping
-    public ResponseEntity<List<Questionnaire>> getAllQuestionnaires(
-            @RequestParam(required = false) String department) {
-        List<Questionnaire> questionnaires;
-        if (department != null) {
-            questionnaires = questionnaireService.getQuestionnairesByDepartment(department);
-        } else {
-            questionnaires = questionnaireService.getAllQuestionnaires();
-        }
+    public ResponseEntity<List<Questionnaire>> getAllQuestionnaires() {
+        List<Questionnaire> questionnaires = questionnaireService.getAllQuestionnaires();
         return ResponseEntity.ok(questionnaires);
     }
 
@@ -67,7 +60,7 @@ public class QuestionnaireController {
     /**
      * Updates an existing questionnaire by its ID.
      *
-     * @param id The ID of the questionnaire to update.
+     * @param id            The ID of the questionnaire to update.
      * @param questionnaire The updated questionnaire data.
      * @return The updated questionnaire.
      */

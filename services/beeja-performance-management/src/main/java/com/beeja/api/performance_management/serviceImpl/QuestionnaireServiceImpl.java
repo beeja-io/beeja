@@ -1,170 +1,237 @@
 package com.beeja.api.performance_management.serviceImpl;
 
-import com.beeja.api.performance_management.enums.Department;
 import com.beeja.api.performance_management.enums.ErrorCode;
 import com.beeja.api.performance_management.enums.ErrorType;
+import com.beeja.api.performance_management.enums.TargetType;
 import com.beeja.api.performance_management.exceptions.BadRequestException;
 import com.beeja.api.performance_management.exceptions.DuplicateDataException;
+import com.beeja.api.performance_management.exceptions.InvalidOperationException;
 import com.beeja.api.performance_management.exceptions.ResourceNotFoundException;
+import com.beeja.api.performance_management.model.Question;
 import com.beeja.api.performance_management.model.Questionnaire;
 import com.beeja.api.performance_management.repository.QuestionnaireRepository;
 import com.beeja.api.performance_management.service.QuestionnaireService;
+import com.beeja.api.performance_management.utils.Constants;
+import com.beeja.api.performance_management.utils.ErrorUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Service implementation for managing Questionnaires.
+ * Handles creation, retrieval, update, and deletion of questionnaires
+ * including validation and duplicate checks.
+ * Implements {@link QuestionnaireService}.
+ */
+@Slf4j
 @Service
 public class QuestionnaireServiceImpl implements QuestionnaireService {
 
     @Autowired
-   private QuestionnaireRepository questionnaireRepository;
+    private QuestionnaireRepository questionnaireRepository;
 
     /**
-     * Creates a new {@link Questionnaire} for a specific {@link Department}.
+     * Creates a new questionnaire after validating and checking for duplicates.
      *
-     * <p>Ensures that a questionnaire does not already exist for the given department before saving.
-     *
-     * @param questionnaire the {@link Questionnaire} entity to be created
-     * @return the created {@link Questionnaire}
-     * @throws BadRequestException if the department is null
-     * @throws DuplicateDataException if a questionnaire already exists for the specified department
+     * @param questionnaire Questionnaire object to create
+     * @return Created Questionnaire
+     * @throws BadRequestException if questions list is empty
+     * @throws DuplicateDataException if duplicate questionnaire exists
+     * @throws InvalidOperationException if save fails
      */
     @Override
     public Questionnaire createQuestionnaire(Questionnaire questionnaire) {
-        if (questionnaire.getDepartment() == null) {
-            throw new BadRequestException(
-                    ErrorType.VALIDATION_ERROR + "," +
-                            ErrorCode.FIELD_VALIDATION_MISSING + "," +
-                            "Department is required"
-            );
+        log.info(Constants.INFO_CREATING_QUESTIONNAIRE);
+
+        validateQuestionnaireRequest(questionnaire);
+
+        Questionnaire newQuestionnaire = new Questionnaire();
+
+        if (questionnaire.getQuestions() != null && !questionnaire.getQuestions().isEmpty()) {
+                questionnaire.getQuestions().forEach(q -> {
+                    if (!q.isRequired() && q.getTarget() == TargetType.SELF) {
+                        q.setRequired(true);
+                    }
+                });
+
+            newQuestionnaire.setQuestions(questionnaire.getQuestions());
         }
 
-        List<Questionnaire> existing = questionnaireRepository.findByDepartment(questionnaire.getDepartment().name(), Sort.by(Sort.Direction.ASC, "department"));
-        if (!existing.isEmpty()) {
-            throw new DuplicateDataException(
-                    ErrorType.RESOURCE_EXISTS_ERROR + "," +
-                            ErrorCode.RESOURCE_EXISTS_ERROR + "," +
-                            "Questionnaire already exists for department: " + questionnaire.getDepartment()
-            );
+        checkDuplicateQuestionnaire(null, newQuestionnaire);
+
+        try {
+            newQuestionnaire = questionnaireRepository.save(newQuestionnaire);
+        } catch (Exception e) {
+            log.error(Constants.ERROR_SAVING_QUESTIONNAIRE, e);
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.INTERNAL_SERVER_ERROR,
+                            ErrorCode.DATABASE_ERROR,
+                            Constants.ERROR_SAVING_QUESTIONNAIRE
+                    ));
         }
 
-        return questionnaireRepository.save(questionnaire);
+        log.info(Constants.INFO_QUESTIONNAIRE_CREATED, newQuestionnaire.getId());
+        return newQuestionnaire;
     }
 
     /**
-     * Retrieves all {@link Questionnaire} entries sorted by department in ascending order.
+     * Retrieves all questionnaires sorted by ID ascending.
      *
-     * @return a list of all {@link Questionnaire} objects
+     * @return List of all Questionnaires
      */
     @Override
     public List<Questionnaire> getAllQuestionnaires() {
-        return questionnaireRepository.findAll(Sort.by(Sort.Direction.ASC, "department"));
+        log.info(Constants.INFO_FETCHING_ALL_QUESTIONNAIRES);
+        return questionnaireRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
     }
 
     /**
-     * Retrieves all {@link Questionnaire} entries for a specified {@link Department}.
+     * Returns all questionnaires. Department filter no longer applies.
      *
-     * @param department the name of the department to filter questionnaires
-     * @return a list of {@link Questionnaire} objects for the given department
-     * @throws BadRequestException if the department is null, blank, or invalid
+     * @param department Department name (ignored)
+     * @return List of all Questionnaires
      */
     @Override
     public List<Questionnaire> getQuestionnairesByDepartment(String department) {
-        if (department == null || department.trim().isEmpty()) {
-            throw new BadRequestException(
-                    ErrorType.VALIDATION_ERROR + "," +
-                            ErrorCode.FIELD_VALIDATION_MISSING + "," +
-                            "Department cannot be null or blank"
-            );
-        }
-        try {
-            Department dep = Department.valueOf(department.toUpperCase());
-            return questionnaireRepository.findByDepartment(dep.name(), Sort.by(Sort.Direction.ASC, "department"));
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException(
-                    ErrorType.VALIDATION_ERROR + "," +
-                            ErrorCode.NUll_VALUE + "," +
-                            "Invalid department: " + department
-            );
-        }
+        return getAllQuestionnaires();
     }
 
     /**
-     * Retrieves a {@link Questionnaire} by its unique identifier.
+     * Retrieves a questionnaire by its ID.
      *
-     * @param id the unique identifier of the {@link Questionnaire}
-     * @return the matching {@link Questionnaire} entity
-     * @throws ResourceNotFoundException if no {@link Questionnaire} is found with the given ID
+     * @param id Questionnaire ID
+     * @return Questionnaire object
+     * @throws ResourceNotFoundException if not found
      */
     @Override
     public Questionnaire getQuestionnaireById(String id) {
-        return questionnaireRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException(
-                        ErrorType.RESOURCE_NOT_FOUND_ERROR + "," +
-                                ErrorCode.RESOURCE_NOT_FOUND + "," +
-                                "Questionnaire not found with id: " + id
-                ));
+        log.info(Constants.INFO_FETCHING_QUESTIONNAIRE_BY_ID, id);
+
+        return questionnaireRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ErrorUtils.formatError(
+                                ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                                ErrorCode.RESOURCE_NOT_FOUND,
+                                Constants.ERROR_INVALID_QUESTIONNAIRE + id
+                        )));
     }
 
     /**
-     * Updates an existing {@link Questionnaire} by ID with the new details provided.
+     * Updates the questions of an existing questionnaire after validation.
      *
-     * <p>If the department is being changed, ensures no duplicate exists before updating.
-     *
-     * @param id the unique identifier of the questionnaire to update
-     * @param questionnaire the new questionnaire details
-     * @return the updated {@link Questionnaire}
-     * @throws BadRequestException if the department is null
-     * @throws DuplicateDataException if another questionnaire exists for the new department
-     * @throws ResourceNotFoundException if the questionnaire to update is not found
+     * @param id Questionnaire ID
+     * @param questionnaire Updated questionnaire data
+     * @return Updated Questionnaire
+     * @throws BadRequestException if questions list is empty
+     * @throws DuplicateDataException if duplicate questionnaire exists
+     * @throws InvalidOperationException if save fails
      */
     @Override
     public Questionnaire updateQuestionnaire(String id, Questionnaire questionnaire) {
+        log.info(Constants.INFO_UPDATING_QUESTIONNAIRE_BY_ID, id);
         Questionnaire existing = getQuestionnaireById(id);
 
-        if (questionnaire.getDepartment() == null) {
-            throw new BadRequestException(
-                    ErrorType.VALIDATION_ERROR + "," +
-                            ErrorCode.FIELD_VALIDATION_MISSING + "," +
-                            "Department is required"
+        validateQuestionnaireRequest(questionnaire);
+        checkDuplicateQuestionnaire(id, questionnaire);
+
+        existing.setQuestions(questionnaire.getQuestions());
+
+        try {
+            existing = questionnaireRepository.save(existing);
+        } catch (Exception e) {
+            log.error(Constants.ERROR_UPDATING_QUESTIONNAIRE, e);
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.INTERNAL_SERVER_ERROR,
+                            ErrorCode.DATABASE_ERROR,
+                            Constants.ERROR_UPDATING_QUESTIONNAIRE
+                    )
             );
         }
 
-        if (!existing.getDepartment().equals(questionnaire.getDepartment())) {
-            List<Questionnaire> depExists = questionnaireRepository.findByDepartment(questionnaire.getDepartment().name(), Sort.by(Sort.Direction.ASC, "department"));
-            if (!depExists.isEmpty()) {
-                throw new DuplicateDataException(
-                        ErrorType.RESOURCE_EXISTS_ERROR + "," +
-                                ErrorCode.RESOURCE_EXISTS_ERROR + "," +
-                                "Questionnaire already exists for department: " + questionnaire.getDepartment()
-                );
-            }
-        }
-
-        existing.setDepartment(questionnaire.getDepartment());
-        existing.setQuestions(questionnaire.getQuestions());
-
-        return questionnaireRepository.save(existing);
+        log.info(Constants.INFO_QUESTIONNAIRE_UPDATED_SUCCESS, existing.getId());
+        return existing;
     }
 
     /**
-     * Deletes a {@link Questionnaire} by its unique identifier.
+     * Updates the questions list of a questionnaire.
      *
-     * @param id the unique identifier of the questionnaire to delete
-     * @throws ResourceNotFoundException if no {@link Questionnaire} exists with the given ID
+     * @param id Questionnaire ID
+     * @param updatedQuestions List of updated questions
+     * @return Updated Questionnaire
+     * @throws InvalidOperationException if questions list is empty
      */
+    @Override
+    public Questionnaire updateQuestions(String id, List<Question> updatedQuestions) {
+        log.info(Constants.INFO_UPDATING_QUESTIONS_FOR_QUESTIONNAIRE, id);
 
+        Questionnaire existing = getQuestionnaireById(id);
+
+        if (updatedQuestions == null || updatedQuestions.isEmpty()) {
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.INVALID_OPERATION,
+                            Constants.ERROR_QUESTION_LIST_EMPTY
+                    ));
+        }
+
+        existing.setQuestions(updatedQuestions);
+        return questionnaireRepository.save(existing);
+    }
+
+    private void validateQuestionnaireRequest(Questionnaire questionnaire) {
+        if (questionnaire.getQuestions() == null || questionnaire.getQuestions().isEmpty()) {
+            throw new BadRequestException(
+                    ErrorUtils.formatError(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.FIELD_VALIDATION_MISSING,
+                            Constants.ERROR_QUESTION_LIST_EMPTY
+                    ));
+        }
+    }
+
+    private void checkDuplicateQuestionnaire(String currentId, Questionnaire questionnaire) {
+        List<Questionnaire> existingList = questionnaireRepository.findAll();
+
+        boolean isDuplicate = existingList.stream()
+                .filter(q -> currentId == null || !q.getId().equals(currentId))
+                .anyMatch(q -> q.getQuestions() != null &&
+                        q.getQuestions().equals(questionnaire.getQuestions()));
+
+        if (isDuplicate) {
+            throw new DuplicateDataException(
+                    ErrorUtils.formatError(
+                            ErrorType.RESOURCE_EXISTS_ERROR,
+                            ErrorCode.RESOURCE_EXISTS_ERROR,
+                            Constants.DUPLICATE_QUESTIONNAIRE_WITH_SAME_QUESTIONS
+                    ));
+        }
+    }
+
+    /**
+     * Deletes a questionnaire by ID.
+     *
+     * @param id Questionnaire ID
+     * @throws ResourceNotFoundException if not found
+     */
     @Override
     public void deleteQuestionnaire(String id) {
+        log.info(Constants.INFO_DELETING_QUESTIONNAIRE_BY_ID, id);
+
         if (!questionnaireRepository.existsById(id)) {
             throw new ResourceNotFoundException(
-                    ErrorType.RESOURCE_NOT_FOUND_ERROR + "," +
-                            ErrorCode.RESOURCE_NOT_FOUND + "," +
-                            "Questionnaire not found with id: " + id
-            );
+                    ErrorUtils.formatError(
+                            ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                            ErrorCode.RESOURCE_NOT_FOUND,
+                            Constants.ERROR_QUESTIONNAIRE_NOT_FOUND + id
+                    ));
         }
         questionnaireRepository.deleteById(id);
+        log.info(Constants.INFO_QUESTIONNAIRE_DELETED, id);
     }
 }

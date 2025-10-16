@@ -21,14 +21,6 @@ import java.util.Optional;
 public interface EvaluationCycleRepository extends MongoRepository<EvaluationCycle, String> {
 
     /**
-     * Finds all evaluation cycles with the given cycle type.
-     *
-     * @param type the cycle type (e.g., ANNUAL, QUARTERLY)
-     * @return a list of EvaluationCycle objects matching the type
-     */
-    List<EvaluationCycle> findByType(CycleType type);
-
-    /**
      * Finds all evaluation cycles with the given status.
      *
      * @param status the cycle status (e.g., ACTIVE, COMPLETED)
@@ -40,20 +32,20 @@ public interface EvaluationCycleRepository extends MongoRepository<EvaluationCyc
      * Finds all evaluation cycles that have a start date within the specified date range.
      *
      * @param startDate the lower bound of the start date range
-     * @param endDate   the upper bound of the start date range
+     * @param feedBackDeadLine   the upper bound of the start date range
      * @return a list of EvaluationCycle objects whose start date falls within the range
      */
-    List<EvaluationCycle> findByStartDateBetween(LocalDate startDate, LocalDate endDate);
+    List<EvaluationCycle> findByStartDateBetween(LocalDate startDate, LocalDate feedBackDeadLine);
 
     /**
      * Finds an evaluation cycle with the specified status, where the current date falls
      * between its start and end dates.
      *
      * @param status  the cycle status to match
-     * @param startCheck the current date or date to compare against startDate
-     * @param endCheck   the current date or date to compare against endDate
-     * @return an Optional containing the matching EvaluationCycle, if found
+     * @param startDate the current date or date to compare against startDate
+     * @param feedBackDeadLine  the current date or date to compare against endDate
+     * @return an list containing the matching EvaluationCycle, if found
      */
-    Optional<EvaluationCycle> findByStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-            CycleStatus status, LocalDate startCheck, LocalDate endCheck);
+    Optional<EvaluationCycle> findByStatusAndStartDateLessThanEqualAndFeedbackDeadlineGreaterThanEqual(
+            CycleStatus status, LocalDate startDate, LocalDate feedBackDeadLine);
 }

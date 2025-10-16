@@ -12,12 +12,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Question {
-    @NotBlank(message = "Question ID cannot be blank")
-    private String questionId;
+    @NotBlank(message = "Question cannot be blank")
+    private String question;
 
     @NotBlank(message = "Question description cannot be blank")
     private String questionDescription;
 
     @NotNull(message = "Target type is required")
     private TargetType target;
+
+    private boolean required = false;
 }

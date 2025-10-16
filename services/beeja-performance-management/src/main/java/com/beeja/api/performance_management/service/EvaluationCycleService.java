@@ -3,6 +3,7 @@ package com.beeja.api.performance_management.service;
 
 import com.beeja.api.performance_management.enums.CycleStatus;
 import com.beeja.api.performance_management.model.EvaluationCycle;
+import com.beeja.api.performance_management.model.dto.EvaluationCycleCreateDto;
 import com.beeja.api.performance_management.model.dto.EvaluationCycleDetailsDto;
 
 import java.util.List;
@@ -71,6 +72,38 @@ public interface EvaluationCycleService {
      *
      * @return the current active EvaluationCycle, if any
      */
+    EvaluationCycle getCurrentActiveCycle(CycleStatus inProgress);
 
-    EvaluationCycle getCurrentActiveCycle();
+    /**
+     * Deletes an evaluation cycle by its unique ID.
+     *
+     * @param id the ID of the cycle to delete
+     */
+    void deleteCycle(String id);
+
+    /**
+     * Retrieves a list of evaluation cycles filtered by their status.
+     *
+     * @param cycleStatus the status of the evaluation cycles to retrieve (e.g., ACTIVE, COMPLETED, UPCOMING)
+     * @return a list of {@link EvaluationCycle} objects that match the specified status
+     */
+    List<EvaluationCycle> getCyclesByStatus(CycleStatus cycleStatus);
+
+    /**
+     * Fully updates an evaluation cycle and its questionnaire details by ID.
+     *
+     * @param id  the ID of the evaluation cycle to update
+     * @param dto the updated cycle and questionnaire details
+     * @return the updated {@link EvaluationCycleDetailsDto}
+     */
+    EvaluationCycleDetailsDto updateFullCycle(String id, EvaluationCycleDetailsDto dto);
+
+    /**
+     * Creates a new evaluation cycle along with optional associated questions.
+     *
+     * @param dto The DTO containing evaluation cycle details and optional questions.
+     * @return An {@link EvaluationCycleDetailsDto} representing the created cycle and linked questionnaire.
+     */
+    EvaluationCycleDetailsDto createCycleWithQuestions(EvaluationCycleCreateDto dto);
+
 }

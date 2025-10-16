@@ -14,5 +14,8 @@
       NUll_VALUE_ERROR,
       MEMORY_ERROR,
       DB_ERROR,
-      ASYNC_ERROR;
+      ASYNC_ERROR,
+        INTERNAL_SERVER_ERROR,
+        NOT_FOUND,
+        GENERAL_ERROR
     }

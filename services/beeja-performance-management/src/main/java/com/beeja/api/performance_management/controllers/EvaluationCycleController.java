@@ -4,6 +4,7 @@ import com.beeja.api.performance_management.enums.CycleStatus;
 import com.beeja.api.performance_management.exceptions.InvalidOperationException;
 import com.beeja.api.performance_management.model.EvaluationCycle;
 import com.beeja.api.performance_management.model.Questionnaire;
+import com.beeja.api.performance_management.model.dto.EvaluationCycleCreateDto;
 import com.beeja.api.performance_management.model.dto.EvaluationCycleDetailsDto;
 import com.beeja.api.performance_management.service.EvaluationCycleService;
 import com.beeja.api.performance_management.service.QuestionnaireService;
@@ -17,16 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * REST controller for managing {@link EvaluationCycle} entities.
- * Provides endpoints for creating, retrieving, updating, and linking questionnaires
- * to evaluation cycles, as well as status management and detailed views.
- * <p>
- * Base URL: /api/cycles
- * </p>
+ * REST Controller for managing Evaluation Cycles in the performance management system.
+ * Provides endpoints to create, retrieve, update, and delete evaluation cycles,
+ * as well as manage related questionnaires and their statuses.
  */
 @RestController
 @RequestMapping("/api/cycles")
-@CrossOrigin(origins = "*")
 public class EvaluationCycleController {
 
     @Autowired
@@ -35,12 +32,11 @@ public class EvaluationCycleController {
     @Autowired
     private QuestionnaireService questionnaireService;
 
-
     /**
      * Creates a new Evaluation Cycle.
      *
-     * @param cycle the EvaluationCycle object to create
-     * @return ResponseEntity containing the created EvaluationCycle and HTTP status 201
+     * @param cycle the EvaluationCycle object to be created
+     * @return the created EvaluationCycle with HTTP 201 status
      */
     @PostMapping
     public ResponseEntity<EvaluationCycle> createEvaluationCycle(@Valid @RequestBody EvaluationCycle cycle) {
@@ -49,9 +45,24 @@ public class EvaluationCycleController {
     }
 
     /**
+     * Creates a new evaluation cycle along with optional questions.
+     * Accepts a JSON payload containing cycle details and an optional list of questions.
+     * Returns the created cycle and associated questionnaire information.
+     *
+     * @param dto The request body containing evaluation cycle data and optional questions.
+     * @return A {@link ResponseEntity} with the created {@link EvaluationCycleDetailsDto} and HTTP 201 status.
+     */
+    @PostMapping("/create-with-questions")
+    public ResponseEntity<EvaluationCycleDetailsDto> createCycleWithQuestions(
+            @Valid @RequestBody EvaluationCycleCreateDto dto) {
+        EvaluationCycleDetailsDto created = cycleService.createCycleWithQuestions(dto);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    }
+
+    /**
      * Retrieves all Evaluation Cycles.
      *
-     * @return ResponseEntity with a list of all EvaluationCycle objects and HTTP status 200
+     * @return list of EvaluationCycle objects with HTTP 200 status
      */
     @GetMapping
     public ResponseEntity<List<EvaluationCycle>> getAllEvaluationCycles() {
@@ -62,7 +73,7 @@ public class EvaluationCycleController {
     /**
      * Retrieves all Evaluation Cycles along with their associated Questionnaires.
      *
-     * @return ResponseEntity containing a list of EvaluationCycleDetailsDto
+     * @return list of EvaluationCycleDetailsDto containing cycle and questionnaire data
      */
     @GetMapping("/with-questionnaires")
     public ResponseEntity<List<EvaluationCycleDetailsDto>> getCyclesWithQuestionnaires() {
@@ -71,23 +82,11 @@ public class EvaluationCycleController {
         List<EvaluationCycleDetailsDto> result = allCycles.stream()
                 .map(cycle -> {
                     Questionnaire questionnaire = null;
-                    if (cycle.getDepartment() != null) {
-                        if (cycle.getQuestionnaireId() != null) {
-                            try {
-                                questionnaire = questionnaireService.getQuestionnaireById(cycle.getQuestionnaireId());
-                            } catch (Exception e) {
-                            }
-                        }
-
-                        if (questionnaire == null) {
-                            try {
-                                questionnaire = questionnaireService
-                                        .getQuestionnairesByDepartment(cycle.getDepartment().name())
-                                        .stream()
-                                        .findFirst()
-                                        .orElse(null);
-                            } catch (Exception e) {
-                            }
+                    if (cycle.getQuestionnaireId() != null) {
+                        try {
+                            questionnaire = questionnaireService.getQuestionnaireById(cycle.getQuestionnaireId());
+                        } catch (Exception e) {
+                            // Log error or handle exception if needed
                         }
                     }
 
@@ -99,10 +98,10 @@ public class EvaluationCycleController {
     }
 
     /**
-     * Retrieves an Evaluation Cycle by its ID.
+     * Retrieves a specific Evaluation Cycle by ID.
      *
-     * @param id the ID of the EvaluationCycle
-     * @return ResponseEntity containing the EvaluationCycle object and HTTP status 200
+     * @param id the ID of the Evaluation Cycle
+     * @return the EvaluationCycle object with HTTP 200 status
      */
     @GetMapping("/{id}")
     public ResponseEntity<EvaluationCycle> getEvaluationCycleById(@PathVariable String id) {
@@ -110,12 +109,11 @@ public class EvaluationCycleController {
         return ResponseEntity.ok(cycle);
     }
 
-
     /**
-     * Retrieves the detailed view of an Evaluation Cycle, including associated questionnaire.
+     * Retrieves details of a specific Evaluation Cycle, including its questionnaire.
      *
-     * @param id the ID of the EvaluationCycle
-     * @return ResponseEntity containing EvaluationCycleDetailsDto and HTTP status 200
+     * @param id the ID of the Evaluation Cycle
+     * @return EvaluationCycleDetailsDto with cycle and questionnaire information
      */
     @GetMapping("/{id}/details")
     public ResponseEntity<EvaluationCycleDetailsDto> getEvaluationCycleDetails(@PathVariable String id) {
@@ -124,22 +122,31 @@ public class EvaluationCycleController {
     }
 
     /**
-     * Retrieves the currently active Evaluation Cycle.
+     * Retrieves Evaluation Cycles by active status.
      *
-     * @return ResponseEntity containing the active EvaluationCycle and HTTP status 200
+     * @param activeStatus optional query parameter for filtering by CycleStatus
+     * @return list of EvaluationCycle objects
      */
     @GetMapping("/active")
-    public ResponseEntity<EvaluationCycle> getActiveEvaluationCycle() {
-        EvaluationCycle cycle = cycleService.getCurrentActiveCycle();
-        return ResponseEntity.ok(cycle);
+    public ResponseEntity<List<EvaluationCycle>> getActiveEvaluationCycle(
+            @RequestParam(value = "active", required = false) String activeStatus) {
+        List<EvaluationCycle> cycles;
+
+        if (activeStatus != null) {
+            cycles = cycleService.getCyclesByStatus(CycleStatus.valueOf(activeStatus.toUpperCase()));
+        } else {
+            cycles = cycleService.getAllCycles();
+        }
+
+        return ResponseEntity.ok(cycles);
     }
 
     /**
-     * Updates an existing Evaluation Cycle.
+     * Updates an existing Evaluation Cycle by ID.
      *
-     * @param id the ID of the EvaluationCycle to update
+     * @param id    the ID of the Evaluation Cycle to update
      * @param cycle the updated EvaluationCycle object
-     * @return ResponseEntity containing the updated EvaluationCycle and HTTP status 200
+     * @return the updated EvaluationCycle with HTTP 200 status
      */
     @PutMapping("/{id}")
     public ResponseEntity<EvaluationCycle> updateEvaluationCycle(
@@ -151,10 +158,9 @@ public class EvaluationCycleController {
     /**
      * Updates the status of an Evaluation Cycle.
      *
-     * @param id the ID of the EvaluationCycle
-     * @param statusUpdate a map containing the new status value
-     * @return ResponseEntity containing the updated EvaluationCycle and HTTP status 200
-     * @throws InvalidOperationException if the status field is missing or invalid
+     * @param id           the ID of the Evaluation Cycle
+     * @param statusUpdate map containing the new status (e.g., {"status": "ACTIVE"})
+     * @return the updated EvaluationCycle with the new status
      */
     @PatchMapping("/{id}/status")
     public ResponseEntity<EvaluationCycle> updateEvaluationCycleStatus(
@@ -177,26 +183,30 @@ public class EvaluationCycleController {
     }
 
     /**
-     * Links a Questionnaire to an Evaluation Cycle.
+     * Performs a full update of the Evaluation Cycle and its associated Questionnaire.
      *
-     * @param id the ID of the EvaluationCycle
-     * @param request a map containing the questionnaireId
-     * @return ResponseEntity containing the updated EvaluationCycle and HTTP status 200
-     * @throws InvalidOperationException if questionnaireId is missing or empty
+     * @param id  the ID of the Evaluation Cycle
+     * @param dto EvaluationCycleDetailsDto containing updated cycle and questionnaire details
+     * @return the updated EvaluationCycleDetailsDto
      */
-    @PatchMapping("/{id}/questionnaire")
-    public ResponseEntity<EvaluationCycle> linkQuestionnaire(
-            @PathVariable String id, @RequestBody Map<String, String> request) {
+    @PutMapping("/{id}/full-update")
+    public ResponseEntity<EvaluationCycleDetailsDto> updateFullEvaluationCycle(
+            @PathVariable String id,
+            @Valid @RequestBody EvaluationCycleDetailsDto dto) {
 
-        String questionnaireId = request.get("questionnaireId");
-        if (questionnaireId == null || questionnaireId.trim().isEmpty()) {
-            throw new InvalidOperationException("Missing 'questionnaireId' field in request body");
-        }
-
-        EvaluationCycle cycle = cycleService.getCycleById(id);
-        cycle.setQuestionnaireId(questionnaireId);
-        EvaluationCycle updated = cycleService.updateCycle(id, cycle);
-
+        EvaluationCycleDetailsDto updated = cycleService.updateFullCycle(id, dto);
         return ResponseEntity.ok(updated);
+    }
+
+    /**
+     * Deletes an Evaluation Cycle by ID.
+     *
+     * @param id the ID of the Evaluation Cycle to delete
+     * @return HTTP 204 No Content on successful deletion
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEvaluationCycle(@PathVariable String id) {
+        cycleService.deleteCycle(id);
+        return ResponseEntity.noContent().build();
     }
 }

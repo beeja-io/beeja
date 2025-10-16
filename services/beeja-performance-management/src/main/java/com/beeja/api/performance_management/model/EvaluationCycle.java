@@ -2,7 +2,6 @@ package com.beeja.api.performance_management.model;
 
 import com.beeja.api.performance_management.enums.CycleStatus;
 import com.beeja.api.performance_management.enums.CycleType;
-import com.beeja.api.performance_management.enums.Department;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -25,24 +24,25 @@ public class EvaluationCycle {
     private CycleType type;
 
     @NotNull
+    private String formDescription;
+
+    @NotNull
     @Indexed
     private LocalDate startDate;
 
     @NotNull
-    @Indexed
     private LocalDate endDate;
+
+    @NotNull
+    @Indexed
+    private LocalDate feedbackDeadline;
 
     @NotNull
     private LocalDate selfEvalDeadline;
 
     @NotNull
-    private LocalDate feedbackDeadline;
-
-    @NotNull
-    private CycleStatus status = CycleStatus.DRAFT;
-
-    @NotNull(message = "Department is required")
-    private Department department;
+    @Indexed
+    private CycleStatus status;
 
     private String questionnaireId;
 }

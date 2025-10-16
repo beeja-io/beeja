@@ -1,7 +1,10 @@
 
 package com.beeja.api.performance_management.service;
 
+import com.beeja.api.performance_management.exceptions.InvalidOperationException;
+import com.beeja.api.performance_management.model.Question;
 import com.beeja.api.performance_management.model.Questionnaire;
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -50,6 +53,16 @@ public interface QuestionnaireService {
      * @return the updated {@link Questionnaire} object
      */
     Questionnaire updateQuestionnaire(String id, Questionnaire questionnaire);
+
+    /**
+     * Updates the list of questions for the specified questionnaire.
+     *
+     * @param id the ID of the questionnaire to update
+     * @param updatedQuestions the new list of {@link Question} objects to replace existing questions
+     * @return the updated {@link Questionnaire} object
+     * @throws InvalidOperationException if the questionnaire does not exist or the questions list is empty
+     */
+    Questionnaire updateQuestions(String id, @Valid List<Question> updatedQuestions);
 
     /**
      * Deletes a questionnaire by its ID.

@@ -7,11 +7,14 @@ import com.beeja.api.performance_management.exceptions.InvalidOperationException
 import com.beeja.api.performance_management.exceptions.ResourceNotFoundException;
 import com.beeja.api.performance_management.model.EvaluationCycle;
 import com.beeja.api.performance_management.model.Questionnaire;
+import com.beeja.api.performance_management.model.dto.EvaluationCycleCreateDto;
 import com.beeja.api.performance_management.model.dto.EvaluationCycleDetailsDto;
 import com.beeja.api.performance_management.repository.EvaluationCycleRepository;
 import com.beeja.api.performance_management.service.EvaluationCycleService;
 import com.beeja.api.performance_management.service.QuestionnaireService;
+import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.ErrorUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +22,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Implementation of {@link EvaluationCycleService} that manages the business logic
- * for creating, retrieving, updating, and publishing evaluation cycles.
- * <p>
- * This service interacts with {@link EvaluationCycleRepository} to persist data
- * and with {@link QuestionnaireService} to link appropriate questionnaires
- * to evaluation cycles.
- * </p>
+ * Service implementation for managing Evaluation Cycles.
+ * Handles creation, updating, retrieval, and deletion of evaluation cycles,
+ * including associated questionnaire data and status transitions.
+ * Implements {@link EvaluationCycleService}.
  */
+@Slf4j
 @Service
 public class EvaluationCycleServiceImpl implements EvaluationCycleService {
 
@@ -36,112 +37,222 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
     @Autowired
     private QuestionnaireService questionnaireService;
 
-
     /**
-     * Creates a new evaluation cycle after validating dates and attempting
-     * to auto-link a questionnaire based on department.
+     * Creates a new evaluation cycle with IN_PROGRESS status.
+     * Validates date ranges and saves to the repository.
      *
-     * @param cycle the evaluation cycle to create
-     * @return the saved EvaluationCycle
+     * @param cycle EvaluationCycle object to be created
+     * @return Saved EvaluationCycle
+     * @throws InvalidOperationException if validation fails or save fails
      */
     @Override
     public EvaluationCycle createCycle(EvaluationCycle cycle) {
+        log.info(Constants.INFO_CREATING_EVALUATION_CYCLE, cycle.getName());
+
         validateCycleDates(cycle);
 
-        if (cycle.getQuestionnaireId() == null && cycle.getDepartment() != null) {
-            try {
-                List<Questionnaire> questionnaires = questionnaireService
-                        .getQuestionnairesByDepartment(cycle.getDepartment().name());
-                if (!questionnaires.isEmpty()) {
-                    cycle.setQuestionnaireId(questionnaires.get(0).getId());
-                }
-            } catch (Exception e) {
-            }
+        EvaluationCycle newCycle = new EvaluationCycle();
+
+        if (cycle.getName() != null) {
+            newCycle.setName(cycle.getName());
+        }
+        if (cycle.getType() != null) {
+            newCycle.setType(cycle.getType());
+        }
+        if (cycle.getFormDescription() != null) {
+            newCycle.setFormDescription(cycle.getFormDescription());
+        }
+        if (cycle.getStartDate() != null) {
+            newCycle.setStartDate(cycle.getStartDate());
+        }
+        if (cycle.getEndDate() != null) {
+            newCycle.setEndDate(cycle.getEndDate());
+        }
+        if (cycle.getFeedbackDeadline() != null) {
+            newCycle.setFeedbackDeadline(cycle.getFeedbackDeadline());
+        }
+        if (cycle.getSelfEvalDeadline() != null) {
+            newCycle.setSelfEvalDeadline(cycle.getSelfEvalDeadline());
+        }
+        if (cycle.getQuestionnaireId() != null) {
+            newCycle.setQuestionnaireId(cycle.getQuestionnaireId());
         }
 
-        return cycleRepository.save(cycle);
+        newCycle.setStatus(CycleStatus.IN_PROGRESS);
+
+        try {
+            newCycle = cycleRepository.save(newCycle);
+        } catch (Exception e) {
+            log.error(Constants.ERROR_SAVING_EVALUATION_CYCLE, e);
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.INTERNAL_SERVER_ERROR,
+                            ErrorCode.DATABASE_ERROR,
+                            Constants.ERROR_SAVING_EVALUATION_CYCLE
+                    )
+            );
+        }
+
+        log.info(Constants.INFO_EVALUATION_CYCLE_CREATED, newCycle.getId());
+        return newCycle;
     }
 
     /**
-     * Retrieves all evaluation cycles from the repository.
+     * Creates a new evaluation cycle along with an optional set of associated questions.
+     * If the provided {@link EvaluationCycleCreateDto} includes a list of questions,
+     * a new {@link Questionnaire} is created and linked to the evaluation cycle.
+     * The method ensures that all cycle dates are valid before persisting the data.
      *
-     * @return a list of all EvaluationCycle instances
+     * @param dto The data transfer object containing details of the evaluation cycle and optional questions.
+     * @return An {@link EvaluationCycleDetailsDto} containing the persisted evaluation cycle and the linked questionnaire (if created).
+     * @throws InvalidOperationException if there is an error during questionnaire creation or cycle persistence.
+     */
+    @Override
+    public EvaluationCycleDetailsDto createCycleWithQuestions(EvaluationCycleCreateDto dto) {
+        log.info(Constants.INFO_CREATING_CYCLE_WITH_QUESTIONS, dto.getName());
+
+        Questionnaire savedQuestionnaire = null;
+
+        if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
+            Questionnaire questionnaire = new Questionnaire();
+            questionnaire.setQuestions(dto.getQuestions());
+
+            try {
+                savedQuestionnaire = questionnaireService.createQuestionnaire(questionnaire);
+            } catch (Exception e) {
+                log.error(Constants.ERROR_CREATING_QUESTIONNAIRE, e);
+                throw new InvalidOperationException(
+                        ErrorUtils.formatError(
+                                ErrorType.INTERNAL_SERVER_ERROR,
+                                ErrorCode.DATABASE_ERROR,
+                                Constants.ERROR_CREATING_QUESTIONNAIRE
+                        )
+                );
+            }
+        }
+
+        EvaluationCycle cycle = new EvaluationCycle();
+        cycle.setName(dto.getName());
+        cycle.setType(dto.getType());
+        cycle.setFormDescription(dto.getFormDescription());
+        cycle.setStartDate(dto.getStartDate());
+        cycle.setEndDate(dto.getEndDate());
+        cycle.setFeedbackDeadline(dto.getFeedbackDeadline());
+        cycle.setSelfEvalDeadline(dto.getSelfEvalDeadline());
+        cycle.setStatus(dto.getStatus() != null ? dto.getStatus() : CycleStatus.IN_PROGRESS);
+
+        if (savedQuestionnaire != null) {
+            cycle.setQuestionnaireId(savedQuestionnaire.getId());
+        }
+
+        validateCycleDates(cycle);
+
+        EvaluationCycle savedCycle;
+        try {
+            savedCycle = cycleRepository.save(cycle);
+        } catch (Exception e) {
+            log.error(Constants.ERROR_SAVING_EVALUATION_CYCLE, e);
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.INTERNAL_SERVER_ERROR,
+                            ErrorCode.DATABASE_ERROR,
+                            Constants.ERROR_SAVING_EVALUATION_CYCLE
+                    )
+            );
+        }
+
+        log.info(Constants.INFO_EVALUATION_CYCLE_CREATED, savedCycle.getId());
+
+        return new EvaluationCycleDetailsDto(savedCycle, savedQuestionnaire);
+    }
+
+    /**
+     * Retrieves all evaluation cycles.
+     *
+     * @return List of EvaluationCycle objects
      */
     @Override
     public List<EvaluationCycle> getAllCycles() {
+        log.info(Constants.INFO_FETCHING_ALL_CYCLES);
         return cycleRepository.findAll();
     }
 
     /**
-     * Retrieves an evaluation cycle by its ID.
+     * Retrieves a specific evaluation cycle by ID.
      *
-     * @param id the ID of the evaluation cycle
-     * @return the found EvaluationCycle
-     * @throws ResourceNotFoundException if no cycle with the given ID exists
+     * @param id Cycle ID
+     * @return EvaluationCycle object
+     * @throws ResourceNotFoundException if not found
      */
     @Override
     public EvaluationCycle getCycleById(String id) {
+        log.info(Constants.INFO_FETCHING_EVALUATIONCYCLE_BY_ID, id);
         return cycleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         ErrorUtils.formatError(
                                 ErrorType.RESOURCE_NOT_FOUND_ERROR,
                                 ErrorCode.RESOURCE_NOT_FOUND,
-                                "Evaluation cycle not found with id: " + id
-                        )
+                                Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND + id)
                 ));
     }
 
     /**
-     * Retrieves an evaluation cycle along with its linked questionnaire details.
+     * Retrieves a cycle and its associated questionnaire.
      *
-     * @param id the ID of the evaluation cycle
-     * @return EvaluationCycleDetailsDto containing both cycle and questionnaire information
+     * @param id Cycle ID
+     * @return DTO containing cycle and questions
      */
     @Override
     public EvaluationCycleDetailsDto getCycleWithQuestionnaire(String id) {
+        log.info(Constants.INFO_FETCHING_EVALUATIONCYCLE_WITH_QUESTIONNAIRE_BY_ID, id);
         EvaluationCycle cycle = getCycleById(id);
-        Questionnaire questionnaire = null;
-
-        if (cycle.getQuestionnaireId() != null) {
-            try {
-                questionnaire = questionnaireService.getQuestionnaireById(cycle.getQuestionnaireId());
-            } catch (ResourceNotFoundException e) {
-            }
-        }
-
         EvaluationCycleDetailsDto dto = new EvaluationCycleDetailsDto();
+
         dto.setId(cycle.getId());
         dto.setName(cycle.getName());
         dto.setType(cycle.getType());
+        dto.setFormDescription(cycle.getFormDescription());
         dto.setStartDate(cycle.getStartDate());
         dto.setEndDate(cycle.getEndDate());
-        dto.setSelfEvalDeadline(cycle.getSelfEvalDeadline());
         dto.setFeedbackDeadline(cycle.getFeedbackDeadline());
+        dto.setSelfEvalDeadline(cycle.getSelfEvalDeadline());
         dto.setStatus(cycle.getStatus());
-        dto.setDepartment(cycle.getDepartment());
+        dto.setQuestionnaireId(cycle.getQuestionnaireId());
 
-        if (questionnaire != null) {
-            dto.setQuestionnaireId(questionnaire.getId());
-            dto.setQuestions(questionnaire.getQuestions());
+        try {
+            if (cycle.getQuestionnaireId() != null) {
+                Questionnaire questionnaire =
+                        questionnaireService.getQuestionnaireById(cycle.getQuestionnaireId());
+                dto.setQuestions(questionnaire.getQuestions());
+            }
+        } catch (ResourceNotFoundException e) {
+            log.warn(Constants.ERROR_QUESTIONNAIRE_NOT_FOUND_FOR_CYCLE, id);
         }
 
         return dto;
     }
 
     /**
-     * Updates an existing evaluation cycle, except if it's already published.
+     * Updates an existing evaluation cycle if not in progress.
      *
-     * @param id the ID of the cycle to update
-     * @param cycle the updated cycle data
-     * @return the updated EvaluationCycle
-     * @throws InvalidOperationException if the cycle is already published
+     * @param id Cycle ID
+     * @param cycle Updated cycle data
+     * @return Updated EvaluationCycle
+     * @throws InvalidOperationException if cycle is in progress or validation fails
      */
+
     @Override
     public EvaluationCycle updateCycle(String id, EvaluationCycle cycle) {
+        log.info(Constants.INFO_UPDATING_EVALUATION_CYCLE, id);
+
         EvaluationCycle existing = getCycleById(id);
 
-        if (existing.getStatus() == CycleStatus.PUBLISHED) {
-            throw new InvalidOperationException("Cannot update published cycle");
+        if (existing.getStatus() == CycleStatus.COMPLETED) {
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.INVALID_OPERATION,
+                            Constants.ERROR_CANNOT_UPDATE_PUBLISHED_CYCLE));
         }
 
         validateCycleDates(cycle);
@@ -150,111 +261,250 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         existing.setType(cycle.getType());
         existing.setStartDate(cycle.getStartDate());
         existing.setEndDate(cycle.getEndDate());
-        existing.setSelfEvalDeadline(cycle.getSelfEvalDeadline());
         existing.setFeedbackDeadline(cycle.getFeedbackDeadline());
+        existing.setSelfEvalDeadline(cycle.getSelfEvalDeadline());
+        existing.setFormDescription(cycle.getFormDescription());
+        existing.setStatus(cycle.getStatus());
         existing.setQuestionnaireId(cycle.getQuestionnaireId());
 
-        return cycleRepository.save(existing);
+        try {
+            existing = cycleRepository.save(existing);
+        } catch (Exception e) {
+            log.error(Constants.ERROR_UPDATING_EVALUATION_CYCLE, e);
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.INTERNAL_SERVER_ERROR,
+                            ErrorCode.DATABASE_ERROR,
+                            Constants.ERROR_UPDATING_EVALUATION_CYCLE
+                    ));
+        }
+
+        log.info(Constants.INFO_EVALUATION_CYCLE_UPDATED_SUCCESSFULLY, existing.getId());
+        return existing;
     }
 
     /**
-     * Updates the status of an evaluation cycle, validating transitions.
+     * Updates an existing evaluation cycle with new details and optionally updates or creates its associated questions.
+     * The method first fetches the evaluation cycle by ID and updates its fields with values from the provided DTO.
+     * If the DTO contains questions, it either updates the existing questionnaire or creates a new one if none exists.
+     * @param id  The identifier of the evaluation cycle to update.
+     * @param dto The data transfer object containing updated cycle details and optional questions.
+     * @return An {@link EvaluationCycleDetailsDto} containing the updated evaluation cycle and questionnaire (if updated or created).
+     * @throws InvalidOperationException if the cycle cannot be found or an error occurs during update operations.
+     */
+    @Override
+    public EvaluationCycleDetailsDto updateFullCycle(String id, EvaluationCycleDetailsDto dto) {
+        log.info(Constants.INFO_FULL_UPDATE_START, id);
+
+        EvaluationCycle cycle = getCycleById(id);
+        log.info(Constants.INFO_EXISTING_CYCLE_FETCHED, cycle.getName(), cycle.getStatus());
+
+        cycle.setName(dto.getName());
+        cycle.setType(dto.getType());
+        cycle.setStartDate(dto.getStartDate());
+        cycle.setEndDate(dto.getEndDate());
+        cycle.setFeedbackDeadline(dto.getFeedbackDeadline());
+        cycle.setSelfEvalDeadline(dto.getSelfEvalDeadline());
+        cycle.setStatus(dto.getStatus());
+        cycle.setFormDescription(dto.getFormDescription());
+
+        log.info(Constants.INFO_UPDATING_CYCLE_FIELDS, id);
+        EvaluationCycle updatedCycle = updateCycle(id, cycle);
+
+        Questionnaire updatedQuestionnaire = null;
+
+        if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
+            log.info(Constants.INFO_UPDATING_QUESTIONS, id);
+
+            String questionnaireId = cycle.getQuestionnaireId();
+
+            if (questionnaireId == null || questionnaireId.trim().isEmpty()) {
+                updatedQuestionnaire = new Questionnaire();
+                updatedQuestionnaire.setQuestions(dto.getQuestions());
+                updatedQuestionnaire = questionnaireService.createQuestionnaire(updatedQuestionnaire);
+
+                cycle.setQuestionnaireId(updatedQuestionnaire.getId());
+                updatedCycle = updateCycle(id, cycle);
+            } else {
+                updatedQuestionnaire = questionnaireService.updateQuestions(questionnaireId, dto.getQuestions());
+            }
+        }
+        log.info(Constants.INFO_FULL_UPDATE_COMPLETED, id);
+        return new EvaluationCycleDetailsDto(updatedCycle, updatedQuestionnaire);
+    }
+
+    /**
+     * Updates the status of a given cycle.
      *
-     * @param id the ID of the cycle
-     * @param status the new status to apply
-     * @return the updated EvaluationCycle
-     * @throws InvalidOperationException for invalid status transitions
+     * @param id Cycle ID
+     * @param status New CycleStatus
+     * @return Updated EvaluationCycle
+     * @throws InvalidOperationException if status transition is invalid
      */
     @Override
     public EvaluationCycle updateCycleStatus(String id, CycleStatus status) {
+        log.info(Constants.INFO_UPDATING_EVALUATION_CYCLE_STATUS, id);
+
+        if (status == null) {
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.INVALID_INPUT,
+                            Constants.ERROR_STATUS_CANNOT_BE_NULL
+                    ));
+        }
+
         EvaluationCycle cycle = getCycleById(id);
         validateStatusTransition(cycle.getStatus(), status);
         cycle.setStatus(status);
-        return cycleRepository.save(cycle);
+
+        try {
+            cycle = cycleRepository.save(cycle);
+        } catch (Exception e) {
+            log.error(Constants.ERROR_FAILED_UPDATE_CYCLE_STATUS, id, e);
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.INTERNAL_SERVER_ERROR,
+                            ErrorCode.DATABASE_ERROR,
+                            Constants.ERROR_UPDATING_EVALUATION_CYCLE_STATUS
+                    ));
+        }
+
+        log.info(Constants.INFO_UPDATED_CYCLE_STATUS, status, id);
+        return cycle;
     }
 
     /**
-     * Retrieves the currently active evaluation cycle, based on date and status.
+     * Fetches the current active cycle based on today's date and status.
      *
-     * @return the currently open EvaluationCycle
-     * @throws ResourceNotFoundException if no active cycle is found
+     * @return Active EvaluationCycle
+     * @throws ResourceNotFoundException if no cycle matches
      */
     @Override
-    public EvaluationCycle getCurrentActiveCycle() {
+    public EvaluationCycle getCurrentActiveCycle(CycleStatus inProgress) {
         LocalDate today = LocalDate.now();
-        return cycleRepository.findByStatusAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                        CycleStatus.OPEN, today, today)
-                .orElseThrow(() -> new ResourceNotFoundException("No active evaluation cycle found"));
+        return cycleRepository.findByStatusAndStartDateLessThanEqualAndFeedbackDeadlineGreaterThanEqual(
+                        CycleStatus.IN_PROGRESS, today, today)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        ErrorUtils.formatError(
+                                ErrorType.NOT_FOUND,
+                                ErrorCode.CYCLE_NOT_FOUND,
+                                Constants.ERROR_NO_ACTIVE_EVALUATION_CYCLE)
+                ));
     }
 
     /**
-     * Validates date constraints for an evaluation cycle.
+     * Retrieves all evaluation cycles by status.
      *
-     * @param cycle the evaluation cycle to validate
-     * @throws InvalidOperationException if any date validation rule is violated
+     * @param status CycleStatus to filter by
+     * @return List of EvaluationCycle objects
      */
+    @Override
+    public List<EvaluationCycle> getCyclesByStatus(CycleStatus status) {
+        log.info(Constants.INFO_FETCH_CYCLES_BY_STATUS, status);
+        List<EvaluationCycle> cycles = cycleRepository.findByStatus(status);
+        if (cycles.isEmpty()) {
+            log.warn(Constants.ERROR_NO_CYCLES_FOUND, status);
+        }
+        return cycles;
+    }
+
     private void validateCycleDates(EvaluationCycle cycle) {
-        if (cycle.getStartDate().isAfter(cycle.getEndDate())) {
+        LocalDate startDate = cycle.getStartDate();
+        LocalDate endDate = cycle.getEndDate();
+        LocalDate selfEvalDeadline = cycle.getSelfEvalDeadline();
+        LocalDate feedbackDeadline = cycle.getFeedbackDeadline();
+
+        if (startDate == null || endDate == null || selfEvalDeadline == null || feedbackDeadline == null) {
             throw new InvalidOperationException(
                     ErrorUtils.formatError(
                             ErrorType.VALIDATION_ERROR,
                             ErrorCode.INVALID_DATE,
-                            "Start date must be before end date"
+                            Constants.MISSING_CYCLE_DATE_FIELDS
                     )
             );
         }
 
-        if (cycle.getSelfEvalDeadline().isBefore(cycle.getStartDate()) ||
-                cycle.getSelfEvalDeadline().isAfter(cycle.getEndDate())) {
+        //startDate <= selfEvalDeadline
+        if (selfEvalDeadline.isBefore(startDate)) {
             throw new InvalidOperationException(
                     ErrorUtils.formatError(
                             ErrorType.VALIDATION_ERROR,
                             ErrorCode.INVALID_SELF_EVAL_DEADLINE,
-                            "Self evaluation deadline must be within cycle period"
+                            Constants.SELF_EVAL_DEADLINE_BEFORE_START
                     )
             );
         }
 
-        if (cycle.getFeedbackDeadline().isBefore(cycle.getStartDate()) ||
-                cycle.getFeedbackDeadline().isAfter(cycle.getEndDate())) {
+        // endDate <= feedbackDeadline
+        if (feedbackDeadline.isBefore(endDate)) {
             throw new InvalidOperationException(
                     ErrorUtils.formatError(
                             ErrorType.VALIDATION_ERROR,
-                            ErrorCode.INVALID_FEEDBACK_DEADLINE,
-                            "Feedback deadline must be within cycle period"
+                            ErrorCode.INVALID_DATE,
+                            Constants.FEEDBACK_DEADLINE_BEFORE_END_DATE
                     )
             );
+        }
+
+        // startDate <= endDate
+        if (startDate.isAfter(endDate)) {
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.INVALID_DATE,
+                            Constants.START_DATE_AFTER_END_DATE
+                    )
+            );
+        }
+
+        // selfEvalDeadline <= feedbackDeadline
+        if (selfEvalDeadline.isAfter(feedbackDeadline)) {
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.INVALID_SELF_EVAL_DEADLINE,
+                            Constants.INFO_SELF_EVAL_DEADLINE_ERROR
+                    ));
+        }
+    }
+
+    private void validateStatusTransition(CycleStatus currentStatus, CycleStatus newStatus) {
+        switch (currentStatus) {
+            case IN_PROGRESS:
+                if (newStatus != CycleStatus.COMPLETED) {
+                    throw new InvalidOperationException("An in-progress cycle can only be marked as completed");
+                }
+                break;
+
+            case COMPLETED:
+                throw new InvalidOperationException("A completed cycle cannot be modified or reopened");
+
+            default:
+                throw new InvalidOperationException("Invalid status transition from " + currentStatus + " to " + newStatus);
         }
     }
 
     /**
-     * Validates allowed transitions between cycle statuses.
+     * Deletes a cycle by ID.
      *
-     * @param currentStatus the current status of the cycle
-     * @param newStatus the new status being requested
-     * @throws InvalidOperationException if the transition is invalid
+     * @param id Cycle ID
+     * @throws ResourceNotFoundException if not found
      */
-    private void validateStatusTransition(CycleStatus currentStatus, CycleStatus newStatus) {
-        switch (currentStatus) {
-            case DRAFT:
-                if (newStatus != CycleStatus.OPEN) {
-                    throw new InvalidOperationException("Draft cycle can only be opened");
-                }
-                break;
-            case OPEN:
-                if (newStatus != CycleStatus.CLOSED) {
-                    throw new InvalidOperationException("Open cycle can only be closed");
-                }
-                break;
-            case CLOSED:
-                if (newStatus != CycleStatus.PUBLISHED) {
-                    throw new InvalidOperationException("Closed cycle can only be published");
-                }
-                break;
-            case PUBLISHED:
-                throw new InvalidOperationException("Published cycle cannot be modified");
-            default:
-                throw new InvalidOperationException("Invalid status transition");
+    @Override
+    public void deleteCycle(String id) {
+        if (!cycleRepository.existsById(id)) {
+            throw new ResourceNotFoundException(
+                    ErrorUtils.formatError(
+                            ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                            ErrorCode.RESOURCE_NOT_FOUND,
+                            Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND + id
+                    ));
         }
+
+        cycleRepository.deleteById(id);
+        log.info(Constants.INFO_DELETED_EVALUATION_CYCLE, id);
     }
+
+
 }
