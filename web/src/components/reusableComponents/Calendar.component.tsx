@@ -23,6 +23,7 @@ interface CalendarProps {
   handleDateInput: (date: Date | null) => void;
   handleCalenderChange: (date: Date) => void;
   selectedDate: Date | null;
+  defaultMonth?: Date;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
@@ -32,8 +33,9 @@ const Calendar: React.FC<CalendarProps> = ({
   handleDateInput,
   selectedDate,
   handleCalenderChange,
+  defaultMonth,
 }) => {
-  const initialDate = selectedDate || new Date();
+  const initialDate = selectedDate || defaultMonth || new Date();
   const [currentDate, setCurrentDate] = useState(initialDate);
 
   const renderWeekdays = () => {

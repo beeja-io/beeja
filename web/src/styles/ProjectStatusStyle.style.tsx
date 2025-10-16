@@ -67,7 +67,7 @@ const DropdownItem = styled.div<{ color: string; bgColor: string }>`
 
 interface Props {
   value: string;
-  onChange: (newValue: string) => void;
+  onChange?: (newValue: string) => void;
   disabled?: boolean;
 }
 
@@ -115,7 +115,7 @@ const StatusDropdown: React.FC<Props> = ({ value, onChange, disabled }) => {
               bgColor={status.bgColor}
               onClick={() => {
                 if (!disabled) {
-                  onChange(status.value);
+                  onChange?.(status.value);
                   setOpen(false);
                 }
               }}
