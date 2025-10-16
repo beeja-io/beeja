@@ -142,17 +142,17 @@ const ClientDetailsScreen: React.FC = () => {
               <ClientInfoDiv>{client?.email}</ClientInfoDiv>
             </ClientInfoRowItem>
 
-            <DotWrapper>
-              <DotSVG />
-            </DotWrapper>
-
-            <ClientInfoRowItem>
-              <CallSVG />
-              <ClientInfoDiv>
-                {t('91+')}
-                {client?.contact}
-              </ClientInfoDiv>
-            </ClientInfoRowItem>
+            {client?.contact && (
+              <>
+                <DotWrapper>
+                  <DotSVG />
+                </DotWrapper>
+                <ClientInfoRowItem>
+                  <CallSVG />
+                  <ClientInfoDiv>{client?.contact}</ClientInfoDiv>
+                </ClientInfoRowItem>
+              </>
+            )}
           </ClientInfoSection>
         </ClientInfo>
         {client?.clientId && (

@@ -131,7 +131,7 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
               </tr>
             </thead>
             <tbody>
-              {rawProjectResources.length ? (
+              {rawProjectResources?.length ? (
                 rawProjectResources.map((r, idx) => (
                   <tr key={idx}>
                     <td>{r.employeeId}</td>

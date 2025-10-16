@@ -1222,13 +1222,20 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             </span>
                             <button
                               className="remove-btn"
-                              onClick={() =>
-                                setSelectedResources((prev) =>
-                                  prev.filter(
+                              onClick={() => {
+                                setSelectedResources((prev) => {
+                                  const updated = prev.filter(
                                     (item) => item.value !== option.value
-                                  )
-                                )
-                              }
+                                  );
+
+                                  setFormData((form) => ({
+                                    ...form,
+                                    resourceAllocations: updated,
+                                  }));
+
+                                  return updated;
+                                });
+                              }}
                             >
                               ✕
                             </button>
