@@ -142,7 +142,7 @@ const LoanListView = (props: LoanListViewProps) => {
                   <th>{t('LOAN_AMOUNT')}</th>
                   <th className="statusHeader">{t('STATUS')}</th>
                   {user && hasPermission(user, LOAN_MODULE.STATUS_CHANGE) && (
-                    <th>{t('ACTION')}</th>
+                    <th>{t('ACTIONS')}</th>
                   )}
                 </tr>
               </TableHead>

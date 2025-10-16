@@ -158,6 +158,15 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
         handleShowErrorMessage();
         return;
       }
+      const productIdPattern = /^[A-Za-z0-9-]{8,20}$/;
+
+      if (!productIdPattern.test(formData.productId || '')) {
+        setErrorMessage(
+          'PRODUCT_ID must be 8-20 characters long and can only include letters, numbers, and hyphens.'
+        );
+        handleShowErrorMessage();
+        return;
+      }
       const form = new FormData();
       form.append('device', formData.device);
       form.append('type', formData.type);

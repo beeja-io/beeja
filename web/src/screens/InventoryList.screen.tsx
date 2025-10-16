@@ -232,7 +232,7 @@ const InventoryList = ({
                   <th>{t('RAM')}</th>
                   <th>{t('DATE_OF_PURCHASE')}</th>
                   <th>{t('AVAILABILITY')}</th>
-                  <th>{t('ACTION')}</th>
+                  <th>{t('ACTIONS')}</th>
                 </tr>
               </TableHead>
               <tbody>

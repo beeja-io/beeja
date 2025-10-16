@@ -215,6 +215,15 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
         setErrorMessage('Please fill ' + errorMessages);
         return;
       }
+      const productIdPattern = /^[A-Za-z0-9-]{8,20}$/;
+
+      if (!productIdPattern.test(formData.productId || '')) {
+        setErrorMessage(
+          'PRODUCT_ID must be 8-20 characters long and can only include letters, numbers, and hyphens.'
+        );
+        handleShowErrorMessage();
+        return;
+      }
 
       const formPayload = new FormData();
 

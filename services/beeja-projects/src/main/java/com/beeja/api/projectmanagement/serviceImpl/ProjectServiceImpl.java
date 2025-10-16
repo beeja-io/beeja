@@ -620,4 +620,29 @@ public class ProjectServiceImpl implements ProjectService {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public List<ProjectDropdownDTO> getAllProjectsForDropdown(String organizationId) {
+        try {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("organizationId").is(organizationId));
+            query.with(Sort.by(Sort.Direction.ASC, "name"));
+
+            List<Project> projects = mongoTemplate.find(query, Project.class);
+
+            return projects.stream()
+                    .filter(p -> p.getName() != null && !p.getName().trim().isEmpty())
+                    .map(p -> new ProjectDropdownDTO(
+                            p.getProjectId(),
+                            p.getName(),
+                            p.getClientId()
+                    ))
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            log.error("Error fetching projects for dropdown", e);
+            return Collections.emptyList();
+        }
+    }
+
 }

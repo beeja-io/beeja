@@ -498,7 +498,7 @@ const MyProfileTabsContainerComponent = ({
         </ul>
       </MyProfileTabsDiv>
 
-      <div style={{ overflow: 'hidden' }}>
+      <div>
         {selectedTab === 'general' && (
           <div>
             <GeneralDetailsTab
