@@ -86,9 +86,74 @@ export const IconWrapper = styled.div`
   align-items: center;
   gap: 10px;
   margin-top: 12px;
+  div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    word-break: break-all;
+    white-space: normal;
+    max-width: 100%;
+  }
+
   svg {
     width: 19px;
     height: 16px;
+  }
+`;
+export const Button = styled.button<{
+  width?: string;
+  padding?: string;
+  height?: string;
+  backgroundColor?: string;
+  border?: string;
+  color?: string;
+  fontSize?: string;
+}>`
+  display: flex;
+  width: ${(props) => (props.width ? props.width : '162px')};
+  height: ${(props) => (props.height ? props.height : '56px')};
+  padding: ${(props) => (props.padding ? props.padding : '18px 24px')};
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  border-radius: 10px;
+  border: ${(props) =>
+    props.border
+      ? props.border
+      : `1px solid ${props.theme.colors.blackColors.black4}`};
+  background-color: ${(props) =>
+    props.backgroundColor
+      ? props.backgroundColor
+      : props.theme.colors.blackColors.white6};
+  color: ${(props) =>
+    props.color ? props.color : props.theme.colors.blackColors.black1};
+  outline: none;
+  cursor: pointer;
+  font-size: ${(props) => (props.fontSize ? props.fontSize : '12px')};
+  white-space: nowrap;
+
+  &.submit {
+    background-color: #005792;
+    color: #fff;
+    border: none;
+    font-family: Nunito;
+    font-weight: 350;
+    font-size: 16px;
+    leading-trim: NONE;
+    line-height: 150%;
+    letter-spacing: 0.3px;
+    text-align: center;
+    width: 180px;
+  }
+  &.cancel {
+    font-family: Nunito;
+    font-weight: 600;
+    font-size: 16px;
+    leading-trim: NONE;
+    line-height: 150%;
+    letter-spacing: 0.3px;
+    text-align: center;
+    width: 180px;
   }
 `;
 
@@ -123,13 +188,14 @@ export const SectionTitle = styled.h2`
 export const FormField = styled.div`
   display: flex;
   flex-direction: column;
+  width: 100%;
 `;
 
 export const Label = styled.label`
   font-size: 14px;
   font-weight: 600;
   height: 24px;
-  color: ${(props) => props.theme.colors.blackColors.black5};
+  color: ${(props) => props.theme.colors.blackColors.black7};
 `;
 
 export const RequiredAsterisk = styled.span`
@@ -168,7 +234,8 @@ export const RightSection = styled.div`
   flex-direction: column;
   height: 250px;
   background: ${(props) => props.theme.colors.blackColors.white6};
-  width: 315px;
+  width: 100%;
+  max-width: 390px;
 
   angle: 0 deg;
   opacity: 1;
@@ -239,6 +306,20 @@ export const TextInput = styled.input`
   color: ${(props) => props.theme.colors.blackColors.black1};
   background-color: ${(props) => props.theme.colors.backgroundColors.primary};
 
+  &.editText {
+    max-width: 1022px;
+    width: 100%;
+  }
+
+  &:disabled,
+  &.disabled {
+    background-color: ${(props) => props.theme.colors.grayColors.gray6};
+    cursor: not-allowed;
+    color: ${(props) => props.theme.colors.grayColors.gray11};
+  }
+  &.errorEnabledInput {
+    border-color: red;
+  }
   &:focus {
     border-color: #007bff;
     outline: none;
@@ -303,6 +384,11 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  &.editContainer {
+    max-width: 1022px;
+    width: 100%;
+  }
 
   label {
     font-family: Nunito;
@@ -409,9 +495,6 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   select:disabled {
     background-color: ${(props) => props.theme.colors.backgroundColors.primary};
     cursor: not-allowed;
-  }
-  input:disabled {
-    background-color: ${(props) => props.theme.colors.blackColors.white6};
   }
   textarea:disabled {
     background-color: ${(props) => props.theme.colors.blackColors.white6};

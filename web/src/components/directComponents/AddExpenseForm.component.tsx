@@ -59,6 +59,7 @@ import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 type AddExpenseFormProps = {
   handleClose: () => void;
   handleLoadExpenses: () => void;
+  handleShowSuccessMessage: () => void;
   mode: 'preview' | 'create' | 'edit';
   expense?: Expense;
   // fileId: string;
@@ -84,11 +85,6 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const handleShowErrorMessage = () => {
     setShowErrorMessage(!showErrorMessage);
-  };
-
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const handleShowSuccessMessage = () => {
-    setShowSuccessMessage(!showSuccessMessage);
   };
 
   const fileId: string =
@@ -265,7 +261,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
       try {
         await createExpense(formData);
-        handleShowSuccessMessage();
+        props.handleShowSuccessMessage();
         await props.handleLoadExpenses();
         props.handleClose();
       } catch (error) {
@@ -656,7 +652,6 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
       }
       try {
         await updateExpense(props.expense?.id, formData);
-        handleShowSuccessMessage();
         await props.handleLoadExpenses();
         handleModeOfModal && handleModeOfModal('preview');
         props.handleClose();
@@ -1685,14 +1680,6 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
           messageBody={responseErrorMessage}
           messageHeading="EXPENSE_IS_UNSUCCESFUL"
           handleClose={handleShowErrorMessage}
-        />
-      )}
-      {showSuccessMessage && (
-        <ToastMessage
-          messageType="success"
-          messageBody={'THE_EXPENSE_HAS_BEEN_ADDED'}
-          messageHeading={'SUCCESSFULLY_ADDED'}
-          handleClose={handleShowSuccessMessage}
         />
       )}
       {isExpenseReceiptPreviewModalOpen &&

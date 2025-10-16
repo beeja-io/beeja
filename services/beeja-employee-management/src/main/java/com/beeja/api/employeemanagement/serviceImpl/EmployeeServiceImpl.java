@@ -315,6 +315,7 @@ public class EmployeeServiceImpl implements EmployeeService {
       }
       log.info("Updating Employee ID from '{}' to '{}'", currentEmployeeId, newEmployeeId.toUpperCase());
       existingEmployee.setEmployeeId(newEmployeeId.toUpperCase());
+      existingEmployee.setEmployeeNumber(ExtractEmpNumUtil.extractEmpNumber(newEmployeeId));
     }
   }
 

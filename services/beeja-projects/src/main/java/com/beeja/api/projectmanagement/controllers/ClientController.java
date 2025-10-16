@@ -5,18 +5,20 @@ import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.service.ClientService;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.beeja.api.projectmanagement.utils.Constants;
+import com.beeja.api.projectmanagement.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for managing clients within an organization. Provides endpoints for adding,
@@ -38,7 +40,7 @@ public class ClientController {
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @HasPermission(PermissionConstants.CREATE_CLIENT)
   public ResponseEntity<Client> addClientToOrganization(@ModelAttribute ClientRequest clientRequest)
-      throws Exception {
+          throws Exception {
     Client client = clientService.addClientToOrganization(clientRequest);
     return new ResponseEntity<>(client, HttpStatus.CREATED);
   }
@@ -54,7 +56,7 @@ public class ClientController {
   @PutMapping("/{clientId}")
   @HasPermission(PermissionConstants.UPDATE_CLIENT)
   public ResponseEntity<Client> updateClientOfOrganization(
-      ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
+          ClientRequest clientRequest, @PathVariable String clientId) throws Exception {
     Client client = clientService.updateClientOfOrganization(clientRequest, clientId);
     return new ResponseEntity<>(client, HttpStatus.OK);
   }
@@ -81,8 +83,48 @@ public class ClientController {
    */
   @GetMapping
   @HasPermission(PermissionConstants.GET_CLIENT)
-  public ResponseEntity<List<Client>> getAllClientsOfOrganization() throws Exception {
-    List<Client> clients = clientService.getAllClientsOfOrganization();
-    return new ResponseEntity<>(clients, HttpStatus.OK);
+  public ResponseEntity<Map<String, Object>> getAllClientsOfOrganization(
+          @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
+          @RequestParam(name = "pageSize", defaultValue = "10") int pageSize) {
+
+      if (pageSize < 1 || pageNumber < 1) {
+          return ResponseEntity.badRequest().body(Map.of(
+                  "error", "Page number and page size must be positive integers."
+          ));
+      }
+
+      String organizationId = UserContext.getLoggedInUserOrganization()
+              .get(Constants.ID).toString();
+
+      Page<Client> page = clientService.getAllClientsOfOrganization(organizationId, pageNumber, pageSize);
+      Map<String, Object> response = new HashMap<>();
+      response.put("metadata", Map.of(
+              "totalRecords", page.getTotalElements(),
+              "totalPages", page.getTotalPages(),
+              "pageNumber", pageNumber,
+              "pageSize", pageSize
+      ));
+      response.put("data", page.getContent());
+
+      return ResponseEntity.ok(response);
   }
+
+    /**
+     * Retrieves a lightweight list of all clients (id & name) for populating dropdowns.
+     *
+     * @return A list of client IDs and names.
+     */
+    @GetMapping("/clients-dropdown")
+    @HasPermission(PermissionConstants.GET_CLIENT)
+    public ResponseEntity<List<Map<String, String>>> getClientsForDropdown() {
+        List<Client> clients = clientService.getAllClientsOfOrganization();
+        List<Map<String, String>> dropdownList = clients.stream()
+                .map(client -> Map.of(
+                        "clientId", client.getClientId(),
+                        "clientName", client.getClientName()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(dropdownList);
+    }
 }

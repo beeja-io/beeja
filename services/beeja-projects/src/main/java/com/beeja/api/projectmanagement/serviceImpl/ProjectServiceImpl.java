@@ -309,24 +309,65 @@ public class ProjectServiceImpl implements ProjectService {
    * @throws ResourceNotFoundException if no {@link Project} is found for the provided clientId
    */
   @Override
-  public List<Project> getProjectsByClientIdInOrganization(String clientId) {
-    List<Project> projects;
-    try {
-      projects =
-          projectRepository.findByClientIdAndOrganizationId(
-              clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
-    } catch (Exception e) {
-      log.error(Constants.ERROR_FETCHING_PROJECTS_WITH_CLIENT, e.getMessage());
-      throw new ResourceNotFoundException(
-          BuildErrorMessage.buildErrorMessage(
-              ErrorType.DB_ERROR,
-              ErrorCode.RESOURCE_NOT_FOUND,
-              Constants.ERROR_FETCHING_PROJECTS_WITH_CLIENT));
-    }
-    if (projects == null || projects.isEmpty()) {
-      return List.of();
-    }
-    return projects;
+  public List<ProjectResponseDTO> getProjectsByClientIdInOrganization(String clientId) {
+      List<Project> projects;
+      try {
+          projects = projectRepository.findByClientIdAndOrganizationId(
+                  clientId,
+                  UserContext.getLoggedInUserOrganization().get(Constants.ID).toString()
+          );
+      } catch (Exception e) {
+          log.error(Constants.ERROR_FETCHING_PROJECTS_WITH_CLIENT);
+          throw new ResourceNotFoundException(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.DB_ERROR,
+                          ErrorCode.RESOURCE_NOT_FOUND,
+                          Constants.ERROR_FETCHING_PROJECTS_WITH_CLIENT
+                  )
+          );
+      }
+
+      if (projects == null || projects.isEmpty()) {
+          log.warn(Constants.PROJECT_NOT_FOUND_WITH_CLIENT);
+          return Collections.emptyList();
+      }
+
+      List<String> allManagerIds = projects.stream()
+              .filter(p -> p.getProjectManagers() != null)
+              .flatMap(p -> p.getProjectManagers().stream())
+              .distinct()
+              .collect(Collectors.toList());
+
+      Map<String, String> idToNameMap = new HashMap<>();
+      if (!allManagerIds.isEmpty()) {
+          try {
+              List<EmployeeNameDTO> managerDTOs = accountClient.getEmployeeNamesById(allManagerIds);
+              managerDTOs.forEach(dto -> idToNameMap.put(dto.getEmployeeId(), dto.getFullName()));
+          } catch (Exception e) {
+              log.error(Constants.FETCH_ERROR_FOR_PROJECT_MANAGERS, e);
+          }
+      }
+
+      return projects.stream().map(project -> {
+          ProjectResponseDTO dto = new ProjectResponseDTO();
+          dto.setProjectId(project.getProjectId());
+          dto.setName(project.getName());
+          dto.setProjectStatus(project.getStatus());
+          dto.setClientId(project.getClientId());
+          dto.setStartDate(project.getStartDate());
+
+          List<String> managerIds = project.getProjectManagers() != null ?
+                  project.getProjectManagers() : Collections.emptyList();
+          dto.setProjectManagerIds(managerIds);
+
+          List<String> managerNames = managerIds.stream()
+                  .map(idToNameMap::get)
+                  .filter(Objects::nonNull)
+                  .collect(Collectors.toList());
+          dto.setProjectManagerNames(managerNames);
+
+          return dto;
+      }).collect(Collectors.toList());
   }
 
   /**
@@ -579,4 +620,29 @@ public class ProjectServiceImpl implements ProjectService {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public List<ProjectDropdownDTO> getAllProjectsForDropdown(String organizationId) {
+        try {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("organizationId").is(organizationId));
+            query.with(Sort.by(Sort.Direction.ASC, "name"));
+
+            List<Project> projects = mongoTemplate.find(query, Project.class);
+
+            return projects.stream()
+                    .filter(p -> p.getName() != null && !p.getName().trim().isEmpty())
+                    .map(p -> new ProjectDropdownDTO(
+                            p.getProjectId(),
+                            p.getName(),
+                            p.getClientId()
+                    ))
+                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            log.error("Error fetching projects for dropdown", e);
+            return Collections.emptyList();
+        }
+    }
+
 }

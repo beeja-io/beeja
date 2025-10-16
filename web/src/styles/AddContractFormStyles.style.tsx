@@ -28,6 +28,7 @@ export const ResourceAvailability = styled.small`
 
 export const ResourceAllocationRow = styled.div`
   display: flex;
+  flex: 1;
   align-items: center;
   height: 56px;
   margin-bottom: 20px;
@@ -55,6 +56,12 @@ export const TextInput = styled.input`
 
   &.disabledBgWhite {
     background-color: white;
+  }
+  &:disabled,
+  &.disabled {
+    background-color: ${(props) => props.theme.colors.grayColors.gray6};
+    cursor: not-allowed;
+    color: ${(props) => props.theme.colors.grayColors.gray11};
   }
   &.grayText {
     color: #8b8b8b;
@@ -105,6 +112,8 @@ export const AvailabilityInput = styled.input`
   flex-grow: 1;
   height: 100%;
   padding: 8px;
+  color: ${(props) => props.theme.colors.blackColors.black7};
+  background-color: ${(props) => props.theme.colors.backgroundColors.primary};
   border-radius: 10px 0 0 10px;
   border: none;
   outline: none;
@@ -114,10 +123,10 @@ export const PercentageSign = styled.span`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #666;
+  color: ${(props) => props.theme.colors.blackColors.black4};
   font-size: 16px;
   font-weight: bold;
-  background: #f2f2f2f2;
+  background: rgba(242, 242, 242, 0.95);
   height: 100%;
   width: 40px;
 `;
@@ -143,7 +152,7 @@ export const ResourceBlock = styled.div`
 `;
 
 export const ResourceLabel = styled.label`
-  color: #111827;
+  color: ${(props) => props.theme.colors.blackColors.black7};
   font-family: Nunito;
   font-weight: 600;
   font-style: SemiBold;
@@ -153,7 +162,7 @@ export const ResourceLabel = styled.label`
   letter-spacing: 0px;
 
   &.ManageResource {
-    border: 1px solid #e9eaec;
+    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
     border-radius: 10px;
     height: 54px;
     display: flex;
@@ -182,10 +191,9 @@ export const NameBubbleListContainer = styled.div`
   display: flex;
   gap: 8px;
   padding: 8px 12px;
-  border: 1px solid #e0e0e0;
+  border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 10px;
-  background-color: white;
-  width: 100%;
+  width: 50%;
   flex-wrap: wrap;
   &.manageResourceList {
     border: none;
@@ -195,7 +203,7 @@ export const NameBubbleListContainer = styled.div`
 
 export const NameBubble = styled.div`
   padding: 6px 12px;
-  color: #333;
+  color: ${(props) => props.theme.colors.blackColors.black7};
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
@@ -205,7 +213,8 @@ export const NameBubble = styled.div`
   width: 95%;
   height: 32px;
   border-bottom-width: 1px;
-  border-bottom: 1px solid #f1f2f4;
+  // border-bottom: 1px solid ${(props) =>
+    props.theme.colors.blackColors.white2};
 
   .percentageAvailability {
     display: flex;
@@ -215,14 +224,14 @@ export const NameBubble = styled.div`
     display: flex;
     align-items: center;
     font-family: Nunito;
-    font-weight: 500px;
-    font-style: Medium;
-    font-size: 10px;
+    font-weight: 700px;
+    font-style: large;
+    font-size: 13px;
     leading-trim: NONE;
     line-height: 160%;
     letter-spacing: 0px;
-    color: #11182766;
-    border: 1px solid #f8f8f8;
+    color: ${(props) => props.theme.colors.blackColors.black7};
+    border: 1px solid ${(props) => props.theme.colors.grayColors.gray6};
     border-radius: 10px;
     border-width: 1px;
     padding: 5px 14px 5px 14px;
@@ -385,4 +394,18 @@ export const RightSection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+`;
+
+export const LogoLabel = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+`;
+
+export const FileName = styled.div`
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: #f5f5f5;
 `;

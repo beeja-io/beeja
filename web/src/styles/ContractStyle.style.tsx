@@ -85,6 +85,13 @@ export const FormInputsContainer = styled.div`
   gap: 40px;
   width: 100%;
   flex-wrap: wrap;
+
+  .infoText-contract {
+    color: ${(props) => props.theme.colors.grayColors.gray7};
+    font-size: 12px;
+
+    display: block;
+  }
 `;
 
 export const ColumnWrapper = styled.div`
@@ -107,7 +114,7 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
     font-size: 14px;
     line-height: 160%;
     letter-spacing: 0px;
-    color: ${(props) => props.theme.colors.blackColors.black5};
+    color: ${(props) => props.theme.colors.blackColors.black7};
   }
   input {
     cursor: text;
@@ -189,17 +196,6 @@ export const InputLabelContainer = styled.div<{ Width?: string }>`
   .grayText {
     color: #687588;
     font-size: 12px;
-  }
-  select:disabled {
-    background-color: ${(props) => props.theme.colors.backgroundColors.primary};
-  }
-  input:disabled {
-    background-color: ${(props) => props.theme.colors.blackColors.white6};
-  }
-  textarea:disabled {
-    background-color: ${(props) => props.theme.colors.blackColors.white6};
-
-    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   }
 `;
 

@@ -31,6 +31,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class InvoicePDFGen {
 
+    private void addLine(Document document, DeviceRgb color) {
+        document.add(
+                new Paragraph(Constants.LINE)
+                        .setFontColor(color)
+                        .setTextAlignment(TextAlignment.CENTER)
+        );
+    }
   public byte[] generatePDF(Contract contract, Invoice invoice, Client client) {
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -52,19 +59,19 @@ public class InvoicePDFGen {
 
     Table headerTable = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();
 
-    String billingFromLabel = "Billing From  ";
+    String billingFromLabel = "Billing From : ";
     String billingFromName = UserContext.getLoggedInUserOrganization().get("name").toString();
     Map<String, Object> map =
         (Map<String, Object>) UserContext.getLoggedInUserOrganization().get("address");
     String billingFromAddress =
         map.get("addressOne")
-            + ", "
+            + "\n"
             + map.get("city")
             + ", "
             + map.get("state")
             + ", "
             + map.get("pinCode")
-            + ", "
+            + "\n"
             + map.get("country");
 
     Paragraph leftAddressPara =
@@ -74,19 +81,19 @@ public class InvoicePDFGen {
             .add(new Text(billingFromAddress).setFontSize(8).setFontColor(grayColor));
     headerTable.addCell(new Cell().add(leftAddressPara).setBorder(Border.NO_BORDER));
 
-    String billingToLabel = "Billing To  ";
+    String billingToLabel = "Billing To : ";
     Address clientAddress = client.getPrimaryAddress();
     String billingToName = client.getClientName();
     String billingToAddress =
         clientAddress != null
             ? clientAddress.getStreet()
-                + ", "
+                + "\n"
                 + clientAddress.getCity()
                 + ", "
                 + clientAddress.getState()
                 + ", "
                 + clientAddress.getPostalCode()
-                + ", "
+                + "\n"
                 + clientAddress.getCountry()
             : " ";
 
@@ -99,8 +106,7 @@ public class InvoicePDFGen {
     headerTable.addCell(new Cell().add(rightAddressPara).setBorder(Border.NO_BORDER));
 
     document.add(headerTable);
-
-    document.add(new Paragraph("\n"));
+      addLine(document, grayColor);
 
     // --- ID'S PART---
 
@@ -143,15 +149,14 @@ public class InvoicePDFGen {
             .setTextAlignment(TextAlignment.RIGHT));
 
     document.add(idSection);
-
-    document.add(new Paragraph("\n"));
+      addLine(document, grayColor);
 
     // --- INVOICE PART---
 
     Table footerTable =
         new Table(UnitValue.createPercentArray(new float[] {70, 30})).useAllAvailableWidth();
 
-    String invoiceId = "#" + invoice.getInvoiceId();
+    String invoiceId = invoice.getInvoiceId();
     String contractId = contract.getContractId();
     String contractTitle = contract.getContractTitle();
 
@@ -160,23 +165,23 @@ public class InvoicePDFGen {
     Date dueDate = invoice.getInvoicePeriod().getEndDate();
     String endDate = formatter.format(dueDate);
 
-    String remarks = "Thank you so much for the great opportunity as always.";
     String orgCity = map.get("city").toString();
     Date current = new Date();
     String contractCreatedAt = formatter.format(current);
 
     Paragraph invoiceDesc =
         new Paragraph()
-            .add(new Text("Invoice ").setFontSize(12).setBold())
-            .add(new Text(invoiceId).setFontSize(12).setBold().setFontColor(blueColor))
-            .add("\n\n")
-            .add(new Text(contractId + " - " + contractTitle).setFontSize(10))
-            .add("\n\n")
+            .add(new Text("Invoice : ").setFontSize(12).setBold())
+            .add(new Text(invoiceId).setFontSize(12).setBold().setFontColor(blueColor)).add("\n")
+            .add(new Text(contractId + " - " + contractTitle).setFontSize(10)).add("\n")
             .add(new Text("Invoice Period : ").setFontSize(9).setBold())
-            .add(new Text(startDate + " To " + endDate).setFontSize(9).setFontColor(grayColor))
-            .add("\n\n")
+            .add(new Text(startDate + " To " + endDate).setFontSize(9).setFontColor(grayColor)).add("\n")
             .add(new Text("Remarks: ").setFontSize(9).setBold())
-            .add(new Text("\"" + remarks + "\"").setFontSize(9).setFontColor(grayColor))
+            .add(new Text("\"" + (invoice.getNotes() != null && invoice.getNotes().size() > 1
+                    ? invoice.getNotes().get(0)
+                    : "") + "\"")
+                    .setFontSize(9)
+                    .setFontColor(grayColor))
             .setMarginTop(5);
 
     Paragraph clientDetails =
@@ -198,10 +203,8 @@ public class InvoicePDFGen {
             .setBorder(Border.NO_BORDER)
             .setTextAlignment(TextAlignment.RIGHT)
             .setVerticalAlignment(VerticalAlignment.BOTTOM));
-
     document.add(footerTable);
-
-    document.add(new Paragraph("\n"));
+      addLine(document, grayColor);
 
     // ------TASK'S PART ----------
 
@@ -228,10 +231,17 @@ public class InvoicePDFGen {
             .setBorder(Border.NO_BORDER));
     itemsTable.addHeaderCell(
         new Cell()
-            .add(new Paragraph("Price (€)").setFontSize(10).setBold())
+            .add(new Paragraph("Amount (€)").setFontSize(10).setBold())
             .setTextAlignment(TextAlignment.RIGHT)
             .setFontColor(grayColor)
             .setBorder(Border.NO_BORDER));
+
+      itemsTable.addCell(
+              new Cell(1, 4)
+                      .add(new Paragraph(Constants.LINE))
+                      .setBorder(Border.NO_BORDER)
+                      .setTextAlignment(TextAlignment.CENTER)
+      );
 
     int serialNo = 1;
     double totalAmount = 0.0;
@@ -252,16 +262,16 @@ public class InvoicePDFGen {
                 .setBorder(Border.NO_BORDER));
         itemsTable.addCell(
             new Cell()
-                .add(new Paragraph(String.valueOf(task.getPrice())).setFontSize(9))
+                .add(new Paragraph(String.valueOf(task.getAmount())).setFontSize(9))
                 .setTextAlignment(TextAlignment.RIGHT)
                 .setBorder(Border.NO_BORDER));
-        totalAmount += task.getPrice();
+        totalAmount += task.getAmount();
       }
     }
 
     document.add(itemsTable);
 
-    document.add(new Paragraph("\n"));
+      addLine(document, grayColor);
 
     // ------CALCULATION PART---------
 
@@ -317,8 +327,6 @@ public class InvoicePDFGen {
 
     document.add(calculationTable);
 
-    document.add(new Paragraph("\n"));
-
     // --- AMOUNT IN WORDS PART ---
 
     double exchangeRate = 95.73; // 1€  == 95.73 INR present day (15-05-2025)
@@ -344,20 +352,17 @@ public class InvoicePDFGen {
 
     // -----NOTE PART ------
 
-    String dayLeft = invoice.getDaysLeftForPayment();
-
     Paragraph notePara =
         new Paragraph()
             .add(new Text("NOTE: ").setBold().setFontSize(9))
-            .add(
-                new Text(
-                        "Please transfer the due amount to the following bank account within next ")
-                    .setFontSize(9)
-                    .setFontColor(grayColor))
-            .add(new Text(dayLeft + " days").setBold().setFontSize(9));
+                .add(new Text("\"" + (invoice.getNotes() != null && invoice.getNotes().size() > 1
+                        ? invoice.getNotes().get(1)
+                        : "") + "\"")
+                        .setFontSize(9)
+                        .setFontColor(grayColor));
 
     document.add(notePara);
-
+      addLine(document, grayColor);
     // ----- PAYMENT SECTION -----
 
     String orgName = invoice.getPaymentDetails().getAccountName().toString();
@@ -424,17 +429,18 @@ public class InvoicePDFGen {
 
     document.add(paymentTable);
 
-    document.add(new Paragraph("\n"));
+      addLine(document, grayColor);
 
     // ------REMARKS SECTION----------
 
     Paragraph remarksPara =
         new Paragraph()
             .add(new Text("Remarks ").setBold().setFontSize(9))
-            .add(
-                new Text("\"Thank you so much for the great opportunity as always.\"")
-                    .setFontSize(9)
-                    .setFontColor(grayColor))
+                .add(new Text("\"" + (invoice.getNotes() != null && invoice.getNotes().size() > 1
+                        ? invoice.getNotes().get(0)
+                        : "") + "\"")
+                        .setFontSize(9)
+                        .setFontColor(grayColor))
             .setTextAlignment(TextAlignment.LEFT)
             .setMarginBottom(15);
 

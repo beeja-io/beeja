@@ -23,20 +23,30 @@ import { updateProjectStatus } from '../service/axiosInstance';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
-
-interface Props {
+import Pagination from '../components/directComponents/Pagination.component';
+export type ProjectListProps = {
   projectList: ProjectEntity[];
   updateProjectList: () => void;
   isLoading: boolean;
   onEditProject: (project: ProjectEntity) => void;
-}
+  totalItems: number;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  itemsPerPage: number;
+  setItemsPerPage: (size: number) => void;
+};
 
 const ProjectList = ({
   projectList,
   updateProjectList,
   isLoading,
   onEditProject,
-}: Props) => {
+  totalItems,
+  currentPage,
+  setCurrentPage,
+  itemsPerPage,
+  setItemsPerPage,
+}: ProjectListProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const { t } = useTranslation();
@@ -66,6 +76,15 @@ const ProjectList = ({
   const handleProjectClick = (projectId: string, clientId: string) => {
     navigate(`/projects/project-management/${projectId}/${clientId}`);
   };
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setItemsPerPage(newPageSize);
+    setCurrentPage(1);
+  };
+
   return (
     <>
       <StyledDiv>
@@ -146,8 +165,16 @@ const ProjectList = ({
                             )
                           }
                         >
-                          {project?.projectManagerNames &&
-                            project?.projectManagerNames[0]}
+                          {Array.isArray(project?.projectManagerNames)
+                            ? project.projectManagerNames.map((name, index) => (
+                                <div key={index}>
+                                  {name}
+                                  {index <
+                                    project.projectManagerNames.length - 1 &&
+                                    ' ,'}
+                                </div>
+                              ))
+                            : project?.projectManagerNames}
                         </td>
                         <td>
                           {project?.projectStatus ? (
@@ -206,6 +233,14 @@ const ProjectList = ({
             </TableList>
           )}
         </TableListContainer>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={Math.ceil(totalItems / itemsPerPage)}
+          handlePageChange={handlePageChange}
+          itemsPerPage={itemsPerPage}
+          handleItemsPerPage={handlePageSizeChange}
+          totalItems={totalItems}
+        />
       </StyledDiv>
 
       {showSuccessMessage && (

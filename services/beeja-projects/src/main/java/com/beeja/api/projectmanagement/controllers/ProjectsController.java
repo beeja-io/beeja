@@ -4,9 +4,11 @@ import com.beeja.api.projectmanagement.annotations.HasPermission;
 import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
+import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
 import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
+import com.beeja.api.projectmanagement.responses.ProjectDropdownDTO;
 import com.beeja.api.projectmanagement.responses.ProjectEmployeeDTO;
 import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 import com.beeja.api.projectmanagement.service.ProjectService;
@@ -70,9 +72,9 @@ public class ProjectsController {
    */
   @GetMapping("/client/{clientId}")
   @HasPermission(PermissionConstants.GET_PROJECT)
-  public ResponseEntity<List<Project>> getProjectsByClientId(@PathVariable String clientId) {
-    List<Project> projects = projectService.getProjectsByClientIdInOrganization(clientId);
-    return ResponseEntity.ok(projects);
+  public ResponseEntity<List<ProjectResponseDTO>> getProjectsByClientId(@PathVariable String clientId) {
+      List<ProjectResponseDTO> projects = projectService.getProjectsByClientIdInOrganization(clientId);
+      return ResponseEntity.ok(projects);
   }
 
   /**
@@ -107,39 +109,36 @@ public class ProjectsController {
     Project updatedProject = projectService.updateProjectByProjectId(projectRequest, projectId);
     return ResponseEntity.ok(updatedProject);
   }
-  @PatchMapping("/{projectId}/status")
-  public ResponseEntity<Project> changeProjectStatus(
-          @PathVariable String projectId,
-          @RequestBody ProjectStatus status) {
 
-    Project updatedProject = projectService.changeProjectStatus(projectId, status);
-    return ResponseEntity.ok(updatedProject);
-  }
-
-  @GetMapping("/all-projects")
+  @GetMapping("/projects")
   @HasPermission(PermissionConstants.GET_PROJECT)
-  public ResponseEntity<Map<String, Object>> getAllProject(
+  public ResponseEntity<Map<String, Object>> getAllProjectOf(
           @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
           @RequestParam(name = "pageSize", defaultValue = "10") int pageSize,
           @RequestParam(required = false) String projectId,
           @RequestParam(required = false) ProjectStatus status) {
 
-    try {
+      if (pageNumber < 1 || pageSize < 1) {
+          throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Page number and size must be positive integers");
+      }
+      try {
       String organizationId = UserContext.getLoggedInUserOrganization()
               .get(Constants.ID).toString();
       List<ProjectResponseDTO> projects = projectService.getAllProjects(organizationId,
               pageNumber, pageSize, projectId, status
       );
 
-      long totalSize = projectService.getTotalProjectsInOrganization(organizationId, projectId, status);
+      long totalRecords = projectService.getTotalProjectsInOrganization(organizationId, projectId, status);
+      long totalPages = (long) Math.ceil((double) totalRecords / pageSize);
 
       Map<String, Object> response = new HashMap<>();
       response.put("metadata", Map.of(
-              "totalSize", totalSize,
+              "totalRecords", totalRecords,
               "pageNumber", pageNumber,
-              "pageSize", pageSize
+              "pageSize", pageSize,
+              "totalPages", totalPages
       ));
-      response.put("projects", projects);
+      response.put("data", projects);
 
       return ResponseEntity.ok(response);
     } catch (ResourceNotFoundException ex) {
@@ -153,6 +152,23 @@ public class ProjectsController {
     @HasPermission(PermissionConstants.GET_PROJECT)
     public ResponseEntity<ProjectEmployeeDTO> getEmployeesByProjectId(@PathVariable String projectId) {
         return ResponseEntity.ok(projectService.getEmployeesByProjectId(projectId));
+    }
+
+    @GetMapping("/projects-dropdown")
+    @HasPermission(PermissionConstants.GET_PROJECT)
+    public List<ProjectDropdownDTO> getAllProjectsForDropdown() {
+        String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+        return projectService.getAllProjectsForDropdown(organizationId);
+    }
+
+    @PatchMapping("/{projectId}/status")
+    @HasPermission(PermissionConstants.UPDATE_CONTRACT)
+    public ResponseEntity<Project> changeContractStatus(
+            @PathVariable String projectId,
+            @RequestBody ProjectStatus status) {
+
+        Project updatedContract = projectService.changeProjectStatus(projectId, status);
+        return ResponseEntity.ok(updatedContract);
     }
 }
 

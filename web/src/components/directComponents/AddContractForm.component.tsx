@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { ContractDetails } from '../../entities/ContractEntiy';
 import { Employee, ProjectEntity } from '../../entities/ProjectEntity';
 import {
-  getAllProjects,
+  getProjectDropdown,
   getProjectEmployees,
   getResourceManager,
   postContracts,
@@ -21,7 +21,6 @@ import {
   ResourceBlock,
   ResourceLabel,
   SaveButton,
-  StyledResourceWrapper,
   TextInput,
 } from '../../styles/AddContractFormStyles.style';
 import {
@@ -36,14 +35,13 @@ import {
   StepWrapper,
   UploadText,
 } from '../../styles/ClientStyles.style';
-import { Button } from '../../styles/CommonStyles.style';
 import { ValidationText } from '../../styles/DocumentTabStyles.style';
 import {
   DateInputWrapper,
   FormField,
   Label,
   RequiredAsterisk,
-  TextArea,
+  Button,
 } from '../../styles/ProjectStyles.style';
 import {
   CheckIcon,
@@ -107,6 +105,9 @@ export type ContractFormData = {
     availability: number;
   }[];
   projectName: string;
+  attachments?: File[];
+  projectId?: string;
+  clientId?: string;
 };
 
 const AddContractForm: React.FC<AddContractFormProps> = ({
@@ -114,6 +115,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   handleSuccessMessage,
   initialData,
 }) => {
+  const { t } = useTranslation();
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<ContractFormData>({
     contractTitle: '',
@@ -128,8 +130,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     projectManagers: [],
     rawProjectResources: [],
     projectName: '',
+    projectId: '',
+    clientId: '',
+    attachments: [],
   });
-  const [file, setFile] = useState<File | null>(null);
+  const [files, setFiles] = useState<File[]>([]);
   const [projectOptions, setProjectOptions] = useState<ProjectEntity[]>([]);
   const [resourceOptions, setResourceOptions] = useState<OptionType[]>([]);
   const [managerOptions, setManagerOptions] = useState<OptionType[]>([]);
@@ -148,12 +153,16 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     startDate?: string;
     endDate?: string;
     contractType?: string;
+    billingType?: string;
+    billingCurrency?: string;
   }>({});
-  const formatDate = (dateStr: string | Date) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-CA');
+
+  const formatDate = (date: Date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
   };
-  const [isOpen, setIsOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
@@ -165,10 +174,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   const [isProjectLoading, setIsProjectLoading] = useState(false);
 
   useEffect(() => {
-    getAllProjects()
+    getProjectDropdown()
       .then((response) => {
-        const data = response.data.projects;
-
+        const data = response.data;
         if (Array.isArray(data)) {
           setProjectOptions(data);
         } else {
@@ -179,7 +187,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         setProjectOptions([]);
         toast.error(t('Failed to fetch project list.') + error);
       });
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     getResourceManager()
@@ -246,6 +254,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         projectManagers: mappedManagers.map((m) => m.value),
         rawProjectResources: mappedResources,
         projectName: matchedProject?.name || '',
+        attachments: [],
       });
 
       setSelectedResources(mappedResources);
@@ -268,11 +277,18 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: undefined,
+    }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files);
+      setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+      e.target.value = '';
     }
   };
 
@@ -291,7 +307,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         projectManagers: [],
         rawProjectResources: [],
       }));
-
+      setSelectedResources([]);
       setIsProjectLoading(true);
       try {
         const response = await getProjectEmployees(selectedProject.projectId);
@@ -321,25 +337,58 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   const handleSubmitData = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+
     try {
-      const payload: any = {};
+      const formDataToSend = new FormData();
 
       Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'startDate' || key === 'endDate') {
+          return;
+        }
+
         if (key === 'resourceAllocations' && Array.isArray(value)) {
-          payload.projectResources = value.map((resource: any) => ({
-            employeeId: resource.value,
-            allocationPercentage: Number(resource.availability || 0),
-          }));
-        } else {
-          payload[key] = value;
+          value.forEach((resource: any, index: number) => {
+            formDataToSend.append(
+              `projectResources[${index}].employeeId`,
+              resource.value
+            );
+            formDataToSend.append(
+              `projectResources[${index}].allocationPercentage`,
+              String(Number(resource.availability || 0))
+            );
+          });
+        } else if (Array.isArray(value)) {
+          value.forEach((val: any) => {
+            formDataToSend.append(key, val);
+          });
+        } else if (value !== undefined && value !== null) {
+          formDataToSend.append(key, value as any);
         }
       });
+      if (files.length > 0) {
+        files.forEach((f) => {
+          formDataToSend.append('attachments', f);
+        });
+      }
+
+      if (formData.startDate) {
+        formDataToSend.append(
+          'startDate',
+          new Date(formData.startDate).toISOString().split('T')[0]
+        );
+      }
+      if (formData.endDate) {
+        formDataToSend.append(
+          'endDate',
+          new Date(formData.endDate).toISOString().split('T')[0]
+        );
+      }
 
       if (initialData?.contractId) {
-        await updateContract(initialData.contractId, payload);
+        await updateContract(initialData.contractId, formDataToSend);
         handleSuccessMessage('Contract has been successfully updated.', 'edit');
       } else {
-        const response = await postContracts(payload);
+        const response = await postContracts(formDataToSend);
         const contractId = response?.data?.contractId;
 
         if (contractId) {
@@ -363,16 +412,49 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     if (!formData.contractTitle)
       newErrors.contractTitle = 'Please enter contract Name';
     if (!formData.startDate) newErrors.startDate = 'Please select Start Date';
-    if (!formData.endDate) newErrors.endDate = 'Please select End Date';
     if (!formData.contractType)
       newErrors.contractType = 'Please select Contract Type';
+    if (!formData.billingType)
+      newErrors.billingType = 'Please select Billing Type';
+    if (!formData.billingCurrency)
+      newErrors.billingCurrency = 'Please select Billing Currency';
 
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
   };
 
-  const { t } = useTranslation();
+  useEffect(() => {
+    if (initialData?.projectId && formInitialized) {
+      (async () => {
+        try {
+          setIsProjectLoading(true);
+          const response = await getProjectEmployees(initialData.projectId);
+
+          const managers = (response.data.managers || []).map((m: any) => ({
+            value: m.employeeId,
+            label: m.fullName,
+          }));
+
+          const resources = (response.data.resources || []).map((r: any) => ({
+            value: r.employeeId,
+            label: r.fullName,
+            availability: r.allocationPercentage ?? 0,
+          }));
+
+          setManagerOptions(managers);
+          setResourceOptions(resources);
+        } catch (error) {
+          toast.error('Failed to fetch project employees');
+          setManagerOptions([]);
+          setResourceOptions([]);
+        } finally {
+          setIsProjectLoading(false);
+        }
+      })();
+    }
+  }, [initialData?.projectId, formInitialized]);
+
   const isFormReady =
     !initialData ||
     (initialData &&
@@ -453,35 +535,82 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     <TextInput
                       type="text"
                       value={initialData.contractId}
+                      className="disabled"
                       disabled
                     />
                   </InputLabelContainer>
                 )}
-                <InputLabelContainer>
-                  <label>
-                    {t('Contract Name')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
-                  <TextInput
-                    name="contractTitle"
-                    type="text"
-                    placeholder="Enter Contract Name"
-                    value={formData.contractTitle}
-                    onChange={(e) => {
-                      handleChange(e);
-                      if (errors.contractTitle) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          contractTitle: undefined,
-                        }));
-                      }
-                    }}
-                    required
-                  />
-                  {errors.contractTitle && (
-                    <ValidationText>{errors.contractTitle}</ValidationText>
-                  )}
-                </InputLabelContainer>
+                {!initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Contract Name')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+                    <TextInput
+                      name="contractTitle"
+                      type="text"
+                      placeholder="Enter Contract Name"
+                      value={formData.contractTitle}
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (errors.contractTitle) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractTitle: undefined,
+                          }));
+                        }
+                      }}
+                      required
+                    />
+                    {errors.contractTitle && (
+                      <ValidationText>{errors.contractTitle}</ValidationText>
+                    )}
+                  </InputLabelContainer>
+                )}
+                {initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Contract Type')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+
+                    <DropdownMenu
+                      label="Select Contract"
+                      name="contractType"
+                      id="contractType"
+                      className="largeContainerExp largeContainerHei"
+                      value={formData.contractType || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'contractType',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+
+                        handleChange(event);
+
+                        if (errors.contractType) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractType: undefined,
+                          }));
+                        }
+                      }}
+                      required={true}
+                      options={[
+                        { label: 'Select Contract', value: '' },
+                        ...Object.values(ContractType).map((type) => ({
+                          label: ContractTypeLabels[type],
+                          value: type,
+                        })),
+                      ]}
+                    />
+                    {errors.contractType && (
+                      <ValidationText>{errors.contractType}</ValidationText>
+                    )}
+                  </InputLabelContainer>
+                )}
 
                 <InputLabelContainer>
                   <label>
@@ -495,7 +624,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       placeholder="Select Date"
                       name="startDate"
                       value={
-                        formData.startDate ? formatDate(formData.startDate) : ''
+                        formData.startDate
+                          ? formatDate(new Date(formData.startDate))
+                          : ''
                       }
                       onFocus={() => setIsStartDateCalOpen(true)}
                       onClick={() => setIsStartDateCalOpen(true)}
@@ -542,13 +673,18 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 </InputLabelContainer>
 
                 <InputLabelContainer>
-                  <label>{t('Billing Type')}</label>
+                  <label>
+                    {t('Billing Type')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
+
                   <DropdownMenu
                     label={t('Select Billing Type')}
                     name="billingType"
                     id="billingType"
-                    className="largeContainerExp"
+                    className="largeContainerExp largeContainerHei"
                     value={formData.billingType || ''}
+                    required
                     onChange={(e) => {
                       const event = {
                         target: {
@@ -566,17 +702,35 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       })),
                     ]}
                   />
+                  {errors.billingType && (
+                    <ValidationText>{errors.billingType}</ValidationText>
+                  )}
                 </InputLabelContainer>
-                <InputLabelContainer>
-                  <label>{t('Budget')}</label>
-                  <TextInput
-                    type="text"
-                    name="contractValue"
-                    placeholder="Enter Budget"
-                    value={formData.contractValue}
-                    onChange={handleChange}
-                  />
-                </InputLabelContainer>
+
+                {initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>{t('Description')}</label>
+                    <TextInput
+                      name="description"
+                      placeholder="Enter Contract Description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      className="largeInput"
+                    />
+                  </InputLabelContainer>
+                )}
+                {!initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>{t('Budget')}</label>
+                    <TextInput
+                      type="text"
+                      name="contractValue"
+                      placeholder="Enter Budget"
+                      value={formData.contractValue}
+                      onChange={handleChange}
+                    />
+                  </InputLabelContainer>
+                )}
 
                 {!initialData?.contractId && (
                   <div>
@@ -590,6 +744,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         id="contractFile"
                         type="file"
                         accept=".pdf,.doc,.docx"
+                        multiple
                         style={{ display: 'none' }}
                         onChange={handleFileChange}
                       />
@@ -599,12 +754,22 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         <BrowseText>{t('Browse')}</BrowseText>
                       </UploadText>
                     </LogoUploadContainer>
-                    {file && (
+                    {files.length > 0 && (
                       <LogoLabel>
-                        <FileName>{file.name}</FileName>
-                        <RemoveButton onClick={() => setFile(null)}>
-                          x
-                        </RemoveButton>
+                        {files.map((f, idx) => (
+                          <FileName key={idx}>
+                            {f.name}
+                            <RemoveButton
+                              onClick={() =>
+                                setFiles((prev) =>
+                                  prev.filter((_, i) => i !== idx)
+                                )
+                              }
+                            >
+                              x
+                            </RemoveButton>
+                          </FileName>
+                        ))}
                       </LogoLabel>
                     )}
                   </div>
@@ -612,54 +777,92 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
               </ColumnWrapper>
 
               <ColumnWrapper>
+                {initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Contract Name')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+                    <TextInput
+                      name="contractTitle"
+                      type="text"
+                      placeholder="Enter Contract Name"
+                      value={formData.contractTitle}
+                      onChange={(e) => {
+                        handleChange(e);
+                        if (errors.contractTitle) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractTitle: undefined,
+                          }));
+                        }
+                      }}
+                      required
+                    />
+                    {errors.contractTitle && (
+                      <ValidationText>{errors.contractTitle}</ValidationText>
+                    )}
+                  </InputLabelContainer>
+                )}
+                {initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>{t('Budget')}</label>
+                    <TextInput
+                      type="text"
+                      name="contractValue"
+                      placeholder="Enter Budget"
+                      value={formData.contractValue}
+                      onChange={handleChange}
+                    />
+                  </InputLabelContainer>
+                )}
+                {!initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>
+                      {t('Contract Type')}
+                      <ValidationText className="star">*</ValidationText>
+                    </label>
+
+                    <DropdownMenu
+                      label="Select Contract"
+                      name="contractType"
+                      id="contractType"
+                      className="largeContainerExp largeContainerHei"
+                      value={formData.contractType || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'contractType',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+
+                        handleChange(event);
+
+                        if (errors.contractType) {
+                          setErrors((prev) => ({
+                            ...prev,
+                            contractType: undefined,
+                          }));
+                        }
+                      }}
+                      required={true}
+                      options={[
+                        { label: 'Select Contract', value: '' },
+                        ...Object.values(ContractType).map((type) => ({
+                          label: ContractTypeLabels[type],
+                          value: type,
+                        })),
+                      ]}
+                    />
+                    {errors.contractType && (
+                      <ValidationText>{errors.contractType}</ValidationText>
+                    )}
+                  </InputLabelContainer>
+                )}
+
                 <InputLabelContainer>
-                  <label>
-                    {t('Contract Type')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
-
-                  <DropdownMenu
-                    label="Select Contract"
-                    name="contractType"
-                    id="contractType"
-                    className="largeContainerExp"
-                    value={formData.contractType || ''}
-                    onChange={(e) => {
-                      const event = {
-                        target: {
-                          name: 'contractType',
-                          value: e,
-                        },
-                      } as React.ChangeEvent<HTMLSelectElement>;
-
-                      handleChange(event);
-
-                      if (errors.contractType) {
-                        setErrors((prev) => ({
-                          ...prev,
-                          contractType: undefined,
-                        }));
-                      }
-                    }}
-                    required={true}
-                    options={[
-                      { label: 'Select Contract', value: '' },
-                      ...Object.values(ContractType).map((type) => ({
-                        label: ContractTypeLabels[type],
-                        value: type,
-                      })),
-                    ]}
-                  />
-                  {errors.contractType && (
-                    <ValidationText>{errors.contractType}</ValidationText>
-                  )}
-                </InputLabelContainer>
-
-                <InputLabelContainer>
-                  <label>
-                    {t('End Date')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
+                  <label>{t('End Date')}</label>
 
                   <DateInputWrapper ref={calendarEndRef}>
                     <TextInput
@@ -667,7 +870,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       placeholder="Select Date"
                       name="endDate"
                       value={
-                        formData.endDate ? formatDate(formData.endDate) : ''
+                        formData.endDate
+                          ? formatDate(new Date(formData.endDate))
+                          : ''
                       }
                       onFocus={() => setIsEndDateCalOpen(true)}
                       onClick={() => setIsEndDateCalOpen(true)}
@@ -717,13 +922,17 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 </InputLabelContainer>
 
                 <InputLabelContainer>
-                  <label>{t('Billing Currency')}</label>
+                  <label>
+                    {t('Billing Currency')}
+                    <ValidationText className="star">*</ValidationText>
+                  </label>
                   <DropdownMenu
                     label="Select Currency"
                     name="billingCurrency"
                     id="billingCurrency"
-                    className="largeContainerExp"
+                    className="largeContainerExp largeContainerHei"
                     value={formData.billingCurrency || ''}
+                    required={true}
                     onChange={(e) => {
                       const event = {
                         target: {
@@ -741,16 +950,24 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       })),
                     ]}
                   />
+                  {errors.billingCurrency && (
+                    <ValidationText>{errors.billingCurrency}</ValidationText>
+                  )}
                 </InputLabelContainer>
-                <InputLabelContainer>
-                  <label>{t('Description')}</label>
-                  <TextArea
-                    name="description"
-                    placeholder="Enter Contract Description"
-                    value={formData.description}
-                    onChange={handleChange}
-                  />
-                </InputLabelContainer>
+
+                {!initialData?.contractId && (
+                  <InputLabelContainer>
+                    <label>{t('Description')}</label>
+                    <TextInput
+                      name="description"
+                      placeholder="Enter Contract Description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      className="largeInput"
+                    />
+                  </InputLabelContainer>
+                )}
+
                 {initialData?.contractId && (
                   <div
                     style={{
@@ -769,6 +986,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         id="contractFile"
                         type="file"
                         accept=".pdf,.doc,.docx"
+                        multiple
                         style={{ display: 'none' }}
                         onChange={handleFileChange}
                       />
@@ -778,21 +996,34 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         <BrowseText>{t('Browse')}</BrowseText>
                       </UploadText>
                     </LogoUploadContainer>
-                    {file && (
+                    {files.length > 0 && (
                       <LogoLabel>
-                        <FileName>{file.name}</FileName>
-                        <RemoveButton onClick={() => setFile(null)}>
-                          x
-                        </RemoveButton>
+                        {files.map((f, idx) => (
+                          <FileName key={idx}>
+                            {f.name}
+                            <RemoveButton
+                              onClick={() =>
+                                setFiles((prev) =>
+                                  prev.filter((_, i) => i !== idx)
+                                )
+                              }
+                            >
+                              x
+                            </RemoveButton>
+                          </FileName>
+                        ))}
                       </LogoLabel>
                     )}
                   </div>
                 )}
               </ColumnWrapper>
+              <span className="infoText-contract">
+                File format : .pdf, .png, .jpeg
+              </span>
             </FormInputsContainer>
 
             <div className="formButtons">
-              <Button onClick={handleClose} type="button">
+              <Button onClick={handleClose} type="button" className="cancel">
                 {t('Cancel')}
               </Button>
               <Button
@@ -823,7 +1054,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     label={t('Select Project')}
                     name="projectName"
                     id="projectName"
-                    className="largeContainerExp"
+                    className="largeContainerExp largeContainerHei"
                     value={formData.projectName || ''}
                     onChange={(e) => {
                       const event = {
@@ -871,6 +1102,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             projectManagers: values,
                           }));
                         }}
+                        required
                         placeholder={t('Select Project Managers')}
                         searchable={true}
                       />
@@ -889,30 +1121,28 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </Label>
 
                   <ResourceAllocationRow>
-                    <StyledResourceWrapper>
-                      <DropdownMenu
-                        label="Search People"
-                        name="currentResource"
-                        id="currentResource"
-                        className="largeContainerRes"
-                        value={currentResource || ''}
-                        onChange={(e) => {
-                          const event = {
-                            target: {
-                              name: 'currentResource',
-                              value: e,
-                            },
-                          } as React.ChangeEvent<HTMLSelectElement>;
-                          setCurrentResource(event.target.value || null);
-                        }}
-                        options={[
-                          ...resourceOptions.map((opt) => ({
-                            label: opt.label,
-                            value: opt.value,
-                          })),
-                        ]}
-                      />
-                    </StyledResourceWrapper>
+                    <DropdownMenu
+                      label="Search People"
+                      name="currentResource"
+                      id="currentResource"
+                      className="largeContainerRes largeContainerHei"
+                      value={currentResource || ''}
+                      onChange={(e) => {
+                        const event = {
+                          target: {
+                            name: 'currentResource',
+                            value: e,
+                          },
+                        } as React.ChangeEvent<HTMLSelectElement>;
+                        setCurrentResource(event.target.value || null);
+                      }}
+                      options={[
+                        ...resourceOptions.map((opt) => ({
+                          label: opt.label,
+                          value: opt.value,
+                        })),
+                      ]}
+                    />
 
                     <AvailabilityContainer>
                       <AvailabilityInput
@@ -983,57 +1213,40 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       .map((option) => (
                         <NameBubble key={option.value}>
                           <span className="name">{option.label}</span>
+                          <span className="percentageAvailability">
+                            <span className="availability">
+                              Allocation: {option.availability}%
+                            </span>
+                            <button
+                              className="remove-btn"
+                              onClick={() =>
+                                setSelectedResources((prev) =>
+                                  prev.filter(
+                                    (item) => item.value !== option.value
+                                  )
+                                )
+                              }
+                            >
+                              ✕
+                            </button>
+                          </span>
                         </NameBubble>
                       ))}
                   </NameBubbleListContainer>
                 </ListWrapper>
-                <ListWrapper className="container">
-                  <ResourceLabel
-                    className="ManageResource"
-                    onClick={() => setIsOpen((prev) => !prev)}
-                  >
-                    <span>{t('Manage Resource Allocation')} </span>
-                    <span className={`arrow ${isOpen ? 'open' : ''}`}>❮</span>
-                  </ResourceLabel>
-                  {isOpen && (
-                    <NameBubbleListContainer className="manageResourceList">
-                      {[...(selectedResources || [])]
-                        .sort((a, b) => a.value.localeCompare(b.value))
-                        .map((option) => (
-                          <NameBubble key={option.value}>
-                            <span className="name">{option.label}</span>
-                            <span className="percentageAvailability">
-                              <span className="availability">
-                                Allocation: {option.availability}%
-                              </span>
-                              <button
-                                className="remove-btn"
-                                onClick={() =>
-                                  setSelectedResources((prev) =>
-                                    prev.filter(
-                                      (item) => item.value !== option.value
-                                    )
-                                  )
-                                }
-                              >
-                                ✕
-                              </button>
-                            </span>
-                          </NameBubble>
-                        ))}
-                    </NameBubbleListContainer>
-                  )}
-                </ListWrapper>
               </ResourceBlock>
             )}
-
             <AddContractButtons>
               <div onClick={handlePreviousStep} className="leftAlign">
                 <span className="separator"> {'<'} </span> &nbsp;
                 {t('Previous')}
               </div>
               <ButtonGroup>
-                <Button onClick={handleDiscardModalToggle} type="button">
+                <Button
+                  onClick={handleDiscardModalToggle}
+                  type="button"
+                  className="cancel"
+                >
                   {t('Cancel')}
                 </Button>
                 <Button className="submit" type="submit">

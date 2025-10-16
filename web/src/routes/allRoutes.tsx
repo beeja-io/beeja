@@ -9,11 +9,14 @@ import { useUser } from '../context/UserContext';
 import LoanManagementScreen from '../screens/LoanManagementScreen.screen';
 import {
   BULK_PAYSLIP_MODULE,
+  CLIENT_MODULE,
+  CONTRACT_MODULE,
   EXPENSE_MODULE,
   FEATURE_TOGGLES_MODULE,
   INVENTORY_MODULE,
   LOAN_MODULE,
   ORGANIZATION_MODULE,
+  PROJECT_MODULE,
 } from '../constants/PermissionConstants';
 import ServiceUnavailable from '../screens/ServiceUnavailable.screen';
 import InventoryManagement from '../screens/InventoryManagement.screen';
@@ -100,8 +103,8 @@ const AllRoutes = () => {
           index
           element={
             <CustomRoute
-              permission={INVENTORY_MODULE.READ_DEVICE}
-              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+              permission={CLIENT_MODULE.READ_CLIENT}
+              featureToggle={EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT}
             >
               <ClientListWrapper />
             </CustomRoute>
@@ -111,8 +114,8 @@ const AllRoutes = () => {
           path=":id"
           element={
             <CustomRoute
-              permission={INVENTORY_MODULE.READ_DEVICE}
-              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+              permission={CLIENT_MODULE.READ_CLIENT}
+              featureToggle={EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT}
             >
               <ClientDetailsScreen />
             </CustomRoute>
@@ -128,8 +131,8 @@ const AllRoutes = () => {
           index
           element={
             <CustomRoute
-              permission={INVENTORY_MODULE.READ_DEVICE}
-              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+              permission={PROJECT_MODULE.READ_PROJECT}
+              featureToggle={EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT}
             >
               <ProjectListWrapper />
             </CustomRoute>
@@ -139,8 +142,8 @@ const AllRoutes = () => {
           path=":projectId/:clientId"
           element={
             <CustomRoute
-              permission={INVENTORY_MODULE.READ_DEVICE}
-              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+              permission={PROJECT_MODULE.READ_PROJECT}
+              featureToggle={EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT}
             >
               <ProjectDetailsSCreen />
             </CustomRoute>
@@ -156,8 +159,8 @@ const AllRoutes = () => {
           index
           element={
             <CustomRoute
-              permission={INVENTORY_MODULE.READ_DEVICE}
-              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+              permission={CONTRACT_MODULE.READ_CONTRACT}
+              featureToggle={EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT}
             >
               <ContractListWrapper />
             </CustomRoute>
@@ -167,8 +170,8 @@ const AllRoutes = () => {
           path=":id"
           element={
             <CustomRoute
-              permission={INVENTORY_MODULE.READ_DEVICE}
-              featureToggle={EFeatureToggles.INVENTORY_MANAGEMENT}
+              permission={CONTRACT_MODULE.READ_CONTRACT}
+              featureToggle={EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT}
             >
               <ContractDetailsScreen />
             </CustomRoute>

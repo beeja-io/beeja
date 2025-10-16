@@ -33,6 +33,19 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
   const [isCalenderOpen, setIsCalenderOpen] = useState(false);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const isOsRamEnabled = (device: string | null | undefined) => {
+    const osRamDevices = [
+      'DESKTOP',
+      'LAPTOP',
+      'MOBILE',
+      'TABLET',
+      'DESKTOPS',
+      'LAPTOPS',
+      'MOBILES',
+      'TABLETS',
+    ];
+    return device ? osRamDevices.includes(device.toUpperCase()) : false;
+  };
 
   const handleShowErrorMessage = () => {
     setShowErrorMessage(!showErrorMessage);
@@ -123,20 +136,15 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
       ) {
         errorMessages.push('Model');
       }
-      if (
-        formData.os === undefined ||
-        formData.os === null ||
-        formData.os === ''
-      ) {
-        errorMessages.push('OS');
+      if (isOsRamEnabled(formData.device)) {
+        if (!formData.os) {
+          errorMessages.push('OS');
+        }
+        if (!formData.ram) {
+          errorMessages.push('RAM');
+        }
       }
-      if (
-        formData.ram === undefined ||
-        formData.ram === null ||
-        formData.ram === ''
-      ) {
-        errorMessages.push('RAM');
-      }
+
       if (
         formData.productId === undefined ||
         formData.productId === null ||
@@ -147,6 +155,15 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
 
       if (errorMessages.length > 0) {
         setErrorMessage('Please fill ' + errorMessages);
+        handleShowErrorMessage();
+        return;
+      }
+      const productIdPattern = /^[A-Za-z0-9-]{8,20}$/;
+
+      if (!productIdPattern.test(formData.productId || '')) {
+        setErrorMessage(
+          'PRODUCT_ID must be 8-20 characters long and can only include letters, numbers, and hyphens.'
+        );
         handleShowErrorMessage();
         return;
       }
@@ -472,16 +489,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
             <InputLabelContainer>
               <label>
                 OS
-                {[
-                  'Desktop',
-                  'Laptop',
-                  'Mobile',
-                  'Tablet',
-                  'Desktops',
-                  'Laptops',
-                  'Mobiles',
-                  'Tablets',
-                ].includes(formData.device) && (
+                {isOsRamEnabled(formData.device) && (
                   <ValidationText className="star">*</ValidationText>
                 )}
               </label>
@@ -494,43 +502,16 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 disabled={Boolean(
                   formData.device &&
                     formData.device !== 'Select Device' &&
-                    ![
-                      'Desktop',
-                      'Laptop',
-                      'Mobile',
-                      'Tablet',
-                      'Desktops',
-                      'Laptops',
-                      'Mobiles',
-                      'Tablets',
-                    ].includes(formData.device)
+                    !isOsRamEnabled(formData.device)
                 )}
-                required={[
-                  'Desktop',
-                  'Laptop',
-                  'Mobile',
-                  'Tablet',
-                  'Desktops',
-                  'Laptops',
-                  'Mobiles',
-                  'Tablets',
-                ].includes(formData.device)}
+                required={isOsRamEnabled(formData.device)}
                 className="largeInput"
               />
             </InputLabelContainer>
             <InputLabelContainer>
               <label>
                 {t('RAM')}
-                {[
-                  'Desktop',
-                  'Laptop',
-                  'Mobile',
-                  'Tablet',
-                  'Desktops',
-                  'Laptops',
-                  'Mobiles',
-                  'Tablets',
-                ].includes(formData.device) && (
+                {isOsRamEnabled(formData.device) && (
                   <ValidationText className="star">*</ValidationText>
                 )}
               </label>
@@ -545,27 +526,9 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
                 disabled={Boolean(
                   formData.device &&
                     formData.device !== 'Select Device' &&
-                    ![
-                      'Desktop',
-                      'Laptop',
-                      'Mobile',
-                      'Tablet',
-                      'Desktops',
-                      'Laptops',
-                      'Mobiles',
-                      'Tablets',
-                    ].includes(formData.device)
+                    !isOsRamEnabled(formData.device)
                 )}
-                required={[
-                  'Desktop',
-                  'Laptop',
-                  'Mobile',
-                  'Tablet',
-                  'Desktops',
-                  'Laptops',
-                  'Mobiles',
-                  'Tablets',
-                ].includes(formData.device)}
+                required={isOsRamEnabled(formData.device)}
                 onKeyDown={(event) => {
                   const allowedCharacters = /^[0-9.-]+$/;
                   if (

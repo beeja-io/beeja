@@ -11,10 +11,7 @@ import {
   ExpenseHeadingSection,
   ExpenseManagementMainContainer,
 } from '../styles/ExpenseManagementStyles.style';
-import {
-  getCurrentThreeMonths,
-  getCurrentTwoYears,
-} from '../utils/dateFormatter';
+import { getCurrentThreeMonths } from '../utils/dateFormatter';
 import { FormFileCloseIcon, FormFileIcon } from '../svgs/DocumentTabSvgs.svg';
 import { uploadBulkPayslip } from '../service/axiosInstance';
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
@@ -89,6 +86,9 @@ const BulkPayslip = () => {
 
   const handleMonthChange = (month: string) => {
     setMonthOfPayslips(month);
+    if (month !== months[0] && month !== months[1]) {
+      setYearOfPayslips(new Date().getFullYear().toString());
+    }
   };
   const handleYearChange = (year: string) => {
     setYearOfPayslips(year);
@@ -138,6 +138,29 @@ const BulkPayslip = () => {
     navigate(-1);
   };
 
+  const getYearOptions = () => {
+    const currentYearNum = new Date().getFullYear();
+    const previousYearNum = currentYearNum - 1;
+
+    const selectedMonthName = monthOfPayslips;
+
+    const needsPreviousYear =
+      selectedMonthName === months[0] || selectedMonthName === months[1];
+
+    let yearsToShow: number[] = [currentYearNum];
+
+    if (needsPreviousYear) {
+      yearsToShow.unshift(previousYearNum);
+    }
+
+    return yearsToShow.map((year) => ({
+      label: year.toString(),
+      value: year.toString(),
+    }));
+  };
+
+  const yearDropdownOptions = getYearOptions();
+
   return (
     <>
       <ExpenseManagementMainContainer>
@@ -161,6 +184,7 @@ const BulkPayslip = () => {
                 id="month"
                 className="largeContainerBulk"
                 onChange={(e) => handleMonthChange(e ?? '')}
+                sortOptions={false}
                 options={getCurrentThreeMonths.map((mon, index) => ({
                   label: mon,
                   value: (index + 1).toString(),
@@ -177,23 +201,7 @@ const BulkPayslip = () => {
                 id="year"
                 className="largeContainerBulk"
                 onChange={(e) => handleYearChange(e ?? '')}
-                options={
-                  months.slice(-3).includes(monthOfPayslips) &&
-                  new Date().getFullYear().toString() === yearOfPayslips
-                    ? [
-                        {
-                          label: (new Date().getFullYear() - 1).toString(),
-                          value: (new Date().getFullYear() - 1).toString(),
-                        },
-                      ]
-                    : getCurrentTwoYears().map((year) => ({
-                        label: year.toString(),
-                        value: year.toString(),
-                        disabled:
-                          months.slice(0, 4).includes(monthOfPayslips) &&
-                          year < new Date().getFullYear(),
-                      }))
-                }
+                options={yearDropdownOptions}
               />
             </InputLabelContainer>
           </section>

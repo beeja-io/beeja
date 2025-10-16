@@ -28,6 +28,7 @@ import {
   FormFileCloseIcon,
   NoDocsIcon,
   CalenderIcon,
+  EyeOnIcon,
 } from '../../svgs/DocumentTabSvgs.svg';
 import { DocumentAction } from './DocumentAction';
 import {
@@ -46,7 +47,6 @@ import {
   UploadFileError,
 } from '../../constants/Constants';
 import ToastMessage from './ToastMessage.component';
-import { EditIcon } from '../../svgs/ExpenseListSvgs.svg';
 import { useUser } from '../../context/UserContext';
 import { DOCUMENT_MODULE } from '../../constants/PermissionConstants';
 import axios from 'axios';
@@ -100,7 +100,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
     ...(user &&
     (hasPermission(user, DOCUMENT_MODULE.READ_DOCUMENT) ||
       hasPermission(user, DOCUMENT_MODULE.READ_ENTIRE_DOCUMENTS))
-      ? [{ title: 'Preview', svg: <EditIcon /> }]
+      ? [{ title: 'Preview', svg: <EyeOnIcon /> }]
       : []),
   ];
 
@@ -194,7 +194,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
       setTotalEntries(response.data.metadata.totalSize);
       setTotalPages(totalPages);
       handleTotalPages(totalPages ?? 1);
-      setAllFilesList(response.data.files);
+      setAllFilesList(response.data.files.reverse());
     } catch (error) {
       throw new Error('Error fetching data:' + error);
     } finally {
@@ -562,6 +562,9 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                         <AlertISVG /> {errors.emptyFile}
                       </ValidationText>
                     )}
+                    <span className="infoText">
+                      File format : .pdf, .png, .jpeg (Maximum Size: 10MB)
+                    </span>
                   </InputLabelContainer>
                 </div>
                 <div>
@@ -606,9 +609,6 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                   </div>
                 </div>
                 <br />
-                <span className="infoText">
-                  File format : .pdf, .png, .jpeg (Maximum Size: 10MB)
-                </span>
               </form>
             </FileUploadForm>
           }
@@ -618,7 +618,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
         <ToastMessage
           messageType="success"
           messageBody="File uploaded"
-          messageHeading="Updated Successfully"
+          messageHeading="Uploaded Successfully"
           handleClose={handleUpdateToastMessage}
         />
       )}

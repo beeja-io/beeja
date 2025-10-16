@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ProjectStatus } from '.././utils/projectStatus';
+import { StatusIcon } from '../svgs/ClientManagmentSvgs.svg';
 
 const DropdownWrapper = styled.div`
   position: relative;
@@ -28,13 +29,11 @@ const Dot = styled.span<{ color: string }>`
   background-color: ${({ color }) => color};
 `;
 
-const DropdownArrow = styled.div<{ open: boolean }>`
+const DropdownArrow = styled.div`
   cursor: pointer;
   margin-left: 8px;
-  color: #687588;
-  font-size: 10px;
-  transform: rotate(${(props) => (props.open ? '90deg' : '270deg')});
-  transition: transform 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
 `;
 
 const DropdownList = styled.div`
@@ -100,9 +99,10 @@ const StatusDropdown: React.FC<Props> = ({ value, onChange, disabled }) => {
         <Dot color={selected?.color || '#000'} />
         <span>{selected?.label || 'Select'}</span>
       </Selected>
+
       {!disabled && (
-        <DropdownArrow open={open} onClick={toggleDropdown}>
-          &lt;
+        <DropdownArrow onClick={toggleDropdown}>
+          <StatusIcon open={open} />
         </DropdownArrow>
       )}
 

@@ -10,6 +10,8 @@ import static org.mockito.Mockito.when;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.request.ProjectRequest;
+import com.beeja.api.projectmanagement.responses.ProjectDetailViewResponseDTO;
+import com.beeja.api.projectmanagement.responses.ProjectResponseDTO;
 import com.beeja.api.projectmanagement.service.ProjectService;
 import com.beeja.api.projectmanagement.utils.Constants;
 import com.beeja.api.projectmanagement.utils.UserContext;
@@ -70,16 +72,16 @@ public class ProjectsControllerTest {
 
   @Test
   public void testGetProjectById() {
-    String projectId = "project123";
-    String clientId = "client123";
-    Project project = new Project();
-    project.setId(projectId);
-    project.setName("Test Project");
-    project.setClientId(clientId);
+        String projectId = "project123";
+        String clientId = "client123";
+        ProjectDetailViewResponseDTO project = new ProjectDetailViewResponseDTO();
+        project.setProjectId(projectId);
+        project.setName("Test Project");
+        project.setClientId(clientId);
 
     when(projectService.getProjectByIdAndClientId(projectId, clientId)).thenReturn(project);
 
-    ResponseEntity<Project> responseEntity = projectsController.getProjectById(projectId, clientId);
+    ResponseEntity<List<ProjectDetailViewResponseDTO>> responseEntity = projectsController.getProjectById(projectId, clientId);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertEquals(project, responseEntity.getBody());
@@ -88,23 +90,23 @@ public class ProjectsControllerTest {
 
   @Test
   public void testGetProjectsByClientId() {
-    String clientId = "client123";
-    List<Project> projects = new ArrayList<>();
-    Project project1 = new Project();
-    project1.setId("project1");
-    project1.setName("Project 1");
-    project1.setClientId(clientId);
-    projects.add(project1);
+      String clientId = "client123";
+        List<ProjectResponseDTO> projects = new ArrayList<>();
+        ProjectResponseDTO project1 = new ProjectResponseDTO();
+        project1.setProjectId("project1");
+        project1.setName("Project 1");
+        project1.setClientId(clientId);
+        projects.add(project1);
 
-    Project project2 = new Project();
-    project2.setId("project2");
-    project2.setName("Project 2");
-    project2.setClientId(clientId);
-    projects.add(project2);
+        ProjectResponseDTO project2 = new ProjectResponseDTO();
+        project2.setProjectId("project2");
+        project2.setName("Project 2");
+        project2.setClientId(clientId);
+        projects.add(project2);
 
     when(projectService.getProjectsByClientIdInOrganization(clientId)).thenReturn(projects);
 
-    ResponseEntity<List<Project>> responseEntity =
+    ResponseEntity<List<ProjectResponseDTO>> responseEntity =
             projectsController.getProjectsByClientId(clientId);
 
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());

@@ -205,6 +205,7 @@
   "Edit_Client": "Kunde bearbeiten",
   "Client_Details": "Kundendaten",
   "Add_New_Client": "Neuen Kunden hinzufügen",
+  "NEW_CLIENT_HAS_BEEN_ADDED\nSUCCESSFULLY_WITH": "Neuer Kunde wurde\nerfolgreich hinzugefügt mit",
   "The_Client_has_been_Updated_Successfully": "Der Client wurde erfolgreich aktualisiert",
   "The_Client_has_been_Added_Successfully": "Der Client wurde erfolgreich hinzugefügt",
   "Client_Successfully_Added.": "Client erfolgreich hinzugefügt.",
@@ -306,5 +307,16 @@
   "Assign_Manager": "Weisen Sie den Manager zu",
   "Review_Cycle_Name": "Überprüfen Sie den Zyklusnamen",
   "Create_Evaluation_Form": "Bewertungsformular erstellen",
-  "Create_New_Form": "Neues Formular erstellen"
+  "Create_New_Form": "Neues Formular erstellen",
+  "EXCISE_TAX": "Verbrauchssteuer",
+  "SALES_TAX": "Umsatzsteuer",
+  "INTERNAL": "Intern",
+  "INDIVIDUAL": "Einzelperson",
+  "COMPANY": "Unternehmen",
+  "ORGANIZATION": "Organisation",
+  "HRMS": "HRMS",
+  "SOCIALMEDIA": "Soziale Medien",
+  "ECOMMERCE": "E-Commerce",
+  "ITSERVICES": "IT-Dienstleistungen",
+  "GST_Number": "GST-Nummer"
 }

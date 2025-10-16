@@ -232,7 +232,7 @@ const InventoryList = ({
                   <th>{t('RAM')}</th>
                   <th>{t('DATE_OF_PURCHASE')}</th>
                   <th>{t('AVAILABILITY')}</th>
-                  <th>{t('ACTION')}</th>
+                  <th>{t('ACTIONS')}</th>
                 </tr>
               </TableHead>
               <tbody>
@@ -350,7 +350,7 @@ const InventoryList = ({
       {showSuccessMessage && (
         <ToastMessage
           messageType="success"
-          messageBody="THE_INVENTORY_HAS_BEEN_ADDED"
+          messageBody="THE_INVENTORY_HAS_BEEN_UPDATED"
           messageHeading="SUCCESSFULLY_UPDATED"
           handleClose={handleShowSuccessMessage}
         />

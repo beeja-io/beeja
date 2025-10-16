@@ -110,7 +110,7 @@ export const uploadProfilePicture = (
   const formData = new FormData();
   formData.append('file', file);
   formData.append('entityId', entityId);
-  return axiosInstance.post('employees/v1/files/profile-pic', formData, {
+  return axiosInstance.post('/employees/v1/files/profile-pic', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -318,6 +318,25 @@ export const downloadClientLogo = (
     responseType: 'blob',
   });
 };
+
+export const getAllAttachmentsByContractId = (
+  contractId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/files/${contractId}`);
+};
+
+export const deleteContractFile = (fileId: string): Promise<AxiosResponse> => {
+  return axiosInstance.delete(`/projects/v1/files/${fileId}`);
+};
+
+export const downloadContractFile = (
+  fileId: string
+): Promise<AxiosResponse<Blob>> => {
+  return axiosInstance.get(`/projects/v1/files/download/${fileId}`, {
+    responseType: 'blob',
+  });
+};
+
 export const postClient = (data: any): Promise<AxiosResponse> => {
   return axiosInstance.post(`/projects/v1/clients`, data);
 };
@@ -326,8 +345,16 @@ export const getClient = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.get(`/projects/v1/clients/${id}`);
 };
 
-export const getAllClient = (): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/projects/v1/clients`);
+export const getAllClient = (
+  pageNumber: number,
+  pageSize: number
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/projects/v1/clients`, {
+    params: {
+      pageNumber,
+      pageSize,
+    },
+  });
 };
 
 export const putClient = (
@@ -352,8 +379,12 @@ export const postProjects = (data: any): Promise<AxiosResponse> => {
   });
 };
 
-export const postContracts = (data: any): Promise<AxiosResponse> => {
-  return axiosInstance.post(`/projects/v1/contracts`, data);
+export const postContracts = (formData: FormData): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/projects/v1/contracts`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 };
 
 export const getProjectDetails = (id: string): Promise<AxiosResponse> => {
@@ -370,8 +401,20 @@ export const getResourceManager = (): Promise<AxiosResponse<Employee[]>> => {
   return axiosInstance.get('/accounts/v1/users/names');
 };
 
-export const getAllProjects = (): Promise<AxiosResponse<any>> => {
-  return axiosInstance.get('/projects/v1/projects/all-projects');
+export const getAllProjects = (
+  pageNumber: number,
+  pageSize: number,
+  projectId?: string,
+  status?: string
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get('/projects/v1/projects/projects', {
+    params: {
+      pageNumber,
+      pageSize,
+      projectId,
+      status,
+    },
+  });
 };
 
 export const getProject = (
@@ -381,8 +424,16 @@ export const getProject = (
   return axiosInstance.get(`/projects/v1/projects/${projectId}/${clientId}`);
 };
 
-export const getAllContracts = (): Promise<AxiosResponse<any>> => {
-  return axiosInstance.get(`/projects/v1/contracts`);
+export const getAllContracts = (
+  pageNumber: number,
+  pageSize: number
+): Promise<AxiosResponse<any>> => {
+  return axiosInstance.get(`/projects/v1/contracts`, {
+    params: {
+      pageNumber,
+      pageSize,
+    },
+  });
 };
 
 export const getProjectsByClientId = (
@@ -439,10 +490,15 @@ export const updateContractStatus = (
 
 export const updateContract = (
   contractId: string,
-  data: any
-): Promise<AxiosResponse<any>> => {
-  return axiosInstance.put(`/projects/v1/contracts/${contractId}`, data);
+  formData: FormData
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(`/projects/v1/contracts/${contractId}`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 };
+
 export const getAllRolesInOrganization = (): Promise<AxiosResponse> => {
   return axiosInstance.get('/accounts/v1/roles');
 };
@@ -588,4 +644,12 @@ export const deleteLog = (id: string): Promise<AxiosResponse> => {
 
 export const updateLog = (id: string, data: any): Promise<AxiosResponse> => {
   return axiosInstance.put(`projects/api/timesheets/${id}`, data);
+};
+
+export const clientDropDown = () => {
+  return axiosInstance.get(`projects/v1/clients/clients-dropdown`);
+};
+
+export const getProjectDropdown = () => {
+  return axiosInstance.get(`projects/v1/projects/projects-dropdown`);
 };

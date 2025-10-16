@@ -68,7 +68,10 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const handleTotalPages = (totalPages: number) => {
     setTotalPages(totalPages);
   };
-
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const handleShowSuccessMessage = () => {
+    setShowSuccessMessage(!showSuccessMessage);
+  };
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const departments = selectedDepartments.map(encodeURIComponent);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -794,7 +797,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                   {user &&
                     (hasPermission(user, EXPENSE_MODULE.UPDATE_EXPENSE) ||
                       hasPermission(user, EXPENSE_MODULE.DELETE_EXPENSE)) && (
-                      <th>{t('ACTION')}</th>
+                      <th>{t('ACTIONS')}</th>
                     )}
                 </tr>
               </TableHead>
@@ -923,6 +926,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
               <AddExpenseForm
                 handleClose={handleIsExpensePreviewModalOpen}
                 handleLoadExpenses={fetchExpenses}
+                handleShowSuccessMessage={handleShowSuccessMessage}
                 mode="preview"
                 expense={expenseToBePreviewed}
                 handleModeOfModal={handleSetModeOfModal}

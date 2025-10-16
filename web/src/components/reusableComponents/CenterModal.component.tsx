@@ -35,7 +35,7 @@ type CenterModalProps = {
   isDashedBox?: boolean;
   isExpanded?: boolean;
   editText?: string;
-  dragText?: string;
+  dragText?: string | React.ReactNode;
 };
 
 const CenterModal = (props: CenterModalProps) => {
@@ -83,7 +83,7 @@ const CenterModal = (props: CenterModalProps) => {
           <DashedBox onClick={props.handleModalLeftButtonClick}>
             <DashedBoxContent>
               <CloudIconSVG />
-              <DropText>{t(props.dragText ? props.dragText : '')}</DropText>
+              <DropText>{props.dragText}</DropText>
             </DashedBoxContent>
           </DashedBox>
         )}

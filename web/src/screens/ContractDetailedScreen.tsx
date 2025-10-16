@@ -13,6 +13,8 @@ import {
   CompanyIcon,
   DateIcon,
   DollarIcon,
+  RupeeIcon,
+  EuroIcon,
   DotSVG,
   EmailSVG,
 } from '../svgs/ClientManagmentSvgs.svg';
@@ -49,6 +51,7 @@ import {
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { InfoText } from '../styles/ProjectStyles.style';
 import ContactTabSection from './ContractTabSection';
+import { BillingCurrency } from '../components/reusableComponents/ContractEnums.component';
 
 const ContractDetailsScreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -153,7 +156,11 @@ const ContractDetailsScreen: React.FC = () => {
             <DotSVG />
             <ColumnItem>{contract?.billingType}</ColumnItem>
             <DotSVG />
-            <DollarIcon />
+            {contract?.billingCurrency === BillingCurrency.DOLLER && (
+              <DollarIcon />
+            )}
+            {contract?.billingCurrency === BillingCurrency.EURO && <EuroIcon />}
+            {contract?.billingCurrency === BillingCurrency.INR && <RupeeIcon />}
             <ColumnItem>{contract?.contractValue}</ColumnItem>
           </RowWrapper>
 
@@ -163,7 +170,14 @@ const ContractDetailsScreen: React.FC = () => {
             <CompanyIcon />
             <ColumnItem>{client?.clientName}</ColumnItem>
             <DotSVG />
-            <ColumnItem>{project?.projectManagerNames}</ColumnItem>
+            <ColumnItem>
+              {(
+                project?.contracts?.flatMap(
+                  (contract) =>
+                    contract?.projectManagers?.map((item) => item?.name) ?? []
+                ) ?? []
+              ).join(', ')}
+            </ColumnItem>
             <DateIcon />
             <ColumnItem>
               {contract?.startDate &&

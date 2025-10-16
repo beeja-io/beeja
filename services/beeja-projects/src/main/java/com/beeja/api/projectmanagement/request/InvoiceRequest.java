@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvoiceRequest {
+  private String invoiceId;
   private String contractId;
   private Date billingDate;
   private Date dueDate;
@@ -25,4 +26,5 @@ public class InvoiceRequest {
   private int vat;
   private String daysLeftForPayment;
   private InvoicePeriod invoicePeriod;
+  private String taxId;
 }

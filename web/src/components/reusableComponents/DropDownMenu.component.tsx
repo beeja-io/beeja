@@ -32,6 +32,7 @@ type DropdownMenuProps = {
   selected?: string;
   onValidationChange?: (isValid: boolean) => void;
   listClassName?: string;
+  sortOptions?: boolean;
 };
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
@@ -48,6 +49,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   required = false,
   onValidationChange,
   listClassName = '',
+  sortOptions = true,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value);
@@ -66,10 +68,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  useEffect(() => {
-    setSelected(value ?? null);
-  }, [value]);
 
   useEffect(() => {
     setSelected(value ?? null);
@@ -96,11 +94,13 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       event.preventDefault();
     }
   };
-  const sortedOptions = [...options].sort((a, b) => {
-    if (!a.value) return -1;
-    if (!b.value) return 1;
-    return String(a.label).localeCompare(String(b.label));
-  });
+  const sortedOptions = sortOptions
+    ? [...options].sort((a, b) => {
+        if (!a.value) return -1;
+        if (!b.value) return 1;
+        return String(a.label).localeCompare(String(b.label));
+      })
+    : options;
 
   return (
     <div>
@@ -265,6 +265,7 @@ interface MultiSelectDropdownProps {
   placeholder?: string;
   searchable?: boolean;
   className?: string | null;
+  required?: boolean;
   onChange: (values: { label: string; value: string }[]) => void;
 }
 
@@ -275,10 +276,16 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   onChange,
   className = '',
   searchable = false,
+  required = false,
 }) => {
   const [open, setOpen] = useState(false);
+  const [touched, setTouched] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const markTouched = () => {
+    if (!touched) setTouched(true);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -294,6 +301,7 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
   }, []);
 
   const handleSelect = (option: { label: string; value: string }) => {
+    markTouched();
     if (value.some((v) => v.value === option.value)) {
       onChange(value.filter((v) => v.value !== option.value));
     } else {
@@ -306,14 +314,20 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
         item.label.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : options;
-  const clearAll = () => onChange([]);
+  const clearAll = () => {
+    markTouched();
+    onChange([]);
+  };
 
   return (
     <div>
       <ContainerStyleMulti
         ref={dropdownRef}
         hasValue={value.length > 0}
-        className={className || ''}
+        className={`${className || ''} ${
+          required && touched && value.length === 0 ? 'error-border' : ''
+        }
+        `}
       >
         <ClearButton onClick={(e) => e.stopPropagation()}>
           {value.length > 0 && (
@@ -323,7 +337,12 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
               </CloseButtonStyle>
             </button>
           )}
-          <ToggleButtonStyle onClick={() => setOpen(!open)}>
+          <ToggleButtonStyle
+            onClick={() => {
+              markTouched();
+              setOpen(!open);
+            }}
+          >
             <span>
               {value.length > 0
                 ? value.map((opt) => opt.label).join(', ')
@@ -374,6 +393,11 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
           </DropdownListStyle>
         )}
       </ContainerStyleMulti>
+      {required && touched && value.length === 0 && (
+        <div style={{ color: 'red', marginTop: '4px', fontSize: '12px' }}>
+          This field is required
+        </div>
+      )}
     </div>
   );
 };

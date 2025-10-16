@@ -38,6 +38,10 @@ const ContractManagement = () => {
     body: string;
   } | null>(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+
   const location = useLocation();
 
   const isContractDetailsRoute = matchPath(
@@ -48,14 +52,14 @@ const ContractManagement = () => {
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const res = await getAllContracts();
-      const response = res?.data?.contracts;
-      setContractList(response);
+      const res = await getAllContracts(currentPage, itemsPerPage);
+      setContractList(res.data.contracts || []);
+      setTotalItems(res.data.metadata.totalRecords);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
     }
-  }, []);
+  }, [currentPage, itemsPerPage]);
 
   useEffect(() => {
     fetchData();
@@ -77,12 +81,14 @@ const ContractManagement = () => {
   const handleSuccessMessage = (value: string, type: 'add' | 'edit') => {
     if (type === 'add') {
       setToastData({
-        heading: 'Contract_Added_Successfully.',
-        body: `New_Contract_has_been_added\nsuccessfully_with "Contract ID: ${value}".`,
+        heading: t('Contract Added Successfully.'),
+        body: t(
+          `New Contract has been added\nsuccessfully with "Contract ID: ${value}".`
+        ),
       });
     } else if (type === 'edit') {
       setToastData({
-        heading: 'Contract_Updated_Successfully.',
+        heading: t('Contract Updated Successfully.'),
         body: value,
       });
     }
@@ -136,7 +142,7 @@ const ContractManagement = () => {
             )}
           </span>
 
-          {!isCreateModalOpen && (
+          {!isCreateModalOpen && !isContractDetailsRoute && (
             <Button
               className="submit shadow"
               onClick={handleOpenCreateModal}
@@ -161,6 +167,11 @@ const ContractManagement = () => {
               isLoading,
               updateContractList: fetchData,
               onEditContract: handleEditContract,
+              totalItems,
+              currentPage,
+              setCurrentPage,
+              itemsPerPage,
+              setItemsPerPage,
             }}
           />
         )}
