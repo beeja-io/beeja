@@ -5,6 +5,19 @@ enum ContractStatus {
   COMPLETED = 'COMPLETED',
 }
 
+export enum ContractType {
+  FIXED_PRICE = 'FIXED_PRICE',
+  HYBRID = 'HYBRID',
+  MILESTONE_BASED = 'MILESTONE_BASED',
+  RETAINER = 'RETAINER',
+}
+
+export enum ContractBillingType {
+  BILLABLE = 'BILLABLE',
+  NON_BILLABLE = 'NON_BILLABLE',
+  PARTIALLY_BILLABLE = 'PARTIALLY_BILLABLE',
+}
+
 export type RawProjectResource = {
   employeeId: string;
   name: string;
@@ -21,11 +34,11 @@ export interface ContractDetails {
   status: ContractStatus;
   projectManagerIds: string[];
   projectManagerNames: string[];
-  billingType?: string;
+  billingType?: ContractBillingType;
   billingCurrency?: string;
   contractValue?: string;
   description?: string;
-  contractType?: string;
+  contractType?: ContractType;
   startDate: string;
   endDate: string;
   projectManagers: string[];

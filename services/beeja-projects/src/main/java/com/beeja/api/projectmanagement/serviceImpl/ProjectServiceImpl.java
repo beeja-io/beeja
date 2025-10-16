@@ -11,6 +11,7 @@ import com.beeja.api.projectmanagement.model.Contract;
 import com.beeja.api.projectmanagement.model.Project;
 import com.beeja.api.projectmanagement.model.dto.EmployeeNameDTO;
 import com.beeja.api.projectmanagement.model.dto.ResourceAllocation;
+import com.beeja.api.projectmanagement.model.dto.ResourceAllocationWithContract;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.repository.ContractRepository;
 import com.beeja.api.projectmanagement.repository.ProjectRepository;
@@ -238,19 +239,44 @@ public class ProjectServiceImpl implements ProjectService {
       contractViews.add(contractView);
     }
 
-    List<ResourceView> resourceViews = new ArrayList<>();
+      Map<String, List<ResourceAllocationWithContract>> employeeAllocationsMap = new HashMap<>();
     for (Contract contract : contracts) {
       contract.setProjectResources(contract.normalizeProjectResources(contract.getRawProjectResources()));
       List<ResourceAllocation> allocations = Optional.ofNullable(contract.getProjectResources()).orElse(Collections.emptyList());
-      for (ResourceAllocation resource : allocations) {
+      for (ResourceAllocation allocation : allocations) {
+              employeeAllocationsMap
+                      .computeIfAbsent(allocation.getEmployeeId(), k -> new ArrayList<>())
+                      .add(new ResourceAllocationWithContract(contract.getContractTitle(), allocation.getAllocationPercentage()));
+          }
+      }
+
+      List<ResourceView> resourceViews = new ArrayList<>();
+      for (String employeeId : projectResourceIds) {
+          String employeeName = idToNameMap.getOrDefault(employeeId, "N/A");
+          List<ResourceAllocationWithContract> allocations = employeeAllocationsMap.get(employeeId);
+
         ResourceView rv = new ResourceView();
-        rv.setEmployeeId(resource.getEmployeeId());
-        rv.setName(idToNameMap.getOrDefault(resource.getEmployeeId(), "N/A"));
-        rv.setContractName(contract.getContractTitle());
-        rv.setAllocationPercentage(resource.getAllocationPercentage());
+        rv.setEmployeeId(employeeId);
+        rv.setName(employeeName);
+
+          if (allocations == null || allocations.isEmpty()) {
+              rv.setContractName(Collections.emptyList());
+              rv.setAllocationPercentage(0.0);
+          } else {
+              List<String> contractNames = allocations.stream()
+                      .map(ResourceAllocationWithContract::getContractName)
+                      .collect(Collectors.toList());
+
+              double totalAllocation = allocations.stream()
+                      .mapToDouble(ResourceAllocationWithContract::getAllocationPercentage)
+                      .sum();
+
+              rv.setContractName(contractNames);
+              rv.setAllocationPercentage(totalAllocation);
+          }
+
         resourceViews.add(rv);
       }
-    }
 
     List<String> projectManagerNames = projectManagerIds.stream()
             .map(idToNameMap::get)
@@ -262,11 +288,8 @@ public class ProjectServiceImpl implements ProjectService {
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-    String clientName = null;
-    Client client = clientRepository.findByClientIdAndOrganizationId(clientId, organizationId);
-    if (client != null) {
-      clientName = client.getClientName();
-    }
+      Client client = clientRepository.findByClientIdAndOrganizationId(clientId, organizationId);
+      String clientName = client != null ? client.getClientName() : null;
 
     ProjectDetailViewResponseDTO dto = new ProjectDetailViewResponseDTO();
     dto.setProjectId(project.getProjectId());
@@ -278,11 +301,12 @@ public class ProjectServiceImpl implements ProjectService {
     dto.setClientId(project.getClientId());
     dto.setClientName(clientName);
     dto.setBillingCurrency(project.getBillingCurrency());
-    dto.setClientContact((client.getContact()));
-    dto.setClientIndustries(client.getIndustry());
-    dto.setClientEmail(client.getEmail());
-    dto.setClientLogId(client.getLogoId());
-
+      if (client != null) {
+        dto.setClientContact(client.getContact());
+        dto.setClientIndustries(client.getIndustry());
+        dto.setClientEmail(client.getEmail());
+        dto.setClientLogId(client.getLogoId());
+    }
 
     dto.setProjectManagerIds(projectManagerIds);
     dto.setProjectManagerNames(projectManagerNames);

@@ -64,6 +64,15 @@ const ContractDetailsScreen: React.FC = () => {
   const [projectId, setProjectId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
+  const formatEnum = (value?: string) => {
+    if (!value) return '';
+    return value
+      .toLowerCase()
+      .split('_')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   useEffect(() => {
     const fetchLogoImage = async () => {
       if (client?.logoId) {
@@ -152,16 +161,24 @@ const ContractDetailsScreen: React.FC = () => {
               {t('ID')}: {contract?.contractId}
             </ColumnItem>
             <DotSVG />
-            <ColumnItem>{contract?.contractType}</ColumnItem>
+            <ColumnItem>{formatEnum(contract?.contractType)}</ColumnItem>
             <DotSVG />
-            <ColumnItem>{contract?.billingType}</ColumnItem>
-            <DotSVG />
-            {contract?.billingCurrency === BillingCurrency.DOLLER && (
-              <DollarIcon />
+            <ColumnItem>{formatEnum(contract?.billingType)}</ColumnItem>
+            {contract?.contractValue && (
+              <>
+                <DotSVG />
+                {contract?.billingCurrency === BillingCurrency.DOLLER && (
+                  <DollarIcon />
+                )}
+                {contract?.billingCurrency === BillingCurrency.EURO && (
+                  <EuroIcon />
+                )}
+                {contract?.billingCurrency === BillingCurrency.INR && (
+                  <RupeeIcon />
+                )}
+                <ColumnItem>{contract?.contractValue}</ColumnItem>
+              </>
             )}
-            {contract?.billingCurrency === BillingCurrency.EURO && <EuroIcon />}
-            {contract?.billingCurrency === BillingCurrency.INR && <RupeeIcon />}
-            <ColumnItem>{contract?.contractValue}</ColumnItem>
           </RowWrapper>
 
           <HorizontalLine />
@@ -171,12 +188,14 @@ const ContractDetailsScreen: React.FC = () => {
             <ColumnItem>{client?.clientName}</ColumnItem>
             <DotSVG />
             <ColumnItem>
-              {(
-                project?.contracts?.flatMap(
-                  (contract) =>
-                    contract?.projectManagers?.map((item) => item?.name) ?? []
-                ) ?? []
-              ).join(', ')}
+              {[
+                ...new Set(
+                  project?.contracts?.flatMap(
+                    (contract) =>
+                      contract?.projectManagers?.map((pm) => pm?.name) ?? []
+                  ) ?? []
+                ),
+              ].join(', ')}
             </ColumnItem>
             <DateIcon />
             <ColumnItem>
@@ -187,16 +206,19 @@ const ContractDetailsScreen: React.FC = () => {
                   day: '2-digit',
                 })}
             </ColumnItem>
-            <ColumnItem>{t('TO')}</ColumnItem>
-            <DateIcon />
-            <ColumnItem>
-              {contract?.endDate &&
-                new Date(contract.endDate).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'short',
-                  day: '2-digit',
-                })}
-            </ColumnItem>
+            {contract?.endDate && (
+              <>
+                <ColumnItem>{t('TO')}</ColumnItem>
+                <DateIcon />
+                <ColumnItem>
+                  {new Date(contract.endDate).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: '2-digit',
+                  })}
+                </ColumnItem>
+              </>
+            )}
           </RowWrapper>
         </ClientInfo>
 
