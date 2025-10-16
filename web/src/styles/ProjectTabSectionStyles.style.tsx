@@ -98,7 +98,6 @@ export const AttachmentList = styled.div`
 
 export const AttachmentItem = styled.div`
   overflow: visible !important;
-  z-index: 10;
   position: relative;
   display: flex;
   align-items: center;

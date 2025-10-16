@@ -213,7 +213,11 @@ const ClientDetailsScreen: React.FC = () => {
             </TaxItem>
             <TaxItem>
               <TaxLabel>{t('Tax_Category')}</TaxLabel>
-              <TaxValue>{client?.taxDetails?.taxCategory || '-'}</TaxValue>
+              <TaxValue>
+                {client?.taxDetails?.taxCategory
+                  ? t(`TaxCategory.${client.taxDetails.taxCategory}`)
+                  : '-'}
+              </TaxValue>
             </TaxItem>
           </TaxDetailsWrapper>
         </RightSectionDiv>

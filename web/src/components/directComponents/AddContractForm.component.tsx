@@ -772,6 +772,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         ))}
                       </LogoLabel>
                     )}
+                    <span className="infoText-contract">
+                      File format : .pdf, .png, .jpeg
+                    </span>
                   </div>
                 )}
               </ColumnWrapper>
@@ -996,6 +999,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         <BrowseText>{t('Browse')}</BrowseText>
                       </UploadText>
                     </LogoUploadContainer>
+                    <span className="infoText-contract">
+                      File format : .pdf, .png, .jpeg
+                    </span>
                     {files.length > 0 && (
                       <LogoLabel>
                         {files.map((f, idx) => (
@@ -1017,9 +1023,6 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </div>
                 )}
               </ColumnWrapper>
-              <span className="infoText-contract">
-                File format : .pdf, .png, .jpeg
-              </span>
             </FormInputsContainer>
 
             <div className="formButtons">
