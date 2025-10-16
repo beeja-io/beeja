@@ -37,6 +37,10 @@ import ProjectDetailsSCreen from '../screens/ProjectDetailsScreen.screen';
 import ContractDetailsScreen from '../screens/ContractDetailedScreen';
 import ContractListWrapper from '../screens/ContractListWrapper';
 import CreateReviewCycleScreen from '../screens/CreateReviewCycle.screen';
+import ReviewCyclesList from '../screens/ReviewCyclesList.screen';
+import AssignFeedbackProviders from '../screens/AssignFeedbackProviders.screen';
+import FeedbackHub from '../screens/FeedbackHub.screen';
+import AddEvaluationCycle from '../components/directComponents/AddEvaluationCycle.component';
 
 const AllRoutes = () => {
   return (
@@ -195,7 +199,7 @@ const AllRoutes = () => {
         }
       />
       <Route
-        path="/performance/create-review-cycle"
+        path="/performance/create-evaluation-form"
         element={
           <CustomRoute
             permission={LOAN_MODULE.READ_LOAN}
@@ -204,8 +208,33 @@ const AllRoutes = () => {
             <CreateReviewCycleScreen />
           </CustomRoute>
         }
+      >
+        <Route index element={<ReviewCyclesList />} />
+        <Route path="new" element={<AddEvaluationCycle />} />
+        <Route path=":id" element={<AddEvaluationCycle />} />
+      </Route>
+      <Route
+        path="/performance/assign-feedback-providers"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <AssignFeedbackProviders />
+          </CustomRoute>
+        }
       />
-
+      <Route
+        path="/performance/feedback-hub"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <FeedbackHub />
+          </CustomRoute>
+        }
+      />
       <Route
         path="/features"
         element={

@@ -286,6 +286,31 @@ export const deleteInventory = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/finance/v1/inventory/${id}`);
 };
 
+export const postPerformanceCycle = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(
+    `/performance/api/cycles/create-with-questions`,
+    data
+  );
+};
+export const getAllPerformance = (): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/api/cycles`);
+};
+
+export const getPerformanceById = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/api/cycles/${id}/details`);
+};
+
+export const updatePerformanceCycle = (
+  id: string,
+  data: any
+): Promise<AxiosResponse> => {
+  return axiosInstance.put(`/performance/api/cycles/${id}/full-update`, data);
+};
+
+export const deletePerformanceCycle = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.delete(`/performance/api/cycles/${id}`);
+};
+
 export const downloadClientLogo = (
   fileId: string
 ): Promise<AxiosResponse<Blob>> => {

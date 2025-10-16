@@ -1,37 +1,46 @@
-import { useCallback, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ExpenseHeadingSection,
   ExpenseManagementMainContainer,
 } from '../styles/ExpenseManagementStyles.style';
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
-import { useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../styles/CommonStyles.style';
 import { useTranslation } from 'react-i18next';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
-import AddReviewCycle from '../components/directComponents/AddReviewCycle.component';
-import ReviewCyclesList from './ReviewCyclesList.screen';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 
 const CreateReviewCycle = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [successToastMessage, setSuccessToastMessage] = useState({
+    heading: '',
+    body: '',
+  });
+
+  const handleShowSuccessMessage = (heading: string, body: string) => {
+    setSuccessToastMessage({ heading, body });
+    setShowSuccessMessage(true);
+  };
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
 
   const goToPreviousPage = () => {
-    if (isCreateModalOpen) {
-      setIsCreateModalOpen(false);
-    } else {
-      navigate(-1);
-    }
+    navigate(-1);
   };
 
-  const handleOpenCreateModal = useCallback(() => {
-    setIsCreateModalOpen(true);
-  }, []);
+  useEffect(() => {
+    if (location.pathname === '/performance/create-evaluation-form') {
+      setIsCreateModalOpen(false);
+    }
+  }, [location.pathname]);
 
-  const handleCloseModal = useCallback(() => {
-    setIsCreateModalOpen(false);
-  }, []);
+  const handleOpenCreateModal = () => {
+    setIsCreateModalOpen(true);
+    navigate('/performance/create-evaluation-form/new');
+  };
 
   return (
     <>
@@ -41,7 +50,7 @@ const CreateReviewCycle = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('Create_Review_Cycle')}
+            {t('Create_Evaluation_Form')}
           </span>
 
           {!isCreateModalOpen && (
@@ -51,17 +60,21 @@ const CreateReviewCycle = () => {
               width="216px"
             >
               <AddNewPlusSVG />
-              {t('Add_New_Review_Cycle')}
+              {t('Create_New_Form')}
             </Button>
           )}
         </ExpenseHeadingSection>
 
-        {isCreateModalOpen ? (
-          <AddReviewCycle handleClose={handleCloseModal} />
-        ) : (
-          <ReviewCyclesList />
-        )}
+        <Outlet context={{ handleShowSuccessMessage }} />
       </ExpenseManagementMainContainer>
+      {showSuccessMessage && (
+        <ToastMessage
+          messageType="success"
+          messageHeading={successToastMessage.heading}
+          messageBody={successToastMessage.body}
+          handleClose={() => setShowSuccessMessage(false)}
+        />
+      )}
     </>
   );
 };

@@ -1,15 +1,16 @@
 import React from 'react';
 import {
-  AnswerPlaceholder,
   ButtonGroup,
   DateRow,
   DateText,
   DescriptionBox,
   FooterContainer,
   Header,
+  Label,
   PreviewCard,
   PreviewWrapper,
   QuestionBlock,
+  QuestionDescription,
   Questions,
   QuestionText,
   RequiredMark,
@@ -23,6 +24,7 @@ type Question = {
   question: string;
   answer?: string;
   required?: boolean;
+  questionDescription?: string;
 };
 
 type FormData = {
@@ -37,7 +39,17 @@ type FormData = {
 type Props = {
   formData: FormData;
   onEdit: () => void;
-  onConfirm: () => void;
+  onConfirm: () => Promise<void> | void;
+};
+
+const formatDate = (dateStr: string | Date) => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric',
+  });
 };
 
 const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
@@ -46,18 +58,16 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
     <PreviewWrapper>
       <PreviewCard>
         <Header>
-          <Title>
-            {formData.reviewCycleName} -{' '}
-            {new Date(formData.startDate || '').getFullYear()}
-          </Title>
+          <Title>{formData.reviewCycleName}</Title>
           <DateRow>
             <DateText>
-              {formData.startDate} To {formData.endDate}
+              {formData.startDate ? formatDate(formData.startDate) : ''} To
+              {formData.endDate ? formatDate(formData.endDate) : ''}
             </DateText>
           </DateRow>
-          <Subtitle>{formData.reviewType} Form</Subtitle>
+          <Subtitle>{formData.reviewType} </Subtitle>
         </Header>
-
+        <Label>Form Description</Label>
         <DescriptionBox>
           {formData.formDescription || 'No description provided.'}
         </DescriptionBox>
@@ -69,7 +79,11 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
                 {index + 1}. {q.question}
                 {q.required && <RequiredMark>*</RequiredMark>}
               </QuestionText>
-              <AnswerPlaceholder>Answer text</AnswerPlaceholder>
+              {q.questionDescription && (
+                <QuestionDescription>
+                  {q.questionDescription}
+                </QuestionDescription>
+              )}
             </QuestionBlock>
           ))}
         </Questions>

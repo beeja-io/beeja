@@ -1,12 +1,4 @@
 import { styled } from 'styled-components';
-export const RowWrapper = styled.div`
-  flex: 1 1 0;
-  margin-left: 20px;
-  margin-right: 40px;
-  gap: 40px;
-  display: flex;
-  justify-content: center;
-`;
 
 export const FormContainer = styled.div`
   background: ${(props) => props.theme.colors.blackColors.white6};
@@ -40,224 +32,9 @@ export const FormInputsContainer = styled.div`
     display: flex;
   }
   &.stepTwoContainer {
-    border: 1px solid var(--Outline-stroke, #e9eaec);
-    margin: 5px 30px;
+    margin: 25px 30px;
     border-radius: 10px;
     padding-top: 15px;
-  }
-`;
-
-export const AddFormMainContainer = styled.form`
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  align-items: center;
-
-  .formInputs {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 40px;
-  }
-
-  .formButtons {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    width: 100%;
-    margin: 120px 40px 60px 30px;
-  }
-
-  .submitButton {
-    background-color: #005792;
-    color: #fff;
-    border: none;
-
-    display: flex;
-    width: 162px;
-    height: 56px;
-    padding: 18px 24px;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    border-radius: 10px;
-    outline: none;
-    cursor: pointer;
-  }
-`;
-
-export const StepsContainer = styled.div`
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  max-width: 75%;
-  width: 50%;
-  margin: 20px 0 20px 10px;
-  padding-top: 15px;
-
-  @media screen and (max-width: 1200px) {
-    max-width: 30%;
-    margin: 10px 0;
-  }
-`;
-export const DateInputWrapper = styled.div`
-  position: relative;
-  max-width: 491px;
-  width: 100%;
-  height: 54px;
-
-  .iconArea {
-    position: absolute;
-    top: 50%;
-    right: 14px;
-    transform: translateY(-50%);
-    pointer-events: all;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-  }
-
-  .calendarSpace {
-    position: absolute;
-    top: 60px;
-    z-index: 10;
-  }
-`;
-export const TextInput = styled.input`
-  outline: none;
-  border-radius: 10px;
-  border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
-  display: flex;
-  padding: 16px 20px;
-  align-items: flex-start;
-  gap: 10px;
-  align-self: stretch;
-  height: 54px;
-  width: 100%;
-  color: ${(props) => props.theme.colors.blackColors.black1};
-  background-color: ${(props) => props.theme.colors.backgroundColors.primary};
-
-  &.largeInput {
-    width: 491px;
-  }
-
-  &.disabledBgWhite {
-    background-color: white;
-  }
-  &.grayText {
-    color: #8b8b8b;
-  }
-`;
-
-export const InputLabelContainer = styled.div<{ Width?: string }>`
-  flex: 1;
-  max-width: 491px;
-  margin: 20px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  label {
-    font-family: Nunito;
-    font-weight: 600;
-    font-size: 14px;
-    line-height: 160%;
-    letter-spacing: 0px;
-    color: ${(props) => props.theme.colors.blackColors.black5};
-  }
-  input {
-    cursor: text;
-  }
-  .selectoption {
-    outline: none;
-    border-radius: 10px;
-    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
-    display: flex;
-    padding: 16px 20px;
-    gap: 10px;
-    align-items: flex-start;
-    justify-content: space-between;
-    align-self: stretch;
-    min-height: 54px;
-    width: ${(props) => (props.Width ? props.Width : '100%')};
-    appearance: none;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 1rem center;
-    background-size: 1em;
-  }
-  .tax-container {
-    margin-right: 140px;
-  }
-  .selectoption.largeSelectOption {
-    max-width: 491px;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .react-select__control {
-    min-height: 54px !important;
-    max-width: 491px;
-    width: 100%;
-    border-radius: 8px;
-    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
-  }
-
-  span.calendarField {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  span.calendarField .iconArea {
-    position: absolute;
-    right: 20px;
-  }
-  div.calendarSpace {
-    justify-self: flex-start;
-    align-self: flex-start;
-    position: absolute;
-    left: 0;
-    top: 55px;
-    z-index: 1;
-  }
-
-  &.fileInputSelected {
-    .selectedFilesMain {
-      display: flex;
-      flex-direction: row;
-      flex-wrap: wrap;
-      max-width: 491px;
-      column-gap: 10px;
-      font-size: 12px;
-    }
-
-    .redPointer {
-      cursor: pointer;
-    }
-  }
-
-  .fileFormatText {
-    color: #687588;
-    font-size: 12px;
-  }
-
-  .grayText {
-    color: #687588;
-    font-size: 12px;
-  }
-  select:disabled {
-    background-color: ${(props) => props.theme.colors.backgroundColors.primary};
-  }
-  input:disabled {
-    background-color: ${(props) => props.theme.colors.blackColors.white6};
-  }
-  textarea:disabled {
-    background-color: ${(props) => props.theme.colors.blackColors.white6};
-
-    border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   }
 `;
 
@@ -269,48 +46,140 @@ export const FormLabelContainer = styled.div`
   background: #fff;
   margin: 15px 0;
   gap: 10px;
+
+  &.answer-container {
+    padding: 20px 10px 20px 10px;
+    width: 96%;
+    margin: 15px auto;
+    background: transparent;
+  }
+  &.description-container {
+    margin-bottom: 30px;
+    background: transparent;
+  }
 `;
 
 export const Container = styled.div`
   margin-left: 68px;
   margin-right: 68px;
 `;
+
+export const HeaderRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+`;
+
 export const Label = styled.div`
-  font-family: Nunito, sans-serif;
-  font-weight: 600;
+  font-family: Inter;
+  font-weight: 500;
+  font-style: Medium;
   font-size: 14px;
-  line-height: 160%;
-  color: #333;
-  margin-bottom: 10px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  color: ${(props) => props.theme.colors.blackColors.black1};
 `;
 
 export const InputContainer = styled.div`
-  width: 100%;
+  width: 98%;
   border-bottom: 1px solid #e9eaec;
   padding-bottom: 5px;
-
-  &:focus-within {
-    border-bottom: 2px solid #007bff;
-  }
 `;
 
 export const StyledInput = styled.input`
   width: 100%;
-  border: none;
+  border: none !important;
   outline: none;
   font-size: 14px;
-  background: transparent;
+  background: transparent !important;
+  resize: none;
+  color: ${(props) => props.theme.colors.brandColors.primary};
 
   &::placeholder {
     color: #999;
   }
 `;
 
+export const StyledTextArea = styled.textarea`
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  resize: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  color: ${(props) => props.theme.colors.brandColors.primary};
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+
+  &::placeholder {
+    color: #999;
+    position: absolute;
+    bottom: 1px;
+  }
+`;
+
+// export const StyledTextArea = styled.textarea`
+//   width: 100%;
+//   border: none !important;
+//   outline: none;
+//   font-size: 14px;
+//   background: transparent !important;
+//   resize: none;
+
+//   &::placeholder {
+//     color: #999;
+//   }
+// `;
+
+export const DescriptionButton = styled.button`
+  display: flex;
+  align-items: baseline;
+  color: #005792;
+  background: none;
+  border: none;
+  padding: 10px 0px 10px 25px;
+  cursor: pointer;
+
+  gap: 8px;
+
+  font-family: Nunito;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+
+  .plus-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: #005792;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 4px;
+  }
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
 export const QuestionBlock = styled.div`
   border-radius: 12px;
   padding: 1.2rem 0px;
-  margin-bottom: 1rem;
-  background: #fff;
+  background-color: transparent;
 
   label {
     font-weight: 600;
@@ -323,16 +192,20 @@ export const QuestionBlock = styled.div`
     width: 100%;
     font-size: 0.95rem;
     outline: none;
+    overflow: hidden;
+    background: #ffff;
+    border-bottom: 1px solid #a0aec0;
   }
 
-  .question-input {
+  & > .question-input {
     border: none;
     border-bottom: 1px solid #a0aec0;
     padding: 0.6rem 0;
     margin-bottom: 1.5rem;
-    background: transparent;
 
-    height: 55px;
+    width: 96%;
+    margin: 15px auto;
+    display: block;
     angle: 0 deg;
     opacity: 1;
     border-bottom-width: 1px;
@@ -372,24 +245,24 @@ export const QuestionBlock = styled.div`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 15px;
-    border-top: 1px solid #f0f0f0;
-    background: #e2ecf399;
+    padding: 0 25px;
+    background: transparent;
+
     height: 65px;
     border-radius: 10px;
 
     .add-btn {
-      width: 96px;
       height: 45px;
       border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 15px;
       background: #005792;
       color: #fff;
       cursor: pointer;
       transition: background 0.2s ease;
+      padding: 15px;
 
       &:hover {
         background: #005795;
@@ -477,6 +350,110 @@ export const FormHeader = styled.div`
   }
 `;
 
+export const DateRangeContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 1rem 0;
+
+  .to-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: ${(props) => props.theme.colors.grayColors.gray7};
+  }
+  .date-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .error-text {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+`;
+
+export const DateField = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: ${(props) => props.theme.colors.grayColors.gray9};
+  position: relative;
+
+  svg path {
+    fill: ${(props) => props.theme.colors.grayColors.gray9};
+  }
+
+  span {
+    font-size: 14px;
+    color: ${(props) => props.theme.colors.grayColors.gray9};
+  }
+
+  .calendarSpace {
+    position: absolute;
+    top: 120%;
+    left: 0;
+    z-index: 10;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+`;
+
+export const TitleInput = styled.input`
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  max-width: 600px;
+
+  font-family: Nunito;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 24px;
+  leading-trim: NONE;
+  line-height: 150%;
+  letter-spacing: 0.3px;
+  text-align: center;
+  color: ${(props) => props.theme.colors.brandColors.primary};
+`;
+
+export const DropdownRow = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 1rem;
+
+  select {
+    min-width: 200px;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fff;
+    font-size: 14px;
+    cursor: pointer;
+
+    &:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+  }
+  .dropdown-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .error-text {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+`;
+
 export const FooterContainer = styled.div`
   position: relative;
   display: flex;
@@ -524,9 +501,10 @@ export const PreviewCard = styled.div`
   border-radius: 12px;
   background: #ffffff;
   border: 1px solid var(--Outline-stroke, #e9eaec);
-  max-width: 1246px;
+  margin: 40px 8% 0 8%;
+  padding: 25px 5% 0 5%;
   width: 100%;
-  padding: 30px;
+
   max-height: 100vh;
   overflow-y: auto;
 `;
@@ -540,7 +518,7 @@ export const Title = styled.h2`
   margin: 0;
   font-size: 20px;
   font-weight: 600;
-  color: #222;
+  color: ${(props) => props.theme.colors.brandColors.primary};
 `;
 
 export const DateRow = styled.div`
@@ -556,10 +534,15 @@ export const DateText = styled.span`
 `;
 
 export const Subtitle = styled.h3`
-  margin: 0;
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
   font-size: 16px;
-  font-weight: 500;
-  color: #374151;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0.17px;
+  text-align: center;
+  color: ${(props) => props.theme.colors.blackColors.black7};
 `;
 
 export const DescriptionBox = styled.div`
@@ -567,7 +550,7 @@ export const DescriptionBox = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
-  margin-bottom: 20px;
+  margin: 10px 0px 20px 0px;
   font-size: 14px;
   color: #374151;
 `;
@@ -585,17 +568,61 @@ export const QuestionText = styled.p`
   color: #1d4ed8;
 `;
 
+export const SearchBox = styled.div`
+  display: flex;
+  width: 315px;
+  padding: 8px 8px 8px 16px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  height: 50px;
+  flex-shrink: 0;
+  align-self: stretch;
+  border-radius: 10px;
+  margin-bottom: 5px;
+  background: ${(props) => props.theme.colors.grayColors.gray6};
+
+  &.search .span {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px;
+    gap: 15px;
+    width: 310px;
+    svg path {
+      fill: ${(props) => props.theme.colors.blackColors.black1};
+    }
+  }
+`;
+
+export const QuestionDescription = styled.p`
+  margin: 4px 0 10px 0;
+  font-size: 0.9rem;
+  color: #717171;
+
+  font-family: Nunito;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+`;
+
 export const RequiredMark = styled.span`
   color: #dc2626;
   margin-left: 4px;
 `;
 
-export const AnswerPlaceholder = styled.div`
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  min-height: 60px;
-  padding: 10px;
-  font-size: 14px;
-  color: #9ca3af;
-  background: #fff;
+export const ActionMenu = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  height: 100%;
+  padding: 8px;
+  svg {
+    display: block;
+  }
 `;

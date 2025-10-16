@@ -475,12 +475,16 @@ const CompleteNavBar = () => {
                       additionalSvgIcon={<ChevronDownSVG />}
                       dropdownItems={[
                         {
-                          name: 'Create Review cycle',
-                          link: '/performance/create-review-cycle',
+                          name: 'Create Evaluation Form',
+                          link: '/performance/create-evaluation-form',
                         },
                         {
-                          name: 'Manage reviews',
-                          link: '/performance/manage-reviews',
+                          name: 'Assign Feedback Providers',
+                          link: '/performance/assign-feedback-providers',
+                        },
+                        {
+                          name: 'Feedback Hub',
+                          link: '/performance/feedback-hub',
                         },
                       ]}
                       isDropdownOpen={openDropdown === 'performance'}
