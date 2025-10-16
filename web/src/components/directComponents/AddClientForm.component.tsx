@@ -939,7 +939,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   type="button"
                   className="cancel"
                 >
-                  {t('Skip')}
+                  {t('Cancel')}
                 </Button>
                 <Button
                   className="submit"
@@ -1373,7 +1373,7 @@ const AddClientForm = (props: AddClientFormProps) => {
             {t('Cancel')}
           </Button>
           <Button className="submit" type="submit" form="summaryForm">
-            {t('Add')}
+            {props.isEditMode ? t('Update') : t('Add')}
           </Button>
         </ButtonGroup>
       )}
