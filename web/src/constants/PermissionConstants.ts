@@ -65,6 +65,7 @@ export const CLIENT_MODULE = {
   UPDATE_CLIENT: 'UCL',
   READ_CLIENT: 'GCL',
   DELETE_CLIENT: 'DCL',
+  GENERATE_INVOICE: 'DEX',
 };
 
 export const CONTRACT_MODULE = {

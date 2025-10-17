@@ -17,8 +17,8 @@ import { FileEntity } from '../../entities/FileEntity';
 import {
   deleteEmployeeFile,
   downloadEmployeeFile,
-  downloadContractFile,
   deleteContractFile,
+  downloadContractFile,
 } from '../../service/axiosInstance';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import {
@@ -148,7 +148,6 @@ export const DocumentAction: React.FC<ActionProps> = ({
         await deleteEmployeeFile(fileId);
       }
       fetchFiles();
-      setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       throw new Error('Error deleting file: ' + error);
