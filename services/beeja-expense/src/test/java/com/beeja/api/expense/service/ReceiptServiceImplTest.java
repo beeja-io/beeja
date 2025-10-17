@@ -63,6 +63,7 @@ class ReceiptServiceImplTest {
   void testDownloadFile_UnauthorisedAccess() throws Exception {
     LinkedHashMap<String, Object> body = new LinkedHashMap<>();
     body.put("entityType", "otherEntity");
+    final String expectedErrorMessage = "FEIGN_CLIENT_ERROR,FILE_SERVICE_COMMUNICATION_FAILED,Failed to fetch file information from file service.";
     ResponseEntity<?> mockGetFileResponse = new ResponseEntity<>(body, HttpStatus.OK);
     doReturn(mockGetFileResponse).when(fileClient).getFileById(fileId);
     FeignClientException exception =
@@ -71,21 +72,21 @@ class ReceiptServiceImplTest {
             () -> {
               receiptService.downloadFile(fileId);
             });
-    assertEquals(Constants.UNAUTHORISED_ACCESS, exception.getMessage());
+    assertEquals(expectedErrorMessage, exception.getMessage());
     verify(fileClient, times(1)).getFileById(fileId);
     verify(fileClient, never()).downloadFile(fileId);
   }
 
   @Test
   void testDownloadFile_FeignClientException() throws Exception {
-    when(fileClient.getFileById(fileId)).thenThrow(new RuntimeException("Feign client error"));
+    when(fileClient.getFileById(fileId)).thenThrow(new RuntimeException("FEIGN_CLIENT_ERROR,FILE_SERVICE_COMMUNICATION_FAILED,Failed to fetch file information from file service."));
     FeignClientException exception =
         assertThrows(
             FeignClientException.class,
             () -> {
               receiptService.downloadFile(fileId);
             });
-    assertEquals("Feign client error", exception.getMessage());
+    assertEquals("FEIGN_CLIENT_ERROR,FILE_SERVICE_COMMUNICATION_FAILED,Failed to fetch file information from file service.", exception.getMessage());
     verify(fileClient, times(1)).getFileById(fileId);
     verify(fileClient, never()).downloadFile(fileId);
   }

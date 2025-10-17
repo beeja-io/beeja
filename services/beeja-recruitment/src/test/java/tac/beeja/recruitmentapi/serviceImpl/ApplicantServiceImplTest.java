@@ -1,221 +1,170 @@
 package tac.beeja.recruitmentapi.serviceImpl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.mongodb.core.FindAndModifyOptions;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockMultipartFile;
+import tac.beeja.recruitmentapi.client.AccountClient;
+import tac.beeja.recruitmentapi.client.FileClient;
+import tac.beeja.recruitmentapi.enums.ApplicantStatus;
+import tac.beeja.recruitmentapi.exceptions.*;
+import tac.beeja.recruitmentapi.model.Applicant;
+import tac.beeja.recruitmentapi.model.AssignedInterviewer;
+import tac.beeja.recruitmentapi.repository.ApplicantRepository;
+import tac.beeja.recruitmentapi.request.AddCommentRequest;
+import tac.beeja.recruitmentapi.request.ApplicantFeedbackRequest;
+import tac.beeja.recruitmentapi.request.ApplicantRequest;
+import tac.beeja.recruitmentapi.request.FileRequest;
+import tac.beeja.recruitmentapi.response.FileResponse;
+import tac.beeja.recruitmentapi.utils.Constants;
+import tac.beeja.recruitmentapi.utils.UserContext;
+
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Query;
-import tac.beeja.recruitmentapi.enums.ApplicantStatus;
-import tac.beeja.recruitmentapi.model.Applicant;
-import tac.beeja.recruitmentapi.response.PaginatedApplicantResponse;
-
+@ExtendWith(MockitoExtension.class)
 class ApplicantServiceImplTest {
 
-  @InjectMocks private ApplicantServiceImpl applicantServiceImpl;
+    @InjectMocks
+    private ApplicantServiceImpl applicantService;
 
-  @Mock private MongoTemplate mongoTemplate;
+    @Mock
+    private FileClient fileClient;
 
-  private Applicant applicant;
+    @Mock
+    private ApplicantRepository applicantRepository;
 
-  @BeforeEach
-  public void setup() {
-    MockitoAnnotations.openMocks(this);
+    @Mock
+    private AccountClient accountClient;
 
-    applicant = new Applicant();
-    applicant.setId("1");
-    applicant.setFirstName("John");
-    applicant.setLastName("Doe");
-    applicant.setEmail("john@example.com");
-    applicant.setPhoneNumber("1234567890");
-    applicant.setPositionAppliedFor("Software Engineer");
-    applicant.setStatus(ApplicantStatus.APPLIED);
-    applicant.setExperience("5 years");
-    applicant.setApplicantId("Employee1");
-    applicant.setCreatedAt(new Date());
-  }
+    @Captor
+    ArgumentCaptor<Applicant> applicantCaptor;
 
-  @Test
-  public void testGetPaginatedApplicants_ValidPagination() {
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Collections.singletonList(applicant));
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class))).thenReturn(1L);
+    @Mock
+    private MongoTemplate mongoTemplate;
 
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, null, null, null, null, null, null, null, "createdAt", "asc");
+    @Mock
+    private ObjectMapper objectMapper;
 
-    assertEquals(1, response.getApplicants().size());
-    assertEquals(1, response.getCurrentPage());
-    assertEquals(10, response.getPageSize());
-    assertEquals(1, response.getTotalRecords());
-    assertEquals(1, response.getTotalPages());
-  }
+    private Applicant applicant;
 
-  @Test
-  public void testGetPaginatedApplicants_NoResults() {
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Collections.emptyList());
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class))).thenReturn(0L);
+    @BeforeEach
+    void setUp() {
+        Map<String, Object> org = new HashMap<>();
+        org.put("id", "org123");
+        org.put("name", "TechCorp");
+        UserContext.setLoggedInUserOrganization(org);
+        UserContext.setLoggedInEmployeeId("emp001");
+        UserContext.setLoggedInUserName("Alice Smith");
 
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, null, null, null, null, null, null, null, "createdAt", "asc");
+        applicant = new Applicant();
+        applicant.setApplicantId("TEST1234");
+        applicant.setAssignedInterviewers(Collections.singletonList(new AssignedInterviewer()));
+        applicant.setStatus(ApplicantStatus.APPLIED);
+    }
 
-    assertTrue(response.getApplicants().isEmpty());
-    assertEquals(1, response.getCurrentPage());
-    assertEquals(10, response.getPageSize());
-    assertEquals(0, response.getTotalRecords());
-    assertEquals(0, response.getTotalPages());
-  }
+    @Test
+    void testPostApplicant_SuccessfulCreationWithResumeUpload() throws Exception {
+        MockMultipartFile resume = new MockMultipartFile(
+                "file", "resume.pdf", "application/pdf", "Test content".getBytes());
+        ApplicantRequest request = new ApplicantRequest();
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setEmail("john.doe@example.com");
+        request.setPhoneNumber("1234567890");
+        request.setPositionAppliedFor("Software Engineer");
+        request.setExperience("5 years");
+        request.setResume(resume);
 
-  @Test
-  public void testGetPaginatedApplicants_WithFilters() {
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Collections.singletonList(applicant));
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class))).thenReturn(1L);
+        Map<String, Object> fileUploadResponse = new HashMap<>();
+        fileUploadResponse.put("id", "file123");
 
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, null, "John", null, null, null, null, null, "createdAt", "asc");
+        when(fileClient.uploadFile(any(FileRequest.class)))
+                .thenReturn((ResponseEntity) new ResponseEntity<>(fileUploadResponse, HttpStatus.OK));
+        when(applicantRepository.countByOrganizationId("org123")).thenReturn(9L);
+        when(applicantRepository.save(any(Applicant.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
-    assertEquals(1, response.getApplicants().size());
-    assertEquals("John", response.getApplicants().get(0).getFirstName());
-  }
+        Applicant result = applicantService.postApplicant(request, true);
 
-  @Test
-  public void testGetPaginatedApplicants_WithApplicantIdFilter() {
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Collections.singletonList(applicant));
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class))).thenReturn(1L);
+        assertNotNull(result);
+        assertEquals(ApplicantStatus.APPLIED, result.getStatus());
+        assertEquals("file123", result.getResumeId());
+        assertEquals("emp001", result.getReferredByEmployeeId());
+        assertEquals("Alice Smith", result.getReferredByEmployeeName());
+        verify(applicantRepository).save(applicantCaptor.capture());
+        assertTrue(applicantCaptor.getValue().getApplicantId().startsWith("TEC"));
+    }
 
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, "Employee1", null, null, null, null, null, null, "createdAt", "asc");
+    @Test
+    void testPostApplicant_InvalidFileFormat_ThrowsBadRequest() {
+        MockMultipartFile resume = new MockMultipartFile(
+                "file", "resume.txt", "text/plain", "Invalid format".getBytes());
 
-    assertEquals(1, response.getApplicants().size());
-    assertEquals("Employee1", response.getApplicants().get(0).getApplicantId());
-  }
+        ApplicantRequest request = new ApplicantRequest();
+        request.setFirstName("John");
+        request.setLastName("Doe");
+        request.setEmail("john.doe@example.com");
+        request.setPhoneNumber("1234567890");
+        request.setPositionAppliedFor("QA Engineer");
+        request.setExperience("3 years");
+        request.setResume(resume);
 
-  @Test
-  public void testGetPaginatedApplicants_WithPositionAppliedForFilter() {
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Collections.singletonList(applicant));
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class))).thenReturn(1L);
+        BadRequestException ex = assertThrows(BadRequestException.class,
+                () -> applicantService.postApplicant(request, false));
 
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, null, null, "Software Engineer", null, null, null, null, "createdAt", "asc");
+        assertEquals("Only PDF, DOC and DOCX files are allowed", ex.getMessage());
+        verifyNoInteractions(fileClient);
+        verifyNoInteractions(applicantRepository);
+    }
 
-    assertEquals(1, response.getApplicants().size());
-    assertEquals("Software Engineer", response.getApplicants().get(0).getPositionAppliedFor());
-  }
+    @Test
+    void getAllApplicantsInOrganization_withPermission_returnsAllApplicants() {
+        String orgId = "org123";
+        List<Applicant> applicants = List.of(new Applicant());
 
-  @Test
-  public void testGetPaginatedApplicants_WithStatusFilter() {
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Arrays.asList(applicant));
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class)))
-        .thenReturn((long) Arrays.asList(applicant).size());
+        try (MockedStatic<UserContext> userContextMock = mockStatic(UserContext.class)) {
+            userContextMock.when(UserContext::getLoggedInUserPermissions)
+                    .thenReturn(Set.of(Constants.GET_ENTIRE_APPLICANTS));
+            userContextMock.when(UserContext::getLoggedInUserOrganization)
+                    .thenReturn(Map.of("id", orgId));
+            when(applicantRepository.findAllByOrganizationId(orgId)).thenReturn(applicants);
 
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, null, null, null, ApplicantStatus.APPLIED, null, null, null, "createdAt", "asc");
+            List<Applicant> result = applicantService.getAllApplicantsInOrganization();
 
-    assertEquals(1, response.getApplicants().size());
-    assertEquals(ApplicantStatus.APPLIED, response.getApplicants().get(0).getStatus());
-  }
+            assertEquals(applicants, result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-  @Test
-  public void testGetPaginatedApplicants_WithExperianceFilter() {
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Arrays.asList(applicant));
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class)))
-        .thenReturn((long) Arrays.asList(applicant).size());
+    @Test
+    void getApplicantById_returnsApplicant() throws Exception {
+        String applicantId = "app123";
+        String orgId = "org123";
+        Applicant applicant = new Applicant();
 
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, null, null, null, null, "5 years", null, null, "createdAt", "asc");
+        try (MockedStatic<UserContext> userContextMock = mockStatic(UserContext.class)) {
+            userContextMock.when(UserContext::getLoggedInUserOrganization).thenReturn(Map.of("id", orgId));
+            when(applicantRepository.findByIdAndOrganizationId(applicantId, orgId)).thenReturn(applicant);
 
-    assertEquals(1, response.getApplicants().size());
-    assertEquals("5 years", response.getApplicants().get(0).getExperience());
-  }
+            Applicant result = applicantService.getApplicantById(applicantId);
 
-  @Test
-  public void testGetPaginatedApplicants_WithDateFilters() {
-    Calendar cal = Calendar.getInstance();
-    cal.set(2024, Calendar.JANUARY, 1);
-    Date fromDate = cal.getTime();
+            assertEquals(applicant, result);
+        }
+    }
 
-    cal.set(2024, Calendar.DECEMBER, 31);
-    Date toDate = cal.getTime();
-
-    cal.set(2024, Calendar.JUNE, 15);
-    Date createdAt = cal.getTime();
-    applicant.setCreatedAt(createdAt);
-
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Collections.singletonList(applicant));
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class))).thenReturn(1L);
-
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, null, null, null, null, null, fromDate, toDate, "createdAt", "asc");
-
-    assertFalse(response.getApplicants().isEmpty());
-    Date retrievedCreatedAt = response.getApplicants().get(0).getCreatedAt();
-
-    assertTrue(!retrievedCreatedAt.before(fromDate) && !retrievedCreatedAt.after(toDate));
-  }
-
-  @Test
-  public void testGetPaginatedApplicants_WithFromDateOnly() {
-    Calendar cal = Calendar.getInstance();
-    cal.set(2024, Calendar.JANUARY, 1);
-    Date fromDate = cal.getTime();
-
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Collections.singletonList(applicant));
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class))).thenReturn(1L);
-
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, null, null, null, null, null, fromDate, null, "createdAt", "asc");
-
-    assertFalse(response.getApplicants().isEmpty());
-    Date createdAt = response.getApplicants().get(0).getCreatedAt();
-    assertTrue(
-        createdAt.after(fromDate) || createdAt.equals(fromDate),
-        "Applicant createdAt should be after or equal to fromDate");
-  }
-
-  @Test
-  public void testGetPaginatedApplicants_WithToDateOnly() {
-    Calendar cal = Calendar.getInstance();
-    cal.set(2024, Calendar.DECEMBER, 31);
-    Date toDate = cal.getTime();
-
-    cal.set(2024, Calendar.DECEMBER, 30);
-    Date createdAt = cal.getTime();
-    applicant.setCreatedAt(createdAt);
-
-    when(mongoTemplate.find(any(Query.class), eq(Applicant.class)))
-        .thenReturn(Collections.singletonList(applicant));
-    when(mongoTemplate.count(any(Query.class), eq(Applicant.class))).thenReturn(1L);
-
-    PaginatedApplicantResponse response =
-        applicantServiceImpl.getPaginatedApplicants(
-            1, 10, null, null, null, null, null, null, toDate, "createdAt", "asc");
-
-    assertFalse(response.getApplicants().isEmpty());
-    Date retrievedCreatedAt = response.getApplicants().get(0).getCreatedAt();
-    assertTrue(
-        retrievedCreatedAt.before(toDate) || retrievedCreatedAt.equals(toDate),
-        "Applicant createdAt should be before or equal to toDate");
-  }
 }
