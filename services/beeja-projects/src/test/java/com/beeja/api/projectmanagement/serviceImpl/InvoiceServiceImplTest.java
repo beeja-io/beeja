@@ -126,6 +126,7 @@ import org.springframework.http.ResponseEntity;
 @ExtendWith(MockitoExtension.class)
 public class InvoiceServiceImplTest {
 
+
   @Mock private InvoiceRepository invoiceRepository;
   @Mock private ContractRepository contractRepository;
   @Mock private PdfGenerationUtil pdfGenerationUtil;

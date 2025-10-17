@@ -32,6 +32,7 @@ import org.springframework.http.ResponseEntity;
 
 public class ContractsControllerTest {
 
+
   @Mock private ContractService contractService;
 
   @InjectMocks private ContractsController contractsController;
