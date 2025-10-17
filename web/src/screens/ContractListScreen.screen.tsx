@@ -166,7 +166,18 @@ const ContractList = ({
                             handleContractClick(contract.contractId)
                           }
                         >
-                          {contract.projectManagerNames?.[0]}
+                          {Array.isArray(contract?.projectManagerNames)
+                            ? contract.projectManagerNames.map(
+                                (name, index) => (
+                                  <div key={index}>
+                                    {name}
+                                    {index <
+                                      contract.projectManagerNames.length - 1 &&
+                                      ' ,'}
+                                  </div>
+                                )
+                              )
+                            : contract?.projectManagerNames}
                         </td>
                         <td>
                           {contract.status ? (

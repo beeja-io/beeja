@@ -183,12 +183,12 @@ const ProjectList = ({
                               onChange={(newStatus) => {
                                 toast.promise(
                                   updateProjectStatus(
-                                    project?.projectId,
+                                    project.projectId,
                                     newStatus as ProjectStatus
                                   ).then(() => {
                                     setProjectList((prevList) =>
-                                      prevList?.map((p) =>
-                                        p?.projectId === project?.projectId
+                                      prevList.map((p) =>
+                                        p.projectId === project.projectId
                                           ? {
                                               ...p,
                                               projectStatus:
@@ -197,6 +197,7 @@ const ProjectList = ({
                                           : p
                                       )
                                     );
+                                    updateProjectList();
                                   }),
                                   {
                                     loading: 'Updating project status...',

@@ -450,20 +450,20 @@ const AddClientForm = (props: AddClientFormProps) => {
     try {
       const dataToSend = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        if (typeof value === 'object' && value !== null) {
+        if (value === null || value === undefined) return;
+        if (typeof value === 'object' && !(value instanceof File)) {
           Object.entries(value).forEach(([subKey, subValue]) => {
-            if (subValue !== null && subValue !== '') {
+            if (subValue !== null && subValue !== undefined) {
               dataToSend.append(`${key}.${subKey}`, String(subValue));
             }
           });
-        } else if (value !== null && value !== '') {
+        } else if (key !== 'logo') {
           dataToSend.append(key, String(value));
         }
       });
-
-      if (file) {
+      if (file instanceof File) {
         dataToSend.append('logo', file);
-      } else if (props.isEditMode && !formData.logoId) {
+      } else if (isEditMode && !formData.logoId) {
         dataToSend.append('removeLogo', 'true');
       }
 
