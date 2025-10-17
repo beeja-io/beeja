@@ -14,6 +14,7 @@ import com.beeja.api.performance_management.service.EvaluationCycleService;
 import com.beeja.api.performance_management.service.QuestionnaireService;
 import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.ErrorUtils;
+import com.beeja.api.performance_management.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,9 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
 
         validateCycleDates(cycle);
 
+        String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
         EvaluationCycle newCycle = new EvaluationCycle();
+        newCycle.setOrganizationId(orgId);
 
         if (cycle.getName() != null) {
             newCycle.setName(cycle.getName());
@@ -131,7 +134,11 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
             }
         }
 
+        String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+
         EvaluationCycle cycle = new EvaluationCycle();
+
+        cycle.setOrganizationId(orgId);
         cycle.setName(dto.getName());
         cycle.setType(dto.getType());
         cycle.setFormDescription(dto.getFormDescription());
@@ -209,6 +216,7 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         EvaluationCycleDetailsDto dto = new EvaluationCycleDetailsDto();
 
         dto.setId(cycle.getId());
+        dto.setOrganizationId(cycle.getOrganizationId());
         dto.setName(cycle.getName());
         dto.setType(cycle.getType());
         dto.setFormDescription(cycle.getFormDescription());

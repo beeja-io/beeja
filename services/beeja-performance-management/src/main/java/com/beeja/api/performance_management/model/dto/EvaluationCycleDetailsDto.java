@@ -22,6 +22,7 @@ import java.util.List;
 public class EvaluationCycleDetailsDto {
     // Cycle fields
     private String id;
+    private String organizationId;
     private String name;
     private CycleType type;
     private String formDescription;

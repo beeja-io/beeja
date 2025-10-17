@@ -14,6 +14,8 @@ public class Questionnaire {
     @Id
     private String id;
 
+    private String organizationId;
+
     @NotEmpty(message = "Questions list cannot be empty")
     private List<@Valid Question> questions;
 }

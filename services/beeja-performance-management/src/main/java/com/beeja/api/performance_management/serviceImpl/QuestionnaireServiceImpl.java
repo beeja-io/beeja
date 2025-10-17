@@ -13,6 +13,7 @@ import com.beeja.api.performance_management.repository.QuestionnaireRepository;
 import com.beeja.api.performance_management.service.QuestionnaireService;
 import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.ErrorUtils;
+import com.beeja.api.performance_management.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -46,9 +47,13 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     public Questionnaire createQuestionnaire(Questionnaire questionnaire) {
         log.info(Constants.INFO_CREATING_QUESTIONNAIRE);
 
+        String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+
+        questionnaire.setOrganizationId(orgId);
         validateQuestionnaireRequest(questionnaire);
 
         Questionnaire newQuestionnaire = new Questionnaire();
+        newQuestionnaire.setOrganizationId(orgId);
 
         if (questionnaire.getQuestions() != null && !questionnaire.getQuestions().isEmpty()) {
                 questionnaire.getQuestions().forEach(q -> {
@@ -59,8 +64,6 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
             newQuestionnaire.setQuestions(questionnaire.getQuestions());
         }
-
-        checkDuplicateQuestionnaire(null, newQuestionnaire);
 
         try {
             newQuestionnaire = questionnaireRepository.save(newQuestionnaire);

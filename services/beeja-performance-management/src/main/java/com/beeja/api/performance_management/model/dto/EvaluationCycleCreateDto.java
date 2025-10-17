@@ -23,6 +23,8 @@ public class EvaluationCycleCreateDto {
     // EvaluationCycle fields
     private String id;
 
+    private String organizationId;
+
     @NotBlank(message = "Name is required")
     private String name;
 

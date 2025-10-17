@@ -16,6 +16,8 @@ public class EvaluationCycle {
     @Id
     private String id;
 
+    private String organizationId;
+
     @NotNull
     private String name;
 
