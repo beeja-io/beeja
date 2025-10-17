@@ -55,7 +55,20 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<
     'Resources' | 'Description' | 'Attachments'
-  >('Resources');
+  >(() => {
+    return (
+      (sessionStorage.getItem(`contractTab_${contractId}`) as
+        | 'Resources'
+        | 'Description'
+        | 'Attachments') || 'Resources'
+    );
+  });
+
+  useEffect(() => {
+    sessionStorage.setItem(`contractTab_${contractId}`, activeTab);
+
+    if (activeTab === 'Attachments') fetchAttachments();
+  }, [activeTab, contractId]);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loading, setLoading] = useState(false);
   const triggerRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
@@ -150,7 +163,13 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
           </ProjectsTable>
         )}
 
-        {activeTab === 'Description' && <div>{description}</div>}
+        {activeTab === 'Description' && (
+          <div>
+            {description && description.trim() !== ''
+              ? description
+              : 'No description available'}
+          </div>
+        )}
 
         {activeTab === 'Attachments' && (
           <AttachmentList className="attachment-scroll-container">

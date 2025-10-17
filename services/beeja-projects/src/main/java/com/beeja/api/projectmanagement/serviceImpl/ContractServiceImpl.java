@@ -225,6 +225,19 @@ public class ContractServiceImpl implements ContractService {
           log.info(Constants.NO_RESOURCE_FOUND, contractId);
       }
 
+      if (contract.getProjectManagers() != null && !contract.getProjectManagers().isEmpty()) {
+          try {
+              List<EmployeeNameDTO> managerDTOs = accountClient.getEmployeeNamesById(contract.getProjectManagers());
+              List<String> activeManagerNames = managerDTOs.stream()
+                      .filter(EmployeeNameDTO::isActive)
+                      .map(EmployeeNameDTO::getFullName)
+                      .toList();
+              contract.setProjectManagers(activeManagerNames);
+          } catch (FeignClientException e) {
+              log.error("Failed to fetch project manager names: {}", e.getMessage(), e);
+          }
+      }
+
       return contract;
   }
 

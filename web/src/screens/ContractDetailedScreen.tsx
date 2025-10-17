@@ -140,7 +140,6 @@ const ContractDetailsScreen: React.FC = () => {
   if (isLoading) {
     return <SpinAnimation />;
   }
-
   return (
     <Container>
       <LeftSection>
@@ -188,14 +187,7 @@ const ContractDetailsScreen: React.FC = () => {
             <ColumnItem>{client?.clientName}</ColumnItem>
             <DotSVG />
             <ColumnItem>
-              {[
-                ...new Set(
-                  project?.contracts?.flatMap(
-                    (contract) =>
-                      contract?.projectManagers?.map((pm) => pm?.name) ?? []
-                  ) ?? []
-                ),
-              ].join(', ')}
+              {[...new Set(contract?.projectManagers ?? [])].join(', ')}
             </ColumnItem>
             <DateIcon />
             <ColumnItem>
@@ -275,7 +267,9 @@ const ContractDetailsScreen: React.FC = () => {
             {project?.projectId && (
               <>
                 <ClientInfoWrapper>
-                  <div className="name">{project?.projectManagerNames}</div>
+                  <div className="name">
+                    {project?.projectManagerNames?.join(', ')}
+                  </div>
                   <DotSVG />
                   <div>{project.projectId}</div>
                 </ClientInfoWrapper>
