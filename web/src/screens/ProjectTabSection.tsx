@@ -27,8 +27,8 @@ interface Contract {
 interface Resource {
   employeeId: string;
   name: string;
-  contractName: string;
-  allocation: string;
+  contractName: string[];
+  allocation: number;
 }
 
 interface ClientTabsSectionProps {
@@ -81,8 +81,8 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           (r: any) => ({
             employeeId: r.employeeId,
             name: r.name,
-            contractName: r.contractName ?? 'N/A',
-            allocation: `${r.allocationPercentage ?? 0}%`,
+            contractName: r.contractName ?? [],
+            allocation: r.allocationPercentage ?? 0,
           })
         );
 
@@ -174,8 +174,18 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
                   <tr key={r?.employeeId}>
                     <td>{r?.employeeId}</td>
                     <td>{r?.name}</td>
-                    <td>{r?.contractName}</td>
-                    <td>{r?.allocation}</td>
+                    <td>
+                      {Array.isArray(r?.contractName) &&
+                      r.contractName.length > 0
+                        ? r.contractName.map((c, index) => (
+                            <span key={index}>
+                              {c}
+                              {index < r.contractName.length - 1 ? ', ' : ''}
+                            </span>
+                          ))
+                        : t('No contracts assigned')}
+                    </td>
+                    <td>{r.allocation > 0 ? `${r.allocation}%` : '-'}</td>
                   </tr>
                 ))
               ) : (

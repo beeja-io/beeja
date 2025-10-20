@@ -3,6 +3,7 @@ package com.beeja.api.employeemanagement.controller;
 import com.beeja.api.employeemanagement.annotations.HasPermission;
 import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.JobDetails;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
@@ -18,15 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -99,5 +92,32 @@ public class EmployeeController {
   ResponseEntity<List<EmployeeBasicInfo>> getAllEmployeeBasicInfo(
           @RequestParam(name = "designations", required = false) List<String> designations){
     return ResponseEntity.ok(employeeService.getAllEmpInfo(designations));
+  }
+
+  @PostMapping("/{employeeId}/history")
+  public ResponseEntity<Employee> addJobStage(
+          @PathVariable String employeeId,
+          @RequestBody JobDetails newJob) throws Exception {
+    return ResponseEntity.ok(employeeService.addJobHistory(employeeId, newJob));
+  }
+
+  @PutMapping("/{employeeId}/history/{jobId}")
+  public ResponseEntity<Employee> updateJobStage(
+          @PathVariable String employeeId,
+          @PathVariable String jobId,
+          @RequestBody JobDetails updatedJob) throws Exception {
+    return ResponseEntity.ok(employeeService.updateJobHistory(employeeId, jobId, updatedJob));
+  }
+
+  @DeleteMapping("/{employeeId}/history/{jobId}")
+  public ResponseEntity<Employee> deleteJobStage(
+          @PathVariable String employeeId,
+          @PathVariable String jobId) throws Exception {
+    return ResponseEntity.ok(employeeService.deleteJobHistory(employeeId, jobId));
+  }
+
+  @GetMapping("/{employeeId}/history")
+  public ResponseEntity<List<JobDetails>> getJobHistory(@PathVariable String employeeId) throws Exception {
+    return ResponseEntity.ok(employeeService.getJobHistory(employeeId));
   }
 }

@@ -217,7 +217,6 @@
   "Billing_Address": "Rechnungsadresse",
   "Tax_Details": "Steuerdetails",
   "VAT/ GST_Number": "Umsatzsteuer-Identifikationsnummer",
-  "Tax_Category": "Steuerkategorie",
   "Projects": "Projekte",
   "Contracts": "Verträge",
   "Resources": "Ressourcen",
@@ -310,6 +309,13 @@
   "Create_New_Form": "Neues Formular erstellen",
   "EXCISE_TAX": "Verbrauchssteuer",
   "SALES_TAX": "Umsatzsteuer",
+  "Tax_Category": "Steuerkategorie",
+  "TaxCategory": {
+    "EXCISE_TAX": "Verbrauchssteuer",
+    "SALES_TAX": "Umsatzsteuer",
+    "GST": "GST",
+    "VAT": "Mehrwertsteuer"
+  },
   "INTERNAL": "Intern",
   "INDIVIDUAL": "Einzelperson",
   "COMPANY": "Unternehmen",

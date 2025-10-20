@@ -450,20 +450,20 @@ const AddClientForm = (props: AddClientFormProps) => {
     try {
       const dataToSend = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        if (typeof value === 'object' && value !== null) {
+        if (value === null || value === undefined) return;
+        if (typeof value === 'object' && !(value instanceof File)) {
           Object.entries(value).forEach(([subKey, subValue]) => {
-            if (subValue !== null && subValue !== '') {
+            if (subValue !== null && subValue !== undefined) {
               dataToSend.append(`${key}.${subKey}`, String(subValue));
             }
           });
-        } else if (value !== null && value !== '') {
+        } else if (key !== 'logo') {
           dataToSend.append(key, String(value));
         }
       });
-
-      if (file) {
+      if (file instanceof File) {
         dataToSend.append('logo', file);
-      } else if (props.isEditMode && !formData.logoId) {
+      } else if (isEditMode && !formData.logoId) {
         dataToSend.append('removeLogo', 'true');
       }
 
@@ -679,6 +679,9 @@ const AddClientForm = (props: AddClientFormProps) => {
                         </RemoveButton>
                       </LogoLabel>
                     )}
+                    <span className="infoText">
+                      File format : .pdf, .png, .jpeg
+                    </span>
                   </InputLabelContainer>
                 )}
               </ColumnWrapper>
@@ -829,9 +832,12 @@ const AddClientForm = (props: AddClientFormProps) => {
                       </RemoveButton>
                     </LogoLabel>
                   )}
+                  <br />
+                  <span className="infoText">
+                    File format : .pdf, .png, .jpeg
+                  </span>
                 </LogoContainer>
               )}
-              <span className="infoText">File format : .pdf, .png, .jpeg</span>
             </FormInputsContainer>
             <div className="formButtons">
               <Button
@@ -886,7 +892,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   options={[
                     { label: 'Select', value: '' },
                     ...(clientOptions?.taxCategory ?? []).map((category) => ({
-                      label: t(category),
+                      label: t(`TaxCategory.${category}`),
                       value: category,
                     })),
                   ]}
@@ -933,7 +939,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   type="button"
                   className="cancel"
                 >
-                  {t('Skip')}
+                  {t('Cancel')}
                 </Button>
                 <Button
                   className="submit"
@@ -1230,7 +1236,18 @@ const AddClientForm = (props: AddClientFormProps) => {
                       {t('Tax_Category')}
                     </SubHeadingDiv>
                     <InfoText className="tax-details">
-                      {formData.taxDetails.taxCategory}
+                      {formData.taxDetails?.taxCategory
+                        ? t(
+                            `TaxCategory.${formData.taxDetails.taxCategory.toUpperCase()}`,
+                            {
+                              defaultValue:
+                                formData.taxDetails.taxCategory.replace(
+                                  /_/g,
+                                  ' '
+                                ),
+                            }
+                          )
+                        : '-'}
                     </InfoText>
                   </InfoBlock>
                   <InfoBlock className="address">
@@ -1356,9 +1373,17 @@ const AddClientForm = (props: AddClientFormProps) => {
             {t('Cancel')}
           </Button>
           <Button className="submit" type="submit" form="summaryForm">
-            {t('Add')}
+            {props.isEditMode ? t('Update') : t('Add')}
           </Button>
         </ButtonGroup>
+      )}
+      {showErrorMessage && (
+        <ToastMessage
+          messageType="error"
+          messageBody="Email Already Exists"
+          messageHeading="Error Occured"
+          handleClose={handleShowErrorMessage}
+        />
       )}
       {isDiscardModalOpen && (
         <CenterModal
