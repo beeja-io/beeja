@@ -383,16 +383,19 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
     }
 
     /**
-     * Fetches the current active cycle based on today's date and status.
-     *
+     * Retrieves the current active evaluation cycle for the logged-in user's organization
+     * based on the provided cycle status
      * @return Active EvaluationCycle
      * @throws ResourceNotFoundException if no cycle matches
      */
     @Override
-    public EvaluationCycle getCurrentActiveCycle(CycleStatus inProgress) {
+    public EvaluationCycle getCurrentActiveCycle(CycleStatus status) {
         LocalDate today = LocalDate.now();
-        return cycleRepository.findByStatusAndStartDateLessThanEqualAndFeedbackDeadlineGreaterThanEqual(
-                        CycleStatus.IN_PROGRESS, today, today)
+
+        String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+
+        return cycleRepository.findByOrganizationIdAndStatusAndStartDateLessThanEqualAndFeedbackDeadlineGreaterThanEqual(
+                        orgId, status, today, today)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         ErrorUtils.formatError(
                                 ErrorType.NOT_FOUND,
@@ -402,7 +405,7 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
     }
 
     /**
-     * Retrieves all evaluation cycles by status.
+     * Retrieves all evaluation cycles for the logged-in user's organization filtered by the given status.
      *
      * @param status CycleStatus to filter by
      * @return List of EvaluationCycle objects
@@ -410,7 +413,8 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
     @Override
     public List<EvaluationCycle> getCyclesByStatus(CycleStatus status) {
         log.info(Constants.INFO_FETCH_CYCLES_BY_STATUS, status);
-        List<EvaluationCycle> cycles = cycleRepository.findByStatus(status);
+        String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+        List<EvaluationCycle> cycles = cycleRepository.findByOrganizationIdAndStatus(orgId, status);
         if (cycles.isEmpty()) {
             log.warn(Constants.ERROR_NO_CYCLES_FOUND, status);
         }

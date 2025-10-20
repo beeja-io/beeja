@@ -1,7 +1,6 @@
 package com.beeja.api.performance_management.repository;
 
 import com.beeja.api.performance_management.enums.CycleStatus;
-import com.beeja.api.performance_management.enums.CycleType;
 import com.beeja.api.performance_management.model.EvaluationCycle;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
@@ -26,7 +25,7 @@ public interface EvaluationCycleRepository extends MongoRepository<EvaluationCyc
      * @param status the cycle status (e.g., ACTIVE, COMPLETED)
      * @return a list of EvaluationCycle objects with the specified status
      */
-    List<EvaluationCycle> findByStatus(CycleStatus status);
+    List<EvaluationCycle> findByOrganizationIdAndStatus(String organizationId, CycleStatus status);
 
     /**
      * Finds all evaluation cycles that have a start date within the specified date range.
@@ -35,17 +34,17 @@ public interface EvaluationCycleRepository extends MongoRepository<EvaluationCyc
      * @param feedBackDeadLine   the upper bound of the start date range
      * @return a list of EvaluationCycle objects whose start date falls within the range
      */
-    List<EvaluationCycle> findByStartDateBetween(LocalDate startDate, LocalDate feedBackDeadLine);
+    List<EvaluationCycle> findByOrganizationIdAndStartDateBetween(String organizationId, LocalDate startDate, LocalDate feedBackDeadLine);
 
     /**
      * Finds an evaluation cycle with the specified status, where the current date falls
      * between its start and end dates.
      *
-     * @param status  the cycle status to match
-     * @param startDate the current date or date to compare against startDate
-     * @param feedBackDeadLine  the current date or date to compare against endDate
+     * @param status           the cycle status to match
+     * @param startDate        the current date or date to compare against startDate
+     * @param feedBackDeadLine the current date or date to compare against endDate
      * @return an list containing the matching EvaluationCycle, if found
      */
-    Optional<EvaluationCycle> findByStatusAndStartDateLessThanEqualAndFeedbackDeadlineGreaterThanEqual(
-            CycleStatus status, LocalDate startDate, LocalDate feedBackDeadLine);
+    Optional<EvaluationCycle> findByOrganizationIdAndStatusAndStartDateLessThanEqualAndFeedbackDeadlineGreaterThanEqual(
+            String organizationId, CycleStatus status, LocalDate startDate, LocalDate feedBackDeadLine);
 }

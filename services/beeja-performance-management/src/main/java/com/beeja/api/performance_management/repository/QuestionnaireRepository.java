@@ -11,6 +11,15 @@ import java.util.List;
 public interface QuestionnaireRepository extends MongoRepository<Questionnaire, String> {
 
     /**
+     * Retrieves all questionnaires for the specified organization, sorted by the provided criteria.
+     *
+     * @param organizationId the organization ID to filter by
+     * @param sort the sort configuration
+     * @return a sorted list of questionnaires belonging to the organization
+     */
+    List<Questionnaire> findByOrganizationId(String organizationId, Sort sort);
+
+    /**
      * Retrieves all questionnaires, sorted by the provided criteria.
      *
      * @param sort the sort configuration

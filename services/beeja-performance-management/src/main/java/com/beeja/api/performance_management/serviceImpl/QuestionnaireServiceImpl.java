@@ -82,14 +82,18 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     }
 
     /**
-     * Retrieves all questionnaires sorted by ID ascending.
+     * Retrieves all questionnaires associated with the currently logged-in user's organization,
+     * sorted by questionnaire ID in ascending order.
      *
-     * @return List of all Questionnaires
+     * @return a list of {@link Questionnaire} objects belonging to the user's organization,
+     *         sorted by their ID in ascending order
      */
     @Override
     public List<Questionnaire> getAllQuestionnaires() {
         log.info(Constants.INFO_FETCHING_ALL_QUESTIONNAIRES);
-        return questionnaireRepository.findAll(Sort.by(Sort.Direction.ASC, "id"));
+
+        String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+        return questionnaireRepository.findByOrganizationId(orgId, Sort.by(Sort.Direction.ASC, "id"));
     }
 
     /**
