@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import CompleteNavBar from './components/reusableComponents/CompleteNavBar.component';
-import { Container } from './styles/MainContainer.style';
+import { CompanyProfileContainer, Container } from './styles/MainContainer.style';
 import { useUser } from './context/UserContext';
 import { fetchMe, getFeatureToggles } from './service/axiosInstance';
 import { ApplicationContextProvider } from './context/ApplicationContext';
@@ -101,9 +101,10 @@ function App() {
           <ProfileImageProvider>
             {' '}
             {/* Wrap the main content with ProfileImageProvider */}
-            <div style={{ display: 'none' }}>
-              <CompanyProfile />
-            </div>
+            <CompanyProfileContainer>
+               <CompanyProfile />
+            </CompanyProfileContainer>
+             
             <CompleteNavBar />
           </ProfileImageProvider>
         );
