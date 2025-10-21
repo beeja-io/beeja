@@ -81,11 +81,29 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
   contractName,
 }) => {
   const { t } = useTranslation();
-  const [activeTab, setActiveTab] = useState<
-    'Resources' | 'Invoices' | 'Attachments' | 'Description'
-  >('Resources');
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [loadingInvoices, setLoadingInvoices] = useState(false);
+   const [activeTab, setActiveTab] = useState<
+  'Resources' | 'Invoices' | 'Attachments' | 'Description'
+>(() => {
+  return (
+    (sessionStorage.getItem(`contractTab_${contractId}`) as
+      | 'Resources'
+      | 'Invoices'
+      | 'Attachments'
+      | 'Description') || 'Resources'
+  );
+});
+
+const [invoices, setInvoices] = useState<Invoice[]>([]);
+const [loadingInvoices, setLoadingInvoices] = useState(false);
+
+useEffect(() => {
+  sessionStorage.setItem(`contractTab_${contractId}`, activeTab);
+  if (activeTab === 'Attachments') {
+    fetchAttachments();
+  } else if (activeTab === 'Invoices') {
+    fetchInvoices();
+  }
+}, [activeTab, contractId]);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [loadingAttachments, setLoadingAttachments] = useState(false);
   const triggerRefs = useRef<Map<string, HTMLDivElement | null>>(new Map());
@@ -213,7 +231,7 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
               </tr>
             </thead>
             <tbody>
-              {rawProjectResources.length ? (
+              {rawProjectResources?.length ? (
                 rawProjectResources.map((r, idx) => (
                   <tr key={idx}>
                     <td>{r.employeeId}</td>
@@ -318,7 +336,13 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
             )}
           </AttachmentList>
         )}
-        {activeTab === 'Description' && <div>{description}</div>}
+        {activeTab === 'Description' && (
+          <div>
+            {description && description.trim() !== ''
+              ? description
+              : 'No description available'}
+          </div>
+        )}
       </TabContent>
     </Container>
   );

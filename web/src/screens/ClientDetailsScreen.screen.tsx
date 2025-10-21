@@ -142,17 +142,17 @@ const ClientDetailsScreen: React.FC = () => {
               <ClientInfoDiv>{client?.email}</ClientInfoDiv>
             </ClientInfoRowItem>
 
-            <DotWrapper>
-              <DotSVG />
-            </DotWrapper>
-
-            <ClientInfoRowItem>
-              <CallSVG />
-              <ClientInfoDiv>
-                {t('91+')}
-                {client?.contact}
-              </ClientInfoDiv>
-            </ClientInfoRowItem>
+            {client?.contact && (
+              <>
+                <DotWrapper>
+                  <DotSVG />
+                </DotWrapper>
+                <ClientInfoRowItem>
+                  <CallSVG />
+                  <ClientInfoDiv>{client?.contact}</ClientInfoDiv>
+                </ClientInfoRowItem>
+              </>
+            )}
           </ClientInfoSection>
         </ClientInfo>
         {client?.clientId && (
@@ -213,7 +213,11 @@ const ClientDetailsScreen: React.FC = () => {
             </TaxItem>
             <TaxItem>
               <TaxLabel>{t('Tax_Category')}</TaxLabel>
-              <TaxValue>{client?.taxDetails?.taxCategory || '-'}</TaxValue>
+              <TaxValue>
+                {client?.taxDetails?.taxCategory
+                  ? t(`TaxCategory.${client.taxDetails.taxCategory}`)
+                  : '-'}
+              </TaxValue>
             </TaxItem>
           </TaxDetailsWrapper>
         </RightSectionDiv>

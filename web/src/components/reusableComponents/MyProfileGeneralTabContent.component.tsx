@@ -39,6 +39,7 @@ import SpinAnimation from '../loaders/SprinAnimation.loader';
 import Calendar from './Calendar.component';
 import ToastMessage from './ToastMessage.component';
 import { DropdownOrg } from './DropDownMenu.component';
+import EmploymentHistory from './EmploymentHistory.component';
 
 type GeneralDetailsTabProps = {
   heading: string;
@@ -472,6 +473,8 @@ export const GeneralDetailsTab = ({
       fetchData();
     }
   }, [heading]);
+  
+  const [showHistory, setShowHistory] = useState(false);
 
   return (
     <>
@@ -492,6 +495,7 @@ export const GeneralDetailsTab = ({
                       onClick={() => {
                         handleIsEditModeOn();
                         resetFormData();
+                        setShowHistory(false);
                       }}
                     >
                       <EditWhitePenSVG />
@@ -715,7 +719,25 @@ export const GeneralDetailsTab = ({
                             {formatDate(value)}
                           </TabContentTableTd>
                         ) : (
-                          <TabContentTableTd>{t(value)}</TabContentTableTd>
+                          <TabContentTableTd>
+                            {t(value)}
+                            {heading === 'Employment Info' && label === 'Employment Type' && (
+                            <button
+                              style={{
+                                marginLeft: '12px',
+                                fontSize: '12px',
+                                padding: '4px 8px',
+                                borderRadius: '6px',
+                                border: '1px solid #ccc',
+                                background: '#f5f5f5',
+                                cursor: 'pointer',
+                              }}
+                              onClick={() => setShowHistory((prev) => !prev)}
+                            >
+                             {!showHistory?"View History":"Close History"}
+                            </button>
+                          )}
+                          </TabContentTableTd>
                         )}
                       </>
                     )}
@@ -793,6 +815,21 @@ export const GeneralDetailsTab = ({
               </div>
             )}
           </TabContentInnerContainer>
+          {showHistory && (
+            <div style={{ marginTop: 18 }}>
+              <div
+                style={{
+                  borderTop: "1px solid #ddd",
+                  margin: "12px 0",
+                }}
+            />
+            <EmploymentHistory
+              employeeId={employee.account.employeeId}
+              jobTitles={jobTitles}
+              employmentTypes={employmentTypes}
+            />
+            </div>
+            )}
         </TabContentMainContainer>
       )}
 

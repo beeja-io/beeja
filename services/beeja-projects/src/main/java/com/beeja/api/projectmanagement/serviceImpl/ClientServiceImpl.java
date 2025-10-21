@@ -45,6 +45,21 @@ public class ClientServiceImpl implements ClientService {
 
   @Autowired FileClient fileClient;
 
+
+    private void checkDuplicateEmail(String email, String organizationId, String clientIdToExclude) {
+        if (email == null || email.isEmpty()) return;
+
+        Client clientWithEmail = clientRepository.findByEmailAndOrganizationId(email, organizationId);
+        if (clientWithEmail != null) {
+            if (clientIdToExclude == null || !clientWithEmail.getClientId().equals(clientIdToExclude)) {
+                throw new ResourceAlreadyFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.CLIENT_ALREADY_FOUND,
+                                ErrorCode.RESOURCE_ALREADY_EXISTS,
+                                Constants.CLIENT_FOUND_EMAIL));
+            }
+        }
+    }
   /**
    * Adds a new {@link Client} to the currently logged-in user's organization.
    *
@@ -56,17 +71,10 @@ public class ClientServiceImpl implements ClientService {
    */
   @Override
   public Client addClientToOrganization(ClientRequest client) throws Exception {
-    Client existingClient =
-            clientRepository.findByEmailAndOrganizationId(
-                    client.getEmail(),
-                    UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
-    if (existingClient != null) {
-      throw new ResourceAlreadyFoundException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.CLIENT_ALREADY_FOUND,
-                      ErrorCode.RESOURCE_ALREADY_EXISTS,
-                      Constants.CLIENT_FOUND_EMAIL));
-    }
+
+      String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+
+      checkDuplicateEmail(client.getEmail(), organizationId, null);
     if (client.getLogo() != null && !client.getLogo().isEmpty()) {
       String contentType = client.getLogo().getContentType();
       if (!logoValidator.getAllowedTypes().contains(contentType)) {
@@ -177,16 +185,19 @@ public class ClientServiceImpl implements ClientService {
   @Override
   public Client updateClientOfOrganization(ClientRequest clientRequest, String clientId)
           throws Exception {
-    Client existingClient =
-            clientRepository.findByClientIdAndOrganizationId(
-                    clientId, UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
-    if (existingClient == null) {
-      throw new ResourceNotFoundException(
-              BuildErrorMessage.buildErrorMessage(
-                      ErrorType.CLIENT_NOT_FOUND,
-                      ErrorCode.RESOURCE_NOT_FOUND,
-                      Constants.CLIENT_NOT_FOUND));
-    }
+      String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+      Client existingClient = clientRepository.findByClientIdAndOrganizationId(clientId, organizationId);
+
+      if (existingClient == null) {
+          throw new ResourceNotFoundException(
+                  BuildErrorMessage.buildErrorMessage(
+                          ErrorType.CLIENT_NOT_FOUND,
+                          ErrorCode.RESOURCE_NOT_FOUND,
+                          Constants.CLIENT_NOT_FOUND));
+      }
+
+      checkDuplicateEmail(clientRequest.getEmail(), organizationId, clientId);
+
     if (clientRequest.getClientName() != null) {
       existingClient.setClientName(clientRequest.getClientName());
     }

@@ -1,6 +1,7 @@
 package com.beeja.api.employeemanagement.service;
 
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.JobDetails;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
@@ -42,4 +43,12 @@ public interface EmployeeService {
   EmployeeValues getEmployeeValues() throws Exception;
 
   List<EmployeeBasicInfo> getAllEmpInfo(List<String> designations);
+
+  Employee addJobHistory(String employeeId, JobDetails newJob) throws Exception;
+
+  Employee updateJobHistory(String employeeId, String jobId, JobDetails updatedJob) throws Exception;
+
+  Employee deleteJobHistory(String employeeId, String jobId) throws Exception;
+
+  List<JobDetails> getJobHistory(String employeeId) throws Exception;
 }
