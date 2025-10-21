@@ -9,6 +9,7 @@ import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.exceptions.ValidationException;
 import com.beeja.api.projectmanagement.model.Client;
+import com.beeja.api.projectmanagement.model.TaxDetails;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.request.FileUploadRequest;
@@ -60,7 +61,36 @@ public class ClientServiceImpl implements ClientService {
             }
         }
     }
-  /**
+
+    private String generateClientIdFromName(String clientName, long orgClientCount) {
+        if (clientName == null || clientName.isEmpty()) {
+            throw new IllegalArgumentException("Client name cannot be null or empty");
+        }
+
+        String[] words = clientName.trim().split("\\s+");
+        String prefix;
+
+        if (words.length == 1) {
+            prefix = words[0].substring(0, Math.min(3, words[0].length())).toUpperCase();
+        } else if (words.length == 2) {
+            String part1 = words[0].substring(0, Math.min(2, words[0].length()));
+            String part2 = words[1].substring(0, 1);
+            prefix = (part1 + part2).toUpperCase();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Math.min(3, words.length); i++) {
+                sb.append(words[i].substring(0, 1).toUpperCase());
+            }
+            prefix = sb.toString();
+        }
+
+        long nextNumber = orgClientCount + 1;
+        String numberPart = String.format("%03d", nextNumber);
+
+        return prefix + numberPart;
+    }
+
+    /**
    * Adds a new {@link Client} to the currently logged-in user's organization.
    *
    * @param client the {@link ClientRequest} containing client details to be added
@@ -136,28 +166,17 @@ public class ClientServiceImpl implements ClientService {
     }
 
     try {
-      long existingClientsCount =
-              clientRepository.countByOrganizationId(
-                      UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
-      if (existingClientsCount == 0) {
-        newClient.setClientId(
-                UserContext.getLoggedInUserOrganization()
-                        .get("name")
-                        .toString()
-                        .substring(0, 3)
-                        .toUpperCase()
-                        + "1");
-      } else {
-        newClient.setClientId(
-                UserContext.getLoggedInUserOrganization()
-                        .get("name")
-                        .toString()
-                        .substring(0, 3)
-                        .toUpperCase()
-                        + (existingClientsCount + 1));
-      }
+      long existingClientsCount = clientRepository.countByOrganizationId(
+                  UserContext.getLoggedInUserOrganization().get(Constants.ID).toString()
+          );
+
+          String clientName = client.getClientName();
+          String generatedClientId = generateClientIdFromName(clientName, existingClientsCount);
+
+        newClient.setClientId(generatedClientId);
+
     } catch (Exception e) {
-      log.error(Constants.ERROR_IN_GENERATING_CLIENT_ID, e.getMessage());
+      log.error(Constants.ERROR_IN_GENERATING_CLIENT_ID, e);
       throw new Exception(Constants.ERROR_IN_GENERATING_CLIENT_ID);
     }
     newClient.setOrganizationId(

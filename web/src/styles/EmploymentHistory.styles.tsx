@@ -46,7 +46,7 @@ export const TimelineItem = styled.li`
   margin-bottom: 32px;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     left: var(--timeline-left);
     top: var(--dot-offset);
@@ -60,9 +60,12 @@ export const TimelineItem = styled.li`
   }
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
-    left: calc(var(--timeline-left) + (var(--dot-size) / 2) - (var(--line-width) / 2) + 1.5px);
+    left: calc(
+      var(--timeline-left) + (var(--dot-size) / 2) - (var(--line-width) / 2) +
+        1.5px
+    );
     top: calc(var(--dot-offset) + var(--dot-size));
     bottom: -32px;
     width: var(--line-width);
@@ -107,22 +110,34 @@ export const Badge = styled.span<{ type?: string }>`
 
   color: ${({ type }) => {
     switch (type) {
-      case 'Full Time': return '#065f46';
-      case 'Part Time': return '#1e3a8a';
-      case 'Intern': return '#92400e';
-      case 'Paid Intern': return '#920e68ff';
-      case 'Free Launcher': return '#6b21a8';
-      default: return '#1e40af';
+      case 'Full Time':
+        return '#065f46';
+      case 'Part Time':
+        return '#1e3a8a';
+      case 'Intern':
+        return '#92400e';
+      case 'Paid Intern':
+        return '#920e68ff';
+      case 'Free Launcher':
+        return '#6b21a8';
+      default:
+        return '#1e40af';
     }
   }};
   background: ${({ type }) => {
     switch (type) {
-      case 'Full Time': return '#d1fae5';
-      case 'Part Time': return '#dbeafe';
-      case 'Intern': return '#fef3c7';
-      case 'Paid Intern': return '#e8e2deff';
-      case 'Free Launcher': return '#ede9fe';
-      default: return '#e0e7ff';
+      case 'Full Time':
+        return '#d1fae5';
+      case 'Part Time':
+        return '#dbeafe';
+      case 'Intern':
+        return '#fef3c7';
+      case 'Paid Intern':
+        return '#e8e2deff';
+      case 'Free Launcher':
+        return '#ede9fe';
+      default:
+        return '#e0e7ff';
     }
   }};
 `;
@@ -138,7 +153,7 @@ export const ActionsMenu = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 4px 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 `;
 
 export const ModalOverlay = styled.div`
@@ -186,4 +201,3 @@ export const SaveButton = styled.button<{ disabled?: boolean }>`
   font-size: 14px;
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 `;
-
