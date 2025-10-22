@@ -44,6 +44,8 @@ import ReviewCyclesList from '../screens/ReviewCyclesList.screen';
 import AssignFeedbackProviders from '../screens/AssignFeedbackProviders.screen';
 import FeedbackHub from '../screens/FeedbackHub.screen';
 import AddEvaluationCycle from '../components/directComponents/AddEvaluationCycle.component';
+import MyTeamOverview from '../screens/MyTeamOverview.screen';
+import EvaluationOverview from '../components/reusableComponents/EvaluationOverview.component';
 
 const AllRoutes = () => {
   return (
@@ -238,6 +240,19 @@ const AllRoutes = () => {
           </CustomRoute>
         }
       />
+      <Route
+        path="/performance/my-team-overview"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            {/* <MyTeamOverview /> */}
+            <EvaluationOverview />
+          </CustomRoute>
+        }
+      />
+
       <Route
         path="/features"
         element={
