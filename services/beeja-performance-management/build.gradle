@@ -44,3 +44,4 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+// test CI
