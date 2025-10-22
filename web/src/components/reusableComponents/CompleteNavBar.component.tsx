@@ -482,6 +482,10 @@ const CompleteNavBar = () => {
                           name: 'Feedback Hub',
                           link: '/performance/feedback-hub',
                         },
+                        {
+                          name: 'My Team Overview',
+                          link: '/performance/my-team-overview',
+                        },
                       ]}
                       isDropdownOpen={openDropdown === 'performance'}
                       setDropdownOpen={() => {
