@@ -3,6 +3,8 @@ import { OriginURL, ProdOriginURL } from '../constants/UrlConstants';
 import { IFeatureToggle } from '../entities/FeatureToggle';
 import { IAssignedInterviewer } from '../entities/ApplicantEntity';
 import { OrganizationValues } from '../entities/OrgValueEntity';
+import { Project } from '../entities/Projects';
+import { InvoiceIdentifiers } from '../entities/Requests/InvoiceIdentifiersRequest';
 import {
   ProjectEntity,
   ProjectStatus,
@@ -700,4 +702,41 @@ export const clientDropDown = () => {
 
 export const getProjectDropdown = () => {
   return axiosInstance.get(`/projects/v1/projects/projects-dropdown`);
+};
+
+export const generateInvoiceIdentifiers = (
+  contractId: string
+): Promise<AxiosResponse<InvoiceIdentifiers>> => {
+  return axiosInstance.post(
+    `/projects/v1/invoices/generate-identifiers/${contractId}`
+  );
+};
+
+export const fetchContractById = (contractId: string) => {
+  return axiosInstance.get(`/projects/v1/contracts/${contractId}`);
+};
+
+export const fetchClientById = (clientId: string) => {
+  return axiosInstance.get(`/projects/v1/clients/${clientId}`);
+};
+
+export const fetchProjectByIdAndClientId = async (
+  projectId: string,
+  clientId: string
+): Promise<Project> => {
+  const response = await axiosInstance.get(
+    `/projects/v1/projects/${projectId}/${clientId}`
+  );
+  return response.data;
+};
+
+export const createInvoice = (invoiceRequest: {
+  contractId: string;
+  [key: string]: any;
+}) => {
+  return axiosInstance.post('/projects/v1/invoices', invoiceRequest);
+};
+
+export const getInvoicesBycontractId = (contractId: string) => {
+  return axiosInstance.get(`/projects/v1/invoices/contract/${contractId}`);
 };

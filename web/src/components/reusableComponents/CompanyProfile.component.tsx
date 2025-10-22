@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   BorderDivLine,
   TabContentEditArea,
@@ -56,6 +56,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { ORGANIZATION_MODULE } from '../../constants/PermissionConstants';
 import { useTranslation } from 'react-i18next';
 import DropdownMenu from './DropDownMenu.component';
+import { ApplicationContext } from '../../context/ApplicationContext';
 
 export const CompanyProfile = () => {
   const [isEditModeOn, setEditModeOn] = useState(false);
@@ -82,6 +83,7 @@ export const CompanyProfile = () => {
   };
 
   const [isUpdateResponseLoading, setIsUpdateResponseLoading] = useState(false);
+  const { setOrganizationData } = useContext(ApplicationContext);
 
   const fetchOrganization = async () => {
     setIsUpdateResponseLoading(true);
@@ -91,6 +93,9 @@ export const CompanyProfile = () => {
       );
       setCompanyProfile(response.data);
       setTempOrganization(response.data);
+      if (typeof setOrganizationData === 'function') {
+        setOrganizationData(response.data);
+      }
       setIsUpdateResponseLoading(false);
     } catch (error) {
       setIsUpdateResponseLoading(false);
@@ -100,7 +105,7 @@ export const CompanyProfile = () => {
   useEffect(() => {
     fetchOrganization();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [user, setOrganizationData]);
   const handleIsEditModeOn = () => {
     setEditModeOn(!isEditModeOn);
   };

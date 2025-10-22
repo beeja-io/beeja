@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import CompleteNavBar from './components/reusableComponents/CompleteNavBar.component';
-import { Container } from './styles/MainContainer.style';
+import { CompanyProfileContainer, Container } from './styles/MainContainer.style';
 import { useUser } from './context/UserContext';
 import { fetchMe, getFeatureToggles } from './service/axiosInstance';
 import { ApplicationContextProvider } from './context/ApplicationContext';
@@ -17,6 +17,7 @@ import axios from 'axios';
 import UnAuthorisedScreen from './screens/UnAuthorisedScreen.screen';
 import ServiceUnavailable from './screens/ServiceUnavailable.screen';
 import { ProfileImageProvider } from './context/ProfileImageContext';
+import { CompanyProfile } from './components/reusableComponents/CompanyProfile.component';
 
 function App() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -100,6 +101,10 @@ function App() {
           <ProfileImageProvider>
             {' '}
             {/* Wrap the main content with ProfileImageProvider */}
+            <CompanyProfileContainer>
+               <CompanyProfile />
+            </CompanyProfileContainer>
+             
             <CompleteNavBar />
           </ProfileImageProvider>
         );
