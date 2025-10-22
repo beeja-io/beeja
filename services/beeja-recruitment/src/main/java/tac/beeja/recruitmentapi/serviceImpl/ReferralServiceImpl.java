@@ -136,7 +136,7 @@ public class ReferralServiceImpl implements ReferralService {
     }
   }
 
-  private static FileDownloadResultMetaData getMetaData(ResponseEntity<byte[]> fileResponse) {
+  public static FileDownloadResultMetaData getMetaData(ResponseEntity<byte[]> fileResponse) {
     HttpHeaders headers = fileResponse.getHeaders();
     String contentDisposition = headers.getFirst(HttpHeaders.CONTENT_DISPOSITION);
     String createdBy = headers.getFirst("createdby");
