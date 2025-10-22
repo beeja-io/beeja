@@ -473,7 +473,7 @@ export const GeneralDetailsTab = ({
       fetchData();
     }
   }, [heading]);
-  
+
   const [showHistory, setShowHistory] = useState(false);
 
   return (
@@ -721,22 +721,27 @@ export const GeneralDetailsTab = ({
                         ) : (
                           <TabContentTableTd>
                             {t(value)}
-                            {heading === 'Employment Info' && label === 'Employment Type' && (
-                            <button
-                              style={{
-                                marginLeft: '12px',
-                                fontSize: '12px',
-                                padding: '4px 8px',
-                                borderRadius: '6px',
-                                border: '1px solid #ccc',
-                                background: '#f5f5f5',
-                                cursor: 'pointer',
-                              }}
-                              onClick={() => setShowHistory((prev) => !prev)}
-                            >
-                             {!showHistory?"View History":"Close History"}
-                            </button>
-                          )}
+                            {heading === 'Employment Info' &&
+                              label === 'Employment Type' && (
+                                <button
+                                  style={{
+                                    marginLeft: '12px',
+                                    fontSize: '12px',
+                                    padding: '4px 8px',
+                                    borderRadius: '6px',
+                                    border: '1px solid #ccc',
+                                    background: '#f5f5f5',
+                                    cursor: 'pointer',
+                                  }}
+                                  onClick={() =>
+                                    setShowHistory((prev) => !prev)
+                                  }
+                                >
+                                  {!showHistory
+                                    ? 'View History'
+                                    : 'Close History'}
+                                </button>
+                              )}
                           </TabContentTableTd>
                         )}
                       </>
@@ -819,17 +824,17 @@ export const GeneralDetailsTab = ({
             <div style={{ marginTop: 18 }}>
               <div
                 style={{
-                  borderTop: "1px solid #ddd",
-                  margin: "12px 0",
+                  borderTop: '1px solid #ddd',
+                  margin: '12px 0',
                 }}
-            />
-            <EmploymentHistory
-              employeeId={employee.account.employeeId}
-              jobTitles={jobTitles}
-              employmentTypes={employmentTypes}
-            />
+              />
+              <EmploymentHistory
+                employeeId={employee.account.employeeId}
+                jobTitles={jobTitles}
+                employmentTypes={employmentTypes}
+              />
             </div>
-            )}
+          )}
         </TabContentMainContainer>
       )}
 

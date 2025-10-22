@@ -405,9 +405,7 @@ const AddClientForm = (props: AddClientFormProps) => {
     if (!formData.industry) {
       isValid = false;
     }
-    if (!formData.email.trim()) {
-      isValid = false;
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+    if (formData.email.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
       isValid = false;
     }
     return isValid;
@@ -598,10 +596,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   </InputLabelContainer>
                 )}
                 <InputLabelContainer>
-                  <label>
-                    {t('EMAIL')}
-                    <ValidationText className="star">*</ValidationText>
-                  </label>
+                  <label>{t('EMAIL')}</label>
                   <TextInput
                     type="email"
                     name="email"
@@ -609,7 +604,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                     className="largeInput"
                     value={formData?.email}
                     onChange={handleChange}
-                    required
                   />
                 </InputLabelContainer>
                 {!formData?.clientId && (
@@ -854,7 +848,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   handleNextStep();
                 }}
               >
-                {t('Save & Continue')}
+                {t('Continue')}
               </Button>
             </div>
           </AddFormMainContainer>
@@ -948,7 +942,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                     handleNextStep();
                   }}
                 >
-                  {t('Save & Continue')}
+                  {t('Continue')}
                 </Button>
               </ButtonGroup>
             </AddClientButtons>
@@ -1124,14 +1118,14 @@ const AddClientForm = (props: AddClientFormProps) => {
                   className="cancel"
                   type="button"
                 >
-                  {t('Skip')}
+                  {t('Cancel')}
                 </Button>
                 <Button
                   className="submit"
                   type="button"
                   onClick={handleNextStep}
                 >
-                  {t('Save & Continue')}
+                  {t('SKip & Continue')}
                 </Button>
               </div>
             </AddClientButtons>
@@ -1191,7 +1185,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       </DotWrap>
                       <InfoGroup>
                         <EmailSVG />
-                        <InfoText>{formData.email}</InfoText>
+                        <InfoText>{formData.email || '-'}</InfoText>
                       </InfoGroup>
 
                       <DotWrap>
@@ -1200,7 +1194,7 @@ const AddClientForm = (props: AddClientFormProps) => {
 
                       <InfoGroup>
                         <CallSVG />
-                        <InfoText>{formData.contact}</InfoText>
+                        <InfoText>{formData.contact || '-'}</InfoText>
                       </InfoGroup>
                     </InfoRow>
                   </div>

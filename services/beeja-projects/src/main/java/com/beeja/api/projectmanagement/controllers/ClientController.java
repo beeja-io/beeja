@@ -115,7 +115,7 @@ public class ClientController {
      * @return A list of client IDs and names.
      */
     @GetMapping("/clients-dropdown")
-    @HasPermission(PermissionConstants.GET_CLIENT)
+    @HasPermission({PermissionConstants.GET_CLIENT, PermissionConstants.CREATE_PROJECT})
     public ResponseEntity<List<Map<String, String>>> getClientsForDropdown() {
         List<Client> clients = clientService.getAllClientsOfOrganization();
         List<Map<String, String>> dropdownList = clients.stream()
