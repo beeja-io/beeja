@@ -13,7 +13,7 @@ export enum ClientType {
   OTHER = 'OTHER',
 }
 export enum Industry {
-  SOCIALMEDIA = 'SOCIALMEDI',
+  SOCIALMEDIA = 'SOCIALMEDIA',
   ITSERVICES = 'ITSERVICES',
   CONSULTING = 'CONSULTING',
   EDUCATION = 'EDUCATION',
