@@ -5,23 +5,23 @@ interface ClientOptions {
 }
 /* eslint-disable no-unused-vars */
 export enum ClientType {
-  INTERNAL = 'Internal',
-  INDIVIDUAL = 'Individual',
-  CORPORATE = 'Corporate',
-  STARTUP = 'Start up',
-  CONSULTING = 'Consulting',
+  INTERNAL = 'INTERNAL',
+  INDIVIDUAL = 'INDIVIDUAL',
+  CORPORATE = 'CORPORATE',
+  STARTUP = 'STARTUP',
+  CONSULTING = 'CONSULTING',
   OTHER = 'OTHER',
 }
 export enum Industry {
-  SOCIALMEDIA = 'Social Media',
-  ITSERVICES = 'IT services',
-  CONSULTING = 'Consulting',
-  EDUCATION = 'Education',
-  FINANCE = 'Finance',
-  HEALTHCARE = 'Health Care',
-  MANUFACTURING = 'Manufacturing',
-  REAL_ESTATE = 'Real Estate',
-  RETAIL = 'Retail',
+  SOCIALMEDIA = 'SOCIALMEDI',
+  ITSERVICES = 'ITSERVICES',
+  CONSULTING = 'CONSULTING',
+  EDUCATION = 'EDUCATION',
+  FINANCE = 'FINANCE',
+  HEALTHCARE = 'HEALTHCARE',
+  MANUFACTURING = 'MANUFACTURING',
+  REAL_ESTATE = 'REAL_ESTATE',
+  RETAIL = 'RETAIL',
   OTHER = 'OTHER',
 }
 export enum TaxCategory {
