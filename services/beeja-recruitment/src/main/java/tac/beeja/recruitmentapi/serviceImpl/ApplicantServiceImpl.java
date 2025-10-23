@@ -255,6 +255,7 @@ public class ApplicantServiceImpl implements ApplicantService {
                                                 applicant.getPositionAppliedFor(),
                                                 applicant.getStatus(),
                                                 applicant.getExperience(),
+                                                applicant.getResumeId(),
                                                 applicant.getReferredByEmployeeName(),
                                                 applicant.getCreatedAt()))
                         .collect(Collectors.toList());
