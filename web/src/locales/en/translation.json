@@ -513,5 +513,15 @@
   "SOCIALMEDIA": "Social Media",
   "ECOMMERCE": "E-Commerce",
   "ITSERVICES": "IT Services",
-  "GST_Number": "GST Number"
+  "GST_Number": "GST Number",
+  "End_Date": "End Date",
+  "Employment_Type": "Employment Type",
+  "Designation": "Designation",
+  "Note":"Note",
+  "Edit_Employment_History": "Edit Employment History",
+  "Add_Employment_History": "Add Employment History",
+  "View_History": "View History",
+  "Employment_History": "Employment History",
+  "Updated_by": "Updated by",
+  "Updated_On": "Updated On:"
 }

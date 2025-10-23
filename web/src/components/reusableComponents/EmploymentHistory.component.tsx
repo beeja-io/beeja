@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
-import { formatDateDDMMYYYY } from '../../utils/dateFormatter';
 import ToastMessage from './ToastMessage.component';
+import { useTranslation } from 'react-i18next';
 import {
   fetchEmployeeHistory,
   addEmployeeHistory,
@@ -8,7 +8,7 @@ import {
   deleteEmployeeHistory,
 } from '../../service/axiosInstance';
 import { OrgDefaults } from '../../entities/OrgDefaultsEntity';
-import { DropdownOrg } from './DropDownMenu.component';
+import DropdownMenu from './DropDownMenu.component';
 import { Button } from '../../styles/CommonStyles.style';
 import { AddNewPlusSVG } from '../../svgs/EmployeeListSvgs.svg';
 import Calendar from '../reusableComponents/Calendar.component';
@@ -39,7 +39,8 @@ import {
   Modal,
   Required,
   CancelButton,
-  SaveButton
+  SaveButton,
+  ActionItem
 } from '../../styles/EmploymentHistory.styles';
 
 interface JobHistoryItem {
@@ -83,6 +84,7 @@ const EmploymentHistory: React.FC<Props> = ({
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteJobId, setDeleteJobId] = useState<string | null>(null);
   const { user } = useUser();
+  const { t } = useTranslation();
 
   const formatDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, '0');
@@ -122,7 +124,12 @@ const EmploymentHistory: React.FC<Props> = ({
     setIsLoading(true);
     try {
       const data = await fetchEmployeeHistory(employeeId);
-      setHistoryList((data || []).reverse());
+      const sortedData = (data || []).reverse().sort((a: JobHistoryItem, b: JobHistoryItem) => {
+        const dateA = new Date(a.joiningDate || 0).getTime();
+        const dateB = new Date(b.joiningDate || 0).getTime();
+        return dateB - dateA;
+      });
+      setHistoryList(sortedData);
       console.log(historyList)
     } catch {
       setToast({ type: 'error', message: 'Failed to fetch history' });
@@ -296,11 +303,38 @@ const EmploymentHistory: React.FC<Props> = ({
     return `• ${years} year${years > 1 ? 's' : ''}, ${months} month${months > 1 ? 's' : ''}`;
   };
   const isSuperAdmin = () => user?.roles.some(role => role.name === "Super Admin");
+  const formatDateReadable = (dateStr?: string): string => {
+    if (!dateStr) return "-";
+    const date = new Date(dateStr);
+    if (isNaN(date.getTime())) return "-";
+
+    return date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+  useEffect(() => {
+    if (isModalOpen) window.scrollTo({ top: 0 });
+  }, [isModalOpen]);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isModalOpen]);
+
 
   return (
     <Container>
       <Header>
-        <Title>Employment History</Title>
+        <Title>{t('Employment_History')}</Title>
         {isSuperAdmin() && (
           <Button
             className="submit shadow"
@@ -309,7 +343,7 @@ const EmploymentHistory: React.FC<Props> = ({
             style={{ marginLeft: 'auto' }}
           >
             <AddNewPlusSVG />
-            Add
+            {t('ADD')}
           </Button>
         )}
       </Header>
@@ -332,9 +366,9 @@ const EmploymentHistory: React.FC<Props> = ({
                         <Badge type={job.employementType}>
                           {job.employementType || 'Unknown'}
                         </Badge>
-                        {job.joiningDate ? formatDateDDMMYYYY(job.joiningDate) : '-'} –{' '}
+                        {job.joiningDate ? formatDateReadable(job.joiningDate) : '-'} –{' '}
                         {job.resignationDate
-                          ? formatDateDDMMYYYY(job.resignationDate)
+                          ? formatDateReadable(job.resignationDate)
                           : 'Present'}{' '}
                         {calculateDiff(job.joiningDate, job.resignationDate)}
                       </Small>
@@ -358,30 +392,12 @@ const EmploymentHistory: React.FC<Props> = ({
                       </div>
                       {showMenuIndex === job.id && (
                         <ActionsMenu ref={actionMenuRef}>
-                          <div
-                            onClick={() => openEdit(job.id || "")}
-                            style={{
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              padding: '4px 8px'
-                            }}
-                          >
-                            <EditIcon /> Edit
-                          </div>
-                          <div
-                            onClick={() => handleDelete(job.id || "")}
-                            style={{
-                              cursor: 'pointer',
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '8px',
-                              padding: '4px 8px'
-                            }}
-                          >
-                            <DeleteIcon /> Delete
-                          </div>
+                          <ActionItem onClick={() => openEdit(job.id || "")}>
+                            <EditIcon /> {t('Edit')}
+                          </ActionItem>
+                          <ActionItem className="delete" onClick={() => handleDelete(job.id || "")}>
+                            <DeleteIcon /> {t('Delete')}
+                          </ActionItem>
                         </ActionsMenu>
                       )}
                     </div>
@@ -395,11 +411,11 @@ const EmploymentHistory: React.FC<Props> = ({
                   }}
                 >
                   <Small>
-                    {job.updatedBy ? `Updated by ${job.updatedBy}` : ''}
+                    {job.updatedBy ? `${t('Updated_by')} ${job.updatedBy}` : ''}
                   </Small>
                   <Small>
                     {job.updatedAt
-                      ? `Updated on: ${formatDateDDMMYYYY(job.updatedAt)}`
+                      ? `${t('Updated_On')} ${formatDateReadable(job.updatedAt)}`
                       : ''}
                   </Small>
                 </div>
@@ -415,33 +431,43 @@ const EmploymentHistory: React.FC<Props> = ({
           <Modal>
 
             <Title style={{ marginTop: 0, marginBottom: 16 }}>
-              {editingJobId !== null ? 'Edit Employment History' : 'Add Employment History'}
+              {editingJobId !== null ? `${t('Edit_Employment_History')}` : `${t('Add_Employment_History')}`}
             </Title>
             <FormInputsContainer>
               <ColumnWrapper>
                 <InputLabelContainer>
                   <label>
-                    Designation<Required>*</Required>
+                    {t('Designation')}<Required>*</Required>
                   </label>
-                  <DropdownOrg
-                    label="Designation"
-                    selected={form.designation || ''}
-                    options={
-                      jobTitles?.values?.map((j) => ({
+                  <DropdownMenu
+                    label={t('Select type')}
+                    name="designation"
+                    id="designation"
+                    value={form.designation || ''}
+                    className="largeContainerHei"
+                    onChange={(e) => {
+                      const event = {
+                        target: {
+                          name: 'designation',
+                          value: e,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleFormChange('designation', event.target.value);
+                    }}
+                    required
+                    options={[
+                      { label: t('Select type'), value: '' },
+                      ...(jobTitles?.values?.map((j) => ({
                         label: j.value,
                         value: j.value,
-                      })) || []
-                    }
-                    onChange={(selectedValue) =>
-                      handleFormChange('designation', selectedValue as string)
-                    }
-                    className="styledDropdown"
+                      })) || []),
+                    ]}
                   />
                   {errors.designation && <div style={{ color: "red", fontSize: 12 }}>{errors.designation}</div>}
                 </InputLabelContainer>
 
                 <InputLabelContainer>
-                  <label>Joining Date<Required>*</Required></label>
+                  <label>{t('Start_Date')}<Required>*</Required></label>
                   <DateInputWrapper ref={calendarJoinRef}>
                     <TextInput
                       type="text"
@@ -461,6 +487,7 @@ const EmploymentHistory: React.FC<Props> = ({
                         <Calendar
                           title="Joining Date"
                           minDate={new Date('2000-01-01')}
+                          maxDate={new Date()}
                           selectedDate={form.joiningDate ? new Date(form.joiningDate) : null}
                           handleDateInput={(date: Date | null) => {
                             if (!date) return;
@@ -475,7 +502,7 @@ const EmploymentHistory: React.FC<Props> = ({
                   {errors.joiningDate && <div style={{ color: "red", fontSize: 12 }}>{errors.joiningDate}</div>}
                 </InputLabelContainer>
                 <InputLabelContainer>
-                  <label>Note</label>
+                  <label>{t('Note')}</label>
                   <TextInput
                     name="note"
                     placeholder="Type your Note (Optional)"
@@ -488,27 +515,37 @@ const EmploymentHistory: React.FC<Props> = ({
               <ColumnWrapper>
                 <InputLabelContainer>
                   <label>
-                    Employment Type<Required>*</Required>
+                    {t('Employment_Type')}<Required>*</Required>
                   </label>
-                  <DropdownOrg
-                    label="Employment Type"
-                    selected={form.employementType || ''}
-                    options={
-                      employmentTypes?.values?.map((e) => ({
+                  <DropdownMenu
+                    label={t('Select type')}
+                    name="employementType"
+                    id="employementType"
+                    value={form.employementType || ''}
+                    className="largeContainerHei"
+                    onChange={(e) => {
+                      const event = {
+                        target: {
+                          name: 'employementType',
+                          value: e,
+                        },
+                      } as React.ChangeEvent<HTMLSelectElement>;
+                      handleFormChange('employementType', event.target.value);
+                    }}
+                    required
+                    options={[
+                      { label: t('Select type'), value: '' },
+                      ...(employmentTypes?.values?.map((e) => ({
                         label: e.value,
                         value: e.value,
-                      })) || []
-                    }
-                    onChange={(selectedValue) =>
-                      handleFormChange('employementType', selectedValue as string)
-                    }
-                    className="styledDropdown"
+                      })) || []),
+                    ]}
                   />
                   {errors.employementType && <div style={{ color: "red", fontSize: 12 }}>{errors.employementType}</div>}
                 </InputLabelContainer>
 
                 <InputLabelContainer>
-                  <label>Resignation Date<Required>*</Required></label>
+                  <label>{t('End_Date')}<Required>*</Required></label>
                   <DateInputWrapper ref={calendarResignRef}>
                     <TextInput
                       type="text"
@@ -528,6 +565,7 @@ const EmploymentHistory: React.FC<Props> = ({
                         <Calendar
                           title="Resignation Date"
                           minDate={form.joiningDate ? new Date(form.joiningDate) : new Date('2000-01-01')}
+                          maxDate={new Date()}
                           selectedDate={form.resignationDate ? new Date(form.resignationDate) : null}
                           handleDateInput={(date: Date | null) => {
                             if (!date) return;
@@ -555,7 +593,7 @@ const EmploymentHistory: React.FC<Props> = ({
               <CancelButton
                 onClick={closeModal}
               >
-                Cancel
+                {t('Cancel')}
               </CancelButton>
 
               <SaveButton
@@ -563,7 +601,14 @@ const EmploymentHistory: React.FC<Props> = ({
                 disabled={isSaving}
 
               >
-                {isSaving ? 'Saving...' : 'Save'}
+                {isSaving
+                  ? editingJobId
+                    ? 'Updating...'
+                    : 'Saving...'
+                  : editingJobId
+                    ? 'Update'
+                    : 'Save'
+                }
               </SaveButton>
             </div>
 
