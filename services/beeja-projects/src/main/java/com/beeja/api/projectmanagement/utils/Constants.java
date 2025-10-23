@@ -48,6 +48,9 @@ public class Constants {
       "Error while fetching client from database";
   public static final String ERROR_FETCHING_CLIENTS = "%s with ID '%s' encountered a DB error.";
   public static final String ERROR_IN_GENERATING_CLIENT_ID = "Error in generating clientId";
+  public static final String CUSTOM_CLIENT_TYPE_REQUIRED = "Custom client type is required if other option selected";
+  public static final String CUSTOM_TAX_CATEGORY_REQUIRED = "Custom tax category is required if other option selected";
+  public static final String CUSTOM_INDUSTRY_TYPE_REQUIRED = "Custom industry type is required if other option selected";
 
   // ========== Project Errors ==========
   public static final String PROJECT_NOT_FOUND = "Project not found with given projectId";

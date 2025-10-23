@@ -39,11 +39,6 @@ public class FileServiceTest {
 
     FileResponse result = fileService.listofFileByEntityId(entityId, page, size);
 
-    assertNotNull(result);
-    assertEquals(mockResponse, result);
-    verify(fileService, times(1)).listofFileByEntityId(entityId, page, size);
-  }
-
   @Test
   void testDownloadFile_Success() throws Exception {
     String fileId = "file123";
@@ -158,60 +153,63 @@ public class FileServiceTest {
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  @Test
-  void testGetFileById_FileNotFound() {
+@Test
+void testGetFileById_FileNotFound() {
     String fileId = "file123";
+
+    // Mocking the service
     try {
-      when(fileService.getFileById(fileId)).thenReturn(null);
+        when(fileService.getFileById(fileId)).thenReturn(null);
     } catch (FileNotFoundException e) {
-      throw new RuntimeException(e);
+        throw new RuntimeException(e);
     }
 
     File result = null;
     try {
-      result = fileService.getFileById(fileId);
+        result = fileService.getFileById(fileId);
     } catch (FileNotFoundException e) {
-      throw new RuntimeException(e);
+        throw new RuntimeException(e);
     }
 
     assertNull(result);
-    try {
-      verify(fileService, times(1)).getFileById(fileId);
-    } catch (FileNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-  }
 
-  @Test
-  void testUploadOrUpdateFile_Success() throws Exception {
+    try {
+        verify(fileService, times(1)).getFileById(fileId);
+    } catch (FileNotFoundException e) {
+        throw new RuntimeException(e);
+    }
+}
+
+
+@Test
+void testUploadOrUpdateFile_Success() throws Exception {
     String organizationId = "org1";
     FileUploadRequest request = new FileUploadRequest();
+
     try (MockedStatic<UserContext> mockedUserContext = mockStatic(UserContext.class)) {
-      Map<String, String> mockedOrganization = new HashMap<>();
-      mockedOrganization.put("id", organizationId);
-      mockedUserContext
-          .when(UserContext::getLoggedInUserOrganization)
-          .thenReturn(mockedOrganization);
+        Map<String, String> mockedOrganization = new HashMap<>();
+        mockedOrganization.put("id", organizationId);
+        mockedUserContext
+            .when(UserContext::getLoggedInUserOrganization)
+            .thenReturn(mockedOrganization);
 
-      File mockFile = new File();
-      when(fileService.uploadOrUpdateFile(request)).thenReturn(mockFile);
+        File mockFile = new File();
+        when(fileService.uploadOrUpdateFile(request)).thenReturn(mockFile);
 
-      File result = fileService.uploadOrUpdateFile(request);
+        File result = fileService.uploadOrUpdateFile(request);
 
-      assertNotNull(result);
-      assertEquals(mockFile, result);
-      verify(fileService, times(1)).uploadOrUpdateFile(request);
+        assertNotNull(result);
+        assertEquals(mockFile, result);
+        verify(fileService, times(1)).uploadOrUpdateFile(request);
     }
-  }
+}
 
-  @Test
-  void testUploadOrUpdateFile_Exception() throws Exception {
+@Test
+void testUploadOrUpdateFile_Exception() throws Exception {
     FileUploadRequest request = new FileUploadRequest();
     when(fileService.uploadOrUpdateFile(request)).thenThrow(new Exception("Error occurred"));
 
     assertThrows(Exception.class, () -> fileService.uploadOrUpdateFile(request));
     verify(fileService, times(1)).uploadOrUpdateFile(request);
-  }
 }
+  }

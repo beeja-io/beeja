@@ -117,9 +117,12 @@ const ClientList = ({
                           : '-'}
                       </td>
                       <td onClick={() => handleClientClick(client?.clientId)}>
-                        {client?.clientType
-                          ? removeUnderScore(client?.clientType)
-                          : '-'}
+                        {client?.clientType === 'OTHER' &&
+                        client?.customClientType
+                          ? capitalizeFirstLetter(client.customClientType)
+                          : client?.clientType
+                            ? removeUnderScore(client.clientType)
+                            : '-'}
                       </td>
 
                       <td>

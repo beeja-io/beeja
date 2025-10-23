@@ -46,7 +46,7 @@ export const TimelineItem = styled.li`
   margin-bottom: 32px;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     left: var(--timeline-left);
     top: var(--dot-offset);
@@ -60,9 +60,12 @@ export const TimelineItem = styled.li`
   }
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
-    left: calc(var(--timeline-left) + (var(--dot-size) / 2) - (var(--line-width) / 2) + 1.5px);
+    left: calc(
+      var(--timeline-left) + (var(--dot-size) / 2) - (var(--line-width) / 2) +
+        1.5px
+    );
     top: calc(var(--dot-offset) + var(--dot-size));
     bottom: -32px;
     width: var(--line-width);
@@ -209,4 +212,3 @@ export const SaveButton = styled.button<{ disabled?: boolean }>`
   font-size: 14px;
   opacity: ${({ disabled }) => (disabled ? 0.6 : 1)};
 `;
-

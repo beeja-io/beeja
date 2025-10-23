@@ -474,7 +474,7 @@ export const GeneralDetailsTab = ({
       fetchData();
     }
   }, [heading]);
-  
+
   const [showHistory, setShowHistory] = useState(false);
 
   return (
@@ -830,17 +830,17 @@ export const GeneralDetailsTab = ({
             <div style={{ marginTop: 18 }}>
               <div
                 style={{
-                  borderTop: "1px solid #ddd",
-                  margin: "12px 0",
+                  borderTop: '1px solid #ddd',
+                  margin: '12px 0',
                 }}
-            />
-            <EmploymentHistory
-              employeeId={employee.account.employeeId}
-              jobTitles={jobTitles}
-              employmentTypes={employmentTypes}
-            />
+              />
+              <EmploymentHistory
+                employeeId={employee.account.employeeId}
+                jobTitles={jobTitles}
+                employmentTypes={employmentTypes}
+              />
             </div>
-            )}
+          )}
         </TabContentMainContainer>
       )}
 

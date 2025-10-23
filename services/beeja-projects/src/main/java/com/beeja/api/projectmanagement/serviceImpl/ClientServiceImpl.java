@@ -2,13 +2,17 @@ package com.beeja.api.projectmanagement.serviceImpl;
 
 import com.beeja.api.projectmanagement.client.FileClient;
 import com.beeja.api.projectmanagement.config.LogoValidator;
+import com.beeja.api.projectmanagement.enums.ClientType;
+import com.beeja.api.projectmanagement.enums.TaxCategory;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
+import com.beeja.api.projectmanagement.enums.Industry;
 import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.exceptions.ValidationException;
 import com.beeja.api.projectmanagement.model.Client;
+import com.beeja.api.projectmanagement.model.TaxDetails;
 import com.beeja.api.projectmanagement.repository.ClientRepository;
 import com.beeja.api.projectmanagement.request.ClientRequest;
 import com.beeja.api.projectmanagement.request.FileUploadRequest;
@@ -60,6 +64,104 @@ public class ClientServiceImpl implements ClientService {
             }
         }
     }
+
+    private String generateClientIdFromName(String clientName, long orgClientCount) {
+        if (clientName == null || clientName.isEmpty()) {
+            throw new IllegalArgumentException("Client name cannot be null or empty");
+        }
+
+        String[] words = clientName.trim().split("\\s+");
+        String prefix;
+
+        if (words.length == 1) {
+            prefix = words[0].substring(0, Math.min(3, words[0].length())).toUpperCase();
+        } else if (words.length == 2) {
+            String part1 = words[0].substring(0, Math.min(2, words[0].length()));
+            String part2 = words[1].substring(0, 1);
+            prefix = (part1 + part2).toUpperCase();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Math.min(3, words.length); i++) {
+                sb.append(words[i].substring(0, 1).toUpperCase());
+            }
+            prefix = sb.toString();
+        }
+
+        long nextNumber = orgClientCount + 1;
+        String numberPart = String.format("%03d", nextNumber);
+
+        return prefix + numberPart;
+    }
+
+
+
+    private void handleClientType(ClientRequest clientRequest, Client clientEntity) {
+        if (clientRequest.getClientType() != null) {
+            clientEntity.setClientType(clientRequest.getClientType());
+
+            if (clientRequest.getClientType() == ClientType.OTHER) {
+                String customType = clientRequest.getCustomClientType();
+                if (customType == null || customType.trim().isEmpty()) {
+                    throw new ValidationException(
+                            new ErrorResponse(
+                                    ErrorType.VALIDATION_ERROR,
+                                    ErrorCode.VALIDATION_ERROR,
+                                    Constants.CUSTOM_CLIENT_TYPE_REQUIRED,
+                                    "")
+                    );
+                }
+                clientEntity.setCustomClientType(customType.trim());
+            } else {
+                clientEntity.setCustomClientType(null);
+            }
+        }
+    }
+
+    private void handleTaxDetails(ClientRequest clientRequest, Client clientEntity) {
+        if (clientRequest.getTaxDetails() != null) {
+            TaxDetails taxDetails = clientRequest.getTaxDetails();
+
+            if (taxDetails.getTaxCategory() == TaxCategory.OTHER) {
+                String customTaxCategory = taxDetails.getCustomTaxCategory();
+                if (customTaxCategory == null || customTaxCategory.trim().isEmpty()) {
+                    throw new ValidationException(
+                            new ErrorResponse(
+                                    ErrorType.VALIDATION_ERROR,
+                                    ErrorCode.VALIDATION_ERROR,
+                                    Constants.CUSTOM_TAX_CATEGORY_REQUIRED,
+                                    "")
+                    );
+                }
+                taxDetails.setCustomTaxCategory(customTaxCategory.trim());
+            } else {
+                taxDetails.setCustomTaxCategory(null);
+            }
+
+            clientEntity.setTaxDetails(taxDetails);
+        }
+    }
+    private void handleIndustryType(ClientRequest clientRequest, Client clientEntity) {
+        if (clientRequest.getIndustry() != null) {
+            clientEntity.setIndustry(clientRequest.getIndustry());
+
+            if (clientRequest.getIndustry() == Industry.OTHER) {
+                String customIndustry = clientRequest.getCustomIndustry();
+                if (customIndustry == null || customIndustry.trim().isEmpty()) {
+                    throw new ValidationException(
+                            new ErrorResponse(
+                                    ErrorType.VALIDATION_ERROR,
+                                    ErrorCode.VALIDATION_ERROR,
+                                    Constants.CUSTOM_INDUSTRY_TYPE_REQUIRED,
+                                    "")
+                    );
+                }
+                clientEntity.setCustomIndustry(customIndustry.trim());
+            } else {
+                clientEntity.setCustomIndustry(null);
+            }
+        }
+    }
+
   /**
    * Adds a new {@link Client} to the currently logged-in user's organization.
    *
@@ -87,11 +189,12 @@ public class ClientServiceImpl implements ClientService {
       }
     }
     Client newClient = new Client();
+    handleClientType(client, newClient);
+    handleIndustryType(client, newClient);
+    handleTaxDetails(client, newClient);
+
     if (client.getClientName() != null) {
       newClient.setClientName(client.getClientName());
-    }
-    if (client.getClientType() != null) {
-      newClient.setClientType(client.getClientType());
     }
     if (client.getEmail() != null) {
       newClient.setEmail(client.getEmail());
@@ -99,17 +202,11 @@ public class ClientServiceImpl implements ClientService {
     if (client.getContact() != null) {
       newClient.setContact(client.getContact());
     }
-    if (client.getTaxDetails() != null) {
-      newClient.setTaxDetails(client.getTaxDetails());
-    }
     if (client.getPrimaryAddress() != null) {
       newClient.setPrimaryAddress(client.getPrimaryAddress());
     }
     if (client.getBillingAddress() != null) {
       newClient.setBillingAddress(client.getBillingAddress());
-    }
-    if (client.getIndustry() != null) {
-      newClient.setIndustry(client.getIndustry());
     }
     if (client.getDescription() != null) {
       newClient.setDescription(client.getDescription());
@@ -136,28 +233,17 @@ public class ClientServiceImpl implements ClientService {
     }
 
     try {
-      long existingClientsCount =
-              clientRepository.countByOrganizationId(
-                      UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
-      if (existingClientsCount == 0) {
-        newClient.setClientId(
-                UserContext.getLoggedInUserOrganization()
-                        .get("name")
-                        .toString()
-                        .substring(0, 3)
-                        .toUpperCase()
-                        + "1");
-      } else {
-        newClient.setClientId(
-                UserContext.getLoggedInUserOrganization()
-                        .get("name")
-                        .toString()
-                        .substring(0, 3)
-                        .toUpperCase()
-                        + (existingClientsCount + 1));
-      }
+      long existingClientsCount = clientRepository.countByOrganizationId(
+                  UserContext.getLoggedInUserOrganization().get(Constants.ID).toString()
+          );
+
+          String clientName = client.getClientName();
+          String generatedClientId = generateClientIdFromName(clientName, existingClientsCount);
+
+        newClient.setClientId(generatedClientId);
+
     } catch (Exception e) {
-      log.error(Constants.ERROR_IN_GENERATING_CLIENT_ID, e.getMessage());
+      log.error(Constants.ERROR_IN_GENERATING_CLIENT_ID, e);
       throw new Exception(Constants.ERROR_IN_GENERATING_CLIENT_ID);
     }
     newClient.setOrganizationId(

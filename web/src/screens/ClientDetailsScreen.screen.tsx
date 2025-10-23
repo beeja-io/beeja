@@ -121,7 +121,11 @@ const ClientDetailsScreen: React.FC = () => {
             </DotWrapper>
 
             <ClientInfoRowItem>
-              <ClientInfoDiv>{client?.clientType}</ClientInfoDiv>
+              <ClientInfoDiv>
+                {client?.clientType === 'OTHER' && client?.customClientType
+                  ? client.customClientType
+                  : client?.clientType || '-'}
+              </ClientInfoDiv>
             </ClientInfoRowItem>
 
             <DotWrapper>
@@ -130,7 +134,11 @@ const ClientDetailsScreen: React.FC = () => {
 
             <ClientInfoRowItem>
               <IndustrySVG />
-              <ClientInfoDiv>{client?.industry}</ClientInfoDiv>
+              <ClientInfoDiv>
+                {client?.industry === 'OTHER' && client?.customIndustry
+                  ? client.customIndustry
+                  : client?.industry || '-'}
+              </ClientInfoDiv>
             </ClientInfoRowItem>
 
             <DotWrapper>
@@ -208,15 +216,18 @@ const ClientDetailsScreen: React.FC = () => {
           <div>{t('Tax_Details')}</div>
           <TaxDetailsWrapper>
             <TaxItem>
-              <TaxLabel>{t('VAT/ GST_Number')}</TaxLabel>
+              <TaxLabel>{t('Tax Number')}</TaxLabel>
               <TaxValue>{client?.taxDetails?.taxNumber || '-'}</TaxValue>
             </TaxItem>
             <TaxItem>
-              <TaxLabel>{t('Tax_Category')}</TaxLabel>
+              <TaxLabel>{t('Tax Category')}</TaxLabel>
               <TaxValue>
-                {client?.taxDetails?.taxCategory
-                  ? t(`TaxCategory.${client.taxDetails.taxCategory}`)
-                  : '-'}
+                {client?.taxDetails?.taxCategory === 'OTHER' &&
+                client?.taxDetails?.customTaxCategory
+                  ? client.taxDetails.customTaxCategory
+                  : client?.taxDetails?.taxCategory
+                    ? client.taxDetails.taxCategory
+                    : '-'}
               </TaxValue>
             </TaxItem>
           </TaxDetailsWrapper>

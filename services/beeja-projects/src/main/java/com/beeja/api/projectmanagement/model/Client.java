@@ -33,6 +33,8 @@ public class Client {
   @NotNull(message = "Client type cannot be null")
   private ClientType clientType;
 
+  private String customClientType;
+
   @Indexed(unique = true)
   @Field("client_id")
   private String clientId;
@@ -43,6 +45,8 @@ public class Client {
   private String email;
 
   private Industry industry;
+
+  private String customIndustry;
 
   @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid contact number")
   private String contact;

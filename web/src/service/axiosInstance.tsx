@@ -3,6 +3,8 @@ import { OriginURL, ProdOriginURL } from '../constants/UrlConstants';
 import { IFeatureToggle } from '../entities/FeatureToggle';
 import { IAssignedInterviewer } from '../entities/ApplicantEntity';
 import { OrganizationValues } from '../entities/OrgValueEntity';
+import { Project } from '../entities/Projects';
+import { InvoiceIdentifiers } from '../entities/Requests/InvoiceIdentifiersRequest';
 import {
   ProjectEntity,
   ProjectStatus,
@@ -165,12 +167,12 @@ export const addEmployeeHistory = (
 
 export const updateEmployeeHistory = (
   employeeId: string,
-  jobId:String,
+  jobId: String,
   data: {
     designation: string;
     employementType?: string;
     department?: string;
-    joiningDate?: string; 
+    joiningDate?: string;
     resignationDate?: string;
     description?: string;
   }
@@ -179,12 +181,14 @@ export const updateEmployeeHistory = (
     .put(`/employees/v1/users/${employeeId}/history/${jobId}`, data)
     .then((res: AxiosResponse) => res.data);
 };
- 
+
 export const deleteEmployeeHistory = (
   employeeId: string,
-  id:String
+  id: String
 ): Promise<AxiosResponse> => {
-  return axiosInstance.delete(`/employees/v1/users/${employeeId}/history/${id}`);
+  return axiosInstance.delete(
+    `/employees/v1/users/${employeeId}/history/${id}`
+  );
 };
 
 export const getAllSettingTypes = (key: String): Promise<AxiosResponse> => {
@@ -675,27 +679,64 @@ export const updateOrganizationValues = (
   );
 };
 export const PostLogHours = (data: any): Promise<AxiosResponse> => {
-  return axiosInstance.post('projects/api/timesheets', data, {
+  return axiosInstance.post('/projects/api/timesheets', data, {
     headers: { 'Content-Type': 'application/json' },
   });
 };
 
 export const fetchMonthLogs = (date: any): Promise<AxiosResponse> => {
-  return axiosInstance.get(`projects/api/timesheets?month=${date}`);
+  return axiosInstance.get(`/projects/api/timesheets?month=${date}`);
 };
 
 export const deleteLog = (id: string): Promise<AxiosResponse> => {
-  return axiosInstance.delete(`projects/api/timesheets/${id}`);
+  return axiosInstance.delete(`/projects/api/timesheets/${id}`);
 };
 
 export const updateLog = (id: string, data: any): Promise<AxiosResponse> => {
-  return axiosInstance.put(`projects/api/timesheets/${id}`, data);
+  return axiosInstance.put(`/projects/api/timesheets/${id}`, data);
 };
 
 export const clientDropDown = () => {
-  return axiosInstance.get(`projects/v1/clients/clients-dropdown`);
+  return axiosInstance.get(`/projects/v1/clients/clients-dropdown`);
 };
 
 export const getProjectDropdown = () => {
-  return axiosInstance.get(`projects/v1/projects/projects-dropdown`);
+  return axiosInstance.get(`/projects/v1/projects/projects-dropdown`);
+};
+
+export const generateInvoiceIdentifiers = (
+  contractId: string
+): Promise<AxiosResponse<InvoiceIdentifiers>> => {
+  return axiosInstance.post(
+    `/projects/v1/invoices/generate-identifiers/${contractId}`
+  );
+};
+
+export const fetchContractById = (contractId: string) => {
+  return axiosInstance.get(`/projects/v1/contracts/${contractId}`);
+};
+
+export const fetchClientById = (clientId: string) => {
+  return axiosInstance.get(`/projects/v1/clients/${clientId}`);
+};
+
+export const fetchProjectByIdAndClientId = async (
+  projectId: string,
+  clientId: string
+): Promise<Project> => {
+  const response = await axiosInstance.get(
+    `/projects/v1/projects/${projectId}/${clientId}`
+  );
+  return response.data;
+};
+
+export const createInvoice = (invoiceRequest: {
+  contractId: string;
+  [key: string]: any;
+}) => {
+  return axiosInstance.post('/projects/v1/invoices', invoiceRequest);
+};
+
+export const getInvoicesBycontractId = (contractId: string) => {
+  return axiosInstance.get(`/projects/v1/invoices/contract/${contractId}`);
 };

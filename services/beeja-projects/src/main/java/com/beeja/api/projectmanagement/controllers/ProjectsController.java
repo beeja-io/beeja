@@ -155,7 +155,7 @@ public class ProjectsController {
     }
 
     @GetMapping("/projects-dropdown")
-    @HasPermission(PermissionConstants.GET_PROJECT)
+    @HasPermission({PermissionConstants.GET_PROJECT, PermissionConstants.CREATE_CONTRACT})
     public List<ProjectDropdownDTO> getAllProjectsForDropdown() {
         String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
         return projectService.getAllProjectsForDropdown(organizationId);

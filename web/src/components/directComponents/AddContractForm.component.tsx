@@ -3,11 +3,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ContractDetails } from '../../entities/ContractEntiy';
-import { Employee, ProjectEntity } from '../../entities/ProjectEntity';
+import { ProjectEntity } from '../../entities/ProjectEntity';
 import {
   getProjectDropdown,
   getProjectEmployees,
-  getResourceManager,
   postContracts,
   updateContract,
 } from '../../service/axiosInstance';
@@ -196,56 +195,28 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   }, [t]);
 
   useEffect(() => {
-    getResourceManager()
-      .then((response) => {
-        const users = response.data as Employee[];
-
-        const managerOpts = users.map((user) => {
-          const fullName = `${user.firstName} ${user.lastName}`;
-          return {
-            value: user.employeeId,
-            label: fullName,
-          };
-        });
-
-        const resourceOpts = users.map((user) => {
-          const fullName = `${user.firstName} ${user.lastName}`;
-          return {
-            value: user.employeeId,
-            label: fullName,
-            availability: user.availabilityPercentage ?? 0,
-          };
-        });
-
-        setManagerOptions(managerOpts);
-        setResourceOptions(resourceOpts);
-      })
-      .catch((error) => {
-        toast.error('Error fetching resource managers:' + error);
-      });
-  }, []);
-  useEffect(() => {
     if (
       initialData &&
       !formInitialized &&
-      managerOptions.length > 0 &&
-      resourceOptions.length > 0 &&
-      projectOptions.length > 0
+      projectOptions.length > 0 &&
+      managerOptions.length > 0
     ) {
-      const mappedManagers = managerOptions.filter((manager) =>
-        initialData.projectManagers?.includes(manager.value)
+      const matchedProject = projectOptions.find(
+        (p) => p.projectId === initialData.projectId
       );
 
+      const mappedManagers = (initialData.projectManagers || []).map((id) => {
+        const manager = managerOptions.find(
+          (m) => m.value === id || m.label === id
+        );
+        return manager || { value: id, label: id };
+      });
       const mappedResources =
-        initialData.rawProjectResources?.map((r) => ({
+        (initialData.rawProjectResources || []).map((r) => ({
           value: r.employeeId,
           label: r.name,
           availability: r.allocationPercentage ?? 0,
         })) || [];
-
-      const matchedProject = projectOptions.find(
-        (p) => p.projectId === initialData.projectId
-      );
 
       setFormData({
         contractTitle: initialData.contractTitle || '',
@@ -257,12 +228,15 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         contractValue: initialData.contractValue?.toString() || '',
         description: initialData.description || '',
         terms: '',
-        projectManagers: mappedManagers.map((m) => m.value),
+        projectManagers: mappedManagers
+          .filter((m): m is { value: string; label: string } => !!m)
+          .map((m) => m.value),
         rawProjectResources: mappedResources,
         projectName: matchedProject?.name || '',
         attachments: [],
+        projectId: initialData.projectId || '',
+        clientId: matchedProject?.clientId || '',
       });
-
       setSelectedResources(mappedResources);
       setFormInitialized(true);
     }
@@ -458,12 +432,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   };
 
   useEffect(() => {
-    if (initialData?.projectId && formInitialized) {
+    if (initialData?.projectId && !formInitialized) {
       (async () => {
         try {
           setIsProjectLoading(true);
           const response = await getProjectEmployees(initialData.projectId);
-
           const managers = (response.data.managers || []).map((m: any) => ({
             value: m.employeeId,
             label: m.fullName,
@@ -490,11 +463,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
   const isFormReady =
     !initialData ||
-    (initialData &&
-      managerOptions.length > 0 &&
-      resourceOptions.length > 0 &&
-      projectOptions.length > 0 &&
-      formInitialized);
+    (initialData && formInitialized && projectOptions.length > 0);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -1173,20 +1142,22 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   </Label>
 
                   <ResourceAllocationRow>
-                    <DropdownMenu
-                      label="Search People"
-                      name="currentResource"
-                      id="currentResource"
-                      className="largeContainerRes largeContainerHei"
-                      value={currentResource || ''}
-                      onChange={(e) => {
-                        const event = {
-                          target: {
-                            name: 'currentResource',
-                            value: e,
-                          },
-                        } as React.ChangeEvent<HTMLSelectElement>;
-                        setCurrentResource(event.target.value || null);
+                    <MultiSelectDropdown
+                      options={resourceOptions.map((opt) => ({
+                        label: opt.label,
+                        value: opt.value,
+                      }))}
+                      value={
+                        currentResource
+                          ? resourceOptions
+                              .filter((r) => r.value === currentResource)
+                              .map((r) => ({ label: r.label, value: r.value }))
+                          : []
+                      }
+                      onChange={(selectedItems) => {
+                        const selectedValue = selectedItems[0]?.value || null;
+                        setCurrentResource(selectedValue);
+
                         if (errorsSteptwo?.selectedResources) {
                           setErrorsSteptwo((prev) => ({
                             ...prev,
@@ -1194,12 +1165,9 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           }));
                         }
                       }}
-                      options={[
-                        ...resourceOptions.map((opt) => ({
-                          label: opt.label,
-                          value: opt.value,
-                        })),
-                      ]}
+                      placeholder="Select Resources"
+                      searchable={true}
+                      className="largeContainerRes largeContainerHei"
                     />
 
                     <AvailabilityContainer>
