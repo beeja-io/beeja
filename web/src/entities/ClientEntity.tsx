@@ -8,8 +8,10 @@ export interface ClientDetails {
   clientId: string;
   clientName: string;
   clientType: ClientType;
+  customClientType: string;
   email: string;
   industry: Industry;
+  customIndustry: string;
 
   contact: string;
   description: string;
@@ -18,6 +20,7 @@ export interface ClientDetails {
   logoId?: string;
   taxDetails: {
     taxCategory: TaxCategory;
+    customTaxCategory: string;
     taxNumber: string;
   };
   primaryAddress: {
@@ -44,16 +47,19 @@ export interface ClientResponse {
   id: string;
   clientName: string;
   clientType: string;
+  customClientType: string;
   clientId: string;
   organizationId: string;
   email: string;
   industry: string;
+  customIndustry: string;
   contact: string;
   description: string;
   logoId: string;
   status: string;
   taxDetails: {
     taxCategory: string;
+    customTaxCategory: string;
     taxNumber: string;
   };
   primaryAddress: {
@@ -78,6 +84,7 @@ export interface Client {
   clientId: string;
   clientName: string;
   clientType: string;
+  customClientType: string;
   organizationId: string;
   id: string;
 }

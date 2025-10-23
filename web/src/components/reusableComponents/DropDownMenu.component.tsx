@@ -10,11 +10,17 @@ import {
   ClearButton,
   SearchField,
   CloseButtonStyle,
+  CustomInputContainer,
+  CustomInputField,
+  AddButton,
+  ErrorText,
+  NoResults,
 } from '../../styles/DropDownMenu.style';
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
 import { TickMark } from '../../styles/DocumentTabStyles.style';
 import { TickmarkIcon } from '../../svgs/DocumentTabSvgs.svg';
 import { CloseButtonSVG } from '../../svgs/profilePictureSvgs.svg';
+import { t } from 'i18next';
 
 type DropdownMenuProps = {
   label?: string;
@@ -33,6 +39,7 @@ type DropdownMenuProps = {
   onValidationChange?: (isValid: boolean) => void;
   listClassName?: string;
   sortOptions?: boolean;
+  onCustomValue?: (value: string) => void;
 };
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
@@ -50,11 +57,15 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   onValidationChange,
   listClassName = '',
   sortOptions = true,
+  onCustomValue,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [touched, setTouched] = useState(false);
+  const [customValue, setCustomValue] = useState('');
+  const [isOtherSelected, setIsOtherSelected] = useState(false);
+  const [localOptions, setLocalOptions] = useState(options);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -70,6 +81,37 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   }, []);
 
   useEffect(() => {
+    setLocalOptions(options);
+  }, [options]);
+
+  useEffect(() => {
+    const selectedValue = selected;
+    const incomingHasSelected =
+      selectedValue == null
+        ? false
+        : options.some((o) => o.value === selectedValue);
+
+    if (selectedValue && !incomingHasSelected) {
+      const withoutOther = options.filter(
+        (opt) => opt.label.toLowerCase() !== 'other'
+      );
+      const hasOther = options.some(
+        (opt) => opt.label.toLowerCase() === 'other'
+      );
+
+      const newLocal = [
+        ...withoutOther,
+        { label: selectedValue, value: selectedValue },
+        ...(hasOther ? [{ label: 'Other', value: 'OTHER' }] : []),
+      ];
+
+      setLocalOptions(newLocal);
+    } else {
+      setLocalOptions(options);
+    }
+  }, [options, selected]);
+
+  useEffect(() => {
     setSelected(value ?? null);
 
     if (required && onValidationChange) {
@@ -79,14 +121,56 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   }, [value, required, onValidationChange]);
 
   const handleSelect = (item: { label: string; value: string | null }) => {
-    setTouched(true);
+    if (!item || !item.label) return;
+
+    if (item.label.toLowerCase() === 'other') {
+      setIsOtherSelected(true);
+      setCustomValue('');
+      setIsOpen(true);
+      return;
+    }
     setSelected(item.value);
     onChange?.(item.value);
+    setIsOtherSelected(false);
     setIsOpen(false);
+    setTouched(true);
+
     if (required && onValidationChange) {
       const isValid = !!item.value;
       onValidationChange(isValid);
     }
+  };
+
+  const handleAddCustomValue = () => {
+    const trimmedValue = customValue?.trim();
+    if (!trimmedValue) return;
+
+    const alreadyExists = localOptions.some(
+      (opt) => opt.value !== null && String(opt.value) === trimmedValue
+    );
+
+    let updatedOptions;
+    if (alreadyExists) {
+      updatedOptions = [...localOptions];
+    } else {
+      const withoutOther = localOptions.filter(
+        (opt) => opt.label.toLowerCase() !== 'other'
+      );
+      updatedOptions = [
+        ...withoutOther,
+        { label: trimmedValue, value: trimmedValue },
+        { label: 'Other', value: 'OTHER' },
+      ];
+    }
+    setLocalOptions(updatedOptions);
+    setSelected(trimmedValue);
+    if (typeof onCustomValue === 'function') {
+      onCustomValue(trimmedValue);
+    }
+
+    setIsOtherSelected(false);
+    setIsOpen(false);
+    setCustomValue('');
   };
 
   const handleKeyPress = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -94,13 +178,34 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       event.preventDefault();
     }
   };
-  const sortedOptions = sortOptions
-    ? [...options].sort((a, b) => {
-        if (!a.value) return -1;
-        if (!b.value) return 1;
-        return String(a.label).localeCompare(String(b.label));
-      })
-    : options;
+  const sortedOptions = (() => {
+    if (!sortOptions) {
+      return localOptions;
+    }
+
+    const tempOptions = [...localOptions];
+    const otherIndex = tempOptions.findIndex(
+      (opt) => opt.value?.toUpperCase() === 'OTHER'
+    );
+
+    const otherOption = otherIndex !== -1 ? tempOptions[otherIndex] : null;
+    const optionsWithoutOther =
+      otherIndex !== -1
+        ? tempOptions.filter((_, index) => index !== otherIndex)
+        : tempOptions;
+
+    optionsWithoutOther.sort((a, b) => {
+      if (a.value === null) return -1;
+      if (b.value === null) return 1;
+      return String(a.label).localeCompare(String(b.label));
+    });
+
+    if (otherOption) {
+      optionsWithoutOther.push(otherOption);
+    }
+
+    return optionsWithoutOther;
+  })();
 
   return (
     <div>
@@ -115,7 +220,9 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
         >
-          {options.find((o) => o.value === selected)?.label || label}
+          {localOptions.find((o) => o.value === selected)?.label ||
+            selected ||
+            label}
           <ArrowDownSVG />
         </ToggleButtonStyle>
 
@@ -138,6 +245,25 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
                 </DropdownItemStyle>
               );
             })}
+            {isOtherSelected && (
+              <CustomInputContainer>
+                <CustomInputField
+                  type="text"
+                  value={customValue}
+                  onChange={(e) => setCustomValue(e.target.value)}
+                  placeholder={t('Enter specific type')}
+                />
+                <AddButton
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddCustomValue();
+                  }}
+                >
+                  <span>+</span> {t('Add')}
+                </AddButton>
+              </CustomInputContainer>
+            )}
           </DropdownListStyle>
         )}
 
@@ -152,9 +278,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         ) : null}
       </ContainerStyle>
       {required && touched && !selected && (
-        <div style={{ color: 'red', marginTop: '4px', fontSize: '12px' }}>
-          This field is required
-        </div>
+        <ErrorText>{t('This field is required')}</ErrorText>
       )}
     </div>
   );
@@ -384,19 +508,13 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                 );
               })
             ) : (
-              <div
-                style={{ padding: '10px', textAlign: 'center', color: '#888' }}
-              >
-                No results found
-              </div>
+              <NoResults>{t('No results found')}</NoResults>
             )}
           </DropdownListStyle>
         )}
       </ContainerStyleMulti>
       {required && touched && value.length === 0 && (
-        <div style={{ color: 'red', marginTop: '4px', fontSize: '12px' }}>
-          This field is required
-        </div>
+        <ErrorText>{t('This field is required')}</ErrorText>
       )}
     </div>
   );

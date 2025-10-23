@@ -6,5 +6,5 @@ export const Container = styled.div`
 `;
 
 export const CompanyProfileContainer = styled.div`
- display: none;
+  display: none;
 `;

@@ -6,7 +6,6 @@ import {
   Container,
   LeftSection,
   LogoPreview,
-  TableContainer,
 } from '../styles/ClientStyles.style';
 
 import {
@@ -140,8 +139,6 @@ const ProjectDetailsSCreen: React.FC = () => {
             description={project.description}
           />
         )}
-
-        <TableContainer />
       </LeftSection>
 
       <RightSection>
