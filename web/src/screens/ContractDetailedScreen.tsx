@@ -4,7 +4,6 @@ import {
   Container,
   LeftSection,
   LogoPreview,
-  TableContainer,
 } from '../styles/ClientStyles.style';
 
 import {
@@ -273,7 +272,6 @@ const ContractDetailsScreen: React.FC = () => {
             contractName={contract?.contractTitle}
           />
         )}
-        <TableContainer />
       </LeftSection>
 
       <RightSection>

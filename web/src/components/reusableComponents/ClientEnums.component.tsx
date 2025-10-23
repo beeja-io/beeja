@@ -7,39 +7,55 @@ interface ClientOptions {
 export enum ClientType {
   INTERNAL = 'INTERNAL',
   INDIVIDUAL = 'INDIVIDUAL',
-  COMPANY = 'COMPANY',
-  ORGANIZATION = 'ORGANIZATION',
+  CORPORATE = 'CORPORATE',
+  STARTUP = 'STARTUP',
+  CONSULTING = 'CONSULTING',
+  OTHER = 'OTHER',
 }
 export enum Industry {
-  HRMS = 'HRMS',
   SOCIALMEDIA = 'SOCIALMEDIA',
-  ECOMMERCE = 'ECOMMERCE',
   ITSERVICES = 'ITSERVICES',
+  CONSULTING = 'CONSULTING',
+  EDUCATION = 'EDUCATION',
+  FINANCE = 'FINANCE',
+  HEALTHCARE = 'HEALTHCARE',
+  MANUFACTURING = 'MANUFACTURING',
+  REAL_ESTATE = 'REAL_ESTATE',
+  RETAIL = 'RETAIL',
+  OTHER = 'OTHER',
 }
 export enum TaxCategory {
   VAT = 'VAT',
   GST = 'GST',
-  SALES_TAX = 'SALES_TAX',
-  EXCISE_TAX = 'EXCISE_TAX',
+  ABN = 'ABN',
+  OTHER = 'OTHER',
 }
 /* eslint-enable no-unused-vars */
 export const clientOptions: ClientOptions = {
   clientType: [
     ClientType.INTERNAL,
     ClientType.INDIVIDUAL,
-    ClientType.COMPANY,
-    ClientType.ORGANIZATION,
+    ClientType.CORPORATE,
+    ClientType.STARTUP,
+    ClientType.CONSULTING,
+    ClientType.OTHER,
   ],
   industry: [
-    Industry.HRMS,
     Industry.SOCIALMEDIA,
-    Industry.ECOMMERCE,
     Industry.ITSERVICES,
+    Industry.CONSULTING,
+    Industry.EDUCATION,
+    Industry.FINANCE,
+    Industry.HEALTHCARE,
+    Industry.MANUFACTURING,
+    Industry.RETAIL,
+    Industry.REAL_ESTATE,
+    Industry.OTHER,
   ],
   taxCategory: [
     TaxCategory.VAT,
     TaxCategory.GST,
-    TaxCategory.EXCISE_TAX,
-    TaxCategory.SALES_TAX,
+    TaxCategory.ABN,
+    TaxCategory.OTHER,
   ],
 };

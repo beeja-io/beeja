@@ -84,18 +84,22 @@ type AddClientFormProps = {
 };
 
 const AddClientForm = (props: AddClientFormProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<ClientDetails>({
     clientId: '',
     clientName: '',
     clientType: '' as ClientType,
+    customClientType: '',
     email: '',
     industry: '' as Industry,
+    customIndustry: '',
     contact: '',
     description: '',
     logo: '',
 
     taxDetails: {
       taxCategory: '' as TaxCategory,
+      customTaxCategory: '',
       taxNumber: '',
     },
     primaryAddress: {
@@ -120,14 +124,17 @@ const AddClientForm = (props: AddClientFormProps) => {
       clientId: '',
       clientName: '',
       clientType: '' as ClientType,
+      customClientType: '',
       email: '',
       industry: '' as Industry,
+      customIndustry: '',
       contact: '',
       description: '',
       logo: '',
       logoId: '',
       taxDetails: {
         taxCategory: '' as TaxCategory,
+        customTaxCategory: '',
         taxNumber: '',
       },
       primaryAddress: {
@@ -331,6 +338,51 @@ const AddClientForm = (props: AddClientFormProps) => {
     }
   };
 
+  const taxCategoryConfig: Record<
+    string,
+    { regex?: RegExp; errorMsg: string; placeholder: string }
+  > = {
+    GST: {
+      regex: /^[A-Za-z0-9]{15}$/,
+      errorMsg: t(
+        'Invalid GST Number, it must be 15 alphanumeric characters (e.g., 27ABCD1234F1Z5)'
+      ),
+      placeholder: t(
+        'GST must be 15 alphanumeric characters (e.g., 27ABCD1234F1Z5)'
+      ),
+    },
+    ABN: {
+      regex: /^\d{11}$/,
+      errorMsg: t('Invalid ABN, it must be 11 digits (e.g., 51679993001)'),
+      placeholder: t('ABN should be 11 digits (e.g., 51679993001)'),
+    },
+    VAT: {
+      regex: /^[A-Z]{2}\d{9}$/,
+      errorMsg: t(
+        'Invalid VAT number. Format: Country code + digits (e.g., DE123456789)'
+      ),
+      placeholder: t('VAT Format: Country code + digits (e.g., DE123456789)'),
+    },
+    OTHER: {
+      errorMsg: '',
+      placeholder: t('Enter tax number'),
+    },
+  };
+
+  const validateTaxNumber = (category: string, taxNumber: string) => {
+    const config = taxCategoryConfig[category];
+    if (!config) return '';
+    if (config.regex && !config.regex.test(taxNumber)) {
+      return config.errorMsg;
+    }
+    return '';
+  };
+
+  const getTaxNumberPlaceholder = (category: string) => {
+    const config = taxCategoryConfig[category];
+    return config ? config.placeholder : t('Enter Tax Number');
+  };
+
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -342,11 +394,6 @@ const AddClientForm = (props: AddClientFormProps) => {
     if (name === 'contact') {
       newValue = newValue.replace(/\D/g, '').slice(0, 10);
     }
-
-    if (name === 'taxDetails.taxNumber') {
-      newValue = newValue.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 15);
-    }
-
     setFormData((prevState) => {
       if (keys.length === 2) {
         const [parentKey, childKey] = keys;
@@ -402,11 +449,25 @@ const AddClientForm = (props: AddClientFormProps) => {
     if (!formData.clientType) {
       isValid = false;
     }
+    if (
+      formData.clientType === ClientType.OTHER &&
+      !formData.customClientType?.trim()
+    ) {
+      isValid = false;
+    }
     if (!formData.industry) {
       isValid = false;
     }
-    if (formData.email.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
+    if (
+      formData.industry === Industry.OTHER &&
+      !formData.customIndustry?.trim()
+    ) {
       isValid = false;
+    }
+    if (formData.email?.trim()) {
+      if (!/\S+@\S+\.\S+/.test(formData.email)) {
+        isValid = false;
+      }
     }
     return isValid;
   };
@@ -415,21 +476,25 @@ const AddClientForm = (props: AddClientFormProps) => {
 
     const newErrors: { taxNumber?: string; taxCategory?: string } = {};
 
-    if (!formData.taxDetails.taxCategory) {
+    const { taxCategory, customTaxCategory, taxNumber } = formData.taxDetails;
+    const category =
+      taxCategory === TaxCategory.OTHER ? customTaxCategory : taxCategory;
+
+    if (!taxCategory) {
       isValid = false;
       newErrors.taxCategory = 'Please select a Tax Category.';
     }
 
-    const taxNumber: string = formData.taxDetails.taxNumber?.trim() || '';
-    if (
-      taxNumber === '' ||
-      taxNumber.length < 10 ||
-      taxNumber.length > 15 ||
-      !/^[A-Za-z0-9-]+$/.test(taxNumber)
-    ) {
+    const trimmedTaxNumber = taxNumber?.trim() || '';
+    if (!trimmedTaxNumber) {
       isValid = false;
-      newErrors.taxNumber =
-        'Tax Number must be 10–15 characters. Example: GSTIN12345.';
+      newErrors.taxNumber = 'Please enter a Tax Number.';
+    } else {
+      const errorMessage = validateTaxNumber(category, trimmedTaxNumber);
+      if (errorMessage) {
+        isValid = false;
+        newErrors.taxNumber = errorMessage;
+      }
     }
     setErrors(newErrors);
     return isValid;
@@ -445,10 +510,38 @@ const AddClientForm = (props: AddClientFormProps) => {
 
     const { handleSuccessMessage, handleClose, isEditMode, updateClientList } =
       props;
+
+    const processCustomField = (
+      payload: any,
+      enumField: 'clientType' | 'industry',
+      customField: 'customClientType' | 'customIndustry'
+    ) => {
+      const enumValue = payload[enumField];
+      const customValue = payload[customField];
+
+      if (enumValue === ClientType.OTHER || enumValue === Industry.OTHER) {
+        payload[enumField] = 'OTHER';
+        payload[customField] = customValue ? customValue.trim() : '';
+      } else {
+        payload[customField] = '';
+      }
+    };
     try {
+      const payload: any = { ...formData };
+
+      processCustomField(payload, 'clientType', 'customClientType');
+      processCustomField(payload, 'industry', 'customIndustry');
+      if (payload.taxDetails.taxCategory === TaxCategory.OTHER) {
+        payload.taxDetails.taxCategory = 'OTHER';
+        payload.taxDetails.customTaxCategory =
+          formData.taxDetails.customTaxCategory.trim();
+      } else {
+        payload.taxDetails.customTaxCategory = '';
+      }
       const dataToSend = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
+      Object.entries(payload).forEach(([key, value]) => {
         if (value === null || value === undefined) return;
+
         if (typeof value === 'object' && !(value instanceof File)) {
           Object.entries(value).forEach(([subKey, subValue]) => {
             if (subValue !== null && subValue !== undefined) {
@@ -481,18 +574,17 @@ const AddClientForm = (props: AddClientFormProps) => {
         }
       }
       await updateClientList();
-      handleClose;
+      handleClose();
     } catch (error) {
       setErrorMessage('Failed to submit data.');
       setShowErrorMessage(true);
-      handleClose;
+      handleClose();
       throw new Error('Error fetching data:' + error);
     } finally {
       setIsResponseLoading(false);
     }
   };
 
-  const { t } = useTranslation();
   return (
     <FormContainer>
       <>
@@ -556,25 +648,43 @@ const AddClientForm = (props: AddClientFormProps) => {
                       label={t('Select type')}
                       name="clientType"
                       id="clientType"
-                      value={formData?.clientType || ''}
-                      className="largeContainerHei"
-                      onChange={(e) => {
-                        const event = {
-                          target: {
-                            name: 'clientType',
-                            value: e,
-                          },
-                        } as React.ChangeEvent<HTMLSelectElement>;
-                        handleChange(event);
+                      options={clientOptions.clientType.map((type) => ({
+                        label: type === 'OTHER' ? 'Other' : type,
+                        value: type,
+                      }))}
+                      value={
+                        formData.clientType === ClientType.OTHER &&
+                        formData.customClientType
+                          ? formData.customClientType
+                          : formData.clientType || null
+                      }
+                      onChange={(selectedValue) => {
+                        if (selectedValue === ClientType.OTHER) {
+                          setFormData((prev) => {
+                            const newState = {
+                              ...prev,
+                              clientType: ClientType.OTHER,
+                            };
+                            return newState;
+                          });
+                        } else {
+                          setFormData((prev) => ({
+                            ...prev,
+                            clientType: selectedValue as ClientType,
+                            customClientType: '',
+                          }));
+                        }
                       }}
-                      required
-                      options={[
-                        { label: t('Select type'), value: '' },
-                        ...clientOptions.clientType.map((type) => ({
-                          label: t(type),
-                          value: type,
-                        })),
-                      ]}
+                      onCustomValue={(customValue) => {
+                        setFormData((prev) => {
+                          const newState = {
+                            ...prev,
+                            clientType: ClientType.OTHER,
+                            customClientType: customValue,
+                          };
+                          return newState;
+                        });
+                      }}
                     />
                   </InputLabelContainer>
                 )}
@@ -707,25 +817,45 @@ const AddClientForm = (props: AddClientFormProps) => {
                       label={t('Select type')}
                       name="clientType"
                       id="clientType"
-                      value={formData?.clientType || ''}
+                      value={
+                        formData.clientType === ClientType.OTHER &&
+                        formData.customClientType
+                          ? formData.customClientType
+                          : formData.clientType || null
+                      }
                       className="largeContainerHei"
-                      onChange={(e) => {
-                        const event = {
-                          target: {
-                            name: 'clientType',
-                            value: e,
-                          },
-                        } as React.ChangeEvent<HTMLSelectElement>;
-                        handleChange(event);
-                      }}
                       required
                       options={[
-                        { label: t('Select type'), value: '' },
                         ...clientOptions.clientType.map((type) => ({
-                          label: t(type),
+                          label: type === 'OTHER' ? t('Other') : t(type),
                           value: type,
                         })),
                       ]}
+                      onChange={(selectedValue) => {
+                        if (selectedValue === ClientType.OTHER) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            clientType: ClientType.OTHER,
+                            customClientType: '',
+                          }));
+                        } else {
+                          setFormData((prev) => ({
+                            ...prev,
+                            clientType: selectedValue as ClientType,
+                            customClientType: '',
+                          }));
+                        }
+                      }}
+                      onCustomValue={(customValue) => {
+                        setFormData((prev) => {
+                          const newState = {
+                            ...prev,
+                            clientType: ClientType.OTHER,
+                            customClientType: customValue,
+                          };
+                          return newState;
+                        });
+                      }}
                     />
                   </InputLabelContainer>
                 )}
@@ -740,21 +870,41 @@ const AddClientForm = (props: AddClientFormProps) => {
                     name="industry"
                     id="industry"
                     className="largeContainerHei"
-                    value={formData?.industry || ''}
-                    onChange={(e) => {
-                      const event = {
-                        target: {
-                          name: 'industry',
-                          value: e,
-                        },
-                      } as React.ChangeEvent<HTMLSelectElement>;
-                      handleChange(event);
+                    value={
+                      formData.industry === Industry.OTHER &&
+                      formData.customIndustry
+                        ? formData.customIndustry
+                        : formData.industry || null
+                    }
+                    onChange={(selectedValue) => {
+                      if (selectedValue === Industry.OTHER) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          industry: Industry.OTHER,
+                          customIndustry: '',
+                        }));
+                      } else {
+                        setFormData((prev) => ({
+                          ...prev,
+                          industry: selectedValue as Industry,
+                          customIndustry: '',
+                        }));
+                      }
+                    }}
+                    onCustomValue={(customValue) => {
+                      setFormData((prev) => {
+                        const newState = {
+                          ...prev,
+                          industry: Industry.OTHER,
+                          customIndustry: customValue,
+                        };
+                        return newState;
+                      });
                     }}
                     required
                     options={[
-                      { label: t('Select Industry'), value: '' },
                       ...clientOptions.industry.map((industry) => ({
-                        label: t(industry),
+                        label: industry === 'OTHER' ? t('Other') : t(industry),
                         value: industry,
                       })),
                     ]}
@@ -872,21 +1022,47 @@ const AddClientForm = (props: AddClientFormProps) => {
                   name="taxDetails.taxCategory"
                   id="taxDetails.taxCategory"
                   className="largeContainerHei"
-                  value={formData.taxDetails?.taxCategory ?? ''}
+                  value={
+                    formData.taxDetails?.taxCategory === TaxCategory.OTHER &&
+                    formData.taxDetails?.customTaxCategory
+                      ? formData.taxDetails.customTaxCategory
+                      : (formData.taxDetails?.taxCategory ?? null)
+                  }
                   required
-                  onChange={(e) => {
-                    const event = {
-                      target: {
-                        name: 'taxDetails.taxCategory',
-                        value: e,
+                  onChange={(selectedValue) => {
+                    if (selectedValue === TaxCategory.OTHER) {
+                      setFormData((prev) => ({
+                        ...prev,
+                        taxDetails: {
+                          ...prev.taxDetails,
+                          taxCategory: TaxCategory.OTHER,
+                          customTaxCategory: '',
+                        },
+                      }));
+                    } else {
+                      setFormData((prev) => ({
+                        ...prev,
+                        taxDetails: {
+                          ...prev.taxDetails,
+                          taxCategory: selectedValue as TaxCategory,
+                          customTaxCategory: '',
+                        },
+                      }));
+                    }
+                  }}
+                  onCustomValue={(customValue) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      taxDetails: {
+                        ...prev.taxDetails,
+                        taxCategory: TaxCategory.OTHER,
+                        customTaxCategory: customValue,
                       },
-                    } as React.ChangeEvent<HTMLSelectElement>;
-                    handleChange(event);
+                    }));
                   }}
                   options={[
-                    { label: 'Select', value: '' },
                     ...(clientOptions?.taxCategory ?? []).map((category) => ({
-                      label: t(`TaxCategory.${category}`),
+                      label: category === 'OTHER' ? 'Other' : category,
                       value: category,
                     })),
                   ]}
@@ -906,12 +1082,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                 <TextInput
                   type="text"
                   name="taxDetails.taxNumber"
-                  placeholder={t('Enter_Tax_Number')}
+                  placeholder={getTaxNumberPlaceholder(
+                    formData.taxDetails.taxCategory
+                  )}
                   className="largeInput"
                   required
-                  minLength={10}
-                  maxLength={15}
-                  pattern="^[A-Za-z0-9-]{10,15}$"
                   value={formData.taxDetails?.taxNumber ?? ''}
                   onChange={handleChange}
                 />
@@ -1125,7 +1300,18 @@ const AddClientForm = (props: AddClientFormProps) => {
                   type="button"
                   onClick={handleNextStep}
                 >
-                  {t('SKip & Continue')}
+                  {formData.primaryAddress.street ||
+                  formData.primaryAddress.city ||
+                  formData.primaryAddress.state ||
+                  formData.primaryAddress.postalCode ||
+                  formData.primaryAddress.country ||
+                  formData.billingAddress.street ||
+                  formData.billingAddress.city ||
+                  formData.billingAddress.state ||
+                  formData.billingAddress.postalCode ||
+                  formData.billingAddress.country
+                    ? t('Continue')
+                    : t('Skip & Continue')}
                 </Button>
               </div>
             </AddClientButtons>
@@ -1159,7 +1345,12 @@ const AddClientForm = (props: AddClientFormProps) => {
                       <SubHeadingDiv className="spacing">
                         {t('Client_Type')}
                       </SubHeadingDiv>
-                      <InfoText>{formData.clientType}</InfoText>
+                      <InfoText>
+                        {formData.clientType === ClientType.OTHER &&
+                        formData.customClientType
+                          ? formData.customClientType
+                          : formData.clientType || '-'}
+                      </InfoText>
                     </InfoRow>
                     <InfoRow>
                       <SubHeadingDiv className="spacing">
@@ -1168,33 +1359,40 @@ const AddClientForm = (props: AddClientFormProps) => {
                       <InfoText className="description">
                         {formData.description?.trim()
                           ? formData.description
-                          : '-'}
+                          : '- N/A'}
                       </InfoText>
                     </InfoRow>
                     <InfoRow>
-                      <SubHeadingDiv>{t('Internal_Type')}</SubHeadingDiv>
                       <DotWrap>
                         <DotSVG />
                       </DotWrap>
                       <InfoGroup>
                         <IndustrySVG />
-                        <InfoText>{formData.industry}</InfoText>
+                        <InfoText>
+                          {formData.industry === Industry.OTHER &&
+                          formData.customIndustry
+                            ? formData.customIndustry
+                            : formData.industry || 'N/A'}
+                        </InfoText>
                       </InfoGroup>
                       <DotWrap>
                         <DotSVG />
                       </DotWrap>
                       <InfoGroup>
                         <EmailSVG />
-                        <InfoText>{formData.email || '-'}</InfoText>
+                        <InfoText>
+                          {formData.email ? formData.email : '- N/A'}
+                        </InfoText>
                       </InfoGroup>
 
                       <DotWrap>
                         <DotSVG />
                       </DotWrap>
-
                       <InfoGroup>
                         <CallSVG />
-                        <InfoText>{formData.contact || '-'}</InfoText>
+                        <InfoText>
+                          {formData.contact ? formData.contact : '- N/A'}
+                        </InfoText>
                       </InfoGroup>
                     </InfoRow>
                   </div>
@@ -1230,18 +1428,21 @@ const AddClientForm = (props: AddClientFormProps) => {
                       {t('Tax_Category')}
                     </SubHeadingDiv>
                     <InfoText className="tax-details">
-                      {formData.taxDetails?.taxCategory
-                        ? t(
-                            `TaxCategory.${formData.taxDetails.taxCategory.toUpperCase()}`,
-                            {
-                              defaultValue:
-                                formData.taxDetails.taxCategory.replace(
-                                  /_/g,
-                                  ' '
-                                ),
-                            }
-                          )
-                        : '-'}
+                      {formData.taxDetails?.taxCategory === TaxCategory.OTHER &&
+                      formData.taxDetails?.customTaxCategory
+                        ? formData.taxDetails.customTaxCategory
+                        : formData.taxDetails?.taxCategory
+                          ? t(
+                              `TaxCategory.${formData.taxDetails.taxCategory.toUpperCase()}`,
+                              {
+                                defaultValue:
+                                  formData.taxDetails.taxCategory.replace(
+                                    /_/g,
+                                    ' '
+                                  ),
+                              }
+                            )
+                          : '-'}
                     </InfoText>
                   </InfoBlock>
                   <InfoBlock className="address">
@@ -1265,7 +1466,7 @@ const AddClientForm = (props: AddClientFormProps) => {
               </HeadingContainer>
               <SummaryAddressContainer>
                 <PrimaryContainer>
-                  <h2>Primary Address</h2>
+                  <h2>{t('Primary Address')}</h2>
                   <AddressBlock>
                     <SubHeadingDiv className="spacing">
                       {t('Street')}

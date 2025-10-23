@@ -513,5 +513,14 @@
   "SOCIALMEDIA": "Social Media",
   "ECOMMERCE": "E-Commerce",
   "ITSERVICES": "IT Services",
-  "GST_Number": "GST Number"
+  "GST_Number": "GST Number",
+  "RETAIL": "Retail",
+  "CONSULTING": "Consulting",
+  "EDUCATION": "Education",
+  "FINANCE": "Finance",
+  "HEALTHCARE": "Health Care",
+  "MANUFACTURING": "Manufacturing",
+  "REAL_ESTATE": "Real Esate",
+  "CORPORATE": "Corporate",
+  "STARTUP": "Start up"
 }
