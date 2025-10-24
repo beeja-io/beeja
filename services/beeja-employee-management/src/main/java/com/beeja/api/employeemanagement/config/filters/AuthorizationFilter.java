@@ -50,7 +50,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     String authorizationHeader = request.getHeader(Constants.AUTHORIZATION);
     String accessToken = null;
     
-    if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
+    if (authorizationHeader != null) {
          accessToken = accessToken.substring(7);
     }
     if (accessToken != null && isValidAccessToken(accessToken)) {
