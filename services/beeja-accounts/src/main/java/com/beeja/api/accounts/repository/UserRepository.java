@@ -6,6 +6,8 @@ import com.beeja.api.accounts.model.User;
 import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import java.util.List;
+
+import com.beeja.api.accounts.model.dto.EmployeeSearchDTO;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -50,4 +52,15 @@ public interface UserRepository extends MongoRepository<User, String> {
   List<EmployeeIdNameDTO> findAllEmployeeNamesAndIdByOrganizations_Id(String organizationId);
 
   List<User> findAllByEmployeeIdInAndOrganizations_Id(List<String> ids, String organizationId);
+
+    @Aggregation(pipeline = {
+            "{ $match: { 'organizations._id': ?1, $or: [ " +
+                    "{ 'firstName': { $regex: ?0, $options: 'i' } }, " +
+                    "{ 'lastName': { $regex: ?0, $options: 'i' } }, " +
+                    "{ $expr: { $regexMatch: { input: { $concat: ['$firstName', ' ', '$lastName'] }, regex: ?0, options: 'i' } } }, " +
+                    "{ 'employeeId': { $regex: ?0, $options: 'i' } } " +
+                    "] } }",
+            "{ $project: { _id: 0, employeeId: 1, fullName: { $concat: ['$firstName', ' ', '$lastName'] } } }"
+    })
+    List<EmployeeSearchDTO> searchUsersByKeyword(String keyword, String organizationId);
 }

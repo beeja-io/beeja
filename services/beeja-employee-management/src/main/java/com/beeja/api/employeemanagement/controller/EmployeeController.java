@@ -5,11 +5,14 @@ import com.beeja.api.employeemanagement.constants.PermissionConstants;
 import com.beeja.api.employeemanagement.model.Employee;
 import com.beeja.api.employeemanagement.model.JobDetails;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeDepartmentDTO;
+import com.beeja.api.employeemanagement.repository.EmployeeRepository;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
 import com.beeja.api.employeemanagement.requests.UpdateKYCRequest;
 import com.beeja.api.employeemanagement.response.EmployeeResponse;
 import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.beeja.api.employeemanagement.service.EmployeeService;
+import com.beeja.api.employeemanagement.utils.UserContext;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
 
   @Autowired private EmployeeService employeeService;
+
+  @Autowired private EmployeeRepository employeeRepository;
 
   @GetMapping
   @HasPermission(PermissionConstants.READ_EMPLOYEE)
@@ -120,4 +125,10 @@ public class EmployeeController {
   public ResponseEntity<List<JobDetails>> getJobHistory(@PathVariable String employeeId) throws Exception {
     return ResponseEntity.ok(employeeService.getJobHistory(employeeId));
   }
+
+    @GetMapping("/departments")
+    public List<EmployeeDepartmentDTO> getDepartmentsByEmployeeIds(@RequestParam List<String> employeeIds) {
+        String orgId = UserContext.getLoggedInUserOrganization().getId();
+        return employeeRepository.findDepartmentsByEmployeeIds(employeeIds, orgId);
+    }
 }

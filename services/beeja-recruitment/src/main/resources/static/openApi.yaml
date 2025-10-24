@@ -1,390 +1,175 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
   title: Beeja Recruitment Service
-  version: v1
+  version: 1.0.0
   description: |-
     `Product of tech.at.core`
-       API documentation for the Beeja Recruitment Open API application.
-       This service provides endpoints for managing applicants and referrals. 
-       It includes functionalities such as creating, updating,and retrieving applicant information, 
-       assigning interviewers, submitting feedback, and handling referrals.
+      API documentation for the Beeja Open API application. It allows users to access
+      data via a APIs secured by cookie and permissions.
     
         ## Authentication & Authorization
-        Beeja uses an authentication system that is secured by username and password.
+        Beeja has a username and password authentication system. 
         [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
 
 externalDocs:
-  description: Explore Beeja Recruitment API
+  description: Explore Beeja
   url: https://beeja.io/
 
 servers:
-  - url: http://localhost:8000/recruitments
-    description: Recruitment APIs
+  - url: http://localhost:8000/recruitment-management
+    description: Beeja Recruitment Service
 
 paths:
   /v1/applicants:
     post:
       summary: Create a new applicant
-      tags: [Applicants]
+      tags: [Applicants Controller]
       requestBody:
         required: true
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              type: object
-              required:
-                - firstName
-                - lastName
-                - email
-                - phoneNumber
-                - positionAppliedFor
-                - resume
-              properties:
-                firstName:
-                  type: string
-                lastName:
-                  type: string
-                email:
-                  type: string
-                  format: email
-                phoneNumber:
-                  type: string
-                positionAppliedFor:
-                  type: string
-                experience:
-                  type: string
-                  nullable: true
-                  description: it is an optional field
-                resume:
-                  type: string
-                  format: binary
+              $ref: '#/components/schemas/ApplicantRequest'
       responses:
         '200':
-          description: Applicant created successfully
+          description: Applicant created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Applicant'
-          '400':
-            description: Invalid applicant input
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/BadRequest'
-          '403':
-            description: Forbidden to create applicant
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Forbidden'
-          '500':
-            description: Internal server error
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     get:
       summary: Get all applicants in the organization
-      tags: [Applicants]
+      tags: [Applicants Controller]
       responses:
-          '200':
-            description: List of applicants fetched
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Applicant'
-          '403':
-            description: Access denied to view applicants
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Forbidden'
-          '500':
-            description: Server error while fetching applicants
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
+        '200':
+          description: List of applicants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Applicant'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
-  /v1/applicants/combinedApplicants:
-    get:
-      summary: Get paginated applicants with filters
-      tags: [Applicants]
-      parameters:
-        - in: query
-          name: page
-          schema:
-            type: integer
-        - in: query
-          name: limit
-          schema:
-            type: integer
-        - in: query
-          name: applicantId
-          schema:
-            type: string
-        - in: query
-          name: firstName
-          schema:
-            type: string
-        - in: query
-          name: positionAppliedFor
-          schema:
-            type: string
-        - in: query
-          name: status
-          schema:
-            $ref: '#/components/schemas/ApplicantStatus'
-        - in: query
-          name: experience
-          schema:
-            type: string
-        - in: query
-          name: fromDate
-          schema:
-            type: string
-            format: date
-        - in: query
-          name: toDate
-          schema:
-            type: string
-            format: date
-        - in: query
-          name: sortBy
-          schema:
-            type: string
-        - in: query
-          name: sortDirection
-          schema:
-            type: string
-            enum: [asc, desc]
-      responses:
-          '200':
-            description: Paginated applicant list fetched
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/PaginatedApplicantResponse'
-          '403':
-            description: Forbidden to view applicants
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Forbidden'
-          '500':
-            description: Server error while fetching paginated list
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
-
-
-  /v1/applicants/{applicantID}:
+  /v1/applicants/{applicantId}:
     get:
       summary: Get applicant by ID
-      tags: [Applicants]
+      tags: [Applicants Controller]
       parameters:
-        - in: path
-          name: applicantID
-          required: true
-          schema:
-            type: string
-      responses:
-          '200':
-            description: Applicant found
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/Applicant'
-          '404':
-            description: Applicant not found
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/NotFound'
-          '500':
-            description: Error while fetching applicant
-            content:
-              application/json:
-                schema:
-                  $ref: '#/components/schemas/InternalServerError'
-
-
-    patch:
-      summary: Update applicant partially
-      tags: [Applicants]
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-      parameters:
-        - in: path
-          name: applicantID
+        - name: applicantId
+          in: path
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Applicant updated successfully
+          description: Applicant details
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Applicant'
-        '400':
-          description: Invalid input for update
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequest'
         '404':
           description: Applicant not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotFound'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Server error while updating
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InternalServerError'
-
-
-  /v1/applicants/{applicantID}/assign-interviewer:
-    patch:
-      summary: Assign interviewer to applicant
-      tags: [Applicants]
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/AssignedInterviewer'
-      parameters:
-        - in: path
-          name: applicantID
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Interviewer assigned
-        '400':
-          description: Invalid interviewer details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequest'
-        '404':
-          description: Applicant not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-
-  /v1/applicants/feedback/{applicantID}:
-    patch:
-      summary: Submit feedback for applicant
-      tags: [Applicants]
-      parameters:
-        - in: path
-          name: applicantID
-          required: true
-          schema:
-            type: string
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ApplicantFeedbackRequest'
-      responses:
-        '200':
-          description: Feedback submitted
-        '400':
-          description: Feedback input invalid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/BadRequest'
-        '404':
-          description: Applicant not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/NotFound'
-
+                $ref: '#/components/schemas/ErrorResponse'
 
   /v1/applicants/resume/{fileId}:
     get:
-      summary: Download applicant resume
-      tags: [Applicants]
+      summary: Download resume file
+      tags: [Applicants Controller]
       parameters:
-        - in: path
-          name: fileId
+        - name: fileId
+          in: path
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Resume file downloaded
+          description: File downloaded
           content:
             application/octet-stream:
               schema:
                 type: string
                 format: binary
         '404':
-          description: Resume not found
+          description: File not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotFound'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Download error
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InternalServerError'
+                $ref: '#/components/schemas/ErrorResponse'
 
-
-  /v1/applicants/{applicantID}/status/{status}:
-    put:
-      summary: Change status of applicant
-      tags: [Applicants]
+  /v1/applicants/{applicantID}/interview/{interviewID}:
+    delete:
+      summary: Delete interview by ID
+      tags: [Applicants Controller]
       parameters:
-        - in: path
-          name: applicantID
+        - name: applicantID
+          in: path
           required: true
           schema:
             type: string
-        - in: path
-          name: status
+        - name: interviewID
+          in: path
           required: true
           schema:
-            $ref: '#/components/schemas/ApplicantStatus'
+            type: string
       responses:
         '200':
-          description: Status updated
-        '400':
-          description: Invalid status
+          description: Interview deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BadRequest'
+                $ref: '#/components/schemas/Applicant'
         '404':
-          description: Applicant not found
+          description: Interview not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotFound'
-
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /v1/applicants/comments:
     post:
       summary: Add comment to applicant
-      tags: [Applicants]
+      tags: [Applicants Controller]
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -392,139 +177,138 @@ paths:
       responses:
         '200':
           description: Comment added
-        '400':
-          description: Invalid comment data
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BadRequest'
+                $ref: '#/components/schemas/Applicant'
+        '400':
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
-
-  /v1/applicants/{applicantID}/interview/{interviewID}:
-    delete:
-      summary: Delete interview from applicant
-      tags: [Applicants]
+  /v1/applicants/{applicantID}/status/{status}:
+    put:
+      summary: Change status of applicant
+      tags: [Applicants Controller]
       parameters:
-        - in: path
-          name: applicantID
+        - name: applicantID
+          in: path
           required: true
           schema:
             type: string
-        - in: path
-          name: interviewID
+        - name: status
+          in: path
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Interviewer removed
-        '404':
-          description: Interview record not found
+          description: Status changed
+        '400':
+          description: Invalid status
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotFound'
-
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Applicant not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /v1/referrals:
     post:
-      summary: Create new referral
-      tags: [Referrals]
+      summary: Create a new referral
+      tags: [Referrals Controller]
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/ApplicantRequest'
       responses:
         '200':
-          description: Referral created successfully
+          description: Referral created
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Applicant'
         '400':
-          description: Invalid referral request
+          description: Invalid input
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BadRequest'
-        '401':
-          description: Unauthorized to create referral
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Internal server error while creating referral
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InternalServerError'
-
-
+                $ref: '#/components/schemas/ErrorResponse'
     get:
-      summary: Get all my referrals
-      tags: [Referrals]
+      summary: Get all referrals by current user
+      tags: [Referrals Controller]
       responses:
         '200':
-          description: Fetched all referrals successfully
+          description: List of referrals
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Applicant'
-        '401':
-          description: Unauthorized to view referrals
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
         '500':
-          description: Internal server error while fetching referrals
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InternalServerError'
-
+                $ref: '#/components/schemas/ErrorResponse'
 
   /v1/referrals/{resumeId}:
     get:
-      summary: Download referral resume
-      tags: [Referrals]
+      summary: Download resume from referral
+      tags: [Referrals Controller]
       parameters:
-        - in: path
-          name: resumeId
+        - name: resumeId
+          in: path
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Resume downloaded successfully
+          description: File downloaded
           content:
             application/octet-stream:
               schema:
                 type: string
                 format: binary
-        '401':
-          description: Unauthorized access to resume
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Unauthorized'
         '404':
           description: Resume not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/NotFound'
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
-          description: Error occurred while downloading resume
+          description: Internal server error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/InternalServerError'
-
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
@@ -533,100 +317,69 @@ components:
       properties:
         id:
           type: string
-        firstName:
-          type: string
-        lastName:
+        name:
           type: string
         email:
           type: string
         phone:
           type: string
         status:
-          $ref: '#/components/schemas/ApplicantStatus'
+          type: string
+        comments:
+          type: array
+          items:
+            type: string
 
     ApplicantRequest:
       type: object
-      required: [firstName, lastName, email, phoneNumber, positionAppliedFor]
-      properties:
-        firstName:
-          type: string
-        lastName:
-          type: string
-        email:
-          type: string
-        phoneNumber:
-          type: string
-        positionAppliedFor:
-          type: string
-        resume:
-          type: string
-          format: binary
-        experience:
-          type: string
-
-    AssignedInterviewer:
-      type: object
-      required: [name, email]
       properties:
         name:
           type: string
         email:
           type: string
+        phone:
+          type: string
+        resume:
+          type: string
+          format: binary
+
+    AssignedInterviewer:
+      type: object
+      properties:
+        interviewerId:
+          type: string
+        interviewDate:
+          type: string
+          format: date-time
 
     ApplicantFeedbackRequest:
       type: object
-      required: [feedback, rating]
       properties:
         feedback:
           type: string
         rating:
-          type: number
+          type: integer
+          format: int32
 
     AddCommentRequest:
       type: object
-      required: [applicantId, comment]
       properties:
         applicantId:
           type: string
         comment:
           type: string
 
-    PaginatedApplicantResponse:
+    ErrorResponse:
       type: object
       properties:
-        totalElements:
+        timestamp:
+          type: string
+          format: date-time
+        status:
           type: integer
-        applicants:
-          type: array
-          items:
-            $ref: '#/components/schemas/Applicant'
-
-    ApplicantStatus:
-      type: string
-      enum: [APPLIED, SHORTLISTED, INTERVIEW_SCHEDULED, HIRED, REJECTED]
-
-    BadRequest:
-      type: object
-      properties:
+        error:
+          type: string
         message:
           type: string
-    Unauthorized:
-        type: object
-        properties:
-          message:
-            type: string
-    NotFound:
-        type: object
-        properties:
-          message:
-            type: string
-    Forbidden:
-      type: object
-      properties:
-        message:
-          type: string
-    InternalServerError:
-      type: object
-      properties:
-        message:
+        path:
           type: string
