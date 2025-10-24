@@ -44,16 +44,18 @@ public class AuthorizationFilter extends OncePerRequestFilter {
       return;
     }
 
-    String accessToken = request.getHeader(Constants.AUTHORIZATION);
-
-    accessToken = accessToken.substring(7);
-    if (isValidAccessToken(accessToken)) {
-      filterChain.doFilter(request, response);
-    } else {
-      log.error(Constants.USER_FAILED_AUTHENTICATE);
-      response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-      response.getWriter().write(Constants.ACCESS_DENIED);
+    String authorizationHeader = request.getHeader(Constants.AUTHORIZATION);
+    String accessToken = null;
+    
+    if (authorizationHeader != null) {
+         accessToken = accessToken.substring(7);
     }
+    if (accessToken != null && isValidAccessToken(accessToken)) {
+        filterChain.doFilter(request, response);
+    } else {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.getWriter().write("Access Denied");
+    }        
   }
 
   private boolean isValidAccessToken(String accessToken) {
