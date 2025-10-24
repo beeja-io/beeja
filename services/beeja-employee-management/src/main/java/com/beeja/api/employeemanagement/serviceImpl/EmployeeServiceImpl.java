@@ -16,6 +16,7 @@ import static com.google.common.io.Files.getFileExtension;
 
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeNameDTO;
+import com.beeja.api.employeemanagement.model.clients.accounts.RoleDTO;
 import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
 import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -521,7 +522,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setJobDetails(existingJobDetails);
       }
       existingJobDetails.setUpdatedAt(new Date());
-      existingJobDetails.setUpdatedBy(UserContext.getLoggedInUserName());
+      existingJobDetails.setUpdatedBy(
+               UserContext.getLoggedInUserName() + " (" +
+                        UserContext.getLoggedInUserDTO().getRoles()
+                                .stream()
+                                .map(RoleDTO::getName)
+                                .collect(Collectors.joining(" | ")) + ")"
+      );
       if (updatedJobDetails.getEmployementType() != null &&
               !updatedJobDetails.getEmployementType().equals(existingJobDetails.getEmployementType())) {
 
@@ -538,7 +545,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         historyJob.setUpdatedBy(existingJobDetails.getUpdatedBy());
         historyJob.setUpdatedAt(existingJobDetails.getUpdatedAt());
         historyJob.setId(UUID.randomUUID().toString());
-        historyJob.setUpdatedBy(UserContext.getLoggedInUserName());
+        historyJob.setUpdatedBy(
+                UserContext.getLoggedInUserName() + " (" +
+                        UserContext.getLoggedInUserDTO().getRoles()
+                                .stream()
+                                .map(RoleDTO::getName)
+                                .collect(Collectors.joining(" | ")) + ")"
+        );
         existingEmployee.getJobHistory().add(historyJob);
       }
 
@@ -974,7 +987,13 @@ public class EmployeeServiceImpl implements EmployeeService {
   public Employee addJobHistory(String employeeId, JobDetails newJob) throws Exception {
     Employee employee = getEmployeeById(employeeId);
 
-    newJob.setUpdatedBy(UserContext.getLoggedInUserName());
+    newJob.setUpdatedBy(
+            UserContext.getLoggedInUserName() + " (" +
+                    UserContext.getLoggedInUserDTO().getRoles()
+                            .stream()
+                            .map(RoleDTO::getName)
+                            .collect(Collectors.joining(" | ")) + ")"
+    );
     validateJobDetails(newJob);
 
     if (employee.getJobHistory() == null) {
@@ -1012,7 +1031,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     updatedJob.setUpdatedAt(new Date());
     validateJobDetails(updatedJob);
     updatedJob.setId(jobId);
-    updatedJob.setUpdatedBy(UserContext.getLoggedInUserName());
+    updatedJob.setUpdatedBy(
+            UserContext.getLoggedInUserName() + " (" +
+                    UserContext.getLoggedInUserDTO().getRoles()
+                            .stream()
+                            .map(RoleDTO::getName)
+                            .collect(Collectors.joining(" | ")) + ")"
+    );
     employee.getJobHistory().set(jobIndex, updatedJob);
 
     return employeeRepository.save(employee);

@@ -21,6 +21,7 @@ import {
   TabContentMainContainerHeading,
   TabContentTable,
   TabContentTableTd,
+  ViewHistoryLink,
 } from '../../styles/MyProfile.style';
 import {
   CheckBoxOnSVG,
@@ -558,7 +559,13 @@ export const GeneralDetailsTab = ({
           <TabContentInnerContainer>
             <div>
               <TabContentTable>
-                {firstColumn.map(({ label, value }) => (
+                {firstColumn.sort((a, b) => {
+                  if (heading === "Employment Info") {
+                    if (a.label === "Joining Date" && b.label === "Employment Type") return -1;
+                    if (a.label === "Employment Type" && b.label === "Joining Date") return 1;
+                  }
+                  return 0;
+                }).map(({ label, value }) => (
                   <tr key={label}>
                     <TabContentTableTd>{t(label)}</TabContentTableTd>
                     {isEditModeOn && isFieldEditable(label) ? (
@@ -720,28 +727,27 @@ export const GeneralDetailsTab = ({
                           </TabContentTableTd>
                         ) : (
                           <TabContentTableTd>
-                            {t(value)}
-                            {heading === 'Employment Info' &&
-                              label === 'Employment Type' && (
-                                <button
-                                  style={{
-                                    marginLeft: '12px',
-                                    fontSize: '12px',
-                                    padding: '4px 8px',
-                                    borderRadius: '6px',
-                                    border: '1px solid #ccc',
-                                    background: '#f5f5f5',
-                                    cursor: 'pointer',
-                                  }}
-                                  onClick={() =>
-                                    setShowHistory((prev) => !prev)
-                                  }
+                            {t(value)}{" "}
+                            {heading === 'Employment Info' && label === 'Employment Type' && (
+                            <ViewHistoryLink onClick={() => setShowHistory((prev) => !prev)} $open={showHistory}>
+                                  .  {t('View_History')}{" "}
+                                <svg
+                                  width="12"
+                                  height="12"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
                                 >
-                                  {!showHistory
-                                    ? 'View History'
-                                    : 'Close History'}
-                                </button>
-                              )}
+                                  <path
+                                    d="M6 9L12 15L18 9"
+                                    stroke="#007AFF"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                            </ViewHistoryLink>
+                          )}
                           </TabContentTableTd>
                         )}
                       </>

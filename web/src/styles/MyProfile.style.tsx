@@ -598,3 +598,23 @@ export const CalendarContainer = styled.div`
   justify-content: center;
   margin: 0rem 5rem;
 `;
+
+export const ViewHistoryLink = styled.span<{ $open?: boolean }>`
+  color: #007aff;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    color: #005bb5;
+  }
+
+  svg {
+    transition: transform 0.2s ease;
+    transform: rotate(${(props) => (props.$open ? "180deg" : "0deg")});
+  }
+`;
