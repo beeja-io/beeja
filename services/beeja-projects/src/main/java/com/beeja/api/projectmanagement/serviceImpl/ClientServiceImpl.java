@@ -2,8 +2,11 @@ package com.beeja.api.projectmanagement.serviceImpl;
 
 import com.beeja.api.projectmanagement.client.FileClient;
 import com.beeja.api.projectmanagement.config.LogoValidator;
+import com.beeja.api.projectmanagement.enums.ClientType;
+import com.beeja.api.projectmanagement.enums.TaxCategory;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
+import com.beeja.api.projectmanagement.enums.Industry;
 import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
@@ -90,7 +93,76 @@ public class ClientServiceImpl implements ClientService {
         return prefix + numberPart;
     }
 
-    /**
+
+
+    private void handleClientType(ClientRequest clientRequest, Client clientEntity) {
+        if (clientRequest.getClientType() != null) {
+            clientEntity.setClientType(clientRequest.getClientType());
+
+            if (clientRequest.getClientType() == ClientType.OTHER) {
+                String customType = clientRequest.getCustomClientType();
+                if (customType == null || customType.trim().isEmpty()) {
+                    throw new ValidationException(
+                            new ErrorResponse(
+                                    ErrorType.VALIDATION_ERROR,
+                                    ErrorCode.VALIDATION_ERROR,
+                                    Constants.CUSTOM_CLIENT_TYPE_REQUIRED,
+                                    "")
+                    );
+                }
+                clientEntity.setCustomClientType(customType.trim());
+            } else {
+                clientEntity.setCustomClientType(null);
+            }
+        }
+    }
+
+    private void handleTaxDetails(ClientRequest clientRequest, Client clientEntity) {
+        if (clientRequest.getTaxDetails() != null) {
+            TaxDetails taxDetails = clientRequest.getTaxDetails();
+
+            if (taxDetails.getTaxCategory() == TaxCategory.OTHER) {
+                String customTaxCategory = taxDetails.getCustomTaxCategory();
+                if (customTaxCategory == null || customTaxCategory.trim().isEmpty()) {
+                    throw new ValidationException(
+                            new ErrorResponse(
+                                    ErrorType.VALIDATION_ERROR,
+                                    ErrorCode.VALIDATION_ERROR,
+                                    Constants.CUSTOM_TAX_CATEGORY_REQUIRED,
+                                    "")
+                    );
+                }
+                taxDetails.setCustomTaxCategory(customTaxCategory.trim());
+            } else {
+                taxDetails.setCustomTaxCategory(null);
+            }
+
+            clientEntity.setTaxDetails(taxDetails);
+        }
+    }
+    private void handleIndustryType(ClientRequest clientRequest, Client clientEntity) {
+        if (clientRequest.getIndustry() != null) {
+            clientEntity.setIndustry(clientRequest.getIndustry());
+
+            if (clientRequest.getIndustry() == Industry.OTHER) {
+                String customIndustry = clientRequest.getCustomIndustry();
+                if (customIndustry == null || customIndustry.trim().isEmpty()) {
+                    throw new ValidationException(
+                            new ErrorResponse(
+                                    ErrorType.VALIDATION_ERROR,
+                                    ErrorCode.VALIDATION_ERROR,
+                                    Constants.CUSTOM_INDUSTRY_TYPE_REQUIRED,
+                                    "")
+                    );
+                }
+                clientEntity.setCustomIndustry(customIndustry.trim());
+            } else {
+                clientEntity.setCustomIndustry(null);
+            }
+        }
+    }
+
+  /**
    * Adds a new {@link Client} to the currently logged-in user's organization.
    *
    * @param client the {@link ClientRequest} containing client details to be added
@@ -117,11 +189,12 @@ public class ClientServiceImpl implements ClientService {
       }
     }
     Client newClient = new Client();
+    handleClientType(client, newClient);
+    handleIndustryType(client, newClient);
+    handleTaxDetails(client, newClient);
+
     if (client.getClientName() != null) {
       newClient.setClientName(client.getClientName());
-    }
-    if (client.getClientType() != null) {
-      newClient.setClientType(client.getClientType());
     }
     if (client.getEmail() != null) {
       newClient.setEmail(client.getEmail());
@@ -129,17 +202,11 @@ public class ClientServiceImpl implements ClientService {
     if (client.getContact() != null) {
       newClient.setContact(client.getContact());
     }
-    if (client.getTaxDetails() != null) {
-      newClient.setTaxDetails(client.getTaxDetails());
-    }
     if (client.getPrimaryAddress() != null) {
       newClient.setPrimaryAddress(client.getPrimaryAddress());
     }
     if (client.getBillingAddress() != null) {
       newClient.setBillingAddress(client.getBillingAddress());
-    }
-    if (client.getIndustry() != null) {
-      newClient.setIndustry(client.getIndustry());
     }
     if (client.getDescription() != null) {
       newClient.setDescription(client.getDescription());

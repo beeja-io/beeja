@@ -838,7 +838,7 @@ export const RightSection = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 522px;
+  height: auto;
   background: ${(props) => props.theme.colors.blackColors.white6};
   width: 315px;
 
@@ -848,7 +848,7 @@ export const RightSection = styled.div`
   padding-right: 24px;
   padding-bottom: 36px;
   padding-left: 24px;
-  gap: 32px;
+  gap: 25px;
   border-radius: 16px;
 `;
 
@@ -950,16 +950,15 @@ export const TaxDetailsWrapper = styled.div`
 
 export const TaxItem = styled.div`
   display: flex;
-  gap: 0.5rem;
   align-items: center;
 `;
 export const TaxLabel = styled.div`
   color: ${(props) => props.theme.colors.grayColors.gray11};
-  min-width: 140px;
+  min-width: 100px;
 `;
 
 export const TaxValue = styled.div`
-  font-weight: 600;
+  font-weight: 400;
   color: ${(props) => props.theme.colors.grayColors.gray11};
 `;
 

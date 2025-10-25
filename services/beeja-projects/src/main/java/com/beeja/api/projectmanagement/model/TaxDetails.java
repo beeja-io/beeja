@@ -9,6 +9,8 @@ public class TaxDetails {
   @NotNull(message = "Tax Category cannot be null")
   private TaxCategory taxCategory;
 
+  private String customTaxCategory;
+
   @NotNull(message = "Tax Number cannot be null")
   private String taxNumber;
 }

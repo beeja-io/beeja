@@ -20,6 +20,8 @@ public class ClientRequest {
   @NotNull(message = "Client type cannot be null")
   private ClientType clientType;
 
+  private String customClientType;
+
   @Email(message = "Invalid email format")
   private String email;
 
@@ -38,6 +40,7 @@ public class ClientRequest {
   private boolean usePrimaryAsBillingAddress = false;
 
   private Industry industry;
+  private String customIndustry;
   private String description;
   private MultipartFile logo;
   private boolean removeLogo = false;

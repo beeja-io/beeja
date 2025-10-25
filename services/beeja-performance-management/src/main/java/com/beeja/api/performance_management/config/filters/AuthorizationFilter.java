@@ -35,11 +35,11 @@ public class AuthorizationFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
-    if (request.getRequestURI().startsWith("/finance/actuator/")
-        || request.getRequestURI().equals("/finance/api-docs/swagger-config")
-        || request.getRequestURI().startsWith("/finance/swagger-ui")
-        || request.getRequestURI().startsWith("/finance/openApi.yaml")
-        || request.getRequestURI().startsWith("/finance/v3/api-docs")) {
+    if (request.getRequestURI().startsWith("/performance/actuator/")
+        || request.getRequestURI().equals("/performance/api-docs/swagger-config")
+        || request.getRequestURI().startsWith("/performance/swagger-ui")
+        || request.getRequestURI().startsWith("/performance/openApi.yaml")
+        || request.getRequestURI().startsWith("/performance/v3/api-docs")) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -53,7 +53,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
       log.error(Constants.USER_FAILED_AUTHENTICATE);
       response.setStatus(HttpServletResponse.SC_FORBIDDEN);
       response.getWriter().write(Constants.ACCESS_DENIED);
-    }
+    }        
   }
 
   private boolean isValidAccessToken(String accessToken) {

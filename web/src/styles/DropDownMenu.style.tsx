@@ -266,3 +266,42 @@ export const CloseButtonStyle = styled.button`
   border-right: 2px solid ${(props) => props.theme.colors.grayColors.gray4};
   height: 40px;
 `;
+
+export const CustomInputContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #acacac;
+`;
+
+export const CustomInputField = styled.input`
+  flex: 1;
+  padding: 8px 40px 8px 12px;
+  border: none;
+  outline: none;
+`;
+
+export const AddButton = styled.button`
+  background: none;
+  color: #005792;
+  border: none;
+  padding-right: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+`;
+
+export const ErrorText = styled.div`
+  color: red;
+  margin-top: 4px;
+  font-size: 12px;
+`;
+
+export const NoResults = styled.div`
+  padding: 10px;
+  text-align: center;
+  color: #888;
+`;
