@@ -407,8 +407,8 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
                     { label: t('SELECT_EMI_TENURE'), value: '' },
                     ...React.Children.toArray(renderEmiTenureOptions()).map(
                       (option: any) => ({
-                        label: option.props.children,
-                        value: option.props.value,
+                        label: String(option.props.children),
+                        value: String(option.props.value),
                       })
                     ),
                   ]}

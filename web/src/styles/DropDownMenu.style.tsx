@@ -304,4 +304,6 @@ export const NoResults = styled.div`
   padding: 10px;
   text-align: center;
   color: #888;
+  background-color: #fff;
+  border-radius: 6px;
 `;

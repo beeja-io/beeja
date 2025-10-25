@@ -16,9 +16,13 @@ import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { Client, ClientDetails } from '../entities/ClientEntity';
 import { getAllClient, getClient } from '../service/axiosInstance';
+import { hasPermission } from '../utils/permissionCheck';
+import { useUser } from '../context/UserContext';
+import { CLIENT_MODULE } from '../constants/PermissionConstants';
 
 const ClientManagement = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const goToPreviousPage = () => {
     if (isCreateModalOpen) {
       setIsCreateModalOpen(false);
@@ -145,16 +149,19 @@ const ClientManagement = () => {
               </>
             )}
           </span>
-          {!isCreateModalOpen && !isClientDetailsRoute && (
-            <Button
-              className="submit shadow"
-              onClick={handleOpenCreateModal}
-              width="216px"
-            >
-              <AddNewPlusSVG />
-              {t('Add_New_Client')}
-            </Button>
-          )}
+          {!isCreateModalOpen &&
+            !isClientDetailsRoute &&
+            user &&
+            hasPermission(user, CLIENT_MODULE.CREATE_CLIENT) && (
+              <Button
+                className="submit shadow"
+                onClick={handleOpenCreateModal}
+                width="216px"
+              >
+                <AddNewPlusSVG />
+                {t('Add_New_Client')}
+              </Button>
+            )}
         </ExpenseHeadingSection>
         {isCreateModalOpen ? (
           <AddClientForm

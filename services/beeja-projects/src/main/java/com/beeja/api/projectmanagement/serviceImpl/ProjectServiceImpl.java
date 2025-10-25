@@ -89,7 +89,36 @@ public class ProjectServiceImpl implements ProjectService {
     }
     return Collections.emptyList();
   }
-  @Override
+
+    private String generateProjectIdFromName(String projectName, long orgProjectCount) {
+        if (projectName == null || projectName.isEmpty()) {
+            throw new IllegalArgumentException(Constants.PROJECT_NAME_NOT_NULL);
+        }
+
+        String[] words = projectName.trim().split("\\s+");
+        String prefix;
+
+        if (words.length == 1) {
+            prefix = words[0].substring(0, Math.min(3, words[0].length())).toUpperCase();
+        } else if (words.length == 2) {
+            String part1 = words[0].substring(0, Math.min(2, words[0].length()));
+            String part2 = words[1].substring(0, 1);
+            prefix = (part1 + part2).toUpperCase();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Math.min(3, words.length); i++) {
+                sb.append(words[i].substring(0, 1).toUpperCase());
+            }
+            prefix = sb.toString();
+        }
+
+        long nextNumber = orgProjectCount + 1;
+        String numberPart = String.format("%03d", nextNumber);
+
+        return prefix + numberPart;
+    }
+
+    @Override
   public Project createProjectForClient(ProjectRequest project) {
     Client client =
         clientRepository.findByClientIdAndOrganizationId(
@@ -140,8 +169,17 @@ public class ProjectServiceImpl implements ProjectService {
     newProject.setOrganizationId(
         UserContext.getLoggedInUserOrganization().get(Constants.ID).toString());
 
-    //        TODO:  PROJECT ID GENERATION
-    newProject.setProjectId(UUID.randomUUID().toString().toUpperCase().substring(0, 6));
+    try{
+        long existingProjectCount = projectRepository.countByOrganizationId(newProject.getOrganizationId());
+        newProject.setProjectId(generateProjectIdFromName(newProject.getName(), existingProjectCount));
+    }catch (Exception e){
+        log.error(Constants.ERROR_GENERATING_PROJECT_ID, e.getMessage());
+        throw new ResourceNotFoundException(
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.DB_ERROR,
+                        ErrorCode.RESOURCE_CREATION_ERROR,
+                        Constants.ERROR_GENERATING_PROJECT_ID));
+    }
     try {
       newProject = projectRepository.save(newProject);
     } catch (Exception e) {

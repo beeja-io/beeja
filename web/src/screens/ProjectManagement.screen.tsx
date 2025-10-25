@@ -15,9 +15,13 @@ import ToastMessage from '../components/reusableComponents/ToastMessage.componen
 import { ProjectEntity } from '../entities/ProjectEntity';
 import { getAllProjects, getProject } from '../service/axiosInstance';
 import { toast } from 'sonner';
+import { hasPermission } from '../utils/permissionCheck';
+import { PROJECT_MODULE } from '../constants/PermissionConstants';
+import { useUser } from '../context/UserContext';
 
 const ProjectManagement = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const location = useLocation();
   const { t } = useTranslation();
 
@@ -152,16 +156,19 @@ const ProjectManagement = () => {
               </>
             )}
           </span>
-          {!isCreateModalOpen && !isProjectDetailsRoute && (
-            <Button
-              className="submit shadow"
-              onClick={handleOpenCreateModal}
-              width="216px"
-            >
-              <AddNewPlusSVG />
-              {t('Add_New_Project')}
-            </Button>
-          )}
+          {!isCreateModalOpen &&
+            !isProjectDetailsRoute &&
+            user &&
+            hasPermission(user, PROJECT_MODULE.CREATE_PROJECT) && (
+              <Button
+                className="submit shadow"
+                onClick={handleOpenCreateModal}
+                width="216px"
+              >
+                <AddNewPlusSVG />
+                {t('Add_New_Project')}
+              </Button>
+            )}
         </ExpenseHeadingSection>
 
         {isCreateModalOpen ? (

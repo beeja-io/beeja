@@ -773,7 +773,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       </LogoLabel>
                     )}
                     <span className="infoText-contract">
-                      File format : .pdf, .png, .jpeg
+                      {t('File format')} : .pdf, .doc, .docx
                     </span>
                   </div>
                 )}
@@ -998,7 +998,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       </UploadText>
                     </LogoUploadContainer>
                     <span className="infoText-contract">
-                      File format : .pdf, .png, .jpeg
+                      {t('File format')} : .pdf, .doc, .docx
                     </span>
                     {files.length > 0 && (
                       <LogoLabel>
@@ -1036,7 +1036,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   }
                 }}
               >
-                {t('Save & Continue')}
+                {t('Continue')}
               </Button>
             </div>
           </AddFormMainContainer>

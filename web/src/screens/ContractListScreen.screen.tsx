@@ -21,6 +21,9 @@ import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
 import Pagination from '../components/directComponents/Pagination.component';
+import { hasPermission } from '../utils/permissionCheck';
+import { CONTRACT_MODULE } from '../constants/PermissionConstants';
+import { useUser } from '../context/UserContext';
 export type ContractListProps = {
   contractList: ContractDetails[];
   updateContractList: () => void;
@@ -48,6 +51,7 @@ const ContractList = ({
   const [contractLists, setContractLists] = useState<ContractDetails[]>([]);
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useUser();
   const [editLoadingContractId, setEditLoadingContractId] = useState<
     string | null
   >(null);
@@ -58,6 +62,17 @@ const ContractList = ({
 
   useEffect(() => {
     keyPressFind(searchInputRef);
+  }, []);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const size = parseInt(
+      searchParams.get('size') || itemsPerPage.toString(),
+      10
+    );
+    setCurrentPage(page);
+    setItemsPerPage(size);
   }, []);
 
   const handleContractClick = (id: string) => {
@@ -86,11 +101,19 @@ const ContractList = ({
 
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', newPage.toString());
+    searchParams.set('size', itemsPerPage.toString());
+    navigate({ search: searchParams.toString() });
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', '1');
+    searchParams.set('size', newPageSize.toString());
+    navigate({ search: searchParams.toString() });
   };
 
   return (
@@ -200,7 +223,27 @@ const ContractList = ({
                             <SpinAnimation />
                           ) : (
                             <EditSVG
+                              disabled={
+                                !(
+                                  user &&
+                                  hasPermission(
+                                    user,
+                                    CONTRACT_MODULE.UPDATE_CONTRACT
+                                  )
+                                )
+                              }
                               onClick={async () => {
+                                if (
+                                  !(
+                                    user &&
+                                    hasPermission(
+                                      user,
+                                      CONTRACT_MODULE.UPDATE_CONTRACT
+                                    )
+                                  )
+                                )
+                                  return;
+
                                 setEditLoadingContractId(contract.contractId);
                                 try {
                                   await onEditContract(contract);

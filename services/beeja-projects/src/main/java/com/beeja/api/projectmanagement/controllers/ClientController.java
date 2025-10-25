@@ -69,7 +69,7 @@ public class ClientController {
    * @throws Exception If the client is not found or an error occurs.
    */
   @GetMapping("/{clientId}")
-  @HasPermission(PermissionConstants.GET_CLIENT)
+  @HasPermission({PermissionConstants.GET_CLIENT, PermissionConstants.GET_CONTRACT})
   public ResponseEntity<Client> getClientById(@PathVariable String clientId) throws Exception {
     Client client = clientService.getClientById(clientId);
     return new ResponseEntity<>(client, HttpStatus.OK);

@@ -53,7 +53,7 @@ public class InvoiceController {
   }
 
   @GetMapping("/contract/{contractId}")
-  @HasPermission(PermissionConstants.GET_INVOICE)
+  @HasPermission({PermissionConstants.GET_INVOICE, PermissionConstants.READ_DOCUMENT})
   public ResponseEntity<List<Invoice>> getInvoicesByContractId(@PathVariable String contractId) {
     List<Invoice> invoices = invoiceService.getInvoicesByContractId(contractId);
     return ResponseEntity.ok(invoices);

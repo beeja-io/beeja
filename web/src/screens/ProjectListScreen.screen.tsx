@@ -24,6 +24,9 @@ import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter } from '../utils/stringUtils';
 import Pagination from '../components/directComponents/Pagination.component';
+import { PROJECT_MODULE } from '../constants/PermissionConstants';
+import { hasPermission } from '../utils/permissionCheck';
+import { useUser } from '../context/UserContext';
 export type ProjectListProps = {
   projectList: ProjectEntity[];
   updateProjectList: () => void;
@@ -51,6 +54,7 @@ const ProjectList = ({
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useUser();
 
   const [projectLists, setProjectList] = useState<ProjectEntity[]>([]);
   const [editLoadingProjectId, setEditLoadingProjectId] = useState<
@@ -73,16 +77,36 @@ const ProjectList = ({
     keyPressFind(searchInputRef);
   }, []);
 
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const size = parseInt(
+      searchParams.get('size') || itemsPerPage.toString(),
+      10
+    );
+
+    setCurrentPage(page);
+    setItemsPerPage(size);
+  }, []);
+
   const handleProjectClick = (projectId: string, clientId: string) => {
     navigate(`/projects/project-management/${projectId}/${clientId}`);
   };
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', newPage.toString());
+    searchParams.set('size', itemsPerPage.toString());
+    navigate({ search: searchParams.toString() });
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', '1');
+    searchParams.set('size', newPageSize.toString());
+    navigate({ search: searchParams.toString() });
   };
 
   return (
@@ -217,7 +241,26 @@ const ProjectList = ({
                             <SpinAnimation />
                           ) : (
                             <EditSVG
+                              disabled={
+                                !(
+                                  user &&
+                                  hasPermission(
+                                    user,
+                                    PROJECT_MODULE.UPDATE_PROJECT
+                                  )
+                                )
+                              }
                               onClick={async () => {
+                                if (
+                                  !(
+                                    user &&
+                                    hasPermission(
+                                      user,
+                                      PROJECT_MODULE.UPDATE_PROJECT
+                                    )
+                                  )
+                                )
+                                  return;
                                 setEditLoadingProjectId(project.projectId);
                                 try {
                                   await onEditProject(project);

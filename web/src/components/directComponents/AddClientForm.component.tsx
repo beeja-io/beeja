@@ -575,11 +575,17 @@ const AddClientForm = (props: AddClientFormProps) => {
       }
       await updateClientList();
       handleClose();
-    } catch (error) {
-      setErrorMessage('Failed to submit data.');
-      setShowErrorMessage(true);
-      handleClose();
-      throw new Error('Error fetching data:' + error);
+    } catch (error: any) {
+      const backendMessage =
+        error?.response?.data?.message || error?.message || '';
+
+      if (backendMessage.includes('Client Found with provided email')) {
+        setErrorMessage('Email Already Exists');
+        setShowErrorMessage(true);
+      } else {
+        setErrorMessage('Failed to submit data.');
+        setShowErrorMessage(true);
+      }
     } finally {
       setIsResponseLoading(false);
     }
@@ -783,8 +789,8 @@ const AddClientForm = (props: AddClientFormProps) => {
                         </RemoveButton>
                       </LogoLabel>
                     )}
-                    <span className="infoText">
-                      File format : .pdf, .png, .jpeg
+                    <span className="grayText">
+                      {t('File format')} : .png, .jpeg
                     </span>
                   </InputLabelContainer>
                 )}
@@ -978,7 +984,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   )}
                   <br />
                   <span className="infoText">
-                    File format : .pdf, .png, .jpeg
+                    {t('File format')} : .png, .jpeg
                   </span>
                 </LogoContainer>
               )}

@@ -238,36 +238,50 @@ const roleData = [
   },
   {
     heading: 'Client, Project & Contract Management',
-    labels: ['Full Access', 'Create', 'View', 'Edit', 'Delete'],
+    labels: ['Full Access', 'Create', 'View', 'Edit', 'Document(Logo & Files)'],
     subsections: [
       {
         moduleName: 'Client Management',
         permissions: [
-          { value: 'GCL', label: 'View' },
           { value: 'CCL', label: 'Create' },
+          { value: 'GCL', label: 'View' },
           { value: 'UCL', label: 'Edit' },
-          { value: 'DCL', label: 'Delete' },
+          { value: 'RDCMT', label: 'Document(Logo & Files)' },
         ],
       },
       {
         moduleName: 'Project Management',
         permissions: [
-          { value: 'GPT', label: 'View' },
           { value: 'CPT', label: 'Create' },
+          { value: 'GPT', label: 'View' },
           { value: 'UPT', label: 'Edit' },
-          { value: 'DPT', label: 'Delete' },
+          { value: 'RDCMT', label: 'Document(Logo & Files)' },
         ],
       },
       {
         moduleName: 'Contract Management',
         permissions: [
-          { value: 'GCON', label: 'View' },
           { value: 'CCON', label: 'Create' },
+          { value: 'GCON', label: 'View' },
           { value: 'UCON', label: 'Edit' },
-          { value: 'DCON', label: 'Delete' },
+          { value: 'RDCMT', label: 'Document(Logo & Files)' },
         ],
       },
       // Add more subsections as needed
+    ],
+  },
+  {
+    heading: 'Invoice Management',
+    labels: ['Full Access', 'Generate', 'View', 'Delete'],
+    subsections: [
+      {
+        moduleName: 'Invoice',
+        permissions: [
+          { value: 'CIN', label: 'Generate' },
+          { value: 'GIN', label: 'View' },
+          { value: 'DIN', label: 'Delete' },
+        ],
+      },
     ],
   },
 ];
