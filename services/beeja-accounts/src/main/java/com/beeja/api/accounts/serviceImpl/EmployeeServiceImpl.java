@@ -15,8 +15,10 @@ import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.EmployeeDepartmentDTO;
 import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
+import com.beeja.api.accounts.model.dto.EmployeeSearchDTO;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
 import com.beeja.api.accounts.repository.OrganizationPatternsRepository;
 import com.beeja.api.accounts.repository.RolesRepository;
@@ -27,6 +29,7 @@ import com.beeja.api.accounts.requests.UpdateUserRequest;
 import com.beeja.api.accounts.requests.UpdateUserRoleRequest;
 import com.beeja.api.accounts.response.CreatedUserResponse;
 import com.beeja.api.accounts.response.EmployeeCount;
+import com.beeja.api.accounts.response.EmployeeSearchResponse;
 import com.beeja.api.accounts.service.EmployeeService;
 import com.beeja.api.accounts.utils.BuildErrorMessage;
 import com.beeja.api.accounts.utils.Constants;
@@ -619,4 +622,28 @@ public class EmployeeServiceImpl implements EmployeeService {
                     emp.isActive()))
             .collect(Collectors.toList());
   }
+
+    @Override
+    public List<EmployeeSearchResponse> searchEmployees(String keyword) {
+        String orgId = UserContext.getLoggedInUserOrganization().getId();
+        List<EmployeeSearchDTO> users = userRepository.searchUsersByKeyword(keyword, orgId);
+        if (users.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<String> employeeIds = users.stream()
+                .map(EmployeeSearchDTO::getEmployeeId)
+                .collect(Collectors.toList());
+
+        List<EmployeeDepartmentDTO> departments = employeeFeignClient.getDepartmentsByEmployeeIds(employeeIds);
+
+        Map<String, String> deptMap = departments.stream()
+                .collect(Collectors.toMap(EmployeeDepartmentDTO::getEmployeeId, EmployeeDepartmentDTO::getDepartment));
+        return users.stream()
+                .map(u -> new EmployeeSearchResponse(
+                        u.getEmployeeId(),
+                        u.getFullName(),
+                        deptMap.getOrDefault(u.getEmployeeId(), null)
+                ))
+                .collect(Collectors.toList());
+    }
 }

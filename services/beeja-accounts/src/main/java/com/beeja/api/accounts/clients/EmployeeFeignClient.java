@@ -1,6 +1,9 @@
 package com.beeja.api.accounts.clients;
 
+import com.beeja.api.accounts.model.dto.EmployeeDepartmentDTO;
 import com.beeja.api.accounts.response.EmployeeValuesDTO;
+
+import java.util.List;
 import java.util.Map;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "employee-service", url = "${client-urls.employeeService}")
 public interface EmployeeFeignClient {
@@ -22,4 +26,7 @@ public interface EmployeeFeignClient {
 
   @GetMapping("/v1/users/employee-values")
   EmployeeValuesDTO getEmployeeValues(@RequestHeader String authorization);
+
+    @GetMapping("/v1/users/departments")
+    List<EmployeeDepartmentDTO> getDepartmentsByEmployeeIds(@RequestParam("employeeIds") List<String> employeeIds);
 }

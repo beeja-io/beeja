@@ -14,6 +14,7 @@ import com.beeja.api.accounts.requests.UpdateUserRequest;
 import com.beeja.api.accounts.requests.UpdateUserRoleRequest;
 import com.beeja.api.accounts.response.CreatedUserResponse;
 import com.beeja.api.accounts.response.EmployeeCount;
+import com.beeja.api.accounts.response.EmployeeSearchResponse;
 import com.beeja.api.accounts.service.EmployeeService;
 import com.beeja.api.accounts.utils.Constants;
 import com.beeja.api.accounts.utils.UserContext;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/v1/users")
@@ -204,4 +206,9 @@ public class EmployeeController {
   public List<EmployeeNameDTO> getEmployeeDetailsById(@RequestBody List<String> ids) {
     return employeeService.getEmployeeNamesById(ids);
   }
+
+    @GetMapping("/search")
+    public List<EmployeeSearchResponse> searchEmployees(@RequestParam String keyword) {
+        return employeeService.searchEmployees(keyword);
+    }
 }

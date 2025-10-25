@@ -12,6 +12,7 @@ import com.beeja.api.performance_management.model.dto.EvaluationCycleDetailsDto;
 import com.beeja.api.performance_management.repository.EvaluationCycleRepository;
 import com.beeja.api.performance_management.service.EvaluationCycleService;
 import com.beeja.api.performance_management.service.QuestionnaireService;
+import com.beeja.api.performance_management.utils.BuildErrorMessage;
 import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.ErrorUtils;
 import com.beeja.api.performance_management.utils.UserContext;
@@ -196,10 +197,11 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         log.info(Constants.INFO_FETCHING_EVALUATIONCYCLE_BY_ID, id);
         return cycleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        ErrorUtils.formatError(
+                        BuildErrorMessage.buildErrorMessage(
                                 ErrorType.RESOURCE_NOT_FOUND_ERROR,
                                 ErrorCode.RESOURCE_NOT_FOUND,
-                                Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND + id)
+                                Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND + id
+                        )
                 ));
     }
 
@@ -397,10 +399,11 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         return cycleRepository.findByOrganizationIdAndStatusAndStartDateLessThanEqualAndFeedbackDeadlineGreaterThanEqual(
                         orgId, status, today, today)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        ErrorUtils.formatError(
+                        BuildErrorMessage.buildErrorMessage(
                                 ErrorType.NOT_FOUND,
                                 ErrorCode.CYCLE_NOT_FOUND,
-                                Constants.ERROR_NO_ACTIVE_EVALUATION_CYCLE)
+                                Constants.ERROR_NO_ACTIVE_EVALUATION_CYCLE
+                        )
                 ));
     }
 
@@ -507,11 +510,12 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
     public void deleteCycle(String id) {
         if (!cycleRepository.existsById(id)) {
             throw new ResourceNotFoundException(
-                    ErrorUtils.formatError(
+                    BuildErrorMessage.buildErrorMessage(
                             ErrorType.RESOURCE_NOT_FOUND_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
                             Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND + id
-                    ));
+                    )
+            );
         }
 
         cycleRepository.deleteById(id);

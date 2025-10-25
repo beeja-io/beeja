@@ -11,6 +11,7 @@ import com.beeja.api.performance_management.model.Question;
 import com.beeja.api.performance_management.model.Questionnaire;
 import com.beeja.api.performance_management.repository.QuestionnaireRepository;
 import com.beeja.api.performance_management.service.QuestionnaireService;
+import com.beeja.api.performance_management.utils.BuildErrorMessage;
 import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.ErrorUtils;
 import com.beeja.api.performance_management.utils.UserContext;
@@ -120,7 +121,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
         return questionnaireRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        ErrorUtils.formatError(
+                        BuildErrorMessage.buildErrorMessage(
                                 ErrorType.RESOURCE_NOT_FOUND_ERROR,
                                 ErrorCode.RESOURCE_NOT_FOUND,
                                 Constants.ERROR_INVALID_QUESTIONNAIRE + id
@@ -232,7 +233,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
         if (!questionnaireRepository.existsById(id)) {
             throw new ResourceNotFoundException(
-                    ErrorUtils.formatError(
+                    BuildErrorMessage.buildErrorMessage(
                             ErrorType.RESOURCE_NOT_FOUND_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
                             Constants.ERROR_QUESTIONNAIRE_NOT_FOUND + id
