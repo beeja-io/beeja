@@ -933,13 +933,18 @@ export const nav_AddClient = styled.span`
 `;
 
 export const CountBadge = styled.span`
-  background-color: #f1f2f4;
-  color: #333;
+  position: relative;
+  top: -8px;
+  margin-left: 0;
+  background-color: #005792;
+  color: #ffffffff;
   padding: 2px 8px;
   border-radius: 12px;
   font-size: 0.75rem;
-  margin-left: 6px;
+  font-weight: 600;
+  line-height: 1;
 `;
+
 export const TaxDetailsWrapper = styled.div`
   display: flex;
   flex-direction: column;

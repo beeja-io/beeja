@@ -66,7 +66,37 @@ public class ContractServiceImpl implements ContractService {
     @Autowired ProjectServiceImpl projectServiceImpl;
     @Autowired FileClient fileClient;
 
-  /**
+
+  private String generateContractIdFromTitle(String contractTitle, long orgContractCount) {
+        if (contractTitle == null || contractTitle.isEmpty()) {
+            throw new IllegalArgumentException(Constants.CONTRACT_NAME_NOT_NULL);
+        }
+
+        String[] words = contractTitle.trim().split("\\s+");
+        String prefix;
+
+        if (words.length == 1) {
+            prefix = words[0].substring(0, Math.min(3, words[0].length())).toUpperCase();
+        } else if (words.length == 2) {
+            String part1 = words[0].substring(0, Math.min(2, words[0].length()));
+            String part2 = words[1].substring(0, 1);
+            prefix = (part1 + part2).toUpperCase();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Math.min(3, words.length); i++) {
+                sb.append(words[i].substring(0, 1).toUpperCase());
+            }
+            prefix = sb.toString();
+        }
+
+        long nextNumber = orgContractCount + 1;
+        String numberPart = String.format("%03d", nextNumber);
+
+        return prefix + numberPart;
+  }
+
+
+    /**
    * Creates a new {@link Contract} for a given {@link Project} and {@link ContractRequest}.
    *
    * @param request the {@link ContractRequest} containing details to create the {@link Contract}
@@ -89,7 +119,17 @@ public class ContractServiceImpl implements ContractService {
     }
 
     Contract contract = new Contract();
-    contract.setContractId(UUID.randomUUID().toString().substring(0, 7).toUpperCase());
+    try{
+        long existingContractCount = contractRepository.countByOrganizationId(project.getOrganizationId());
+        contract.setContractId(generateContractIdFromTitle(request.getContractTitle(), existingContractCount));
+    }catch (Exception e){
+        log.error(Constants.ERROR_GENERATING_CONTRACT_ID, e.getMessage());
+        throw new ResourceNotFoundException(
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.DB_ERROR,
+                        ErrorCode.RESOURCE_CREATION_ERROR,
+                        Constants.ERROR_GENERATING_CONTRACT_ID));
+    }
     contract.setProjectId(request.getProjectId());
     contract.setClientId(request.getClientId());
     contract.setContractTitle(request.getContractTitle());

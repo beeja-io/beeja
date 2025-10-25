@@ -21,14 +21,14 @@ export const Tab = styled.div<{ active: boolean }>`
   padding: 10px 16px;
   cursor: pointer;
   border-bottom: 2px solid
-    ${(props) => (props.active ? '#007bff' : 'transparent')};
+    ${(props) => (props.active ? '#005792' : 'transparent')};
   color: ${(props) =>
     props.active
-      ? '#007bff'
+      ? '#005792'
       : '${(props) => props.theme.colors.blackColors.white6}'};
   font-weight: ${(props) => (props.active ? '600' : '500')};
   &:hover {
-    color: #007bff;
+    color: '#005792';
   }
 `;
 
@@ -148,4 +148,16 @@ export const LoaderContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+export const NoDataContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 160%;
+  letter-spacing: 0.2px;
+  color: #818181;
+  text-align: center;
 `;

@@ -11,6 +11,7 @@ import { CountBadge, DateIconWrapper } from '../styles/ClientStyles.style';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import {
   Container,
+  NoDataContainer,
   ProjectsTable,
   Tab,
   TabContent,
@@ -55,7 +56,24 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<
     'Projects' | 'Contracts' | 'Resources' | 'Attachments' | 'Description'
-  >('Projects');
+  >(() => {
+    return (
+      (sessionStorage.getItem(`activeTab_${clientId}`) as
+        | 'Projects'
+        | 'Contracts'
+        | 'Resources'
+        | 'Attachments'
+        | 'Description') ?? 'Projects'
+    );
+  });
+
+  const handleTabChange = (
+    tab: 'Projects' | 'Contracts' | 'Resources' | 'Attachments' | 'Description'
+  ) => {
+    setActiveTab(tab);
+    sessionStorage.setItem(`activeTab_${clientId}`, tab);
+  };
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [contracts, setContracts] = useState<Contract[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
@@ -128,7 +146,7 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
           <Tab
             key={tab}
             active={activeTab === tab}
-            onClick={() => setActiveTab(tab as any)}
+            onClick={() => handleTabChange(tab as any)}
           >
             {t(tab)}
             {tab === 'Projects' && <CountBadge>{projects.length}</CountBadge>}
@@ -177,7 +195,11 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={5}>{t('No Projects Available')}</td>
+                  <td colSpan={5}>
+                    <NoDataContainer>
+                      {t('No Projects Available')}
+                    </NoDataContainer>
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -220,7 +242,11 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6}>{t('No Contracts Available')}</td>
+                  <td colSpan={6}>
+                    <NoDataContainer>
+                      {t('No Contracts Available')}
+                    </NoDataContainer>
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -249,7 +275,11 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4}>{t('No Resources Available')}</td>
+                  <td colSpan={4}>
+                    <NoDataContainer>
+                      {t('No Resources Available')}
+                    </NoDataContainer>
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -265,7 +295,7 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
             {description ? (
               <p>{description}</p>
             ) : (
-              <p>{t('No Description Available')}</p>
+              <NoDataContainer>{t('No Description Added')}</NoDataContainer>
             )}
           </div>
         )}
