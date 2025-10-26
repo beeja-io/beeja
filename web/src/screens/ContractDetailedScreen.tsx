@@ -59,6 +59,9 @@ import { InvoiceIdentifiers } from '../entities/Requests/InvoiceIdentifiersReque
 import { InvoiceInnerBigContainer } from '../styles/InvoiceManagementStyles.style';
 import CenterModalMain from '../components/reusableComponents/CenterModalMain.component';
 import { BillingCurrency } from '../components/reusableComponents/ContractEnums.component';
+import { useFeatureToggles } from '../context/FeatureToggleContext';
+import { hasFeature } from '../utils/featureCheck';
+import { EFeatureToggles } from '../entities/FeatureToggle';
 
 const ContractDetailsScreen: React.FC = () => {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -86,6 +89,7 @@ const ContractDetailsScreen: React.FC = () => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
+  const { featureToggles } = useFeatureToggles();
 
   useEffect(() => {
     const fetchLogoImage = async () => {
@@ -249,18 +253,23 @@ const ContractDetailsScreen: React.FC = () => {
           </RowWrapper>
           <HorizontalLine />
           <InvoiceInnerBigContainer>
-            {user && hasPermission(user, CLIENT_MODULE.GENERATE_INVOICE) && (
-              <button
-                className="button_element"
-                onClick={() => {
-                  if (contract?.contractId) {
-                    handleIsCreateModalOpen(contract.contractId);
-                  }
-                }}
-              >
-                {isLoading ? <SpinAnimation /> : 'Generate Invoice'}
-              </button>
-            )}
+            {user &&
+              hasPermission(user, CLIENT_MODULE.GENERATE_INVOICE) &&
+              hasFeature(
+                featureToggles?.featureToggles ?? [],
+                EFeatureToggles.INVOICE_GENERATION
+              ) && (
+                <button
+                  className="button_element"
+                  onClick={() => {
+                    if (contract?.contractId) {
+                      handleIsCreateModalOpen(contract.contractId);
+                    }
+                  }}
+                >
+                  {isLoading ? <SpinAnimation /> : 'Generate Invoice'}
+                </button>
+              )}
           </InvoiceInnerBigContainer>
         </ContractInfo>
 
@@ -361,7 +370,7 @@ const ContractDetailsScreen: React.FC = () => {
               projectId={projectId ?? undefined}
               status={project?.status}
               clientId={clientDetails?.clientId}
-              billingCurrency={contractDetails.billingCurrency}
+              billingCurrency={contractDetails?.billingCurrency}
             />
           }
         />

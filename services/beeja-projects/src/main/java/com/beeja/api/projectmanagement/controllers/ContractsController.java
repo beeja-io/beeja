@@ -127,7 +127,7 @@ public class ContractsController {
   }
 
     @GetMapping("/{clientId}/resources")
-    @HasPermission(PermissionConstants.GET_CONTRACT)
+    @HasPermission({PermissionConstants.GET_CONTRACT, PermissionConstants.GET_CLIENT})
     public ResponseEntity<List<ClientResourcesDTO>> getClientResources(@PathVariable String clientId) {
         List<ClientResourcesDTO> resources = contractService.getClientResources(clientId);
         if (resources.isEmpty()) {
@@ -137,7 +137,7 @@ public class ContractsController {
     }
 
     @GetMapping("/client/{clientId}")
-    @HasPermission(PermissionConstants.GET_CONTRACT)
+    @HasPermission({PermissionConstants.GET_CONTRACT, PermissionConstants.GET_CLIENT})
     public ResponseEntity<List<ContractResponsesDTO>> getContractsByClientId(
             @PathVariable String clientId) {
         return ResponseEntity.ok(contractService.getContractsByClientId(clientId));

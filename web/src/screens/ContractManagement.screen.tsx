@@ -16,9 +16,13 @@ import AddContractForm from '../components/directComponents/AddContractForm.comp
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import { ContractDetails } from '../entities/ContractEntiy';
 import { getAllContracts, getContractDetails } from '../service/axiosInstance';
+import { hasPermission } from '../utils/permissionCheck';
+import { CONTRACT_MODULE } from '../constants/PermissionConstants';
+import { useUser } from '../context/UserContext';
 
 const ContractManagement = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const { t } = useTranslation();
 
   const goToPreviousPage = () => {
@@ -146,16 +150,19 @@ const ContractManagement = () => {
             )}
           </span>
 
-          {!isCreateModalOpen && !isContractDetailsRoute && (
-            <Button
-              className="submit shadow"
-              onClick={handleOpenCreateModal}
-              width="216px"
-            >
-              <AddNewPlusSVG />
-              {t('Add_New_Contract')}
-            </Button>
-          )}
+          {!isCreateModalOpen &&
+            !isContractDetailsRoute &&
+            user &&
+            hasPermission(user, CONTRACT_MODULE.CREATE_CONTRACT) && (
+              <Button
+                className="submit shadow"
+                onClick={handleOpenCreateModal}
+                width="216px"
+              >
+                <AddNewPlusSVG />
+                {t('Add_New_Contract')}
+              </Button>
+            )}
         </ExpenseHeadingSection>
 
         {isCreateModalOpen ? (

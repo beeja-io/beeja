@@ -14,6 +14,7 @@ import {
   FileMeta,
   NoAttachments,
   LoaderContainer,
+  NoDataContainer,
 } from '../styles/ProjectTabSectionStyles.style';
 import {
   InvId,
@@ -241,8 +242,10 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} style={{ textAlign: 'center' }}>
-                    {t('No Resources Found')}
+                  <td colSpan={3}>
+                    <NoDataContainer>
+                      {t('No Resources Available')}
+                    </NoDataContainer>
                   </td>
                 </tr>
               )}
@@ -263,14 +266,18 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
             <tbody>
               {loadingInvoices ? (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center' }}>
-                    <PulseLoader height="300px" />
+                  <td colSpan={5}>
+                    <LoaderContainer>
+                      <PulseLoader />
+                    </LoaderContainer>
                   </td>
                 </tr>
               ) : invoices.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ textAlign: 'center' }}>
-                    {t('No invoices found')}
+                  <td colSpan={5}>
+                    <NoDataContainer>
+                      {t('No Invoice Available')}
+                    </NoDataContainer>
                   </td>
                 </tr>
               ) : (
@@ -338,9 +345,11 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
         )}
         {activeTab === 'Description' && (
           <div>
-            {description && description.trim() !== ''
-              ? description
-              : 'No description available'}
+            {description?.trim() ? (
+              description
+            ) : (
+              <NoDataContainer>{t('No Description Added')}</NoDataContainer>
+            )}
           </div>
         )}
       </TabContent>
