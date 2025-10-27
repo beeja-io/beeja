@@ -14,6 +14,7 @@ import com.beeja.api.performance_management.request.FeedbackProviderRequest;
 import com.beeja.api.performance_management.response.FeedbackProviderDetails;
 import com.beeja.api.performance_management.service.FeedbackProvidersService;
 import com.beeja.api.performance_management.utils.BuildErrorMessage;
+import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,71 +35,68 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
     private FeedbackProviderRepository feedbackProviderRepository;
 
     @Override
-    public List<FeedbackProvider> assignFeedbackProvider(FeedbackProviderRequest requestDto) {
+    public List<FeedbackProvider> assignFeedbackProvider(String employeeId, FeedbackProviderRequest requestDto) {
         List<FeedbackProvider> savedForms = new ArrayList<>();
+        String orgId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
 
-        String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
-
-        try{
+        try {
             if (requestDto == null) {
-                log.error("FeedbackFormRequest is null");
+                log.error(Constants.FEEDBACK_REQUEST_NULL);
                 throw new BadRequestException(
                         ErrorType.VALIDATION_ERROR + "," +
                                 ErrorCode.FIELD_VALIDATION_MISSING + "," +
-                                "Request body cannot be null");
+                                Constants.FEEDBACK_REQUEST_NULL);
             }
-            for (String receiverId : requestDto.getEmployeeIds()) {
 
-                List<AssignedReviewer> reviewers = requestDto.getAssignedReviewers().stream()
-                        .filter(r -> !r.getReviewerId().equals(receiverId))
-                        .map(r -> {
-                            AssignedReviewer rev = new AssignedReviewer();
-                            rev.setReviewerId(r.getReviewerId());
-                            rev.setRole(r.getRole());
-                            rev.setStatus(ProviderStatus.IN_PROGRESS);
-                            return rev;
-                        })
-                        .toList();
+            List<AssignedReviewer> reviewers = requestDto.getAssignedReviewers().stream()
+                    .filter(r -> !r.getReviewerId().equals(employeeId))
+                    .map(r -> {
+                        AssignedReviewer rev = new AssignedReviewer();
+                        rev.setReviewerId(r.getReviewerId());
+                        rev.setRole(r.getRole());
+                        rev.setStatus(ProviderStatus.IN_PROGRESS);
+                        return rev;
+                    })
+                    .toList();
 
-                feedbackProviderRepository.findByOrganizationIdAndEmployeeIdAndCycleId(orgId, receiverId, requestDto.getCycleId())
-                        .ifPresentOrElse(
-                                existing -> savedForms.add(existing),
-                                () -> {
-                                    FeedbackProvider form = new FeedbackProvider();
-                                    form.setOrganizationId(orgId);
-                                    form.setEmployeeId(receiverId);
-                                    form.setCycleId(requestDto.getCycleId());
-                                    form.setQuestionnaireId(requestDto.getQuestionnaireId());
-                                    form.setAssignedReviewers(reviewers);
-                                    form.setProviderStatus(ProviderStatus.IN_PROGRESS);
-                                    try {
-                                        savedForms.add(feedbackProviderRepository.save(form));
-                                        log.info("Saved feedback form for employeeId={}", receiverId);
-                                    } catch (Exception e) {
-                                        log.error("Error saving feedback form for employeeId={}: {}", receiverId, e.getMessage(), e);
-                                        throw e;
-                                    }
+            feedbackProviderRepository.findByOrganizationIdAndEmployeeIdAndCycleId(orgId, employeeId, requestDto.getCycleId())
+                    .ifPresentOrElse(
+                            existing -> savedForms.add(existing),
+                            () -> {
+                                FeedbackProvider form = new FeedbackProvider();
+                                form.setOrganizationId(orgId);
+                                form.setEmployeeId(employeeId);
+                                form.setCycleId(requestDto.getCycleId());
+                                form.setQuestionnaireId(requestDto.getQuestionnaireId());
+                                form.setAssignedReviewers(reviewers);
+                                try {
+                                    savedForms.add(feedbackProviderRepository.save(form));
+                                } catch (Exception e) {
+                                    log.error(Constants.ERROR_ASSIGNING_FEEDBACK_PROVIDER, employeeId, e);
+                                    throw e;
                                 }
-                        );
-            }
-        }catch (BadRequestException e) {
-            log.warn("BadRequestException: {}", e.getMessage());
+                            }
+                    );
+
+        } catch (BadRequestException e) {
+            log.warn(Constants.WARN_BAD_REQUEST_EXCEPTION, e.getMessage());
         }
-        log.info("Total feedback forms processed: {}", savedForms.size());
+
+        log.info(Constants.INFO_FEEDBACK_FORM_PROCESSED, employeeId);
         return savedForms;
     }
 
     @Override
     public List<FeedbackProvider> updateFeedbackProviders(FeedbackProviderRequest request, String employeeId) {
-        String organizationId = UserContext.getLoggedInUserOrganization().get("id").toString();
-        log.info("Updating feedback providers for employeeId={}, orgId={}", employeeId, organizationId);
+        String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+        log.info(Constants.INFO_UPDATING_FEEDBACK_PROVIDERS, employeeId, organizationId);
 
         if (employeeId == null || employeeId.trim().isEmpty()) {
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.VALIDATION_ERROR,
                             ErrorCode.NUll_VALUE,
-                            "Employee ID must not be null or empty"
+                            Constants.EMPLOYEE_ID_NOT_EMPTY
                     )
             );
         }
@@ -108,7 +106,7 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.VALIDATION_ERROR,
                             ErrorCode.NUll_VALUE,
-                            "Assigned reviewers list must not be empty"
+                            Constants.ASSIGNED_REVIEWERS_NOT_EMPTY
                     )
             );
         }
@@ -119,7 +117,7 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                         BuildErrorMessage.buildErrorMessage(
                                 ErrorType.RESOURCE_NOT_FOUND_ERROR,
                                 ErrorCode.RESOURCE_NOT_FOUND,
-                                "Feedback form not found for employeeId=" + employeeId
+                                Constants.PROVIDERS_NOT_FOUND + employeeId
                         )
                 ));
 
@@ -128,18 +126,17 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.VALIDATION_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Cycle ID mismatch for employeeId=" + employeeId
+                            Constants.CYCLE_ID_MISMATCH + employeeId
                     )
             );
         }
 
-        // Validate questionnaireId
         if (!existingForm.getQuestionnaireId().equals(request.getQuestionnaireId())) {
             throw new ResourceNotFoundException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.VALIDATION_ERROR,
                             ErrorCode.RESOURCE_NOT_FOUND,
-                            "Questionnaire ID mismatch for employeeId=" + employeeId
+                            Constants.QUESTIONNAIRE_ID_MISMATCH + employeeId
                     )
             );
         }
@@ -158,12 +155,8 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
         existingForm.setEmployeeId(employeeId);
         existingForm.setOrganizationId(organizationId);
         existingForm.setAssignedReviewers(reviewers);
-        existingForm.setProviderStatus(ProviderStatus.IN_PROGRESS);
 
         FeedbackProvider savedForm = feedbackProviderRepository.save(existingForm);
-
-        log.info("✅ Updated feedback provider for employeeId={} with {} reviewers and status={}",
-                employeeId, reviewers.size(), existingForm.getProviderStatus());
 
         return List.of(savedForm);
     }
@@ -172,7 +165,7 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
     @Override
     public FeedbackProviderDetails getFeedbackFormDetails(String employeeId, String cycleId, String providerStatus) {
         try {
-            String organizationId = UserContext.getLoggedInUserOrganization().get("id").toString();
+            String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
 
             List<FeedbackProvider> feedbackForm = feedbackProviderRepository
                     .findByOrganizationIdAndEmployeeIdAndCycleId(organizationId, employeeId, cycleId)
@@ -181,7 +174,7 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
 
 
             List<EmployeeIdNameDTO> employeeDetails = accountClient.getEmployeeNamesById(List.of(employeeId));
-            String employeeName = employeeDetails.isEmpty() ? "Unknown" : employeeDetails.get(0).getFullName();
+            String employeeName = employeeDetails.isEmpty() ? "-" : employeeDetails.get(0).getFullName();
 
             List<AssignedReviewer> assignedReviewers = feedbackForm.isEmpty()
                     ? Collections.emptyList()
@@ -200,7 +193,7 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
 
                 reviewerDetails.stream()
                         .filter(dto -> dto.getEmployeeId() == null || dto.getFullName() == null)
-                        .forEach(dto -> log.warn("Invalid reviewer detail returned: {}", dto));
+                        .forEach(dto -> log.warn(Constants.INVALID_REVIEWER_DETAIL_RETURNED, dto));
 
                 reviewerNameMap = reviewerDetails.stream()
                         .filter(dto -> dto.getEmployeeId() != null && dto.getFullName() != null)
@@ -218,7 +211,7 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                             (r.getStatus() != null && r.getStatus().toString().equalsIgnoreCase(providerStatus)))
                     .map(r -> ReviewerDetailsDTO.builder()
                             .reviewerId(r.getReviewerId())
-                            .reviewerName(reviewerNameMap.getOrDefault(r.getReviewerId(), "Unknown"))
+                            .reviewerName(reviewerNameMap.getOrDefault(r.getReviewerId(), "-"))
                             .role(r.getRole())
                             .providerStatus(r.getStatus())
                             .build())
@@ -231,7 +224,7 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                     .build();
 
         } catch (Exception e) {
-            log.error("Exception in getFeedbackFormDetails: ", e);
+            log.error(Constants.WARN_BAD_REQUEST_EXCEPTION, e.getMessage());
             throw e;
         }
     }

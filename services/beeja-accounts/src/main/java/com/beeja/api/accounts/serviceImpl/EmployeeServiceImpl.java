@@ -642,6 +642,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .map(u -> new EmployeeSearchResponse(
                         u.getEmployeeId(),
                         u.getFullName(),
+                        u.getEmail(),
                         deptMap.getOrDefault(u.getEmployeeId(), null)
                 ))
                 .collect(Collectors.toList());

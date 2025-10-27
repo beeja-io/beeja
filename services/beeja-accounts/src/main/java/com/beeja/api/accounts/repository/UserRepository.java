@@ -55,12 +55,12 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     @Aggregation(pipeline = {
             "{ $match: { 'organizations._id': ?1, $or: [ " +
-                    "{ 'firstName': { $regex: ?0, $options: 'i' } }, " +
-                    "{ 'lastName': { $regex: ?0, $options: 'i' } }, " +
-                    "{ $expr: { $regexMatch: { input: { $concat: ['$firstName', ' ', '$lastName'] }, regex: ?0, options: 'i' } } }, " +
-                    "{ 'employeeId': { $regex: ?0, $options: 'i' } } " +
+                    "{ 'firstName': { $regex: '^?0', $options: 'i' } }, " +
+                    "{ 'lastName': { $regex: '^?0', $options: 'i' } }, " +
+                    "{ $expr: { $regexMatch: { input: { $concat: [ { $ifNull: ['$firstName',''] }, ' ', { $ifNull: ['$lastName',''] } ] }, regex: '^?0', options: 'i' } } }, " +
+                    "{ 'employeeId': { $regex: '^?0', $options: 'i' } } " +
                     "] } }",
-            "{ $project: { _id: 0, employeeId: 1, fullName: { $concat: ['$firstName', ' ', '$lastName'] } } }"
+            "{ $project: { _id: 1, employeeId: 1, fullName: { $concat: [ { $ifNull: ['$firstName',''] }, ' ', { $ifNull: ['$lastName',''] } ] }, email: 1 } }"
     })
     List<EmployeeSearchDTO> searchUsersByKeyword(String keyword, String organizationId);
 }

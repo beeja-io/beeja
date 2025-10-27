@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface FeedbackProvidersService {
 
-    List<FeedbackProvider> assignFeedbackProvider(FeedbackProviderRequest requestDto);
+    List<FeedbackProvider> assignFeedbackProvider(String employeeId, FeedbackProviderRequest requestDto);
 
     List<FeedbackProvider> updateFeedbackProviders(FeedbackProviderRequest request, String employeeId);
 

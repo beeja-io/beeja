@@ -6,22 +6,26 @@ import com.beeja.api.performance_management.response.FeedbackProviderDetails;
 import com.beeja.api.performance_management.service.FeedbackProvidersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("feedbackProvider")
+@RequestMapping("/v1/feedbackProvider")
 public class FeedbackProvidersController {
 
     @Autowired
     FeedbackProvidersService feedbackProvidersService;
 
-    @PostMapping("/assign")
-    public ResponseEntity<List<FeedbackProvider>> assignFeedbackProvider(@RequestBody FeedbackProviderRequest requestDto) {
-        List<FeedbackProvider> assignProvider = feedbackProvidersService.assignFeedbackProvider(requestDto);
-        return ResponseEntity.ok(assignProvider);
+    @PostMapping("/assign/{employeeId}")
+    public ResponseEntity<List<FeedbackProvider>> assignFeedbackProvider(
+            @PathVariable String employeeId,
+            @RequestBody FeedbackProviderRequest requestDto) {
+
+        List<FeedbackProvider> assignedProviders = feedbackProvidersService.assignFeedbackProvider(employeeId, requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(assignedProviders);
     }
 
     @PutMapping("/providers/{employeeId}")

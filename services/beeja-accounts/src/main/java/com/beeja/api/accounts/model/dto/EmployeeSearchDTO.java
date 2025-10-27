@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class EmployeeSearchDTO {
     private String employeeId;
     private String fullName;
+    private String email;
 }

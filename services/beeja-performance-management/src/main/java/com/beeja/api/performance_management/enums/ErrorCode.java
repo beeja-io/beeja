@@ -44,5 +44,6 @@ public enum ErrorCode {
     INVALID_INPUT,
     DATABASE_ERROR,
     INVALID_OPERATION,
-    UNKNOWN
+    UNKNOWN,
+    DUPLICATE_RESOURCE
 }
