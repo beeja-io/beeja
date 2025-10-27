@@ -23,7 +23,7 @@ import java.util.Map;
  * as well as manage related questionnaires and their statuses.
  */
 @RestController
-@RequestMapping("/api/cycles")
+@RequestMapping("/v1/api/cycles")
 public class EvaluationCycleController {
 
     @Autowired
