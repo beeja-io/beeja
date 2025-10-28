@@ -60,14 +60,33 @@ export const InvoiceInnerBigContainer = styled.div`
     }
   }
   .button_element {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 32px;
+    border: none;
     border-radius: 10px;
     background-color: #005792;
-    box-shadow: 2px 7px 8px 0px rgba(0, 87, 146, 0.2);
-    padding: 10px;
-    color: #fff;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Nunito', sans-serif;
+    box-shadow: 0px 4px 8px rgba(0, 87, 146, 0.25);
     cursor: pointer;
-    margin: 10px;
-    margin-left: 5px;
+    transition: all 0.2s ease;
+
+    &:active {
+      background-color: #00466e;
+      box-shadow: 0px 3px 6px rgba(0, 87, 146, 0.25);
+      transform: translateY(0);
+    }
+
+    &:disabled {
+      background-color: #a5c8de;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
   }
 `;
 export const InvoiceInnersmallContainer = styled.div`
@@ -209,22 +228,33 @@ margin:10px;
 }
 `;
 export const AddRowContainer = styled.div`
+margin-top: 10px;
+margin-bottom: 10px;
   .rowsAlign {
     display: flex;
-    justify-content: space-between;
-    margin: 10px;
-    padding: 10px;
+    margin-top: 10px;
     flex-wrap: wrap;  
   }
-  .alignButton {
-    display: flex;
-    justify-content: center;
+.alignButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+
+  button {
+    border: none;
+    background: transparent;  
+    padding: 0;             
+    cursor: pointer;          
+    display: flex;           
     align-items: center;
-    gap: 10px;
-    button {
-      border: none;
-    }
+    justify-content: center;
   }
+  button:last-child svg path {
+    fill: ${(props) => props.theme.colors.blackColors.black1};
+  }
+
+}
   .rowItem {
     display: flex;
     flex-direction: column;
@@ -244,8 +274,33 @@ export const AddRowContainer = styled.div`
     input[name="serialNo"] {
       background-color: #ffffff;
       cursor: not-allowed;
-      width: 60px;
+      width: 50px;
     }
+    input[name="contract"] {
+      background-color: #ffffff;
+      width: 150px;
+    }
+    input[name="description"] {
+      background-color: #ffffff;
+      width: 500px;
+    }
+    input[name="price"] {
+      background-color: #ffffff;
+      width: 110px;
+    }
+  }
+  .r1{
+    margin-right: 37px;
+    margin-left: 5px;
+  }
+  .r2{
+    margin-right: 50px;
+  }
+  .r3{
+    margin-right: 98px;
+  }
+  .r4{
+    margin-right: 40px;
   }
   .errorSpan {
     font-size: 12px;
@@ -280,12 +335,12 @@ export const InvoiceButtonContainer = styled.div`
   gap: 10px;
   margin: 20px 0px;
 `;
-export const InvoiceButton = styled(Button)<{
+export const InvoiceButton = styled(Button) <{
   disabled?: boolean;
   variant?: 'send' | 'download';
 }>`
   width: 150px;
-  height: 50px;
+  height: 55px;
   padding: 12px 12px;
   font-weight: bold;
 
@@ -302,6 +357,11 @@ export const InvoiceButton = styled(Button)<{
     color: ${({ disabled }) => (disabled ? '#a0a0a0' : undefined)};
     cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   }
+`;
+export const TableShowing = styled.div`
+  margin: 10px;
+  border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+  border-radius: 6px;
 `;
 export const InvoiceDetails = styled.div`
   border-radius: 6px;
@@ -350,7 +410,6 @@ export const TextInput = styled.input`
   width: 160px;
   margin: 0px 10px;
 `;
-// InvoiceManagementStyles.style.tsx
 
 export const TableHead = styled.thead`
   background-color: ${(props) => props.theme.colors.blackColors.white3};
@@ -367,7 +426,6 @@ export const TableHead = styled.thead`
     border-radius: 10px;
 
     th {
-      padding: 0 10px;
       font-size: 12px;
     }
   }
@@ -390,6 +448,9 @@ export const TableBodyRow = styled.tr`
     padding: 0 10px;
     font-size: 12px;
     vertical-align: middle;
+  }
+  svg path {
+    fill: ${(props) => props.theme.colors.blackColors.black1};
   }
 `;
 export const DatePicker = styled.div`
@@ -420,8 +481,8 @@ margin:20px 0px;
 `;
 export const TableRow = styled.tr`
   height: 35px;
-  border-bottom: 1px solid #005792;
-  font-family: Nunito;
+  border-bottom: 1px solid #55565735;
+  color: #687588;
   td {
     font-size: 12px;
     vertical-align: middle;
@@ -433,12 +494,33 @@ export const Tablelist = styled.table`
     margin: 10px;
   }
 `;
+export const TableList = styled.table`
+  border: 0;
+  width: 100%;
+  border-collapse: collapse;
+  /*  z-index: -1; */
+
+  thead {
+    background-color: ${(props) => props.theme.colors.blackColors.white3};
+    color: ${(props) => props.theme.colors.grayColors.gray7};
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 160%;
+    letter-spacing: 0.2px;
+    height: 56px;
+
+    tr th {
+      padding: 0 10px;
+      font-size: 12px;
+    }
+  }
+`;
 export const TableBodyRows = styled.tr`
   height: 30px;
   td {
     padding: 0 10px;
     font-size: 12px;
-    vertical-align: middle;
   }
 `;
 export const InvoicePaymentContainer = styled.div`

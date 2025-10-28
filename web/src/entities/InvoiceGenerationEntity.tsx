@@ -45,7 +45,7 @@ export interface AddInvoiceFormProps {
 export interface FormDataProps {
   RemittanceNo: string;
   InvoiceNo: string;
-  tax: number;
+  tax: String;
   taxId: string;
   fromDate: Date;
   toDate: Date;
