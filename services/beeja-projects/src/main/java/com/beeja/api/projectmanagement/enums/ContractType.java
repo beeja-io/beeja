@@ -4,5 +4,6 @@ public enum ContractType {
     FIXED_PRICE,
     HYBRID,
     MILESTONE_BASED,
-    RETAINER;
+    RETAINER,
+    OTHER;
 }

@@ -249,12 +249,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         {isOpen && !disabled && (
           <DropdownListStyle className={`${listClassName || ''}`}>
             {sortedOptions
-              .filter(
-                (opt) =>
-                  opt.value !== null &&
-                  opt.label !== label &&
-                  opt.label.trim() !== ''
-              )
+              .filter((opt) => opt.value !== null && opt.value !== '')
               .map((item, index) => {
                 const isSelected = selected === item.value;
                 return (
@@ -280,6 +275,12 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
                   value={customValue}
                   onChange={(e) => setCustomValue(e.target.value)}
                   placeholder={t('Enter specific type')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddCustomValue();
+                    }
+                  }}
                 />
                 <AddButton
                   type="button"

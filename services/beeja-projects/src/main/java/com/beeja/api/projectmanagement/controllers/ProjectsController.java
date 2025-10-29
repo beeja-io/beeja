@@ -162,8 +162,8 @@ public class ProjectsController {
     }
 
     @PatchMapping("/{projectId}/status")
-    @HasPermission(PermissionConstants.UPDATE_CONTRACT)
-    public ResponseEntity<Project> changeContractStatus(
+    @HasPermission(PermissionConstants.UPDATE_PROJECT)
+    public ResponseEntity<Project> changeProjectStatus(
             @PathVariable String projectId,
             @RequestBody ProjectStatus status) {
 

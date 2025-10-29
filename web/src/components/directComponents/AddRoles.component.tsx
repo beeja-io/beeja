@@ -52,6 +52,20 @@ const AddRoleComponent: React.FC<Props> = ({
   };
   const { t } = useTranslation();
 
+  const isPartOfAnotherFullAccess = (
+    dep: string,
+    permissionsList: string[]
+  ) => {
+    const fullContractPermissions = ['CCON', 'UCON', 'DCON', 'GCON'];
+    if (
+      dep === 'GCON' &&
+      fullContractPermissions.every((p) => permissionsList.includes(p))
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     if (editingRole) {
       setRoleName(editingRole.name);
@@ -98,7 +112,10 @@ const AddRoleComponent: React.FC<Props> = ({
               updatedPermissions.includes(key) &&
               deps.includes(dep)
           );
-          if (!stillRequired) {
+          if (
+            !stillRequired &&
+            !isPartOfAnotherFullAccess(dep, updatedPermissions)
+          ) {
             updatedPermissions = updatedPermissions.filter((p) => p !== dep);
           }
         });
@@ -152,7 +169,10 @@ const AddRoleComponent: React.FC<Props> = ({
                 updatedPermissions.includes(key) &&
                 deps.includes(dep)
             );
-            if (!stillRequired) {
+            if (
+              !stillRequired &&
+              !isPartOfAnotherFullAccess(dep, updatedPermissions)
+            ) {
               updatedPermissions = updatedPermissions.filter((p) => p !== dep);
             }
           });

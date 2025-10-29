@@ -354,7 +354,10 @@ export const updatePerformanceCycle = (
   id: string,
   data: any
 ): Promise<AxiosResponse> => {
-  return axiosInstance.put(`/performance/v1/api/cycles/${id}/full-update`, data);
+  return axiosInstance.put(
+    `/performance/v1/api/cycles/${id}/full-update`,
+    data
+  );
 };
 
 export const deletePerformanceCycle = (id: string): Promise<AxiosResponse> => {

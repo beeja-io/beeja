@@ -5,6 +5,8 @@ import com.beeja.api.projectmanagement.client.FileClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
+import com.beeja.api.projectmanagement.enums.ContractBillingType;
+import com.beeja.api.projectmanagement.enums.ContractType;
 import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
@@ -29,6 +31,7 @@ import com.beeja.api.projectmanagement.utils.UserContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import io.micrometer.core.instrument.config.validate.ValidationException;
 import jakarta.ws.rs.InternalServerErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +98,28 @@ public class ContractServiceImpl implements ContractService {
         return prefix + numberPart;
   }
 
+    private void handleContractType(ContractRequest contractRequest, Contract contractEntity) {
+        if (contractRequest.getContractType() != null) {
+            contractEntity.setContractType(contractRequest.getContractType());
+
+            if (contractRequest.getContractType() == ContractType.OTHER) {
+                String customContractType = contractRequest.getCustomContractType();
+                if (customContractType == null || customContractType.trim().isEmpty()) {
+                    throw new ResourceNotFoundException(
+                            BuildErrorMessage.buildErrorMessage(
+                                    ErrorType.VALIDATION_ERROR,
+                                    ErrorCode.VALIDATION_ERROR,
+                                    Constants.CUSTOM_CONTRACT_TYPE_REQUIRED
+                            )
+                    );
+                }
+                contractEntity.setCustomContractType(customContractType.trim());
+            } else {
+                contractEntity.setCustomContractType(null);
+            }
+        }
+    }
+
 
     /**
    * Creates a new {@link Contract} for a given {@link Project} and {@link ContractRequest}.
@@ -141,7 +166,7 @@ public class ContractServiceImpl implements ContractService {
     contract.setOrganizationId(project.getOrganizationId());
     contract.setBillingCurrency(request.getBillingCurrency());
     contract.setBillingType(request.getBillingType());
-    contract.setContractType(request.getContractType());
+      handleContractType(request, contract);
     contract.setStatus(ProjectStatus.IN_PROGRESS);
       if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
           try{
@@ -321,11 +346,19 @@ public class ContractServiceImpl implements ContractService {
     }
 
     if (request.getDescription() != null) contract.setDescription(request.getDescription());
-    if (request.getContractValue() != null) contract.setContractValue(request.getContractValue());
+    if (request.getBillingCurrency() != null) {
+          contract.setBillingCurrency(request.getBillingCurrency());
+    } else if (request.getBillingType() == ContractBillingType.NON_BILLABLE) {
+          contract.setBillingCurrency(null);
+    }
     if (request.getStartDate() != null) contract.setStartDate(request.getStartDate());
     if (request.getEndDate() != null) contract.setEndDate(request.getEndDate());
     if (request.getSignedBy() != null) contract.setSignedBy(request.getSignedBy());
-    if (request.getBillingCurrency() != null) contract.setBillingCurrency(request.getBillingCurrency());
+    if (request.getContractValue() != null) {
+        contract.setContractValue(request.getContractValue());
+    } else if (request.getBillingType() == ContractBillingType.NON_BILLABLE) {
+        contract.setContractValue(null);
+    }
     if(request.getContractType() != null) contract.setContractType(request.getContractType());
     if(request.getBillingType() != null) contract.setBillingType(request.getBillingType());
     if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){

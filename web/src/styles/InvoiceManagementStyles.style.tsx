@@ -68,6 +68,13 @@ export const InvoiceInnerBigContainer = styled.div`
     cursor: pointer;
     margin: 10px;
     margin-left: 5px;
+    &:disabled {
+      background-color: #d3d3d3;
+      color: #666;
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.7;
+    }
   }
 `;
 export const InvoiceInnersmallContainer = styled.div`
