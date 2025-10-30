@@ -1,17 +1,19 @@
 package com.beeja.api.performance_management.serviceImpl;
 
 import com.beeja.api.performance_management.client.AccountClient;
+import com.beeja.api.performance_management.client.EmployeeFeignClient;
 import com.beeja.api.performance_management.enums.ErrorCode;
 import com.beeja.api.performance_management.enums.ErrorType;
 import com.beeja.api.performance_management.enums.ProviderStatus;
 import com.beeja.api.performance_management.exceptions.BadRequestException;
+import com.beeja.api.performance_management.exceptions.FeignClientException;
 import com.beeja.api.performance_management.exceptions.ResourceNotFoundException;
 import com.beeja.api.performance_management.model.FeedbackProvider;
-import com.beeja.api.performance_management.model.dto.AssignedReviewer;
-import com.beeja.api.performance_management.model.dto.EmployeeIdNameDTO;
+import com.beeja.api.performance_management.model.dto.*;
 import com.beeja.api.performance_management.repository.FeedbackProviderRepository;
 import com.beeja.api.performance_management.request.FeedbackProviderRequest;
 import com.beeja.api.performance_management.response.FeedbackProviderDetails;
+import com.beeja.api.performance_management.response.ReviewerAssignedEmployeesResponse;
 import com.beeja.api.performance_management.service.FeedbackProvidersService;
 import com.beeja.api.performance_management.utils.BuildErrorMessage;
 import com.beeja.api.performance_management.utils.Constants;
@@ -19,7 +21,7 @@ import com.beeja.api.performance_management.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.beeja.api.performance_management.model.dto.ReviewerDetailsDTO;
+import org.springframework.web.ErrorResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,6 +32,9 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
 
     @Autowired
     AccountClient accountClient;
+
+    @Autowired
+    EmployeeFeignClient employeeFeignClient;
 
     @Autowired
     private FeedbackProviderRepository feedbackProviderRepository;
@@ -225,6 +230,100 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
 
         } catch (Exception e) {
             log.error(Constants.WARN_BAD_REQUEST_EXCEPTION, e.getMessage());
+            throw e;
+        }
+    }
+
+    @Override
+    public ReviewerAssignedEmployeesResponse getEmployeesAssignedToReviewer() {
+        try {
+            String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
+            String reviewerId = UserContext.getLoggedInEmployeeId();
+
+            List<FeedbackProvider> providers =
+                    feedbackProviderRepository.findByOrganizationId(organizationId);
+
+            List<FeedbackProvider> matchedProviders = providers.stream()
+                    .filter(p -> p.getAssignedReviewers() != null &&
+                            p.getAssignedReviewers().stream()
+                                    .anyMatch(r -> reviewerId.equals(r.getReviewerId())))
+                    .toList();
+
+
+            if (matchedProviders.isEmpty()) {
+                return null;
+            }
+
+            List<String> employeeIds = matchedProviders.stream()
+                    .map(FeedbackProvider::getEmployeeId)
+                    .distinct()
+                    .toList();
+
+            List<EmployeeIdNameDTO> employeeDetails;
+            try {
+                employeeDetails = accountClient.getEmployeeNamesById(employeeIds);
+            } catch (Exception ex) {
+                log.error(Constants.ACCOUNT_CLIENT_ERROR, reviewerId, ex);
+                throw new FeignClientException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.FEIGN_CLIENT_ERROR,
+                                ErrorCode.FEIGN_CLIENT_ERROR,
+                                Constants.ACCOUNT_CLIENT_ERROR
+                        )
+                );
+            }
+
+
+            List<EmployeeDepartmentDTO> departmentDetails;
+            try {
+                departmentDetails = employeeFeignClient.getDepartmentsByEmployeeIds(employeeIds);
+            } catch (Exception ex) {
+                log.error(Constants.EMPLOYEE_CLIENT_ERROR, reviewerId, ex);
+                throw new FeignClientException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.FEIGN_CLIENT_ERROR,
+                                ErrorCode.FEIGN_CLIENT_ERROR,
+                                Constants.EMPLOYEE_CLIENT_ERROR
+                        )
+                );
+            }
+            Map<String, String> employeeNameMap = employeeDetails.stream()
+                    .filter(e -> e.getEmployeeId() != null && e.getFullName() != null)
+                    .collect(Collectors.toMap(EmployeeIdNameDTO::getEmployeeId, EmployeeIdNameDTO::getFullName));
+
+            Map<String, String> employeeDepartmentMap = departmentDetails.stream()
+                    .filter(e -> e.getEmployeeId() != null && e.getDepartment() != null)
+                    .collect(Collectors.toMap(EmployeeDepartmentDTO::getEmployeeId, EmployeeDepartmentDTO::getDepartment));
+
+            List<EmployeeIdNameDTO> reviewerDetails = accountClient.getEmployeeNamesById(List.of(reviewerId));
+            String reviewerName = reviewerDetails.isEmpty() ? "Unknown" : reviewerDetails.get(0).getFullName();
+
+
+            List<AssignedEmployeeDTO> assignedEmployees = matchedProviders.stream()
+                    .map(p -> {
+                        AssignedReviewer reviewer = p.getAssignedReviewers().stream()
+                                .filter(r -> reviewerId.equals(r.getReviewerId()))
+                                .findFirst()
+                                .orElse(null);
+
+                        return AssignedEmployeeDTO.builder()
+                                .employeeId(p.getEmployeeId())
+                                .employeeName(employeeNameMap.getOrDefault(p.getEmployeeId(), "Unknown"))
+                                .department(employeeDepartmentMap.getOrDefault(p.getEmployeeId(), "Unknown"))
+                                .cycleId(p.getCycleId())
+                                .role(reviewer != null ? reviewer.getRole() : null)
+                                .build();
+                    })
+                    .toList();
+
+            return ReviewerAssignedEmployeesResponse.builder()
+                    .reviewerId(reviewerId)
+                    .reviewerName(reviewerName)
+                    .assignedEmployees(assignedEmployees)
+                    .build();
+
+        } catch (Exception e) {
+            log.error(Constants.INVALID_ERROR, e);
             throw e;
         }
     }

@@ -96,4 +96,11 @@ public class Constants {
     public static final String REMOVE_RECEIVER = "Removed {} old receivers not present in incoming list";
     public static final String NO_RECEIVER_FOUND = "No receivers found for organizationId={}, cycleId={}, questionnaireId={}";
     public static final String NOT_ASSIGNED = "No reviewers assigned for employeeId={}, providerId={}";
+
+
+    //============== Fegin client Errors ===============/
+    public static final String ACCOUNT_CLIENT_ERROR = "Failed to fetch employee details from Account service: {}";
+    public static final String EMPLOYEE_CLIENT_ERROR = "Failed to fetch department details from EmployeeFeignClient for reviewerId: {}";
+
+    public static final String INVALID_ERROR = "Exception in getEmployeesAssignedToReviewer: ";
 }

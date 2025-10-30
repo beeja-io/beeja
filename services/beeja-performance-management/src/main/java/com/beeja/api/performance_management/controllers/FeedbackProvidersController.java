@@ -3,6 +3,7 @@ package com.beeja.api.performance_management.controllers;
 import com.beeja.api.performance_management.model.FeedbackProvider;
 import com.beeja.api.performance_management.request.FeedbackProviderRequest;
 import com.beeja.api.performance_management.response.FeedbackProviderDetails;
+import com.beeja.api.performance_management.response.ReviewerAssignedEmployeesResponse;
 import com.beeja.api.performance_management.service.FeedbackProvidersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -52,5 +53,21 @@ public class FeedbackProvidersController {
         }
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/reviewer")
+    public ResponseEntity<ReviewerAssignedEmployeesResponse> getEmployeesAssignedToReviewer() {
+        try {
+            ReviewerAssignedEmployeesResponse response =
+                    feedbackProvidersService.getEmployeesAssignedToReviewer();
+
+            if (response == null || response.getAssignedEmployees().isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
