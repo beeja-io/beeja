@@ -21,6 +21,7 @@ import {
   Tablelist,
   TextInput,
   ValidationText,
+  Alignmenting,
 } from '../../styles/InvoiceManagementStyles.style.tsx';
 import { formatDate } from '../../utils/dateFormatter';
 import Calendar from '../reusableComponents/Calendar.component';
@@ -778,13 +779,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               <TableHead>
                 <tr>
                   <th>{t('Sno')}</th>
-                  <th style={{ width: '200px' }}>
+                  <th className='spacesno'>
                     <TableHeadLabel>
                       {t('Task')}
                       <ValidationText>*</ValidationText>
                     </TableHeadLabel>
                   </th>
-                  <th style={{ width: '600px' }}>{t('Description')}</th>
+                  <th className='spacetask'>{t('Description')}</th>
                   <th>
                     <TableHeadLabel>
                       {'Price in ' + getCurrencySymbol(formData.currencyType)}
@@ -798,10 +799,10 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               {data.map((project, index) => (
                 <TableBodyRow key={index}>
                   <td>{index + 1}</td>
-                  <td style={{ width: '200px' }}>{project.contract}</td>
-                  <td style={{ width: '600px' }}>{project.description}</td>
+                  <td>{project.contract}</td>
+                  <td>{project.description}</td>
                   <td>{project.price}</td>
-                  <td onClick={(e) => handleDeleteList(e, index)} className='deletebox'>
+                  <td onClick={(e) => handleDeleteList(e, index)} className='deletebox' style={{cursor:'pointer'}}>
                     <DeleteIconSVG />
                   </td>
                 </TableBodyRow>
@@ -870,11 +871,11 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             <Tablelist>
               <div className="borderCollapse">
                 <TableRow>
-                  <td style={{ paddingRight: '80px', paddingLeft: '15px' }} className='sidehead'>{t('Sub Total')}</td>
-                  <td style={{ paddingRight: '50px' }}>{`(${getCurrencySymbol(formData.currencyType)}) ${subTotal}`}</td>
+                  <td className='sidehead'>{t('Sub Total')}</td>
+                  <td className='sidehead2'>{`(${getCurrencySymbol(formData.currencyType)}) ${subTotal}`}</td>
                 </TableRow>
                 <TableRow>
-                  <td className='sidehead' style={{ paddingLeft: '15px' }}>{t('Tax')}{' (%)'}</td>
+                  <td className='sidehead'>{t('Tax')}{' (%)'}</td>
                   {!taxFlag ? (
                     <td>
                       {`(${getCurrencySymbol(formData.currencyType)}) ${formData.tax}`}
@@ -897,7 +898,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   )}
                 </TableRow>
                 <TableRow>
-                  <td className='sidehead' style={{ paddingLeft: '15px' }}>{t('Total')}</td>
+                  <td className='sidehead'>{t('Total')}</td>
                   <td>
                     ({getCurrencySymbol(formData.currencyType)}) {Total}
                   </td>
@@ -916,7 +917,8 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               </TableRow>
             </Tablelist>
           </InvoiceCalculationContainer>
-          <div style={{ marginLeft: "10px" }}>
+          <Alignmenting>
+          <div>
             <span className="remarks">{t('NOTE: ')}</span>
             {isDueDaysEditModeOn ? (
               <TextInput
@@ -937,6 +939,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               </span>
             )}
           </div>
+          </Alignmenting>
           <InvoicePaymentContainer>
             <span className="PayDet">{t('Payment Details')}</span>
             <div>
@@ -960,7 +963,8 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               </Tablelist>
             </div>
           </InvoicePaymentContainer>
-          <div style={{ marginLeft: "10px" }}>
+          <Alignmenting>
+          <div>
             <span className="remarks">{t('Remarks')}</span>
             {!isRemarksNoteEditModeOn ? (
               <span className="remarksNote">
@@ -984,6 +988,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               <span className="remarks"> {organizationDetails?.name} </span>
             </div>
           </div>
+          </Alignmenting>
           <div className="formButtons">
             <Button type="button" onClick={handleConfirmDeleteChanges}>
               {t('CANCEL')}
