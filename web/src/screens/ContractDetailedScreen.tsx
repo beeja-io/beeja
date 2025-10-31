@@ -22,7 +22,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { ClientResponse } from '../entities/ClientEntity';
-import { ContractDetails } from '../entities/ContractEntiy';
+import { ContractDetails, ContractType } from '../entities/ContractEntiy';
 import { ProjectEntity } from '../entities/ProjectEntity';
 import { AddInvoiceForm } from '../components/directComponents/AddInvoiceForm.component';
 import {
@@ -199,7 +199,11 @@ const ContractDetailsScreen: React.FC = () => {
               {t('ID')}: {contract?.contractId}
             </ColumnItem>
             <DotSVG />
-            <ColumnItem>{formatEnum(contract?.contractType)}</ColumnItem>
+            <ColumnItem>
+              {contract?.contractType === ContractType.OTHER
+                ? contract?.customContractType
+                : formatEnum(contract?.contractType)}
+            </ColumnItem>
             <DotSVG />
             <ColumnItem>{formatEnum(contract?.billingType)}</ColumnItem>
             {contract?.contractValue && (
@@ -261,6 +265,12 @@ const ContractDetailsScreen: React.FC = () => {
               ) && (
                 <button
                   className="button_element"
+                  disabled={contract?.billingType === 'NON_BILLABLE'}
+                  title={
+                    contract?.billingType === 'NON_BILLABLE'
+                      ? 'It is a non-billable contract'
+                      : ''
+                  }
                   onClick={() => {
                     if (contract?.contractId) {
                       handleIsCreateModalOpen(contract.contractId);

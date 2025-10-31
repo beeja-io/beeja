@@ -377,8 +377,8 @@ export const TickMark = styled.span`
 
 export const ActionContainer = styled.div`
   position: relative;
-  // display: inline-block;
   width: 24px;
+  cursor: pointer;
 `;
 export const ActionMenuContent = styled.div`
   display: flex;

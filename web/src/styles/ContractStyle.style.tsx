@@ -298,3 +298,15 @@ export const ContractInfo = styled.div`
   padding: 20px;
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
 `;
+
+export const AttachmentWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+export const FileLists = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
