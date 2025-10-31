@@ -191,6 +191,7 @@ export const InvoiceRemittance = styled.div`
     font-size: 14px;
   }
 `;
+
 export const InvoiceAddressContainer = styled.div`
 width:100%;
 display:flex;
@@ -207,7 +208,7 @@ margin:10px;
  font-size:13px;
 }
 .applyStyle2{
- color: #000;
+ color: ${(props) => props.theme.colors.blackColors.black1};
  font-size:15px;
  margin-left:10px;
 }
@@ -270,22 +271,48 @@ margin-bottom: 10px;
       padding: 5px;
       border-radius: 6px;
       border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
+      color: ${(props) => props.theme.colors.blackColors.black1};
+      background-color: ${(props) => props.theme.colors.blackColors.white3};
+      outline: none;
+      transition: none;
+
+      &:focus,
+      &:active,
+      &:valid,
+      &:invalid {
+        background-color: ${(props) => props.theme.colors.blackColors.white3};
+      }
+
+      &:-webkit-autofill,
+      &:-webkit-autofill:hover,
+      &:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px
+          ${(props) => props.theme.colors.blackColors.white3} inset !important;
+        -webkit-text-fill-color: ${(props) =>
+          props.theme.colors.blackColors.black1} !important;
+        transition: background-color 9999s ease-in-out 0s;
+      }
+
+      &:focus {
+        border-color: ${(props) => props.theme.colors.brandColors.primary};
+      }
     }
+
     input[name="serialNo"] {
-      background-color: #ffffff;
+      background-color: ${(props) => props.theme.colors.blackColors.white3};
       cursor: not-allowed;
       width: 50px;
     }
     input[name="contract"] {
-      background-color: #ffffff;
+      background-color: ${(props) => props.theme.colors.blackColors.white3};
       width: 150px;
     }
     input[name="description"] {
-      background-color: #ffffff;
+      background-color: ${(props) => props.theme.colors.blackColors.white3};
       width: 500px;
     }
     input[name="price"] {
-      background-color: #ffffff;
+      background-color: ${(props) => props.theme.colors.blackColors.white3};
       width: 110px;
     }
   }
@@ -302,17 +329,70 @@ margin-bottom: 10px;
   .r4{
     margin-right: 40px;
   }
+  .r1{
+    margin-right: 37px;
+    margin-left: 5px;
+  }
+  .r2{
+    margin-right: 50px;
+  }
+  .r3{
+    margin-right: 98px;
+  }
+  .r4{
+    margin-right: 40px;
+  }
   .errorSpan {
     font-size: 12px;
-    color: red;
+    color: ${(props) => props.theme.colors.stateColors.error};
     margin: 5px 0px;
   }
+
   @media screen and (max-width: 768px) {
     .rowsAlign {
       flex-direction: column;
       align-items: stretch;
-    }
+  }
 
+  @media screen and (max-width: 1024px) {
+    .rowItem input[name='description'] {
+      width: 350px;
+    }
+    .rowItem input[name='contract'] {
+      width: 120px;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .rowItem input {
+      width: 100% !important;
+    }
+    .r1,
+    .r2,
+    .r3,
+    .r4 {
+      margin-right: 0;
+      margin-left: 0;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .alignButton {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .rowsAlign {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .rowItem label {
+      font-size: 11px;
+    }
+    .rowItem input {
+      font-size: 12px;
+      padding: 4px;
+    }
+  }
 `;
 export const ValidationText = styled.span`
   color: #e03137;
@@ -383,7 +463,6 @@ export const InvoiceDetails = styled.div`
   .sub-invoicedetails {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
   }
   .fontSize {
     font-size: 15px;
@@ -428,6 +507,12 @@ export const TableHead = styled.thead`
     th {
       font-size: 12px;
     }
+  }
+  .spacesno{
+    width: 200px;
+  }
+  .spacetask{
+    width: 600px;
   }
 `;
 
@@ -486,6 +571,20 @@ export const TableRow = styled.tr`
   td {
     font-size: 12px;
     vertical-align: middle;
+  }
+  .style1{
+    color: ${(props) => props.theme.colors.blackColors.black1};
+    font-weight: 600;
+    padding-left: 2px;
+  }
+  .sidehead{
+    font-size: 14px;
+    font-weight: 700;
+    padding-right: 80px;
+    padding-left: 15px;
+  }
+  .sidehead2{
+    padding-right: 50px;
   }
 `;
 export const Tablelist = styled.table`
@@ -605,3 +704,7 @@ export const InvId = styled.span`
   font-weight: 500;
   font-size: 11px;
 `;
+export const Alignmenting=styled.div`
+  margin-left: 10px;
+`;
+

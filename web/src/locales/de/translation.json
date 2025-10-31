@@ -324,5 +324,15 @@
   "SOCIALMEDIA": "Soziale Medien",
   "ECOMMERCE": "E-Commerce",
   "ITSERVICES": "IT-Dienstleistungen",
-  "GST_Number": "GST-Nummer"
+  "GST_Number": "GST-Nummer",
+  "End_Date": "Einddatum",
+  "Employment_Type": "Type dienstverband",
+  "Designation": "Aanduiding",
+  "Note":"Opmerking",
+  "Edit_Employment_History": "Werkgeschiedenis bewerken",
+  "Add_Employment_History": "Werkgeschiedenis toevoegen",
+  "View_History": "Geschiedenis bekijken",
+  "Employment_History": "Werkervaring",
+  "Updated_by": "Bijgewerkt door",
+  "Updated_On": "Bijgewerkt op:"
 }
