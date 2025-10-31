@@ -64,7 +64,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
   const generateDueRemarks = (endDate: Date | undefined): string => {
     return t(
-      `Please transfer the due amount to the following bank account with in next 7 days.`
+      'Please transfer the due amount to the following bank account within next 7 days.'
     );
   };
 
@@ -112,13 +112,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
     primaryAddress: organizationDetails?.address
       ? {
-        addressOne: organizationDetails.address.addressOne || '',
-        addressTwo: organizationDetails.address.addressTwo,
-        city: organizationDetails.address.city || '',
-        state: organizationDetails.address.state || '',
-        country: organizationDetails.address.country || '',
-        pinCode: organizationDetails.address.pinCode || 0,
-      }
+          addressOne: organizationDetails.address.addressOne || '',
+          addressTwo: organizationDetails.address.addressTwo,
+          city: organizationDetails.address.city || '',
+          state: organizationDetails.address.state || '',
+          country: organizationDetails.address.country || '',
+          pinCode: organizationDetails.address.pinCode || 0,
+        }
       : getDefaultAddress(),
     billingAddress: props.billingAddress || {
       street: '',
@@ -157,13 +157,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
       primaryAddress: organizationDetails?.address
         ? {
-          addressOne: organizationDetails.address.addressOne || '',
-          addressTwo: organizationDetails.address.addressTwo,
-          city: organizationDetails.address.city || '',
-          state: organizationDetails.address.state || '',
-          country: organizationDetails.address.country || '',
-          pinCode: organizationDetails.address.pinCode || 0,
-        }
+            addressOne: organizationDetails.address.addressOne || '',
+            addressTwo: organizationDetails.address.addressTwo,
+            city: organizationDetails.address.city || '',
+            state: organizationDetails.address.state || '',
+            country: organizationDetails.address.country || '',
+            pinCode: organizationDetails.address.pinCode || 0,
+          }
         : getDefaultAddress(),
       billingAddress: props.billingAddress || {
         street: '',
@@ -442,7 +442,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||
-        'Failed to create invoice. Please try again.'
+          'Failed to create invoice. Please try again.'
       );
     } finally {
       setIsLoading(false);

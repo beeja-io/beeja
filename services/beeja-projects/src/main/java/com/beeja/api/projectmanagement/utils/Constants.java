@@ -111,6 +111,7 @@ public class Constants {
     public static final String ERROR_IN_VALIDATE_PROJECT_MANAGERS = "Error while validating project managers via account service" ;
   public static final String ERROR_IN_VALIDATE_PROJECT_RESOURCES = "Error while validating project resources via account service";
     public static final String NO_RESOURCES_FOUND = "No resources found for contracts of clientId: {}";
+    public static final String CUSTOM_CONTRACT_TYPE_REQUIRED = "Custom Contract type not be null";
 
     // ========== Utility ==========
   public static String format(String message, Object... args) {

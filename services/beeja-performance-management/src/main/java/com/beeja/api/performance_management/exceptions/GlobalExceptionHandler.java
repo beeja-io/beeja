@@ -88,6 +88,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+    @ExceptionHandler(FeignClientException.class)
+    public ResponseEntity<ErrorResponse> handleFeignClientException(
+            FeignClientException e, WebRequest request) {
+        String[] errorMessage = convertStringToArray(e.getMessage());
+        ErrorResponse errorResponse =
+                new ErrorResponse(
+                        ErrorType.valueOf(errorMessage[0]),
+                        ErrorCode.valueOf(errorMessage[1]),
+                        errorMessage[2],
+                        request.getDescription(false),
+                        LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+
+        log.error("Feign client call failed: {}", errorMessage[2]);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(errorResponse);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception e) {
         log.error(e.getMessage());

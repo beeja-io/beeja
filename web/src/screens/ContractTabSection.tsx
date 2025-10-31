@@ -150,10 +150,10 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
           uploadedBy: file.createdByName || '',
           uploadedOn: file.createdAt
             ? new Date(file.createdAt).toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: 'short',
-              year: 'numeric',
-            })
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+              })
             : '',
           createdBy: file.createdBy,
         })) || [];
@@ -228,17 +228,15 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
                   EFeatureToggles.INVOICE_GENERATION
                 ))
           )
-          .map(
-            (tabKey) => (
-              <Tab
-                key={tabKey}
-                active={activeTab === tabKey}
-                onClick={() => setActiveTab(tabKey as any)}
-              >
-                {t(tabKey)}
-              </Tab>
-            )
-          )}
+          .map((tabKey) => (
+            <Tab
+              key={tabKey}
+              active={activeTab === tabKey}
+              onClick={() => setActiveTab(tabKey as any)}
+            >
+              {t(tabKey)}
+            </Tab>
+          ))}
       </Tabs>
 
       <TabContent>
@@ -277,8 +275,8 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
           hasPermission(user, CLIENT_MODULE.GENERATE_INVOICE) &&
           hasFeature(
             featureToggles?.featureToggles ?? [],
-            EFeatureToggles.INVOICE_GENERATION)
-          && (
+            EFeatureToggles.INVOICE_GENERATION
+          ) && (
             <ProjectsTable>
               <thead>
                 <tr>
@@ -319,7 +317,11 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
                       <td>{invoice.createdByName || '-'}</td>
                       <td>{formatDate(invoice.createdAt)}</td>
                       <td>
-                        {renderDocumentAction(invoice, 'invoice', fetchInvoices)}
+                        {renderDocumentAction(
+                          invoice,
+                          'invoice',
+                          fetchInvoices
+                        )}
                       </td>
                     </tr>
                   ))
