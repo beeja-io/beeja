@@ -21,14 +21,14 @@ export const Tab = styled.div<{ active: boolean }>`
   padding: 10px 16px;
   cursor: pointer;
   border-bottom: 2px solid
-    ${(props) => (props.active ? '#007bff' : 'transparent')};
+    ${(props) => (props.active ? '#005792' : 'transparent')};
   color: ${(props) =>
     props.active
-      ? '#007bff'
+      ? '#005792'
       : '${(props) => props.theme.colors.blackColors.white6}'};
   font-weight: ${(props) => (props.active ? '600' : '500')};
   &:hover {
-    color: #007bff;
+    color: '#005792';
   }
 `;
 
@@ -36,7 +36,7 @@ export const TabContent = styled.div`
   overflow-x: auto;
   overflow: visible;
   position: relative;
-  z-index: 999;
+  z-index: auto;
   margin-top: 18px;
 `;
 
@@ -102,11 +102,11 @@ export const AttachmentItem = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
   padding: 10px 15px;
   margin-bottom: 8px;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(196, 196, 196, 0.1);
 `;
 
 export const AttachmentInfo = styled.div`
@@ -148,4 +148,16 @@ export const LoaderContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+export const NoDataContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 160%;
+  letter-spacing: 0.2px;
+  color: #818181;
+  text-align: center;
 `;

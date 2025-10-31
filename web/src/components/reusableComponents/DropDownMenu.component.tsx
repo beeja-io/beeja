@@ -66,6 +66,17 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   const [customValue, setCustomValue] = useState('');
   const [isOtherSelected, setIsOtherSelected] = useState(false);
   const [localOptions, setLocalOptions] = useState(options);
+  const customInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isOtherSelected && customInputRef.current) {
+      customInputRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      });
+      customInputRef.current.focus();
+    }
+  }, [isOtherSelected]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -185,7 +196,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
     const tempOptions = [...localOptions];
     const otherIndex = tempOptions.findIndex(
-      (opt) => opt.value?.toUpperCase() === 'OTHER'
+      (opt) =>
+        typeof opt.value === 'string' && opt.value.toUpperCase() === 'OTHER'
     );
 
     const otherOption = otherIndex !== -1 ? tempOptions[otherIndex] : null;
@@ -197,7 +209,15 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
     optionsWithoutOther.sort((a, b) => {
       if (a.value === null) return -1;
       if (b.value === null) return 1;
-      return String(a.label).localeCompare(String(b.label));
+
+      const aNum = Number(a.label);
+      const bNum = Number(b.label);
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        return aNum - bNum;
+      }
+      return String(a.label).localeCompare(String(b.label), undefined, {
+        sensitivity: 'base',
+      });
     });
 
     if (otherOption) {
@@ -228,30 +248,39 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
         {isOpen && !disabled && (
           <DropdownListStyle className={`${listClassName || ''}`}>
-            {sortedOptions.map((item, index) => {
-              const isSelected = selected === item.value;
-              return (
-                <DropdownItemStyle
-                  key={item.value ?? index}
-                  selected={isSelected}
-                  onClick={() => handleSelect(item)}
-                >
-                  <span>{item.label}</span>
-                  <CheckIconStyle selected={isSelected}>
-                    <TickMark>
-                      <TickmarkIcon />
-                    </TickMark>
-                  </CheckIconStyle>
-                </DropdownItemStyle>
-              );
-            })}
+            {sortedOptions
+              .filter((opt) => opt.value !== null && opt.value !== '')
+              .map((item, index) => {
+                const isSelected = selected === item.value;
+                return (
+                  <DropdownItemStyle
+                    key={item.value ?? index}
+                    selected={isSelected}
+                    onClick={() => handleSelect(item)}
+                  >
+                    <span>{item.label}</span>
+                    <CheckIconStyle selected={isSelected}>
+                      <TickMark>
+                        <TickmarkIcon />
+                      </TickMark>
+                    </CheckIconStyle>
+                  </DropdownItemStyle>
+                );
+              })}
             {isOtherSelected && (
               <CustomInputContainer>
                 <CustomInputField
+                  ref={customInputRef}
                   type="text"
                   value={customValue}
                   onChange={(e) => setCustomValue(e.target.value)}
                   placeholder={t('Enter specific type')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddCustomValue();
+                    }
+                  }}
                 />
                 <AddButton
                   type="button"

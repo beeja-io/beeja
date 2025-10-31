@@ -50,4 +50,7 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
 
   Optional<Project> findByProjectId(String projectId, String organizationId);
 
+  long countByOrganizationId(String organizationId);
+
+
 }

@@ -57,7 +57,7 @@ public class ProjectsController {
    * @return a {@link ResponseEntity} containing the project and HTTP status {@code 200 OK}
    */
   @GetMapping("/{projectId}/{clientId}")
-  @HasPermission(PermissionConstants.GET_PROJECT)
+  @HasPermission({PermissionConstants.GET_PROJECT, PermissionConstants.GET_CONTRACT})
   public ResponseEntity<List<ProjectDetailViewResponseDTO>> getProjectById(
       @PathVariable String projectId, @PathVariable String clientId) {
     ProjectDetailViewResponseDTO responseDTO = projectService.getProjectByIdAndClientId(projectId, clientId);
@@ -71,7 +71,7 @@ public class ProjectsController {
    * @return a {@link ResponseEntity} containing the list of projects and HTTP status {@code 200 OK}
    */
   @GetMapping("/client/{clientId}")
-  @HasPermission(PermissionConstants.GET_PROJECT)
+  @HasPermission({PermissionConstants.GET_PROJECT, PermissionConstants.GET_CLIENT})
   public ResponseEntity<List<ProjectResponseDTO>> getProjectsByClientId(@PathVariable String clientId) {
       List<ProjectResponseDTO> projects = projectService.getProjectsByClientIdInOrganization(clientId);
       return ResponseEntity.ok(projects);
@@ -162,8 +162,8 @@ public class ProjectsController {
     }
 
     @PatchMapping("/{projectId}/status")
-    @HasPermission(PermissionConstants.UPDATE_CONTRACT)
-    public ResponseEntity<Project> changeContractStatus(
+    @HasPermission(PermissionConstants.UPDATE_PROJECT)
+    public ResponseEntity<Project> changeProjectStatus(
             @PathVariable String projectId,
             @RequestBody ProjectStatus status) {
 

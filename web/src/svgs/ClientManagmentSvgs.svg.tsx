@@ -19,7 +19,10 @@ interface EditSVGProps {
   onClick?: () => void;
 }
 
-export const EditSVG: React.FC<EditSVGProps> = ({ onClick }) => {
+export const EditSVG: React.FC<EditSVGProps & { disabled?: boolean }> = ({
+  onClick,
+  disabled,
+}) => {
   return (
     <svg
       width="18"
@@ -28,7 +31,7 @@ export const EditSVG: React.FC<EditSVGProps> = ({ onClick }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       onClick={onClick}
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: disabled ? 'not-allowed' : 'pointer' }}
     >
       <path
         fillRule="evenodd"

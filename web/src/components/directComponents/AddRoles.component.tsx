@@ -45,7 +45,26 @@ const AddRoleComponent: React.FC<Props> = ({
   const [description, setDescription] = useState('');
   const [permissions, setPermissions] = useState<string[]>(initialPermissions);
   const [isLoading, setIsLoading] = useState(false);
+  const permissionDependencies: Record<string, string[]> = {
+    CIN: ['GCON'],
+    GIN: ['GCON'],
+    DIN: ['GCON'],
+  };
   const { t } = useTranslation();
+
+  const isPartOfAnotherFullAccess = (
+    dep: string,
+    permissionsList: string[]
+  ) => {
+    const fullContractPermissions = ['CCON', 'UCON', 'DCON', 'GCON'];
+    if (
+      dep === 'GCON' &&
+      fullContractPermissions.every((p) => permissionsList.includes(p))
+    ) {
+      return true;
+    }
+    return false;
+  };
 
   useEffect(() => {
     if (editingRole) {
@@ -81,31 +100,87 @@ const AddRoleComponent: React.FC<Props> = ({
   }, [permissions]);
 
   const handleCheckboxChange = (permission: string) => {
-    if (permissions.includes(permission)) {
-      setPermissions(permissions.filter((p) => p !== permission));
+    let updatedPermissions = [...permissions];
+
+    if (updatedPermissions.includes(permission)) {
+      updatedPermissions = updatedPermissions.filter((p) => p !== permission);
+      if (permissionDependencies[permission]) {
+        permissionDependencies[permission].forEach((dep) => {
+          const stillRequired = Object.entries(permissionDependencies).some(
+            ([key, deps]) =>
+              key !== permission &&
+              updatedPermissions.includes(key) &&
+              deps.includes(dep)
+          );
+          if (
+            !stillRequired &&
+            !isPartOfAnotherFullAccess(dep, updatedPermissions)
+          ) {
+            updatedPermissions = updatedPermissions.filter((p) => p !== dep);
+          }
+        });
+      }
     } else {
-      setPermissions([...permissions, permission]);
+      updatedPermissions.push(permission);
+      if (permissionDependencies[permission]) {
+        updatedPermissions = Array.from(
+          new Set([
+            ...updatedPermissions,
+            ...permissionDependencies[permission],
+          ])
+        );
+      }
     }
+
+    setPermissions(updatedPermissions);
   };
 
   const handleFullAccessToggle = (
     isChecked: boolean,
     subsectionPermissions: Permission[]
   ) => {
+    let updatedPermissions = [...permissions];
+
+    const permissionValues = subsectionPermissions
+      .map((perm) => perm.value)
+      .filter((val) => val !== '');
+
     if (isChecked) {
-      const newPermissions = permissions.concat(
-        subsectionPermissions
-          .map((perm) => perm.value)
-          .filter((value) => value !== '')
+      updatedPermissions = Array.from(
+        new Set([...updatedPermissions, ...permissionValues])
       );
-      setPermissions(newPermissions);
+      permissionValues.forEach((perm) => {
+        if (permissionDependencies[perm]) {
+          updatedPermissions = Array.from(
+            new Set([...updatedPermissions, ...permissionDependencies[perm]])
+          );
+        }
+      });
     } else {
-      const newPermissions = permissions.filter(
-        (perm) =>
-          !subsectionPermissions.map((perm) => perm.value).includes(perm)
+      updatedPermissions = updatedPermissions.filter(
+        (perm) => !permissionValues.includes(perm)
       );
-      setPermissions(newPermissions);
+      permissionValues.forEach((perm) => {
+        if (permissionDependencies[perm]) {
+          permissionDependencies[perm].forEach((dep) => {
+            const stillRequired = Object.entries(permissionDependencies).some(
+              ([key, deps]) =>
+                key !== perm &&
+                updatedPermissions.includes(key) &&
+                deps.includes(dep)
+            );
+            if (
+              !stillRequired &&
+              !isPartOfAnotherFullAccess(dep, updatedPermissions)
+            ) {
+              updatedPermissions = updatedPermissions.filter((p) => p !== dep);
+            }
+          });
+        }
+      });
     }
+
+    setPermissions(updatedPermissions);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

@@ -416,14 +416,10 @@ const CompleteNavBar = () => {
                       />
                     )} */}
                   {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
-                    (hasFeature(
+                    hasFeature(
                       featureToggles.featureToggles,
                       EFeatureToggles.TIME_SHEET
-                    ) ||
-                      hasFeature(
-                        featureToggles.featureToggles,
-                        EFeatureToggles.PERFORMANCE_AND_FEEDBACK_MANAGEMENT
-                      )) && (
+                    ) && (
                       <ListItem
                         isSideBarOpen={sidebarOpen}
                         linkTo="#"
@@ -439,28 +435,10 @@ const CompleteNavBar = () => {
                         }
                         additionalSvgIcon={<ChevronDownSVG />}
                         dropdownItems={[
-                          ...(hasFeature(
-                            featureToggles.featureToggles,
-                            EFeatureToggles.TIME_SHEET
-                          )
-                            ? [
-                                {
-                                  name: 'Time Sheet',
-                                  link: '/timeoff/timesheet',
-                                },
-                              ]
-                            : []),
-                          ...(hasFeature(
-                            featureToggles.featureToggles,
-                            EFeatureToggles.PERFORMANCE_AND_FEEDBACK_MANAGEMENT
-                          )
-                            ? [
-                                {
-                                  name: 'Performance & Feedback',
-                                  link: '/timeoff/performance',
-                                },
-                              ]
-                            : []),
+                          {
+                            name: 'Time Sheet',
+                            link: '/timeoff/timesheet',
+                          },
                         ]}
                         isDropdownOpen={openDropdown === 'timeoff'}
                         setDropdownOpen={() => {
@@ -471,7 +449,10 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )}
-                  {
+                  {hasFeature(
+                    featureToggles.featureToggles,
+                    EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+                  ) && (
                     <ListItem
                       isSideBarOpen={sidebarOpen}
                       linkTo="#"
@@ -509,8 +490,7 @@ const CompleteNavBar = () => {
                       }}
                       hasAdditionalSvg
                     />
-                  }
-
+                  )}
                   {hasFeature(
                     featureToggles.featureToggles,
                     EFeatureToggles.RECRUITMENT_MANAGEMENT

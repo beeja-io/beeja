@@ -10,6 +10,8 @@ import com.beeja.api.accounts.requests.UpdateUserRequest;
 import com.beeja.api.accounts.requests.UpdateUserRoleRequest;
 import com.beeja.api.accounts.response.CreatedUserResponse;
 import com.beeja.api.accounts.response.EmployeeCount;
+import com.beeja.api.accounts.response.EmployeeSearchResponse;
+
 import java.util.List;
 
 public interface EmployeeService {
@@ -45,4 +47,6 @@ public interface EmployeeService {
   List<EmployeeIdNameDTO> getAllEmployeeNameId();
 
   List<EmployeeNameDTO> getEmployeeNamesById(List<String> ids);
+
+  List<EmployeeSearchResponse> searchEmployees(String keyword);
 }

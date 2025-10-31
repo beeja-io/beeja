@@ -65,12 +65,16 @@ public class Constants {
   public static final String ERROR_FETCHING_PROJECTS_WITH_ORGANIZATION =
       "Error while fetching projects with provided organizationId";
   public static final String FETCH_ERROR_FOR_PROJECT_MANAGERS = "Failed to fetch Project Manager names for IDs";
+  public static final String ERROR_GENERATING_PROJECT_ID = "Failed to generate project ID";
+  public static final String PROJECT_NAME_NOT_NULL = "Project name not blank";
 
   // ========== Contract Errors ==========
   public static final String CONTRACT_NOT_FOUND = "Contract not found with given contractId";
   public static final String ERROR_SAVING_CONTRACT = "Failed to save contract";
   public static final String ERROR_UPDATING_CONTRACT = "Failed to update contract";
   public static final String FEIGN_CLIENT_ERROR = "Failed to fetch employee names: {}";
+  public static final String ERROR_GENERATING_CONTRACT_ID = "Failed to generate contract ID";
+  public static final String CONTRACT_NAME_NOT_NULL = "Contract name not blank";
 
   //=========== Contract Log Messages =======
 
@@ -107,6 +111,7 @@ public class Constants {
     public static final String ERROR_IN_VALIDATE_PROJECT_MANAGERS = "Error while validating project managers via account service" ;
   public static final String ERROR_IN_VALIDATE_PROJECT_RESOURCES = "Error while validating project resources via account service";
     public static final String NO_RESOURCES_FOUND = "No resources found for contracts of clientId: {}";
+    public static final String CUSTOM_CONTRACT_TYPE_REQUIRED = "Custom Contract type not be null";
 
     // ========== Utility ==========
   public static String format(String message, Object... args) {

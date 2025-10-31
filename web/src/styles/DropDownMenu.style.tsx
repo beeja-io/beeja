@@ -157,9 +157,8 @@ export const ToggleButtonStyle = styled.div<{ disabled?: boolean }>`
   align-items: center;
   justify-content: space-between;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  margin-left: +7px;
-  margin-top: +5px;
-  cursor: pointer;
+  margin-left: 7px;
+  margin-top: 5px;
   transition: all 0.2s ease-in-out;
 `;
 
@@ -279,6 +278,7 @@ export const CustomInputField = styled.input`
   padding: 8px 40px 8px 12px;
   border: none;
   outline: none;
+  background: ${(props) => props.theme.colors.blackColors.white6};
 `;
 
 export const AddButton = styled.button`
@@ -304,4 +304,6 @@ export const NoResults = styled.div`
   padding: 10px;
   text-align: center;
   color: #888;
+  background-color: #fff;
+  border-radius: 6px;
 `;

@@ -17,6 +17,9 @@ import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
 import { capitalizeFirstLetter, removeUnderScore } from '../utils/stringUtils';
 import Pagination from '../components/directComponents/Pagination.component';
 import { Client } from '../entities/ClientEntity';
+import { hasPermission } from '../utils/permissionCheck';
+import { CLIENT_MODULE } from '../constants/PermissionConstants';
+import { useUser } from '../context/UserContext';
 
 export type ClientListProps = {
   clientList: Client[];
@@ -42,7 +45,7 @@ const ClientList = ({
   setItemsPerPage,
 }: ClientListProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
-
+  const { user } = useUser();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const handleShowSuccessMessage = () => {
     setShowSuccessMessage(true);
@@ -62,11 +65,32 @@ const ClientList = ({
   };
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', newPage.toString());
+    searchParams.set('size', itemsPerPage.toString());
+    navigate({ search: searchParams.toString() });
   };
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const size = parseInt(
+      searchParams.get('size') || itemsPerPage.toString(),
+      10
+    );
+
+    setCurrentPage(page);
+    setItemsPerPage(size);
+  }, []);
 
   const handlePageSizeChange = (newPageSize: number) => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
+
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('page', '1');
+    searchParams.set('size', newPageSize.toString());
+    navigate({ search: searchParams.toString() });
   };
 
   return (
@@ -124,11 +148,21 @@ const ClientList = ({
                             ? removeUnderScore(client.clientType)
                             : '-'}
                       </td>
-
                       <td>
                         <EditSVG
+                          disabled={
+                            !(
+                              user &&
+                              hasPermission(user, CLIENT_MODULE.UPDATE_CLIENT)
+                            )
+                          }
                           onClick={() => {
-                            onEditClient(client);
+                            if (
+                              user &&
+                              hasPermission(user, CLIENT_MODULE.UPDATE_CLIENT)
+                            ) {
+                              onEditClient(client);
+                            }
                           }}
                         />
                       </td>

@@ -1,5 +1,4 @@
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { minDateOfFromCalendar } from '../../constants/Constants';
 import {
   AddRowContainer,
   DatePicker,
@@ -78,7 +77,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       return t('The contract has ended.');
     }
     return t(
-      `Please transfer the due amount to the following bank account with in next ${dueDays} days.`
+      'Please transfer the due amount to the following bank account within next 7 days.'
     );
   };
 
@@ -690,8 +689,23 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   <div className="filterCalender">
                     <Calendar
                       title="FROM_DATE"
-                      minDate={minDateOfFromCalendar}
-                      maxDate={currentDate}
+                      minDate={
+                        props.startDate ? new Date(props.startDate) : undefined
+                      }
+                      maxDate={
+                        toDate
+                          ? new Date(
+                              Math.min(
+                                toDate.getTime(),
+                                props.endDate
+                                  ? new Date(props.endDate).getTime()
+                                  : toDate.getTime()
+                              )
+                            )
+                          : props.endDate
+                            ? new Date(props.endDate)
+                            : undefined
+                      }
                       handleDateInput={(selectedDate) => {
                         if (selectedDate instanceof Date) {
                           handleDateInput(selectedDate, true);
@@ -726,7 +740,23 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   <div className="filterCalender">
                     <Calendar
                       title="TO_DATE"
-                      minDate={fromDate}
+                      minDate={
+                        fromDate
+                          ? new Date(
+                              Math.max(
+                                fromDate.getTime(),
+                                props.startDate
+                                  ? new Date(props.startDate).getTime()
+                                  : fromDate.getTime()
+                              )
+                            )
+                          : props.startDate
+                            ? new Date(props.startDate)
+                            : undefined
+                      }
+                      maxDate={
+                        props.endDate ? new Date(props.endDate) : undefined
+                      }
                       handleDateInput={(selectedDate) => {
                         if (selectedDate instanceof Date) {
                           handleDateInput(selectedDate, false);
@@ -1022,7 +1052,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             handleModalLeftButtonClick={() => setConfirmDeleteChanges(false)}
             handleModalSubmit={() => props.handleClose()}
             modalHeading="Invoice Changes"
-            modalContent={'Are you sure to discard changes'}
+            modalContent={'Are you sure you want to discard changes?'}
           />
         </span>
       )}
@@ -1033,7 +1063,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             handleModalLeftButtonClick={() => setConfirmSaveChanges(false)}
             handleModalSubmit={handleConfirmSaveChanges}
             modalHeading="Save Changes"
-            modalContent={'Are you sure to save changes'}
+            modalContent={'Are you sure you want to save changes?'}
           />
         </span>
       )}

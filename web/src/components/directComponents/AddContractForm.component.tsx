@@ -69,6 +69,8 @@ import {
   RowWrapper,
   ListWrapper,
   AddContractButtons,
+  AttachmentWrapper,
+  FileLists,
 } from '../../styles/ContractStyle.style';
 import CenterModal from '../reusableComponents/CenterModal.component';
 import DropdownMenu, {
@@ -93,6 +95,7 @@ export type ContractFormData = {
   startDate: string;
   endDate: string;
   contractType: string;
+  customContractType: string;
   billingType?: string;
   billingCurrency?: string;
   contractValue?: string;
@@ -105,7 +108,8 @@ export type ContractFormData = {
     availability: number;
   }[];
   projectName: string;
-  attachments?: File[];
+  attachments?: (File | string)[];
+  attachmentIds?: string[];
   projectId?: string;
   clientId?: string;
 };
@@ -123,6 +127,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     startDate: '',
     endDate: '',
     contractType: '',
+    customContractType: '',
     billingType: '',
     billingCurrency: '',
     contractValue: '',
@@ -134,6 +139,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     projectId: '',
     clientId: '',
     attachments: [],
+    attachmentIds: [],
   });
   const [files, setFiles] = useState<File[]>([]);
   const [projectOptions, setProjectOptions] = useState<ProjectEntity[]>([]);
@@ -161,6 +167,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     projectName?: string;
     selectedResources?: string;
     projectManagers?: string;
+    availability?: string;
   }>({});
   const formatDate = (date: Date) => {
     const day = String(date.getDate()).padStart(2, '0');
@@ -171,6 +178,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formInitialized, setFormInitialized] = useState(false);
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+  const isDisabled = formData.billingType === ContractBillingType.NON_BILLABLE;
 
   const handleDiscardModalToggle = () => {
     setIsDiscardModalOpen((prev) => !prev);
@@ -223,6 +231,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         startDate: initialData.startDate || '',
         endDate: initialData.endDate || '',
         contractType: initialData.contractType || '',
+        customContractType: initialData.customContractType || '',
         billingType: initialData.billingType || '',
         billingCurrency: initialData.billingCurrency || '',
         contractValue: initialData.contractValue?.toString() || '',
@@ -233,7 +242,8 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
           .map((m) => m.value),
         rawProjectResources: mappedResources,
         projectName: matchedProject?.name || '',
-        attachments: [],
+        attachments: initialData.attachmentIds || [],
+        attachmentIds: initialData.attachmentIds ?? [],
         projectId: initialData.projectId || '',
         clientId: matchedProject?.clientId || '',
       });
@@ -338,18 +348,67 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     return Object.keys(newErrors1).length === 0;
   };
 
+  const validateAvailabilityInput = (rawValue: string) => {
+    if (rawValue.trim() === '') return { cleanedValue: '', errorMessage: '' };
+
+    if (!/^\d+$/.test(rawValue))
+      return {
+        cleanedValue: rawValue.replace(/\D/g, ''),
+        errorMessage: t('availability.invalid_number'),
+      };
+
+    const value = Number(rawValue.replace(/^0+/, '') || '0');
+
+    if (value < 1)
+      return {
+        cleanedValue: String(value || ''),
+        errorMessage: t('availability.below_one'),
+      };
+    if (value > 100)
+      return {
+        cleanedValue: String(value),
+        errorMessage: t('availability.above_hundred'),
+      };
+
+    return { cleanedValue: String(value), errorMessage: '' };
+  };
+
   const handleSubmitData = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!validateStepTwo()) {
       return;
     }
+
     setIsSubmitting(true);
 
     try {
+      const payload: any = { ...formData };
+      payload.attachmentIds = Array.isArray(payload.attachmentIds)
+        ? payload.attachmentIds.filter((id: string) => id && id.trim() !== '')
+        : [];
+
+      const processCustomField = (
+        payload: any,
+        enumField: 'contractType',
+        customField: 'customContractType'
+      ) => {
+        const enumValue = payload[enumField];
+        const customValue = payload[customField];
+
+        if (enumValue === ContractType.OTHER) {
+          payload[enumField] = 'OTHER';
+          payload[customField] = customValue ? customValue.trim() : '';
+        } else {
+          payload[customField] = '';
+        }
+      };
+
+      processCustomField(payload, 'contractType', 'customContractType');
       const formDataToSend = new FormData();
 
-      Object.entries(formData).forEach(([key, value]) => {
-        if (key === 'startDate' || key === 'endDate') {
+      Object.entries(payload).forEach(([key, value]) => {
+        if (key === 'startDate' || key === 'endDate' || key === 'attachments') {
           return;
         }
 
@@ -365,17 +424,30 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
             );
           });
         } else if (Array.isArray(value)) {
-          value.forEach((val: any) => {
-            formDataToSend.append(key, val);
-          });
+          if (key === 'attachmentIds') {
+            if (value.length > 0) {
+              value.forEach((val: any) => {
+                formDataToSend.append('attachmentIds', val);
+              });
+            } else {
+              formDataToSend.append('attachmentIds', '');
+            }
+          } else {
+            value.forEach((val: any) => {
+              formDataToSend.append(key, val);
+            });
+          }
         } else if (value !== undefined && value !== null) {
           formDataToSend.append(key, value as any);
         }
       });
-      if (files.length > 0) {
-        files.forEach((f) => {
-          formDataToSend.append('attachments', f);
-        });
+      if (Array.isArray(files)) {
+        const validFiles = files.filter((f) => f instanceof File);
+        if (validFiles.length > 0) {
+          validFiles.forEach((f) => {
+            formDataToSend.append('attachments', f);
+          });
+        }
       }
 
       if (formData.startDate) {
@@ -423,8 +495,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
       newErrors.contractType = 'Please select Contract Type';
     if (!formData.billingType)
       newErrors.billingType = 'Please select Billing Type';
-    if (!formData.billingCurrency)
-      newErrors.billingCurrency = 'Please select Billing Currency';
+    if (formData.billingType !== ContractBillingType.NON_BILLABLE) {
+      if (!formData.billingCurrency) {
+        newErrors.billingCurrency = 'Please select a Billing Currency';
+      }
+    }
 
     setErrors(newErrors);
 
@@ -487,6 +562,16 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (formData.billingType === ContractBillingType.NON_BILLABLE) {
+      setFormData((prev) => ({
+        ...prev,
+        contractValue: '',
+        billingCurrency: '',
+      }));
+    }
+  }, [formData.billingType]);
 
   if (isSubmitting || !isFormReady) {
     return <SpinAnimation />;
@@ -581,16 +666,26 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       name="contractType"
                       id="contractType"
                       className="largeContainerExp largeContainerHei"
-                      value={formData.contractType || ''}
-                      onChange={(e) => {
-                        const event = {
-                          target: {
-                            name: 'contractType',
-                            value: e,
-                          },
-                        } as React.ChangeEvent<HTMLSelectElement>;
-
-                        handleChange(event);
+                      value={
+                        formData.contractType === ContractType.OTHER &&
+                        formData.customContractType
+                          ? formData.customContractType
+                          : formData.contractType || null
+                      }
+                      onChange={(selectedValue) => {
+                        if (selectedValue === ContractType.OTHER) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            contractType: ContractType.OTHER,
+                            customContractType: '',
+                          }));
+                        } else {
+                          setFormData((prev) => ({
+                            ...prev,
+                            contractType: selectedValue as ContractType,
+                            customContractType: '',
+                          }));
+                        }
 
                         if (errors.contractType) {
                           setErrors((prev) => ({
@@ -599,10 +694,20 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           }));
                         }
                       }}
+                      onCustomValue={(customValue) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          contractType: ContractType.OTHER,
+                          customContractType: customValue,
+                        }));
+                      }}
+                      required
                       options={[
-                        { label: 'Select Contract', value: '' },
                         ...Object.values(ContractType).map((type) => ({
-                          label: ContractTypeLabels[type],
+                          label:
+                            type === 'OTHER'
+                              ? 'Other'
+                              : ContractTypeLabels[type],
                           value: type,
                         })),
                       ]}
@@ -727,7 +832,22 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       name="contractValue"
                       placeholder="Enter Budget"
                       value={formData.contractValue}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        if (
+                          formData.billingType !==
+                          ContractBillingType.NON_BILLABLE
+                        )
+                          handleChange(e);
+                      }}
+                      disabled={
+                        formData.billingType ===
+                        ContractBillingType.NON_BILLABLE
+                      }
+                      readOnly={
+                        formData.billingType ===
+                        ContractBillingType.NON_BILLABLE
+                      }
+                      className="largeInput"
                     />
                   </InputLabelContainer>
                 )}
@@ -755,7 +875,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       </UploadText>
                     </LogoUploadContainer>
                     {files.length > 0 && (
-                      <LogoLabel>
+                      <FileLists>
                         {files.map((f, idx) => (
                           <FileName key={idx}>
                             {f.name}
@@ -770,10 +890,10 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             </RemoveButton>
                           </FileName>
                         ))}
-                      </LogoLabel>
+                      </FileLists>
                     )}
                     <span className="infoText-contract">
-                      File format : .pdf, .png, .jpeg
+                      {t('File format')} : .pdf, .doc, .docx
                     </span>
                   </div>
                 )}
@@ -815,7 +935,19 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       name="contractValue"
                       placeholder="Enter Budget"
                       value={formData.contractValue}
-                      onChange={handleChange}
+                      onChange={(e) => {
+                        if (formData.billingType !== 'NON-BILLABLE')
+                          handleChange(e);
+                      }}
+                      disabled={
+                        formData.billingType ===
+                        ContractBillingType.NON_BILLABLE
+                      }
+                      readOnly={
+                        formData.billingType ===
+                        ContractBillingType.NON_BILLABLE
+                      }
+                      className="largeInput"
                     />
                   </InputLabelContainer>
                 )}
@@ -831,16 +963,26 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       name="contractType"
                       id="contractType"
                       className="largeContainerExp largeContainerHei"
-                      value={formData.contractType || ''}
-                      onChange={(e) => {
-                        const event = {
-                          target: {
-                            name: 'contractType',
-                            value: e,
-                          },
-                        } as React.ChangeEvent<HTMLSelectElement>;
-
-                        handleChange(event);
+                      value={
+                        formData.contractType === ContractType.OTHER &&
+                        formData.customContractType
+                          ? formData.customContractType
+                          : formData.contractType || null
+                      }
+                      onChange={(selectedValue) => {
+                        if (selectedValue === ContractType.OTHER) {
+                          setFormData((prev) => ({
+                            ...prev,
+                            contractType: ContractType.OTHER,
+                            customContractType: '',
+                          }));
+                        } else {
+                          setFormData((prev) => ({
+                            ...prev,
+                            contractType: selectedValue as ContractType,
+                            customContractType: '',
+                          }));
+                        }
 
                         if (errors.contractType) {
                           setErrors((prev) => ({
@@ -849,14 +991,25 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           }));
                         }
                       }}
+                      onCustomValue={(customValue) => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          contractType: ContractType.OTHER,
+                          customContractType: customValue,
+                        }));
+                      }}
+                      required
                       options={[
-                        { label: 'Select Contract', value: '' },
                         ...Object.values(ContractType).map((type) => ({
-                          label: ContractTypeLabels[type],
+                          label:
+                            type === 'OTHER'
+                              ? 'Other'
+                              : ContractTypeLabels[type],
                           value: type,
                         })),
                       ]}
                     />
+
                     {errors.contractType && (
                       <ValidationText>{errors.contractType}</ValidationText>
                     )}
@@ -926,7 +1079,10 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 <InputLabelContainer>
                   <label>
                     {t('Billing Currency')}
-                    <ValidationText className="star">*</ValidationText>
+                    {formData.billingType !==
+                      ContractBillingType.NON_BILLABLE && (
+                      <ValidationText className="star">*</ValidationText>
+                    )}
                   </label>
                   <DropdownMenu
                     label="Select Currency"
@@ -943,6 +1099,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       } as React.ChangeEvent<HTMLSelectElement>;
                       handleChange(event);
                     }}
+                    disabled={isDisabled}
                     options={[
                       { label: 'Select Currency', value: '' },
                       ...Object.values(BillingCurrency).map((currency) => ({
@@ -970,13 +1127,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                 )}
 
                 {initialData?.contractId && (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '10px',
-                    }}
-                  >
+                  <AttachmentWrapper>
                     <LogoLabel>{t('Attachments')}</LogoLabel>
                     <LogoUploadContainer
                       onClick={() =>
@@ -998,10 +1149,10 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       </UploadText>
                     </LogoUploadContainer>
                     <span className="infoText-contract">
-                      File format : .pdf, .png, .jpeg
+                      {t('File format')} : .pdf, .doc, .docx
                     </span>
                     {files.length > 0 && (
-                      <LogoLabel>
+                      <FileLists>
                         {files.map((f, idx) => (
                           <FileName key={idx}>
                             {f.name}
@@ -1016,9 +1167,38 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             </RemoveButton>
                           </FileName>
                         ))}
-                      </LogoLabel>
+                      </FileLists>
                     )}
-                  </div>
+                    {(formData.attachments ?? []).length > 0 && (
+                      <FileLists>
+                        {(formData.attachments ?? []).map((id, index) => (
+                          <FileName key={index}>
+                            {typeof id === 'string' ? id : id.name}
+                            <RemoveButton
+                              type="button"
+                              onClick={() =>
+                                setFormData((prev) => {
+                                  const newAttachments = (
+                                    prev.attachments ?? []
+                                  ).filter((_, i) => i !== index);
+                                  const newAttachmentIds = (
+                                    prev.attachmentIds ?? []
+                                  ).filter((_, i) => i !== index);
+                                  return {
+                                    ...prev,
+                                    attachments: newAttachments,
+                                    attachmentIds: newAttachmentIds,
+                                  };
+                                })
+                              }
+                            >
+                              X
+                            </RemoveButton>
+                          </FileName>
+                        ))}
+                      </FileLists>
+                    )}
+                  </AttachmentWrapper>
                 )}
               </ColumnWrapper>
             </FormInputsContainer>
@@ -1036,7 +1216,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   }
                 }}
               >
-                {t('Save & Continue')}
+                {t('Continue')}
               </Button>
             </div>
           </AddFormMainContainer>
@@ -1120,13 +1300,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                         placeholder={t('Select Project Managers')}
                         searchable={true}
                       />
-                      {errorsSteptwo &&
-                        !errorsSteptwo?.projectName &&
-                        errorsSteptwo?.projectManagers && (
-                          <ValidationText>
-                            {errorsSteptwo.projectManagers}
-                          </ValidationText>
-                        )}
+                      {errorsSteptwo?.projectManagers && (
+                        <ValidationText>
+                          {errorsSteptwo.projectManagers}
+                        </ValidationText>
+                      )}
                     </InputLabelContainer>
                   </div>
                 )}
@@ -1172,12 +1350,27 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
 
                     <AvailabilityContainer>
                       <AvailabilityInput
-                        type="number"
-                        min="1"
-                        max="100"
+                        type="text"
+                        inputMode="numeric"
                         placeholder="Enter Percentage"
                         value={currentAvailability}
-                        onChange={(e) => setCurrentAvailability(e.target.value)}
+                        onChange={(e) => {
+                          const rawValue = e.target.value;
+                          const { cleanedValue, errorMessage } =
+                            validateAvailabilityInput(rawValue);
+                          if (errorMessage) {
+                            setErrorsSteptwo((prev) => ({
+                              ...prev,
+                              availability: errorMessage,
+                            }));
+                          } else {
+                            setErrorsSteptwo((prev) => ({
+                              ...prev,
+                              availability: undefined,
+                            }));
+                          }
+                          setCurrentAvailability(cleanedValue);
+                        }}
                       />
                       <PercentageSign>%</PercentageSign>
                     </AvailabilityContainer>
@@ -1186,6 +1379,17 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       type="button"
                       onClick={() => {
                         if (!currentResource || !currentAvailability) return;
+
+                        const { cleanedValue, errorMessage } =
+                          validateAvailabilityInput(currentAvailability);
+
+                        if (errorMessage) {
+                          setErrorsSteptwo((prev) => ({
+                            ...prev,
+                            availability: errorMessage,
+                          }));
+                          return;
+                        }
 
                         const label = resourceOptions.find(
                           (r) => r.value === currentResource
@@ -1206,7 +1410,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                             {
                               value: currentResource,
                               label: label || '',
-                              availability: Number(currentAvailability),
+                              availability: Number(cleanedValue),
                             },
                           ];
 
@@ -1225,13 +1429,16 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       {t('Save')}
                     </SaveButton>
                   </ResourceAllocationRow>
-                  {errorsSteptwo &&
-                    !errorsSteptwo?.projectName &&
-                    errorsSteptwo?.selectedResources && (
-                      <ValidationText>
-                        {errorsSteptwo.selectedResources}
-                      </ValidationText>
-                    )}
+                  {errorsSteptwo?.selectedResources && (
+                    <ValidationText>
+                      {errorsSteptwo.selectedResources}
+                    </ValidationText>
+                  )}
+                  {errorsSteptwo?.availability && (
+                    <ValidationText>
+                      {errorsSteptwo.availability}
+                    </ValidationText>
+                  )}
                 </FormField>
               </RowWrapper>
             </FormResourceContainer>

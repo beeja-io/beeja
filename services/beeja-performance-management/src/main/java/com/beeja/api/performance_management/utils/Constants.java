@@ -70,4 +70,37 @@ public class Constants {
   public static final String START_DATE_AFTER_END_DATE = "Start date must be on or before the end date";
   public static final String INFO_CREATING_CYCLE_WITH_QUESTIONS = "Creating evaluation cycle with questions: {}";
   public static final String ERROR_CREATING_QUESTIONNAIRE = "Failed to create questionnaire";
+
+  // ========= LOG For Feedback Providers =========/
+  public static final String FEEDBACK_REQUEST_NULL = "FeedbackFormRequest is null";
+  public static final String ERROR_ASSIGNING_FEEDBACK_PROVIDER = "Failed to assigning feedback providers for employeeId={}";
+  public static final String INFO_FEEDBACK_FORM_PROCESSED = "Feedback form processed for employeeId = {}";
+  public static final String WARN_BAD_REQUEST_EXCEPTION = "BadRequestException: {}";
+  public static final String INFO_UPDATING_FEEDBACK_PROVIDERS = "Updating feedback providers for employeeId={}, orgId={}";
+  public static final String EMPLOYEE_ID_NOT_EMPTY = "Employee ID must not be null or empty";
+  public static final String ASSIGNED_REVIEWERS_NOT_EMPTY = "Assigned reviewers list must not be empty";
+  public static final String PROVIDERS_NOT_FOUND = "Feedback Providers not found for employeeId=";
+  public static final String CYCLE_ID_MISMATCH = "Cycle ID mismatch for employeeId=";
+  public static final String QUESTIONNAIRE_ID_MISMATCH = "Questionnaire ID mismatch for employeeId=";
+  public static final String INVALID_REVIEWER_DETAIL_RETURNED = "Invalid reviewer detail returned: {}";
+
+
+    // ========= LOG For Feedback Receivers =========//
+    public static final String FEEDBACK_RECEIVERS_NULL = "Adding FeedbackReceivers ReceiverRequest is null";
+    public static final String DUPLICATE_EMPLOYEE_ID = "Duplicate Employee ID found in request";
+    public static final String RECEIVER_LIST_CANNOT_BE_EMPTY = "Receiver list cannot be empty";
+    public static final String RECEIVER_DETAIL_NOT_EMPTY = "Employee ID, Full Name, and Department are required for each receiver";
+    public static final String CYCLE_ID_QUESTIONNAIRE_ID_EMPTY = "Cycle ID or Questionnaire ID is empty. cycleId={}, questionnaireId={}";
+    public static final String RECEIVER_CYCLE_QUESTIONNAIRE_EMPTY = "Receiver list cannot be empty for cycleId={}, questionnaireId={}";
+    public static final String EMPTY_EMPLOYEE_ID = "Skipping receiver with empty employeeId";
+    public static final String REMOVE_RECEIVER = "Removed {} old receivers not present in incoming list";
+    public static final String NO_RECEIVER_FOUND = "No receivers found for organizationId={}, cycleId={}, questionnaireId={}";
+    public static final String NOT_ASSIGNED = "No reviewers assigned for employeeId={}, providerId={}";
+
+
+    //============== Fegin client Errors ===============/
+    public static final String ACCOUNT_CLIENT_ERROR = "Failed to fetch employee details from Account service: {}";
+    public static final String EMPLOYEE_CLIENT_ERROR = "Failed to fetch department details from EmployeeFeignClient for reviewerId: {}";
+
+    public static final String INVALID_ERROR = "Exception in getEmployeesAssignedToReviewer: ";
 }

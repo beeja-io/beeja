@@ -5,6 +5,8 @@ import com.beeja.api.projectmanagement.client.FileClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
 import com.beeja.api.projectmanagement.enums.ProjectStatus;
+import com.beeja.api.projectmanagement.enums.ContractBillingType;
+import com.beeja.api.projectmanagement.enums.ContractType;
 import com.beeja.api.projectmanagement.exceptions.FeignClientException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
@@ -29,6 +31,7 @@ import com.beeja.api.projectmanagement.utils.UserContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import io.micrometer.core.instrument.config.validate.ValidationException;
 import jakarta.ws.rs.InternalServerErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +69,59 @@ public class ContractServiceImpl implements ContractService {
     @Autowired ProjectServiceImpl projectServiceImpl;
     @Autowired FileClient fileClient;
 
-  /**
+
+  private String generateContractIdFromTitle(String contractTitle, long orgContractCount) {
+        if (contractTitle == null || contractTitle.isEmpty()) {
+            throw new IllegalArgumentException(Constants.CONTRACT_NAME_NOT_NULL);
+        }
+
+        String[] words = contractTitle.trim().split("\\s+");
+        String prefix;
+
+        if (words.length == 1) {
+            prefix = words[0].substring(0, Math.min(3, words[0].length())).toUpperCase();
+        } else if (words.length == 2) {
+            String part1 = words[0].substring(0, Math.min(2, words[0].length()));
+            String part2 = words[1].substring(0, 1);
+            prefix = (part1 + part2).toUpperCase();
+        } else {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Math.min(3, words.length); i++) {
+                sb.append(words[i].substring(0, 1).toUpperCase());
+            }
+            prefix = sb.toString();
+        }
+
+        long nextNumber = orgContractCount + 1;
+        String numberPart = String.format("%03d", nextNumber);
+
+        return prefix + numberPart;
+  }
+
+    private void handleContractType(ContractRequest contractRequest, Contract contractEntity) {
+        if (contractRequest.getContractType() != null) {
+            contractEntity.setContractType(contractRequest.getContractType());
+
+            if (contractRequest.getContractType() == ContractType.OTHER) {
+                String customContractType = contractRequest.getCustomContractType();
+                if (customContractType == null || customContractType.trim().isEmpty()) {
+                    throw new ResourceNotFoundException(
+                            BuildErrorMessage.buildErrorMessage(
+                                    ErrorType.VALIDATION_ERROR,
+                                    ErrorCode.VALIDATION_ERROR,
+                                    Constants.CUSTOM_CONTRACT_TYPE_REQUIRED
+                            )
+                    );
+                }
+                contractEntity.setCustomContractType(customContractType.trim());
+            } else {
+                contractEntity.setCustomContractType(null);
+            }
+        }
+    }
+
+
+    /**
    * Creates a new {@link Contract} for a given {@link Project} and {@link ContractRequest}.
    *
    * @param request the {@link ContractRequest} containing details to create the {@link Contract}
@@ -89,7 +144,17 @@ public class ContractServiceImpl implements ContractService {
     }
 
     Contract contract = new Contract();
-    contract.setContractId(UUID.randomUUID().toString().substring(0, 7).toUpperCase());
+    try{
+        long existingContractCount = contractRepository.countByOrganizationId(project.getOrganizationId());
+        contract.setContractId(generateContractIdFromTitle(request.getContractTitle(), existingContractCount));
+    }catch (Exception e){
+        log.error(Constants.ERROR_GENERATING_CONTRACT_ID, e.getMessage());
+        throw new ResourceNotFoundException(
+                BuildErrorMessage.buildErrorMessage(
+                        ErrorType.DB_ERROR,
+                        ErrorCode.RESOURCE_CREATION_ERROR,
+                        Constants.ERROR_GENERATING_CONTRACT_ID));
+    }
     contract.setProjectId(request.getProjectId());
     contract.setClientId(request.getClientId());
     contract.setContractTitle(request.getContractTitle());
@@ -101,7 +166,7 @@ public class ContractServiceImpl implements ContractService {
     contract.setOrganizationId(project.getOrganizationId());
     contract.setBillingCurrency(request.getBillingCurrency());
     contract.setBillingType(request.getBillingType());
-    contract.setContractType(request.getContractType());
+      handleContractType(request, contract);
     contract.setStatus(ProjectStatus.IN_PROGRESS);
       if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){
           try{
@@ -281,11 +346,19 @@ public class ContractServiceImpl implements ContractService {
     }
 
     if (request.getDescription() != null) contract.setDescription(request.getDescription());
-    if (request.getContractValue() != null) contract.setContractValue(request.getContractValue());
+    if (request.getBillingCurrency() != null) {
+          contract.setBillingCurrency(request.getBillingCurrency());
+    } else if (request.getBillingType() == ContractBillingType.NON_BILLABLE) {
+          contract.setBillingCurrency(null);
+    }
     if (request.getStartDate() != null) contract.setStartDate(request.getStartDate());
     if (request.getEndDate() != null) contract.setEndDate(request.getEndDate());
     if (request.getSignedBy() != null) contract.setSignedBy(request.getSignedBy());
-    if (request.getBillingCurrency() != null) contract.setBillingCurrency(request.getBillingCurrency());
+    if (request.getContractValue() != null) {
+        contract.setContractValue(request.getContractValue());
+    } else if (request.getBillingType() == ContractBillingType.NON_BILLABLE) {
+        contract.setContractValue(null);
+    }
     if(request.getContractType() != null) contract.setContractType(request.getContractType());
     if(request.getBillingType() != null) contract.setBillingType(request.getBillingType());
     if(request.getProjectManagers() != null && !request.getProjectManagers().isEmpty()){

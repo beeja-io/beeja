@@ -38,6 +38,7 @@ info:
 
 client-urls:
   accountsService: ${ACCOUNTS_SERVICE_BASE_URL}/accounts
+  employeeService: ${EMPLOYEE_SERVICE_BASE_URL}/employees
 
 springdoc:
   api-docs:

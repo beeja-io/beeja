@@ -338,27 +338,30 @@ export const deleteInventory = (id: string): Promise<AxiosResponse> => {
 
 export const postPerformanceCycle = (data: any): Promise<AxiosResponse> => {
   return axiosInstance.post(
-    `/performance/api/cycles/create-with-questions`,
+    `/performance/v1/api/cycles/create-with-questions`,
     data
   );
 };
 export const getAllPerformance = (): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/performance/api/cycles`);
+  return axiosInstance.get(`/performance/v1/api/cycles`);
 };
 
 export const getPerformanceById = (id: string): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/performance/api/cycles/${id}/details`);
+  return axiosInstance.get(`/performance/v1/api/cycles/${id}/details`);
 };
 
 export const updatePerformanceCycle = (
   id: string,
   data: any
 ): Promise<AxiosResponse> => {
-  return axiosInstance.put(`/performance/api/cycles/${id}/full-update`, data);
+  return axiosInstance.put(
+    `/performance/v1/api/cycles/${id}/full-update`,
+    data
+  );
 };
 
 export const deletePerformanceCycle = (id: string): Promise<AxiosResponse> => {
-  return axiosInstance.delete(`/performance/api/cycles/${id}`);
+  return axiosInstance.delete(`/performance/v1/api/cycles/${id}`);
 };
 
 export const downloadClientLogo = (

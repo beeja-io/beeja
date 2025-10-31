@@ -15,7 +15,7 @@ import java.util.List;
  * Provides endpoints for creating, retrieving, updating, and deleting questionnaires.
  */
 @RestController
-@RequestMapping("/api/questionnaires")
+@RequestMapping("/v1/api/questionnaires")
 public class QuestionnaireController {
 
     @Autowired
