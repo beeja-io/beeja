@@ -261,13 +261,38 @@ const AddClientForm = (props: AddClientFormProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
   const [errors, setErrors] = useState<{
+    clientName?: string;
+    clientType?: string;
+    industry?: string;
+    email?: string;
     taxCategory?: string;
     taxNumber?: string;
+    primaryAddressPostalCode?: string;
+    billingAddressPostalCode?: string;
   }>({});
   const [logoPreviewUrl, setLogoPreviewUrl] = useState<string | null>(null);
 
   const handleDiscardModalToggle = () => {
     setIsDiscardModalOpen((prev) => !prev);
+  };
+
+  const [touched, setTouched] = useState<{
+    primaryAddressPostalCode?: boolean;
+    billingAddressPostalCode?: boolean;
+  }>({});
+
+  const fiveDigitCountries = ['US', 'Germany', 'Australia'];
+
+  const validatePostalCode = (country: string, code: string) => {
+    if (!code) return true;
+
+    if (country === 'India') {
+      return /^\d{6}$/.test(code);
+    }
+    if (fiveDigitCountries.includes(country)) {
+      return /^\d{5}$/.test(code);
+    }
+    return true;
   };
 
   useEffect(() => {
@@ -321,13 +346,9 @@ const AddClientForm = (props: AddClientFormProps) => {
         alert('File is too large. Please upload a file smaller than 5 MB.');
         return;
       }
-
-      // Revoke previous blob URL if exists
       if (logoPreviewUrl) {
         URL.revokeObjectURL(logoPreviewUrl);
       }
-
-      // Set new file and generate blob URL
       const objectUrl = URL.createObjectURL(selectedFile);
       setLogoPreviewUrl(objectUrl);
       setFile(selectedFile);
@@ -392,7 +413,24 @@ const AddClientForm = (props: AddClientFormProps) => {
     let newValue = value ?? '';
 
     if (name === 'contact') {
-      newValue = newValue.replace(/\D/g, '').slice(0, 10);
+      newValue = newValue.replace(/\D/g, '');
+      if (newValue.startsWith('0')) {
+        newValue = newValue.slice(1);
+      }
+      newValue = newValue.slice(0, 10);
+    }
+
+    if (
+      name === 'billingAddress.postalCode' ||
+      name === 'primaryAddress.postalCode'
+    ) {
+      const addressType = name.startsWith('primaryAddress')
+        ? 'primaryAddress'
+        : 'billingAddress';
+      const country = formData[addressType]?.country ?? '';
+      const maxLength =
+        country === 'India' ? 6 : fiveDigitCountries.includes(country) ? 5 : 6;
+      newValue = newValue.replace(/\D/g, '').slice(0, maxLength);
     }
     setFormData((prevState) => {
       if (keys.length === 2) {
@@ -436,40 +474,100 @@ const AddClientForm = (props: AddClientFormProps) => {
         }
       }
 
+      if (['clientName', 'clientType', 'industry'].includes(name)) {
+        if (newValue.trim()) {
+          delete newErrors[name as keyof typeof newErrors];
+        }
+      }
+
+      if (name === 'email') {
+        if (!newValue.trim() || /\S+@\S+\.\S+/.test(newValue)) {
+          delete newErrors.email;
+        }
+      }
+
+      if (
+        name === 'primaryAddress.postalCode' ||
+        name === 'billingAddress.postalCode'
+      ) {
+        const addressType = name.startsWith('primaryAddress')
+          ? 'primaryAddress'
+          : 'billingAddress';
+        const country = formData[addressType]?.country ?? '';
+        const code = newValue;
+        if (validatePostalCode(country, code)) {
+          if (!touched[`${addressType}PostalCode`]) {
+            return newErrors;
+          }
+          delete newErrors[`${addressType}PostalCode`];
+        }
+      }
+
       return newErrors;
     });
   };
 
+  const handlePostalCodeBlur = (
+    field: 'primaryAddressPostalCode' | 'billingAddressPostalCode'
+  ) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+
+    const addressType =
+      field === 'primaryAddressPostalCode'
+        ? 'primaryAddress'
+        : 'billingAddress';
+    const country = formData[addressType]?.country ?? '';
+    const code = formData[addressType]?.postalCode ?? '';
+
+    if (!validatePostalCode(country, code)) {
+      setErrors((prev) => ({
+        ...prev,
+        [field]:
+          country === 'India'
+            ? t('validation.postalCode.india')
+            : t('validation.postalCode.default', { country }),
+      }));
+    } else {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
   const validateStep1 = () => {
-    let isValid = true;
+    const newErrors: {
+      clientName?: string;
+      clientType?: string;
+      industry?: string;
+      email?: string;
+    } = {};
 
     if (!formData.clientName.trim()) {
-      isValid = false;
+      newErrors.clientName = t('CLIENT_NAME_REQUIRED');
     }
     if (!formData.clientType) {
-      isValid = false;
+      newErrors.clientType = t('CLIENT_TYPE_REQUIRED');
     }
     if (
       formData.clientType === ClientType.OTHER &&
       !formData.customClientType?.trim()
-    ) {
-      isValid = false;
-    }
-    if (!formData.industry) {
-      isValid = false;
-    }
+    )
+      if (!formData.industry) {
+        newErrors.industry = t('INDUSTRY_REQUIRED');
+      }
     if (
       formData.industry === Industry.OTHER &&
       !formData.customIndustry?.trim()
-    ) {
-      isValid = false;
-    }
-    if (formData.email?.trim()) {
-      if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        isValid = false;
+    )
+      if (formData.email?.trim()) {
+        if (!/\S+@\S+\.\S+/.test(formData.email)) {
+          newErrors.email = t('INVALID_EMAIL');
+        }
       }
-    }
-    return isValid;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
   const validateStep2 = () => {
     let isValid = true;
@@ -709,6 +807,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                       onChange={handleChange}
                       required
                     />
+                    {errors.clientName && (
+                      <ValidationText className="error">
+                        {errors.clientName}
+                      </ValidationText>
+                    )}
                   </InputLabelContainer>
                 )}
                 <InputLabelContainer>
@@ -721,6 +824,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                     value={formData?.email}
                     onChange={handleChange}
                   />
+                  {errors.email && (
+                    <ValidationText className="error">
+                      {errors.email}
+                    </ValidationText>
+                  )}
                 </InputLabelContainer>
                 {!formData?.clientId && (
                   <InputLabelContainer>
@@ -811,6 +919,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                       onChange={handleChange}
                       required
                     />
+                    {errors.clientName && (
+                      <ValidationText className="error">
+                        {errors.clientName}
+                      </ValidationText>
+                    )}
                   </InputLabelContainer>
                 )}
                 {!formData?.clientId && (
@@ -851,6 +964,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                             customClientType: '',
                           }));
                         }
+                        setErrors((prev) => {
+                          const newErrors = { ...prev };
+                          delete newErrors.clientType;
+                          return newErrors;
+                        });
                       }}
                       onCustomValue={(customValue) => {
                         setFormData((prev) => {
@@ -863,6 +981,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                         });
                       }}
                     />
+                    {errors.clientType && (
+                      <ValidationText className="error">
+                        {errors.clientType}
+                      </ValidationText>
+                    )}
                   </InputLabelContainer>
                 )}
 
@@ -896,6 +1019,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                           customIndustry: '',
                         }));
                       }
+                      setErrors((prev) => {
+                        const newErrors = { ...prev };
+                        delete newErrors.industry;
+                        return newErrors;
+                      });
                     }}
                     onCustomValue={(customValue) => {
                       setFormData((prev) => {
@@ -915,6 +1043,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                       })),
                     ]}
                   />
+                  {errors.industry && (
+                    <ValidationText className="error">
+                      {errors.industry}
+                    </ValidationText>
+                  )}
                 </InputLabelContainer>
                 {formData?.clientId && (
                   <InputLabelContainer>
@@ -1055,6 +1188,11 @@ const AddClientForm = (props: AddClientFormProps) => {
                         },
                       }));
                     }
+                    setErrors((prev) => {
+                      const newErrors = { ...prev };
+                      delete newErrors.taxCategory;
+                      return newErrors;
+                    });
                   }}
                   onCustomValue={(customValue) => {
                     setFormData((prev) => ({
@@ -1182,22 +1320,42 @@ const AddClientForm = (props: AddClientFormProps) => {
                       className="largeInput"
                       value={formData.primaryAddress?.postalCode ?? ''}
                       onChange={handleChange}
+                      onBlur={() =>
+                        handlePostalCodeBlur('primaryAddressPostalCode')
+                      }
                       style={{ width: '133px' }}
                     />
                   </InputLabelContainer>
                 </div>
+                {touched.primaryAddressPostalCode &&
+                  errors.primaryAddressPostalCode && (
+                    <ValidationText>
+                      {errors.primaryAddressPostalCode}
+                    </ValidationText>
+                  )}
               </div>
               <div>
                 <InputLabelContainer>
                   <label>{t('Country')}</label>
-                  <TextInput
-                    type="text"
-                    name="primaryAddress.country"
-                    placeholder={t('United_States_of_America')}
+                  <DropdownMenu
+                    label={t('SELECT_COUNTRY')}
+                    value={formData.primaryAddress?.country ?? ''}
                     className="largeInput"
-                    value={formData.primaryAddress?.country}
-                    onChange={handleChange}
-                    style={{ width: '420px' }}
+                    onChange={(value: string | null) => {
+                      handleChange({
+                        target: {
+                          name: 'primaryAddress.country',
+                          value: value ?? '',
+                        },
+                      } as React.ChangeEvent<HTMLInputElement>);
+                    }}
+                    options={[
+                      { label: t('INDIA'), value: 'India' },
+                      { label: t('GERMANY'), value: 'Germany' },
+                      { label: t('US'), value: 'US' },
+                      { label: t('AUSTRALIA'), value: 'Australia' },
+                    ]}
+                    style={{ width: '280px', minWidth: '280px' }}
                   />
                 </InputLabelContainer>
               </div>
@@ -1267,23 +1425,43 @@ const AddClientForm = (props: AddClientFormProps) => {
                       className="largeInput"
                       value={formData?.billingAddress?.postalCode ?? ''}
                       onChange={handleChange}
+                      onBlur={() =>
+                        handlePostalCodeBlur('billingAddressPostalCode')
+                      }
                       style={{ width: '133px' }}
                     />
                   </InputLabelContainer>
                 </div>
+                {touched.billingAddressPostalCode &&
+                  errors.billingAddressPostalCode && (
+                    <ValidationText>
+                      {errors.billingAddressPostalCode}
+                    </ValidationText>
+                  )}
               </div>
               <div>
                 <InputLabelContainer>
                   <label>{t('Country')}</label>
-                  <TextInput
-                    type="text"
-                    name="billingAddress.country"
-                    disabled={formData.usePrimaryAddress}
-                    placeholder={t('United_States_of_America')}
+                  <DropdownMenu
+                    label={t('SELECT_COUNTRY')}
+                    value={formData.billingAddress?.country ?? ''}
                     className="largeInput"
-                    value={formData?.billingAddress?.country ?? ''}
-                    onChange={handleChange}
-                    style={{ width: '420px' }}
+                    disabled={formData.usePrimaryAddress}
+                    onChange={(value: string | null) => {
+                      handleChange({
+                        target: {
+                          name: 'billingAddress.country',
+                          value: value ?? '',
+                        },
+                      } as React.ChangeEvent<HTMLInputElement>);
+                    }}
+                    options={[
+                      { label: t('INDIA'), value: 'India' },
+                      { label: t('GERMANY'), value: 'Germany' },
+                      { label: t('US'), value: 'US' },
+                      { label: t('AUSTRALIA'), value: 'Australia' },
+                    ]}
+                    style={{ width: '280px', minWidth: '280px' }}
                   />
                 </InputLabelContainer>
               </div>
@@ -1365,7 +1543,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       <InfoText className="description">
                         {formData.description?.trim()
                           ? formData.description
-                          : '- N/A'}
+                          : '-'}
                       </InfoText>
                     </InfoRow>
                     <InfoRow>
@@ -1387,7 +1565,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       <InfoGroup>
                         <EmailSVG />
                         <InfoText>
-                          {formData.email ? formData.email : '- N/A'}
+                          {formData.email ? formData.email : '-'}
                         </InfoText>
                       </InfoGroup>
 
@@ -1397,7 +1575,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       <InfoGroup>
                         <CallSVG />
                         <InfoText>
-                          {formData.contact ? formData.contact : '- N/A'}
+                          {formData.contact ? formData.contact : 'N/A'}
                         </InfoText>
                       </InfoGroup>
                     </InfoRow>

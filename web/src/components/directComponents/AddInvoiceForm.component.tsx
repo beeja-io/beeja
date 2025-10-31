@@ -63,7 +63,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
   const generateDueRemarks = (endDate: Date | undefined): string => {
     return t(
-      `Please transfer the due amount to the following bank account with in next 7 days.`
+      'Please transfer the due amount to the following bank account within next 7 days.'
     );
   };
 
@@ -111,13 +111,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
     primaryAddress: organizationDetails?.address
       ? {
-        addressOne: organizationDetails.address.addressOne || '',
-        addressTwo: organizationDetails.address.addressTwo,
-        city: organizationDetails.address.city || '',
-        state: organizationDetails.address.state || '',
-        country: organizationDetails.address.country || '',
-        pinCode: organizationDetails.address.pinCode || 0,
-      }
+          addressOne: organizationDetails.address.addressOne || '',
+          addressTwo: organizationDetails.address.addressTwo,
+          city: organizationDetails.address.city || '',
+          state: organizationDetails.address.state || '',
+          country: organizationDetails.address.country || '',
+          pinCode: organizationDetails.address.pinCode || 0,
+        }
       : getDefaultAddress(),
     billingAddress: props.billingAddress || {
       street: '',
@@ -156,13 +156,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
       primaryAddress: organizationDetails?.address
         ? {
-          addressOne: organizationDetails.address.addressOne || '',
-          addressTwo: organizationDetails.address.addressTwo,
-          city: organizationDetails.address.city || '',
-          state: organizationDetails.address.state || '',
-          country: organizationDetails.address.country || '',
-          pinCode: organizationDetails.address.pinCode || 0,
-        }
+            addressOne: organizationDetails.address.addressOne || '',
+            addressTwo: organizationDetails.address.addressTwo,
+            city: organizationDetails.address.city || '',
+            state: organizationDetails.address.state || '',
+            country: organizationDetails.address.country || '',
+            pinCode: organizationDetails.address.pinCode || 0,
+          }
         : getDefaultAddress(),
       billingAddress: props.billingAddress || {
         street: '',
@@ -441,7 +441,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||
-        'Failed to create invoice. Please try again.'
+          'Failed to create invoice. Please try again.'
       );
     } finally {
       setIsLoading(false);
@@ -678,11 +678,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                       maxDate={
                         toDate
                           ? new Date(
-                            Math.min(
-                              toDate.getTime(),
-                              props.endDate ? new Date(props.endDate).getTime() : toDate.getTime()
+                              Math.min(
+                                toDate.getTime(),
+                                props.endDate
+                                  ? new Date(props.endDate).getTime()
+                                  : toDate.getTime()
+                              )
                             )
-                          )
                           : props.endDate
                             ? new Date(props.endDate)
                             : undefined
@@ -697,7 +699,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                         }
                       }}
                       selectedDate={fromDate ? fromDate : new Date()}
-                      handleCalenderChange={function (): void { }}
+                      handleCalenderChange={function (): void {}}
                     />
                   </div>
                 )}
@@ -724,16 +726,20 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                       minDate={
                         fromDate
                           ? new Date(
-                            Math.max(
-                              fromDate.getTime(),
-                              props.startDate ? new Date(props.startDate).getTime() : fromDate.getTime()
+                              Math.max(
+                                fromDate.getTime(),
+                                props.startDate
+                                  ? new Date(props.startDate).getTime()
+                                  : fromDate.getTime()
+                              )
                             )
-                          )
                           : props.startDate
                             ? new Date(props.startDate)
                             : undefined
                       }
-                      maxDate={props.endDate ? new Date(props.endDate) : undefined}
+                      maxDate={
+                        props.endDate ? new Date(props.endDate) : undefined
+                      }
                       handleDateInput={(selectedDate) => {
                         if (selectedDate instanceof Date) {
                           handleDateInput(selectedDate, false);
@@ -745,7 +751,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                         }
                       }}
                       selectedDate={toDate ? toDate : new Date()}
-                      handleCalenderChange={() => { }}
+                      handleCalenderChange={() => {}}
                     />
                   </div>
                 )}
