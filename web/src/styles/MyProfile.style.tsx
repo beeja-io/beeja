@@ -607,7 +607,9 @@ export const ViewHistoryLink = styled.span<{ $open?: boolean }>`
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
 
   &:hover {
     color: #005bb5;
@@ -615,6 +617,6 @@ export const ViewHistoryLink = styled.span<{ $open?: boolean }>`
 
   svg {
     transition: transform 0.2s ease;
-    transform: rotate(${(props) => (props.$open ? "180deg" : "0deg")});
+    transform: rotate(${(props) => (props.$open ? '180deg' : '0deg')});
   }
 `;

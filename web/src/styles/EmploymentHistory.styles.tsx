@@ -110,22 +110,34 @@ export const Badge = styled.span<{ type?: string }>`
 
   color: ${({ type }) => {
     switch (type) {
-      case 'Full Time': return '#065f46';
-      case 'Part Time': return '#8a1e7dff';
-      case 'Intern': return '#92400e';
-      case 'Paid Intern': return '#920e68ff';
-      case 'Free Launcher': return '#6b21a8';
-      default: return '#1e40af';
+      case 'Full Time':
+        return '#065f46';
+      case 'Part Time':
+        return '#8a1e7dff';
+      case 'Intern':
+        return '#92400e';
+      case 'Paid Intern':
+        return '#920e68ff';
+      case 'Free Launcher':
+        return '#6b21a8';
+      default:
+        return '#1e40af';
     }
   }};
   background: ${({ type }) => {
     switch (type) {
-      case 'Full Time': return '#d1fae5';
-      case 'Part Time': return '#f1d7eeff';
-      case 'Intern': return '#fef3c7';
-      case 'Paid Intern': return '#e8e2deff';
-      case 'Free Launcher': return '#ede9fe';
-      default: return '#e0e7ff';
+      case 'Full Time':
+        return '#d1fae5';
+      case 'Part Time':
+        return '#f1d7eeff';
+      case 'Intern':
+        return '#fef3c7';
+      case 'Paid Intern':
+        return '#e8e2deff';
+      case 'Free Launcher':
+        return '#ede9fe';
+      default:
+        return '#e0e7ff';
     }
   }};
 `;
@@ -137,7 +149,7 @@ export const ActionsMenu = styled.div`
   position: absolute;
   right: 0;
   top: 20px;
-  background: ${(props) => props.theme.colors.blackColors.white};;
+  background: ${(props) => props.theme.colors.blackColors.white};
   border: 1px solid ${(props) => props.theme.colors.grayColors.gray5};
   border-radius: 6px;
   padding: 4px 6px;
@@ -151,7 +163,9 @@ export const ActionItem = styled.div`
   gap: 8px;
   padding: 4px 8px;
   border-radius: 4px;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 
   &:hover {
     background: ${(props) => props.theme.colors.grayColors.gray5};
@@ -161,7 +175,6 @@ export const ActionItem = styled.div`
     background: ${(props) => props.theme.colors.grayColors.gray5};
   }
 `;
-
 
 export const ModalOverlay = styled.div`
   position: fixed;
@@ -189,7 +202,7 @@ export const Required = styled.span`
 `;
 
 export const CancelButton = styled.button`
-  width: 120px; 
+  width: 120px;
   height: 40px;
   padding: 10px 24px;
   border-radius: 8px;
@@ -201,7 +214,7 @@ export const CancelButton = styled.button`
 `;
 
 export const SaveButton = styled.button<{ disabled?: boolean }>`
-  width: 120px; 
+  width: 120px;
   height: 40px;
   padding: 10px 24px;
   border-radius: 8px;

@@ -559,201 +559,222 @@ export const GeneralDetailsTab = ({
           <TabContentInnerContainer>
             <div>
               <TabContentTable>
-                {firstColumn.sort((a, b) => {
-                  if (heading === "Employment Info") {
-                    if (a.label === "Joining Date" && b.label === "Employment Type") return -1;
-                    if (a.label === "Employment Type" && b.label === "Joining Date") return 1;
-                  }
-                  return 0;
-                }).map(({ label, value }) => (
-                  <tr key={label}>
-                    <TabContentTableTd>{t(label)}</TabContentTableTd>
-                    {isEditModeOn && isFieldEditable(label) ? (
-                      <TabContentTableTd>
-                        {label === 'Country' ||
-                        label === 'Nationality' ||
-                        label === 'Department' ||
-                        label === 'Employment Type' ||
-                        label === 'Designation' ? (
-                          <DropdownOrg
-                            label={label}
-                            selected={formData[label] ?? ''}
-                            options={(label === 'Country'
-                              ? ['India', 'Germany', 'United States']
-                              : label === 'Nationality'
-                                ? ['Indian', 'German', 'American']
-                                : label === 'Department'
-                                  ? departmentList?.values?.map((d) => d.value)
-                                  : label === 'Employment Type'
-                                    ? employmentTypes?.values?.map(
-                                        (e) => e.value
+                {firstColumn
+                  .sort((a, b) => {
+                    if (heading === 'Employment Info') {
+                      if (
+                        a.label === 'Joining Date' &&
+                        b.label === 'Employment Type'
+                      )
+                        return -1;
+                      if (
+                        a.label === 'Employment Type' &&
+                        b.label === 'Joining Date'
+                      )
+                        return 1;
+                    }
+                    return 0;
+                  })
+                  .map(({ label, value }) => (
+                    <tr key={label}>
+                      <TabContentTableTd>{t(label)}</TabContentTableTd>
+                      {isEditModeOn && isFieldEditable(label) ? (
+                        <TabContentTableTd>
+                          {label === 'Country' ||
+                          label === 'Nationality' ||
+                          label === 'Department' ||
+                          label === 'Employment Type' ||
+                          label === 'Designation' ? (
+                            <DropdownOrg
+                              label={label}
+                              selected={formData[label] ?? ''}
+                              options={(label === 'Country'
+                                ? ['India', 'Germany', 'United States']
+                                : label === 'Nationality'
+                                  ? ['Indian', 'German', 'American']
+                                  : label === 'Department'
+                                    ? departmentList?.values?.map(
+                                        (d) => d.value
                                       )
-                                    : label === 'Designation'
-                                      ? jobTitles?.values?.map((j) => j.value)
-                                      : []
-                            )?.map((value) => ({
-                              label: value,
-                              value: value,
-                            }))}
-                            onChange={(selectedValue) =>
-                              handleChange(label, selectedValue as string)
-                            }
-                          />
-                        ) : label === 'Joining Date' ? (
-                          <>
-                            <CalendarInputContainer>
-                              <InlineInput
-                                placeholder={t('Enter Joining Date')}
-                                value={
-                                  joiningDate
-                                    ? formatDateDDMMYYYY(joiningDate)
-                                    : employee.employee.jobDetails &&
-                                        employee.employee.jobDetails.joiningDate
-                                      ? formatDateDDMMYYYY(
+                                    : label === 'Employment Type'
+                                      ? employmentTypes?.values?.map(
+                                          (e) => e.value
+                                        )
+                                      : label === 'Designation'
+                                        ? jobTitles?.values?.map((j) => j.value)
+                                        : []
+                              )?.map((value) => ({
+                                label: value,
+                                value: value,
+                              }))}
+                              onChange={(selectedValue) =>
+                                handleChange(label, selectedValue as string)
+                              }
+                            />
+                          ) : label === 'Joining Date' ? (
+                            <>
+                              <CalendarInputContainer>
+                                <InlineInput
+                                  placeholder={t('Enter Joining Date')}
+                                  value={
+                                    joiningDate
+                                      ? formatDateDDMMYYYY(joiningDate)
+                                      : employee.employee.jobDetails &&
                                           employee.employee.jobDetails
                                             .joiningDate
-                                        )
-                                      : ''
+                                        ? formatDateDDMMYYYY(
+                                            employee.employee.jobDetails
+                                              .joiningDate
+                                          )
+                                        : ''
+                                  }
+                                  onChange={(e) =>
+                                    setJoiningDate(e.target.value)
+                                  }
+                                  disabled
+                                />
+                                <StyledCalendarIconDark>
+                                  <span onClick={toggleCalendar}>
+                                    <CalenderIconDark />
+                                  </span>
+                                </StyledCalendarIconDark>
+                              </CalendarInputContainer>
+                            </>
+                          ) : (
+                            <InlineInput
+                              disabled={
+                                (label === 'Employee Id' &&
+                                  user &&
+                                  user.employeeId !==
+                                    employee.account.employeeId &&
+                                  !user.roles.some((role) =>
+                                    role.permissions.includes(
+                                      EMPLOYEE_MODULE.UPDATE_EMPLOYEE
+                                    )
+                                  )) ??
+                                false
+                              }
+                              type={
+                                label === 'Date of Birth' ||
+                                label === 'Joining Date'
+                                  ? 'date'
+                                  : 'text'
+                              }
+                              max={new Date().toISOString().split('T')[0]}
+                              value={
+                                formData[label] !== undefined
+                                  ? label === 'Date of Birth' ||
+                                    label === 'Joining Date'
+                                    ? formatDateYYYYMMDD(formData[label])
+                                    : formData[label]
+                                  : ''
+                              }
+                              placeholder={`Enter ${t(label)}`}
+                              onFocus={(e) => {
+                                if (e.target.value === '-') {
+                                  e.target.value = '';
                                 }
-                                onChange={(e) => setJoiningDate(e.target.value)}
-                                disabled
-                              />
-                              <StyledCalendarIconDark>
-                                <span onClick={toggleCalendar}>
-                                  <CalenderIconDark />
-                                </span>
-                              </StyledCalendarIconDark>
-                            </CalendarInputContainer>
-                          </>
-                        ) : (
-                          <InlineInput
-                            disabled={
-                              (label === 'Employee Id' &&
-                                user &&
-                                user.employeeId !==
-                                  employee.account.employeeId &&
-                                !user.roles.some((role) =>
-                                  role.permissions.includes(
-                                    EMPLOYEE_MODULE.UPDATE_EMPLOYEE
-                                  )
-                                )) ??
-                              false
-                            }
-                            type={
-                              label === 'Date of Birth' ||
-                              label === 'Joining Date'
-                                ? 'date'
-                                : 'text'
-                            }
-                            max={new Date().toISOString().split('T')[0]}
-                            value={
-                              formData[label] !== undefined
-                                ? label === 'Date of Birth' ||
-                                  label === 'Joining Date'
-                                  ? formatDateYYYYMMDD(formData[label])
-                                  : formData[label]
-                                : ''
-                            }
-                            placeholder={`Enter ${t(label)}`}
-                            onFocus={(e) => {
-                              if (e.target.value === '-') {
-                                e.target.value = '';
-                              }
-                            }}
-                            onChange={(e) => {
-                              const inputValue = e.target.value;
-                              const labelsToExcludeFromStrictAlphabets = [
-                                'Email Address',
-                                'Alt Email Address',
-                                'Primary Address',
-                                'Email',
-                                'Phone',
-                                'Date of Birth',
-                                'Joining Date',
-                                'Employee Id',
-                              ];
-                              if (label === 'Postal Code') {
-                                const numericValue = inputValue.replace(
-                                  /\D/g,
-                                  ''
-                                );
-                                const validValue = numericValue.slice(0, 6);
-                                handleChange(label, validValue);
-                              } else if (label === 'Aadhar Number') {
-                                const numericValue = inputValue.replace(
-                                  /\D/g,
-                                  ''
-                                );
-                                const validValue = numericValue.slice(0, 12);
-                                handleChange(label, validValue);
-                              } else if (label === 'Phone') {
-                                const numericValue = inputValue.replace(
-                                  /\D/g,
-                                  ''
-                                );
-                                const validValue = numericValue.slice(0, 10);
-                                handleChange(label, validValue);
-                              } else if (label === 'Employee Id') {
-                                handleChange(label, inputValue.toUpperCase());
-                              } else if (
-                                !labelsToExcludeFromStrictAlphabets.includes(
-                                  label
-                                ) &&
-                                (/^[a-zA-Z\s]*$/.test(inputValue) ||
-                                  inputValue === '')
-                              ) {
-                                handleChange(label, inputValue);
-                              }
+                              }}
+                              onChange={(e) => {
+                                const inputValue = e.target.value;
+                                const labelsToExcludeFromStrictAlphabets = [
+                                  'Email Address',
+                                  'Alt Email Address',
+                                  'Primary Address',
+                                  'Email',
+                                  'Phone',
+                                  'Date of Birth',
+                                  'Joining Date',
+                                  'Employee Id',
+                                ];
+                                if (label === 'Postal Code') {
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ''
+                                  );
+                                  const validValue = numericValue.slice(0, 6);
+                                  handleChange(label, validValue);
+                                } else if (label === 'Aadhar Number') {
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ''
+                                  );
+                                  const validValue = numericValue.slice(0, 12);
+                                  handleChange(label, validValue);
+                                } else if (label === 'Phone') {
+                                  const numericValue = inputValue.replace(
+                                    /\D/g,
+                                    ''
+                                  );
+                                  const validValue = numericValue.slice(0, 10);
+                                  handleChange(label, validValue);
+                                } else if (label === 'Employee Id') {
+                                  handleChange(label, inputValue.toUpperCase());
+                                } else if (
+                                  !labelsToExcludeFromStrictAlphabets.includes(
+                                    label
+                                  ) &&
+                                  (/^[a-zA-Z\s]*$/.test(inputValue) ||
+                                    inputValue === '')
+                                ) {
+                                  handleChange(label, inputValue);
+                                }
 
-                              // For other cases in the exclusion list, allow any input
-                              else if (
-                                labelsToExcludeFromStrictAlphabets.includes(
-                                  label
-                                )
-                              ) {
-                                handleChange(label, inputValue);
-                              }
-                            }}
-                          />
-                        )}
-                      </TabContentTableTd>
-                    ) : (
-                      <>
-                        {value != '-' &&
-                        (label === 'Joining Date' ||
-                          label === 'Date of Birth') ? (
-                          <TabContentTableTd>
-                            {formatDate(value)}
-                          </TabContentTableTd>
-                        ) : (
-                          <TabContentTableTd>
-                            {t(value)}{" "}
-                            {heading === 'Employment Info' && label === 'Employment Type' && (
-                            <ViewHistoryLink onClick={() => setShowHistory((prev) => !prev)} $open={showHistory}>
-                                  .  {t('View_History')}{" "}
-                                <svg
-                                  width="12"
-                                  height="12"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                >
-                                  <path
-                                    d="M6 9L12 15L18 9"
-                                    stroke="#007AFF"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                  />
-                                </svg>
-                            </ViewHistoryLink>
+                                // For other cases in the exclusion list, allow any input
+                                else if (
+                                  labelsToExcludeFromStrictAlphabets.includes(
+                                    label
+                                  )
+                                ) {
+                                  handleChange(label, inputValue);
+                                }
+                              }}
+                            />
                           )}
-                          </TabContentTableTd>
-                        )}
-                      </>
-                    )}
-                  </tr>
-                ))}
+                        </TabContentTableTd>
+                      ) : (
+                        <>
+                          {value != '-' &&
+                          (label === 'Joining Date' ||
+                            label === 'Date of Birth') ? (
+                            <TabContentTableTd>
+                              {formatDate(value)}
+                            </TabContentTableTd>
+                          ) : (
+                            <TabContentTableTd>
+                              {t(value)}{' '}
+                              {heading === 'Employment Info' &&
+                                label === 'Employment Type' && (
+                                  <ViewHistoryLink
+                                    onClick={() =>
+                                      setShowHistory((prev) => !prev)
+                                    }
+                                    $open={showHistory}
+                                  >
+                                    . {t('View_History')}{' '}
+                                    <svg
+                                      width="12"
+                                      height="12"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M6 9L12 15L18 9"
+                                        stroke="#007AFF"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                    </svg>
+                                  </ViewHistoryLink>
+                                )}
+                            </TabContentTableTd>
+                          )}
+                        </>
+                      )}
+                    </tr>
+                  ))}
               </TabContentTable>
             </div>
             {secondColumn.length > 0 && (
