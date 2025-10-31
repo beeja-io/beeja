@@ -517,7 +517,7 @@
   "End_Date": "End Date",
   "Employment_Type": "Employment Type",
   "Designation": "Designation",
-  "Note":"Note",
+  "Note": "Note",
   "Edit_Employment_History": "Edit Employment History",
   "Add_Employment_History": "Add Employment History",
   "View_History": "View History",
@@ -549,5 +549,7 @@
       "india": "Postal code must be exactly 6 digits for India.",
       "default": "Postal/Zip code must be exactly 5 digits for {{country}}."
     }
-  }
+  },
+  "Due_mark": "Please transfer the due amount to the following bank account within next 7 days.",
+  "Remark": "Thank you so much for the great opportunity as always"
 }

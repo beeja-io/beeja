@@ -402,7 +402,7 @@ export const InvoiceButtonContainer = styled.div`
   gap: 10px;
   margin: 20px 0px;
 `;
-export const InvoiceButton = styled(Button) <{
+export const InvoiceButton = styled(Button)<{
   disabled?: boolean;
   variant?: 'send' | 'download';
 }>`
@@ -495,10 +495,10 @@ export const TableHead = styled.thead`
       font-size: 12px;
     }
   }
-  .spacesno{
+  .spacesno {
     width: 200px;
   }
-  .spacetask{
+  .spacetask {
     width: 600px;
   }
 `;
@@ -559,18 +559,18 @@ export const TableRow = styled.tr`
     font-size: 12px;
     vertical-align: middle;
   }
-  .style1{
+  .style1 {
     color: ${(props) => props.theme.colors.blackColors.black1};
     font-weight: 600;
     padding-left: 2px;
   }
-  .sidehead{
+  .sidehead {
     font-size: 14px;
     font-weight: 700;
     padding-right: 80px;
     padding-left: 15px;
   }
-  .sidehead2{
+  .sidehead2 {
     padding-right: 50px;
   }
 `;
@@ -691,7 +691,6 @@ export const InvId = styled.span`
   font-weight: 500;
   font-size: 11px;
 `;
-export const Alignmenting=styled.div`
+export const Alignmenting = styled.div`
   margin-left: 10px;
 `;
-
