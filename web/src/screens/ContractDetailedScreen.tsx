@@ -176,6 +176,17 @@ const ContractDetailsScreen: React.FC = () => {
     setIsCreateModalOpen(!isCreateModalOpen);
   };
 
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isCreateModalOpen]);
+
   if (isLoading) {
     return <SpinAnimation />;
   }
@@ -372,7 +383,7 @@ const ContractDetailsScreen: React.FC = () => {
               }
               contractId={contractId ?? ''}
               contractTitle={contract?.contractTitle}
-              startDate={contractDetails?.startDate}
+              startDate={contract?.startDate}
               endDate={contract?.endDate}
               billingAddress={clientDetails?.billingAddress}
               clientName={clientDetails?.clientName}

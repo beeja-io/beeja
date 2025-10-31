@@ -16,9 +16,12 @@ import {
   TableHead,
   TableHeadLabel,
   TableRow,
+  TableShowing,
+  TableList,
   Tablelist,
   TextInput,
   ValidationText,
+  Alignmenting,
 } from '../../styles/InvoiceManagementStyles.style.tsx';
 import { formatDate } from '../../utils/dateFormatter';
 import Calendar from '../reusableComponents/Calendar.component';
@@ -56,26 +59,10 @@ import {
 } from '../reusableComponents/ContractEnums.component.tsx';
 import SpinAnimation from '../loaders/SprinAnimation.loader.tsx';
 import { t } from 'i18next';
-import { TableList } from '../../styles/DocumentTabStyles.style.tsx';
 
 export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
-  const getRemainingDueDays = (dueDate: Date | undefined): number => {
-    if (!dueDate || isNaN(dueDate.getTime())) {
-      return 0;
-    }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    dueDate.setHours(0, 0, 0, 0);
-    const diffDays =
-      Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) +
-      1;
-    return diffDays;
-  };
+
   const generateDueRemarks = (endDate: Date | undefined): string => {
-    const dueDays = getRemainingDueDays(endDate);
-    if (!endDate || dueDays <= 0) {
-      return t('The contract has ended.');
-    }
     return t(
       'Please transfer the due amount to the following bank account within next 7 days.'
     );
@@ -109,7 +96,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
   const [formData, setFormData] = useState<FormDataProps>({
     RemittanceNo: props.remittanceReferenceNumber || '',
     InvoiceNo: props.invoiceId || '',
-    tax: 18,
+    tax: "",
     taxId: organizationDetails?.taxId || '',
     organization: organizationDetails?.name || '',
     organizationId: props.organizationId || '',
@@ -376,7 +363,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     setData([...data.slice(0, id), ...data.slice(id + 1)]);
   };
   const subTotal = data.reduce((sum, item) => sum + Number(item.price), 0);
-  const gstAmount = (subTotal * formData.tax) / 100;
+  const gstAmount = (subTotal * Number(formData.tax)) / 100;
   const Total = subTotal + gstAmount;
   const [confirmDeleteChanges, setConfirmDeleteChanges] = useState(false);
   const handleConfirmDeleteChanges = (
@@ -407,7 +394,6 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     if (
       !formData.contractId ||
       !formData.clientId ||
-      !Total ||
       !formData.fromDate ||
       !formData.toDate
     ) {
@@ -439,7 +425,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
         remittanceRef: formData.RemittanceNo || null,
         invoiceId: formData.InvoiceNo || null,
         taxId: formData.taxId || null,
-        vat: formData.tax || 18,
+        vat: Number(formData.tax),
         daysLeftForPayment: formData.dueRemarks.match(/\d+/)?.[0] || '30',
         invoicePeriod: {
           startDate: formData.fromDate.toISOString(),
@@ -482,7 +468,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      toast.success(t('Invoice download started'));
+      toast.success(t('Invoice downloaded successfully'));
     } catch (error) {
       toast.error(t('Failed to download invoice. Please try again.'));
     } finally {
@@ -603,7 +589,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               {!isRemittanceRefEditModeOn ? (
                 <>
                   <span className="applyMargin"> {formData.RemittanceNo}</span>
-                  <span onClick={handleIsRemittanceEditModeOn}>
+                  <span onClick={handleIsRemittanceEditModeOn} style={{ cursor: 'pointer' }}>
                     <EditWhitePenSVG />
                   </span>
                 </>
@@ -626,7 +612,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                     {' '}
                     {organizationDetails?.taxId}{' '}
                   </span>
-                  <span onClick={handleIsTaxIdEditModeOn}>
+                  <span onClick={handleIsTaxIdEditModeOn} style={{ cursor: 'pointer' }}>
                     <EditWhitePenSVG />
                   </span>
                 </>
@@ -650,7 +636,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   <span className="applyMargin fontColor">
                     {formData.InvoiceNo}{' '}
                   </span>
-                  <span onClick={handleIsInvoiceEditModeOn}>
+                  <span onClick={handleIsInvoiceEditModeOn} style={{ cursor: 'pointer' }}>
                     <EditWhitePenSVG />
                   </span>
                 </>
@@ -669,131 +655,103 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             <span className="applyMargin1 ">
               {formData.contractId} - {formData.contractName}
             </span>
-            <div className="dateSet">
-              <span>{t('Invoice Period')}</span>&nbsp;
-              <div ref={calendarFromRef}>
-                <DatePicker onClick={handleFromCalendarClick}>
-                  <span className="dateName">
-                    <span className="calenderIcon">
-                      <CalenderSVG />
+            <div className="sub-invoicedetails">
+              <div className="dateSet">
+                <span>{t('Invoice Period')}</span>&nbsp;
+                <div ref={calendarFromRef}>
+                  <DatePicker onClick={handleFromCalendarClick}>
+                    <span className="dateName">
+                      <span className="calenderIcon" style={{ cursor: 'pointer' }}>
+                        <CalenderSVG />
+                      </span>
+                      &nbsp;
+                      <span className="dateChild">
+                        {fromDate
+                          ? `${formatDate(fromDate.toString())}`
+                          : `${formatDate(formData.fromDate.toString())}`}
+                      </span>
                     </span>
-                    &nbsp;
-                    <span className="dateChild">
-                      {fromDate
-                        ? `${formatDate(fromDate.toString())}`
-                        : `${formatDate(formData.fromDate.toString())}`}
-                    </span>
-                  </span>
-                </DatePicker>
-                {showFromCalendar && (
-                  <div className="filterCalender">
-                    <Calendar
-                      title="FROM_DATE"
-                      minDate={
-                        props.startDate ? new Date(props.startDate) : undefined
-                      }
-                      maxDate={
-                        toDate
-                          ? new Date(
+                  </DatePicker>
+                  {showFromCalendar && (
+                    <div className="filterCalender">
+                      <Calendar
+                        title="From Date"
+                        minDate={props.startDate ? new Date(props.startDate) : undefined}
+                        maxDate={
+                          toDate
+                            ? new Date(
                               Math.min(
                                 toDate.getTime(),
-                                props.endDate
-                                  ? new Date(props.endDate).getTime()
-                                  : toDate.getTime()
+                                props.endDate ? new Date(props.endDate).getTime() : toDate.getTime()
                               )
                             )
-                          : props.endDate
-                            ? new Date(props.endDate)
-                            : undefined
-                      }
-                      handleDateInput={(selectedDate) => {
-                        if (selectedDate instanceof Date) {
-                          handleDateInput(selectedDate, true);
-                          setFormData((prevState) => ({
-                            ...prevState,
-                            fromDate: selectedDate,
-                          }));
+                            : props.endDate
+                              ? new Date(props.endDate)
+                              : undefined
                         }
-                      }}
-                      selectedDate={fromDate ? fromDate : new Date()}
-                      handleCalenderChange={function (): void {}}
-                    />
-                  </div>
-                )}
-              </div>
-              <span> {t('To')} </span>&nbsp;
-              <div ref={calendarToRef}>
-                <DatePicker onClick={handleToCalendarClick}>
-                  <span className="dateName">
-                    <span className="calenderIcon">
-                      <CalenderSVG />
+                        handleDateInput={(selectedDate) => {
+                          if (selectedDate instanceof Date) {
+                            handleDateInput(selectedDate, true);
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              fromDate: selectedDate,
+                            }));
+                          }
+                        }}
+                        selectedDate={fromDate ? fromDate : new Date()}
+                        handleCalenderChange={function (): void { }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <span> {t('To')} </span>&nbsp;
+                <div ref={calendarToRef}>
+                  <DatePicker onClick={handleToCalendarClick}>
+                    <span className="dateName">
+                      <span className="calenderIcon" style={{ cursor: 'pointer' }}>
+                        <CalenderSVG />
+                      </span>
+                      &nbsp;
+                      <span className="dateChild">
+                        {toDate
+                          ? `${formatDate(toDate.toString())}`
+                          : `${formatDate(formData.toDate.toString())}`}
+                      </span>
                     </span>
-                    &nbsp;
-                    <span className="dateChild">
-                      {toDate
-                        ? `${formatDate(toDate.toString())}`
-                        : `${formatDate(formData.toDate.toString())}`}
-                    </span>
-                  </span>
-                </DatePicker>
-                {showToCalendar && (
-                  <div className="filterCalender">
-                    <Calendar
-                      title="TO_DATE"
-                      minDate={
-                        fromDate
-                          ? new Date(
+                  </DatePicker>
+                  {showToCalendar && (
+                    <div className="filterCalender">
+                      <Calendar
+                        title="To Date"
+                        minDate={
+                          fromDate
+                            ? new Date(
                               Math.max(
                                 fromDate.getTime(),
-                                props.startDate
-                                  ? new Date(props.startDate).getTime()
-                                  : fromDate.getTime()
+                                props.startDate ? new Date(props.startDate).getTime() : fromDate.getTime()
                               )
                             )
-                          : props.startDate
-                            ? new Date(props.startDate)
-                            : undefined
-                      }
-                      maxDate={
-                        props.endDate ? new Date(props.endDate) : undefined
-                      }
-                      handleDateInput={(selectedDate) => {
-                        if (selectedDate instanceof Date) {
-                          handleDateInput(selectedDate, false);
-                          setFormData((prevState) => ({
-                            ...prevState,
-                            toDate: selectedDate,
-                            dueRemarks: generateDueRemarks(selectedDate),
-                          }));
+                            : props.startDate
+                              ? new Date(props.startDate)
+                              : undefined
                         }
-                      }}
-                      selectedDate={toDate ? toDate : new Date()}
-                      handleCalenderChange={() => {}}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="sub-invoicedetails">
-              <div>
-                <span className="remarks">{t('Remarks')}</span>
-                {!isRemarksNoteEditModeOn ? (
-                  <span className="remarksNote">
-                    <span>"</span> {formData.remarksNote} <span>"</span>
-                    <span onClick={handleIsRemarksNoteEditModeOn}>
-                      <EditWhitePenSVG />
-                    </span>
-                  </span>
-                ) : (
-                  <TextInput
-                    className="remarksNote"
-                    name="remarksNote"
-                    value={formData.remarksNote}
-                    onChange={handleChange}
-                    onBlur={handleIsRemarksNoteEditModeOn}
-                    required
-                  />
-                )}
+                        maxDate={props.endDate ? new Date(props.endDate) : undefined}
+                        handleDateInput={(selectedDate) => {
+                          if (selectedDate instanceof Date) {
+                            handleDateInput(selectedDate, false);
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              toDate: selectedDate,
+                              dueRemarks: generateDueRemarks(selectedDate),
+                            }));
+                          }
+                        }}
+                        selectedDate={toDate ? toDate : new Date()}
+                        handleCalenderChange={() => { }}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 {!isCityEditModeOn ? (
@@ -801,7 +759,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                     <span className="remarks applyMargin">
                       {cityValue}, {formatCurrentDate(currentDate)}
                     </span>
-                    <span onClick={handleIsCityEditModeOn}>
+                    <span onClick={handleIsCityEditModeOn} style={{ cursor: 'pointer' }}>
                       <EditWhitePenSVG />
                     </span>
                   </>
@@ -816,23 +774,25 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               </div>
             </div>
           </InvoiceDetails>
-          <div>
+          <TableShowing>
             <TableList>
               <TableHead>
                 <tr>
                   <th>{t('Sno')}</th>
-                  <th>
+                  <th className='spacesno'>
                     <TableHeadLabel>
-                      <ValidationText>*</ValidationText> {t('Task')}
-                    </TableHeadLabel>
-                  </th>
-                  <th>{t('Description')}</th>
-                  <th>
-                    <TableHeadLabel>
+                      {t('Task')}
                       <ValidationText>*</ValidationText>
-                      {'Price In ' + getCurrencySymbol(formData.currencyType)}
                     </TableHeadLabel>
                   </th>
+                  <th className='spacetask'>{t('Description')}</th>
+                  <th>
+                    <TableHeadLabel>
+                      {'Price in ' + getCurrencySymbol(formData.currencyType)}
+                      <ValidationText>*</ValidationText>
+                    </TableHeadLabel>
+                  </th>
+                  <th></th>
                 </tr>
               </TableHead>
 
@@ -842,94 +802,94 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   <td>{project.contract}</td>
                   <td>{project.description}</td>
                   <td>{project.price}</td>
-                  <td onClick={(e) => handleDeleteList(e, index)}>
+                  <td onClick={(e) => handleDeleteList(e, index)} className='deletebox' style={{cursor:'pointer'}}>
                     <DeleteIconSVG />
                   </td>
                 </TableBodyRow>
               ))}
             </TableList>
-          </div>
-          <AddRowContainer>
-            {!isAddRowsEditModeOn ? (
-              <span
-                className="addRows"
-                style={{ cursor: 'pointer' }}
-                onClick={handleIsAddRowsEditModeOn}
-              >
-                <Plus /> {t('Add Row')}
-              </span>
-            ) : (
-              <div className="rowsAlign">
-                <div className="rowItem">
-                  <input name="serialNo" value={data.length + 1} readOnly />
+            <AddRowContainer>
+              {!isAddRowsEditModeOn ? (
+                <span
+                  className="addRows"
+                  style={{ cursor: 'pointer' }}
+                  onClick={handleIsAddRowsEditModeOn}
+                >
+                  <Plus /> {t('Add Row')}
+                </span>
+              ) : (
+                <div className="rowsAlign">
+                  <div className="rowItem r1">
+                    <input name="serialNo" value={data.length + 1} readOnly />
+                  </div>
+                  <div className="rowItem r2">
+                    <input name="contract" onChange={handleChangeRows} />
+                    {errors.contract && (
+                      <span className="errorSpan">{errors.contract}</span>
+                    )}
+                  </div>
+                  <div className="rowItem r3">
+                    <input name="description" onChange={handleChangeRows} />
+                  </div>
+                  <div className="rowItem r4">
+                    <input
+                      name="price"
+                      onChange={handleChangeRows}
+                      onKeyDown={(event) => {
+                        const allowedCharacters = /^[0-9]+$/;
+                        if (
+                          !allowedCharacters.test(event.key) &&
+                          event.key !== 'ArrowLeft' &&
+                          event.key !== 'ArrowRight' &&
+                          event.key !== 'Backspace'
+                        ) {
+                          event.preventDefault();
+                        }
+                        if (event.key === 'e') {
+                          event.preventDefault();
+                        }
+                      }}
+                    />
+                    {errors.price && (
+                      <span className="errorSpan">{errors.price}</span>
+                    )}
+                  </div>
+                  <div className="alignButton">
+                    <button type="button" onClick={handleRowChanges}>
+                      {' '}
+                      <CheckBoxOnSVG />{' '}
+                    </button>
+                    <button onClick={() => setIsAddRowsEditModeOn(false)} className="cross-icon">
+                      <CrossMarkSVG />
+                    </button>
+                  </div>
                 </div>
-                <div className="rowItem">
-                  <input name="contract" onChange={handleChangeRows} />
-                  {errors.contract && (
-                    <span className="errorSpan">{errors.contract}</span>
-                  )}
-                </div>
-                <div className="rowItem">
-                  <input name="description" onChange={handleChangeRows} />
-                </div>
-                <div className="rowItem">
-                  <input
-                    name="price"
-                    onChange={handleChangeRows}
-                    onKeyDown={(event) => {
-                      const allowedCharacters = /^[0-9]+$/;
-                      if (
-                        !allowedCharacters.test(event.key) &&
-                        event.key !== 'ArrowLeft' &&
-                        event.key !== 'ArrowRight' &&
-                        event.key !== 'Backspace'
-                      ) {
-                        event.preventDefault();
-                      }
-                      if (event.key === 'e') {
-                        event.preventDefault();
-                      }
-                    }}
-                  />
-                  {errors.price && (
-                    <span className="errorSpan">{errors.price}</span>
-                  )}
-                </div>
-                <div className="alignButton">
-                  <button type="button" onClick={handleRowChanges}>
-                    {' '}
-                    <CheckBoxOnSVG />{' '}
-                  </button>
-                  <button onClick={() => setIsAddRowsEditModeOn(false)}>
-                    <CrossMarkSVG />
-                  </button>
-                </div>
-              </div>
-            )}
-          </AddRowContainer>
+              )}
+            </AddRowContainer>
+          </TableShowing>
           <InvoiceCalculationContainer>
             <Tablelist>
               <div className="borderCollapse">
                 <TableRow>
-                  <td>{t('Sub Total')}</td>
-                  <td>{`${getCurrencySymbol(formData.currencyType)} ${subTotal}`}</td>
+                  <td className='sidehead'>{t('Sub Total')}</td>
+                  <td className='sidehead2'>{`(${getCurrencySymbol(formData.currencyType)}) ${subTotal}`}</td>
                 </TableRow>
                 <TableRow>
-                  <td>{t('Tax')}</td>
+                  <td className='sidehead'>{t('Tax')}{' (%)'}</td>
                   {!taxFlag ? (
                     <td>
-                      {`${getCurrencySymbol(formData.currencyType)} ${formData.tax}`}
-                      <span onClick={handleTaxClick}>
+                      {`(${getCurrencySymbol(formData.currencyType)}) ${formData.tax}`}
+                      <span onClick={handleTaxClick} style={{ cursor: 'pointer' }}>
                         {' '}
                         <EditWhitePenSVG />{' '}
                       </span>
                     </td>
                   ) : (
                     <td>
-                      ($)
+                      ({`${getCurrencySymbol(formData.currencyType)}`})
                       <TextInput
                         name="tax"
-                        value={formData.tax}
+                        value={Number(formData.tax)}
                         onChange={handleChange}
                         onBlur={handleTaxClick}
                         required
@@ -938,7 +898,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   )}
                 </TableRow>
                 <TableRow>
-                  <td>{t('Total')}</td>
+                  <td className='sidehead'>{t('Total')}</td>
                   <td>
                     ({getCurrencySymbol(formData.currencyType)}) {Total}
                   </td>
@@ -951,12 +911,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                 <td>
                   {t('Amount In Words')}({formData.currencyType}):
                 </td>
-                <td>
+                <td className='style1'>
                   {CapitalizeWords(toWords(Total))} {t('Only/-')}
                 </td>
               </TableRow>
             </Tablelist>
           </InvoiceCalculationContainer>
+          <Alignmenting>
           <div>
             <span className="remarks">{t('NOTE: ')}</span>
             {isDueDaysEditModeOn ? (
@@ -971,13 +932,14 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             ) : (
               <span className="remarksNote">
                 {formData.dueRemarks}{' '}
-                <span onClick={handleIsDueDaysEditModeOn}>
+                <span onClick={handleIsDueDaysEditModeOn} style={{ cursor: 'pointer' }}>
                   {' '}
                   <EditWhitePenSVG />
                 </span>
               </span>
             )}
           </div>
+          </Alignmenting>
           <InvoicePaymentContainer>
             <span className="PayDet">{t('Payment Details')}</span>
             <div>
@@ -1001,12 +963,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               </Tablelist>
             </div>
           </InvoicePaymentContainer>
+          <Alignmenting>
           <div>
             <span className="remarks">{t('Remarks')}</span>
             {!isRemarksNoteEditModeOn ? (
               <span className="remarksNote">
                 <span>"</span> {formData.remarksNote} <span>"</span>
-                <span onClick={handleIsRemarksNoteEditModeOn}>
+                <span onClick={handleIsRemarksNoteEditModeOn} style={{ cursor: 'pointer' }}>
                   <EditWhitePenSVG />
                 </span>
               </span>
@@ -1021,10 +984,11 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               />
             )}
             <div className="spanSign">
-              <span className="remarksNote"> {t('Best Regards')} </span>
+              <span className="remarksNote"> {t('Best Regards,')} </span>
               <span className="remarks"> {organizationDetails?.name} </span>
             </div>
           </div>
+          </Alignmenting>
           <div className="formButtons">
             <Button type="button" onClick={handleConfirmDeleteChanges}>
               {t('CANCEL')}
