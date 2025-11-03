@@ -10,7 +10,6 @@ import {
   FormLabelContainer,
   Label,
   InputContainer,
-  StyledInput,
   Container,
   FormContainer,
   FooterContainer,
@@ -44,6 +43,7 @@ import ToastMessage from '../reusableComponents/ToastMessage.component';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useOutletContext } from 'react-router-dom';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
+import CenterModal from '../reusableComponents/CenterModal.component';
 
 interface OutletContextType {
   handleShowSuccessMessage: (heading: string, body: string) => void;
@@ -69,6 +69,7 @@ const AddEvaluationCycle: React.FC = () => {
   const [isStartDateCalOpen, setIsStartDateCalOpen] = useState(false);
   const [isEndDateCalOpen, setIsEndDateCalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [activeAddIndex, setActiveAddIndex] = useState<number>(0);
 
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -86,12 +87,49 @@ const AddEvaluationCycle: React.FC = () => {
     }
   }, [isEditMode]);
 
+  const startCalendarRef = useRef<HTMLDivElement>(null);
+  const endCalendarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      if (
+        startCalendarRef.current &&
+        !startCalendarRef.current.contains(target)
+      ) {
+        setIsStartDateCalOpen(false);
+      }
+
+      if (endCalendarRef.current && !endCalendarRef.current.contains(target)) {
+        setIsEndDateCalOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   const fetchReviewCycleById = async () => {
     if (!id) return;
     try {
       setIsLoading(true);
       const response = await getPerformanceById(id);
       const data = response.data;
+
+      const mappedQuestions =
+        data?.questions?.map(
+          (q: Question): Question => ({
+            question: q.question || '',
+            questionDescription:
+              q.questionDescription && q.questionDescription.trim() !== ''
+                ? q.questionDescription
+                : undefined,
+            required: q.required ?? false,
+          })
+        ) || [];
 
       setFormData({
         reviewCycleName: data.name,
@@ -103,11 +141,15 @@ const AddEvaluationCycle: React.FC = () => {
           data?.questions?.map(
             (q: Question): Question => ({
               question: q.question || '',
-              questionDescription: q.questionDescription || '',
+              questionDescription:
+                q.questionDescription && q.questionDescription.trim() !== ''
+                  ? q.questionDescription
+                  : undefined,
               required: q.required ?? false,
             })
           ) || [],
       });
+      setActiveAddIndex(mappedQuestions.length - 1);
     } catch (error) {
       toast.error('Failed to load review cycle details');
     } finally {
@@ -129,6 +171,19 @@ const AddEvaluationCycle: React.FC = () => {
       },
     ],
   });
+
+  useEffect(() => {
+    if (formData.questions.length === 0) {
+      setFormData((prev) => ({
+        ...prev,
+        questions: [
+          { question: '', questionDescription: undefined, required: false },
+        ],
+      }));
+      setActiveAddIndex(0);
+    }
+  }, [formData.questions]);
+
   const [showErrorMessage, setShowErrorMessage] = useState(false);
 
   const [errorMessage, setErrorMessage] = useState('');
@@ -141,7 +196,7 @@ const AddEvaluationCycle: React.FC = () => {
   });
 
   const handleCloseErrorMessage = () => setShowErrorMessage(false);
-
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
   const formatDate = (dateStr: string | Date) => {
@@ -174,29 +229,74 @@ const AddEvaluationCycle: React.FC = () => {
     target.style.height = `${target.scrollHeight}px`;
   };
 
-  const addQuestion = () => {
+  const addQuestion = (currentIndex?: number) => {
+    const currentQuestion =
+      typeof currentIndex === 'number'
+        ? formData.questions[currentIndex]
+        : null;
+
+    if (
+      currentQuestion &&
+      (!currentQuestion.question ||
+        currentQuestion.question.trim().length === 0)
+    ) {
+      return;
+    }
+
     setFormData((prev) => ({
       ...prev,
-      questions: [...prev.questions, { question: '', required: false }],
+      questions: [
+        ...prev.questions,
+        { question: '', questionDescription: undefined, required: false },
+      ],
     }));
+
+    if (typeof currentIndex === 'number') {
+      setActiveAddIndex(currentIndex + 1);
+    } else {
+      setActiveAddIndex(formData.questions.length);
+    }
   };
 
   const deleteQuestion = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      questions: prev.questions.filter((_, i) => i !== index),
-    }));
+    setFormData((prev) => {
+      const updatedQuestions = prev.questions.filter((_, i) => i !== index);
+      return {
+        ...prev,
+        questions: updatedQuestions,
+      };
+    });
+
     questionRefs.current.splice(index, 1);
     answerRefs.current.splice(index, 1);
+
+    setActiveAddIndex((prev) => {
+      if (index === prev && prev > 0) return prev - 1;
+      if (index < prev) return prev - 1;
+      if (index > prev) return prev;
+      if (
+        index === formData.questions.length - 1 &&
+        prev === formData.questions.length - 1
+      )
+        return formData.questions.length - 2;
+      return prev;
+    });
   };
 
   const handleQuestionChange = <FieldName extends keyof Question>(
     questionIndex: number,
     fieldName: FieldName,
-    newValue: string | boolean
+    newValue: string | boolean | undefined
   ) => {
-    if (fieldName === 'question' && questionRefs.current[questionIndex]) {
-      const textarea = questionRefs.current[questionIndex];
+    if (
+      (fieldName === 'question' && questionRefs.current[questionIndex]) ||
+      (fieldName === 'questionDescription' && answerRefs.current[questionIndex])
+    ) {
+      const textarea =
+        fieldName === 'question'
+          ? questionRefs.current[questionIndex]
+          : answerRefs.current[questionIndex];
+
       if (textarea) {
         textarea.style.height = '0px';
         textarea.style.height = `${textarea.scrollHeight}px`;
@@ -205,10 +305,16 @@ const AddEvaluationCycle: React.FC = () => {
 
     setFormData((previousFormData) => {
       const updatedQuestions = [...previousFormData.questions];
-      updatedQuestions[questionIndex] = {
-        ...updatedQuestions[questionIndex],
-        [fieldName]: newValue,
-      };
+      const updatedQuestion = { ...updatedQuestions[questionIndex] };
+
+      if (newValue === undefined && fieldName === 'questionDescription') {
+        delete updatedQuestion[fieldName];
+      } else {
+        updatedQuestion[fieldName] = newValue as any;
+      }
+
+      updatedQuestions[questionIndex] = updatedQuestion;
+
       return {
         ...previousFormData,
         questions: updatedQuestions,
@@ -216,20 +322,38 @@ const AddEvaluationCycle: React.FC = () => {
     });
   };
 
+  useEffect(() => {
+    if (!formData?.questions?.length) return;
+    formData.questions.forEach((q, index) => {
+      const questionTextArea = questionRefs.current[index];
+      const descriptionTextArea = answerRefs.current[index];
+
+      if (questionTextArea) {
+        questionTextArea.style.height = '0px';
+        questionTextArea.style.height = `${questionTextArea.scrollHeight}px`;
+      }
+
+      if (descriptionTextArea) {
+        descriptionTextArea.style.height = '0px';
+        descriptionTextArea.style.height = `${descriptionTextArea.scrollHeight}px`;
+      }
+    });
+  }, [formData.questions]);
+
   const handlePreview = () => {
     const errors: any = {};
 
     if (!formData.reviewCycleName?.trim()) {
-      errors.reviewCycleName = 'required Review Cycle';
+      errors.reviewCycleName = 'Required Review Cycle';
     }
     if (!formData.reviewType) {
-      errors.reviewType = 'required Review Type';
+      errors.reviewType = 'Required Review Type';
     }
     if (!formData.startDate) {
-      errors.startDate = 'required Start Date';
+      errors.startDate = 'Required Start Date';
     }
     if (!formData.endDate) {
-      errors.endDate = 'required End Date';
+      errors.endDate = 'Required End Date';
     }
 
     if (
@@ -250,9 +374,27 @@ const AddEvaluationCycle: React.FC = () => {
       setFormErrors(errors);
       return;
     }
+    const filteredQuestions = formData.questions.filter(
+      (q) =>
+        q.question.trim() !== '' || (q.questionDescription?.trim() || '') !== ''
+    );
+
+    setFormData((prev) => ({
+      ...prev,
+      questions: filteredQuestions,
+    }));
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
 
     setPreviewMode(true);
   };
+
+  const hasValidQuestion = formData.questions.some(
+    (q) => q.question && q.question.trim() !== ''
+  );
 
   const handleSubmit = async () => {
     try {
@@ -319,6 +461,17 @@ const AddEvaluationCycle: React.FC = () => {
   };
   useAutosizeTextArea(textareaRef.current, formData.formDescription);
 
+  useEffect(() => {
+    if (previewMode) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [previewMode]);
+
   return (
     <FormContainer>
       {isLoading ? (
@@ -326,20 +479,33 @@ const AddEvaluationCycle: React.FC = () => {
       ) : (
         <FormInputsContainer className="stepTwoContainer">
           <FormHeader>
-            <TitleInput
-              type="text"
-              placeholder="Enter Title"
-              value={formData.reviewCycleName}
-              onChange={(e: any) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  reviewCycleName: e.target.value,
-                }))
-              }
-            />
+            <div className="date-wrapper">
+              <TitleInput
+                type="text"
+                placeholder="Enter Title"
+                value={formData.reviewCycleName}
+                onChange={(e: any) => {
+                  const value = e.target.value;
+                  const filteredValue = value.replace(/[^a-zA-Z0-9 _-]/g, '');
+                  setFormData((prev) => ({
+                    ...prev,
+                    reviewCycleName: filteredValue,
+                  }));
 
+                  if (formErrors?.reviewCycleName && value.trim()) {
+                    setFormErrors((prev: any) => ({
+                      ...prev,
+                      reviewCycleName: '',
+                    }));
+                  }
+                }}
+              />
+              {formErrors && formErrors?.reviewCycleName && (
+                <span className="error-text">{formErrors.reviewCycleName}</span>
+              )}
+            </div>
             <DateRangeContainer>
-              <div className="date-wrapper">
+              <div className="date-wrapper" ref={startCalendarRef}>
                 <DateField onClick={() => setIsStartDateCalOpen(true)}>
                   <CalenderIconDark />
                   <span>
@@ -367,6 +533,10 @@ const AddEvaluationCycle: React.FC = () => {
                             ...prev,
                             startDate: date.toLocaleDateString('en-CA'),
                           }));
+                          setFormErrors((prev: any) => ({
+                            ...prev,
+                            startDate: '',
+                          }));
                           setIsStartDateCalOpen(false);
                         }}
                         handleCalenderChange={() => {}}
@@ -380,7 +550,7 @@ const AddEvaluationCycle: React.FC = () => {
               </div>
 
               <span className="to-label">To</span>
-              <div className="date-wrapper">
+              <div className="date-wrapper" ref={endCalendarRef}>
                 <DateField onClick={() => setIsEndDateCalOpen(true)}>
                   <CalenderIconDark />
                   <span>
@@ -414,6 +584,10 @@ const AddEvaluationCycle: React.FC = () => {
                             ...prev,
                             endDate: date.toLocaleDateString('en-CA'),
                           }));
+                          setFormErrors((prev: any) => ({
+                            ...prev,
+                            endDate: '',
+                          }));
                           setIsEndDateCalOpen(false);
                         }}
                         handleCalenderChange={() => {}}
@@ -444,6 +618,7 @@ const AddEvaluationCycle: React.FC = () => {
                       },
                     } as React.ChangeEvent<HTMLSelectElement>;
                     handleChange(event);
+                    setFormErrors((prev: any) => ({ ...prev, reviewType: '' }));
                   }}
                   options={[
                     { label: t('Select Review Type'), value: '' },
@@ -466,6 +641,7 @@ const AddEvaluationCycle: React.FC = () => {
             <FormLabelContainer className="description-container">
               <InputContainer>
                 <StyledTextArea
+                  className="description"
                   ref={textareaRef}
                   rows={1}
                   placeholder="Description"
@@ -488,42 +664,56 @@ const AddEvaluationCycle: React.FC = () => {
                   }
                 />
 
-                {!q.questionDescription && (
+                {q.questionDescription === undefined ? (
                   <DescriptionButton
                     type="button"
-                    onClick={() =>
-                      handleQuestionChange(index, 'questionDescription', '')
-                    }
+                    onClick={() => {
+                      handleQuestionChange(index, 'questionDescription', '');
+                      setTimeout(() => {
+                        answerRefs.current[index]?.focus();
+                      }, 0);
+                    }}
                   >
                     <span className="plus-box">+</span> Add Description
                   </DescriptionButton>
-                )}
+                ) : (
+                  <StyledTextArea
+                    placeholder="Add a description (optional)"
+                    className="description question-input"
+                    value={q.questionDescription}
+                    rows={1}
+                    ref={(el) => (answerRefs.current[index] = el)}
+                    onChange={(e) => {
+                      const value = e.target.value;
 
-                {q.questionDescription !== undefined && (
-                  <FormLabelContainer className="answer-container">
-                    <StyledInput
-                      type="text"
-                      placeholder="Add a description (optional)"
-                      value={q.questionDescription}
-                      onChange={(e) =>
+                      if (value.trim() === '') {
                         handleQuestionChange(
                           index,
                           'questionDescription',
-                          e.target.value
-                        )
+                          undefined
+                        );
+                      } else {
+                        handleQuestionChange(
+                          index,
+                          'questionDescription',
+                          value
+                        );
                       }
-                    />
-                  </FormLabelContainer>
+                    }}
+                  />
                 )}
 
                 <div className="question-footer">
-                  <button
-                    type="button"
-                    className="add-btn"
-                    onClick={addQuestion}
-                  >
-                    + Add New Question
-                  </button>
+                  {activeAddIndex === index && (
+                    <button
+                      type="button"
+                      className="add-btn"
+                      onClick={() => addQuestion(index)}
+                      disabled={!q.question.trim()}
+                    >
+                      + Add New Question
+                    </button>
+                  )}
 
                   <div className="actions">
                     <div className="required-toggle">
@@ -553,13 +743,20 @@ const AddEvaluationCycle: React.FC = () => {
 
             <FooterContainer className="centerAlign">
               <ButtonGroup>
-                <Button onClick={handleClose} type="button">
+                <Button
+                  type="button"
+                  className="cancel"
+                  onClick={() => setShowCancelModal(true)}
+                  disabled={!hasValidQuestion}
+                >
                   {t('Cancel')}
                 </Button>
+
                 <Button
                   className="submit"
                   type="button"
                   onClick={handlePreview}
+                  disabled={!hasValidQuestion}
                 >
                   {isEditMode ? 'Update & Preview' : 'Save & Preview'}
                 </Button>
@@ -582,6 +779,25 @@ const AddEvaluationCycle: React.FC = () => {
           messageBody={errorMessage}
           messageHeading="ERROR"
           handleClose={handleCloseErrorMessage}
+        />
+      )}
+      {showCancelModal && (
+        <CenterModal
+          handleModalLeftButtonClick={() => setShowCancelModal(false)}
+          handleModalClose={() => setShowCancelModal(false)}
+          handleModalSubmit={() => {
+            setShowCancelModal(false);
+            handleClose();
+          }}
+          modalHeading={t('Discard Changes?')}
+          modalContent={t('Are you sure you want to discard your changes?')}
+          modalType="discardModal"
+          modalLeftButtonClass="mobileBtn"
+          modalRightButtonClass="mobileBtn"
+          modalRightButtonBorderColor="black"
+          modalRightButtonTextColor="black"
+          modalLeftButtonText={t('No')}
+          modalRightButtonText={t('Discard')}
         />
       )}
     </FormContainer>
