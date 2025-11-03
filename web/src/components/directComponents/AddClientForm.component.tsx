@@ -263,9 +263,12 @@ const AddClientForm = (props: AddClientFormProps) => {
   const [errors, setErrors] = useState<{
     clientName?: string;
     clientType?: string;
+    customClientType?: string;
     industry?: string;
+    customIndustry?: string;
     email?: string;
     taxCategory?: string;
+    customTaxCategory?: string;
     taxNumber?: string;
     primaryAddressPostalCode?: string;
     billingAddressPostalCode?: string;
@@ -474,9 +477,24 @@ const AddClientForm = (props: AddClientFormProps) => {
         }
       }
 
-      if (['clientName', 'clientType', 'industry'].includes(name)) {
-        if (newValue.trim()) {
+      if (
+        [
+          'clientName',
+          'clientType',
+          'industry',
+          'customClientType',
+          'customIndustry',
+        ].includes(name)
+      ) {
+        if (newValue?.toString().trim()) {
           delete newErrors[name as keyof typeof newErrors];
+
+          if (name === 'customClientType') {
+            delete newErrors.clientType;
+          }
+          if (name === 'customIndustry') {
+            delete newErrors.industry;
+          }
         }
       }
 
@@ -536,39 +554,50 @@ const AddClientForm = (props: AddClientFormProps) => {
     }
   };
 
+  const isOtherValue = (val: any) =>
+    val === ClientType.OTHER ||
+    val === Industry.OTHER ||
+    String(val).toUpperCase() === 'OTHER';
   const validateStep1 = () => {
     const newErrors: {
       clientName?: string;
       clientType?: string;
+      customClientType?: string;
       industry?: string;
+      customIndustry?: string;
       email?: string;
     } = {};
 
     if (!formData.clientName.trim()) {
       newErrors.clientName = t('CLIENT_NAME_REQUIRED');
     }
+
     if (!formData.clientType) {
       newErrors.clientType = t('CLIENT_TYPE_REQUIRED');
-    }
-    if (
-      formData.clientType === ClientType.OTHER &&
+    } else if (
+      isOtherValue(formData.clientType) &&
       !formData.customClientType?.trim()
-    )
-      if (!formData.industry) {
-        newErrors.industry = t('INDUSTRY_REQUIRED');
-      }
-    if (
-      formData.industry === Industry.OTHER &&
+    ) {
+      newErrors.customClientType = t('CUSTOM_CLIENT_TYPE_REQUIRED');
+    }
+
+    if (!formData.industry) {
+      newErrors.industry = t('INDUSTRY_REQUIRED');
+    } else if (
+      isOtherValue(formData.industry) &&
       !formData.customIndustry?.trim()
-    )
-      if (formData.email?.trim()) {
-        if (!/\S+@\S+\.\S+/.test(formData.email)) {
-          newErrors.email = t('INVALID_EMAIL');
-        }
-      }
+    ) {
+      newErrors.customIndustry = t('CUSTOM_INDUSTRY_REQUIRED');
+    }
+
+    if (formData.email?.trim() && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = t('INVALID_EMAIL');
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
   const validateStep2 = () => {
     let isValid = true;
 
@@ -805,7 +834,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       className="largeInput"
                       value={formData?.clientName}
                       onChange={handleChange}
-                      required
                     />
                     {errors.clientName && (
                       <ValidationText className="error">
@@ -917,7 +945,6 @@ const AddClientForm = (props: AddClientFormProps) => {
                       className="largeInput"
                       value={formData?.clientName}
                       onChange={handleChange}
-                      required
                     />
                     {errors.clientName && (
                       <ValidationText className="error">
@@ -967,17 +994,21 @@ const AddClientForm = (props: AddClientFormProps) => {
                         setErrors((prev) => {
                           const newErrors = { ...prev };
                           delete newErrors.clientType;
+                          delete newErrors.customClientType;
                           return newErrors;
                         });
                       }}
                       onCustomValue={(customValue) => {
-                        setFormData((prev) => {
-                          const newState = {
-                            ...prev,
-                            clientType: ClientType.OTHER,
-                            customClientType: customValue,
-                          };
-                          return newState;
+                        setFormData((prev) => ({
+                          ...prev,
+                          clientType: ClientType.OTHER,
+                          customClientType: customValue,
+                        }));
+                        setErrors((prev) => {
+                          const newErrors = { ...prev };
+                          delete newErrors.clientType;
+                          delete newErrors.customClientType;
+                          return newErrors;
                         });
                       }}
                     />
@@ -1022,17 +1053,21 @@ const AddClientForm = (props: AddClientFormProps) => {
                       setErrors((prev) => {
                         const newErrors = { ...prev };
                         delete newErrors.industry;
+                        delete newErrors.customIndustry;
                         return newErrors;
                       });
                     }}
                     onCustomValue={(customValue) => {
-                      setFormData((prev) => {
-                        const newState = {
-                          ...prev,
-                          industry: Industry.OTHER,
-                          customIndustry: customValue,
-                        };
-                        return newState;
+                      setFormData((prev) => ({
+                        ...prev,
+                        industry: Industry.OTHER,
+                        customIndustry: customValue,
+                      }));
+                      setErrors((prev) => {
+                        const newErrors = { ...prev };
+                        delete newErrors.industry;
+                        delete newErrors.customIndustry;
+                        return newErrors;
                       });
                     }}
                     required
@@ -1203,6 +1238,12 @@ const AddClientForm = (props: AddClientFormProps) => {
                         customTaxCategory: customValue,
                       },
                     }));
+                    setErrors((prev) => {
+                      const newErrors = { ...prev };
+                      delete newErrors.taxCategory;
+                      delete newErrors.customTaxCategory;
+                      return newErrors;
+                    });
                   }}
                   options={[
                     ...(clientOptions?.taxCategory ?? []).map((category) => ({

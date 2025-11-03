@@ -220,6 +220,9 @@ margin:10px;
     font-weight: 400;
     line-height: 160%;
     margin:10px 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 .arrowAdjust{
  display:flex;
@@ -229,44 +232,21 @@ margin:10px;
 }
 `;
 export const AddRowContainer = styled.div`
-margin-top: 10px;
-margin-bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
   .rowsAlign {
-    display: flex;
-    margin-top: 10px;
-    flex-wrap: wrap;  
-  }
-.alignButton {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-
-  button {
-    border: none;
-    background: transparent;  
-    padding: 0;             
-    cursor: pointer;          
-    display: flex;           
+    display: grid;
+    grid-template-columns: 60px 200px 400px 150px auto;
     align-items: center;
-    justify-content: center;
-  }
-  button:last-child svg path {
-    fill: ${(props) => props.theme.colors.blackColors.black1};
+    gap: 10px;
+    padding-left: 0;
   }
 
-}
   .rowItem {
     display: flex;
     flex-direction: column;
-    label {
-      background-color: ${(props) => props.theme.colors.blackColors.white3};
-      color: ${(props) => props.theme.colors.grayColors.gray7};
-      font-size: 12px;
-      font-style: nounito;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
+
     input {
       padding: 5px;
       border-radius: 6px;
@@ -274,92 +254,59 @@ margin-bottom: 10px;
       color: ${(props) => props.theme.colors.blackColors.black1};
       background-color: ${(props) => props.theme.colors.blackColors.white3};
       outline: none;
-      transition: none;
-
-      &:focus,
-      &:active,
-      &:valid,
-      &:invalid {
-        background-color: ${(props) => props.theme.colors.blackColors.white3};
-      }
-
-      &:-webkit-autofill,
-      &:-webkit-autofill:hover,
-      &:-webkit-autofill:focus {
-        -webkit-box-shadow: 0 0 0 1000px
-          ${(props) => props.theme.colors.blackColors.white3} inset !important;
-        -webkit-text-fill-color: ${(props) =>
-          props.theme.colors.blackColors.black1} !important;
-        transition: background-color 9999s ease-in-out 0s;
-      }
-
-      &:focus {
-        border-color: ${(props) => props.theme.colors.brandColors.primary};
-      }
     }
 
-    input[name="serialNo"] {
-      background-color: ${(props) => props.theme.colors.blackColors.white3};
+    input[name='serialNo'] {
+      width: 100%;
+      max-width: 30px;
       cursor: not-allowed;
-      width: 50px;
     }
-    input[name="contract"] {
-      background-color: ${(props) => props.theme.colors.blackColors.white3};
-      width: 150px;
-    }
-    input[name="description"] {
-      background-color: ${(props) => props.theme.colors.blackColors.white3};
-      width: 500px;
-    }
-    input[name="price"] {
-      background-color: ${(props) => props.theme.colors.blackColors.white3};
-      width: 110px;
+
+    input[name='contract'],
+    input[name='description'],
+    input[name='price'] {
+      width: 100%;
     }
   }
-  .r1{
-    margin-right: 37px;
-    margin-left: 5px;
+
+  .alignButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+
+    button {
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    button:last-child svg path {
+      fill: ${(props) => props.theme.colors.blackColors.black1};
+    }
   }
-  .r2{
-    margin-right: 50px;
-  }
-  .r3{
-    margin-right: 98px;
-  }
-  .r4{
-    margin-right: 40px;
-  }
+
   .errorSpan {
     font-size: 12px;
     color: ${(props) => props.theme.colors.stateColors.error};
-    margin: 5px 0px;
+    margin-top: 4px;
+  }
+
+  @media screen and (max-width: 1024px) {
+    .rowsAlign {
+      grid-template-columns: 50px 150px 350px 100px auto;
+    }
   }
 
   @media screen and (max-width: 768px) {
     .rowsAlign {
+      display: flex;
       flex-direction: column;
       align-items: stretch;
-  }
-
-  @media screen and (max-width: 1024px) {
-    .rowItem input[name='description'] {
-      width: 350px;
-    }
-    .rowItem input[name='contract'] {
-      width: 120px;
-    }
-  }
-
-  @media screen and (max-width: 768px) {
-    .rowItem input {
-      width: 100% !important;
-    }
-    .r1,
-    .r2,
-    .r3,
-    .r4 {
-      margin-right: 0;
-      margin-left: 0;
     }
   }
 
@@ -368,19 +315,13 @@ margin-bottom: 10px;
       flex-direction: column;
       gap: 8px;
     }
-    .rowsAlign {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    .rowItem label {
-      font-size: 11px;
-    }
     .rowItem input {
       font-size: 12px;
       padding: 4px;
     }
   }
 `;
+
 export const ValidationText = styled.span`
   color: #e03137;
   font-size: 12px;
@@ -499,7 +440,10 @@ export const TableHead = styled.thead`
     width: 200px;
   }
   .spacetask {
-    width: 600px;
+    width: 400px;
+  }
+  .sno {
+    width: 70px;
   }
 `;
 

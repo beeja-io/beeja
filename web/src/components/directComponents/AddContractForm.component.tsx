@@ -160,6 +160,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     startDate?: string;
     endDate?: string;
     contractType?: string;
+    customContractType?: string;
     billingType?: string;
     billingCurrency?: string;
   }>({});
@@ -570,6 +571,11 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         contractValue: '',
         billingCurrency: '',
       }));
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.billingCurrency;
+        return newErrors;
+      });
     }
   }, [formData.billingType]);
 
@@ -700,6 +706,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           contractType: ContractType.OTHER,
                           customContractType: customValue,
                         }));
+                        setErrors((prev) => {
+                          const newErrors = { ...prev };
+                          delete newErrors.contractType;
+                          delete newErrors.customContractType;
+                          return newErrors;
+                        });
                       }}
                       required
                       options={[
@@ -997,6 +1009,12 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           contractType: ContractType.OTHER,
                           customContractType: customValue,
                         }));
+                        setErrors((prev) => {
+                          const newErrors = { ...prev };
+                          delete newErrors.contractType;
+                          delete newErrors.customContractType;
+                          return newErrors;
+                        });
                       }}
                       required
                       options={[
