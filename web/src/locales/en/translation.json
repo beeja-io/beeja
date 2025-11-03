@@ -551,5 +551,8 @@
     }
   },
   "Due_mark": "Please transfer the due amount to the following bank account within next 7 days.",
-  "Remark": "Thank you so much for the great opportunity as always"
+  "Remark": "Thank you so much for the great opportunity as always",
+  "Duplicate_Invoice": "Invoice ID already Exists.",
+  "Duplicate_Remittance": "Remittance Reference already Exists.",
+  "Unknow_Error": "Failed to create invoice. Please try again."
 }

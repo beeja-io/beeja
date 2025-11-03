@@ -25,4 +25,19 @@ interface InvoiceRequest {
   invoicePeriod: InvoicePeriod;
   currency: string;
   taxId: string | null;
+  primaryAddress?: {
+    addressOne: string;
+    addressTwo?: string;
+    city: string;
+    state: string;
+    pinCode: number;
+    country: string;
+  };
+  billingAddress?: {
+    street: string;
+    city: string;
+    state: string;
+    postalCode: string;
+    country: string;
+  };
 }

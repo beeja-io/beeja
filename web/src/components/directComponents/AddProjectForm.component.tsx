@@ -269,7 +269,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                     type="text"
                     name="name"
                     placeholder={t('Enter_Project_Name')}
-                    className={`largeInput ${errors.name ? 'errorEnabledInput' : ''}`}
+                    className="largeInput"
                     value={projectFormData.name}
                     onChange={handleChange}
                   />

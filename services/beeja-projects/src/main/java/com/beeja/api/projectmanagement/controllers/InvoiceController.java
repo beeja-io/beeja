@@ -30,14 +30,9 @@ public class InvoiceController {
   @PostMapping
   @HasPermission(PermissionConstants.CREATE_INVOICE)
   public ResponseEntity<Invoice> createInvoice(@RequestBody InvoiceRequest invoiceRequest) {
-    try {
-      Invoice invoice =
-          invoiceService.generateInvoiceForContract(invoiceRequest.getContractId(), invoiceRequest);
+      Invoice invoice = invoiceService.generateInvoiceForContract(
+              invoiceRequest.getContractId(), invoiceRequest);
       return ResponseEntity.status(HttpStatus.CREATED).body(invoice);
-    } catch (Exception e) {
-      log.error("Failed to create invoice: {}", e.getMessage());
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-    }
   }
 
   @GetMapping("/{invoiceId}")

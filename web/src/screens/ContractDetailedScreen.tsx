@@ -300,6 +300,7 @@ const ContractDetailsScreen: React.FC = () => {
             rawProjectResources={contract?.rawProjectResources}
             description={contract?.description || ''}
             contractName={contract?.contractTitle}
+            billingType={contract?.billingType}
           />
         )}
       </LeftSection>
@@ -391,7 +392,8 @@ const ContractDetailsScreen: React.FC = () => {
               projectId={projectId ?? undefined}
               status={project?.status}
               clientId={clientDetails?.clientId}
-              billingCurrency={contractDetails?.billingCurrency}
+              billingCurrency={contract?.billingCurrency}
+              billingType={contract?.billingType}
             />
           }
         />

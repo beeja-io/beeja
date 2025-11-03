@@ -320,8 +320,11 @@ export const LogoContainer = styled.div`
   align-items: center;
   justify-content: flex-start;
   flex: 1 1 2;
-
   width: 100%;
+  .infoText {
+    color: #687588;
+    font-size: 12px;
+  }
 `;
 
 export const LogoLabel = styled.div`
