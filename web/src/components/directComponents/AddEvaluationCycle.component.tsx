@@ -324,7 +324,7 @@ const AddEvaluationCycle: React.FC = () => {
 
   useEffect(() => {
     if (!formData?.questions?.length) return;
-    formData.questions.forEach((q, index) => {
+    formData.questions.forEach((_, index) => {
       const questionTextArea = questionRefs.current[index];
       const descriptionTextArea = answerRefs.current[index];
 
