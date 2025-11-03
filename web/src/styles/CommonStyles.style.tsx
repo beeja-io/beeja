@@ -121,7 +121,22 @@ export const Button = styled.button<{
     border-radius: 50%;
     animation: button-loading-spinner 1s ease infinite;
   }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 1; 
+  }
 
+  &.cancel:disabled {
+    background-color: #ffffff;
+    color: #d9d9d9;
+    border: 1px solid #d9d9d9;
+  }
+
+  &.submit:disabled {
+    background-color: #d9d9d9;
+    color: #ffffff;
+    border: 1px solid #ffffff;
+  
   @keyframes button-loading-spinner {
     from {
       transform: rotate(0turn);

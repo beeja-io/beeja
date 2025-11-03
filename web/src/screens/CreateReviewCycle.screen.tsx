@@ -37,6 +37,10 @@ const CreateReviewCycle = () => {
     }
   }, [location.pathname]);
 
+  const isEditMode =
+    location.pathname.startsWith('/performance/create-evaluation-form/') &&
+    !location.pathname.endsWith('/new');
+
   const handleOpenCreateModal = () => {
     setIsCreateModalOpen(true);
     navigate('/performance/create-evaluation-form/new');
@@ -50,10 +54,10 @@ const CreateReviewCycle = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('Create_Evaluation_Form')}
+            {t('Review_Cycles')}
           </span>
 
-          {!isCreateModalOpen && (
+          {!isCreateModalOpen && !isEditMode && (
             <Button
               className="submit shadow"
               onClick={handleOpenCreateModal}

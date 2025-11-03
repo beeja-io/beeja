@@ -49,7 +49,7 @@ export const FormLabelContainer = styled.div`
 
   &.answer-container {
     padding: 20px 10px 20px 10px;
-    width: 96%;
+    width: 98%;
     margin: 15px auto;
     background: transparent;
   }
@@ -78,7 +78,7 @@ export const Label = styled.div`
   leading-trim: NONE;
   line-height: 100%;
   letter-spacing: 0%;
-  color: ${(props) => props.theme.colors.blackColors.black1};
+  color: ${(props) => props.theme.colors.blackColors.black7};
 `;
 
 export const InputContainer = styled.div`
@@ -125,20 +125,10 @@ export const StyledTextArea = styled.textarea`
     position: absolute;
     bottom: 1px;
   }
+  &.description {
+    color: ${(props) => props.theme.colors.grayColors.gray7};
+  }
 `;
-
-// export const StyledTextArea = styled.textarea`
-//   width: 100%;
-//   border: none !important;
-//   outline: none;
-//   font-size: 14px;
-//   background: transparent !important;
-//   resize: none;
-
-//   &::placeholder {
-//     color: #999;
-//   }
-// `;
 
 export const DescriptionButton = styled.button`
   display: flex;
@@ -202,8 +192,7 @@ export const QuestionBlock = styled.div`
     border-bottom: 1px solid #a0aec0;
     padding: 0.6rem 0;
     margin-bottom: 1.5rem;
-
-    width: 96%;
+    width: 98%;
     margin: 15px auto;
     display: block;
     angle: 0 deg;
@@ -272,6 +261,8 @@ export const QuestionBlock = styled.div`
     .actions {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
+      margin-left: auto;
       gap: 1rem;
 
       button {
@@ -348,6 +339,16 @@ export const FormHeader = styled.div`
     color: #333;
     margin-top: 0.5rem;
   }
+  .date-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .error-text {
+    color: red;
+    font-size: 12px;
+    margin-top: 4px;
+  }
 `;
 
 export const DateRangeContainer = styled.div`
@@ -383,10 +384,13 @@ export const DateField = styled.div`
   color: ${(props) => props.theme.colors.grayColors.gray9};
   position: relative;
 
-  svg path {
+  > svg path {
     fill: ${(props) => props.theme.colors.grayColors.gray9};
   }
 
+  &:hover svg path {
+    fill: ${(props) => props.theme.colors.blackColors.black1};
+  }
   span {
     font-size: 14px;
     color: ${(props) => props.theme.colors.grayColors.gray9};
@@ -425,7 +429,7 @@ export const TitleInput = styled.input`
 export const DropdownRow = styled.div`
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 10px;
   margin-top: 1rem;
 
   select {
