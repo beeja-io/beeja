@@ -78,7 +78,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
     setIsDocumentPreviewModalOpen(!isDocumentPreviewModalOpen);
   };
   useEffect(() => {
-    if (isDocumentPreviewModalOpen) {
+    if (isDocumentPreviewModalOpen || confirmDeleteModal) {
       disableBodyScroll();
     } else {
       enableBodyScroll();
@@ -87,7 +87,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
     return () => {
       enableBodyScroll();
     };
-  }, [isDocumentPreviewModalOpen]);
+  }, [isDocumentPreviewModalOpen,confirmDeleteModal]);
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
