@@ -259,37 +259,6 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     }
   };
 
-  const [isBillingFromEditModeOn, setIsBillingFromEditModeOn] = useState(false);
-  const [isBillingToEditModeOn, setIsBillingToEditModeOn] = useState(false);
-
-  const handleBillingFromEditToggle = () =>
-    setIsBillingFromEditModeOn(!isBillingFromEditModeOn);
-
-  const handleBillingToEditToggle = () =>
-    setIsBillingToEditModeOn(!isBillingToEditModeOn);
-
-  const handleBillingFromChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      primaryAddress: {
-        ...prev.primaryAddress,
-        [name]: value,
-      },
-    }));
-  };
-
-  const handleBillingToChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      billingAddress: {
-        ...prev.billingAddress,
-        [name]: value,
-      },
-    }));
-  };
-
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
     return () => {
@@ -401,7 +370,6 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
   const handleSaveButtonClick = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
     if (data.length === 0) {
       toast.error(
         t(
@@ -451,28 +419,13 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
           startDate: formData.fromDate.toISOString(),
           endDate: formData.toDate.toISOString(),
         },
-        primaryAddress: {
-          addressOne: formData.primaryAddress?.addressOne || '',
-          addressTwo: formData.primaryAddress?.addressTwo || '',
-          city: formData.primaryAddress?.city || '',
-          state: formData.primaryAddress?.state || '',
-          pinCode: formData.primaryAddress?.pinCode || 0,
-          country: formData.primaryAddress?.country || '',
-        },
-        billingAddress: {
-          street: formData.billingAddress?.street || '',
-          city: formData.billingAddress?.city || '',
-          state: formData.billingAddress?.state || '',
-          postalCode: formData.billingAddress?.postalCode || '',
-          country: formData.billingAddress?.country || '',
-        },
       };
 
       const response = await createInvoice(invoiceRequest);
       setInvoiceData(response.data);
       setInvoiceFileId(response.data.invoiceFileId);
 
-      toast.success(t('Invoice created successfully!'));
+      toast.success(t('Invoice Generated successfully!'));
       setIsInvoiceSaved(true);
     } catch (error: any) {
       const backendError = error?.response?.data;
@@ -600,64 +553,28 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             <div className="adjusting">
               <span className="applyStyle1">
                 {t('Billing From')}
-                <span className="applyStyle2">{formData.organization}</span>
-                <span
-                  onClick={handleBillingFromEditToggle}
-                  style={{ cursor: 'pointer', marginLeft: '6px' }}
-                >
-                  <EditWhitePenSVG />
-                </span>
+                <span className="applyStyle2">{organizationDetails?.name}</span>
               </span>
-
-              {!isBillingFromEditModeOn ? (
+              {organizationDetails?.address?.addressOne ||
+              organizationDetails?.address?.city ||
+              organizationDetails?.address?.pinCode ||
+              organizationDetails?.address?.state ||
+              organizationDetails?.address?.country ? (
                 <span className="textFont">
-                  {formData.primaryAddress?.addressOne}
+                  {organizationDetails?.address?.addressOne}
                   <br />
-                  {formData.primaryAddress?.city}-
-                  {formData.primaryAddress?.pinCode}
+                  {organizationDetails?.address?.city}
+                  {organizationDetails?.address?.pinCode
+                    ? `-${organizationDetails?.address?.pinCode}`
+                    : ''}
                   <br />
-                  {formData.primaryAddress?.state},{' '}
-                  {formData.primaryAddress?.country}.
+                  {organizationDetails?.address?.state &&
+                    `${organizationDetails?.address?.state}, `}
+                  {organizationDetails?.address?.country &&
+                    `${organizationDetails?.address?.country}.`}
                 </span>
               ) : (
-                <div className="textFont">
-                  <TextInput
-                    type="text"
-                    name="addressOne"
-                    placeholder={t('Address Line 1')}
-                    value={formData.primaryAddress?.addressOne}
-                    onChange={handleBillingFromChange}
-                  />
-                  <TextInput
-                    type="text"
-                    name="city"
-                    placeholder={t('City')}
-                    value={formData.primaryAddress?.city}
-                    onChange={handleBillingFromChange}
-                  />
-                  <TextInput
-                    type="text"
-                    name="state"
-                    placeholder={t('State')}
-                    value={formData.primaryAddress?.state}
-                    onChange={handleBillingFromChange}
-                  />
-                  <TextInput
-                    type="text"
-                    name="country"
-                    placeholder={t('Country')}
-                    value={formData.primaryAddress?.country}
-                    onChange={handleBillingFromChange}
-                  />
-                  <TextInput
-                    type="number"
-                    name="pinCode"
-                    placeholder={t('Pincode')}
-                    value={formData.primaryAddress?.pinCode}
-                    onChange={handleBillingFromChange}
-                    onBlur={handleBillingFromEditToggle}
-                  />
-                </div>
+                <span className="noAddressInfo">{t('No_org_Address')}</span>
               )}
             </div>
             <div className="arrowAdjust">
@@ -667,63 +584,28 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               <span className="applyStyle1">
                 {t('Billing To')}
                 <span className="applyStyle2">{formData.clientName}</span>
-                <span
-                  onClick={handleBillingToEditToggle}
-                  style={{ cursor: 'pointer', marginLeft: '6px' }}
-                >
-                  <EditWhitePenSVG />
-                </span>
               </span>
 
-              {!isBillingToEditModeOn ? (
+              {formData.billingAddress?.street ||
+              formData.billingAddress?.city ||
+              formData.billingAddress?.postalCode ||
+              formData.billingAddress?.state ||
+              formData.billingAddress?.country ? (
                 <span className="textFont">
                   {formData.billingAddress?.street}
                   <br />
-                  {formData.billingAddress?.city}-
-                  {formData.billingAddress?.postalCode}
+                  {formData.billingAddress?.city}
+                  {formData.billingAddress?.postalCode
+                    ? `-${formData.billingAddress?.postalCode}`
+                    : ''}
                   <br />
-                  {formData.billingAddress?.state},{' '}
-                  {formData.billingAddress?.country}.
+                  {formData.billingAddress?.state &&
+                    `${formData.billingAddress?.state}, `}
+                  {formData.billingAddress?.country &&
+                    `${formData.billingAddress?.country}.`}
                 </span>
               ) : (
-                <div className="textFont">
-                  <TextInput
-                    type="text"
-                    name="street"
-                    placeholder={t('Street')}
-                    value={formData.billingAddress?.street}
-                    onChange={handleBillingToChange}
-                  />
-                  <TextInput
-                    type="text"
-                    name="city"
-                    placeholder={t('City')}
-                    value={formData.billingAddress?.city}
-                    onChange={handleBillingToChange}
-                  />
-                  <TextInput
-                    type="text"
-                    name="state"
-                    placeholder={t('State')}
-                    value={formData.billingAddress?.state}
-                    onChange={handleBillingToChange}
-                  />
-                  <TextInput
-                    type="text"
-                    name="country"
-                    placeholder={t('Country')}
-                    value={formData.billingAddress?.country}
-                    onChange={handleBillingToChange}
-                  />
-                  <TextInput
-                    type="number"
-                    name="postalCode"
-                    placeholder={t('Postal Code')}
-                    value={formData.billingAddress?.postalCode}
-                    onChange={handleBillingToChange}
-                    onBlur={handleBillingToEditToggle}
-                  />
-                </div>
+                <span className="noAddressInfo">{t('NO_Client_Address')}</span>
               )}
             </div>
           </InvoiceAddressContainer>
@@ -1094,7 +976,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             <Tablelist>
               <TableRow>
                 <td>
-                  {t('Amount In Words')}({formData.currencyType}):
+                  {t('Amount In Words ')} ({formData.currencyType}) :
                 </td>
                 <td className="style1">
                   {CapitalizeWords(toWords(Total))} {t('Only/-')}

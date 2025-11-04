@@ -201,7 +201,7 @@ margin:10px;
  display:flex;
  flex-direction:column;
  overflow-wrap:break-word;
- width:30%
+ width:25%
 }
 .applyStyle1{
  color: #005792;
@@ -228,6 +228,23 @@ margin:10px;
  display:flex;
  align-items:center;
  
+}
+ .noAddressInfo {
+  font-weight: 400;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: #687588;
+  width: 450px;
+  height: 22px;
+  opacity: 0.6;
+  width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  margin-top: 15px;
 }
 }
 `;
