@@ -44,7 +44,7 @@ export const ProjectsTable = styled.table`
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
-  opacity: 0.8;
+  opacity: 1;
 
   th,
   td {
