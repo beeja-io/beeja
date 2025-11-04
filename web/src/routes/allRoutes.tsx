@@ -44,6 +44,7 @@ import ReviewCyclesList from '../screens/ReviewCyclesList.screen';
 import AssignFeedbackProviders from '../screens/AssignFeedbackProviders.screen';
 import FeedbackHub from '../screens/FeedbackHub.screen';
 import AddEvaluationCycle from '../components/directComponents/AddEvaluationCycle.component';
+import ProvideFeedback from '../screens/ProvideFeedback.screen';
 
 const AllRoutes = () => {
   return (
@@ -235,6 +236,17 @@ const AllRoutes = () => {
             featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
           >
             <FeedbackHub />
+          </CustomRoute>
+        }
+      />
+      <Route
+        path="/performance/feedback-hub/provide-feedback/:id"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <ProvideFeedback />
           </CustomRoute>
         }
       />

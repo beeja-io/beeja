@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   ButtonGroup,
+  DateRangeContainer,
   DateRow,
   DateText,
   DescriptionBox,
@@ -19,6 +20,11 @@ import {
 } from '../../styles/CreateReviewCycleStyle.style';
 import { Button } from '../../styles/CommonStyles.style';
 import { useTranslation } from 'react-i18next';
+import {
+  AnswerField,
+  ReadOnlyInput,
+} from '../../styles/FeedbackHubStyles.style';
+import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 
 type Question = {
   question: string;
@@ -38,8 +44,10 @@ type FormData = {
 
 type Props = {
   formData: FormData;
-  onEdit: () => void;
-  onConfirm: () => Promise<void> | void;
+  onEdit?: () => void;
+  onConfirm?: () => Promise<void> | void;
+  showAnswers?: boolean;
+  feedbackReceiverName?: string;
 };
 
 const formatDate = (dateStr: string | Date) => {
@@ -52,26 +60,45 @@ const formatDate = (dateStr: string | Date) => {
   });
 };
 
-const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
+const PreviewMode: React.FC<Props> = ({
+  formData,
+  onEdit,
+  onConfirm,
+  showAnswers = false,
+  feedbackReceiverName,
+}) => {
   const { t } = useTranslation();
   return (
     <PreviewWrapper>
       <PreviewCard>
         <Header>
           <Title>{formData.reviewCycleName}</Title>
-          <DateRow>
-            <DateText>
-              {formData.startDate ? formatDate(formData.startDate) : ''} To
-              {formData.endDate ? formatDate(formData.endDate) : ''}
-            </DateText>
-          </DateRow>
+          <DateRangeContainer>
+            <DateRow>
+              <DateText>
+                <CalenderIconDark />
+                {formData.startDate ? formatDate(formData.startDate) : ''}
+                <span>To </span>
+                <CalenderIconDark />
+                {formData.endDate ? formatDate(formData.endDate) : ''}
+              </DateText>
+            </DateRow>
+          </DateRangeContainer>
           <Subtitle>{formData.reviewType} </Subtitle>
         </Header>
         <Label>Form Description</Label>
-        <DescriptionBox>
+        <DescriptionBox className="preview-mode">
           {formData.formDescription || 'No description provided.'}
         </DescriptionBox>
+        {showAnswers && feedbackReceiverName && (
+          <div style={{ marginBottom: '20px' }}>
+            <Label>
+              Feedback Receiver Name<RequiredMark>*</RequiredMark>
+            </Label>
 
+            <ReadOnlyInput value={feedbackReceiverName} readOnly />
+          </div>
+        )}
         <Questions>
           {formData.questions.map((q, index) => (
             <QuestionBlock key={index}>
@@ -84,19 +111,30 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
                   {q.questionDescription}
                 </QuestionDescription>
               )}
+              {showAnswers && (
+                <>
+                  {q.answer ? (
+                    <ReadOnlyInput value={q.answer} readOnly />
+                  ) : (
+                    <AnswerField placeholder="No answer provided" disabled />
+                  )}
+                </>
+              )}
             </QuestionBlock>
           ))}
         </Questions>
 
         <FooterContainer>
-          <ButtonGroup>
-            <Button onClick={onEdit} type="button">
-              {t('Edit')}
-            </Button>
-            <Button className="submit" type="button" onClick={onConfirm}>
-              {t('Save & Continue')}
-            </Button>
-          </ButtonGroup>
+          {onEdit && onConfirm && (
+            <ButtonGroup>
+              <Button onClick={onEdit} type="button">
+                {t('Edit')}
+              </Button>
+              <Button className="submit" type="button" onClick={onConfirm}>
+                {t('Save & Continue')}
+              </Button>
+            </ButtonGroup>
+          )}
         </FooterContainer>
       </PreviewCard>
     </PreviewWrapper>

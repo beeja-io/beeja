@@ -12,6 +12,9 @@ export const FormContainer = styled.div`
     gap: 40px;
     width: 100%;
   }
+  .noBorder {
+    border: none;
+  }
 `;
 
 export const FormInputsContainer = styled.div`
@@ -78,7 +81,7 @@ export const Label = styled.div`
   leading-trim: NONE;
   line-height: 100%;
   letter-spacing: 0%;
-  color: ${(props) => props.theme.colors.blackColors.black1};
+  color: ${(props) => props.theme.colors.blackColors.black7};
 `;
 
 export const InputContainer = styled.div`
@@ -119,26 +122,15 @@ export const StyledTextArea = styled.textarea`
   line-height: 160%;
   letter-spacing: 0px;
   vertical-align: middle;
-
+  &.answer-color {
+    color: ${(props) => props.theme.colors.grayColors.gray7};
+  }
   &::placeholder {
     color: #999;
     position: absolute;
     bottom: 1px;
   }
 `;
-
-// export const StyledTextArea = styled.textarea`
-//   width: 100%;
-//   border: none !important;
-//   outline: none;
-//   font-size: 14px;
-//   background: transparent !important;
-//   resize: none;
-
-//   &::placeholder {
-//     color: #999;
-//   }
-// `;
 
 export const DescriptionButton = styled.button`
   display: flex;
@@ -519,18 +511,34 @@ export const Title = styled.h2`
   font-size: 20px;
   font-weight: 600;
   color: ${(props) => props.theme.colors.brandColors.primary};
+  span {
+    transform: rotate(90deg);
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+  }
 `;
 
 export const DateRow = styled.div`
   font-size: 14px;
   color: #6b7280;
   margin: 6px 0;
+  svg path {
+    fill: ${(props) => props.theme.colors.grayColors.gray9};
+  }
 `;
 
 export const DateText = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
+
+  svg path {
+    fill: ${(props) => props.theme.colors.grayColors.gray9};
+  }
+  span {
+    margin: 0 8px;
+  }
 `;
 
 export const Subtitle = styled.h3`
@@ -550,22 +558,31 @@ export const DescriptionBox = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
-  margin: 10px 0px 20px 0px;
-  font-size: 14px;
-  color: #374151;
+  margin: 10px 0px 25px 0px;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: ${(props) => props.theme.colors.blackColors.black7};
+  &.preview-mode {
+    background: transparent;
+  }
 `;
 
 export const Questions = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 `;
 
 export const QuestionText = styled.p`
   font-weight: 500;
   font-size: 15px;
   margin-bottom: 8px;
-  color: #1d4ed8;
+  color: ${(props) => props.theme.colors.brandColors.primary};
 `;
 
 export const SearchBox = styled.div`

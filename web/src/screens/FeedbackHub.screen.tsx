@@ -1,31 +1,34 @@
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   ExpenseHeadingSection,
   ExpenseManagementMainContainer,
 } from '../styles/ExpenseManagementStyles.style';
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { useState } from 'react';
-import { ExpenseHeading, StyledDiv } from '../styles/ExpenseListStyles.style';
 import { useTranslation } from 'react-i18next';
-import { Tab, TabContent, Tabs } from '../styles/ProjectTabSectionStyles.style';
+import {
+  StyledDiv,
+  Tab,
+  TabContent,
+  TabHeading,
+  Tabs,
+} from '../styles/FeedbackHubStyles.style';
+import SelfEvaluationForm from './SelfEvaluation.screen';
+import ProvideFeedback from './ProvideFeedback.screen';
+import FeedbackReceived from '../components/reusableComponents/FeedbackReceived.component';
+import { useUser } from '../context/UserContext';
 
 const FeedbackHub = () => {
   const [activeTab, setActiveTab] = useState<
-    'Feedback Requests' | 'Self Evaluation' | 'My Feedback'
+    'Feedback Requests' | 'Self Evaluation' | 'My Feedbacks'
   >('Feedback Requests');
   const navigate = useNavigate();
-  const location = useLocation();
   const { t } = useTranslation();
 
+  const { user } = useUser();
+
   const goToPreviousPage = () => {
-    if (
-      location.pathname.endsWith('/new') ||
-      location.pathname.match(/\/\d+$/)
-    ) {
-      navigate('/performance/create-evaluation-form');
-    } else {
-      navigate(-1);
-    }
+    navigate(-1);
   };
 
   return (
@@ -40,33 +43,32 @@ const FeedbackHub = () => {
           </span>
         </ExpenseHeadingSection>
 
-        <>
-          <StyledDiv>
-            <ExpenseHeading>
-              <Tabs>
-                {['Feedback Requests', 'Self Evaluation', 'My Feedback'].map(
-                  (tab) => (
-                    <Tab
-                      key={tab}
-                      active={activeTab === tab}
-                      onClick={() => setActiveTab(tab as any)}
-                    >
-                      {t(tab)}
-                    </Tab>
-                  )
-                )}
-              </Tabs>
-            </ExpenseHeading>
-          </StyledDiv>
-        </>
+        <StyledDiv>
+          <TabHeading>
+            <Tabs>
+              {['Feedback Requests', 'Self Evaluation', 'My Feedbacks'].map(
+                (tab) => (
+                  <Tab
+                    key={tab}
+                    active={activeTab === tab}
+                    onClick={() => setActiveTab(tab as any)}
+                  >
+                    {t(tab)}
+                  </Tab>
+                )
+              )}
+            </Tabs>
+          </TabHeading>
+          <TabContent>
+            {activeTab === 'Feedback Requests' && (
+              <ProvideFeedback user={user} />
+            )}
 
-        <TabContent>
-          {activeTab === 'Feedback Requests' && <p>Feedback Requests</p>}
+            {activeTab === 'Self Evaluation' && <SelfEvaluationForm />}
 
-          {activeTab === 'Self Evaluation' && <p>Self Evaluation</p>}
-
-          {activeTab === 'My Feedback' && <p>My Feedback</p>}
-        </TabContent>
+            {activeTab === 'My Feedbacks' && <FeedbackReceived user={user} />}
+          </TabContent>
+        </StyledDiv>
       </ExpenseManagementMainContainer>
     </>
   );

@@ -350,17 +350,62 @@ export const getPerformanceById = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.get(`/performance/v1/api/cycles/${id}/details`);
 };
 
+export const getProvideFeedbackById = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/v1/api/responses/cycle/${id}`);
+};
+
 export const updatePerformanceCycle = (
   id: string,
   data: any
 ): Promise<AxiosResponse> => {
-  return axiosInstance.put(`/performance/v1/api/cycles/${id}/full-update`, data);
+  return axiosInstance.put(
+    `/performance/v1/api/cycles/${id}/full-update`,
+    data
+  );
 };
 
 export const deletePerformanceCycle = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/performance/v1/api/cycles/${id}`);
 };
 
+export const submitFeedback = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/performance/v1/api/responses`, data);
+};
+
+export const getFeedBackById = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/v1/api/responses/form/${id}`);
+};
+
+export const getFeedBackProviderReviewer = (): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/v1/feedbackProvider/reviewer`);
+};
+export const postSelfEvaluation = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(
+    `/performance/v1/api/responses/self-evaluation`,
+    data
+  );
+};
+
+export const getSelfEvaluation = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/performance/v1/api/responses/self-evaluation/employee/${id}`
+  );
+};
+
+export const getAllResponses = (): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/performance/v1/api/responses/employee/ULT11/grouped`
+  );
+};
+
+export const postEmployeeResponse = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/performance/v1/api/responses`, data);
+};
+export const getOverallRating = (): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/performance/v1/api/ratings/employee/ULT11/cycle/CYCLE2028`
+  );
+};
 export const downloadClientLogo = (
   fileId: string
 ): Promise<AxiosResponse<Blob>> => {
