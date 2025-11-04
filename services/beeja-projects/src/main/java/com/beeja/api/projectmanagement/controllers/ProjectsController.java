@@ -149,7 +149,7 @@ public class ProjectsController {
   }
 
     @GetMapping("/{projectId}/employees")
-    @HasPermission(PermissionConstants.GET_PROJECT)
+    @HasPermission({PermissionConstants.GET_PROJECT, PermissionConstants.CREATE_CONTRACT})
     public ResponseEntity<ProjectEmployeeDTO> getEmployeesByProjectId(@PathVariable String projectId) {
         return ResponseEntity.ok(projectService.getEmployeesByProjectId(projectId));
     }

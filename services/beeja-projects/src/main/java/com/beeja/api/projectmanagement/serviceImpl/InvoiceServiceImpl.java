@@ -150,8 +150,7 @@ public class InvoiceServiceImpl implements InvoiceService {
         Client client = clientRepository.findByClientIdAndOrganizationId(invoice.getClientId(), orgId);
     try {
 
-      byte[] invoicePdfBytes = invoicePDFGen.generatePDF(contract, invoice, client, request.getPrimaryAddress(),
-              request.getBillingAddress());
+      byte[] invoicePdfBytes = invoicePDFGen.generatePDF(contract, invoice, client);
       MultipartFile multipartFile = new InMemoryMultipartFile("invoice.pdf", invoicePdfBytes);
 
       FileUploadRequest fileUpload = new FileUploadRequest();
