@@ -54,6 +54,8 @@ interface JobHistoryItem {
   department?: string;
   joiningDate?: string;
   resignationDate?: string;
+  startDate?: string;
+  endDate?: string;
   description?: string;
   updatedBy?: string;
   updatedAt?: string;
@@ -77,6 +79,7 @@ const EmploymentHistory: React.FC<Props> = ({
   const [toast, setToast] = useState<{
     type: 'success' | 'error';
     message: string;
+    head: string;
   } | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [showMenuIndex, setShowMenuIndex] = useState<String | null>(null);
@@ -141,13 +144,13 @@ const EmploymentHistory: React.FC<Props> = ({
       const sortedData = (data || [])
         .reverse()
         .sort((a: JobHistoryItem, b: JobHistoryItem) => {
-          const dateA = new Date(a.joiningDate || 0).getTime();
-          const dateB = new Date(b.joiningDate || 0).getTime();
+          const dateA = new Date(a.startDate || 0).getTime();
+          const dateB = new Date(b.startDate || 0).getTime();
           return dateB - dateA;
         });
       setHistoryList(sortedData);
     } catch {
-      setToast({ type: 'error', message: 'Failed to fetch history' });
+      setToast({ type: 'error', message: 'Failed to fetch history', head:"" });
     } finally {
       setIsLoading(false);
     }
@@ -171,8 +174,8 @@ const EmploymentHistory: React.FC<Props> = ({
       designation: jobToEdit.designation,
       employementType: jobToEdit.employementType,
       department: jobToEdit.department,
-      joiningDate: jobToEdit.joiningDate,
-      resignationDate: jobToEdit.resignationDate,
+      startDate: jobToEdit.startDate,
+      endDate: jobToEdit.endDate,
       description: jobToEdit.description,
     });
 
@@ -196,10 +199,10 @@ const EmploymentHistory: React.FC<Props> = ({
     if (
       !form.designation ||
       !form.employementType ||
-      !form.joiningDate ||
-      !form.resignationDate
+      !form.startDate ||
+      !form.endDate
     ) {
-      setToast({ type: 'error', message: 'Please fill all required fields' });
+      setToast({ type: 'error', message: 'Please fill all required fields', head:"" });
       return;
     }
 
@@ -210,6 +213,7 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'success',
         message: 'Employment history added successfully',
+        head:"Added Successfully"
       });
       fetchHistory();
       closeModal();
@@ -217,6 +221,7 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'error',
         message: 'Error occurred while adding employment history',
+        head:"Add Unsuccessful"
       });
     } finally {
       setIsSaving(false);
@@ -227,10 +232,10 @@ const EmploymentHistory: React.FC<Props> = ({
     if (
       !form.designation ||
       !form.employementType ||
-      !form.joiningDate ||
-      !form.resignationDate
+      !form.startDate ||
+      !form.endDate
     ) {
-      setToast({ type: 'error', message: 'Please fill all required fields' });
+      setToast({ type: 'error', message: 'Please fill all required fields', head:"" });
       return;
     }
     if (!editingJobId) return;
@@ -248,6 +253,7 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'success',
         message: 'Employment history updated successfully',
+        head:"Updated Successfully"
       });
       fetchHistory();
       closeModal();
@@ -255,6 +261,7 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'error',
         message: 'Error occurred while updating employment history',
+        head:"Update Unsuccessful"
       });
     } finally {
       setIsSaving(false);
@@ -266,9 +273,9 @@ const EmploymentHistory: React.FC<Props> = ({
     if (!form.designation) newErrors.designation = 'Please Select designation';
     if (!form.employementType)
       newErrors.employementType = 'Please Select employment type';
-    if (!form.joiningDate) newErrors.joiningDate = 'Please Select joining date';
-    if (!form.resignationDate)
-      newErrors.resignationDate = 'Please Select resignation date';
+    if (!form.startDate) newErrors.startDate = 'Please Select start date';
+    if (!form.endDate)
+      newErrors.endDate = 'Please Select End date';
 
     setErrors(newErrors);
 
@@ -292,40 +299,52 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'success',
         message: 'Employment history deleted successfully',
+        head:"Deleted Successfully"
       });
       fetchHistory();
     } catch {
       setToast({
         type: 'error',
         message: 'Error occurred while deleting employment history',
+        head:"Delete Unsuccessful"
       });
     } finally {
       setIsDeleteModalOpen(false);
       setDeleteJobId(null);
     }
   };
-  const calculateDiff = (start?: string, end?: string) => {
-    if (!start) return '';
+const calculateDiff = (start?: string, end?: string) => {
+  if (!start) return '';
 
-    const startDate = new Date(start);
-    const endDate = end ? new Date(end) : new Date();
+  const startDate = new Date(start);
+  const endDate = end ? new Date(end) : new Date();
 
-    let years = endDate.getFullYear() - startDate.getFullYear();
-    let months = endDate.getMonth() - startDate.getMonth();
+  let years = endDate.getFullYear() - startDate.getFullYear();
+  let months = endDate.getMonth() - startDate.getMonth();
+  let days = endDate.getDate() - startDate.getDate();
 
-    if (months < 0) {
-      years--;
-      months += 12;
-    }
+  if (days < 0) {
+    months--;
+    const prevMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+    days += prevMonth.getDate();
+  }
 
-    if (years < 0) return '';
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
 
-    if (years === 0 && months === 0) return '• 0 months';
-    if (years === 0) return `• ${months} month${months > 1 ? 's' : ''}`;
-    if (months === 0) return `• ${years} year${years > 1 ? 's' : ''}`;
+  if (years < 0) return '';
 
-    return `• ${years} year${years > 1 ? 's' : ''}, ${months} month${months > 1 ? 's' : ''}`;
-  };
+  if (years === 0 && months === 0 && days < 29) return '• 0 months';
+
+  if (years === 0 && months === 0) return '• 1 month';
+  if (years === 0) return `• ${months} month${months > 1 ? 's' : ''}`;
+  if (months === 0) return `• ${years} year${years > 1 ? 's' : ''}`;
+
+  return `• ${years} year${years > 1 ? 's' : ''}, ${months} month${months > 1 ? 's' : ''}`;
+};
+
   const isSuperAdmin = () =>
     user?.roles.some((role) => role.name === 'Super Admin');
   const formatDateReadable = (dateStr?: string): string => {
@@ -387,14 +406,14 @@ const EmploymentHistory: React.FC<Props> = ({
                         <Badge type={job.employementType}>
                           {job.employementType || 'Unknown'}
                         </Badge>
-                        {job.joiningDate
-                          ? formatDateReadable(job.joiningDate)
-                          : '-'}{' '}
+                        {job.startDate
+                          ? formatDateReadable(job.startDate)
+                          : formatDateReadable(job.joiningDate)}{' '}
                         –{' '}
-                        {job.resignationDate
-                          ? formatDateReadable(job.resignationDate)
+                        {job.endDate
+                          ? formatDateReadable(job.endDate)
                           : 'Present'}{' '}
-                        {calculateDiff(job.joiningDate, job.resignationDate)}
+                        {calculateDiff(job.startDate?job.startDate:job.joiningDate, job.endDate)}
                       </Small>
                     </div>
 
@@ -509,10 +528,10 @@ const EmploymentHistory: React.FC<Props> = ({
                     <TextInput
                       type="text"
                       placeholder="Select Date"
-                      name="joiningDate"
+                      name="startDate"
                       value={
-                        form.joiningDate
-                          ? formatDate(new Date(form.joiningDate))
+                        form.startDate
+                          ? formatDate(new Date(form.startDate))
                           : ''
                       }
                       onFocus={() => setIsJoinDateOpen(true)}
@@ -529,16 +548,16 @@ const EmploymentHistory: React.FC<Props> = ({
                     <div className="calendarSpace">
                       {isJoinDateOpen && (
                         <Calendar
-                          title="Joining Date"
+                          title="Start Date"
                           minDate={new Date('2000-01-01')}
                           maxDate={new Date()}
                           selectedDate={
-                            form.joiningDate ? new Date(form.joiningDate) : null
+                            form.startDate ? new Date(form.startDate) : null
                           }
                           handleDateInput={(date: Date | null) => {
                             if (!date) return;
                             handleFormChange(
-                              'joiningDate',
+                              'startDate',
                               date.toLocaleDateString('en-CA')
                             );
                             setIsJoinDateOpen(false);
@@ -548,9 +567,9 @@ const EmploymentHistory: React.FC<Props> = ({
                       )}
                     </div>
                   </DateInputWrapper>
-                  {errors.joiningDate && (
+                  {errors.startDate && (
                     <div style={{ color: 'red', fontSize: 12 }}>
-                      {errors.joiningDate}
+                      {errors.startDate}
                     </div>
                   )}
                 </InputLabelContainer>
@@ -613,10 +632,10 @@ const EmploymentHistory: React.FC<Props> = ({
                     <TextInput
                       type="text"
                       placeholder="Select Date"
-                      name="resignationDate"
+                      name="endDate"
                       value={
-                        form.resignationDate
-                          ? formatDate(new Date(form.resignationDate))
+                        form.endDate
+                          ? formatDate(new Date(form.endDate))
                           : ''
                       }
                       onFocus={() => setIsResignDateOpen(true)}
@@ -633,22 +652,22 @@ const EmploymentHistory: React.FC<Props> = ({
                     <div className="calendarSpace">
                       {isResignDateOpen && (
                         <Calendar
-                          title="Resignation Date"
+                          title="End Date"
                           minDate={
-                            form.joiningDate
-                              ? new Date(form.joiningDate)
+                            form.startDate
+                              ? new Date(form.startDate)
                               : new Date('2000-01-01')
                           }
                           maxDate={new Date()}
                           selectedDate={
-                            form.resignationDate
-                              ? new Date(form.resignationDate)
+                            form.endDate
+                              ? new Date(form.endDate)
                               : null
                           }
                           handleDateInput={(date: Date | null) => {
                             if (!date) return;
                             handleFormChange(
-                              'resignationDate',
+                              'endDate',
                               date.toLocaleDateString('en-CA')
                             );
                             setIsResignDateOpen(false);
@@ -658,9 +677,9 @@ const EmploymentHistory: React.FC<Props> = ({
                       )}
                     </div>
                   </DateInputWrapper>
-                  {errors.resignationDate && (
+                  {errors.endDate && (
                     <div style={{ color: 'red', fontSize: 12 }}>
-                      {errors.resignationDate}
+                      {errors.endDate}
                     </div>
                   )}
                 </InputLabelContainer>
@@ -710,9 +729,7 @@ const EmploymentHistory: React.FC<Props> = ({
         <ToastMessage
           messageType={toast.type}
           messageBody={toast.message}
-          messageHeading={
-            toast.type === 'success' ? 'Done' : 'Update unsuccessful'
-          }
+          messageHeading={toast.head}
           handleClose={() => setToast(null)}
         />
       )}

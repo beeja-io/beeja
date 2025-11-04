@@ -539,8 +539,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         historyJob.setDesignation(existingJobDetails.getDesignation());
         historyJob.setEmployementType(existingJobDetails.getEmployementType());
         historyJob.setDepartment(existingJobDetails.getDepartment());
-        historyJob.setJoiningDate(existingJobDetails.getJoiningDate());
-        historyJob.setResignationDate(new Date());
+        if(existingJobDetails.getStartDate()==null) {
+          historyJob.setStartDate(existingJobDetails.getJoiningDate());
+        }
+        else{
+          historyJob.setStartDate(existingJobDetails.getStartDate());
+        }
+        historyJob.setEndDate(new Date());
         historyJob.setDescription(existingJobDetails.getDescription());
         historyJob.setUpdatedBy(existingJobDetails.getUpdatedBy());
         historyJob.setUpdatedAt(existingJobDetails.getUpdatedAt());
@@ -553,6 +558,7 @@ public class EmployeeServiceImpl implements EmployeeService {
                                 .collect(Collectors.joining(" | ")) + ")"
         );
         existingEmployee.getJobHistory().add(historyJob);
+        existingJobDetails.setStartDate(new Date());
       }
 
       if (updatedJobDetails.getDesignation() != null) {
@@ -975,11 +981,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     if (job.getEmployementType() == null || job.getEmployementType().isBlank()) {
       throw new Exception("Employment type is mandatory");
     }
-    if (job.getJoiningDate() == null) {
-      throw new Exception("Joining date is mandatory");
+    if (job.getStartDate() == null) {
+      throw new Exception("Start date is mandatory");
     }
-    if (job.getResignationDate() == null) {
-      throw new Exception("Resignation date is mandatory");
+    if (job.getEndDate() == null) {
+      throw new Exception("End date is mandatory");
     }
   }
 
