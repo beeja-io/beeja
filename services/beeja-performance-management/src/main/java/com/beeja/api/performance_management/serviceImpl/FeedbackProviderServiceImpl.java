@@ -240,15 +240,13 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
             String organizationId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
             String reviewerId = UserContext.getLoggedInEmployeeId();
 
-            List<FeedbackProvider> providers =
-                    feedbackProviderRepository.findByOrganizationId(organizationId);
+            List<FeedbackProvider> providers = feedbackProviderRepository.findByOrganizationId(organizationId);
 
             List<FeedbackProvider> matchedProviders = providers.stream()
                     .filter(p -> p.getAssignedReviewers() != null &&
                             p.getAssignedReviewers().stream()
                                     .anyMatch(r -> reviewerId.equals(r.getReviewerId())))
                     .toList();
-
 
             if (matchedProviders.isEmpty()) {
                 return null;
@@ -273,7 +271,6 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                 );
             }
 
-
             List<EmployeeDepartmentDTO> departmentDetails;
             try {
                 departmentDetails = employeeFeignClient.getDepartmentsByEmployeeIds(employeeIds);
@@ -287,6 +284,7 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                         )
                 );
             }
+
             Map<String, String> employeeNameMap = employeeDetails.stream()
                     .filter(e -> e.getEmployeeId() != null && e.getFullName() != null)
                     .collect(Collectors.toMap(EmployeeIdNameDTO::getEmployeeId, EmployeeIdNameDTO::getFullName));
@@ -298,7 +296,6 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
             List<EmployeeIdNameDTO> reviewerDetails = accountClient.getEmployeeNamesById(List.of(reviewerId));
             String reviewerName = reviewerDetails.isEmpty() ? "Unknown" : reviewerDetails.get(0).getFullName();
 
-
             List<AssignedEmployeeDTO> assignedEmployees = matchedProviders.stream()
                     .map(p -> {
                         AssignedReviewer reviewer = p.getAssignedReviewers().stream()
@@ -306,12 +303,16 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                                 .findFirst()
                                 .orElse(null);
 
+                        boolean isSubmitted = reviewer != null &&
+                                ProviderStatus.COMPLETED.equals(reviewer.getStatus());
+
                         return AssignedEmployeeDTO.builder()
                                 .employeeId(p.getEmployeeId())
                                 .employeeName(employeeNameMap.getOrDefault(p.getEmployeeId(), "Unknown"))
                                 .department(employeeDepartmentMap.getOrDefault(p.getEmployeeId(), "Unknown"))
                                 .cycleId(p.getCycleId())
                                 .role(reviewer != null ? reviewer.getRole() : null)
+                                .isSubmitted(isSubmitted)
                                 .build();
                     })
                     .toList();
