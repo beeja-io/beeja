@@ -111,6 +111,7 @@ export const StyledTextArea = styled.textarea`
   box-sizing: border-box;
   overflow: hidden;
   color: ${(props) => props.theme.colors.brandColors.primary};
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
   font-family: Nunito;
   font-weight: 600;
   font-style: SemiBold;
@@ -247,8 +248,9 @@ export const QuestionBlock = styled.div`
       align-items: center;
       justify-content: center;
       gap: 15px;
-      background: #005792;
+      background-color: #005792;
       color: #fff;
+      border: none;
       cursor: pointer;
       transition: background 0.2s ease;
       padding: 15px;
@@ -503,10 +505,10 @@ export const PreviewWrapper = styled.div`
 export const PreviewCard = styled.div`
   background: white;
   border-radius: 12px;
-  background: #ffffff;
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
   border: 1px solid var(--Outline-stroke, #e9eaec);
-  margin: 40px 8% 0 8%;
-  padding: 25px 5% 0 5%;
+  margin: 40px 4% 0 4%;
+  padding: 25px 5% 10px 5%;
   width: 100%;
 
   max-height: 100vh;
@@ -522,6 +524,15 @@ export const Title = styled.h2`
   margin: 0;
   font-size: 20px;
   font-weight: 600;
+
+  font-family: Nunito;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 24px;
+  leading-trim: NONE;
+  line-height: 150%;
+  letter-spacing: 0.3px;
+  text-align: center;
   color: ${(props) => props.theme.colors.brandColors.primary};
 `;
 
@@ -535,13 +546,20 @@ export const DateText = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  > svg path {
+    fill: ${(props) => props.theme.colors.grayColors.gray9};
+  }
+
+  &:hover svg path {
+    fill: ${(props) => props.theme.colors.blackColors.black1};
+  }
 `;
 
 export const Subtitle = styled.h3`
   font-family: Nunito;
   font-weight: 600;
   font-style: SemiBold;
-  font-size: 16px;
+  font-size: 20px;
   leading-trim: NONE;
   line-height: 160%;
   letter-spacing: 0.17px;
@@ -550,13 +568,13 @@ export const Subtitle = styled.h3`
 `;
 
 export const DescriptionBox = styled.div`
-  background: #f9fafb;
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
   margin: 10px 0px 20px 0px;
   font-size: 14px;
-  color: #374151;
+  color: #717171;
 `;
 
 export const Questions = styled.div`
@@ -569,7 +587,7 @@ export const QuestionText = styled.p`
   font-weight: 500;
   font-size: 15px;
   margin-bottom: 8px;
-  color: #1d4ed8;
+  color: ${(props) => props.theme.colors.brandColors.primary};
 `;
 
 export const SearchBox = styled.div`

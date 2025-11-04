@@ -54,7 +54,7 @@ const CreateReviewCycle = () => {
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {t('Review_Cycles')}
+            {t('Create_Evaluation_Form')}
           </span>
 
           {!isCreateModalOpen && !isEditMode && (
