@@ -67,9 +67,9 @@ public class SelfEvaluationServiceImpl implements SelfEvaluationService {
 
         String orgId = getOrgId();
 
-        boolean alreadySubmitted = selfRepo.existsByEmployeeIdAndSubmittedTrue(self.getEmployeeId());
+        boolean alreadySubmitted = selfRepo.existsByEmployeeIdAndOrganizationIdAndSubmittedTrue(self.getEmployeeId(), orgId);
         if (alreadySubmitted) {
-            log.warn(Constants.SELF_EVALUATION_ALREADY_SUBMITTED,self.getEmployeeId());
+            log.warn(Constants.SELF_EVALUATION_ALREADY_SUBMITTED, self.getEmployeeId());
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Self-evaluation already submitted by this employee."
