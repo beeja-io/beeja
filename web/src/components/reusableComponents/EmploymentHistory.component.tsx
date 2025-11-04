@@ -150,7 +150,7 @@ const EmploymentHistory: React.FC<Props> = ({
         });
       setHistoryList(sortedData);
     } catch {
-      setToast({ type: 'error', message: 'Failed to fetch history', head:"" });
+      setToast({ type: 'error', message: 'Failed to fetch history', head: '' });
     } finally {
       setIsLoading(false);
     }
@@ -202,7 +202,11 @@ const EmploymentHistory: React.FC<Props> = ({
       !form.startDate ||
       !form.endDate
     ) {
-      setToast({ type: 'error', message: 'Please fill all required fields', head:"" });
+      setToast({
+        type: 'error',
+        message: 'Please fill all required fields',
+        head: '',
+      });
       return;
     }
 
@@ -213,7 +217,7 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'success',
         message: 'Employment history added successfully',
-        head:"Added Successfully"
+        head: 'Added Successfully',
       });
       fetchHistory();
       closeModal();
@@ -221,7 +225,7 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'error',
         message: 'Error occurred while adding employment history',
-        head:"Add Unsuccessful"
+        head: 'Add Unsuccessful',
       });
     } finally {
       setIsSaving(false);
@@ -235,7 +239,11 @@ const EmploymentHistory: React.FC<Props> = ({
       !form.startDate ||
       !form.endDate
     ) {
-      setToast({ type: 'error', message: 'Please fill all required fields', head:"" });
+      setToast({
+        type: 'error',
+        message: 'Please fill all required fields',
+        head: '',
+      });
       return;
     }
     if (!editingJobId) return;
@@ -253,7 +261,7 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'success',
         message: 'Employment history updated successfully',
-        head:"Updated Successfully"
+        head: 'Updated Successfully',
       });
       fetchHistory();
       closeModal();
@@ -261,7 +269,7 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'error',
         message: 'Error occurred while updating employment history',
-        head:"Update Unsuccessful"
+        head: 'Update Unsuccessful',
       });
     } finally {
       setIsSaving(false);
@@ -274,8 +282,7 @@ const EmploymentHistory: React.FC<Props> = ({
     if (!form.employementType)
       newErrors.employementType = 'Please Select employment type';
     if (!form.startDate) newErrors.startDate = 'Please Select start date';
-    if (!form.endDate)
-      newErrors.endDate = 'Please Select End date';
+    if (!form.endDate) newErrors.endDate = 'Please Select End date';
 
     setErrors(newErrors);
 
@@ -299,51 +306,51 @@ const EmploymentHistory: React.FC<Props> = ({
       setToast({
         type: 'success',
         message: 'Employment history deleted successfully',
-        head:"Deleted Successfully"
+        head: 'Deleted Successfully',
       });
       fetchHistory();
     } catch {
       setToast({
         type: 'error',
         message: 'Error occurred while deleting employment history',
-        head:"Delete Unsuccessful"
+        head: 'Delete Unsuccessful',
       });
     } finally {
       setIsDeleteModalOpen(false);
       setDeleteJobId(null);
     }
   };
-const calculateDiff = (start?: string, end?: string) => {
-  if (!start) return '';
+  const calculateDiff = (start?: string, end?: string) => {
+    if (!start) return '';
 
-  const startDate = new Date(start);
-  const endDate = end ? new Date(end) : new Date();
+    const startDate = new Date(start);
+    const endDate = end ? new Date(end) : new Date();
 
-  let years = endDate.getFullYear() - startDate.getFullYear();
-  let months = endDate.getMonth() - startDate.getMonth();
-  let days = endDate.getDate() - startDate.getDate();
+    let years = endDate.getFullYear() - startDate.getFullYear();
+    let months = endDate.getMonth() - startDate.getMonth();
+    let days = endDate.getDate() - startDate.getDate();
 
-  if (days < 0) {
-    months--;
-    const prevMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
-    days += prevMonth.getDate();
-  }
+    if (days < 0) {
+      months--;
+      const prevMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0);
+      days += prevMonth.getDate();
+    }
 
-  if (months < 0) {
-    years--;
-    months += 12;
-  }
+    if (months < 0) {
+      years--;
+      months += 12;
+    }
 
-  if (years < 0) return '';
+    if (years < 0) return '';
 
-  if (years === 0 && months === 0 && days < 29) return '• 0 months';
+    if (years === 0 && months === 0 && days < 29) return '• 0 months';
 
-  if (years === 0 && months === 0) return '• 1 month';
-  if (years === 0) return `• ${months} month${months > 1 ? 's' : ''}`;
-  if (months === 0) return `• ${years} year${years > 1 ? 's' : ''}`;
+    if (years === 0 && months === 0) return '• 1 month';
+    if (years === 0) return `• ${months} month${months > 1 ? 's' : ''}`;
+    if (months === 0) return `• ${years} year${years > 1 ? 's' : ''}`;
 
-  return `• ${years} year${years > 1 ? 's' : ''}, ${months} month${months > 1 ? 's' : ''}`;
-};
+    return `• ${years} year${years > 1 ? 's' : ''}, ${months} month${months > 1 ? 's' : ''}`;
+  };
 
   const isSuperAdmin = () =>
     user?.roles.some((role) => role.name === 'Super Admin');
@@ -413,7 +420,10 @@ const calculateDiff = (start?: string, end?: string) => {
                         {job.endDate
                           ? formatDateReadable(job.endDate)
                           : 'Present'}{' '}
-                        {calculateDiff(job.startDate?job.startDate:job.joiningDate, job.endDate)}
+                        {calculateDiff(
+                          job.startDate ? job.startDate : job.joiningDate,
+                          job.endDate
+                        )}
                       </Small>
                     </div>
 
@@ -634,9 +644,7 @@ const calculateDiff = (start?: string, end?: string) => {
                       placeholder="Select Date"
                       name="endDate"
                       value={
-                        form.endDate
-                          ? formatDate(new Date(form.endDate))
-                          : ''
+                        form.endDate ? formatDate(new Date(form.endDate)) : ''
                       }
                       onFocus={() => setIsResignDateOpen(true)}
                       onClick={() => setIsResignDateOpen(true)}
@@ -660,9 +668,7 @@ const calculateDiff = (start?: string, end?: string) => {
                           }
                           maxDate={new Date()}
                           selectedDate={
-                            form.endDate
-                              ? new Date(form.endDate)
-                              : null
+                            form.endDate ? new Date(form.endDate) : null
                           }
                           handleDateInput={(date: Date | null) => {
                             if (!date) return;
