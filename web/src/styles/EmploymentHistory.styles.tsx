@@ -194,6 +194,8 @@ export const Modal = styled.div`
   border-radius: 10px;
   padding: 50px;
   margin-bottom: 80px;
+  max-height: 80vh;
+  overflow-y: auto;
 `;
 
 export const Required = styled.span`
