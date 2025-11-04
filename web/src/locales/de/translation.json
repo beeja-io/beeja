@@ -193,7 +193,6 @@
   "ACCOUNT_NAME_ERROR": "Ungültiger Kontoinhabername. Es sind nur Buchstaben erlaubt. Beispiel: John Doe.",
   "ACCOUNT_NUMBER_ERROR": "Ungültige Kontonummer. Es sind nur Zahlen erlaubt (8–20 Ziffern). Beispiel: 123456789012.",
   "IFSC_ERROR": "Geben Sie einen gültigen IFSC-Code ein, z. B.: ABCD0123456",
-
   "errors": {
     "unsupported_format": "Nicht unterstütztes Dateiformat. Bitte laden Sie eine gültige Belegdatei hoch.",
     "single_file_exceeds": "Dateigröße überschreitet 5 MB. Bitte laden Sie eine kleinere Datei hoch.",
@@ -324,5 +323,20 @@
   "SOCIALMEDIA": "Soziale Medien",
   "ECOMMERCE": "E-Commerce",
   "ITSERVICES": "IT-Dienstleistungen",
-  "GST_Number": "GST-Nummer"
+  "GST_Number": "GST-Nummer",
+  "Assign_Feedback_Receivers_Providers": "Feedback-Empfänger und -Anbieter zuweisen",
+  "Add_Feedback_Receiver": "Feedback-Empfänger hinzufügen",
+  "Feedback_Receivers_List": "Liste der Feedback-Empfänger",
+  "Employee_Name": "Mitarbeitername",
+  "Feedback_Status": "Feedbackstatus",
+  "End_Date": "Enddatum",
+  "List_of_feedback_Receivers": "Liste der Feedback-Empfänger",
+  "Select_Add_Feedback_Receivers": "Feedback-Empfänger auswählen und hinzufügen",
+  "Select_Feedback_Receivers": "Feedback-Empfänger auswählen",
+  "Selected_Feedback_Receivers": "Ausgewählter Feedback-Empfänger",
+  "Select_Assign_Feedback_Providers": "Feedbackgeber auswählen und zuweisen",
+  "Select_Feedback_Providers": "Feedbackgeber auswählen",
+  "Selected_Feedback_Providers": "Ausgewählte Feedbackgeber",
+  "View_More_Details": "Weitere Details anzeigen",
+  "List_of_forms": "Liste der Formulare"
 }

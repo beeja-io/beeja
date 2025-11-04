@@ -354,7 +354,10 @@ export const updatePerformanceCycle = (
   id: string,
   data: any
 ): Promise<AxiosResponse> => {
-  return axiosInstance.put(`/performance/v1/api/cycles/${id}/full-update`, data);
+  return axiosInstance.put(
+    `/performance/v1/api/cycles/${id}/full-update`,
+    data
+  );
 };
 
 export const deletePerformanceCycle = (id: string): Promise<AxiosResponse> => {
@@ -739,4 +742,50 @@ export const createInvoice = (invoiceRequest: {
 
 export const getInvoicesBycontractId = (contractId: string) => {
   return axiosInstance.get(`/projects/v1/invoices/contract/${contractId}`);
+};
+
+export const searchUsers = (keyword: string) => {
+  return axiosInstance.get(
+    `/accounts/v1/users/search?keyword=${encodeURIComponent(keyword || '')}`
+  );
+};
+
+export const createReceiverList = async (payload: any) => {
+  return await axiosInstance.post('/performance/v1/feedbackReceivers', payload);
+};
+
+export const getReceivers = async (
+  cycleId: string,
+  questionnaireId: string
+) => {
+  return axiosInstance.get(
+    `/performance/v1/feedbackReceivers/${cycleId}/${questionnaireId}`
+  );
+};
+
+export const assignProvider = async (employeeId: string, payload: any) => {
+  return axiosInstance.post(
+    `/performance/v1/feedbackProvider/assign/${employeeId}`,
+    payload
+  );
+};
+
+export const getProviders = async (employeeId: string) => {
+  return axiosInstance.get(`/performance/v1/feedbackProvider/${employeeId}`);
+};
+
+export const getFeedbackProviderDetails = async (
+  employeeId: string,
+  cycleId: string
+) => {
+  return axiosInstance.get(
+    `/performance/v1/feedbackProvider/${employeeId}/${cycleId}`
+  );
+};
+
+export const updateFeedbackProviders = (employeeId: string, payload: any) => {
+  return axiosInstance.put(
+    `/performance/v1/feedbackProvider/providers/${employeeId}`,
+    payload
+  );
 };

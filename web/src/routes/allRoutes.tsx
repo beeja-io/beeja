@@ -41,9 +41,12 @@ import ContractDetailsScreen from '../screens/ContractDetailedScreen';
 import ContractListWrapper from '../screens/ContractListWrapper';
 import CreateReviewCycleScreen from '../screens/CreateReviewCycle.screen';
 import ReviewCyclesList from '../screens/ReviewCyclesList.screen';
-import AssignFeedbackProviders from '../screens/AssignFeedbackProviders.screen';
+import AssignFeedbackProviders from '../screens/AssignFeedbackReceiversProviders.screen';
 import FeedbackHub from '../screens/FeedbackHub.screen';
 import AddEvaluationCycle from '../components/directComponents/AddEvaluationCycle.component';
+import FeedbackReceiversList from '../screens/FeedbackReceiversList.screen';
+import AddFeedbackReceivers from '../components/reusableComponents/AddFeedbackReceivers.component';
+import ViewMoreDetails from '../screens/ViewMoreDetailsListScreen.screen';
 
 const AllRoutes = () => {
   return (
@@ -216,6 +219,7 @@ const AllRoutes = () => {
         <Route path="new" element={<AddEvaluationCycle />} />
         <Route path=":id" element={<AddEvaluationCycle />} />
       </Route>
+
       <Route
         path="/performance/assign-feedback-providers"
         element={
@@ -227,6 +231,43 @@ const AllRoutes = () => {
           </CustomRoute>
         }
       />
+
+      {/* <Route
+  path="/performance/assign-feedback-providers/:id/add-feedback-receiver"
+  element={
+    <CustomRoute
+      permission={LOAN_MODULE.READ_LOAN}
+      featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+    >
+      <AddFeedbackReceivers />
+    </CustomRoute>
+  }
+  
+/> */}
+      <Route
+        path="/performance/view-more-details"
+        element={<ViewMoreDetails />}
+      />
+
+      <Route
+        path="/performance/assign-feedback-providers/:cycleId/:questionnaireId/add-feedback-receiver"
+        element={<AddFeedbackReceivers />}
+      />
+
+      {/* <Route
+  path="/performance/assign-feedback-providers/:cycleId/add-feedback-receiver"
+  element={<AddFeedbackReceivers />}
+/> */}
+
+      {/* <Route
+  path="/performance/assign-feedback-providers"
+  element={<AddFeedbackReceivers />}
+/> */}
+      <Route
+        path="/performance/assign-feedback-providers/:cycleId/:questionnaireId"
+        element={<FeedbackReceiversList />}
+      />
+
       <Route
         path="/performance/feedback-hub"
         element={

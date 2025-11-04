@@ -19,8 +19,10 @@ import { useTranslation } from 'react-i18next';
 import { getAllPerformance } from '../service/axiosInstance';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
+import FeedbackReceiversList from './FeedbackReceiversList.screen'; // ✅ import your list screen
 
 type PerformanceCycle = {
+  questionnaireId: string;
   id: string;
   name: string;
   type: string;
@@ -35,6 +37,10 @@ const AssignFeedbackProviders = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+
+  const [selectedCycle, setSelectedCycle] = useState<PerformanceCycle | null>(
+    null
+  );
 
   useEffect(() => {
     const fetchPerformanceCycles = async () => {
@@ -52,6 +58,10 @@ const AssignFeedbackProviders = () => {
     fetchPerformanceCycles();
   }, []);
 
+  const handleCycleClick = (cycle: PerformanceCycle) => {
+    setSelectedCycle(cycle);
+  };
+
   const goToPreviousPage = () => {
     if (
       location.pathname.endsWith('/new') ||
@@ -66,22 +76,24 @@ const AssignFeedbackProviders = () => {
   return (
     <>
       <ExpenseManagementMainContainer>
-        <ExpenseHeadingSection>
-          <span className="heading">
-            <span onClick={goToPreviousPage}>
-              <ArrowDownSVG />
+        {!selectedCycle && (
+          <ExpenseHeadingSection>
+            <span className="heading">
+              <span onClick={goToPreviousPage}>
+                <ArrowDownSVG />
+              </span>
+              {t('Assign_Feedback_Receivers_Providers')}
             </span>
-            {t('Assign Feedback Providers')}
-          </span>
-        </ExpenseHeadingSection>
+          </ExpenseHeadingSection>
+        )}
 
-        <>
+        {!selectedCycle ? (
           <StyledDiv>
             <ExpenseHeading>
-              <ExpenseTitle>{t('List of forms')}</ExpenseTitle>
+              <ExpenseTitle>{t('List_of_forms')}</ExpenseTitle>
             </ExpenseHeading>
 
-            <TableListContainer style={{ marginTop: 0 }}>
+            <TableListContainer>
               {!isLoading && cycles.length === 0 ? (
                 <ZeroEntriesFound heading="No Assign Feedback Providers" />
               ) : (
@@ -89,10 +101,9 @@ const AssignFeedbackProviders = () => {
                   <TableHead>
                     <tr>
                       <th>{t('Name')}</th>
-                      <th>{t('Start date')}</th>
-                      <th>{t('End date')}</th>
+                      <th>{t('Start_Date')}</th>
+                      <th>{t('End_Date')}</th>
                       <th>{t('Status')}</th>
-                      <th>{t('ACTION')}</th>
                     </tr>
                   </TableHead>
                   <tbody>
@@ -111,17 +122,24 @@ const AssignFeedbackProviders = () => {
                         ))}
                       </>
                     ) : (
-                      cycles?.map((cycle) => (
-                        <TableBodyRow key={cycle.id}>
-                          <td>{cycle?.name || '-'}</td>
-                          <td>{cycle?.startDate || '-'}</td>
-                          <td>{cycle?.endDate || '-'}</td>
-                          {cycle?.status ? (
-                            <StatusDropdown value={cycle.status} disabled />
-                          ) : (
-                            '-'
-                          )}
-                          <td>Details</td>
+                      cycles?.map((cycle, index) => (
+                        <TableBodyRow key={index}>
+                          <td onClick={() => handleCycleClick(cycle)}>
+                            {cycle?.name || '-'}
+                          </td>
+                          <td onClick={() => handleCycleClick(cycle)}>
+                            {cycle?.startDate || '-'}
+                          </td>
+                          <td onClick={() => handleCycleClick(cycle)}>
+                            {cycle?.endDate || '-'}
+                          </td>
+                          <td onClick={() => handleCycleClick(cycle)}>
+                            {cycle?.status ? (
+                              <StatusDropdown value={cycle.status} disabled />
+                            ) : (
+                              '-'
+                            )}
+                          </td>
                         </TableBodyRow>
                       ))
                     )}
@@ -130,7 +148,12 @@ const AssignFeedbackProviders = () => {
               )}
             </TableListContainer>
           </StyledDiv>
-        </>
+        ) : (
+          <FeedbackReceiversList
+            cycleId={selectedCycle.id}
+            questionnaireId={selectedCycle.questionnaireId}
+          />
+        )}
       </ExpenseManagementMainContainer>
     </>
   );
