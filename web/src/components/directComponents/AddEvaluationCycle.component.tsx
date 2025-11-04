@@ -65,7 +65,9 @@ type ReviewFormData = {
 };
 
 const AddEvaluationCycle: React.FC = () => {
-  const { handleShowSuccessMessage } = useOutletContext<OutletContextType>();
+  const context = useOutletContext<OutletContextType>();
+  const handleShowSuccessMessage =
+    context?.handleShowSuccessMessage || (() => {});
   const [isStartDateCalOpen, setIsStartDateCalOpen] = useState(false);
   const [isEndDateCalOpen, setIsEndDateCalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -324,7 +326,7 @@ const AddEvaluationCycle: React.FC = () => {
 
   useEffect(() => {
     if (!formData?.questions?.length) return;
-    formData.questions.forEach((q, index) => {
+    formData.questions.forEach((_, index) => {
       const questionTextArea = questionRefs.current[index];
       const descriptionTextArea = answerRefs.current[index];
 
@@ -609,6 +611,7 @@ const AddEvaluationCycle: React.FC = () => {
                   id="reviewType"
                   style={{ border: 'none' }}
                   value={formData.reviewType || ''}
+                  width="160px"
                   className="largeContainerFil"
                   onChange={(e) => {
                     const event = {
@@ -623,7 +626,7 @@ const AddEvaluationCycle: React.FC = () => {
                   options={[
                     { label: t('Select Review Type'), value: '' },
                     ...Object.values(ReviewType).map((type) => ({
-                      label: ReviewTypeLabels[type],
+                      label: `${ReviewTypeLabels[type]} Review`,
                       value: type,
                     })),
                   ]}

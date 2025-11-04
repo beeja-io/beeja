@@ -19,6 +19,7 @@ import {
 } from '../../styles/CreateReviewCycleStyle.style';
 import { Button } from '../../styles/CommonStyles.style';
 import { useTranslation } from 'react-i18next';
+import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
 
 type Question = {
   question: string;
@@ -61,11 +62,18 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
           <Title>{formData.reviewCycleName}</Title>
           <DateRow>
             <DateText>
-              {formData.startDate ? formatDate(formData.startDate) : ''} To
+              <CalenderIconDark />
+              {formData.startDate ? formatDate(formData.startDate) : ''}
+              <span>To </span>
+              <CalenderIconDark />
               {formData.endDate ? formatDate(formData.endDate) : ''}
             </DateText>
           </DateRow>
-          <Subtitle>{formData.reviewType} </Subtitle>
+          <Subtitle>
+            {formData.reviewType
+              ? `${formData.reviewType.charAt(0).toUpperCase()}${formData.reviewType.slice(1).toLowerCase()} Review`
+              : ''}
+          </Subtitle>
         </Header>
         <Label>Form Description</Label>
         <DescriptionBox>

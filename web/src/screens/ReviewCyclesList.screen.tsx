@@ -67,7 +67,7 @@ const ReviewCyclesList = () => {
 
         <TableListContainer style={{ marginTop: 0 }}>
           {!isLoading && cycles.length === 0 ? (
-            <ZeroEntriesFound heading="No Evaluation List" />
+            <ZeroEntriesFound heading="No Evaluation Cycles Found" />
           ) : (
             <TableList>
               <TableHead>
