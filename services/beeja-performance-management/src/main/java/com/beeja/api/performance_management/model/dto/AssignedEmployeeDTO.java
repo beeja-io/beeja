@@ -16,4 +16,5 @@ public class AssignedEmployeeDTO {
     private String department;
     private String cycleId;
     private String role;
+    private boolean isSubmitted;
 }
