@@ -329,6 +329,7 @@
   "INDIA": "India",
   "GERMANY": "Germany",
   "US": "US",
+  "AUSTRALIA": "Australia",
   "FILLING_ADDRESS": "Filing Address",
   "WEBSITE_URL": "Website URL",
   "PF_NO.": "PF No.",
@@ -403,7 +404,6 @@
   "Billing_Address": "Billing Address",
   "Tax_Details": "Tax Details",
   "VAT/ GST_Number": "VAT/ GST Number",
-
   "Projects": "Projects",
   "Contracts": "Contracts",
   "Resources": "Resources",
@@ -514,6 +514,16 @@
   "ECOMMERCE": "E-Commerce",
   "ITSERVICES": "IT Services",
   "GST_Number": "GST Number",
+  "End_Date": "End Date",
+  "Employment_Type": "Employment Type",
+  "Designation": "Designation",
+  "Note": "Note",
+  "Edit_Employment_History": "Edit Employment History",
+  "Add_Employment_History": "Add Employment History",
+  "View_History": "View History",
+  "Employment_History": "Employment History",
+  "Updated_by": "Updated by",
+  "Updated_On": "Updated On:",
   "RETAIL": "Retail",
   "CONSULTING": "Consulting",
   "EDUCATION": "Education",
@@ -522,5 +532,29 @@
   "MANUFACTURING": "Manufacturing",
   "REAL_ESTATE": "Real Esate",
   "CORPORATE": "Corporate",
-  "STARTUP": "Start up"
+  "STARTUP": "Start up",
+  "availability": {
+    "invalid_number": "Please enter percentage between 1 to 100",
+    "below_one": "Please enter percentage greater than one",
+    "above_hundred": "Please enter percentage below 100"
+  },
+  "CLIENT_NAME_REQUIRED": "Client name is required",
+  "CLIENT_TYPE_REQUIRED": "Client type is required",
+  "CUSTOM_CLIENT_TYPE_REQUIRED": "Please specify the client type",
+  "INDUSTRY_REQUIRED": "Industry is required",
+  "CUSTOM_INDUSTRY_REQUIRED": "Please specify the industry",
+  "INVALID_EMAIL": "Please enter a valid email address",
+  "validation": {
+    "postalCode": {
+      "india": "Postal code must be exactly 6 digits for India.",
+      "default": "Postal/Zip code must be exactly 5 digits for {{country}}."
+    }
+  },
+  "Due_mark": "Please transfer the due amount to the following bank account within next 7 days.",
+  "Remark": "Thank you so much for the great opportunity as always",
+  "Duplicate_Invoice": "An Invoice with this ID already Exists.",
+  "Duplicate_Remittance": "A Remittance Ref with this ID already Exists",
+  "Unknow_Error": "Failed to create invoice. Please try again.",
+  "No_org_Address": "Organization address is not defined or available in the Organization Profile Settings.",
+  "NO_Client_Address": "Client address is currently unavailable, as it wasn’t provided"
 }

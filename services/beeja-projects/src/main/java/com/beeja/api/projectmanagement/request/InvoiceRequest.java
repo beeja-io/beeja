@@ -1,9 +1,12 @@
 package com.beeja.api.projectmanagement.request;
 
+import com.beeja.api.projectmanagement.model.Address;
 import com.beeja.api.projectmanagement.model.InvoicePeriod;
 import com.beeja.api.projectmanagement.model.Task;
 import java.util.Date;
 import java.util.List;
+
+import com.beeja.api.projectmanagement.model.dto.orgAddress;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,4 +30,6 @@ public class InvoiceRequest {
   private String daysLeftForPayment;
   private InvoicePeriod invoicePeriod;
   private String taxId;
+  private orgAddress primaryAddress;
+  private Address billingAddress;
 }

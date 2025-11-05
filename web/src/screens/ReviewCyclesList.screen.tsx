@@ -29,6 +29,7 @@ type PerformanceCycle = {
 const ReviewCyclesList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [cycles, setCycles] = useState<PerformanceCycle[]>([]);
+  const [activeActionId, setActiveActionId] = useState<string | null>(null);
   const { t } = useTranslation();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successToastMessage, setSuccessToastMessage] = useState({
@@ -66,7 +67,7 @@ const ReviewCyclesList = () => {
 
         <TableListContainer style={{ marginTop: 0 }}>
           {!isLoading && cycles.length === 0 ? (
-            <ZeroEntriesFound heading="No Evaluation List" />
+            <ZeroEntriesFound heading="No Evaluation Cycles Found" />
           ) : (
             <TableList>
               <TableHead>
@@ -92,63 +93,71 @@ const ReviewCyclesList = () => {
                     ))}
                   </>
                 ) : (
-                  cycles?.map((cycle) => (
-                    <TableBodyRow key={cycle.id}>
-                      <td>{cycle?.name || '-'}</td>
-                      <td>
-                        {cycle?.startDate
-                          ? new Date(cycle.startDate).toLocaleDateString(
-                              'en-US',
-                              {
+                  cycles
+                    ?.slice()
+                    .sort((a, b) => b.id.localeCompare(a.id))
+                    .map((cycle) => (
+                      <TableBodyRow key={cycle.id}>
+                        <td>{cycle?.name || '-'}</td>
+                        <td>
+                          {cycle?.startDate
+                            ? new Date(cycle.startDate).toLocaleDateString(
+                                'en-US',
+                                {
+                                  month: '2-digit',
+                                  day: '2-digit',
+                                  year: 'numeric',
+                                }
+                              )
+                            : '-'}
+                        </td>
+                        <td>
+                          {cycle?.feedbackDeadline
+                            ? new Date(
+                                cycle.feedbackDeadline
+                              ).toLocaleDateString('en-US', {
                                 month: '2-digit',
                                 day: '2-digit',
                                 year: 'numeric',
-                              }
-                            )
-                          : '-'}
-                      </td>
-                      <td>
-                        {cycle?.feedbackDeadline
-                          ? new Date(cycle.feedbackDeadline).toLocaleDateString(
-                              'en-US',
-                              {
-                                month: '2-digit',
-                                day: '2-digit',
-                                year: 'numeric',
-                              }
-                            )
-                          : '-'}
-                      </td>
-                      <td>
-                        {cycle?.status ? (
-                          <StatusDropdown value={cycle.status} disabled />
-                        ) : (
-                          '-'
-                        )}
-                      </td>
-                      <td>
-                        <EvaluationListAction
-                          options={Actions}
-                          currentCycle={cycle}
-                          fetchCycles={fetchPerformanceCycles}
-                          onSuccess={(msg) => {
-                            setSuccessToastMessage({
-                              heading: 'Success',
-                              body: msg,
-                            });
-                            setShowSuccessMessage(true);
-                          }}
-                          onError={(msg) => {
-                            setSuccessToastMessage({
-                              heading: 'Error',
-                              body: msg,
-                            });
-                            setShowSuccessMessage(true);
-                          }}
-                        />
-                      </td>
-                    </TableBodyRow>
-                  ))
+                              })
+                            : '-'}
+                        </td>
+                        <td>
+                          {cycle?.status ? (
+                            <StatusDropdown value={cycle.status} disabled />
+                          ) : (
+                            '-'
+                          )}
+                        </td>
+                        <td>
+                          <EvaluationListAction
+                            options={Actions}
+                            currentCycle={cycle}
+                            isOpen={activeActionId === cycle.id}
+                            onToggle={() =>
+                              setActiveActionId((prev) =>
+                                prev === cycle.id ? null : cycle.id
+                              )
+                            }
+                            fetchCycles={fetchPerformanceCycles}
+                            onSuccess={(msg) => {
+                              setSuccessToastMessage({
+                                heading: 'Success',
+                                body: msg,
+                              });
+                              setShowSuccessMessage(true);
+                            }}
+                            onError={(msg) => {
+                              setSuccessToastMessage({
+                                heading: 'Error',
+                                body: msg,
+                              });
+                              setShowSuccessMessage(true);
+                            }}
+                          />
+                        </td>
+                      </TableBodyRow>
+                    ))
                 )}
               </tbody>
             </TableList>

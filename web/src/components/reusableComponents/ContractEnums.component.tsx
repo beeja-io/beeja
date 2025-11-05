@@ -3,6 +3,7 @@ export enum ContractType {
   HYBRID = 'HYBRID',
   MILESTONE_BASED = 'MILESTONE_BASED',
   RETAINER = 'RETAINER',
+  OTHER = 'OTHER',
 }
 
 export const ContractTypeLabels: Record<ContractType, string> = {
@@ -10,6 +11,7 @@ export const ContractTypeLabels: Record<ContractType, string> = {
   [ContractType.HYBRID]: 'Hybrid',
   [ContractType.MILESTONE_BASED]: 'Milestone Based',
   [ContractType.RETAINER]: 'Retainer',
+  [ContractType.OTHER]: 'Other',
 };
 
 export enum ContractBillingType {

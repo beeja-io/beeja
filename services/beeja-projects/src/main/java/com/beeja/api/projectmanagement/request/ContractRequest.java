@@ -31,6 +31,7 @@ public class ContractRequest {
   private String signedBy;
   private ContractBillingCurrency billingCurrency;
   private ContractType contractType;
+  private String customContractType;
   private ContractBillingType billingType;
   private List<String> projectManagers;
   private List<ResourceAllocation> projectResources;

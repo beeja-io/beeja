@@ -15,4 +15,8 @@ public interface InvoiceRepository extends MongoRepository<Invoice, String> {
     long countByOrganizationIdAndInvoiceIdStartingWith(String organizationId, String prefix);
 
     void deleteByInvoiceId(String invoiceId);
+
+    boolean existsByInvoiceIdAndOrganizationId(String invoiceId, String organizationId);
+
+    boolean existsByRemittanceRefAndOrganizationId(String remittanceRef, String organizationId);
 }

@@ -16,9 +16,12 @@ import {
   TableHead,
   TableHeadLabel,
   TableRow,
+  TableShowing,
+  TableList,
   Tablelist,
   TextInput,
   ValidationText,
+  Alignmenting,
 } from '../../styles/InvoiceManagementStyles.style.tsx';
 import { formatDate } from '../../utils/dateFormatter';
 import Calendar from '../reusableComponents/Calendar.component';
@@ -56,31 +59,8 @@ import {
 } from '../reusableComponents/ContractEnums.component.tsx';
 import SpinAnimation from '../loaders/SprinAnimation.loader.tsx';
 import { t } from 'i18next';
-import { TableList } from '../../styles/DocumentTabStyles.style.tsx';
 
 export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
-  const getRemainingDueDays = (dueDate: Date | undefined): number => {
-    if (!dueDate || isNaN(dueDate.getTime())) {
-      return 0;
-    }
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    dueDate.setHours(0, 0, 0, 0);
-    const diffDays =
-      Math.ceil((dueDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) +
-      1;
-    return diffDays;
-  };
-  const generateDueRemarks = (endDate: Date | undefined): string => {
-    const dueDays = getRemainingDueDays(endDate);
-    if (!endDate || dueDays <= 0) {
-      return t('The contract has ended.');
-    }
-    return t(
-      'Please transfer the due amount to the following bank account with in next 7 days.'
-    );
-  };
-
   const getBillingCurrency = (value?: string): BillingCurrency => {
     if (
       value &&
@@ -109,7 +89,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
   const [formData, setFormData] = useState<FormDataProps>({
     RemittanceNo: props.remittanceReferenceNumber || '',
     InvoiceNo: props.invoiceId || '',
-    tax: 18,
+    tax: '',
     taxId: organizationDetails?.taxId || '',
     organization: organizationDetails?.name || '',
     organizationId: props.organizationId || '',
@@ -121,7 +101,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     clientName: props.clientName || '',
     clientId: props.clientId || '',
     status: props.status || '',
-    currencyType: getBillingCurrency(props.billingCurrency),
+    currencyType: getBillingCurrency(props.billingCurrency || ''),
 
     primaryAddress: organizationDetails?.address
       ? {
@@ -146,10 +126,8 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       accountNumber: organizationDetails?.bankDetails?.accountNumber || '',
       ifscNumber: organizationDetails?.bankDetails?.ifscNumber || '',
     },
-    dueRemarks: generateDueRemarks(
-      props.endDate ? new Date(props.endDate) : undefined
-    ),
-    remarksNote: 'Thank you so much for the great opportunity as always',
+    dueRemarks: t('Due_mark'),
+    remarksNote: t('Remark'),
   });
   const [errors, setErrors] = useState({
     contract: '',
@@ -166,7 +144,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       status: props.status || '',
       clientId: props.clientId || '',
       contractName: props.contractTitle || '',
-      currencyType: getBillingCurrency(props.billingCurrency),
+      currencyType: getBillingCurrency(props.billingCurrency || ''),
 
       primaryAddress: organizationDetails?.address
         ? {
@@ -186,9 +164,6 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
         country: '',
       },
       clientName: props.clientName || '',
-      dueRemarks: generateDueRemarks(
-        props.endDate ? new Date(props.endDate) : undefined
-      ),
       taxId: organizationDetails?.taxId || prevData.taxId,
       organization: organizationDetails?.name || '',
       paymentDetails: {
@@ -283,6 +258,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       setShowToCalendar(false);
     }
   };
+
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
     return () => {
@@ -376,7 +352,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     setData([...data.slice(0, id), ...data.slice(id + 1)]);
   };
   const subTotal = data.reduce((sum, item) => sum + Number(item.price), 0);
-  const gstAmount = (subTotal * formData.tax) / 100;
+  const gstAmount = (subTotal * Number(formData.tax)) / 100;
   const Total = subTotal + gstAmount;
   const [confirmDeleteChanges, setConfirmDeleteChanges] = useState(false);
   const handleConfirmDeleteChanges = (
@@ -394,7 +370,6 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
   const handleSaveButtonClick = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-
     if (data.length === 0) {
       toast.error(
         t(
@@ -407,7 +382,6 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
     if (
       !formData.contractId ||
       !formData.clientId ||
-      !Total ||
       !formData.fromDate ||
       !formData.toDate
     ) {
@@ -439,7 +413,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
         remittanceRef: formData.RemittanceNo || null,
         invoiceId: formData.InvoiceNo || null,
         taxId: formData.taxId || null,
-        vat: formData.tax || 18,
+        vat: Number(formData.tax),
         daysLeftForPayment: formData.dueRemarks.match(/\d+/)?.[0] || '30',
         invoicePeriod: {
           startDate: formData.fromDate.toISOString(),
@@ -451,13 +425,26 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       setInvoiceData(response.data);
       setInvoiceFileId(response.data.invoiceFileId);
 
-      toast.success(t('Invoice created successfully!'));
+      toast.success(t('Invoice Generated successfully!'));
       setIsInvoiceSaved(true);
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.message ||
-          'Failed to create invoice. Please try again.'
-      );
+      const backendError = error?.response?.data;
+
+      if (backendError?.code === 'RESOURCE_ALREADY_EXISTS') {
+        const message = backendError?.message?.toLowerCase() || '';
+
+        if (message.includes('invoice id')) {
+          toast.error(t('Duplicate_Invoice'));
+        } else if (message.includes('remittance')) {
+          toast.error(t('Duplicate_Remittance'));
+        } else {
+          toast.error(t('Duplicate record found.'));
+        }
+      } else if (backendError?.message) {
+        toast.error(backendError.message);
+      } else {
+        toast.error(t('Unknow_Error'));
+      }
     } finally {
       setIsLoading(false);
     }
@@ -482,7 +469,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      toast.success(t('Invoice download started'));
+      toast.success(t('Invoice downloaded successfully'));
     } catch (error) {
       toast.error(t('Failed to download invoice. Please try again.'));
     } finally {
@@ -568,15 +555,27 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                 {t('Billing From')}
                 <span className="applyStyle2">{organizationDetails?.name}</span>
               </span>
-              <span className="textFont">
-                {organizationDetails?.address?.addressOne}
-                <br />
-                {organizationDetails?.address?.city}-
-                {organizationDetails?.address?.pinCode}
-                <br />
-                {organizationDetails?.address?.state},
-                {organizationDetails?.address?.country}.
-              </span>
+              {organizationDetails?.address?.addressOne ||
+              organizationDetails?.address?.city ||
+              organizationDetails?.address?.pinCode ||
+              organizationDetails?.address?.state ||
+              organizationDetails?.address?.country ? (
+                <span className="textFont">
+                  {organizationDetails?.address?.addressOne}
+                  <br />
+                  {organizationDetails?.address?.city}
+                  {organizationDetails?.address?.pinCode
+                    ? `-${organizationDetails?.address?.pinCode}`
+                    : ''}
+                  <br />
+                  {organizationDetails?.address?.state &&
+                    `${organizationDetails?.address?.state}, `}
+                  {organizationDetails?.address?.country &&
+                    `${organizationDetails?.address?.country}.`}
+                </span>
+              ) : (
+                <span className="noAddressInfo">{t('No_org_Address')}</span>
+              )}
             </div>
             <div className="arrowAdjust">
               <RightArrowSVG />
@@ -586,15 +585,28 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                 {t('Billing To')}
                 <span className="applyStyle2">{formData.clientName}</span>
               </span>
-              <span className="textFont">
-                {formData.billingAddress?.street}
-                <br />
-                {formData.billingAddress?.city}-
-                {formData.billingAddress?.postalCode}
-                <br />
-                {formData.billingAddress?.state},
-                {formData.billingAddress?.country}.
-              </span>
+
+              {formData.billingAddress?.street ||
+              formData.billingAddress?.city ||
+              formData.billingAddress?.postalCode ||
+              formData.billingAddress?.state ||
+              formData.billingAddress?.country ? (
+                <span className="textFont">
+                  {formData.billingAddress?.street}
+                  <br />
+                  {formData.billingAddress?.city}
+                  {formData.billingAddress?.postalCode
+                    ? `-${formData.billingAddress?.postalCode}`
+                    : ''}
+                  <br />
+                  {formData.billingAddress?.state &&
+                    `${formData.billingAddress?.state}, `}
+                  {formData.billingAddress?.country &&
+                    `${formData.billingAddress?.country}.`}
+                </span>
+              ) : (
+                <span className="noAddressInfo">{t('NO_Client_Address')}</span>
+              )}
             </div>
           </InvoiceAddressContainer>
           <InvoiceRemittance>
@@ -603,7 +615,10 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               {!isRemittanceRefEditModeOn ? (
                 <>
                   <span className="applyMargin"> {formData.RemittanceNo}</span>
-                  <span onClick={handleIsRemittanceEditModeOn}>
+                  <span
+                    onClick={handleIsRemittanceEditModeOn}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <EditWhitePenSVG />
                   </span>
                 </>
@@ -619,14 +634,17 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               )}
             </div>
             <div className="spanElement">
-              <label>{t('TaxID :')}</label>
+              <label>{t('TAX ID :')}</label>
               {!isTaxIdEditModeOn ? (
                 <>
                   <span className="applyMargin">
                     {' '}
                     {organizationDetails?.taxId}{' '}
                   </span>
-                  <span onClick={handleIsTaxIdEditModeOn}>
+                  <span
+                    onClick={handleIsTaxIdEditModeOn}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <EditWhitePenSVG />
                   </span>
                 </>
@@ -650,7 +668,10 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   <span className="applyMargin fontColor">
                     {formData.InvoiceNo}{' '}
                   </span>
-                  <span onClick={handleIsInvoiceEditModeOn}>
+                  <span
+                    onClick={handleIsInvoiceEditModeOn}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <EditWhitePenSVG />
                   </span>
                 </>
@@ -669,131 +690,119 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             <span className="applyMargin1 ">
               {formData.contractId} - {formData.contractName}
             </span>
-            <div className="dateSet">
-              <span>{t('Invoice Period')}</span>&nbsp;
-              <div ref={calendarFromRef}>
-                <DatePicker onClick={handleFromCalendarClick}>
-                  <span className="dateName">
-                    <span className="calenderIcon">
-                      <CalenderSVG />
+            <div className="sub-invoicedetails">
+              <div className="dateSet">
+                <span>{t('Invoice Period')}</span>&nbsp;
+                <div ref={calendarFromRef}>
+                  <DatePicker onClick={handleFromCalendarClick}>
+                    <span className="dateName">
+                      <span
+                        className="calenderIcon"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <CalenderSVG />
+                      </span>
+                      &nbsp;
+                      <span className="dateChild">
+                        {fromDate
+                          ? `${formatDate(fromDate.toString())}`
+                          : `${formatDate(formData.fromDate.toString())}`}
+                      </span>
                     </span>
-                    &nbsp;
-                    <span className="dateChild">
-                      {fromDate
-                        ? `${formatDate(fromDate.toString())}`
-                        : `${formatDate(formData.fromDate.toString())}`}
-                    </span>
-                  </span>
-                </DatePicker>
-                {showFromCalendar && (
-                  <div className="filterCalender">
-                    <Calendar
-                      title="FROM_DATE"
-                      minDate={
-                        props.startDate ? new Date(props.startDate) : undefined
-                      }
-                      maxDate={
-                        toDate
-                          ? new Date(
-                              Math.min(
-                                toDate.getTime(),
-                                props.endDate
-                                  ? new Date(props.endDate).getTime()
-                                  : toDate.getTime()
-                              )
-                            )
-                          : props.endDate
-                            ? new Date(props.endDate)
-                            : undefined
-                      }
-                      handleDateInput={(selectedDate) => {
-                        if (selectedDate instanceof Date) {
-                          handleDateInput(selectedDate, true);
-                          setFormData((prevState) => ({
-                            ...prevState,
-                            fromDate: selectedDate,
-                          }));
-                        }
-                      }}
-                      selectedDate={fromDate ? fromDate : new Date()}
-                      handleCalenderChange={function (): void {}}
-                    />
-                  </div>
-                )}
-              </div>
-              <span> {t('To')} </span>&nbsp;
-              <div ref={calendarToRef}>
-                <DatePicker onClick={handleToCalendarClick}>
-                  <span className="dateName">
-                    <span className="calenderIcon">
-                      <CalenderSVG />
-                    </span>
-                    &nbsp;
-                    <span className="dateChild">
-                      {toDate
-                        ? `${formatDate(toDate.toString())}`
-                        : `${formatDate(formData.toDate.toString())}`}
-                    </span>
-                  </span>
-                </DatePicker>
-                {showToCalendar && (
-                  <div className="filterCalender">
-                    <Calendar
-                      title="TO_DATE"
-                      minDate={
-                        fromDate
-                          ? new Date(
-                              Math.max(
-                                fromDate.getTime(),
-                                props.startDate
-                                  ? new Date(props.startDate).getTime()
-                                  : fromDate.getTime()
-                              )
-                            )
-                          : props.startDate
+                  </DatePicker>
+                  {showFromCalendar && (
+                    <div className="filterCalender">
+                      <Calendar
+                        title="From Date"
+                        minDate={
+                          props.startDate
                             ? new Date(props.startDate)
                             : undefined
-                      }
-                      maxDate={
-                        props.endDate ? new Date(props.endDate) : undefined
-                      }
-                      handleDateInput={(selectedDate) => {
-                        if (selectedDate instanceof Date) {
-                          handleDateInput(selectedDate, false);
-                          setFormData((prevState) => ({
-                            ...prevState,
-                            toDate: selectedDate,
-                            dueRemarks: generateDueRemarks(selectedDate),
-                          }));
                         }
-                      }}
-                      selectedDate={toDate ? toDate : new Date()}
-                      handleCalenderChange={() => {}}
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-            <div className="sub-invoicedetails">
-              <div>
-                <span className="remarks">{t('Remarks')}</span>
-                {!isRemarksNoteEditModeOn ? (
-                  <span className="remarksNote">
-                    <span>"</span> {formData.remarksNote} <span>"</span>
-                    <span onClick={handleIsRemarksNoteEditModeOn}>
-                      <EditWhitePenSVG />
+                        maxDate={
+                          toDate
+                            ? new Date(
+                                Math.min(
+                                  toDate.getTime(),
+                                  props.endDate
+                                    ? new Date(props.endDate).getTime()
+                                    : toDate.getTime()
+                                )
+                              )
+                            : props.endDate
+                              ? new Date(props.endDate)
+                              : undefined
+                        }
+                        handleDateInput={(selectedDate) => {
+                          if (selectedDate instanceof Date) {
+                            handleDateInput(selectedDate, true);
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              fromDate: selectedDate,
+                            }));
+                          }
+                        }}
+                        selectedDate={fromDate ? fromDate : new Date()}
+                        handleCalenderChange={function (): void {}}
+                      />
+                    </div>
+                  )}
+                </div>
+                <span> {t('To')} </span>&nbsp;
+                <div ref={calendarToRef}>
+                  <DatePicker onClick={handleToCalendarClick}>
+                    <span className="dateName">
+                      <span
+                        className="calenderIcon"
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <CalenderSVG />
+                      </span>
+                      &nbsp;
+                      <span className="dateChild">
+                        {toDate
+                          ? `${formatDate(toDate.toString())}`
+                          : `${formatDate(formData.toDate.toString())}`}
+                      </span>
                     </span>
-                  </span>
-                ) : (
-                  <TextInput
-                    className="remarksNote"
-                    name="remarksNote"
-                    value={formData.remarksNote}
-                    onChange={handleChange}
-                    onBlur={handleIsRemarksNoteEditModeOn}
-                    required
-                  />
-                )}
+                  </DatePicker>
+                  {showToCalendar && (
+                    <div className="filterCalender">
+                      <Calendar
+                        title="To Date"
+                        minDate={
+                          fromDate
+                            ? new Date(
+                                Math.max(
+                                  fromDate.getTime(),
+                                  props.startDate
+                                    ? new Date(props.startDate).getTime()
+                                    : fromDate.getTime()
+                                )
+                              )
+                            : props.startDate
+                              ? new Date(props.startDate)
+                              : undefined
+                        }
+                        maxDate={
+                          props.endDate ? new Date(props.endDate) : undefined
+                        }
+                        handleDateInput={(selectedDate) => {
+                          if (selectedDate instanceof Date) {
+                            handleDateInput(selectedDate, false);
+                            setFormData((prevState) => ({
+                              ...prevState,
+                              toDate: selectedDate,
+                              dueRemarks: formData.dueRemarks,
+                            }));
+                          }
+                        }}
+                        selectedDate={toDate ? toDate : new Date()}
+                        handleCalenderChange={() => {}}
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 {!isCityEditModeOn ? (
@@ -801,7 +810,10 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                     <span className="remarks applyMargin">
                       {cityValue}, {formatCurrentDate(currentDate)}
                     </span>
-                    <span onClick={handleIsCityEditModeOn}>
+                    <span
+                      onClick={handleIsCityEditModeOn}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <EditWhitePenSVG />
                     </span>
                   </>
@@ -816,23 +828,25 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               </div>
             </div>
           </InvoiceDetails>
-          <div>
+          <TableShowing>
             <TableList>
               <TableHead>
                 <tr>
-                  <th>{t('Sno')}</th>
-                  <th>
+                  <th className="sno">{t('Sno')}</th>
+                  <th className="spacesno">
                     <TableHeadLabel>
-                      <ValidationText>*</ValidationText> {t('Task')}
-                    </TableHeadLabel>
-                  </th>
-                  <th>{t('Description')}</th>
-                  <th>
-                    <TableHeadLabel>
+                      {t('Task')}
                       <ValidationText>*</ValidationText>
-                      {'Price In ' + getCurrencySymbol(formData.currencyType)}
                     </TableHeadLabel>
                   </th>
+                  <th className="spacetask">{t('Description')}</th>
+                  <th>
+                    <TableHeadLabel>
+                      {'Price in ' + getCurrencySymbol(formData.currencyType)}
+                      <ValidationText>*</ValidationText>
+                    </TableHeadLabel>
+                  </th>
+                  <th></th>
                 </tr>
               </TableHead>
 
@@ -842,94 +856,107 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   <td>{project.contract}</td>
                   <td>{project.description}</td>
                   <td>{project.price}</td>
-                  <td onClick={(e) => handleDeleteList(e, index)}>
+                  <td
+                    onClick={(e) => handleDeleteList(e, index)}
+                    className="deletebox"
+                    style={{ cursor: 'pointer' }}
+                  >
                     <DeleteIconSVG />
                   </td>
                 </TableBodyRow>
               ))}
             </TableList>
-          </div>
-          <AddRowContainer>
-            {!isAddRowsEditModeOn ? (
-              <span
-                className="addRows"
-                style={{ cursor: 'pointer' }}
-                onClick={handleIsAddRowsEditModeOn}
-              >
-                <Plus /> {t('Add Row')}
-              </span>
-            ) : (
-              <div className="rowsAlign">
-                <div className="rowItem">
-                  <input name="serialNo" value={data.length + 1} readOnly />
+            <AddRowContainer>
+              {!isAddRowsEditModeOn ? (
+                <span
+                  className="addRows"
+                  style={{ cursor: 'pointer' }}
+                  onClick={handleIsAddRowsEditModeOn}
+                >
+                  <Plus /> {t('Add Row')}
+                </span>
+              ) : (
+                <div className="rowsAlign">
+                  <div className="rowItem r1">
+                    <input name="serialNo" value={data.length + 1} readOnly />
+                  </div>
+                  <div className="rowItem r2">
+                    <input name="contract" onChange={handleChangeRows} />
+                    {errors.contract && (
+                      <span className="errorSpan">{errors.contract}</span>
+                    )}
+                  </div>
+                  <div className="rowItem r3">
+                    <input name="description" onChange={handleChangeRows} />
+                  </div>
+                  <div className="rowItem r4">
+                    <input
+                      name="price"
+                      onChange={handleChangeRows}
+                      onKeyDown={(event) => {
+                        const allowedCharacters = /^[0-9]+$/;
+                        if (
+                          !allowedCharacters.test(event.key) &&
+                          event.key !== 'ArrowLeft' &&
+                          event.key !== 'ArrowRight' &&
+                          event.key !== 'Backspace'
+                        ) {
+                          event.preventDefault();
+                        }
+                        if (event.key === 'e') {
+                          event.preventDefault();
+                        }
+                      }}
+                    />
+                    {errors.price && (
+                      <span className="errorSpan">{errors.price}</span>
+                    )}
+                  </div>
+                  <div className="alignButton">
+                    <button type="button" onClick={handleRowChanges}>
+                      {' '}
+                      <CheckBoxOnSVG />{' '}
+                    </button>
+                    <button
+                      onClick={() => setIsAddRowsEditModeOn(false)}
+                      className="cross-icon"
+                    >
+                      <CrossMarkSVG />
+                    </button>
+                  </div>
                 </div>
-                <div className="rowItem">
-                  <input name="contract" onChange={handleChangeRows} />
-                  {errors.contract && (
-                    <span className="errorSpan">{errors.contract}</span>
-                  )}
-                </div>
-                <div className="rowItem">
-                  <input name="description" onChange={handleChangeRows} />
-                </div>
-                <div className="rowItem">
-                  <input
-                    name="price"
-                    onChange={handleChangeRows}
-                    onKeyDown={(event) => {
-                      const allowedCharacters = /^[0-9]+$/;
-                      if (
-                        !allowedCharacters.test(event.key) &&
-                        event.key !== 'ArrowLeft' &&
-                        event.key !== 'ArrowRight' &&
-                        event.key !== 'Backspace'
-                      ) {
-                        event.preventDefault();
-                      }
-                      if (event.key === 'e') {
-                        event.preventDefault();
-                      }
-                    }}
-                  />
-                  {errors.price && (
-                    <span className="errorSpan">{errors.price}</span>
-                  )}
-                </div>
-                <div className="alignButton">
-                  <button type="button" onClick={handleRowChanges}>
-                    {' '}
-                    <CheckBoxOnSVG />{' '}
-                  </button>
-                  <button onClick={() => setIsAddRowsEditModeOn(false)}>
-                    <CrossMarkSVG />
-                  </button>
-                </div>
-              </div>
-            )}
-          </AddRowContainer>
+              )}
+            </AddRowContainer>
+          </TableShowing>
           <InvoiceCalculationContainer>
             <Tablelist>
               <div className="borderCollapse">
                 <TableRow>
-                  <td>{t('Sub Total')}</td>
-                  <td>{`${getCurrencySymbol(formData.currencyType)} ${subTotal}`}</td>
+                  <td className="sidehead">{t('Sub Total')}</td>
+                  <td className="sidehead2">{`(${getCurrencySymbol(formData.currencyType)}) ${subTotal}`}</td>
                 </TableRow>
                 <TableRow>
-                  <td>{t('Tax')}</td>
+                  <td className="sidehead">
+                    {t('Tax')}
+                    {' (%)'}
+                  </td>
                   {!taxFlag ? (
                     <td>
-                      {`${getCurrencySymbol(formData.currencyType)} ${formData.tax}`}
-                      <span onClick={handleTaxClick}>
+                      {`(${getCurrencySymbol(formData.currencyType)}) ${formData.tax}`}
+                      <span
+                        onClick={handleTaxClick}
+                        style={{ cursor: 'pointer' }}
+                      >
                         {' '}
                         <EditWhitePenSVG />{' '}
                       </span>
                     </td>
                   ) : (
                     <td>
-                      ($)
+                      ({`${getCurrencySymbol(formData.currencyType)}`})
                       <TextInput
                         name="tax"
-                        value={formData.tax}
+                        value={Number(formData.tax)}
                         onChange={handleChange}
                         onBlur={handleTaxClick}
                         required
@@ -938,7 +965,7 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                   )}
                 </TableRow>
                 <TableRow>
-                  <td>{t('Total')}</td>
+                  <td className="sidehead">{t('Total')}</td>
                   <td>
                     ({getCurrencySymbol(formData.currencyType)}) {Total}
                   </td>
@@ -949,35 +976,40 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
             <Tablelist>
               <TableRow>
                 <td>
-                  {t('Amount In Words')}({formData.currencyType}):
+                  {t('Amount In Words ')} ({formData.currencyType}) :
                 </td>
-                <td>
+                <td className="style1">
                   {CapitalizeWords(toWords(Total))} {t('Only/-')}
                 </td>
               </TableRow>
             </Tablelist>
           </InvoiceCalculationContainer>
-          <div>
-            <span className="remarks">{t('NOTE: ')}</span>
-            {isDueDaysEditModeOn ? (
-              <TextInput
-                className="remarksNote"
-                name="dueRemarks"
-                value={formData.dueRemarks}
-                onChange={handleChange}
-                onBlur={handleIsDueDaysEditModeOn}
-                required
-              />
-            ) : (
-              <span className="remarksNote">
-                {formData.dueRemarks}{' '}
-                <span onClick={handleIsDueDaysEditModeOn}>
-                  {' '}
-                  <EditWhitePenSVG />
+          <Alignmenting>
+            <div>
+              <span className="remarks">{t('NOTE: ')}</span>
+              {isDueDaysEditModeOn ? (
+                <TextInput
+                  className="remarksNote"
+                  name="dueRemarks"
+                  value={formData.dueRemarks}
+                  onChange={handleChange}
+                  onBlur={handleIsDueDaysEditModeOn}
+                  required
+                />
+              ) : (
+                <span className="remarksNote">
+                  {formData.dueRemarks}{' '}
+                  <span
+                    onClick={handleIsDueDaysEditModeOn}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    {' '}
+                    <EditWhitePenSVG />
+                  </span>
                 </span>
-              </span>
-            )}
-          </div>
+              )}
+            </div>
+          </Alignmenting>
           <InvoicePaymentContainer>
             <span className="PayDet">{t('Payment Details')}</span>
             <div>
@@ -1001,30 +1033,35 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               </Tablelist>
             </div>
           </InvoicePaymentContainer>
-          <div>
-            <span className="remarks">{t('Remarks')}</span>
-            {!isRemarksNoteEditModeOn ? (
-              <span className="remarksNote">
-                <span>"</span> {formData.remarksNote} <span>"</span>
-                <span onClick={handleIsRemarksNoteEditModeOn}>
-                  <EditWhitePenSVG />
+          <Alignmenting>
+            <div>
+              <span className="remarks">{t('Remarks')}</span>
+              {!isRemarksNoteEditModeOn ? (
+                <span className="remarksNote">
+                  <span>"</span> {formData.remarksNote} <span>"</span>
+                  <span
+                    onClick={handleIsRemarksNoteEditModeOn}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <EditWhitePenSVG />
+                  </span>
                 </span>
-              </span>
-            ) : (
-              <TextInput
-                className="remarksNote"
-                name="remarksNote"
-                value={formData.remarksNote}
-                onChange={handleChange}
-                onBlur={handleIsRemarksNoteEditModeOn}
-                required
-              />
-            )}
-            <div className="spanSign">
-              <span className="remarksNote"> {t('Best Regards')} </span>
-              <span className="remarks"> {organizationDetails?.name} </span>
+              ) : (
+                <TextInput
+                  className="remarksNote"
+                  name="remarksNote"
+                  value={formData.remarksNote}
+                  onChange={handleChange}
+                  onBlur={handleIsRemarksNoteEditModeOn}
+                  required
+                />
+              )}
+              <div className="spanSign">
+                <span className="remarksNote"> {t('Best Regards,')} </span>
+                <span className="remarks"> {organizationDetails?.name} </span>
+              </div>
             </div>
-          </div>
+          </Alignmenting>
           <div className="formButtons">
             <Button type="button" onClick={handleConfirmDeleteChanges}>
               {t('CANCEL')}

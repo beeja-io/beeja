@@ -22,7 +22,7 @@ import { useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import { ClientResponse } from '../entities/ClientEntity';
-import { ContractDetails } from '../entities/ContractEntiy';
+import { ContractDetails, ContractType } from '../entities/ContractEntiy';
 import { ProjectEntity } from '../entities/ProjectEntity';
 import { AddInvoiceForm } from '../components/directComponents/AddInvoiceForm.component';
 import {
@@ -176,6 +176,17 @@ const ContractDetailsScreen: React.FC = () => {
     setIsCreateModalOpen(!isCreateModalOpen);
   };
 
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [isCreateModalOpen]);
+
   if (isLoading) {
     return <SpinAnimation />;
   }
@@ -199,7 +210,11 @@ const ContractDetailsScreen: React.FC = () => {
               {t('ID')}: {contract?.contractId}
             </ColumnItem>
             <DotSVG />
-            <ColumnItem>{formatEnum(contract?.contractType)}</ColumnItem>
+            <ColumnItem>
+              {contract?.contractType === ContractType.OTHER
+                ? contract?.customContractType
+                : formatEnum(contract?.contractType)}
+            </ColumnItem>
             <DotSVG />
             <ColumnItem>{formatEnum(contract?.billingType)}</ColumnItem>
             {contract?.contractValue && (
@@ -261,6 +276,12 @@ const ContractDetailsScreen: React.FC = () => {
               ) && (
                 <button
                   className="button_element"
+                  disabled={contract?.billingType === 'NON_BILLABLE'}
+                  title={
+                    contract?.billingType === 'NON_BILLABLE'
+                      ? 'It is a non-billable contract'
+                      : ''
+                  }
                   onClick={() => {
                     if (contract?.contractId) {
                       handleIsCreateModalOpen(contract.contractId);
@@ -279,6 +300,7 @@ const ContractDetailsScreen: React.FC = () => {
             rawProjectResources={contract?.rawProjectResources}
             description={contract?.description || ''}
             contractName={contract?.contractTitle}
+            billingType={contract?.billingType}
           />
         )}
       </LeftSection>
@@ -362,7 +384,7 @@ const ContractDetailsScreen: React.FC = () => {
               }
               contractId={contractId ?? ''}
               contractTitle={contract?.contractTitle}
-              startDate={contractDetails?.startDate}
+              startDate={contract?.startDate}
               endDate={contract?.endDate}
               billingAddress={clientDetails?.billingAddress}
               clientName={clientDetails?.clientName}
@@ -370,7 +392,8 @@ const ContractDetailsScreen: React.FC = () => {
               projectId={projectId ?? undefined}
               status={project?.status}
               clientId={clientDetails?.clientId}
-              billingCurrency={contractDetails?.billingCurrency}
+              billingCurrency={contract?.billingCurrency}
+              billingType={contract?.billingType}
             />
           }
         />

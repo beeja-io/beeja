@@ -1,6 +1,7 @@
 package com.beeja.api.employeemanagement.repository;
 
 import com.beeja.api.employeemanagement.model.Employee;
+import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeDepartmentDTO;
 import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
 import java.util.List;
 import java.util.Optional;
@@ -39,4 +40,10 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
  List<Employee> findAllByOrganizationIdAndJobDetailsDesignationIn(String organizationId, List<String> designations);
 
  Optional<Employee> findByEmployeeId(String employeeId);
+
+ @Aggregation(pipeline = {
+          "{ $match: { 'employeeId': { $in: ?0 }, 'organizationId': ?1 } }",
+          "{ $project: { _id: 0, employeeId: 1, department: '$jobDetails.department' } }"
+ })
+ List<EmployeeDepartmentDTO> findDepartmentsByEmployeeIds(List<String> employeeIds, String organizationId);
 }

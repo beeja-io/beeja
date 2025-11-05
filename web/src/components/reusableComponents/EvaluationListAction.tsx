@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { ActionIcon } from '../../svgs/ExpenseListSvgs.svg';
 import {
   ActionContainer,
@@ -8,6 +8,8 @@ import {
 } from '../../styles/ExpenseListStyles.style';
 import { useNavigate } from 'react-router-dom';
 import { deletePerformanceCycle } from '../../service/axiosInstance';
+import CenterModal from './CenterModal.component';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
   options: { title: string; svg: React.ReactNode }[];
@@ -15,6 +17,8 @@ interface Props {
   fetchCycles: () => void;
   onSuccess?: (message: string) => void;
   onError?: (message: string) => void;
+  isOpen: boolean;
+  onToggle: () => void;
 }
 
 const EvaluationListAction: React.FC<Props> = ({
@@ -23,49 +27,82 @@ const EvaluationListAction: React.FC<Props> = ({
   fetchCycles,
   onSuccess,
   onError,
+  isOpen,
+  onToggle,
 }) => {
-  const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const handleDiscardModalToggle = () => {
+    setShowDeleteModal(false);
+  };
 
   const handleOptionClick = async (title: string) => {
     if (title === 'Edit') {
       navigate(`/performance/create-evaluation-form/${currentCycle.id}`);
     }
     if (title === 'Delete') {
-      try {
-        await deletePerformanceCycle(currentCycle.id);
-        onSuccess?.('Review cycle deleted successfully!');
-        if (fetchCycles) fetchCycles();
-      } catch (error: any) {
-        onError?.(
-          error.response?.data?.message || 'Failed to delete review cycle'
-        );
-      }
+      setShowDeleteModal(true);
     }
-    setOpen(false);
+    onToggle();
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deletePerformanceCycle(currentCycle.id);
+      onSuccess?.('Review cycle has been deleted successfully!');
+      fetchCycles();
+    } catch (error: any) {
+      onError?.(
+        error.response?.data?.message || 'Failed to delete review cycle'
+      );
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteModal(false);
+    }
   };
 
   return (
-    <ActionContainer ref={dropdownRef}>
-      <ActionMenu className="action-align" onClick={() => setOpen(!open)}>
-        <ActionIcon />
-      </ActionMenu>
-
-      {open && (
-        <ActionMenuContent>
-          {options.map((op, i) => (
-            <ActionMenuOption
-              key={i}
-              onClick={() => handleOptionClick(op.title)}
-            >
-              {op.svg} {op.title}
-            </ActionMenuOption>
-          ))}
-        </ActionMenuContent>
+    <>
+      <ActionContainer ref={dropdownRef}>
+        <ActionMenu className="action-align" onClick={onToggle}>
+          <ActionIcon />
+        </ActionMenu>
+        {isOpen && (
+          <ActionMenuContent>
+            {options.map((op, i) => (
+              <ActionMenuOption
+                key={i}
+                onClick={() => handleOptionClick(op.title)}
+              >
+                {op.svg} {op.title}
+              </ActionMenuOption>
+            ))}
+          </ActionMenuContent>
+        )}
+      </ActionContainer>
+      {showDeleteModal && (
+        <CenterModal
+          handleModalLeftButtonClick={handleDiscardModalToggle}
+          handleModalClose={handleDiscardModalToggle}
+          handleModalSubmit={handleConfirmDelete}
+          modalHeading={t('Delete Review Cycle?')}
+          modalContent={t('Are you sure you want to delete this review cycle?')}
+          modalType="discardModal"
+          modalLeftButtonClass="mobileBtn"
+          modalRightButtonClass="mobileBtn"
+          modalRightButtonBorderColor="black"
+          modalRightButtonTextColor="black"
+          modalLeftButtonText={t('No')}
+          modalRightButtonText={isDeleting ? t('Deleting...') : t('Delete')}
+        />
       )}
-    </ActionContainer>
+    </>
   );
 };
 
