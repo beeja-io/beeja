@@ -1391,6 +1391,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       } as React.ChangeEvent<HTMLInputElement>);
                     }}
                     options={[
+                      { label: t('Select Country'), value: '' },
                       { label: t('INDIA'), value: 'India' },
                       { label: t('GERMANY'), value: 'Germany' },
                       { label: t('US'), value: 'US' },
@@ -1497,6 +1498,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                       } as React.ChangeEvent<HTMLInputElement>);
                     }}
                     options={[
+                      { label: t('Select Country'), value: '' },
                       { label: t('INDIA'), value: 'India' },
                       { label: t('GERMANY'), value: 'Germany' },
                       { label: t('US'), value: 'US' },

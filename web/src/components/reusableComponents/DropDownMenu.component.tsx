@@ -209,8 +209,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         : tempOptions;
 
     optionsWithoutOther.sort((a, b) => {
-      if (a.value === null) return -1;
-      if (b.value === null) return 1;
+      if (a.value === null || a.value === '') return -1;
+      if (b.value === null || b.value === '') return 1;
 
       const aNum = Number(a.label);
       const bNum = Number(b.label);
@@ -251,25 +251,23 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
         {isOpen && !disabled && (
           <DropdownListStyle className={`${listClassName || ''}`}>
-            {sortedOptions
-              .filter((opt) => opt.value !== null && opt.value !== '')
-              .map((item, index) => {
-                const isSelected = selected === item.value;
-                return (
-                  <DropdownItemStyle
-                    key={item.value ?? index}
-                    selected={isSelected}
-                    onClick={() => handleSelect(item)}
-                  >
-                    <span>{item.label}</span>
-                    <CheckIconStyle selected={isSelected}>
-                      <TickMark>
-                        <TickmarkIcon />
-                      </TickMark>
-                    </CheckIconStyle>
-                  </DropdownItemStyle>
-                );
-              })}
+            {sortedOptions.map((item, index) => {
+              const isSelected = selected === item.value;
+              return (
+                <DropdownItemStyle
+                  key={item.value ?? index}
+                  selected={isSelected}
+                  onClick={() => handleSelect(item)}
+                >
+                  <span>{item.label}</span>
+                  <CheckIconStyle selected={isSelected}>
+                    <TickMark>
+                      <TickmarkIcon />
+                    </TickMark>
+                  </CheckIconStyle>
+                </DropdownItemStyle>
+              );
+            })}
             {isOtherSelected && (
               <CustomInputContainer>
                 <CustomInputField

@@ -171,7 +171,7 @@ export const InvoiceRemittance = styled.div`
   border-radius: 6px;
   border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   padding: 10px;
-  margin: 20px 10px;
+  margin: 70px 10px 20px;
   label {
     color: var(--greyscale-600, #687588);
     font-family: Nunito;
@@ -201,7 +201,7 @@ margin:10px;
  display:flex;
  flex-direction:column;
  overflow-wrap:break-word;
- width:25%
+ width:30%
 }
 .applyStyle1{
  color: #005792;

@@ -725,7 +725,6 @@ export const CompanyProfile = () => {
                     { label: t('SELECT_STATE'), value: '' },
                     { label: t('TELANGANA'), value: 'Telangana' },
                     { label: t('ANDHRA_PRADESH'), value: 'AP' },
-                    { label: t('DELHI'), value: 'Delhi' },
                   ]}
                   disabled={!isEditModeOn}
                   onChange={(value: string | null) => {
@@ -792,6 +791,7 @@ export const CompanyProfile = () => {
                 } as React.ChangeEvent<HTMLInputElement>);
               }}
               options={[
+                { label: t('SELECT_COUNTRY'), value: '' },
                 { label: t('INDIA'), value: 'India' },
                 { label: t('GERMANY'), value: 'Germany' },
                 { label: t('US'), value: 'US' },
