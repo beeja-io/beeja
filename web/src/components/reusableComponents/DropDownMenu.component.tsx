@@ -59,7 +59,6 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   listClassName = '',
   sortOptions = true,
   onCustomValue,
-  width = '100%',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value);
@@ -236,8 +235,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         onKeyDown={onKeyDown || handleKeyPress}
         hasValue={!!selected}
         className={`${className || ''} ${required && touched && !selected ? 'error-border' : ''}`}
-        // style={style}
-        style={{ ...style, width }}
+        style={style}
       >
         <ToggleButtonStyle
           onClick={() => !disabled && setIsOpen(!isOpen)}
