@@ -10,6 +10,7 @@ export enum ContractType {
   HYBRID = 'HYBRID',
   MILESTONE_BASED = 'MILESTONE_BASED',
   RETAINER = 'RETAINER',
+  OTHER = 'OTHER',
 }
 
 export enum ContractBillingType {
@@ -26,6 +27,8 @@ export type RawProjectResource = {
 };
 
 export interface ContractDetails {
+  attachmentIds: string[];
+  customContractType: string;
   projectId: string;
   contractId: string;
   contractTitle: string;

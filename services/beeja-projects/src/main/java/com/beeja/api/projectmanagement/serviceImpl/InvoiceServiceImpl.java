@@ -5,6 +5,7 @@ import com.beeja.api.projectmanagement.client.FileClient;
 import com.beeja.api.projectmanagement.enums.ErrorCode;
 import com.beeja.api.projectmanagement.enums.ErrorType;
 import com.beeja.api.projectmanagement.enums.InvoiceStatus;
+import com.beeja.api.projectmanagement.exceptions.ResourceAlreadyFoundException;
 import com.beeja.api.projectmanagement.exceptions.ResourceNotFoundException;
 import com.beeja.api.projectmanagement.model.Client;
 import com.beeja.api.projectmanagement.model.Contract;
@@ -76,6 +77,28 @@ public class InvoiceServiceImpl implements InvoiceService {
               ErrorCode.RESOURCE_NOT_FOUND,
               "Contract not found for provided ID"));
     }
+
+      if (request.getInvoiceId() != null && !request.getInvoiceId().isBlank()) {
+          boolean invoiceExists = invoiceRepository.existsByInvoiceIdAndOrganizationId(request.getInvoiceId(), orgId);
+          if (invoiceExists) {
+              throw new ResourceAlreadyFoundException(
+                      BuildErrorMessage.buildErrorMessage(
+                              ErrorType.VALIDATION_ERROR,
+                              ErrorCode.DUPLICATE_ENTRY,
+                              Constants.INVOICE_ID_ALREADY_EXISTS));
+          }
+      }
+
+      if (request.getRemittanceRef() != null && !request.getRemittanceRef().isBlank()) {
+          boolean remittanceExists = invoiceRepository.existsByRemittanceRefAndOrganizationId(request.getRemittanceRef(), orgId);
+          if (remittanceExists) {
+              throw new ResourceAlreadyFoundException(
+                      BuildErrorMessage.buildErrorMessage(
+                              ErrorType.VALIDATION_ERROR,
+                              ErrorCode.DUPLICATE_ENTRY,
+                              Constants.REMITTANCE_REF_ALREADY_EXISTS));
+          }
+      }
 
     Invoice invoice = new Invoice();
     invoice.setInvoiceId(request.getInvoiceId());

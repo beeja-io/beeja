@@ -381,8 +381,16 @@ export const ExpenseListSection = styled.section`
     border-radius: 16px;
     background: ${(props) => props.theme.colors.backgroundColors.primary};
     box-shadow: 0px 5px 40px 0px rgba(0, 0, 0, 0.1);
-    z-index: 1000; // Add this to ensure it appears above other elements
+    z-index: 9999; // Add this to ensure it appears above other elements
     top: 100%; // Position it right below the date picker
     left: 0;
+
+    -webkit-user-select: none;
+    pointer-events: all;
+
+    @supports (-webkit-touch-callout: none) {
+      pointer-events: all !important;
+      z-index: 99999;
+    }
   }
 `;

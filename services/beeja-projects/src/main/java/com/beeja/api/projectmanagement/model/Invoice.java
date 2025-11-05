@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "invoices")
@@ -20,10 +21,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Invoice {
 
   @Id private String id;
+
+  @Indexed
   private String invoiceId;
   private String contractId;
   private String projectId;
   private String clientId;
+
+  @Indexed
   private String organizationId;
 
   private Double amount;
@@ -34,6 +39,8 @@ public class Invoice {
   private List<String> notes;
   private String invoiceFileId;
   private PaymentDetails paymentDetails;
+
+  @Indexed(unique = true, sparse = true)
   private String remittanceRef;
   private String taxId;
   private String amountInWords;

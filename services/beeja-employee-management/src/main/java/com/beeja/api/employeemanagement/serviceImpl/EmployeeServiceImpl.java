@@ -16,6 +16,7 @@ import static com.google.common.io.Files.getFileExtension;
 
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeNameDTO;
+import com.beeja.api.employeemanagement.model.clients.accounts.RoleDTO;
 import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
 import com.beeja.api.employeemanagement.response.EmployeeValues;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -521,7 +522,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setJobDetails(existingJobDetails);
       }
       existingJobDetails.setUpdatedAt(new Date());
-      existingJobDetails.setUpdatedBy(UserContext.getLoggedInUserName());
+      existingJobDetails.setUpdatedBy(
+               UserContext.getLoggedInUserName() + " (" +
+                        UserContext.getLoggedInUserDTO().getRoles()
+                                .stream()
+                                .map(RoleDTO::getName)
+                                .collect(Collectors.joining(" | ")) + ")"
+      );
       if (updatedJobDetails.getEmployementType() != null &&
               !updatedJobDetails.getEmployementType().equals(existingJobDetails.getEmployementType())) {
 
@@ -532,14 +539,26 @@ public class EmployeeServiceImpl implements EmployeeService {
         historyJob.setDesignation(existingJobDetails.getDesignation());
         historyJob.setEmployementType(existingJobDetails.getEmployementType());
         historyJob.setDepartment(existingJobDetails.getDepartment());
-        historyJob.setJoiningDate(existingJobDetails.getJoiningDate());
-        historyJob.setResignationDate(new Date());
+        if(existingJobDetails.getStartDate()==null) {
+          historyJob.setStartDate(existingJobDetails.getJoiningDate());
+        }
+        else{
+          historyJob.setStartDate(existingJobDetails.getStartDate());
+        }
+        historyJob.setEndDate(new Date());
         historyJob.setDescription(existingJobDetails.getDescription());
         historyJob.setUpdatedBy(existingJobDetails.getUpdatedBy());
         historyJob.setUpdatedAt(existingJobDetails.getUpdatedAt());
         historyJob.setId(UUID.randomUUID().toString());
-        historyJob.setUpdatedBy(UserContext.getLoggedInUserName());
+        historyJob.setUpdatedBy(
+                UserContext.getLoggedInUserName() + " (" +
+                        UserContext.getLoggedInUserDTO().getRoles()
+                                .stream()
+                                .map(RoleDTO::getName)
+                                .collect(Collectors.joining(" | ")) + ")"
+        );
         existingEmployee.getJobHistory().add(historyJob);
+        existingJobDetails.setStartDate(new Date());
       }
 
       if (updatedJobDetails.getDesignation() != null) {
@@ -962,11 +981,11 @@ public class EmployeeServiceImpl implements EmployeeService {
     if (job.getEmployementType() == null || job.getEmployementType().isBlank()) {
       throw new Exception("Employment type is mandatory");
     }
-    if (job.getJoiningDate() == null) {
-      throw new Exception("Joining date is mandatory");
+    if (job.getStartDate() == null) {
+      throw new Exception("Start date is mandatory");
     }
-    if (job.getResignationDate() == null) {
-      throw new Exception("Resignation date is mandatory");
+    if (job.getEndDate() == null) {
+      throw new Exception("End date is mandatory");
     }
   }
 
@@ -974,7 +993,13 @@ public class EmployeeServiceImpl implements EmployeeService {
   public Employee addJobHistory(String employeeId, JobDetails newJob) throws Exception {
     Employee employee = getEmployeeById(employeeId);
 
-    newJob.setUpdatedBy(UserContext.getLoggedInUserName());
+    newJob.setUpdatedBy(
+            UserContext.getLoggedInUserName() + " (" +
+                    UserContext.getLoggedInUserDTO().getRoles()
+                            .stream()
+                            .map(RoleDTO::getName)
+                            .collect(Collectors.joining(" | ")) + ")"
+    );
     validateJobDetails(newJob);
 
     if (employee.getJobHistory() == null) {
@@ -1012,7 +1037,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     updatedJob.setUpdatedAt(new Date());
     validateJobDetails(updatedJob);
     updatedJob.setId(jobId);
-    updatedJob.setUpdatedBy(UserContext.getLoggedInUserName());
+    updatedJob.setUpdatedBy(
+            UserContext.getLoggedInUserName() + " (" +
+                    UserContext.getLoggedInUserDTO().getRoles()
+                            .stream()
+                            .map(RoleDTO::getName)
+                            .collect(Collectors.joining(" | ")) + ")"
+    );
     employee.getJobHistory().set(jobIndex, updatedJob);
 
     return employeeRepository.save(employee);

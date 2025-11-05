@@ -78,7 +78,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
     setIsDocumentPreviewModalOpen(!isDocumentPreviewModalOpen);
   };
   useEffect(() => {
-    if (isDocumentPreviewModalOpen) {
+    if (isDocumentPreviewModalOpen || confirmDeleteModal) {
       disableBodyScroll();
     } else {
       enableBodyScroll();
@@ -87,7 +87,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
     return () => {
       enableBodyScroll();
     };
-  }, [isDocumentPreviewModalOpen]);
+  }, [isDocumentPreviewModalOpen, confirmDeleteModal]);
 
   const handleOptionClick = (option: string) => {
     setSelectedOption(option);
@@ -266,7 +266,7 @@ export const DocumentAction: React.FC<ActionProps> = ({
           handleModalClose={deleteModalClose}
           handleModalSubmit={handleConfirmDelete}
           modalHeading="Delete"
-          modalContent="Are you sure want to Delete the Document?"
+          modalContent="Are you sure you want to Delete the Document?"
         />
       )}
       {isDocumentPreviewModalOpen && (

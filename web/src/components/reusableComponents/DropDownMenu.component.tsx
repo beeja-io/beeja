@@ -40,6 +40,7 @@ type DropdownMenuProps = {
   listClassName?: string;
   sortOptions?: boolean;
   onCustomValue?: (value: string) => void;
+  width?: string;
 };
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
@@ -58,6 +59,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   listClassName = '',
   sortOptions = true,
   onCustomValue,
+  width = '100%',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value);
@@ -207,8 +209,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         : tempOptions;
 
     optionsWithoutOther.sort((a, b) => {
-      if (a.value === null) return -1;
-      if (b.value === null) return 1;
+      if (a.value === null || a.value === '') return -1;
+      if (b.value === null || b.value === '') return 1;
 
       const aNum = Number(a.label);
       const bNum = Number(b.label);
@@ -234,7 +236,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         onKeyDown={onKeyDown || handleKeyPress}
         hasValue={!!selected}
         className={`${className || ''} ${required && touched && !selected ? 'error-border' : ''}`}
-        style={style}
+        // style={style}
+        style={{ ...style, width }}
       >
         <ToggleButtonStyle
           onClick={() => !disabled && setIsOpen(!isOpen)}
@@ -248,30 +251,23 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
         {isOpen && !disabled && (
           <DropdownListStyle className={`${listClassName || ''}`}>
-            {sortedOptions
-              .filter(
-                (opt) =>
-                  opt.value !== null &&
-                  opt.label !== label &&
-                  opt.label.trim() !== ''
-              )
-              .map((item, index) => {
-                const isSelected = selected === item.value;
-                return (
-                  <DropdownItemStyle
-                    key={item.value ?? index}
-                    selected={isSelected}
-                    onClick={() => handleSelect(item)}
-                  >
-                    <span>{item.label}</span>
-                    <CheckIconStyle selected={isSelected}>
-                      <TickMark>
-                        <TickmarkIcon />
-                      </TickMark>
-                    </CheckIconStyle>
-                  </DropdownItemStyle>
-                );
-              })}
+            {sortedOptions.map((item, index) => {
+              const isSelected = selected === item.value;
+              return (
+                <DropdownItemStyle
+                  key={item.value ?? index}
+                  selected={isSelected}
+                  onClick={() => handleSelect(item)}
+                >
+                  <span>{item.label}</span>
+                  <CheckIconStyle selected={isSelected}>
+                    <TickMark>
+                      <TickmarkIcon />
+                    </TickMark>
+                  </CheckIconStyle>
+                </DropdownItemStyle>
+              );
+            })}
             {isOtherSelected && (
               <CustomInputContainer>
                 <CustomInputField
@@ -280,6 +276,12 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
                   value={customValue}
                   onChange={(e) => setCustomValue(e.target.value)}
                   placeholder={t('Enter specific type')}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddCustomValue();
+                    }
+                  }}
                 />
                 <AddButton
                   type="button"

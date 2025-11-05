@@ -149,7 +149,7 @@ public class ProjectsController {
   }
 
     @GetMapping("/{projectId}/employees")
-    @HasPermission(PermissionConstants.GET_PROJECT)
+    @HasPermission({PermissionConstants.GET_PROJECT, PermissionConstants.CREATE_CONTRACT})
     public ResponseEntity<ProjectEmployeeDTO> getEmployeesByProjectId(@PathVariable String projectId) {
         return ResponseEntity.ok(projectService.getEmployeesByProjectId(projectId));
     }
@@ -162,8 +162,8 @@ public class ProjectsController {
     }
 
     @PatchMapping("/{projectId}/status")
-    @HasPermission(PermissionConstants.UPDATE_CONTRACT)
-    public ResponseEntity<Project> changeContractStatus(
+    @HasPermission(PermissionConstants.UPDATE_PROJECT)
+    public ResponseEntity<Project> changeProjectStatus(
             @PathVariable String projectId,
             @RequestBody ProjectStatus status) {
 

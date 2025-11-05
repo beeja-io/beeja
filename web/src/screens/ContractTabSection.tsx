@@ -74,6 +74,7 @@ interface ContactTabSectionProps {
   description: string;
   rawProjectResources: RawProjectResource[];
   contractName: string;
+  billingType?: string;
 }
 
 interface ActionType {
@@ -86,6 +87,7 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
   description,
   rawProjectResources,
   contractName,
+  billingType,
 }) => {
   const { t } = useTranslation();
   const { user } = useUser();
@@ -226,7 +228,8 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
                 hasFeature(
                   featureToggles?.featureToggles ?? [],
                   EFeatureToggles.INVOICE_GENERATION
-                ))
+                ) &&
+                billingType !== 'NON_BILLABLE')
           )
           .map((tabKey) => (
             <Tab

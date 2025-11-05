@@ -38,15 +38,29 @@ public class InvoicePDFGen {
                         .setTextAlignment(TextAlignment.CENTER)
         );
     }
+
+    private String getCurrencySymbol(String currencyCode) {
+        return switch (currencyCode.toUpperCase()) {
+            case "INR" -> "INR";
+            case "DOLLER" -> "$";
+            case "EURO" -> "€";
+            default -> currencyCode;
+        };
+    }
   public byte[] generatePDF(Contract contract, Invoice invoice, Client client) {
+
 
     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
     PdfWriter writer = new PdfWriter(byteArrayOutputStream);
     PdfDocument pdfDoc = new PdfDocument(writer);
     Document document = new Document(pdfDoc, PageSize.A4);
     document.setMargins(30, 30, 30, 30);
+      String currencyCode = contract.getBillingCurrency().name();
+      String currencySymbol = getCurrencySymbol(currencyCode);
+      String currencyName = currencyCode.toUpperCase();
 
-    // Define your colors
+
+      // Define your colors
     DeviceRgb blueColor = new DeviceRgb(0, 102, 204);
     DeviceRgb grayColor = new DeviceRgb(120, 120, 120);
     DeviceRgb blackColor = new DeviceRgb(0, 0, 0);
@@ -59,56 +73,95 @@ public class InvoicePDFGen {
 
     Table headerTable = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();
 
-    String billingFromLabel = "Billing From : ";
-    String billingFromName = UserContext.getLoggedInUserOrganization().get("name").toString();
-    Map<String, Object> map =
-        (Map<String, Object>) UserContext.getLoggedInUserOrganization().get("address");
-    String billingFromAddress =
-        map.get("addressOne")
-            + "\n"
-            + map.get("city")
-            + ", "
-            + map.get("state")
-            + ", "
-            + map.get("pinCode")
-            + "\n"
-            + map.get("country");
+      String billingFromLabel = "Billing From : ";
+      String billingFromName = UserContext.getLoggedInUserOrganization().get("name").toString();
+      Map<String, Object> map =
+              (Map<String, Object>) UserContext.getLoggedInUserOrganization().get("address");
 
-    Paragraph leftAddressPara =
-        new Paragraph()
-            .add(new Text(billingFromLabel).setFontSize(8).setBold().setFontColor(blueColor))
-            .add(new Text(billingFromName + "\n").setFontSize(10).setBold())
-            .add(new Text(billingFromAddress).setFontSize(8).setFontColor(grayColor));
-    headerTable.addCell(new Cell().add(leftAddressPara).setBorder(Border.NO_BORDER));
+      StringBuilder billingFromBuilder = new StringBuilder();
 
-    String billingToLabel = "Billing To : ";
-    Address clientAddress = client.getPrimaryAddress();
-    String billingToName = client.getClientName();
-    String billingToAddress =
-        clientAddress != null
-            ? clientAddress.getStreet()
-                + "\n"
-                + clientAddress.getCity()
-                + ", "
-                + clientAddress.getState()
-                + ", "
-                + clientAddress.getPostalCode()
-                + "\n"
-                + clientAddress.getCountry()
-            : " ";
+      Object addressOne = map.get("addressOne");
+      if (addressOne != null && !addressOne.toString().isBlank()) {
+          billingFromBuilder.append(addressOne.toString()).append("\n");
+      }
+      StringBuilder line2 = new StringBuilder();
+      Object city = map.get("city");
+      Object state = map.get("state");
+      Object pinCode = map.get("pinCode");
 
-    Paragraph rightAddressPara =
-        new Paragraph()
-            .add(new Text(billingToLabel).setFontSize(8).setBold().setFontColor(blueColor))
-            .add(new Text(billingToName + "\n").setFontSize(10).setBold())
-            .add(new Text(billingToAddress).setFontSize(8).setFontColor(grayColor))
-            .setTextAlignment(TextAlignment.RIGHT);
-    headerTable.addCell(new Cell().add(rightAddressPara).setBorder(Border.NO_BORDER));
+      if (city != null && !city.toString().isBlank()) {
+          line2.append(city);
+      }
+      if (state != null && !state.toString().isBlank()) {
+          if (!line2.isEmpty()) line2.append(", ");
+          line2.append(state);
+      }
+      if (pinCode != null && !pinCode.toString().isBlank()) {
+          if (line2.length() > 0) line2.append(", ");
+          line2.append(pinCode);
+      }
+      if (line2.length() > 0) {
+          billingFromBuilder.append(line2).append("\n");
+      }
+      Object country = map.get("country");
+      if (country != null && !country.toString().isBlank()) {
+          billingFromBuilder.append(country);
+      }
 
-    document.add(headerTable);
+      String billingFromAddress = billingFromBuilder.toString().trim();
+
+
+      Paragraph leftAddressPara =
+              new Paragraph()
+                      .add(new Text(billingFromLabel).setFontSize(8).setBold().setFontColor(blueColor))
+                      .add(new Text(billingFromName + "\n").setFontSize(10).setBold())
+                      .add(new Text(billingFromAddress).setFontSize(8).setFontColor(grayColor));
+      headerTable.addCell(new Cell().add(leftAddressPara).setBorder(Border.NO_BORDER));
+
+      String billingToLabel = "Billing To : ";
+      Address clientAddress = client.getPrimaryAddress();
+      String billingToName = client.getClientName();
+      String billingToAddress = "";
+      if (clientAddress != null) {
+          StringBuilder addressBuilder = new StringBuilder();
+
+          if (clientAddress.getStreet() != null && !clientAddress.getStreet().isBlank()) {
+              addressBuilder.append(clientAddress.getStreet()).append("\n");
+          }
+          StringBuilder line3 = new StringBuilder();
+          if (clientAddress.getCity() != null && !clientAddress.getCity().isBlank()) {
+              line2.append(clientAddress.getCity());
+          }
+          if (clientAddress.getState() != null && !clientAddress.getState().isBlank()) {
+              if (!line3.isEmpty()) line2.append(", ");
+              line2.append(clientAddress.getState());
+          }
+          if (clientAddress.getPostalCode() != null && !clientAddress.getPostalCode().isBlank()) {
+              if (!line3.isEmpty()) line2.append(", ");
+              line2.append(clientAddress.getPostalCode());
+          }
+          if (!line3.isEmpty()) {
+              addressBuilder.append(line2).append("\n");
+          }
+
+          if (clientAddress.getCountry() != null && !clientAddress.getCountry().isBlank()) {
+              addressBuilder.append(clientAddress.getCountry());
+          }
+          billingToAddress = addressBuilder.toString().trim();
+      }
+
+      Paragraph rightAddressPara =
+              new Paragraph()
+                      .add(new Text(billingToLabel).setFontSize(8).setBold().setFontColor(blueColor))
+                      .add(new Text(billingToName + "\n").setFontSize(10).setBold())
+                      .add(new Text(billingToAddress).setFontSize(8).setFontColor(grayColor))
+                      .setTextAlignment(TextAlignment.RIGHT);
+      headerTable.addCell(new Cell().add(rightAddressPara).setBorder(Border.NO_BORDER));
+
+      document.add(headerTable);
       addLine(document, grayColor);
 
-    // --- ID'S PART---
+      // --- ID'S PART---
 
     Table idSection =
         new Table(UnitValue.createPercentArray(new float[] {1, 1, 1})).useAllAvailableWidth();
@@ -164,8 +217,8 @@ public class InvoicePDFGen {
     String startDate = formatter.format(stDate);
     Date dueDate = invoice.getInvoicePeriod().getEndDate();
     String endDate = formatter.format(dueDate);
+     String orgCity = map.get("city").toString();
 
-    String orgCity = map.get("city").toString();
     Date current = new Date();
     String contractCreatedAt = formatter.format(current);
 
@@ -176,12 +229,6 @@ public class InvoicePDFGen {
             .add(new Text(contractId + " - " + contractTitle).setFontSize(10)).add("\n")
             .add(new Text("Invoice Period : ").setFontSize(9).setBold())
             .add(new Text(startDate + " To " + endDate).setFontSize(9).setFontColor(grayColor)).add("\n")
-            .add(new Text("Remarks: ").setFontSize(9).setBold())
-            .add(new Text("\"" + (invoice.getNotes() != null && invoice.getNotes().size() > 1
-                    ? invoice.getNotes().get(0)
-                    : "") + "\"")
-                    .setFontSize(9)
-                    .setFontColor(grayColor))
             .setMarginTop(5);
 
     Paragraph clientDetails =
@@ -211,14 +258,16 @@ public class InvoicePDFGen {
     List<Task> tasks = invoice.getTasks();
 
     Table itemsTable =
-        new Table(UnitValue.createPercentArray(new float[] {10, 30, 40, 20}))
+        new Table(UnitValue.createPercentArray(new float[] {5, 35, 40, 20}))
             .useAllAvailableWidth();
 
     itemsTable.addHeaderCell(
         new Cell()
             .add(new Paragraph("S.No.").setFontSize(10).setBold())
             .setFontColor(grayColor)
-            .setBorder(Border.NO_BORDER));
+            .setBorder(Border.NO_BORDER)
+            .setTextAlignment(TextAlignment.LEFT)
+            .setVerticalAlignment(VerticalAlignment.MIDDLE));
     itemsTable.addHeaderCell(
         new Cell()
             .add(new Paragraph("Task").setFontSize(10).setBold())
@@ -231,7 +280,7 @@ public class InvoicePDFGen {
             .setBorder(Border.NO_BORDER));
     itemsTable.addHeaderCell(
         new Cell()
-            .add(new Paragraph("Amount (€)").setFontSize(10).setBold())
+            .add(new Paragraph("Amount (" + currencySymbol + ")").setFontSize(10).setBold())
             .setTextAlignment(TextAlignment.RIGHT)
             .setFontColor(grayColor)
             .setBorder(Border.NO_BORDER));
@@ -250,7 +299,9 @@ public class InvoicePDFGen {
         itemsTable.addCell(
             new Cell()
                 .add(new Paragraph(String.valueOf(serialNo++)).setFontSize(9))
-                .setTextAlignment(TextAlignment.CENTER)
+                .setTextAlignment(TextAlignment.LEFT)
+                .setBorder(Border.NO_BORDER)
+                .setVerticalAlignment(VerticalAlignment.MIDDLE)
                 .setBorder(Border.NO_BORDER));
         itemsTable.addCell(
             new Cell()
@@ -295,20 +346,20 @@ public class InvoicePDFGen {
 
     calculationTable.addCell(
         new Cell()
-            .add(new Paragraph("€" + totalAmount).setFontSize(10))
+            .add(new Paragraph("(" + currencySymbol + ")" + totalAmount).setFontSize(10))
             .setBorder(Border.NO_BORDER)
             .setFontColor(grayColor));
 
     calculationTable.addCell(
         new Cell()
-            .add(new Paragraph("VAT(%)").setFontSize(10))
+            .add(new Paragraph("TAX(%)").setFontSize(10))
             .setBold()
             .setBorder(Border.NO_BORDER)
             .setFontColor(grayColor));
 
     calculationTable.addCell(
         new Cell()
-            .add(new Paragraph("€" + vatPercentage).setFontSize(10))
+            .add(new Paragraph("(" + currencySymbol + ")" + vatPercentage).setFontSize(10))
             .setBorder(Border.NO_BORDER)
             .setFontColor(grayColor));
 
@@ -321,7 +372,7 @@ public class InvoicePDFGen {
 
     calculationTable.addCell(
         new Cell()
-            .add(new Paragraph("€" + finalTotal).setFontSize(10))
+            .add(new Paragraph("(" + currencySymbol + ")" + finalTotal).setFontSize(10))
             .setBorder(Border.NO_BORDER)
             .setFontColor(grayColor));
 
@@ -329,26 +380,22 @@ public class InvoicePDFGen {
 
     // --- AMOUNT IN WORDS PART ---
 
-    double exchangeRate = 95.73; // 1€  == 95.73 INR present day (15-05-2025)
-    double indianRupees = finalTotal * exchangeRate;
-    String amountInWordsDollars = AmountToWordsUtil.convertToWords(finalTotal) + " euros only /-";
-    String amountInWordsRupees = AmountToWordsUtil.convertToWords(indianRupees) + " ruppes only /-";
+      String amountInWordsDollars = AmountToWordsUtil.convertToWords(finalTotal) + " only /-";
 
-    Paragraph amountInWordsPara =
-        new Paragraph()
-            .add(new Text("Amount in words(Euros): ").setFontSize(9).setFontColor(grayColor))
-            .add(new Text(amountInWordsDollars).setFontSize(9).setBold().setFontColor(blackColor))
-            .setTextAlignment(TextAlignment.RIGHT);
-    document.add(amountInWordsPara);
+      Paragraph amountInWordsPara =
+              new Paragraph()
+                      .add(new Text("Amount In Words (" + currencyName.toUpperCase() + "): ")
+                              .setFontSize(9)
+                              .setFontColor(grayColor))
+                      .add(new Text(amountInWordsDollars)
+                              .setFontSize(9)
+                              .setBold()
+                              .setFontColor(blackColor))
+                      .setTextAlignment(TextAlignment.RIGHT);
 
-    Paragraph amountInWordsRupeesPara =
-        new Paragraph()
-            .add(new Text("Amount in words(Rupees): ").setFontSize(9).setFontColor(grayColor))
-            .add(new Text(amountInWordsRupees).setFontSize(9).setBold().setFontColor(blackColor))
-            .setTextAlignment(TextAlignment.RIGHT);
-    document.add(amountInWordsRupeesPara);
+      document.add(amountInWordsPara);
 
-    document.add(new Paragraph("\n"));
+      document.add(new Paragraph("\n"));
 
     // -----NOTE PART ------
 

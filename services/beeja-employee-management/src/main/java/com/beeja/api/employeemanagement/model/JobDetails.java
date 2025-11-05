@@ -16,4 +16,6 @@ public class JobDetails {
   private String description;
   private String updatedBy;
   private Date updatedAt;
+  private Date startDate;
+  private Date endDate;
 }

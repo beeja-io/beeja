@@ -409,7 +409,7 @@ const EmployeeList = () => {
               }}
             />
             <DropdownMenu
-              label="JobTitle"
+              label="Job Title"
               className="largeContainerFil"
               name="JobTitle"
               options={[
@@ -428,7 +428,7 @@ const EmployeeList = () => {
               }}
             />
             <DropdownMenu
-              label="EmployementType"
+              label="Employement Type"
               className="largeContainerFil"
               name="EmployementType"
               options={[

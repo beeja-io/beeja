@@ -111,6 +111,7 @@ public class Constants {
     public static final String ERROR_IN_VALIDATE_PROJECT_MANAGERS = "Error while validating project managers via account service" ;
   public static final String ERROR_IN_VALIDATE_PROJECT_RESOURCES = "Error while validating project resources via account service";
     public static final String NO_RESOURCES_FOUND = "No resources found for contracts of clientId: {}";
+    public static final String CUSTOM_CONTRACT_TYPE_REQUIRED = "Custom Contract type not be null";
 
     // ========== Utility ==========
   public static String format(String message, Object... args) {
@@ -136,4 +137,6 @@ public class Constants {
   public static final String INVOICE_DELETED_SUCCESSFULLY = "Invoice deleted successfully for id: {}";
   public static final String NOT_AUTHORIZED_TO_DELETE_INVOICE = "Not authorized to delete invoice";
   public static final String LINE = "________________________________________________________________________________";
+    public static final String INVOICE_ID_ALREADY_EXISTS = "Invoice ID already exists for this organization";
+    public static final String REMITTANCE_REF_ALREADY_EXISTS = "Remittance Reference already exists for this organization";
 }

@@ -1,19 +1,19 @@
 import { BillingCurrency } from '../components/reusableComponents/ContractEnums.component';
 
 interface BillingAddress {
-  street: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
+  street?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
 }
 interface Address {
-  addressOne: string;
+  addressOne?: string;
   addressTwo?: string;
-  city: string;
-  state: string;
-  pinCode: number;
-  country: string;
+  city?: string;
+  state?: string;
+  pinCode?: number;
+  country?: string;
 }
 interface BankDetails {
   accountName: string;
@@ -40,12 +40,13 @@ export interface AddInvoiceFormProps {
   status?: string;
   clientId?: string;
   billingCurrency?: string;
+  billingType?: string;
 }
 
 export interface FormDataProps {
   RemittanceNo: string;
   InvoiceNo: string;
-  tax: number;
+  tax: String;
   taxId: string;
   fromDate: Date;
   toDate: Date;

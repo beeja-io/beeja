@@ -43,6 +43,7 @@ public class Contract {
   private ProjectStatus status;
   private ContractBillingType billingType;
   private ContractType contractType;
+  private String customContractType;
   private ContractBillingCurrency billingCurrency;
   private String signedBy;
   private Boolean isActive = true;
