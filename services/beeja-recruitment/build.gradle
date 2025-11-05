@@ -19,6 +19,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.17.1"
+    
+    // Microsoft Graph API for Teams integration
+    implementation 'com.microsoft.graph:microsoft-graph:6.9.0'
+    implementation 'com.azure:azure-identity:1.11.1'
 }
 
 test {

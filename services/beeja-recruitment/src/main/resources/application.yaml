@@ -45,3 +45,13 @@ logs:
 
 jwt:
   secret: ${JWT_SECRET_KEY}
+
+# Microsoft Teams Integration Configuration
+microsoft:
+  teams:
+    client-id: ${MS_TEAMS_CLIENT_ID}
+    client-secret: ${MS_TEAMS_CLIENT_SECRET}
+    tenant-id: ${MS_TEAMS_TENANT_ID}
+    service-account-email: ${MS_TEAMS_SERVICE_ACCOUNT_EMAIL}
+    authority: https://login.microsoftonline.com/${microsoft.teams.tenant-id}
+    scope: ${MS_TEAMS_SCOPE:https://graph.microsoft.com/.default}
