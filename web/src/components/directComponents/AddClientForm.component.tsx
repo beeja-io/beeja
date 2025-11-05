@@ -297,6 +297,39 @@ const AddClientForm = (props: AddClientFormProps) => {
     }
     return true;
   };
+  useEffect(() => {
+    const addressTypes: ('primaryAddress' | 'billingAddress')[] = [
+      'primaryAddress',
+      'billingAddress',
+    ];
+
+    const newErrors = { ...errors };
+
+    addressTypes.forEach((addressType) => {
+      const country = formData[addressType]?.country ?? '';
+      const code = formData[addressType]?.postalCode ?? '';
+
+      const fieldKey =
+        addressType === 'primaryAddress'
+          ? 'primaryAddressPostalCode'
+          : 'billingAddressPostalCode';
+      if (code && !validatePostalCode(country, code)) {
+        newErrors[fieldKey] =
+          country === 'India'
+            ? t('validation.postalCode.india')
+            : t('validation.postalCode.default', { country });
+      } else {
+        delete newErrors[fieldKey];
+      }
+    });
+
+    setErrors(newErrors);
+  }, [
+    formData.primaryAddress.country,
+    formData.billingAddress.country,
+    formData.primaryAddress.postalCode,
+    formData.billingAddress.postalCode,
+  ]);
 
   useEffect(() => {
     const fetchLogoImage = async () => {

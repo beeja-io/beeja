@@ -150,7 +150,7 @@ export const OrganizationSettingsDateCurrency = ({
             <DropdownMenu
               label="Date Format"
               className={'drop'}
-              selected={organization.preferences?.dateFormat || ''}
+              value={organization.preferences?.dateFormat || ''}
               disabled={!isEditDateFormatModeOn}
               options={Object.keys(DATE_FORMATS).map((key) => ({
                 label: DATE_FORMATS[key],
@@ -170,7 +170,7 @@ export const OrganizationSettingsDateCurrency = ({
             <Label>Time Zone</Label>
             <DropdownMenu
               label={t('Select Timezone')}
-              selected={organization.preferences?.timeZone ?? ''}
+              value={organization.preferences?.timeZone ?? ''}
               className={'drop'}
               onChange={(value: string | null) => {
                 handleInputChange({
@@ -231,7 +231,7 @@ export const OrganizationSettingsDateCurrency = ({
             <DropdownMenu
               label="Currency Type"
               className={'drop'}
-              selected={organization.preferences?.currencyType ?? ''}
+              value={organization.preferences?.currencyType ?? ''}
               disabled={!isEditCurrencyModeOn}
               options={Object.keys(CURRENCY_TYPES).map((key) => ({
                 label: CURRENCY_TYPES[key],

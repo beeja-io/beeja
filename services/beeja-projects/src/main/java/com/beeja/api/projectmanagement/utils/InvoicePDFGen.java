@@ -231,9 +231,12 @@ public class InvoicePDFGen {
             .add(new Text(startDate + " To " + endDate).setFontSize(9).setFontColor(grayColor)).add("\n")
             .setMarginTop(5);
 
+      String cityText = (orgCity != null && !orgCity.trim().isEmpty())
+              ? orgCity + ", "
+              : "";
     Paragraph clientDetails =
         new Paragraph()
-            .add(new Text(orgCity + ", ").setFontSize(10).setBold())
+            .add(new Text(cityText).setFontSize(10).setBold())
             .add(new Text(contractCreatedAt).setFontSize(10).setBold())
             .setTextAlignment(TextAlignment.RIGHT)
             .setMarginTop(10);
@@ -466,7 +469,7 @@ public class InvoicePDFGen {
             .setFontColor(blackColor));
 
     paymentTable.addCell(
-        new Cell().add(new Paragraph("isfc")).setBorder(Border.NO_BORDER).setFontColor(grayColor));
+        new Cell().add(new Paragraph("IFSC")).setBorder(Border.NO_BORDER).setFontColor(grayColor));
     paymentTable.addCell(
         new Cell()
             .add(new Paragraph(isfc))
@@ -498,7 +501,7 @@ public class InvoicePDFGen {
     Paragraph wishingPara =
         new Paragraph()
             .add(new Text("Best Regards,\n\n").setFontColor(grayColor).setBold())
-            .add(new Text(orgName))
+            .add(new Text(billingFromName))
             .setFontSize(9);
 
     document.add(wishingPara);
