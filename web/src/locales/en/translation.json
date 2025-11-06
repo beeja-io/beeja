@@ -558,5 +558,7 @@
   "No_org_Address": "Organization address is not defined or available in the Organization Profile Settings.",
   "NO_Client_Address": "Client address is currently unavailable, as it wasn’t provided",
   "Bank_Error": "Unable to generate invoice. Payment details are missing. Please contact the Contract Admin team to configure.",
-  "Task_Error": "Please add at least one Task and Price before generating the invoice."
+  "Task_Error": "Please add at least one Task and Price before generating the invoice.",
+  "Email_Exsist_Error": "A client with this Email ID already exists.",
+  "Logo_Error": "Logo upload failed. Please try again."
 }

@@ -67,6 +67,7 @@ export const CLIENT_MODULE = {
   DELETE_CLIENT: 'DCL',
   GENERATE_INVOICE: 'CIN',
   DELETE_INVOICE: 'DIN',
+  READ_INVOICE: 'GIN',
 };
 
 export const CONTRACT_MODULE = {
