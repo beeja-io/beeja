@@ -128,6 +128,7 @@ export const StyledTextArea = styled.textarea`
   }
   &.description {
     color: ${(props) => props.theme.colors.grayColors.gray7};
+    border: none;
   }
 `;
 
@@ -170,8 +171,12 @@ export const DescriptionButton = styled.button`
 export const QuestionBlock = styled.div`
   border-radius: 12px;
   padding: 1.2rem 0px;
-  background-color: transparent;
-
+  background-color: #00579205;
+  margin-bottom: 15px;
+  &.preview-block {
+    background-color: transparent;
+    padding: 0px;
+  }
   label {
     font-weight: 600;
     font-size: 13px;
@@ -212,7 +217,9 @@ export const QuestionBlock = styled.div`
       border-bottom: 1px solid #005792;
     }
   }
-
+  .question-input.description {
+    border-bottom: none;
+  }
   .answer-input {
     height: 55px;
     margin-bottom: 1rem;
@@ -238,7 +245,7 @@ export const QuestionBlock = styled.div`
     padding: 0 25px;
     background: transparent;
 
-    height: 65px;
+    height: 55px;
     border-radius: 10px;
 
     .add-btn {
@@ -415,7 +422,6 @@ export const TitleInput = styled.input`
   outline: none;
   background: transparent;
   width: 100%;
-  max-width: 600px;
 
   font-family: Nunito;
   font-weight: 700;
@@ -426,6 +432,10 @@ export const TitleInput = styled.input`
   letter-spacing: 0.3px;
   text-align: center;
   color: ${(props) => props.theme.colors.brandColors.primary};
+  &::placeholder {
+    color: ${(props) => props.theme.colors.blackColors.black7};
+    opacity: 1;
+  }
 `;
 
 export const DropdownRow = styled.div`
@@ -507,7 +517,7 @@ export const PreviewCard = styled.div`
   border-radius: 12px;
   background: ${(props) => props.theme.colors.backgroundColors.primary};
   border: 1px solid var(--Outline-stroke, #e9eaec);
-  margin: 40px 4% 0 4%;
+  margin: 40px 9% 0 9%;
   padding: 25px 5% 10px 5%;
   width: 100%;
 
@@ -518,6 +528,7 @@ export const PreviewCard = styled.div`
 export const Header = styled.div`
   text-align: center;
   margin-bottom: 20px;
+  margin-top: 20px;
 `;
 
 export const Title = styled.h2`
@@ -572,7 +583,7 @@ export const DescriptionBox = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
-  margin: 10px 0px 20px 0px;
+  margin: 10px 0px 30px 0px;
   font-size: 14px;
   color: #717171;
 `;
@@ -580,16 +591,55 @@ export const DescriptionBox = styled.div`
 export const Questions = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 `;
 
-export const QuestionText = styled.p`
-  font-weight: 500;
+// export const QuestionText = styled.p`
+// font-weight: 500;
+// font-size: 15px;
+//   margin-bottom: 8px;
+//   color: ${(props) => props.theme.colors.brandColors.primary};
+//   padding-left: 2em;
+//   text-indent: -1em;
+//   margin-left: 0;
+// `;
+
+export const QuestionText = styled.div`
+  display: grid;
+  font-weight: 600;
   font-size: 15px;
   margin-bottom: 8px;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: 0.25em;
+`;
+export const QuestionNumber = styled.span`
+  grid-column: 1;
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+
   color: ${(props) => props.theme.colors.brandColors.primary};
 `;
 
+export const QuestionMainText = styled.span`
+  grid-column: 2;
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+
+  color: ${(props) => props.theme.colors.brandColors.primary};
+`;
 export const SearchBox = styled.div`
   display: flex;
   width: 315px;
@@ -630,6 +680,7 @@ export const QuestionDescription = styled.p`
   line-height: 160%;
   letter-spacing: 0px;
   vertical-align: middle;
+  margin-left: 1em;
 `;
 
 export const RequiredMark = styled.span`
