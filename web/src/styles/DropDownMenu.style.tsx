@@ -151,11 +151,14 @@ export const ContainerStyleMulti = styled.div<{
       props.theme.colors.brandColors.primary};
   }
 `;
-export const ToggleButtonStyle = styled.div<{ disabled?: boolean }>`
+export const ToggleButtonStyle = styled.div<{
+  disabled?: boolean;
+  justify?: 'center' | 'space-between' | 'flex-start' | 'flex-end';
+}>`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: ${({ justify = 'space-between' }) => justify};
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   margin-left: 7px;
   margin-top: 5px;

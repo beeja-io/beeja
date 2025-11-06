@@ -11,6 +11,8 @@ import {
   PreviewWrapper,
   QuestionBlock,
   QuestionDescription,
+  QuestionMainText,
+  QuestionNumber,
   Questions,
   QuestionText,
   RequiredMark,
@@ -20,6 +22,7 @@ import {
 import { Button } from '../../styles/CommonStyles.style';
 import { useTranslation } from 'react-i18next';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
+import { ReviewType, ReviewTypeLabels } from './PerformanceEnums.component';
 
 type Question = {
   question: string;
@@ -71,7 +74,7 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
           </DateRow>
           <Subtitle>
             {formData.reviewType
-              ? `${formData.reviewType.charAt(0).toUpperCase()}${formData.reviewType.slice(1).toLowerCase()} Review`
+              ? `${ReviewTypeLabels[formData.reviewType as ReviewType]} Review`
               : ''}
           </Subtitle>
         </Header>
@@ -82,10 +85,26 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
 
         <Questions>
           {formData.questions.map((q, index) => (
-            <QuestionBlock key={index}>
+            // <QuestionBlock key={index} className="preview-block">
+            //   <QuestionText>
+            //     <span>{index + 1}.&nbsp;</span>
+            //     {q.question}
+            //     {q.required && <RequiredMark>*</RequiredMark>}
+            //   </QuestionText>
+            //   {q.questionDescription && (
+            //     <QuestionDescription>
+            //       {q.questionDescription}
+            //     </QuestionDescription>
+            //   )}
+            // </QuestionBlock>
+
+            <QuestionBlock key={index} className="preview-block">
               <QuestionText>
-                {index + 1}. {q.question}
-                {q.required && <RequiredMark>*</RequiredMark>}
+                <QuestionNumber>{index + 1}.</QuestionNumber>
+                <QuestionMainText>
+                  {q.question}
+                  {q.required && <RequiredMark>*</RequiredMark>}
+                </QuestionMainText>
               </QuestionText>
               {q.questionDescription && (
                 <QuestionDescription>
@@ -93,6 +112,20 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
                 </QuestionDescription>
               )}
             </QuestionBlock>
+            // <QuestionBlock
+            //   key={index}
+            //   style={{
+            //     display: 'grid',
+            //     gridTemplateColumns: '2em 1fr',
+            //     alignItems: 'start',
+            //   }}
+            // >
+            //   <span style={{ gridColumn: 1 }}>{index + 1}.</span>
+            //   <QuestionText style={{ gridColumn: 2, marginLeft: 0 }}>
+            //     {q.question}
+            //     {q.required && <RequiredMark>*</RequiredMark>}
+            //   </QuestionText>
+            // </QuestionBlock>
           ))}
         </Questions>
 
@@ -102,7 +135,7 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
               {t('Edit')}
             </Button>
             <Button className="submit" type="button" onClick={onConfirm}>
-              {t('Save & Continue')}
+              {t('Save')}
             </Button>
           </ButtonGroup>
         </FooterContainer>
