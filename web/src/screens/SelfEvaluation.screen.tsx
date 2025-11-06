@@ -18,18 +18,30 @@ import {
   postSelfEvaluation,
 } from '../service/axiosInstance';
 import { StyledInfoICon } from '../svgs/PerformanceEvaluation.Svgs.scg';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 
 const SelfEvaluationForm: React.FC = () => {
   const [reflection, setReflection] = useState('');
-  const [isEditable, setIsEditable] = useState(false);
+  const [isEditable, setIsEditable] = useState(true);
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const { user } = useUser();
   const employeeId = user?.employeeId ? user?.employeeId : '';
+  const [toastMessage, setToastMessage] = useState<{
+    type: 'success' | 'error';
+    heading: string;
+    body: string;
+  } | null>(null);
+  const [isCreatedToastMessage, setIsCreatedToastMessage] = useState(false);
 
   const handleTextAreaClick = () => {
     setIsEditable(true);
+  };
+
+  const handleIsCreatedToastMessage = () => {
+    setIsCreatedToastMessage(false);
+    setToastMessage(null);
   };
 
   useEffect(() => {
@@ -75,7 +87,12 @@ const SelfEvaluationForm: React.FC = () => {
       const response = await postSelfEvaluation(payload);
 
       if (response?.status === 200 || response?.status === 201) {
-        alert('Form submitted successfully!');
+        setToastMessage({
+          type: 'success',
+          heading: 'Form Submitted',
+          body: 'Self-evaluation form submitted successfully.',
+        });
+        setIsCreatedToastMessage(true);
 
         setIsSubmitted(true);
       } else {
@@ -161,6 +178,14 @@ const SelfEvaluationForm: React.FC = () => {
           </form>
         )}
       </StyledDiv>
+      {toastMessage && isCreatedToastMessage && (
+        <ToastMessage
+          messageType={toastMessage.type}
+          messageHeading={toastMessage.heading}
+          messageBody={toastMessage.body}
+          handleClose={handleIsCreatedToastMessage}
+        />
+      )}
     </>
   );
 };

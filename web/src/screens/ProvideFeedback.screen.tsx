@@ -10,6 +10,7 @@ import {
   DateRow,
   DateText,
   DescriptionBox,
+  ErrorText,
   FooterContainer,
   FormContainer,
   FormInputsContainer,
@@ -72,11 +73,12 @@ interface Answer {
 }
 
 interface FeedbackItem {
-  id: string;
+  employeeId: string;
+  cycleId: string;
   name: string;
   role: string;
-  cycleId: string;
   submitted: boolean;
+  department: string;
 }
 
 type ProvideFeedbackProps = {
@@ -99,6 +101,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [responseErrorMessage, setResponseErrorMessage] = useState('');
   const [successMessageBody, setSuccessMessageBody] = useState('');
+  const [validationErrors, setValidationErrors] = useState<boolean[]>([]);
 
   useEffect(() => {
     const fetchFeedbackData = async () => {
@@ -106,32 +109,25 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
         setIsLoading(true);
         const response = await getFeedBackProviderReviewer();
         if (response?.data) {
-          if (response.data.assignedEmployees?.length > 0) {
-            const formattedData = response.data.assignedEmployees.map(
-              (employee: any) => ({
-                id: employee.cycleId,
-                name: employee.employeeName,
-                role: employee.role,
-                submitted: employee.submitted,
-              })
-            );
-            setFeedbackData(formattedData);
-          } else {
-            setFeedbackData([]);
-            throw new Error('No assigned employees found.');
-          }
+          const employees = response.data.assignedEmployees || [];
+          const formattedData = employees.map((employee: any) => ({
+            employeeId: employee.employeeId,
+            cycleId: employee.cycleId,
+            name: employee.employeeName,
+            role: employee.role,
+            department: employee.department,
+            submitted: employee.isSubmitted || employee.submitted,
+          }));
+          setFeedbackData(formattedData);
+        } else {
+          setFeedbackData([]);
         }
       } catch (error) {
-        throw new Error(
-          `Error fetching feedback provider reviewer data: ${
-            (error as Error).message || error
-          }`
-        );
+        setError(`Error fetching feedback data: ${(error as Error).message}`);
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchFeedbackData();
   }, []);
 
@@ -141,8 +137,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
 
     try {
       setIsLoading(true);
-
-      const response = await getProvideFeedbackById(employee.id);
+      const response = await getProvideFeedbackById(employee.cycleId);
       const { evaluationCycle, feedbackResponses } = response.data;
 
       if (!feedbackResponses?.length) {
@@ -150,7 +145,6 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
       }
 
       const latestFeedback = feedbackResponses.at(-1);
-
       const questions = latestFeedback.responses.map((res: any) => ({
         questionId: res.questionId,
         question: res.question || `Question for ${res.questionId}`,
@@ -158,17 +152,12 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
         description: res.description || '',
       }));
 
-      const mergedFormData = {
-        ...evaluationCycle,
-        questions,
-      };
-
-      setFormData(mergedFormData);
+      setFormData({ ...evaluationCycle, questions });
 
       const mappedAnswers = latestFeedback.responses.map((res: any) => ({
         questionId: res.questionId,
         description: res.description,
-        answer: res.answer || '',
+        answer: null,
       }));
 
       setAnswers(mappedAnswers);
@@ -196,15 +185,23 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
     setAnswers(newAnswers);
   };
 
-  const handlePreview = () => {
-    setPreviewMode(true);
-  };
-
   const handleSubmit = async () => {
     if (!formData || !selectedEmployee) return;
+
+    const errors = formData.questions.map(
+      (q, index) => q.required && !answers[index]?.answer?.trim()
+    );
+
+    const hasErrors = errors.some((err) => err === true);
+    setValidationErrors(errors);
+
+    if (hasErrors) {
+      return;
+    }
+
     const payload = {
-      cycleId: formData.id,
-      employeeId: selectedEmployee.id,
+      cycleId: selectedEmployee.cycleId,
+      employeeId: selectedEmployee.employeeId,
       reviewerId: user?.employeeId,
       reviewerRole: 'PEER',
       responses: answers.map((a) => ({
@@ -217,6 +214,21 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
     try {
       setIsLoading(true);
       await postEmployeeResponse(payload);
+
+      const updatedResponse = await getFeedBackProviderReviewer();
+      if (updatedResponse?.data?.assignedEmployees) {
+        const formattedData = updatedResponse.data.assignedEmployees.map(
+          (employee: any) => ({
+            employeeId: employee.employeeId,
+            cycleId: employee.cycleId,
+            name: employee.employeeName,
+            department: employee.department,
+            submitted: employee.isSubmitted || employee.submitted,
+          })
+        );
+        setFeedbackData(formattedData);
+      }
+
       setSuccessMessageBody(
         `Feedback for ${selectedEmployee.name} submitted successfully!`
       );
@@ -231,7 +243,6 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
   };
 
   const answerRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
-
   useLayoutEffect(() => {
     answers.forEach((_, index) => {
       const textArea = answerRefs.current[index];
@@ -256,11 +267,11 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
       ) : !selectedEmployee ? (
         <ListContainer>
           {feedbackData.map((item) => (
-            <ListRow key={item.id}>
+            <ListRow key={item.employeeId}>
               <UserInfo>
                 <UserText>
                   <Name>{item.name}</Name>
-                  <Role>{item.role}</Role>
+                  <Role>{item.department}</Role>
                 </UserText>
               </UserInfo>
               <ProvideButton
@@ -280,7 +291,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
               <span onClick={goToPreviousPage}>
                 <ArrowDownSVG />
               </span>
-              {formData.name || 'Performance Evaluation Form - 2025'}
+              {formData.name || 'Performance Evaluation Form'}
             </Title>
             <DateRangeContainer>
               <DateRow>
@@ -302,12 +313,11 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
             <Label>
               Feedback Receiver Name<RequiredMark>*</RequiredMark>
             </Label>
-
             <ReadOnlyInput value={feedbackReceiverName} readOnly />
           </div>
 
           <Questions>
-            {formData?.questions?.map((q, index) => (
+            {formData.questions.map((q, index) => (
               <QuestionBlock key={index}>
                 <QuestionText>
                   {index + 1}. {q.question}
@@ -316,7 +326,6 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
                 {q.description && (
                   <QuestionDescription>{q.description}</QuestionDescription>
                 )}
-
                 <FormLabelContainer>
                   <InputContainer>
                     <StyledTextArea
@@ -325,19 +334,27 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
                       rows={1}
                       placeholder="Type your Answer"
                       value={answers[index]?.answer || ''}
-                      onChange={(e) =>
-                        handleAnswerChange(index, e.target.value)
-                      }
+                      onChange={(e) => {
+                        handleAnswerChange(index, e.target.value);
+                        if (validationErrors[index]) {
+                          const updatedErrors = [...validationErrors];
+                          updatedErrors[index] = false;
+                          setValidationErrors(updatedErrors);
+                        }
+                      }}
                     />
                   </InputContainer>
                 </FormLabelContainer>
+                {validationErrors[index] && (
+                  <ErrorText>This field is required</ErrorText>
+                )}
               </QuestionBlock>
             ))}
           </Questions>
 
           <FooterContainer>
             <ButtonGroup>
-              <Button type="button" onClick={handlePreview}>
+              <Button type="button" onClick={() => setPreviewMode(true)}>
                 Preview
               </Button>
               <Button className="submit" type="button" onClick={handleSubmit}>
@@ -374,7 +391,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
         <ToastMessage
           messageType="error"
           messageBody={responseErrorMessage}
-          messageHeading="EXPENSE_IS_UNSUCCESFUL"
+          messageHeading="Submission Failed"
           handleClose={() => setShowErrorMessage(false)}
         />
       )}
@@ -382,7 +399,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
         <ToastMessage
           messageType="success"
           messageBody={successMessageBody}
-          messageHeading="Submitted Successfully "
+          messageHeading="Submitted Successfully"
           handleClose={() => setShowSuccessMessage(false)}
         />
       )}

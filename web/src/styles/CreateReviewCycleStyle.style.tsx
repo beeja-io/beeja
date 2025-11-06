@@ -668,3 +668,10 @@ export const ActionMenu = styled.div`
     display: block;
   }
 `;
+
+export const ErrorText = styled.span`
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+`;
