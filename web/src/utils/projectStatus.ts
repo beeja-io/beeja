@@ -30,4 +30,10 @@ export const ProjectStatus: ProjectStatusOption[] = [
     color: '#E03137',
     bgColor: '#E031371A',
   },
+  {
+    value: 'NOT_ASSIGNED',
+    label: 'Not Assigned',
+    color: '#AAAAAA',
+    bgColor: '#EFEFEF',
+  },
 ];
