@@ -123,7 +123,7 @@ const EmploymentHistory: React.FC<Props> = ({
     try {
       const data = await fetchEmployeeHistory(employeeId);
       setHistoryList((data || []).reverse());
-      console.log(historyList)
+    
     } catch {
       setToast({ type: 'error', message: 'Failed to fetch history' });
     }

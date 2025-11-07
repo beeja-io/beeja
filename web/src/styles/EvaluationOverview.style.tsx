@@ -106,7 +106,6 @@ export const Placeholder = styled.div`
   justify-content: center;
   color: #8f98a4;
   font-size: 15px;
-  border: 1px dashed #e6ebf2;
   border-radius: 8px;
   padding: 20px;
 `;
@@ -192,11 +191,31 @@ export const NavButton = styled.button<{ primary?: boolean }>`
 `;
 
 export const ResponsesContainer = styled.div`
-  background: #f0f2f6ff;
+  background: #0057920F;
   border: 1px solid #e2e5ea;
   border-radius: 10px;
   padding: 16px 18px;
   margin-top: 14px;
+
+    max-height: 360px; 
+  overflow-y: auto;
+
+ 
+  scrollbar-width: thin;
+  scrollbar-color: ${(props) => props.theme.colors.grayColors.gray8} transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: ${(props) => props.theme.colors.grayColors.gray8};
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 `;
 
 export const ResponseHeader = styled.div`
@@ -325,14 +344,14 @@ export const HideNamesToggle = styled.div`
 
   min-height: 32px;
 
-  .toggle-switch {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 24px;
-    width: 50px;
-    transition: all 0.3s ease;
-  }
+  // .toggle-switch {
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   height: 24px;
+  //   width: 50px;
+  //   transition: all 0.3s ease;
+  // }
 
   svg {
     width: 46px;
@@ -344,7 +363,6 @@ export const HideNamesToggle = styled.div`
   span {
     font-size: 14px;
     color: #333;
-    margin-top: 2px;
     transition: color 0.2s ease;
   }
 

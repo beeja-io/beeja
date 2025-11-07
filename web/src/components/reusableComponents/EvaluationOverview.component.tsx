@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import {
   OuterContainer,
   Container,
-  HeaderRow,
-  TitleBlock,
-  Title,
-  Subtitle,
+  // HeaderRow,
+  // TitleBlock,
+  // Title,
+  // Subtitle,
   TabBar,
   Tab,
   Content,
@@ -14,7 +14,7 @@ import {
   QuestionText,
   QuestionDesc,
   Placeholder,
-  DescriptionBox,
+  // DescriptionBox,
   NameBox,
   NavButton,
   ResponsesContainer,
@@ -30,18 +30,16 @@ import {
   HideNamesToggle,
   EvaluationHeadingSection,
   AuthorInfo,
-  DateDisplayContainer,
+  // DateDisplayContainer,
 
 } from "../../styles/EvaluationOverview.style";
-import {
-  ActiveToggleSVG,
-  InactiveToggleSVG,
-} from '../../svgs/CreateIDPatternSvgs.svg';
+
 import Rating from "./Rating.component";
-import { ToggleSwitchContainer } from '../../styles/IDPatternCreateStyles.style';
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs'
 import { MyProfileSVG } from "../../svgs/NavBarSvgs.svg";
-import { CalenderIcon} from "../../svgs/ExpenseListSvgs.svg";
+import { Slider, StyledSwitch, SwitchLabel } from "../../styles/InputStyles.style";
+import { WriteSVG } from "../../svgs/PerformanceEvaluation.Svgs.scg";
+// import { CalenderIcon} from "../../svgs/ExpenseListSvgs.svg";
 
 type Response = {
   id: number;
@@ -160,13 +158,7 @@ const EvaluationOverview: React.FC = () => {
     description:
       "This evaluation gathers peer feedback, self-assessment and summarizes overall ratings for Bhagath's performance in the first half of 2025.",
   };
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("en-GB", {
-      month: "short",
-      year: "numeric",
-    });
-  };
+  
 
 
   return (
@@ -186,29 +178,21 @@ const EvaluationOverview: React.FC = () => {
           <h6>Feedback Received</h6>
           <p>The Following Feedbacks have been Received for {"Bhagath"} </p>
         </OuterHeader>
+        <TabBar>
+          <Tab active={activeTab === "all"} onClick={() => setActiveTab("all")}>
+            All Responses
+          </Tab>
+          <Tab active={activeTab === "self"} onClick={() => setActiveTab("self")}>
+            Self Evaluation
+          </Tab>
+          <Tab
+            active={activeTab === "rating"}
+            onClick={() => setActiveTab("rating")}
+          >
+            Overall Rating
+          </Tab>
+        </TabBar>
         <Container>
-          <HeaderRow>
-            <TitleBlock>
-              <Title>Performance Evaluation Form - 2025</Title>
-              <DateDisplayContainer>
-                <span className="date-item">
-                  <CalenderIcon />
-                  {formatDate("2025-01-01")}
-                </span>
-
-                <span className="separator">to</span>
-
-                <span className="date-item">
-                  <CalenderIcon />
-                  {formatDate("2025-06-30")}
-                </span>
-              </DateDisplayContainer>
-
-              <Subtitle>Annual Review</Subtitle>
-            </TitleBlock>
-          </HeaderRow>
-
-          <DescriptionBox>{feedbackReceiver.description}</DescriptionBox>
 
           <ReceiverRow>
             <ReceiverInfo>
@@ -216,39 +200,38 @@ const EvaluationOverview: React.FC = () => {
               <NameBox>{feedbackReceiver.name}</NameBox>
             </ReceiverInfo>
 
-            <ProvideRatingButton onClick={() => setShowRatingCard(true)}>
-              Provide Rating
-            </ProvideRatingButton>
+            {activeTab === "rating" && (
+              <ProvideRatingButton onClick={() => setShowRatingCard(true)}>
+                 <WriteSVG />
+                Provide Rating
+              </ProvideRatingButton>
+            )}
+
           </ReceiverRow>
 
-          <TabBar>
-            <Tab active={activeTab === "all"} onClick={() => setActiveTab("all")}>
-              All Responses
-            </Tab>
-            <Tab active={activeTab === "self"} onClick={() => setActiveTab("self")}>
-              Self Evaluation
-            </Tab>
-            <Tab
-              active={activeTab === "rating"}
-              onClick={() => setActiveTab("rating")}
-            >
-              Overall Rating
-            </Tab>
-          </TabBar>
+
 
           <Content>
             {activeTab === "all" && (
               <>
                 <FeedbackHeaderRow>
                   <HideNamesToggle>
-                    <ToggleSwitchContainer isChecked={hideNames}>
+                    <SwitchLabel>
+                      <StyledSwitch
+                        type="checkbox"
+                        checked={hideNames}
+                        onChange={(e) => setHideNames(e.target.checked)}
+                      />
+                      <Slider />
+                    </SwitchLabel>
+                    {/* <ToggleSwitchContainer isChecked={hideNames}>
                       <div
                         className="toggle-switch"
                         onClick={() => setHideNames((prev) => !prev)}
                       >
                         {hideNames ? <ActiveToggleSVG /> : <InactiveToggleSVG />}
                       </div>
-                    </ToggleSwitchContainer>
+                    </ToggleSwitchContainer> */}
 
                     <span>Hide feedback provider names</span>
                   </HideNamesToggle>
