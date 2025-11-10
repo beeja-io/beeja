@@ -3,6 +3,7 @@ package com.beeja.api.performance_management.controllers;
 import com.beeja.api.performance_management.model.FinalRating;
 import com.beeja.api.performance_management.model.dto.ComputeRatingRequest;
 import com.beeja.api.performance_management.service.RatingService;
+import com.beeja.api.performance_management.utils.UserContext;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -42,5 +43,15 @@ public class RatingController {
     @PatchMapping("/{id}/publish")
     public ResponseEntity<FinalRating> publish(@PathVariable String id) {
         return ResponseEntity.ok(ratingService.publishRating(id));
+    }
+
+    /**
+     * Fetch all ratings for the logged-in employee in a specific cycle.
+     * Example: GET /v1/api/ratings/my/cycle/CYCLE2025
+     */
+    @GetMapping("/my/cycle/{cycleId}")
+    public ResponseEntity<List<FinalRating>> getMyRatings(@PathVariable String cycleId) {
+        String employeeId = UserContext.getLoggedInEmployeeId();
+        return ResponseEntity.ok(ratingService.getRatings(employeeId, cycleId));
     }
 }

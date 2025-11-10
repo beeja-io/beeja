@@ -1,13 +1,13 @@
 package com.beeja.api.performance_management.response;
 
 import com.beeja.api.performance_management.model.dto.AssignedEmployeeDTO;
+import com.beeja.api.performance_management.model.dto.ReviewerEmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,5 +15,5 @@ import java.util.List;
 public class ReviewerAssignedEmployeesResponse {
     private String reviewerId;
     private String reviewerName;
-    private List<AssignedEmployeeDTO> assignedEmployees;
+    private List<ReviewerEmployeeDTO> assignedEmployees;
 }
