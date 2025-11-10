@@ -719,7 +719,7 @@ export const CompanyProfile = () => {
               <div>
                 <DropdownMenu
                   label={t('Select_State')}
-                  selected={companyProfile.address?.state ?? ''}
+                  value={companyProfile.address?.state ?? ''}
                   className={'largeContainerFil drop'}
                   options={[
                     { label: t('SELECT_STATE'), value: '' },
@@ -780,7 +780,7 @@ export const CompanyProfile = () => {
             <Label>{t('COUNTRY')}</Label>
             <DropdownMenu
               label={t('SELECT_COUNTRY')}
-              selected={companyProfile.address?.country ?? ''}
+              value={companyProfile.address?.country ?? ''}
               className={'drop'}
               onChange={(value: string | null) => {
                 handleInputChange({

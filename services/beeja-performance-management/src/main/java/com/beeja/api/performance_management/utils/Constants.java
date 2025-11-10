@@ -83,8 +83,9 @@ public class Constants {
   public static final String CYCLE_ID_MISMATCH = "Cycle ID mismatch for employeeId=";
   public static final String QUESTIONNAIRE_ID_MISMATCH = "Questionnaire ID mismatch for employeeId=";
   public static final String INVALID_REVIEWER_DETAIL_RETURNED = "Invalid reviewer detail returned: {}";
-
-
+  public static final String ERROR_FETCHING_ASSIGNED_EMPLOYEES = "Error while fetching assigned employees for reviewer: {}";
+  public static final String ERROR_FETCHING_CYCLE_NAME = "Unable to fetch cycle name for cycleId {}: {}";
+  public static final String ERROR_FETCHING_FORMS = "Error while fetching forms for employeeId {} reviewerId {}: {}";
     // ========= LOG For Feedback Receivers =========//
     public static final String FEEDBACK_RECEIVERS_NULL = "Adding FeedbackReceivers ReceiverRequest is null";
     public static final String DUPLICATE_EMPLOYEE_ID = "Duplicate Employee ID found in request";
@@ -109,6 +110,10 @@ public class Constants {
     public static final String REVIEWER_NOT_FOUND_IN_FEEDBACK_PROVIDER = "Reviewer {} not found in feedback provider for employee {}";
     public static final String ERROR_SAVING_FEEDBACK_RESPONSE = "Error saving feedback response: {}";
     public static final String ERROR_SAVING_FEEDBACK_RESPONSE_SIMPLE = "Error saving feedback response";
+    public static final String NO_FEEDBACK_RESPONSES_FOUND = "No feedback responses found for cycleId: {}";
+    public static final String CYCLE_NOT_FOUND = "Cycle not found for ID: {}";
+    public static final String MULTIPLE_FEEDBACK_PROVIDERS_FOUND = "Multiple FeedbackProvider entries found for employeeId={}, cycleId={}, orgId={}";
+    public static final String REVIEWER_MARKED_COMPLETED_DUPLICATE = "Reviewer {} marked COMPLETED in duplicate provider {}";
 
     //============== Fegin client Errors ===============/
     public static final String ACCOUNT_CLIENT_ERROR = "Failed to fetch employee details from Account service: {}";
@@ -132,4 +137,5 @@ public class Constants {
     public static final String SELF_EVALUATION_SUBMITTED_SUCCESSFULLY = "Self-evaluation submitted successfully for employee {}";
     public static final String NULL_OR_EMPTY_EMPLOYEE_ID_WHILE_FETCHING_SELF_EVAL = "Attempted to fetch self-evaluations with null or empty employee ID";
     public static final String FETCHED_SELF_EVALUATIONS_FOR_EMPLOYEE = "Fetched {} self-evaluation(s) for employee {}";
+  
 }

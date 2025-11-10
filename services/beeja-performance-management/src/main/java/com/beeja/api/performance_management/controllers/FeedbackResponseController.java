@@ -4,6 +4,7 @@ import com.beeja.api.performance_management.model.FeedbackResponse;
 import com.beeja.api.performance_management.model.dto.CycleWithResponsesDTO;
 import com.beeja.api.performance_management.model.dto.EmployeeGroupedResponsesDTO;
 import com.beeja.api.performance_management.model.dto.SubmitFeedbackRequest;
+import com.beeja.api.performance_management.response.MyFeedbackFormResponse;
 import com.beeja.api.performance_management.service.FeedbackResponseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -70,6 +71,26 @@ public class FeedbackResponseController {
     @GetMapping("/cycle/{cycleId}")
     public ResponseEntity<CycleWithResponsesDTO> getResponsesForCycle(@PathVariable String cycleId) {
         CycleWithResponsesDTO dto = responseService.getResponsesForCycle(cycleId);
+        return ResponseEntity.ok(dto);
+    }
+
+    /**
+     * Returns all feedback forms (cycles) where the logged-in employee has received feedback.
+     */
+    @GetMapping("/my-feedback/forms")
+    public ResponseEntity<List<MyFeedbackFormResponse>> getMyFeedbackForms() {
+        List<MyFeedbackFormResponse> forms = responseService.getMyFeedbackForms();
+        return ResponseEntity.ok(forms);
+    }
+
+    /**
+     * Returns grouped feedback responses (all answers from reviewers) for the logged-in employee
+     * within a specific form (cycle).
+     */
+    @GetMapping("/my-feedback/cycle/{cycleId}")
+    public ResponseEntity<EmployeeGroupedResponsesDTO> getMyResponsesByCycle(
+            @PathVariable String cycleId) {
+        EmployeeGroupedResponsesDTO dto = responseService.getMyResponsesByCycle(cycleId);
         return ResponseEntity.ok(dto);
     }
 }

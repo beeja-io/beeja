@@ -49,7 +49,7 @@ const SelfEvaluationForm: React.FC = () => {
       if (!employeeId) return;
       setLoading(true);
       try {
-        const res = await getSelfEvaluation(employeeId);
+        const res = await getSelfEvaluation();
         if (res?.data[0]?.submitted) {
           setIsSubmitted(true);
         }

@@ -59,14 +59,14 @@ export const Tab = styled.button<{ active?: boolean }>`
   padding: 10px 14px;
   font-size: 14px;
   font-weight: 600;
-  color: ${(p) => (p.active ? '#0b66d1' : '#667085')};
+  color: ${(p) => (p.active ? '#005792' : '#667085')};
   border-bottom: ${(p) =>
-    p.active ? '2px solid #0b66d1' : '3px solid transparent'};
+    p.active ? '2px solid #005792' : '3px solid transparent'};
   cursor: pointer;
   transition: all 0.2s ease-in-out;
 
   &:hover {
-    color: #0b66d1;
+    color: #005792;
   }
 `;
 
@@ -112,18 +112,6 @@ export const Placeholder = styled.div`
   border: 1px dashed #e6ebf2;
   border-radius: 8px;
   padding: 20px;
-`;
-
-export const DescriptionBox = styled.div`
-  background: ${(props) => props.theme.colors.grayColors.gray6};
-  border: 1px solid #e3e6eb;
-  border-radius: 10px;
-  padding: 16px 20px;
-  margin: 12px 0 20px 0;
-  color: ${(props) => props.theme.colors.blackColors.black7};
-  line-height: 1.5;
-  font-weight: 400;
-  font-size: 15px;
 `;
 
 export const NameBox = styled.div`
@@ -234,6 +222,9 @@ export const ResponseInnerBox = styled.div`
   line-height: 1.5;
   margin-bottom: 8px;
   white-space: pre-wrap;
+  &.no-answer {
+    margin-bottom: 0px;
+  }
 `;
 
 export const FeedbackHeaderRow = styled.div`
@@ -332,42 +323,6 @@ export const ProvideRatingButton = styled.button`
   }
 `;
 
-export const HideNamesToggle = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  user-select: none;
-
-  min-height: 32px;
-
-  .toggle-switch {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 24px;
-    width: 50px;
-    transition: all 0.3s ease;
-  }
-
-  svg {
-    width: 46px;
-    height: 24px;
-    display: block;
-    cursor: pointer;
-  }
-
-  span {
-    font-size: 14px;
-    color: ${(props) => props.theme.colors.blackColors.black7};
-    margin-top: 2px;
-    transition: color 0.2s ease;
-  }
-
-  &:hover span {
-    color: #2a7ae4;
-  }
-`;
 export const EvaluationHeadingSection = styled.section`
   display: flex;
   justify-content: flex-start;
@@ -398,42 +353,5 @@ export const EvaluationHeadingSection = styled.section`
         transform: rotate(90deg) scale(1.1);
       }
     }
-  }
-`;
-
-export const AuthorInfo = styled.span`
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-
-  svg {
-    width: 16px;
-    height: 16px;
-  }
-`;
-
-export const DateDisplayContainer = styled.div`
-  font-weight: 400;
-  color: #687588;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  margin-bottom: 7px;
-
-  .date-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-
-    svg {
-      width: 16px;
-      height: 16px;
-    }
-  }
-
-  .separator {
-    color: #9ca3af;
-    font-size: 14px;
   }
 `;

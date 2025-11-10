@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   Container,
-  HeaderRow,
-  TitleBlock,
-  Title,
-  Subtitle,
   TabBar,
   Tab,
   Content,
@@ -13,7 +9,6 @@ import {
   QuestionText,
   QuestionDesc,
   Placeholder,
-  DescriptionBox,
   NameBox,
   NavButton,
   ResponsesContainer,
@@ -24,19 +19,12 @@ import {
   ReceiverInfo,
   ReceiverLabel,
   ReceiverRow,
-  HideNamesToggle,
-  AuthorInfo,
-  DateDisplayContainer,
 } from '../../styles/EvaluationOverview.style';
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
-import { CalenderIcon } from '../../svgs/ExpenseListSvgs.svg';
+
 import {
-  Slider,
-  StyledSwitch,
-  SwitchLabel,
-} from '../../styles/InputStyles.style';
-import {
-  getAllResponses,
+  getAllResponsesById,
+  getAllResponsesDropDown,
   getOverallRating,
   getSelfEvaluation,
 } from '../../service/axiosInstance';
@@ -50,6 +38,8 @@ import {
 } from '../../styles/FeedbackHubStyles.style';
 import { OverallRatingStar } from '../../svgs/PerformanceEvaluation.Svgs.scg';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
+import { SelectWrapper } from '../../styles/CreateReviewCycleStyle.style';
+import DropdownMenu from './DropDownMenu.component';
 
 type QuestionResponse = {
   questionId: string;
@@ -58,19 +48,14 @@ type QuestionResponse = {
   description?: string;
 };
 
-type EvaluationCycle = {
-  id: string;
-  organizationId: string;
-  name: string;
+interface CycleItem {
+  cycleId: string;
+  cycleName: string;
   type: string;
-  formDescription?: string;
+  status: string;
   startDate: string;
   endDate: string;
-  feedbackDeadline: string;
-  selfEvalDeadline: string;
-  status: string;
-  questionnaireId: string;
-};
+}
 
 interface OverallRating {
   id: string;
@@ -86,64 +71,75 @@ interface OverallRating {
 
 type FeedbackReceivedProps = {
   user: any;
-  showHideNames?: boolean;
 };
 
-const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({
-  user,
-  showHideNames,
-}) => {
+const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'self' | 'rating'>('all');
-  const [hideNames, setHideNames] = useState<boolean>(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
 
   const [loading, setLoading] = useState(false);
   const [mainLoading, setMainLoading] = useState(true);
   const [selfEvaluationData, setSelfEvaluationData] = useState('');
+  const [forms, setForms] = useState<CycleItem[]>([]);
+  const [selectedCycleId, setSelectedCycleId] = useState('');
 
   const [questionData, setQuestionData] = useState<QuestionResponse[]>([]);
-  const [evaluationCycle, setEvaluationCycle] =
-    useState<EvaluationCycle | null>(null);
 
   const [ratingData, setRatingData] = useState<OverallRating | null>(null);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    });
-  };
+  const employeeId = user?.employeeId;
 
   useEffect(() => {
-    const fetchResponses = async () => {
-      setMainLoading(true);
+    const fetchForms = async () => {
       try {
-        const result = await getAllResponses();
-        setEvaluationCycle(result.data.evaluationCycle);
-        setQuestionData(result.data.questions);
+        setMainLoading(true);
+        const res = await getAllResponsesDropDown();
+        const formsList = res.data || [];
+        setForms(formsList);
+
+        if (formsList.length > 0) {
+          const firstCycleId = formsList[0].id || formsList[0].cycleId;
+          setSelectedCycleId(firstCycleId);
+
+          const response = await getAllResponsesById(firstCycleId);
+          const { questions } = response.data;
+          setQuestionData(questions || []);
+        }
       } catch (err: any) {
-        throw new Error(err?.message || 'Failed to fetch all responses');
+        throw new Error(err?.message || 'Failed to fetch cycle details');
       } finally {
         setMainLoading(false);
       }
     };
 
-    fetchResponses();
+    fetchForms();
   }, []);
+
+  const handleSelectForm = async (cycleId: string) => {
+    setSelectedCycleId(cycleId);
+    try {
+      setMainLoading(true);
+      const res = await getAllResponsesById(cycleId);
+
+      const { questions } = res.data;
+      setQuestionData(questions || []);
+    } catch (err: any) {
+      throw new Error(err?.message || 'Failed to fetch forms');
+    } finally {
+      setMainLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchSelfEvaluation = async () => {
       try {
         setLoading(true);
 
-        const employeeId = user?.employeeId;
         if (!employeeId) {
           throw new Error('Employee ID not found');
         }
 
-        const res = await getSelfEvaluation(employeeId);
+        const res = await getSelfEvaluation();
         const storedAnswer = res.data?.[0]?.responses?.[0]?.answer || '';
         setSelfEvaluationData(storedAnswer);
       } catch (err: any) {
@@ -159,7 +155,7 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({
     const fetchOverallRating = async () => {
       setLoading(true);
       try {
-        const response = await getOverallRating();
+        const response = await getOverallRating(employeeId);
         if (response?.data?.length > 0) {
           setRatingData(response.data[0]);
         } else {
@@ -181,36 +177,6 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({
       ) : (
         <>
           <Container>
-            <HeaderRow>
-              <TitleBlock>
-                <Title>{evaluationCycle?.name}</Title>
-
-                {evaluationCycle && (
-                  <DateDisplayContainer>
-                    <span className="date-item">
-                      <CalenderIcon />
-                      {formatDate(evaluationCycle.startDate)}
-                    </span>
-
-                    <span className="separator">To</span>
-
-                    <span className="date-item">
-                      <CalenderIcon />
-                      {formatDate(evaluationCycle.endDate)}
-                    </span>
-                  </DateDisplayContainer>
-                )}
-                <Subtitle>
-                  {evaluationCycle?.type?.toLowerCase() === 'annual'
-                    ? 'Annual Review'
-                    : evaluationCycle?.type}
-                </Subtitle>
-              </TitleBlock>
-            </HeaderRow>
-            {evaluationCycle?.formDescription && (
-              <DescriptionBox>{evaluationCycle.formDescription}</DescriptionBox>
-            )}
-
             <ReceiverRow>
               <ReceiverInfo>
                 <ReceiverLabel>Feedback Receiver Name</ReceiverLabel>
@@ -252,19 +218,36 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({
               {activeTab === 'all' && (
                 <>
                   <FeedbackHeaderRow>
-                    {showHideNames && (
-                      <HideNamesToggle>
-                        <SwitchLabel>
-                          <StyledSwitch
-                            type="checkbox"
-                            checked={hideNames}
-                            onChange={(e) => setHideNames(e.target.checked)}
-                          />
-                          <Slider />
-                        </SwitchLabel>
-                        <span>Hide feedback provider names</span>
-                      </HideNamesToggle>
-                    )}
+                    <SelectWrapper>
+                      <label htmlFor="feedbackFormSelect">Feedback Form</label>
+                      <DropdownMenu
+                        label={
+                          forms.length === 0
+                            ? 'No forms available'
+                            : 'Select form'
+                        }
+                        name="feedbackFormSelect"
+                        id="feedbackFormSelect"
+                        value={selectedCycleId || ''}
+                        required
+                        className="largeContainerExp"
+                        disabled={mainLoading || forms.length === 0}
+                        options={
+                          forms.length > 0
+                            ? forms.map((item) => ({
+                                label: item.cycleName,
+                                value: item.cycleId,
+                              }))
+                            : []
+                        }
+                        onChange={(selectedValue) => {
+                          if (selectedValue) {
+                            handleSelectForm(selectedValue);
+                          }
+                        }}
+                      />
+                    </SelectWrapper>
+
                     <QuestionProgress>
                       <NavButton
                         disabled={currentQuestionIndex === 0}
@@ -302,7 +285,7 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({
                         <QuestionBlock key={q.questionId}>
                           <QuestionHeader>
                             <QuestionText className="questionHeading">
-                              {`${currentQuestionIndex + 1}. ${q.title || ` ${q.questionId}`}`}
+                              {`${currentQuestionIndex + 1}. ${q.title || q.questionId}`}
                             </QuestionText>
                           </QuestionHeader>
 
@@ -311,21 +294,22 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({
                           )}
 
                           <ResponsesContainer>
-                            {q.responses?.length ? (
-                              q.responses.map((res: string, index: number) => (
-                                <React.Fragment key={index}>
-                                  <ResponseHeader>
-                                    <div>Response {index + 1}</div>
-                                    {showHideNames && !hideNames && (
-                                      <AuthorInfo>Anonymous</AuthorInfo>
-                                    )}
-                                  </ResponseHeader>
-
-                                  <ResponseInnerBox>{res}</ResponseInnerBox>
-                                </React.Fragment>
-                              ))
+                            {q.responses?.length &&
+                            q.responses.some((r) => r) ? (
+                              q.responses.map(
+                                (res: string | null, index: number) => (
+                                  <React.Fragment key={index}>
+                                    <ResponseHeader>
+                                      <div>Response {index + 1}</div>
+                                    </ResponseHeader>
+                                    <ResponseInnerBox>
+                                      {res || 'No response given'}
+                                    </ResponseInnerBox>
+                                  </React.Fragment>
+                                )
+                              )
                             ) : (
-                              <ResponseInnerBox>
+                              <ResponseInnerBox className="no-answer">
                                 No responses yet
                               </ResponseInnerBox>
                             )}

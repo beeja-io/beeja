@@ -751,7 +751,7 @@ export const GeneralDetailsTab = ({
                                     }
                                     $open={showHistory}
                                   >
-                                    . {t('View_History')}{' '}
+                                    {t('View_History')}{' '}
                                     <svg
                                       width="12"
                                       height="12"

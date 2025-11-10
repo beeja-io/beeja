@@ -151,11 +151,14 @@ export const ContainerStyleMulti = styled.div<{
       props.theme.colors.brandColors.primary};
   }
 `;
-export const ToggleButtonStyle = styled.div<{ disabled?: boolean }>`
+export const ToggleButtonStyle = styled.div<{
+  disabled?: boolean;
+  justify?: 'center' | 'space-between' | 'flex-start' | 'flex-end';
+}>`
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: ${({ justify = 'space-between' }) => justify};
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   margin-left: 7px;
   margin-top: 5px;
@@ -193,15 +196,22 @@ export const DropdownListStyle = styled.ul`
     background: #888;
   }
 `;
-export const DropdownItemStyle = styled.li<{ selected: boolean }>`
+export const DropdownItemStyle = styled.li<{
+  selected: boolean;
+  disabled?: boolean;
+}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   z-index: 999;
-  color: ${(props) => props.theme.colors.blackColors.black1};
-  background-color: ${(props) => props.theme.colors.blackColors.white6};
+  color: ${({ disabled, theme }) =>
+    disabled ? theme.colors.grayColors.gray5 : theme.colors.blackColors.black1};
+  background-color: ${({ disabled, theme }) =>
+    disabled ? theme.colors.grayColors.gray2 : theme.colors.grayColors.gray6};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
   font-weight: ${(props) => (props.selected ? 600 : 'normal')};
 
   &:hover {

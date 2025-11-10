@@ -159,6 +159,10 @@ export const NavBarContainer = styled.section`
     color: ${(props) =>
       props.theme.colors.blackColors.black}; // Change this to the desired color
   }
+  .dropdown-item {
+    white-space: pre-line;
+  }
+
   @media screen and (max-width: 800px) {
     // &.sidebar {
     //   display: none;

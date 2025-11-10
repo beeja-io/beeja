@@ -611,8 +611,8 @@ const AddEvaluationCycle: React.FC = () => {
                   id="reviewType"
                   style={{ border: 'none' }}
                   value={formData.reviewType || ''}
-                  width="160px"
-                  className="largeContainerFil"
+                  justify="center"
+                  className="largeContainerFil dropdownCenterFit"
                   onChange={(e) => {
                     const event = {
                       target: {
@@ -682,7 +682,7 @@ const AddEvaluationCycle: React.FC = () => {
                 ) : (
                   <StyledTextArea
                     placeholder="Add a description (optional)"
-                    className="description question-input"
+                    className="question-input description"
                     value={q.questionDescription}
                     rows={1}
                     ref={(el) => (answerRefs.current[index] = el)}

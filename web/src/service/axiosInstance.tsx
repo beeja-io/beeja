@@ -349,7 +349,13 @@ export const getAllPerformance = (): Promise<AxiosResponse> => {
 export const getPerformanceById = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.get(`/performance/v1/api/cycles/${id}/details`);
 };
-
+export const getMultiFormList = (
+  employeeId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/performance/v1/feedbackProvider/forms/${employeeId}`
+  );
+};
 export const getProvideFeedbackById = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.get(`/performance/v1/api/responses/cycle/${id}`);
 };
@@ -386,24 +392,30 @@ export const postSelfEvaluation = (data: any): Promise<AxiosResponse> => {
   );
 };
 
-export const getSelfEvaluation = (id: string): Promise<AxiosResponse> => {
+export const getSelfEvaluation = (): Promise<AxiosResponse> => {
   return axiosInstance.get(
-    `/performance/v1/api/responses/self-evaluation/employee/${id}`
+    `/performance/v1/api/responses/self-evaluation/employee/me`
   );
 };
 
-export const getAllResponses = (): Promise<AxiosResponse> => {
+export const getAllResponsesDropDown = (): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/v1/api/responses/my-feedback/forms `);
+};
+
+export const getAllResponsesById = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.get(
-    `/performance/v1/api/responses/employee/ULT11/grouped`
+    `/performance/v1/api/responses/my-feedback/cycle/${id}`
   );
 };
 
 export const postEmployeeResponse = (data: any): Promise<AxiosResponse> => {
   return axiosInstance.post(`/performance/v1/api/responses`, data);
 };
-export const getOverallRating = (): Promise<AxiosResponse> => {
+export const getOverallRating = (
+  employeeId: string
+): Promise<AxiosResponse> => {
   return axiosInstance.get(
-    `/performance/v1/api/ratings/employee/ULT11/cycle/CYCLE2028`
+    `/performance/v1/api/ratings/employee/${employeeId}/cycle/CYCLE2028`
   );
 };
 export const downloadClientLogo = (
@@ -784,4 +796,50 @@ export const createInvoice = (invoiceRequest: {
 
 export const getInvoicesBycontractId = (contractId: string) => {
   return axiosInstance.get(`/projects/v1/invoices/contract/${contractId}`);
+};
+
+export const searchUsers = (keyword: string) => {
+  return axiosInstance.get(
+    `/accounts/v1/users/search?keyword=${encodeURIComponent(keyword || '')}`
+  );
+};
+
+export const createReceiverList = async (payload: any) => {
+  return await axiosInstance.post('/performance/v1/feedbackReceivers', payload);
+};
+
+export const getReceivers = async (
+  cycleId: string,
+  questionnaireId: string
+) => {
+  return axiosInstance.get(
+    `/performance/v1/feedbackReceivers/${cycleId}/${questionnaireId}`
+  );
+};
+
+export const assignProvider = async (employeeId: string, payload: any) => {
+  return axiosInstance.post(
+    `/performance/v1/feedbackProvider/assign/${employeeId}`,
+    payload
+  );
+};
+
+export const getProviders = async (employeeId: string) => {
+  return axiosInstance.get(`/performance/v1/feedbackProvider/${employeeId}`);
+};
+
+export const getFeedbackProviderDetails = async (
+  employeeId: string,
+  cycleId: string
+) => {
+  return axiosInstance.get(
+    `/performance/v1/feedbackProvider/${employeeId}/${cycleId}`
+  );
+};
+
+export const updateFeedbackProviders = (employeeId: string, payload: any) => {
+  return axiosInstance.put(
+    `/performance/v1/feedbackProvider/providers/${employeeId}`,
+    payload
+  );
 };

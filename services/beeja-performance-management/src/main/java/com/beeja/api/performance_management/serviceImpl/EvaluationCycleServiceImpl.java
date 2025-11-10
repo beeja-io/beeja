@@ -521,6 +521,4 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         cycleRepository.deleteById(id);
         log.info(Constants.INFO_DELETED_EVALUATION_CYCLE, id);
     }
-
-
 }

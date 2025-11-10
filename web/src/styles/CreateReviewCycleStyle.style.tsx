@@ -17,6 +17,24 @@ export const FormContainer = styled.div`
   }
 `;
 
+export const FormSubContainer = styled.div`
+  background: ${(props) => props.theme.colors.blackColors.white6};
+  border: 1px solid ${(props) => props.theme.colors.blackColors.white2};
+  border-radius: 10px;
+  font-family: Nunito;
+  padding: 15px;
+
+  .formButtons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+  }
+  .noBorder {
+    border: none;
+  }
+`;
+
 export const FormInputsContainer = styled.div`
   display: flex;
   flex-direction: column;
@@ -41,12 +59,59 @@ export const FormInputsContainer = styled.div`
   }
 `;
 
+export const ControlsRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+`;
+
+export const SelectWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 12px;
+    color: #374151;
+  }
+`;
+
+export const FormsCount = styled.div`
+  font-size: 13px;
+  color: ${(props) => props.theme.colors.blackColors.black1};
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-family: Nunito;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+`;
+
+export const Count = styled.span`
+  color: ${(props) => props.theme.colors.brandColors.primary};
+  font-family: Nunito;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+`;
+
 export const FormLabelContainer = styled.div`
   width: 100%;
   padding: 20px 0px 10px 10px;
   border: 1px solid #e9eaec;
   border-radius: 10px;
-  background: #fff;
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
   margin: 15px 0;
   gap: 10px;
 
@@ -131,6 +196,10 @@ export const StyledTextArea = styled.textarea`
     position: absolute;
     bottom: 1px;
   }
+  &.description {
+    color: ${(props) => props.theme.colors.grayColors.gray7};
+    border: none;
+  }
 `;
 
 export const DescriptionButton = styled.button`
@@ -172,8 +241,12 @@ export const DescriptionButton = styled.button`
 export const QuestionBlock = styled.div`
   border-radius: 12px;
   padding: 1.2rem 0px;
-  background-color: transparent;
-
+  background-color: #00579205;
+  margin-bottom: 15px;
+  &.preview-block {
+    background-color: transparent;
+    padding: 0px;
+  }
   label {
     font-weight: 600;
     font-size: 13px;
@@ -214,7 +287,9 @@ export const QuestionBlock = styled.div`
       border-bottom: 1px solid #005792;
     }
   }
-
+  .question-input.description {
+    border-bottom: none;
+  }
   .answer-input {
     height: 55px;
     margin-bottom: 1rem;
@@ -240,7 +315,7 @@ export const QuestionBlock = styled.div`
     padding: 0 25px;
     background: transparent;
 
-    height: 65px;
+    height: 55px;
     border-radius: 10px;
 
     .add-btn {
@@ -417,7 +492,6 @@ export const TitleInput = styled.input`
   outline: none;
   background: transparent;
   width: 100%;
-  max-width: 600px;
 
   font-family: Nunito;
   font-weight: 700;
@@ -428,6 +502,10 @@ export const TitleInput = styled.input`
   letter-spacing: 0.3px;
   text-align: center;
   color: ${(props) => props.theme.colors.brandColors.primary};
+  &::placeholder {
+    color: ${(props) => props.theme.colors.blackColors.black7};
+    opacity: 1;
+  }
 `;
 
 export const DropdownRow = styled.div`
@@ -509,7 +587,7 @@ export const PreviewCard = styled.div`
   border-radius: 12px;
   background: ${(props) => props.theme.colors.backgroundColors.primary};
   border: 1px solid var(--Outline-stroke, #e9eaec);
-  margin: 40px 4% 0 4%;
+  margin: 40px 9% 0 9%;
   padding: 25px 5% 10px 5%;
   width: 100%;
 
@@ -520,6 +598,7 @@ export const PreviewCard = styled.div`
 export const Header = styled.div`
   text-align: center;
   margin-bottom: 20px;
+  margin-top: 20px;
 `;
 
 export const Title = styled.h2`
@@ -541,6 +620,45 @@ export const Title = styled.h2`
     display: inline-block;
     margin-right: 5px;
     cursor: pointer;
+  }
+`;
+
+export const TitleHeading = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: ${(props) => props.theme.colors.brandColors.primary};
+    margin: 0;
+  }
+`;
+
+export const BackButton = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #687588;
+  font-family: Nunito;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  cursor: pointer;
+  span {
+    transform: rotate(90deg);
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+  svg {
+    width: 18px;
+    height: 18px;
   }
 `;
 
@@ -603,13 +721,52 @@ export const Questions = styled.div`
   gap: 10px;
 `;
 
-export const QuestionText = styled.p`
-  font-weight: 500;
+// export const QuestionText = styled.p`
+// font-weight: 500;
+// font-size: 15px;
+//   margin-bottom: 8px;
+//   color: ${(props) => props.theme.colors.brandColors.primary};
+//   padding-left: 2em;
+//   text-indent: -1em;
+//   margin-left: 0;
+// `;
+
+export const QuestionText = styled.div`
+  display: grid;
+  font-weight: 600;
   font-size: 15px;
   margin-bottom: 8px;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: 0.25em;
+`;
+export const QuestionNumber = styled.span`
+  grid-column: 1;
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+
   color: ${(props) => props.theme.colors.brandColors.primary};
 `;
 
+export const QuestionMainText = styled.span`
+  grid-column: 2;
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+
+  color: ${(props) => props.theme.colors.brandColors.primary};
+`;
 export const SearchBox = styled.div`
   display: flex;
   width: 315px;
@@ -650,6 +807,7 @@ export const QuestionDescription = styled.p`
   line-height: 160%;
   letter-spacing: 0px;
   vertical-align: middle;
+  margin-left: 1em;
 `;
 
 export const RequiredMark = styled.span`

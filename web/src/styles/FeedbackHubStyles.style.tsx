@@ -21,14 +21,14 @@ export const Tab = styled.div<{ active: boolean }>`
   cursor: pointer;
   white-space: nowrap;
   border-bottom: 2px solid
-    ${(props) => (props.active ? '#007bff' : 'transparent')};
+    ${(props) => (props.active ? '#005792' : 'transparent')};
   color: ${(props) =>
     props.active
-      ? '#007bff'
+      ? '#005792'
       : '${(props) => props.theme.colors.blackColors.white6}'};
   font-weight: ${(props) => (props.active ? '600' : '500')};
   &:hover {
-    color: #007bff;
+    color: #005792;
   }
 `;
 

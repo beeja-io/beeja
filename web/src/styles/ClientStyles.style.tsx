@@ -935,11 +935,11 @@ export const nav_AddClient = styled.span`
   transform: rotate(90deg);
 `;
 
-export const CountBadge = styled.span`
+export const CountBadge = styled.span<{ $active?: boolean }>`
   position: relative;
   top: -8px;
   margin-left: 0;
-  background-color: #005792;
+  background-color: ${(props) => (props.$active ? '#005792' : '#cccccc')};
   color: #ffffffff;
   padding: 2px 8px;
   border-radius: 12px;
