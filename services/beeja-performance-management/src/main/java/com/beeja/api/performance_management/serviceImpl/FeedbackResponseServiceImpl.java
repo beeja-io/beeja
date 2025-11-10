@@ -11,20 +11,23 @@ import com.beeja.api.performance_management.model.dto.*;
 import com.beeja.api.performance_management.repository.EvaluationCycleRepository;
 import com.beeja.api.performance_management.repository.FeedbackProviderRepository;
 import com.beeja.api.performance_management.repository.FeedbackResponseRepository;
+import com.beeja.api.performance_management.response.MyFeedbackFormResponse;
 import com.beeja.api.performance_management.service.FeedbackResponseService;
 import com.beeja.api.performance_management.utils.BuildErrorMessage;
 import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
- * Implementation of {@link FeedbackResponseService}.
- * Handles feedback submission and retrieval for employees and cycles.
+ * Secure and multi-tenant safe implementation of FeedbackResponseService.
+ * All operations are scoped by organizationId to prevent data leaks across tenants.
  */
 @Service
 @Slf4j
@@ -42,12 +45,11 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         this.cycleRepository = cycleRepository;
     }
 
-    /**
-     * Retrieves organization ID from user context.
-     */
+    /** Helper: Safely fetch organization ID from UserContext. */
     private String getOrgId() {
         Map<String, Object> org = UserContext.getLoggedInUserOrganization();
-        if (org == null || org.get("id") == null) {
+        Object id = (org == null) ? null : org.get(Constants.ID);
+        if (id == null) {
             throw new BadRequestException(
                     BuildErrorMessage.buildErrorMessage(
                             ErrorType.VALIDATION_ERROR,
@@ -56,13 +58,9 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
                     ).toString()
             );
         }
-        return org.get("id").toString();
+        return id.toString();
     }
 
-    /**
-     * Submits feedback for a given form and employee.
-     * Automatically marks the reviewer as COMPLETED in FeedbackProvider.
-     */
     @Override
     public FeedbackResponse submitFeedback(SubmitFeedbackRequest req) {
         if (req == null) {
@@ -75,6 +73,8 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
             );
         }
 
+        String orgId = getOrgId();
+
         FeedbackResponse response = new FeedbackResponse();
         response.setFormId(req.getFormId());
         response.setEmployeeId(req.getEmployeeId());
@@ -84,32 +84,53 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         response.setResponses(req.getResponses());
         response.setSubmittedAt(Instant.now());
         response.setStatus(FormStatus.COMPLETED);
-        response.setOrganizationId(getOrgId());
+        response.setOrganizationId(orgId);
 
         try {
             FeedbackResponse saved = repository.save(response);
             log.info(Constants.FEEDBACK_SUBMITTED_SUCCESSFULLY, req.getEmployeeId(), req.getFormId());
 
-            String orgId = getOrgId();
-
-            feedbackProviderRepository
-                    .findByOrganizationIdAndEmployeeIdAndCycleId(orgId, req.getEmployeeId(), req.getCycleId())
-                    .ifPresent(provider -> {
-                        boolean updated = false;
-                        for (AssignedReviewer reviewer : provider.getAssignedReviewers()) {
-                            if (reviewer.getReviewerId().equals(req.getReviewerId())) {
-                                reviewer.setStatus(ProviderStatus.COMPLETED);
-                                updated = true;
+            // Update feedback provider reviewer status to COMPLETED
+            try {
+                feedbackProviderRepository
+                        .findByOrganizationIdAndEmployeeIdAndCycleId(orgId, req.getEmployeeId(), req.getCycleId())
+                        .ifPresent(provider -> {
+                            boolean updated = false;
+                            for (AssignedReviewer reviewer : provider.getAssignedReviewers()) {
+                                if (reviewer.getReviewerId().equals(req.getReviewerId())) {
+                                    reviewer.setStatus(ProviderStatus.COMPLETED);
+                                    updated = true;
+                                }
                             }
-                        }
 
-                        if (updated) {
+                            if (updated) {
+                                feedbackProviderRepository.save(provider);
+                                log.info(Constants.REVIEWER_MARKED_COMPLETED, req.getReviewerId(), req.getEmployeeId());
+                            } else {
+                                log.warn(Constants.REVIEWER_NOT_FOUND_IN_FEEDBACK_PROVIDER, req.getReviewerId(), req.getEmployeeId());
+                            }
+                        });
+
+            } catch (IncorrectResultSizeDataAccessException e) {
+                log.warn(Constants.MULTIPLE_FEEDBACK_PROVIDERS_FOUND,
+                        req.getEmployeeId(), req.getCycleId(), orgId);
+
+                List<FeedbackProvider> duplicates = feedbackProviderRepository.findByOrganizationId(orgId)
+                        .stream()
+                        .filter(p -> req.getEmployeeId().equals(p.getEmployeeId())
+                                && req.getCycleId().equals(p.getCycleId()))
+                        .toList();
+
+                for (FeedbackProvider provider : duplicates) {
+                    for (AssignedReviewer reviewer : provider.getAssignedReviewers()) {
+                        if (reviewer.getReviewerId().equals(req.getReviewerId())) {
+                            reviewer.setStatus(ProviderStatus.COMPLETED);
                             feedbackProviderRepository.save(provider);
-                            log.info(Constants.REVIEWER_MARKED_COMPLETED, req.getReviewerId(), req.getEmployeeId());
-                        } else {
-                            log.warn(Constants.REVIEWER_NOT_FOUND_IN_FEEDBACK_PROVIDER, req.getReviewerId(), req.getEmployeeId());
+                            log.info(Constants.REVIEWER_MARKED_COMPLETED_DUPLICATE, req.getReviewerId(), provider.getId());
                         }
-                    });
+                    }
+                }
+            }
 
             return saved;
 
@@ -119,9 +140,6 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         }
     }
 
-    /**
-     * Fetches feedback responses for a given form.
-     */
     @Override
     public List<FeedbackResponse> getByFormId(String formId) {
         if (formId == null || formId.isBlank()) {
@@ -130,9 +148,6 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return repository.findByFormIdAndOrganizationId(formId, getOrgId());
     }
 
-    /**
-     * Fetches feedback responses for a given employee and cycle.
-     */
     @Override
     public List<FeedbackResponse> getByEmployeeAndCycle(String employeeId, String cycleId) {
         if (employeeId == null || cycleId == null) {
@@ -141,9 +156,6 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return repository.findByEmployeeIdAndCycleIdAndOrganizationId(employeeId, cycleId, getOrgId());
     }
 
-    /**
-     * Fetches all feedback responses for a given employee.
-     */
     @Override
     public List<FeedbackResponse> getByEmployee(String employeeId) {
         if (employeeId == null || employeeId.isBlank()) {
@@ -152,13 +164,11 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return repository.findByEmployeeIdAndOrganizationId(employeeId, getOrgId());
     }
 
-    /**
-     * Returns grouped responses for an employee along with cycle details.
-     */
     @Override
     public EmployeeGroupedResponsesDTO getGroupedResponsesWithCycleByEmployee(String employeeId) {
+        String orgId = getOrgId();
         List<FeedbackResponse> responses =
-                repository.findByEmployeeIdAndOrganizationId(employeeId, getOrgId());
+                repository.findByEmployeeIdAndOrganizationId(employeeId, orgId);
 
         if (responses.isEmpty()) {
             throw new ResourceNotFoundException(
@@ -171,7 +181,7 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         }
 
         String cycleId = responses.get(0).getCycleId();
-        EvaluationCycle cycle = cycleRepository.findById(cycleId)
+        EvaluationCycle cycle = cycleRepository.findByIdAndOrganizationId(cycleId, orgId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         BuildErrorMessage.buildErrorMessage(
                                 ErrorType.RESOURCE_NOT_FOUND_ERROR,
@@ -194,12 +204,10 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return new EmployeeGroupedResponsesDTO(cycle, new ArrayList<>(groupedResponses.values()));
     }
 
-    /**
-     * Fetches all feedback responses for a given evaluation cycle.
-     */
     @Override
     public CycleWithResponsesDTO getResponsesForCycle(String cycleId) {
-        EvaluationCycle cycle = cycleRepository.findById(cycleId)
+        String orgId = getOrgId();
+        EvaluationCycle cycle = cycleRepository.findByIdAndOrganizationId(cycleId, orgId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         BuildErrorMessage.buildErrorMessage(
                                 ErrorType.RESOURCE_NOT_FOUND_ERROR,
@@ -208,7 +216,85 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
                         )
                 ));
 
-        List<FeedbackResponse> responses = repository.findByCycleIdAndOrganizationId(cycleId, getOrgId());
+        List<FeedbackResponse> responses = repository.findByCycleIdAndOrganizationId(cycleId, orgId);
         return new CycleWithResponsesDTO(cycle, responses);
+    }
+
+    @Override
+    public List<MyFeedbackFormResponse> getMyFeedbackForms() {
+        String orgId = getOrgId();
+        String employeeId = UserContext.getLoggedInEmployeeId();
+
+        List<FeedbackResponse> myResponses =
+                repository.findByEmployeeIdAndOrganizationId(employeeId, orgId);
+
+        if (myResponses.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<String> cycleIds = myResponses.stream()
+                .map(FeedbackResponse::getCycleId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        List<EvaluationCycle> cycles = cycleRepository.findByIdInAndOrganizationId(new ArrayList<>(cycleIds), orgId);
+
+        List<MyFeedbackFormResponse> result = new ArrayList<>();
+        for (EvaluationCycle cycle : cycles) {
+            result.add(new MyFeedbackFormResponse(
+                    cycle.getId(),
+                    cycle.getName(),
+                    cycle.getType() != null ? cycle.getType().name() : null,
+                    cycle.getStatus() != null ? cycle.getStatus().name() : null,
+                    cycle.getStartDate() != null ? cycle.getStartDate().toString() : null,
+                    cycle.getEndDate() != null ? cycle.getEndDate().toString() : null
+            ));
+        }
+
+        return result;
+    }
+
+    @Override
+    public EmployeeGroupedResponsesDTO getMyResponsesByCycle(String cycleId) {
+        String orgId = getOrgId();
+        String employeeId = UserContext.getLoggedInEmployeeId();
+
+        List<FeedbackResponse> responses =
+                repository.findByEmployeeIdAndCycleIdAndOrganizationId(employeeId, cycleId, orgId);
+
+        if (responses.isEmpty()) {
+            throw new ResourceNotFoundException(
+                    BuildErrorMessage.buildErrorMessage(
+                            ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                            ErrorCode.RESOURCE_NOT_FOUND,
+                            Constants.NO_FEEDBACK_RESPONSES_FOUND + cycleId
+                    )
+            );
+        }
+
+        EvaluationCycle cycle = cycleRepository.findByIdAndOrganizationId(cycleId, orgId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                                ErrorCode.RESOURCE_NOT_FOUND,
+                                Constants.CYCLE_NOT_FOUND + cycleId
+                        )
+                ));
+
+        Map<String, QuestionResponseDTO> grouped = new LinkedHashMap<>();
+
+        for (FeedbackResponse response : responses) {
+            for (QuestionAnswer qa : response.getResponses()) {
+                if (qa.getQuestionId() != null) {
+                    grouped.computeIfAbsent(qa.getQuestionId(), id -> {
+                        QuestionResponseDTO dto = new QuestionResponseDTO();
+                        dto.setQuestionId(id);
+                        return dto;
+                    }).getResponses().add(qa.getAnswer());
+                }
+            }
+        }
+
+        return new EmployeeGroupedResponsesDTO(cycle, new ArrayList<>(grouped.values()));
     }
 }

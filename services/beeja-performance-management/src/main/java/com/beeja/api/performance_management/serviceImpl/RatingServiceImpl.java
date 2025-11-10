@@ -13,11 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 
-import static com.beeja.api.performance_management.utils.Constants.NO_RESPONSES_FOUND_FOR_EMPLOYEE;
-
 /**
- * Service implementation for handling employee ratings.
- * Computes, retrieves, and publishes final ratings based on feedback and self-evaluation.
+ * Secure multi-tenant implementation for managing employee ratings.
+ * All repository calls are scoped by organizationId to prevent data leaks.
  */
 @Service
 public class RatingServiceImpl implements RatingService {
@@ -37,17 +35,23 @@ public class RatingServiceImpl implements RatingService {
     }
 
     /**
+     * Helper method to safely retrieve organizationId from user context.
+     */
+    private String getOrgId() {
+        Object org = UserContext.getLoggedInUserOrganization().get("id");
+        if (org == null) {
+            throw new IllegalStateException("Organization ID missing in user context");
+        }
+        return org.toString();
+    }
+
+    /**
      * Computes a final rating for an employee in a given evaluation cycle.
-     *
-     * @param employeeId Employee's ID
-     * @param cycleId    Evaluation cycle ID
-     * @param computedBy User computing the rating
-     * @return Saved FinalRating object
      */
     @Override
     @Transactional
     public FinalRating computeRating(String employeeId, String cycleId, String computedBy) {
-        String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+        String orgId = getOrgId();
         log.info(Constants.COMPUTING_RATING, employeeId, cycleId, orgId);
 
         List<FeedbackResponse> responses = responseRepo.findByEmployeeIdAndOrganizationId(employeeId, orgId);
@@ -76,14 +80,10 @@ public class RatingServiceImpl implements RatingService {
 
     /**
      * Retrieves all ratings for an employee in a specific cycle.
-     *
-     * @param employeeId Employee ID
-     * @param cycleId    Cycle ID
-     * @return List of FinalRating objects
      */
     @Override
     public List<FinalRating> getRatings(String employeeId, String cycleId) {
-        String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
+        String orgId = getOrgId();
         log.info(Constants.FETCHING_RATINGS, employeeId, cycleId, orgId);
 
         List<FinalRating> ratings = ratingRepo.findByEmployeeIdAndCycleIdAndOrganizationId(employeeId, cycleId, orgId);
@@ -96,18 +96,17 @@ public class RatingServiceImpl implements RatingService {
 
     /**
      * Publishes a final rating by marking it as published.
-     *
-     * @param id FinalRating ID
-     * @return Updated FinalRating object
+     * Ensures that the rating belongs to the same organization as the logged-in user.
      */
     @Override
     public FinalRating publishRating(String id) {
+        String orgId = getOrgId();
         log.info(Constants.PUBLISHING_FINAL_RATING, id);
 
-        FinalRating finalRating = ratingRepo.findById(id)
+        FinalRating finalRating = ratingRepo.findByIdAndOrganizationId(id, orgId)
                 .orElseThrow(() -> {
                     log.error(Constants.FINAL_RATING_NOT_FOUND, id);
-                    return new IllegalArgumentException("Final rating not found with ID: " + id);
+                    return new IllegalArgumentException("Final rating not found for this organization: " + id);
                 });
 
         finalRating.setPublished(true);
