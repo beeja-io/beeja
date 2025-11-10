@@ -137,6 +137,8 @@ public class Constants {
   public static final String INVOICE_DELETED_SUCCESSFULLY = "Invoice deleted successfully for id: {}";
   public static final String NOT_AUTHORIZED_TO_DELETE_INVOICE = "Not authorized to delete invoice";
   public static final String LINE = "________________________________________________________________________________";
-    public static final String INVOICE_ID_ALREADY_EXISTS = "Invoice ID already exists for this organization";
-    public static final String REMITTANCE_REF_ALREADY_EXISTS = "Remittance Reference already exists for this organization";
+  public static final String INVOICE_ID_ALREADY_EXISTS = "Invoice ID already exists for this organization";
+  public static final String REMITTANCE_REF_ALREADY_EXISTS = "Remittance Reference already exists for this organization";
+  public static final String TAX_ID_MISSING = "No Tax ID available (both org and request empty)";
+  public static final String INVOICE_UPLOAD_FAILED = "Invoice uploaded failed";
 }

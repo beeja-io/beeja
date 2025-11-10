@@ -137,7 +137,7 @@ const ClientList = ({
                       </td>
                       <td onClick={() => handleClientClick(client?.clientId)}>
                         {client?.clientName
-                          ? capitalizeFirstLetter(client?.clientName)
+                          ? client?.clientName
                           : '-'}
                       </td>
                       <td onClick={() => handleClientClick(client?.clientId)}>

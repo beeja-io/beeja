@@ -72,99 +72,105 @@ public class InvoicePDFGen {
     // --- HEDEAR PART(TITLE AND ADDRESS)---
 
     Table headerTable = new Table(UnitValue.createPercentArray(2)).useAllAvailableWidth();
+    String billingFromLabel = "Billing From : ";
+        Map<String, Object> orgDetails = UserContext.getLoggedInUserOrganization();
+        String billingFromName = orgDetails.get("name") != null
+                ? orgDetails.get("name").toString()
+                : "";
 
-      String billingFromLabel = "Billing From : ";
-      String billingFromName = UserContext.getLoggedInUserOrganization().get("name").toString();
-      Map<String, Object> map =
-              (Map<String, Object>) UserContext.getLoggedInUserOrganization().get("address");
+        Map<String, Object> addressMap = null;
+        Object addressObj = orgDetails.get("address");
+        if (addressObj instanceof Map<?, ?> tempMap) {
+            addressMap = (Map<String, Object>) tempMap;
+        }
 
-      StringBuilder billingFromBuilder = new StringBuilder();
+        String addressOne = addressMap != null && addressMap.get("addressOne") != null
+                ? addressMap.get("addressOne").toString().trim()
+                : "";
+        String city = addressMap != null && addressMap.get("city") != null
+                ? addressMap.get("city").toString().trim()
+                : "";
+        String state = addressMap != null && addressMap.get("state") != null
+                ? addressMap.get("state").toString().trim()
+                : "";
+        String pinCode = addressMap != null && addressMap.get("pinCode") != null
+                ? addressMap.get("pinCode").toString().trim()
+                : "";
+        String country = addressMap != null && addressMap.get("country") != null
+                ? addressMap.get("country").toString().trim()
+                : "";
+        StringBuilder billingFromBuilder = new StringBuilder();
 
-      Object addressOne = map.get("addressOne");
-      if (addressOne != null && !addressOne.toString().isBlank()) {
-          billingFromBuilder.append(addressOne.toString()).append("\n");
-      }
-      StringBuilder line2 = new StringBuilder();
-      Object city = map.get("city");
-      Object state = map.get("state");
-      Object pinCode = map.get("pinCode");
+        if (!addressOne.isEmpty()) billingFromBuilder.append(addressOne).append("\n");
 
-      if (city != null && !city.toString().isBlank()) {
-          line2.append(city);
-      }
-      if (state != null && !state.toString().isBlank()) {
-          if (!line2.isEmpty()) line2.append(", ");
-          line2.append(state);
-      }
-      if (pinCode != null && !pinCode.toString().isBlank()) {
-          if (line2.length() > 0) line2.append(", ");
-          line2.append(pinCode);
-      }
-      if (line2.length() > 0) {
-          billingFromBuilder.append(line2).append("\n");
-      }
-      Object country = map.get("country");
-      if (country != null && !country.toString().isBlank()) {
-          billingFromBuilder.append(country);
-      }
+        StringBuilder line2 = new StringBuilder();
+        if (!city.isEmpty()) line2.append(city);
+        if (!state.isEmpty()) {
+            if (!line2.isEmpty()) line2.append(", ");
+            line2.append(state);
+        }
+        if (!pinCode.isEmpty()) {
+            if (!line2.isEmpty()) line2.append(", ");
+            line2.append(pinCode);
+        }
+        if (!line2.isEmpty()) billingFromBuilder.append(line2).append("\n");
+        if (!country.isEmpty()) billingFromBuilder.append(country);
 
-      String billingFromAddress = billingFromBuilder.toString().trim();
+        String billingFromAddress = billingFromBuilder.toString().trim();
+        Paragraph leftAddressPara = new Paragraph()
+                .add(new Text(billingFromLabel).setFontSize(8).setBold().setFontColor(blueColor))
+                .add(new Text(billingFromName + "\n").setFontSize(10).setBold())
+                .add(new Text(billingFromAddress).setFontSize(8).setFontColor(grayColor));
 
+        headerTable.addCell(new Cell().add(leftAddressPara).setBorder(Border.NO_BORDER));
 
-      Paragraph leftAddressPara =
-              new Paragraph()
-                      .add(new Text(billingFromLabel).setFontSize(8).setBold().setFontColor(blueColor))
-                      .add(new Text(billingFromName + "\n").setFontSize(10).setBold())
-                      .add(new Text(billingFromAddress).setFontSize(8).setFontColor(grayColor));
-      headerTable.addCell(new Cell().add(leftAddressPara).setBorder(Border.NO_BORDER));
+        String billingToLabel = "Billing To : ";
+        Address clientAddress = client.getPrimaryAddress();
+        String billingToName = client.getClientName() != null ? client.getClientName().trim() : "";
+        String billingToAddress = "";
 
-      String billingToLabel = "Billing To : ";
-      Address clientAddress = client.getPrimaryAddress();
-      String billingToName = client.getClientName();
-      String billingToAddress = "";
-      if (clientAddress != null) {
-          StringBuilder addressBuilder = new StringBuilder();
+        if (clientAddress != null) {
+            StringBuilder addressBuilder = new StringBuilder();
+            if (clientAddress.getStreet() != null && !clientAddress.getStreet().isBlank()) {
+                addressBuilder.append(clientAddress.getStreet().trim()).append("\n");
+            }
+            StringBuilder line3 = new StringBuilder();
 
-          if (clientAddress.getStreet() != null && !clientAddress.getStreet().isBlank()) {
-              addressBuilder.append(clientAddress.getStreet()).append("\n");
-          }
-          StringBuilder line3 = new StringBuilder();
-          if (clientAddress.getCity() != null && !clientAddress.getCity().isBlank()) {
-              line2.append(clientAddress.getCity());
-          }
-          if (clientAddress.getState() != null && !clientAddress.getState().isBlank()) {
-              if (!line3.isEmpty()) line2.append(", ");
-              line2.append(clientAddress.getState());
-          }
-          if (clientAddress.getPostalCode() != null && !clientAddress.getPostalCode().isBlank()) {
-              if (!line3.isEmpty()) line2.append(", ");
-              line2.append(clientAddress.getPostalCode());
-          }
-          if (!line3.isEmpty()) {
-              addressBuilder.append(line2).append("\n");
-          }
+            if (clientAddress.getCity() != null && !clientAddress.getCity().isBlank()) {
+                line3.append(clientAddress.getCity().trim());
+            }
+            if (clientAddress.getState() != null && !clientAddress.getState().isBlank()) {
+                if (!line3.isEmpty()) line3.append(", ");
+                line3.append(clientAddress.getState().trim());
+            }
+            if (clientAddress.getPostalCode() != null && !clientAddress.getPostalCode().isBlank()) {
+                if (!line3.isEmpty()) line3.append(", ");
+                line3.append(clientAddress.getPostalCode().trim());
+            }
+            if (!line3.isEmpty()) {
+                addressBuilder.append(line3).append("\n");
+            }
+            if (clientAddress.getCountry() != null && !clientAddress.getCountry().isBlank()) {
+                addressBuilder.append(clientAddress.getCountry().trim());
+            }
 
-          if (clientAddress.getCountry() != null && !clientAddress.getCountry().isBlank()) {
-              addressBuilder.append(clientAddress.getCountry());
-          }
-          billingToAddress = addressBuilder.toString().trim();
-      }
+            billingToAddress = addressBuilder.toString().trim();
+        }
 
-      Paragraph rightAddressPara =
-              new Paragraph()
-                      .add(new Text(billingToLabel).setFontSize(8).setBold().setFontColor(blueColor))
-                      .add(new Text(billingToName + "\n").setFontSize(10).setBold())
-                      .add(new Text(billingToAddress).setFontSize(8).setFontColor(grayColor))
-                      .setTextAlignment(TextAlignment.RIGHT);
-      headerTable.addCell(new Cell().add(rightAddressPara).setBorder(Border.NO_BORDER));
+        Paragraph rightAddressPara = new Paragraph()
+                .add(new Text(billingToLabel).setFontSize(8).setBold().setFontColor(blueColor))
+                .add(new Text(billingToName + "\n").setFontSize(10).setBold())
+                .add(new Text(billingToAddress).setFontSize(8).setFontColor(grayColor))
+                .setTextAlignment(TextAlignment.RIGHT);
 
-      document.add(headerTable);
-      addLine(document, grayColor);
+        headerTable.addCell(new Cell().add(rightAddressPara).setBorder(Border.NO_BORDER));
+        document.add(headerTable);
+        addLine(document, grayColor);
 
-      // --- ID'S PART---
+        // --- ID'S PART---
 
-    Table idSection =
-        new Table(UnitValue.createPercentArray(new float[] {1, 1, 1})).useAllAvailableWidth();
+        Table idSection =
+                new Table(UnitValue.createPercentArray(new float[] {1, 1, 1})).useAllAvailableWidth();
 
     String remittanceRef = invoice.getRemittanceRef();
     String invoiceNo = invoice.getInvoiceId();
@@ -217,9 +223,15 @@ public class InvoicePDFGen {
     String startDate = formatter.format(stDate);
     Date dueDate = invoice.getInvoicePeriod().getEndDate();
     String endDate = formatter.format(dueDate);
-     String orgCity = map.get("city").toString();
+    String orgCity = (addressMap != null
+            && addressMap.get("city") != null
+            && !addressMap.get("city").toString().trim().isEmpty())
+            ? addressMap.get("city").toString().trim()
+              : "";
 
-    Date current = new Date();
+
+
+      Date current = new Date();
     String contractCreatedAt = formatter.format(current);
 
     Paragraph invoiceDesc =
@@ -231,7 +243,7 @@ public class InvoicePDFGen {
             .add(new Text(startDate + " To " + endDate).setFontSize(9).setFontColor(grayColor)).add("\n")
             .setMarginTop(5);
 
-      String cityText = (orgCity != null && !orgCity.trim().isEmpty())
+      String cityText = !orgCity.trim().isEmpty()
               ? orgCity + ", "
               : "";
     Paragraph clientDetails =
@@ -329,7 +341,7 @@ public class InvoicePDFGen {
 
     // ------CALCULATION PART---------
 
-    double subTotal = totalAmount; // totalAmount is already calculated
+    double subTotal = totalAmount;
     int vatPercentage = invoice.getVat();
     double vatValue = (vatPercentage / 100.0) * subTotal;
     double finalTotal = subTotal + vatValue;
@@ -415,10 +427,10 @@ public class InvoicePDFGen {
       addLine(document, grayColor);
     // ----- PAYMENT SECTION -----
 
-    String orgName = invoice.getPaymentDetails().getAccountName().toString();
-    String bankName = invoice.getPaymentDetails().getBankName().toString();
-    String accountNo = invoice.getPaymentDetails().getAccountNumber().toString();
-    String isfc = invoice.getPaymentDetails().getIfscNumber().toString();
+    String orgName = invoice.getPaymentDetails().getAccountName();
+    String bankName = invoice.getPaymentDetails().getBankName();
+    String accountNo = invoice.getPaymentDetails().getAccountNumber();
+    String ifsc = invoice.getPaymentDetails().getIfscNumber();
 
     Paragraph paymentHeader =
         new Paragraph("Payment Details")
@@ -472,7 +484,7 @@ public class InvoicePDFGen {
         new Cell().add(new Paragraph("IFSC")).setBorder(Border.NO_BORDER).setFontColor(grayColor));
     paymentTable.addCell(
         new Cell()
-            .add(new Paragraph(isfc))
+            .add(new Paragraph(ifsc))
             .setBorder(Border.NO_BORDER)
             .setBold()
             .setFontColor(blackColor));

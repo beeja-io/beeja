@@ -22,7 +22,6 @@ import { ProjectEntity, ProjectStatus } from '../entities/ProjectEntity';
 import { updateProjectStatus } from '../service/axiosInstance';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
-import { capitalizeFirstLetter } from '../utils/stringUtils';
 import Pagination from '../components/directComponents/Pagination.component';
 import { PROJECT_MODULE } from '../constants/PermissionConstants';
 import { hasPermission } from '../utils/permissionCheck';
@@ -166,7 +165,7 @@ const ProjectList = ({
                           }
                         >
                           {project?.name
-                            ? capitalizeFirstLetter(project.name)
+                            ? project.name
                             : '-'}
                         </td>
                         <td
@@ -178,7 +177,7 @@ const ProjectList = ({
                           }
                         >
                           {project?.clientName
-                            ? capitalizeFirstLetter(project?.clientName)
+                            ? project?.clientName
                             : '-'}
                         </td>
                         <td
