@@ -11,4 +11,6 @@ public interface FeedbackReceiverRepository extends MongoRepository<FeedbackRece
 
     List<FeedbackReceivers> findByOrganizationIdAndCycleIdAndQuestionnaireId(
             String organizationId, String cycleId, String questionnaireId);
+
+    List<FeedbackReceivers> findByEmployeeIdAndOrganizationId(String employeeId, String string);
 }
