@@ -30,6 +30,19 @@ export const Tab = styled.div<{ active: boolean }>`
   &:hover {
     color: #005792;
   }
+  .badge {
+    background-color: #005792;
+    color: #fff;
+    border-radius: 50%;
+    width: 22px;
+    height: 22px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 22px;
+    text-align: center;
+    display: inline-block;
+    margin-left: 7px;
+  }
 `;
 
 export const TabContent = styled.div`

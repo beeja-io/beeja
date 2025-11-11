@@ -207,16 +207,18 @@ export const DropdownItemStyle = styled.li<{
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   z-index: 999;
   color: ${({ disabled, theme }) =>
-    disabled ? theme.colors.grayColors.gray5 : theme.colors.blackColors.black1};
+    disabled ? theme.colors.grayColors.gray7 : theme.colors.blackColors.black1};
   background-color: ${({ disabled, theme }) =>
-    disabled ? theme.colors.grayColors.gray2 : theme.colors.grayColors.gray6};
-  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
-  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+    disabled ? theme.colors.grayColors.gray4 : theme.colors.blackColors.white6};
   font-weight: ${(props) => (props.selected ? 600 : 'normal')};
 
   &:hover {
-    background-color: ${(props) => props.theme.colors.grayColors.gray6};
-    color: ${(props) => props.theme.colors.blackColors.black7};
+    background-color: ${({ disabled, theme }) =>
+      disabled ? theme.colors.grayColors.gray4 : theme.colors.grayColors.gray6};
+    color: ${({ disabled, theme }) =>
+      disabled
+        ? theme.colors.grayColors.gray7
+        : theme.colors.blackColors.black7};
   }
 `;
 

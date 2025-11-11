@@ -139,8 +139,8 @@ export const NameBox = styled.div`
 
 export const NavButton = styled.button<{ primary?: boolean }>`
   color: ${(p) => (p.primary ? '#fff' : '#222')};
-  border: none;
   border-radius: 6px;
+  border: 1px solid #f1f2f4;
   padding: 6px;
   font-size: 16px;
   font-weight: 400;
@@ -166,6 +166,8 @@ export const NavButton = styled.button<{ primary?: boolean }>`
     height: 18px;
     display: block;
     transition: transform 0.18s ease;
+    fill: currentColor;
+    stroke: currentColor;
   }
 
   .arrow.left svg {
@@ -205,11 +207,18 @@ export const ResponseHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-weight: 400;
-  font-size: 14px;
-  color: #687588;
+  color: ${(props) => props.theme.colors.blackColors.black1};
   margin-bottom: 8px;
   margin-top: 12px;
+
+  font-family: Nunito;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 13.71px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
 `;
 
 export const ResponseInnerBox = styled.div`

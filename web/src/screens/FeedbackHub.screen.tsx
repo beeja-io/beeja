@@ -22,6 +22,7 @@ const FeedbackHub = () => {
   const [activeTab, setActiveTab] = useState<
     'Feedback Requests' | 'Self Evaluation' | 'My Feedbacks'
   >('Feedback Requests');
+  const [pendingCount, setPendingCount] = useState(0);
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -54,6 +55,9 @@ const FeedbackHub = () => {
                     onClick={() => setActiveTab(tab as any)}
                   >
                     {t(tab)}
+                    {tab === 'Feedback Requests' && pendingCount > 0 && (
+                      <span className="badge">{pendingCount}</span>
+                    )}
                   </Tab>
                 )
               )}
@@ -61,7 +65,10 @@ const FeedbackHub = () => {
           </TabHeading>
           <TabContent>
             {activeTab === 'Feedback Requests' && (
-              <ProvideFeedback user={user} />
+              <ProvideFeedback
+                user={user}
+                onPendingCountChange={setPendingCount}
+              />
             )}
 
             {activeTab === 'Self Evaluation' && <SelfEvaluationForm />}

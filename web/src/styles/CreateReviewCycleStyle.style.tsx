@@ -72,8 +72,15 @@ export const SelectWrapper = styled.div`
   gap: 6px;
 
   label {
-    font-size: 12px;
-    color: #374151;
+    font-family: Nunito;
+    font-weight: 500;
+    font-style: Medium;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+    color: ${(props) => props.theme.colors.blackColors.black7};
   }
 `;
 

@@ -19,7 +19,7 @@ import {
   ReceiverInfo,
   ReceiverLabel,
   ReceiverRow,
-} from '../../styles/EvaluationOverview.style';
+} from '../../styles/FeedbackReceivedStyles.style';
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
 
 import {
@@ -117,6 +117,7 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
 
   const handleSelectForm = async (cycleId: string) => {
     setSelectedCycleId(cycleId);
+    setCurrentQuestionIndex(0);
     try {
       setMainLoading(true);
       const res = await getAllResponsesById(cycleId);
@@ -295,19 +296,17 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
 
                           <ResponsesContainer>
                             {q.responses?.length &&
-                            q.responses.some((r) => r) ? (
-                              q.responses.map(
-                                (res: string | null, index: number) => (
+                            q.responses.some((r) => !!r) ? (
+                              q.responses
+                                .filter((res) => !!res)
+                                .map((res: string, index: number) => (
                                   <React.Fragment key={index}>
                                     <ResponseHeader>
                                       <div>Response {index + 1}</div>
                                     </ResponseHeader>
-                                    <ResponseInnerBox>
-                                      {res || 'No response given'}
-                                    </ResponseInnerBox>
+                                    <ResponseInnerBox>{res}</ResponseInnerBox>
                                   </React.Fragment>
-                                )
-                              )
+                                ))
                             ) : (
                               <ResponseInnerBox className="no-answer">
                                 No responses yet

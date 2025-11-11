@@ -90,9 +90,13 @@ interface FeedbackItem {
 
 type ProvideFeedbackProps = {
   user?: any;
+  onPendingCountChange?: (count: number) => void;
 };
 
-const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
+const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
+  user,
+  onPendingCountChange,
+}) => {
   const [formData, setFormData] = useState<PerformanceFormData | null>(null);
   const [selectedEmployee, setSelectedEmployee] = useState<FeedbackItem | null>(
     null
@@ -135,6 +139,10 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
           };
         });
         setFeedbackData(formattedData);
+        const pending = formattedData.filter(
+          (emp: any) => !emp.submitted
+        ).length;
+        if (onPendingCountChange) onPendingCountChange(pending);
       } else {
         setFeedbackData([]);
       }
@@ -309,8 +317,6 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
       const formListResponse = await getMultiFormList(
         selectedEmployee.employeeId
       );
-      // const updatedForms = formListResponse.data || [];
-      // setForms(updatedForms);
 
       const updatedForms = formListResponse.data || [];
       const mappedForms = updatedForms.map((form: any) => ({
@@ -336,6 +342,21 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
           `All feedback forms for ${selectedEmployee.name} have been submitted!`
         );
         setShowSuccessMessage(true);
+        setFeedbackData((prevData) => {
+          const updatedData = prevData.map((item) =>
+            item.employeeId === selectedEmployee.employeeId
+              ? { ...item, submitted: true }
+              : item
+          );
+
+          if (onPendingCountChange) {
+            const pending = updatedData.filter((emp) => !emp.submitted).length;
+            onPendingCountChange(pending);
+          }
+
+          return updatedData;
+        });
+
         fetchFeedbackData();
       }
       setPreviewMode(false);
@@ -361,6 +382,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({ user }) => {
   const goToPreviousPage = () => {
     setSelectedEmployee(null);
     setFormData(null);
+    fetchFeedbackData();
   };
 
   const handleSelectForm = (formId: string) => {
