@@ -70,6 +70,12 @@ public class Constants {
   public static final String START_DATE_AFTER_END_DATE = "Start date must be on or before the end date";
   public static final String INFO_CREATING_CYCLE_WITH_QUESTIONS = "Creating evaluation cycle with questions: {}";
   public static final String ERROR_CREATING_QUESTIONNAIRE = "Failed to create questionnaire";
+  public static final String INFO_QUESTIONNAIRE_FETCHING_QUESTIONNAIRE_BY_ID = "Fetching questionnaire by ID.";
+  public static final String INFO_VALIDATING_ACCESS_FOR_CYCLE_ID = "Validating access for cycle ID: {} (today: {})";
+  public static final String ERROR_FORM_EXPIRED_END_DATE_PASSED = "Form expired — end date passed for cycle {}";
+  public static final String ERROR_EVALUATION_FORM_EXPIRED_END_DATE_PASSED = "This evaluation form has expired — the evaluation end date has passed.";
+  public static final String ERROR_SELF_EVALUATION_DEADLINE_PASSED_FOR_CYCLE = "Self-evaluation deadline passed for cycle {}";
+  public static final String ERROR_FEEDBACK_DEADLINE_PASSED_FOR_CYCLE = "Feedback deadline passed for cycle {}";
 
   // ========= LOG For Feedback Providers =========/
   public static final String FEEDBACK_REQUEST_NULL = "FeedbackFormRequest is null";
@@ -86,6 +92,14 @@ public class Constants {
   public static final String ERROR_FETCHING_ASSIGNED_EMPLOYEES = "Error while fetching assigned employees for reviewer: {}";
   public static final String ERROR_FETCHING_CYCLE_NAME = "Unable to fetch cycle name for cycleId {}: {}";
   public static final String ERROR_FETCHING_FORMS = "Error while fetching forms for employeeId {} reviewerId {}: {}";
+  public static final String INFO_DELETING_CYCLE_ID_FOR_ORG_ID = "Deleting cycle ID: {} for OrgId: {}";
+  public static final String INFO_FETCHING_ACTIVE_EVALUATION_CYCLE_FOR_ORG_ID_AND_STATUS = "Fetching active evaluation cycle for OrgId: {} and status: {}";
+  public static final String INFO_NO_EVALUATION_CYCLES_FOUND_WITH_STATUS = "No evaluation cycles found with status: {}";
+  public static final String INFO_FETCHED_CYCLES_WITH_STATUS = "Fetched {} cycles with status {}";
+  public static final String INFO_NO_EVALUATION_CYCLES_FOUND_FOR_ORGANIZATION = "No evaluation cycles found for your organization.";
+  public static final String INFO_FETCHED_EVALUATION_CYCLES_FOR_ORG_ID = "Fetched {} evaluation cycles for OrgId: {}";
+  public static final String ERROR_FAILED_TO_FETCH_EVALUATION_CYCLES = "Failed to fetch evaluation cycles.";
+
     // ========= LOG For Feedback Receivers =========//
     public static final String FEEDBACK_RECEIVERS_NULL = "Adding FeedbackReceivers ReceiverRequest is null";
     public static final String DUPLICATE_EMPLOYEE_ID = "Duplicate Employee ID found in request";
@@ -137,5 +151,4 @@ public class Constants {
     public static final String SELF_EVALUATION_SUBMITTED_SUCCESSFULLY = "Self-evaluation submitted successfully for employee {}";
     public static final String NULL_OR_EMPTY_EMPLOYEE_ID_WHILE_FETCHING_SELF_EVAL = "Attempted to fetch self-evaluations with null or empty employee ID";
     public static final String FETCHED_SELF_EVALUATIONS_FOR_EMPLOYEE = "Fetched {} self-evaluation(s) for employee {}";
-  
 }
