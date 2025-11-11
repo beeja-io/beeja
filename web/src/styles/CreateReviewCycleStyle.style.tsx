@@ -12,6 +12,27 @@ export const FormContainer = styled.div`
     gap: 40px;
     width: 100%;
   }
+  .noBorder {
+    border: none;
+  }
+`;
+
+export const FormSubContainer = styled.div`
+  background: ${(props) => props.theme.colors.blackColors.white6};
+  border: 1px solid ${(props) => props.theme.colors.blackColors.white2};
+  border-radius: 10px;
+  font-family: Nunito;
+  padding: 15px;
+
+  .formButtons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+  }
+  .noBorder {
+    border: none;
+  }
 `;
 
 export const FormInputsContainer = styled.div`
@@ -38,12 +59,66 @@ export const FormInputsContainer = styled.div`
   }
 `;
 
+export const ControlsRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+`;
+
+export const SelectWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-family: Nunito;
+    font-weight: 500;
+    font-style: Medium;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+    color: ${(props) => props.theme.colors.blackColors.black7};
+  }
+`;
+
+export const FormsCount = styled.div`
+  font-size: 13px;
+  color: ${(props) => props.theme.colors.blackColors.black1};
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-family: Nunito;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+`;
+
+export const Count = styled.span`
+  color: ${(props) => props.theme.colors.brandColors.primary};
+  font-family: Nunito;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+`;
+
 export const FormLabelContainer = styled.div`
   width: 100%;
   padding: 20px 0px 10px 10px;
   border: 1px solid #e9eaec;
   border-radius: 10px;
-  background: #fff;
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
   margin: 15px 0;
   gap: 10px;
 
@@ -120,7 +195,9 @@ export const StyledTextArea = styled.textarea`
   line-height: 160%;
   letter-spacing: 0px;
   vertical-align: middle;
-
+  &.answer-color {
+    color: ${(props) => props.theme.colors.grayColors.gray7};
+  }
   &::placeholder {
     color: #999;
     position: absolute;
@@ -545,24 +622,72 @@ export const Title = styled.h2`
   letter-spacing: 0.3px;
   text-align: center;
   color: ${(props) => props.theme.colors.brandColors.primary};
+  span {
+    transform: rotate(90deg);
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+`;
+
+export const TitleHeading = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: ${(props) => props.theme.colors.brandColors.primary};
+    margin: 0;
+  }
+`;
+
+export const BackButton = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #687588;
+  font-family: Nunito;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  cursor: pointer;
+  span {
+    transform: rotate(90deg);
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+  svg {
+    width: 18px;
+    height: 18px;
+  }
 `;
 
 export const DateRow = styled.div`
   font-size: 14px;
   color: #6b7280;
   margin: 6px 0;
+  svg path {
+    fill: ${(props) => props.theme.colors.grayColors.gray9};
+  }
 `;
 
 export const DateText = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  > svg path {
+
+  svg path {
     fill: ${(props) => props.theme.colors.grayColors.gray9};
   }
-
-  &:hover svg path {
-    fill: ${(props) => props.theme.colors.blackColors.black1};
+  span {
+    margin: 0 8px;
   }
 `;
 
@@ -583,9 +708,18 @@ export const DescriptionBox = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
-  margin: 10px 0px 30px 0px;
-  font-size: 14px;
-  color: #717171;
+  margin: 10px 0px 25px 0px;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: ${(props) => props.theme.colors.blackColors.black7};
+  &.preview-mode {
+    background: transparent;
+  }
 `;
 
 export const Questions = styled.div`
@@ -698,4 +832,11 @@ export const ActionMenu = styled.div`
   svg {
     display: block;
   }
+`;
+
+export const ErrorText = styled.span`
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
 `;

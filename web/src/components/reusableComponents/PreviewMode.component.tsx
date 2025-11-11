@@ -4,6 +4,7 @@ import {
   DateRow,
   DateText,
   DescriptionBox,
+  ErrorText,
   FooterContainer,
   Header,
   Label,
@@ -21,8 +22,11 @@ import {
 } from '../../styles/CreateReviewCycleStyle.style';
 import { Button } from '../../styles/CommonStyles.style';
 import { useTranslation } from 'react-i18next';
+import {
+  AnswerField,
+  ReadOnlyInput,
+} from '../../styles/FeedbackHubStyles.style';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
-import { ReviewType, ReviewTypeLabels } from './PerformanceEnums.component';
 
 type Question = {
   question: string;
@@ -42,8 +46,11 @@ type FormData = {
 
 type Props = {
   formData: FormData;
-  onEdit: () => void;
-  onConfirm: () => Promise<void> | void;
+  onEdit?: () => void;
+  onConfirm?: () => Promise<void> | void;
+  showAnswers?: boolean;
+  feedbackReceiverName?: string;
+  validationErrors?: boolean[];
 };
 
 const formatDate = (dateStr: string | Date) => {
@@ -56,7 +63,14 @@ const formatDate = (dateStr: string | Date) => {
   });
 };
 
-const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
+const PreviewMode: React.FC<Props> = ({
+  formData,
+  onEdit,
+  onConfirm,
+  showAnswers = false,
+  feedbackReceiverName,
+  validationErrors,
+}) => {
   const { t } = useTranslation();
   return (
     <PreviewWrapper>
@@ -74,30 +88,25 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
           </DateRow>
           <Subtitle>
             {formData.reviewType
-              ? `${ReviewTypeLabels[formData.reviewType as ReviewType]} Review`
+              ? `${formData.reviewType.charAt(0).toUpperCase()}${formData.reviewType.slice(1).toLowerCase()} Review`
               : ''}
           </Subtitle>
         </Header>
         <Label>Form Description</Label>
-        <DescriptionBox>
+        <DescriptionBox className="preview-mode">
           {formData.formDescription || 'No description provided.'}
         </DescriptionBox>
+        {showAnswers && feedbackReceiverName && (
+          <div style={{ marginBottom: '20px' }}>
+            <Label>
+              Feedback Receiver Name<RequiredMark>*</RequiredMark>
+            </Label>
 
+            <ReadOnlyInput value={feedbackReceiverName} readOnly />
+          </div>
+        )}
         <Questions>
           {formData.questions.map((q, index) => (
-            // <QuestionBlock key={index} className="preview-block">
-            //   <QuestionText>
-            //     <span>{index + 1}.&nbsp;</span>
-            //     {q.question}
-            //     {q.required && <RequiredMark>*</RequiredMark>}
-            //   </QuestionText>
-            //   {q.questionDescription && (
-            //     <QuestionDescription>
-            //       {q.questionDescription}
-            //     </QuestionDescription>
-            //   )}
-            // </QuestionBlock>
-
             <QuestionBlock key={index} className="preview-block">
               <QuestionText>
                 <QuestionNumber>{index + 1}.</QuestionNumber>
@@ -111,21 +120,19 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
                   {q.questionDescription}
                 </QuestionDescription>
               )}
+              {showAnswers && (
+                <>
+                  {q.answer ? (
+                    <ReadOnlyInput value={q.answer} readOnly />
+                  ) : (
+                    <AnswerField placeholder="No answer provided" disabled />
+                  )}
+                  {validationErrors?.[index] && (
+                    <ErrorText>This field is required</ErrorText>
+                  )}
+                </>
+              )}
             </QuestionBlock>
-            // <QuestionBlock
-            //   key={index}
-            //   style={{
-            //     display: 'grid',
-            //     gridTemplateColumns: '2em 1fr',
-            //     alignItems: 'start',
-            //   }}
-            // >
-            //   <span style={{ gridColumn: 1 }}>{index + 1}.</span>
-            //   <QuestionText style={{ gridColumn: 2, marginLeft: 0 }}>
-            //     {q.question}
-            //     {q.required && <RequiredMark>*</RequiredMark>}
-            //   </QuestionText>
-            // </QuestionBlock>
           ))}
         </Questions>
 
@@ -135,7 +142,7 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
               {t('Edit')}
             </Button>
             <Button className="submit" type="button" onClick={onConfirm}>
-              {t('Save')}
+              {t('Save & Continue')}
             </Button>
           </ButtonGroup>
         </FooterContainer>

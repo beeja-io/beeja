@@ -196,20 +196,29 @@ export const DropdownListStyle = styled.ul`
     background: #888;
   }
 `;
-export const DropdownItemStyle = styled.li<{ selected: boolean }>`
+export const DropdownItemStyle = styled.li<{
+  selected: boolean;
+  disabled?: boolean;
+}>`
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
   z-index: 999;
-  color: ${(props) => props.theme.colors.blackColors.black1};
-  background-color: ${(props) => props.theme.colors.blackColors.white6};
+  color: ${({ disabled, theme }) =>
+    disabled ? theme.colors.grayColors.gray7 : theme.colors.blackColors.black1};
+  background-color: ${({ disabled, theme }) =>
+    disabled ? theme.colors.grayColors.gray4 : theme.colors.blackColors.white6};
   font-weight: ${(props) => (props.selected ? 600 : 'normal')};
 
   &:hover {
-    background-color: ${(props) => props.theme.colors.grayColors.gray6};
-    color: ${(props) => props.theme.colors.blackColors.black7};
+    background-color: ${({ disabled, theme }) =>
+      disabled ? theme.colors.grayColors.gray4 : theme.colors.grayColors.gray6};
+    color: ${({ disabled, theme }) =>
+      disabled
+        ? theme.colors.grayColors.gray7
+        : theme.colors.blackColors.black7};
   }
 `;
 

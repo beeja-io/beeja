@@ -349,6 +349,16 @@ export const getAllPerformance = (): Promise<AxiosResponse> => {
 export const getPerformanceById = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.get(`/performance/v1/api/cycles/${id}/details`);
 };
+export const getMultiFormList = (
+  employeeId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/performance/v1/feedbackProvider/forms/${employeeId}`
+  );
+};
+export const getProvideFeedbackById = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/v1/api/responses/cycle/${id}`);
+};
 
 export const updatePerformanceCycle = (
   id: string,
@@ -364,6 +374,50 @@ export const deletePerformanceCycle = (id: string): Promise<AxiosResponse> => {
   return axiosInstance.delete(`/performance/v1/api/cycles/${id}`);
 };
 
+export const submitFeedback = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/performance/v1/api/responses`, data);
+};
+
+export const getFeedBackById = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/v1/api/responses/form/${id}`);
+};
+
+export const getFeedBackProviderReviewer = (): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/v1/feedbackProvider/reviewer`);
+};
+export const postSelfEvaluation = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(
+    `/performance/v1/api/responses/self-evaluation`,
+    data
+  );
+};
+
+export const getSelfEvaluation = (): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/performance/v1/api/responses/self-evaluation/employee/me`
+  );
+};
+
+export const getAllResponsesDropDown = (): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/v1/api/responses/my-feedback/forms`);
+};
+
+export const getAllResponsesById = (id: string): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/performance/v1/api/responses/my-feedback/cycle/${id}`
+  );
+};
+
+export const postEmployeeResponse = (data: any): Promise<AxiosResponse> => {
+  return axiosInstance.post(`/performance/v1/api/responses`, data);
+};
+export const getOverallRating = (
+  employeeId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/performance/v1/api/overview/employee/${employeeId}/overall-rating`
+  );
+};
 export const downloadClientLogo = (
   fileId: string
 ): Promise<AxiosResponse<Blob>> => {

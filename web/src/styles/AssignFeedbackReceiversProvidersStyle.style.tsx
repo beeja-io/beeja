@@ -351,6 +351,11 @@ export const ActionMenuOptions = styled.div`
   gap: 20px;
   background: transparent;
 
+  > svg path {
+    fill: none;
+    stroke: ${(props) => props.theme.colors.blackColors.black1};
+  }
+
   &:hover {
     background: ${(props) => props.theme.colors.grayColors.gray6};
     border-radius: 10px;

@@ -27,7 +27,7 @@ type DropdownMenuProps = {
   name?: string;
   id?: string;
   className?: string | null;
-  options: { label: string; value: string | null }[];
+  options: { label: string; value: string | null; disabled?: boolean }[];
   value?: string | null;
   onChange?: (value: string | null) => void;
   disabled?: boolean;
@@ -258,7 +258,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
                 <DropdownItemStyle
                   key={item.value ?? index}
                   selected={isSelected}
-                  onClick={() => handleSelect(item)}
+                  disabled={item.disabled}
+                  onClick={() => !item.disabled && handleSelect(item)}
                 >
                   <span>{item.label}</span>
                   <CheckIconStyle selected={isSelected}>
