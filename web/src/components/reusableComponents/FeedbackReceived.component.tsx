@@ -157,11 +157,7 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
       setLoading(true);
       try {
         const response = await getOverallRating(employeeId);
-        if (response?.data?.length > 0) {
-          setRatingData(response.data[0]);
-        } else {
-          setRatingData(null);
-        }
+        setRatingData(response.data);
       } catch (error) {
         setRatingData(null);
       } finally {

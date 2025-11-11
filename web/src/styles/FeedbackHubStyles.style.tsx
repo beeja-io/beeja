@@ -237,7 +237,7 @@ export const AnswerField = styled.textarea`
 `;
 
 export const RatingBox = styled.div`
-  background: #f8fbff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 20px 24px;
@@ -257,21 +257,30 @@ export const RatingIcon = styled.div`
 `;
 
 export const RatingValue = styled.div`
+  font-family: Nunito;
+  font-weight: 700;
+  font-style: Bold;
   font-size: 16px;
-  font-weight: 600;
-  color: #1c274c;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0.2px;
+  color: #005792;
 
   span {
-    font-weight: 400;
-    color: #687588;
     margin-left: 4px;
   }
 `;
 
 export const RatingText = styled.p`
+  font-family: Nunito;
+  font-weight: 500;
+  font-style: Medium;
   font-size: 14px;
-  color: #344054;
-  line-height: 1.6;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: ${(props) => props.theme.colors.blackColors.black7};
   margin: 0;
 `;
 

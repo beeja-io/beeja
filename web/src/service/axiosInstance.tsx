@@ -399,7 +399,7 @@ export const getSelfEvaluation = (): Promise<AxiosResponse> => {
 };
 
 export const getAllResponsesDropDown = (): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/performance/v1/api/responses/my-feedback/forms `);
+  return axiosInstance.get(`/performance/v1/api/responses/my-feedback/forms`);
 };
 
 export const getAllResponsesById = (id: string): Promise<AxiosResponse> => {
@@ -415,7 +415,7 @@ export const getOverallRating = (
   employeeId: string
 ): Promise<AxiosResponse> => {
   return axiosInstance.get(
-    `/performance/v1/api/ratings/employee/${employeeId}/cycle/CYCLE2028`
+    `/performance/v1/api/overview/employee/${employeeId}/overall-rating`
   );
 };
 export const downloadClientLogo = (
