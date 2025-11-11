@@ -29,6 +29,9 @@ import {
   updateFeedbackProviders,
 } from '../../service/axiosInstance';
 import { toast } from 'sonner';
+import { TickmarkIcon } from '../../svgs/DocumentTabSvgs.svg';
+import ToastMessage from './ToastMessage.component';
+import { ValidationText } from '../../styles/DocumentTabStyles.style';
 
 type FeedbackReceiver = {
   employeeId: string;
@@ -77,8 +80,31 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [, setList] = useState([]);
+  const [fromReceiversList, setList] = useState<any[]>([]);
   const isProvidersPage = mode === 'provider';
+
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorToastMessage, setErrorToastMessage] = useState('');
+
+  const [previousProviders, setPreviousProviders] = useState<any[]>([]);
+
+  const [toastData, setToastData] = useState<{
+    type: 'success' | 'error' | null;
+    heading?: string;
+    body?: string;
+  }>({ type: null });
+
+  useEffect(() => {
+    if (isProvidersPage && selectedReceiver?.employeeId && cycleId) {
+      const stored = sessionStorage.getItem(
+        `previousProviders_${selectedReceiver.employeeId}_${cycleId}`
+      );
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setPreviousProviders(parsed);
+      }
+    }
+  }, [isProvidersPage, selectedReceiver, cycleId]);
 
   const handleAssignProviders = async () => {
     try {
@@ -94,36 +120,82 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
         return;
       }
 
-      if (selected.length === 0) {
-        toast.error('Please select at least one provider');
+      if (searchTerm.trim() === '' && selected.length === 0) {
+        setToastData({
+          type: 'error',
+          heading: 'Error',
+          body: t('Please select at least one provider.'),
+        });
         return;
       }
+
+      if (selected.length === 0) {
+        setToastData({
+          type: 'error',
+          heading: 'Error',
+          body: t('This employee is already assigned\nas a feedback provider.'),
+        });
+        return;
+      }
+
+      const storedProvidersKey = `previousProviders_${selectedReceiver.employeeId}_${cycleId}`;
+      const oldProviders =
+        JSON.parse(sessionStorage.getItem(storedProvidersKey) || '[]') || [];
+
+      const oldReviewerList = oldProviders.map((prov: any) => ({
+        reviewerId: prov.id?.toString(),
+        role: prov.role || prov.designation || 'Reviewer',
+        status: prov.status || 'IN_PROGRESS',
+      }));
+
+      const newReviewerList = selected.map((emp) => ({
+        reviewerId: emp.id?.toString(),
+        role: providerRole || emp.role || 'Reviewer',
+        status: 'IN_PROGRESS',
+      }));
+
+      const mergedReviewers = [
+        ...oldReviewerList,
+        ...newReviewerList.filter(
+          (newProv) =>
+            !oldReviewerList.some(
+              (oldProv: any) => oldProv.reviewerId === newProv.reviewerId
+            )
+        ),
+      ];
 
       const payload = {
         cycleId,
         questionnaireId,
-        assignedReviewers: selected.map((emp) => ({
-          reviewerId: emp.id?.toString(),
-          role: providerRole || emp.role || 'Reviewer',
-          status: 'IN_PROGRESS',
-        })),
+        assignedReviewers: mergedReviewers,
       };
 
       if (selectedReceiver.providerStatus === 'NOT_ASSIGNED') {
         await assignProvider(selectedReceiver.employeeId, payload);
-        toast.success('Providers assigned successfully');
+        setToastData({
+          type: 'success',
+          heading: t('Providers Assigned'),
+          body: t('The feedback providers have been assigned successfully.'),
+        });
       } else if (selectedReceiver.providerStatus === 'IN_PROGRESS') {
         await updateFeedbackProviders(selectedReceiver.employeeId, payload);
-        toast.success('Providers updated successfully');
-      } else {
-        toast.error('Unsupported provider status');
-        return;
+        setToastData({
+          type: 'success',
+          heading: t('Providers Updated'),
+          body: t('The feedback providers have been updated successfully.'),
+        });
       }
 
-      onSuccess?.();
-      onClose?.();
+      setTimeout(() => {
+        onSuccess?.();
+        onClose?.();
+      }, 2000);
     } catch (err) {
-      toast.error('Failed to assign provider');
+      setToastData({
+        type: 'error',
+        heading: 'Error',
+        body: t('Something went wrong while assigning providers.'),
+      });
     }
   };
 
@@ -132,7 +204,35 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
       toast.error('Cycle ID or Questionnaire ID missing');
       return;
     }
+    if (searchTerm.trim() === '' && selected.length === 0) {
+      setToastData({
+        type: 'error',
+        heading: 'Error',
+        body: 'Please select at least one receiver.',
+      });
+      return;
+    }
 
+    const duplicateReceiver = selected.find((emp) =>
+      fromReceiversList.some((existing) => existing.employeeId === emp.id)
+    );
+
+    if (duplicateReceiver) {
+      setToastData({
+        type: 'error',
+        heading: 'Duplicate Receiver',
+        body: t('This employee is already assigned as a feedback receiver.'),
+      });
+      return;
+    }
+    if (selected.length === 0) {
+      setToastData({
+        type: 'error',
+        heading: 'Error',
+        body: t('This employee is already assigned as a feedback receiver.'),
+      });
+      return;
+    }
     const payload = {
       cycleId,
       questionnaireId,
@@ -146,20 +246,29 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
 
     try {
       await createReceiverList(payload);
-
-      toast.success('Successfully Added', {
-        description: 'The Feedback Receiver has been added successfully.',
+      setToastData({
+        type: 'success',
+        heading: 'Receivers Added',
+        body: t('The feedback receivers have been added successfully.'),
       });
 
-      onSuccess?.();
-      onClose?.();
+      setTimeout(() => {
+        onSuccess?.();
+        onClose?.();
+      }, 2000);
     } catch (error) {
-      toast.error('Failed to create receiver list');
+      setToastData({
+        type: 'error',
+        heading: 'Error',
+        body: t('Something went wrong while adding receivers.'),
+      });
     }
   };
 
   const fetchUsers = useCallback(async (keyword: string = '') => {
-    if (keyword.trim().length === 0) return;
+    if (keyword.trim().length === 0) {
+      return;
+    }
     setLoading(true);
 
     try {
@@ -178,7 +287,6 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
         );
 
       if (formatted.length === 0) {
-        setError('No employees found');
         setEmployees([]);
       } else {
         setEmployees(formatted);
@@ -207,6 +315,24 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
   const handleSearchClick = () => fetchUsers(searchTerm);
 
   const handleAdd = (emp: FeedbackUser) => {
+    if (isProvidersPage && emp.id === selectedReceiver?.employeeId) {
+      setErrorToastMessage(
+        'You cannot assign yourself as a feedback provider.'
+      );
+      setShowErrorToast(true);
+      return;
+    }
+    const alreadyExists =
+      fromReceiversList.some((r) => r.employeeId === emp.id) ||
+      previousProviders.some((p) => p.id?.toString() === emp.id?.toString());
+
+    if (alreadyExists) {
+      setErrorToastMessage(
+        `This employee is already assigned as a feedback ${isProvidersPage ? 'provider' : 'receiver'}.`
+      );
+      setShowErrorToast(true);
+      return;
+    }
     setSelected((prev) => {
       if (prev.some((e) => e.id === emp.id)) return prev;
       return [...prev, emp];
@@ -234,15 +360,24 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
   useEffect(() => {
     if (!cycleId || !questionnaireId) return;
 
-    if (isProvidersPage && selectedReceiver?.employeeId) {
-      getProviders(selectedReceiver.employeeId).then((res) => {
-        setList(res.data?.providers || []);
-      });
-    } else {
-      getReceivers(cycleId, questionnaireId).then((res) => {
-        setList(res.data?.receivers || []);
-      });
-    }
+    const fetchData = async () => {
+      try {
+        if (isProvidersPage && selectedReceiver?.employeeId) {
+          const res = await getProviders(selectedReceiver.employeeId);
+          const providerList = res.data?.providers || [];
+          setList(providerList);
+          setPreviousProviders(providerList);
+        } else {
+          const res = await getReceivers(cycleId, questionnaireId);
+          const receiverList = res.data?.receivers || [];
+          setList(receiverList);
+        }
+      } catch (err) {
+        throw new Error('Error loading existing list');
+      }
+    };
+
+    fetchData();
   }, [isProvidersPage, selectedReceiver, cycleId, questionnaireId]);
 
   const isViewMoreDetailsRoute = matchPath(
@@ -255,6 +390,14 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
       `/performance/assign-feedback-providers/${cycleId}/add-feedback-receiver`
     );
   };
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   return (
     <ExpenseManagementMainContainer>
@@ -302,19 +445,18 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
               </ExpenseTitle>
             </ExpenseHeadingFeedback>
 
-            {/* 🔍 Search Section */}
             <Section>
               <SectionTitle>
                 {isProvidersPage
                   ? t('Select_Feedback_Providers')
                   : t('Select_Feedback_Receivers')}
-                *
+                <ValidationText className="star">*</ValidationText>
               </SectionTitle>
               <div className="search-container">
                 <input
                   type="text"
                   className="search-input"
-                  placeholder="Search by Employee Name, Employee ID"
+                  placeholder="Search by Employee Name"
                   value={searchTerm}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -339,29 +481,85 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                     <p>{error}</p>
                   ) : employees.length > 0 ? (
                     employees.map((emp) => {
+                      const isAlreadyReceiver =
+                        !isProvidersPage &&
+                        fromReceiversList?.some(
+                          (rec) => rec.employeeId === emp.id
+                        );
+
+                      const isAlreadyProvider =
+                        isProvidersPage &&
+                        (fromReceiversList?.some((prov) => {
+                          const providerId =
+                            prov.reviewerId || prov.employeeId || prov.id;
+                          return providerId?.toString() === emp.id?.toString();
+                        }) ||
+                          previousProviders.some(
+                            (prov) => prov.id?.toString() === emp.id?.toString()
+                          ));
+
                       const isSelected = selected.some(
                         (sel) => sel.id === emp.id
                       );
+                      const isSelf =
+                        isProvidersPage &&
+                        emp.id === selectedReceiver?.employeeId;
+
+                      const showTick =
+                        isAlreadyReceiver || isAlreadyProvider || isSelected;
+                      const isDisabled =
+                        isAlreadyReceiver ||
+                        isAlreadyProvider ||
+                        isSelected ||
+                        isSelf;
+
                       return (
                         <div
                           key={emp.id}
-                          className={`employee-row ${isSelected ? 'selected' : ''}`}
-                          onClick={() => !isSelected && handleAdd(emp)}
+                          className={`employee-row ${showTick ? 'selected' : ''} ${
+                            isDisabled ? 'disabled' : ''
+                          }`}
+                          onClick={() => {
+                            if (isSelf) {
+                              toast.error(
+                                'You cannot assign the receiver as their own provider.'
+                              );
+                              return;
+                            }
+
+                            if (isAlreadyReceiver || isAlreadyProvider) {
+                              toast.error(
+                                `This employee is already assigned as a feedback ${
+                                  isProvidersPage ? 'provider' : 'receiver'
+                                }.`
+                              );
+                              return;
+                            }
+
+                            if (isSelected) {
+                              toast.info('This employee is already selected.');
+                              return;
+                            }
+
+                            handleAdd(emp);
+                          }}
                         >
                           <div className="employee-details">
                             <p className="employee-name">{emp.name}</p>
                             <p className="employee-role">{emp.role}</p>
                           </div>
 
-                          {isSelected && (
-                            <span className="selected-label">Selected</span>
+                          {showTick && (
+                            <span className="selected-icon">
+                              <TickmarkIcon />
+                            </span>
                           )}
                         </div>
                       );
                     })
-                  ) : (
+                  ) : searchTerm.trim().length > 0 ? (
                     <p>No employees found</p>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </Section>
@@ -416,6 +614,22 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
           </FeedbackCard>
         </PreviewWrapper>
       </StyledDiv>
+      {toastData.type && (
+        <ToastMessage
+          messageType={toastData.type}
+          messageHeading={toastData.heading || ''}
+          messageBody={toastData.body || ''}
+          handleClose={() => setToastData({ type: null })}
+        />
+      )}
+      {showErrorToast && (
+        <ToastMessage
+          messageType="error"
+          messageHeading="Error"
+          messageBody={errorToastMessage}
+          handleClose={() => setShowErrorToast(false)}
+        />
+      )}
     </ExpenseManagementMainContainer>
   );
 };

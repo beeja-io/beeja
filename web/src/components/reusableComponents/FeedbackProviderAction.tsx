@@ -56,6 +56,8 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
             employeeId: currentEmployee.employeeId,
             cycleId: currentEmployee.cycleId,
             receiverName: currentEmployee.fullName,
+            fromReceiversList: true,
+            fromReceiversListDirect: true,
           },
         });
       }

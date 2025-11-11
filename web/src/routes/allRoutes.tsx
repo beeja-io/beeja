@@ -232,18 +232,6 @@ const AllRoutes = () => {
         }
       />
 
-      {/* <Route
-  path="/performance/assign-feedback-providers/:id/add-feedback-receiver"
-  element={
-    <CustomRoute
-      permission={LOAN_MODULE.READ_LOAN}
-      featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
-    >
-      <AddFeedbackReceivers />
-    </CustomRoute>
-  }
-  
-/> */}
       <Route
         path="/performance/view-more-details"
         element={<ViewMoreDetails />}
@@ -254,15 +242,6 @@ const AllRoutes = () => {
         element={<AddFeedbackReceivers />}
       />
 
-      {/* <Route
-  path="/performance/assign-feedback-providers/:cycleId/add-feedback-receiver"
-  element={<AddFeedbackReceivers />}
-/> */}
-
-      {/* <Route
-  path="/performance/assign-feedback-providers"
-  element={<AddFeedbackReceivers />}
-/> */}
       <Route
         path="/performance/assign-feedback-providers/:cycleId/:questionnaireId"
         element={<FeedbackReceiversList />}

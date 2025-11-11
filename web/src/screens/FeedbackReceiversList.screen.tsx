@@ -15,7 +15,7 @@ import {
 import { Button } from '../styles/CommonStyles.style';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
-import { useNavigate } from 'react-router-dom';
+
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { toast } from 'sonner';
 import {
@@ -29,7 +29,7 @@ import { FormFileIcon } from '../svgs/DocumentTabSvgs.svg';
 import { AssignUserSVG } from '../svgs/PerformanceEvaluation.Svgs.scg';
 import AddFeedbackReceivers from '../components/reusableComponents/AddFeedbackReceivers.component';
 import { getReceivers } from '../service/axiosInstance';
-import StatusDropdown from '../styles/ProjectStatusStyle.style';
+import FeedbackStatusDropdown from '../styles/FeedbackStatusStyle.style';
 
 type FeedbackReceiver = {
   id: string | undefined;
@@ -55,7 +55,6 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
   onBack,
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
 
   const [feedbackReceivers, setFeedbackReceivers] = useState<
     FeedbackReceiver[]
@@ -116,7 +115,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
     <ExpenseManagementMainContainer>
       <ExpenseHeadingSection>
         <span className="heading">
-          <span onClick={onBack || (() => navigate(-1))}>
+          <span onClick={onBack}>
             <ArrowDownSVG />
           </span>
           {t('Assign_Feedback_Receivers_Providers')}
@@ -210,7 +209,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
 
                       <td className={getStatusClass(normalizedStatus)}>
                         {receiver?.providerStatus ? (
-                          <StatusDropdown
+                          <FeedbackStatusDropdown
                             value={receiver.providerStatus}
                             disabled
                           />

@@ -52,11 +52,8 @@ export const Section = styled.div`
     font-size: 14px;
     color: #333;
     outline: none;
-    background: ${(props) => props.theme.colors.grayColors.gray5};
-
-    // &:focus {
-    //   border-color: #0052cc;
-    // }
+    background-color: #f8f8f8;
+    // background: ${(props) => props.theme.colors.grayColors.gray5};
   }
 
   .search-icon {
@@ -109,6 +106,13 @@ export const Section = styled.div`
     padding: 10px 12px;
     border: none;
     cursor: pointer;
+
+    &.disabled {
+      cursor: not-allowed;
+      background: ${(props) => props.theme.colors.grayColors.gray5};
+      pointer-events: none;
+      opacity: 0.9;
+    }
 
     .employee-details {
       .employee-name {
