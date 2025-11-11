@@ -34,13 +34,13 @@ type PerformanceCycle = {
 const AssignFeedbackProviders = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [cycles, setCycles] = useState<PerformanceCycle[]>([]);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { t } = useTranslation();
-
   const [selectedCycle, setSelectedCycle] = useState<PerformanceCycle | null>(
     null
   );
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchPerformanceCycles = async () => {
@@ -48,6 +48,13 @@ const AssignFeedbackProviders = () => {
       try {
         const response = await getAllPerformance();
         setCycles(response.data);
+
+        if (location.state?.openReceiversList && location.state?.cycleId) {
+          const matchedCycle = response.data.find(
+            (c: any) => c.id === location.state.cycleId
+          );
+          if (matchedCycle) setSelectedCycle(matchedCycle);
+        }
       } catch (error) {
         toast.error('Failed to fetch performance cycles');
       } finally {
@@ -56,7 +63,7 @@ const AssignFeedbackProviders = () => {
     };
 
     fetchPerformanceCycles();
-  }, []);
+  }, [location.state]);
 
   const handleCycleClick = (cycle: PerformanceCycle) => {
     setSelectedCycle(cycle);
@@ -122,26 +129,49 @@ const AssignFeedbackProviders = () => {
                         ))}
                       </>
                     ) : (
-                      cycles?.map((cycle, index) => (
-                        <TableBodyRow key={index}>
-                          <td onClick={() => handleCycleClick(cycle)}>
-                            {cycle?.name || '-'}
-                          </td>
-                          <td onClick={() => handleCycleClick(cycle)}>
-                            {cycle?.startDate || '-'}
-                          </td>
-                          <td onClick={() => handleCycleClick(cycle)}>
-                            {cycle?.endDate || '-'}
-                          </td>
-                          <td onClick={() => handleCycleClick(cycle)}>
-                            {cycle?.status ? (
-                              <StatusDropdown value={cycle.status} disabled />
-                            ) : (
-                              '-'
-                            )}
-                          </td>
-                        </TableBodyRow>
-                      ))
+                      cycles
+                        ?.slice()
+                        .sort((a, b) => b.id.localeCompare(a.id))
+                        .map((cycle, index) => (
+                          <TableBodyRow key={index}>
+                            <td onClick={() => handleCycleClick(cycle)}>
+                              {cycle?.name || '-'}
+                            </td>
+                            <td onClick={() => handleCycleClick(cycle)}>
+                              <td>
+                                {cycle?.startDate
+                                  ? new Date(
+                                      cycle.startDate
+                                    ).toLocaleDateString('en-US', {
+                                      month: '2-digit',
+                                      day: '2-digit',
+                                      year: 'numeric',
+                                    })
+                                  : '-'}
+                              </td>
+                            </td>
+                            <td onClick={() => handleCycleClick(cycle)}>
+                              {/* {cycle?.endDate || '-'} */}
+                              {cycle?.endDate
+                                ? new Date(cycle.endDate).toLocaleDateString(
+                                    'en-US',
+                                    {
+                                      month: '2-digit',
+                                      day: '2-digit',
+                                      year: 'numeric',
+                                    }
+                                  )
+                                : '-'}
+                            </td>
+                            <td onClick={() => handleCycleClick(cycle)}>
+                              {cycle?.status ? (
+                                <StatusDropdown value={cycle.status} disabled />
+                              ) : (
+                                '-'
+                              )}
+                            </td>
+                          </TableBodyRow>
+                        ))
                     )}
                   </tbody>
                 </TableList>
@@ -152,6 +182,7 @@ const AssignFeedbackProviders = () => {
           <FeedbackReceiversList
             cycleId={selectedCycle.id}
             questionnaireId={selectedCycle.questionnaireId}
+            onBack={() => setSelectedCycle(null)}
           />
         )}
       </ExpenseManagementMainContainer>
