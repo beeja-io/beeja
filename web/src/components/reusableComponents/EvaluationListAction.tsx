@@ -19,6 +19,7 @@ interface Props {
   onError?: (message: string) => void;
   isOpen: boolean;
   onToggle: () => void;
+  setCycles: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 const EvaluationListAction: React.FC<Props> = ({
@@ -29,6 +30,7 @@ const EvaluationListAction: React.FC<Props> = ({
   onError,
   isOpen,
   onToggle,
+  setCycles,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -55,8 +57,11 @@ const EvaluationListAction: React.FC<Props> = ({
     setIsDeleting(true);
     try {
       await deletePerformanceCycle(currentCycle.id);
-      onSuccess?.('Review cycle has been deleted successfully!');
+      setCycles((prev: any) =>
+        prev.filter((cycle: any) => cycle.id !== currentCycle.id)
+      );
       fetchCycles();
+      onSuccess?.('Review cycle has been deleted successfully!');
     } catch (error: any) {
       onError?.(
         error.response?.data?.message || 'Failed to delete review cycle'

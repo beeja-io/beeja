@@ -136,9 +136,7 @@ const ClientList = ({
                         {client?.clientId ?? '-'}
                       </td>
                       <td onClick={() => handleClientClick(client?.clientId)}>
-                        {client?.clientName
-                          ? client?.clientName
-                          : '-'}
+                        {client?.clientName ? client?.clientName : '-'}
                       </td>
                       <td onClick={() => handleClientClick(client?.clientId)}>
                         {client?.clientType === 'OTHER' &&

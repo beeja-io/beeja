@@ -487,11 +487,14 @@ export const DateField = styled.div`
     top: 120%;
     left: 0;
     z-index: 10;
-    background: #fff;
+    background: ${(props) => props.theme.colors.backgroundColors.primary};
     border: 1px solid #eee;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
+
+    h2, h3, .calendar-header, .calendar-title, .calendar-month {
+      color: ${(props) => props.theme.colors.blackColors.black1};
+    }
 `;
 
 export const TitleInput = styled.input`
