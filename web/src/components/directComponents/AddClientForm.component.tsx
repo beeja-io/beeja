@@ -1719,7 +1719,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   </InfoBlock>
                   <InfoBlock className="address">
                     <SubHeadingDiv className="spacing tax-container">
-                      {t('GST_Number')}
+                      {t('TAX Number')}
                     </SubHeadingDiv>
                     <InfoText className="tax-details">
                       {formData.taxDetails.taxNumber}
