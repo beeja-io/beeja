@@ -8,7 +8,6 @@ import {
   TableList,
   TableListContainer,
 } from '../styles/ExpenseListStyles.style';
-import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { DeleteIcon, EditIcon } from '../svgs/ExpenseListSvgs.svg';
 import { getAllPerformance } from '../service/axiosInstance';
@@ -32,7 +31,12 @@ const ReviewCyclesList = () => {
   const [activeActionId, setActiveActionId] = useState<string | null>(null);
   const { t } = useTranslation();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [successToastMessage, setSuccessToastMessage] = useState({
+    heading: '',
+    body: '',
+  });
+  const [errorToastMessage, setErrorToastMessage] = useState({
     heading: '',
     body: '',
   });
@@ -43,7 +47,7 @@ const ReviewCyclesList = () => {
       const response = await getAllPerformance();
       setCycles(response.data);
     } catch (error) {
-      toast.error('Failed to fetch performance cycles');
+      throw new Error('Failed to load review cycle details');
     } finally {
       setIsLoading(false);
     }
@@ -133,6 +137,7 @@ const ReviewCyclesList = () => {
                           <EvaluationListAction
                             options={Actions}
                             currentCycle={cycle}
+                            setCycles={setCycles}
                             isOpen={activeActionId === cycle.id}
                             onToggle={() =>
                               setActiveActionId((prev) =>
@@ -142,13 +147,13 @@ const ReviewCyclesList = () => {
                             fetchCycles={fetchPerformanceCycles}
                             onSuccess={(msg) => {
                               setSuccessToastMessage({
-                                heading: 'Success',
+                                heading: 'Form Deleted Successfully',
                                 body: msg,
                               });
                               setShowSuccessMessage(true);
                             }}
                             onError={(msg) => {
-                              setSuccessToastMessage({
+                              setErrorToastMessage({
                                 heading: 'Error',
                                 body: msg,
                               });
@@ -166,12 +171,19 @@ const ReviewCyclesList = () => {
       </StyledDiv>
       {showSuccessMessage && (
         <ToastMessage
-          messageType={
-            successToastMessage.heading === 'Success' ? 'success' : 'error'
-          }
+          messageType="success"
           messageHeading={successToastMessage.heading}
           messageBody={successToastMessage.body}
           handleClose={() => setShowSuccessMessage(false)}
+        />
+      )}
+
+      {showErrorMessage && (
+        <ToastMessage
+          messageType="error"
+          messageHeading={errorToastMessage.heading || 'Error'}
+          messageBody={errorToastMessage.body || 'Something went wrong.'}
+          handleClose={() => setShowErrorMessage(false)}
         />
       )}
     </>

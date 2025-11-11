@@ -164,9 +164,7 @@ const ProjectList = ({
                             )
                           }
                         >
-                          {project?.name
-                            ? project.name
-                            : '-'}
+                          {project?.name ? project.name : '-'}
                         </td>
                         <td
                           onClick={() =>
@@ -176,9 +174,7 @@ const ProjectList = ({
                             )
                           }
                         >
-                          {project?.clientName
-                            ? project?.clientName
-                            : '-'}
+                          {project?.clientName ? project?.clientName : '-'}
                         </td>
                         <td
                           onClick={() =>

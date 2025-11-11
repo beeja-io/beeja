@@ -562,7 +562,7 @@ const AddEvaluationCycle: React.FC = () => {
                   </span>
                   {isEndDateCalOpen && (
                     <div
-                      className="calendarSpace"
+                      className="calendarField calendarSpace"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Calendar
