@@ -749,7 +749,24 @@ const AddEvaluationCycle: React.FC = () => {
                 <Button
                   type="button"
                   className="cancel"
-                  onClick={() => setShowCancelModal(true)}
+                  onClick={() => {
+                    const hasData =
+                      formData.reviewCycleName?.trim() ||
+                      formData.startDate ||
+                      formData.endDate ||
+                      formData.reviewType ||
+                      formData.formDescription?.trim() ||
+                      formData.questions.some(
+                        (q) =>
+                          q.question?.trim() || q.questionDescription?.trim()
+                      );
+
+                    if (hasData) {
+                      setShowCancelModal(true);
+                    } else {
+                      navigate(-1);
+                    }
+                  }}
                 >
                   {t('Cancel')}
                 </Button>

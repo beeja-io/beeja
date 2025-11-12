@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActionIcon } from '../../svgs/ExpenseListSvgs.svg';
 import {
   ActionContainer,
@@ -52,6 +52,23 @@ const EvaluationListAction: React.FC<Props> = ({
     }
     onToggle();
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        onToggle();
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isOpen, onToggle]);
 
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
