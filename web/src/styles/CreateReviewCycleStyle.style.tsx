@@ -494,6 +494,7 @@ export const DateField = styled.div`
 
     h2, h3, .calendar-header, .calendar-title, .calendar-month {
       color: ${(props) => props.theme.colors.blackColors.black1};
+      font-size:14px;
     }
 `;
 

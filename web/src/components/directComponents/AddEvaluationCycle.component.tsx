@@ -750,7 +750,6 @@ const AddEvaluationCycle: React.FC = () => {
                   type="button"
                   className="cancel"
                   onClick={() => setShowCancelModal(true)}
-                  disabled={!hasValidQuestion}
                 >
                   {t('Cancel')}
                 </Button>

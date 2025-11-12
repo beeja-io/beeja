@@ -27,6 +27,7 @@ import {
   ReadOnlyInput,
 } from '../../styles/FeedbackHubStyles.style';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
+import { ReviewType, ReviewTypeLabels } from './PerformanceEnums.component';
 
 type Question = {
   question: string;
@@ -88,7 +89,7 @@ const PreviewMode: React.FC<Props> = ({
           </DateRow>
           <Subtitle>
             {formData.reviewType
-              ? `${formData.reviewType.charAt(0).toUpperCase()}${formData.reviewType.slice(1).toLowerCase()} Review`
+              ? `${ReviewTypeLabels[formData.reviewType as ReviewType]} Review`
               : ''}
           </Subtitle>
         </Header>
@@ -142,7 +143,7 @@ const PreviewMode: React.FC<Props> = ({
               {t('Edit')}
             </Button>
             <Button className="submit" type="button" onClick={onConfirm}>
-              {t('Save & Continue')}
+              {t('Save')}
             </Button>
           </ButtonGroup>
         </FooterContainer>
