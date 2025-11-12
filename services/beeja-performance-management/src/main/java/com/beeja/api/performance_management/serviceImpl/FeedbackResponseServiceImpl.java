@@ -1,3 +1,4 @@
+
 package com.beeja.api.performance_management.serviceImpl;
 
 import com.beeja.api.performance_management.enums.ErrorCode;
@@ -13,6 +14,7 @@ import com.beeja.api.performance_management.repository.FeedbackProviderRepositor
 import com.beeja.api.performance_management.repository.FeedbackResponseRepository;
 import com.beeja.api.performance_management.response.MyFeedbackFormResponse;
 import com.beeja.api.performance_management.service.FeedbackResponseService;
+import com.beeja.api.performance_management.service.QuestionnaireService;
 import com.beeja.api.performance_management.utils.BuildErrorMessage;
 import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.UserContext;
@@ -26,8 +28,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Secure and multi-tenant safe implementation of FeedbackResponseService.
- * All operations are scoped by organizationId to prevent data leaks across tenants.
+ * Implementation of FeedbackResponseService.
+ * Handles creation, retrieval, and grouping of feedback responses.
+ * All operations are scoped by organizationId for tenant safety.
  */
 @Service
 @Slf4j
@@ -39,13 +42,16 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
     @Autowired
     private FeedbackProviderRepository feedbackProviderRepository;
 
+    @Autowired
+    private QuestionnaireService questionnaireService;
+
     public FeedbackResponseServiceImpl(FeedbackResponseRepository repository,
                                        EvaluationCycleRepository cycleRepository) {
         this.repository = repository;
         this.cycleRepository = cycleRepository;
     }
 
-    /** Helper: Safely fetch organization ID from UserContext. */
+    /** Gets the organization ID from UserContext. */
     private String getOrgId() {
         Map<String, Object> org = UserContext.getLoggedInUserOrganization();
         Object id = (org == null) ? null : org.get(Constants.ID);
@@ -61,6 +67,7 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return id.toString();
     }
 
+    /** Submits a feedback response and marks the reviewer as completed. */
     @Override
     public FeedbackResponse submitFeedback(SubmitFeedbackRequest req) {
         if (req == null) {
@@ -90,7 +97,6 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
             FeedbackResponse saved = repository.save(response);
             log.info(Constants.FEEDBACK_SUBMITTED_SUCCESSFULLY, req.getEmployeeId(), req.getFormId());
 
-            // Update feedback provider reviewer status to COMPLETED
             try {
                 feedbackProviderRepository
                         .findByOrganizationIdAndEmployeeIdAndCycleId(orgId, req.getEmployeeId(), req.getCycleId())
@@ -140,6 +146,7 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         }
     }
 
+    /** Gets feedback responses by form ID. */
     @Override
     public List<FeedbackResponse> getByFormId(String formId) {
         if (formId == null || formId.isBlank()) {
@@ -148,6 +155,7 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return repository.findByFormIdAndOrganizationId(formId, getOrgId());
     }
 
+    /** Gets feedback responses by employee and cycle. */
     @Override
     public List<FeedbackResponse> getByEmployeeAndCycle(String employeeId, String cycleId) {
         if (employeeId == null || cycleId == null) {
@@ -156,6 +164,7 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return repository.findByEmployeeIdAndCycleIdAndOrganizationId(employeeId, cycleId, getOrgId());
     }
 
+    /** Gets feedback responses by employee ID. */
     @Override
     public List<FeedbackResponse> getByEmployee(String employeeId) {
         if (employeeId == null || employeeId.isBlank()) {
@@ -164,6 +173,7 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return repository.findByEmployeeIdAndOrganizationId(employeeId, getOrgId());
     }
 
+    /** Gets grouped feedback responses for an employee along with cycle info. */
     @Override
     public EmployeeGroupedResponsesDTO getGroupedResponsesWithCycleByEmployee(String employeeId) {
         String orgId = getOrgId();
@@ -204,6 +214,7 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return new EmployeeGroupedResponsesDTO(cycle, new ArrayList<>(groupedResponses.values()));
     }
 
+    /** Gets all responses for a specific cycle with its questionnaire details. */
     @Override
     public CycleWithResponsesDTO getResponsesForCycle(String cycleId) {
         String orgId = getOrgId();
@@ -215,11 +226,35 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
                                 Constants.EVALUATION_CYCLE_NOT_FOUND_WITH_ID + cycleId
                         )
                 ));
+        EvaluationCycleDetailsDto dto = new EvaluationCycleDetailsDto();
+
+        dto.setId(cycle.getId());
+        dto.setOrganizationId(cycle.getOrganizationId());
+        dto.setName(cycle.getName());
+        dto.setType(cycle.getType());
+        dto.setFormDescription(cycle.getFormDescription());
+        dto.setStartDate(cycle.getStartDate());
+        dto.setEndDate(cycle.getEndDate());
+        dto.setFeedbackDeadline(cycle.getFeedbackDeadline());
+        dto.setSelfEvalDeadline(cycle.getSelfEvalDeadline());
+        dto.setStatus(cycle.getStatus());
+        dto.setQuestionnaireId(cycle.getQuestionnaireId());
+
+        try {
+            if (cycle.getQuestionnaireId() != null) {
+                Questionnaire questionnaire =
+                        questionnaireService.getQuestionnaireById(cycle.getQuestionnaireId());
+                dto.setQuestions(questionnaire.getQuestions());
+            }
+        } catch (ResourceNotFoundException e) {
+            log.warn(Constants.ERROR_QUESTIONNAIRE_NOT_FOUND_FOR_CYCLE, cycleId);
+        }
 
         List<FeedbackResponse> responses = repository.findByCycleIdAndOrganizationId(cycleId, orgId);
-        return new CycleWithResponsesDTO(cycle, responses);
+        return new CycleWithResponsesDTO(dto, responses);
     }
 
+    /** Gets all feedback forms for the logged-in employee. */
     @Override
     public List<MyFeedbackFormResponse> getMyFeedbackForms() {
         String orgId = getOrgId();
@@ -254,6 +289,7 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return result;
     }
 
+    /** Gets the logged-in employee’s feedback responses grouped by cycle. */
     @Override
     public EmployeeGroupedResponsesDTO getMyResponsesByCycle(String cycleId) {
         String orgId = getOrgId();
@@ -298,3 +334,4 @@ public class FeedbackResponseServiceImpl implements FeedbackResponseService {
         return new EmployeeGroupedResponsesDTO(cycle, new ArrayList<>(grouped.values()));
     }
 }
+
