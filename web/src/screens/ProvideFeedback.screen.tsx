@@ -50,6 +50,10 @@ import PreviewMode from '../components/reusableComponents/PreviewMode.component'
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
+import {
+  ReviewType,
+  ReviewTypeLabels,
+} from '../components/reusableComponents/PerformanceEnums.component';
 
 interface Question {
   question: string;
@@ -185,34 +189,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
           formList[0];
 
         setSelectedFormId(activeForm.cycleId);
-
-        const feedbackResponse = await getProvideFeedbackById(
-          activeForm.cycleId
-        );
-        const { evaluationCycle, feedbackResponses } = feedbackResponse.data;
-
-        if (!feedbackResponses?.length) {
-          throw new Error('No feedback responses found!');
-        }
-
-        const latestFeedback = feedbackResponses.at(-1);
-
-        const questions = latestFeedback.responses.map((res: any) => ({
-          questionId: res.questionId,
-          question: res.question || `Question for ${res.questionId}`,
-          required: true,
-          description: res.description || '',
-        }));
-
-        setFormData({ ...evaluationCycle, questions });
-
-        const mappedAnswers = latestFeedback.responses.map((res: any) => ({
-          questionId: res.questionId,
-          description: res.description,
-          answer: null,
-        }));
-
-        setAnswers(mappedAnswers);
+        await fetchFormDetails(activeForm.cycleId);
       } else {
         setError('No forms available for this employee.');
       }
@@ -223,45 +200,42 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (!selectedFormId) return;
+  const fetchFormDetails = async (selectedFormId: string) => {
+    try {
+      setIsLoading(true);
+      const response = await getProvideFeedbackById(selectedFormId);
+      const { evaluationCycle } = response.data;
 
-    const fetchFormDetails = async () => {
-      try {
-        setIsLoading(true);
-        const response = await getProvideFeedbackById(selectedFormId);
-        const { evaluationCycle, feedbackResponses } = response.data;
-
-        if (!feedbackResponses?.length) {
-          throw new Error('No feedback responses found!');
-        }
-
-        const latestFeedback = feedbackResponses.at(-1);
-
-        const questions = latestFeedback.responses.map((res: any) => ({
-          questionId: res.questionId,
-          question: res.question || `Question for ${res.questionId}`,
-          required: true,
-          description: res.description || '',
-        }));
-
-        setFormData({ ...evaluationCycle, questions });
-
-        const mappedAnswers = latestFeedback.responses.map((res: any) => ({
-          questionId: res.questionId,
-          description: res.description,
-          answer: null,
-        }));
-
-        setAnswers(mappedAnswers);
-      } catch (err) {
-        setError('Failed to load form data');
-      } finally {
-        setIsLoading(false);
+      if (!evaluationCycle?.questions?.length) {
+        throw new Error('No questions found in the evaluation cycle');
       }
-    };
 
-    fetchFormDetails();
+      const questions = evaluationCycle.questions.map(
+        (q: any, index: number) => ({
+          questionId: q.questionId || `Q${index + 1}`,
+          question: q.question || `Question ${index + 1}`,
+          required: q.required ?? true,
+          description: q.questionDescription || '',
+        })
+      );
+      setFormData({ ...evaluationCycle, questions });
+
+      const mappedAnswers = questions.map((res: any) => ({
+        questionId: res.question,
+        description: res.description,
+        answer: null,
+      }));
+
+      setAnswers(mappedAnswers);
+    } catch (err) {
+      setError('Failed to load form data');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedFormId) fetchFormDetails(selectedFormId);
   }, [selectedFormId]);
 
   const formatDate = (dateString: string): string => {
@@ -338,9 +312,16 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
         setShowSuccessMessage(true);
       } else {
         setSelectedEmployee(null);
-        setSuccessMessageBody(
-          `All feedback forms for ${selectedEmployee.name} have been submitted!`
-        );
+
+        if (mappedForms.length === 1) {
+          setSuccessMessageBody(
+            `Performance evaluation form - ${mappedForms[0].label} feedback for ${selectedEmployee.name} submitted successfully.`
+          );
+        } else {
+          setSuccessMessageBody(
+            `All feedback forms for ${selectedEmployee.name} have been submitted!`
+          );
+        }
         setShowSuccessMessage(true);
         setFeedbackData((prevData) => {
           const updatedData = prevData.map((item) =>
@@ -409,7 +390,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
               <UserInfo>
                 <UserText>
                   <Name>{item.name}</Name>
-                  <Role>{item.role}</Role>
+                  <Role>{item.department}</Role>
                 </UserText>
               </UserInfo>
               <ProvideButton
@@ -483,16 +464,15 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                 </DateRow>
               </DateRangeContainer>
               <Subtitle>
-                {`${
-                  formData.type
-                    ? formData.type.charAt(0).toUpperCase() +
-                      formData.type.slice(1).toLowerCase()
-                    : 'Annual'
-                } Review`}
+                {formData.type
+                  ? `${ReviewTypeLabels[formData.type as ReviewType]} Review`
+                  : ''}
               </Subtitle>
             </Header>
 
-            <DescriptionBox>{formData.formDescription}</DescriptionBox>
+            {formData.formDescription && (
+              <DescriptionBox>{formData.formDescription}</DescriptionBox>
+            )}
 
             <div style={{ marginBottom: '20px' }}>
               <Label>
@@ -504,12 +484,18 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
             <Questions>
               {formData.questions.map((q, index) => (
                 <QuestionBlock key={index}>
-                  <QuestionText>
-                    {index + 1}. {q.question}
-                    {q.required && <RequiredMark>*</RequiredMark>}
+                  <QuestionText className="viewquestion">
+                    <span>{index + 1}.</span>
+                    <span>
+                      {q.question}
+                      {q.required && <RequiredMark>*</RequiredMark>}
+                    </span>
                   </QuestionText>
+
                   {q.description && (
-                    <QuestionDescription>{q.description}</QuestionDescription>
+                    <QuestionDescription className="feedback-description">
+                      {q.description}
+                    </QuestionDescription>
                   )}
                   <FormLabelContainer>
                     <InputContainer>

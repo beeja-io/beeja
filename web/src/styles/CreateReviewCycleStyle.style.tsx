@@ -731,16 +731,6 @@ export const Questions = styled.div`
   gap: 10px;
 `;
 
-// export const QuestionText = styled.p`
-// font-weight: 500;
-// font-size: 15px;
-//   margin-bottom: 8px;
-//   color: ${(props) => props.theme.colors.brandColors.primary};
-//   padding-left: 2em;
-//   text-indent: -1em;
-//   margin-left: 0;
-// `;
-
 export const QuestionText = styled.div`
   display: grid;
   font-weight: 600;
@@ -749,6 +739,10 @@ export const QuestionText = styled.div`
   grid-template-columns: auto 1fr;
   align-items: start;
   column-gap: 0.25em;
+  &.viewquestion {
+    display: inline-flex;
+    color: ${(props) => props.theme.colors.brandColors.primary};
+  }
 `;
 export const QuestionNumber = styled.span`
   grid-column: 1;
@@ -818,6 +812,9 @@ export const QuestionDescription = styled.p`
   letter-spacing: 0px;
   vertical-align: middle;
   margin-left: 1em;
+  &.feedback-description {
+    margin-left: 0px;
+  }
 `;
 
 export const RequiredMark = styled.span`
