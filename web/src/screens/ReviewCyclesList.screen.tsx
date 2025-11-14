@@ -106,10 +106,10 @@ const ReviewCyclesList = () => {
                         <td>
                           {cycle?.startDate
                             ? new Date(cycle.startDate).toLocaleDateString(
-                                'en-US',
+                                'en-GB',
                                 {
-                                  month: '2-digit',
                                   day: '2-digit',
+                                  month: '2-digit',
                                   year: 'numeric',
                                 }
                               )
@@ -119,9 +119,9 @@ const ReviewCyclesList = () => {
                           {cycle?.feedbackDeadline
                             ? new Date(
                                 cycle.feedbackDeadline
-                              ).toLocaleDateString('en-US', {
-                                month: '2-digit',
+                              ).toLocaleDateString('en-GB', {
                                 day: '2-digit',
+                                month: '2-digit',
                                 year: 'numeric',
                               })
                             : '-'}

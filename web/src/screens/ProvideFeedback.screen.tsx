@@ -54,6 +54,7 @@ import {
   ReviewType,
   ReviewTypeLabels,
 } from '../components/reusableComponents/PerformanceEnums.component';
+import { useTranslation } from 'react-i18next';
 
 interface Question {
   question: string;
@@ -122,6 +123,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
   const [responseErrorMessage, setResponseErrorMessage] = useState('');
   const [successMessageBody, setSuccessMessageBody] = useState('');
   const [validationErrors, setValidationErrors] = useState<boolean[]>([]);
+  const { t } = useTranslation();
 
   const fetchFeedbackData = async () => {
     try {
@@ -210,14 +212,12 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
         throw new Error('No questions found in the evaluation cycle');
       }
 
-      const questions = evaluationCycle.questions.map(
-        (q: any, index: number) => ({
-          questionId: q.questionId || `Q${index + 1}`,
-          question: q.question || `Question ${index + 1}`,
-          required: q.required ?? true,
-          description: q.questionDescription || '',
-        })
-      );
+      const questions = evaluationCycle.questions.map((q: any) => ({
+        questionId: q.questionId,
+        question: q.question,
+        required: q.required,
+        description: q.questionDescription,
+      }));
       setFormData({ ...evaluationCycle, questions });
 
       const mappedAnswers = questions.map((res: any) => ({
@@ -307,7 +307,10 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
         setSelectedFormId(nextForm.id);
         setError('');
         setSuccessMessageBody(
-          `Feedback for ${selectedEmployee.name} submitted successfully! Moving to next form (${nextForm.label}).`
+          t('feedback.nextFormSuccess', {
+            name: selectedEmployee.name,
+            label: nextForm.label,
+          })
         );
         setShowSuccessMessage(true);
       } else {
@@ -315,11 +318,11 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
 
         if (mappedForms.length === 1) {
           setSuccessMessageBody(
-            `Performance evaluation form - ${mappedForms[0].label} feedback for ${selectedEmployee.name} submitted successfully.`
+            t('feedback.singleSuccess', { name: selectedEmployee.name })
           );
         } else {
           setSuccessMessageBody(
-            `All feedback forms for ${selectedEmployee.name} have been submitted!`
+            t('feedback.allSuccess', { name: selectedEmployee.name })
           );
         }
         setShowSuccessMessage(true);

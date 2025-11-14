@@ -89,8 +89,8 @@ const SelfEvaluationForm: React.FC = () => {
       if (response?.status === 200 || response?.status === 201) {
         setToastMessage({
           type: 'success',
-          heading: 'Form Submitted',
-          body: 'Self-evaluation form submitted successfully.',
+          heading: 'Submitted Successfully',
+          body: 'Your self evaluation has been submitted successfully.',
         });
         setIsCreatedToastMessage(true);
 
@@ -110,7 +110,7 @@ const SelfEvaluationForm: React.FC = () => {
 
   const handleCancel = () => {
     setReflection('');
-    setIsEditable(false);
+    setIsEditable(true);
   };
 
   return (
