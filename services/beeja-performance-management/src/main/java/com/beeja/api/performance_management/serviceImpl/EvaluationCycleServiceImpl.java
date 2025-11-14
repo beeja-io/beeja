@@ -94,15 +94,22 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
      */
     @Override
     public List<EvaluationCycle> getAllCycles() {
+
         String orgId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
         List<EvaluationCycle> cycles = cycleRepository.findByOrganizationId(orgId);
-        if (cycles.isEmpty())
-            throw new InvalidOperationException(ErrorUtils.formatError(
+
+        if (cycles.isEmpty()) {
+            ErrorUtils.formatError(
                     ErrorType.SUCCESS,
                     ErrorCode.NO_EVALUATION_CYCLES_FOUND,
-                    Constants.NO_EVALUATION_CYCLE));
+                    Constants.NO_EVALUATION_CYCLE
+            );
+
+            return List.of();
+        }
         return cycles;
     }
+
 
     /**
      * Retrieves an evaluation cycle by ID.
@@ -153,7 +160,11 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         EvaluationCycle existing = getCycleById(id);
         if (existing.getStatus() == CycleStatus.COMPLETED)
             throw new InvalidOperationException(ErrorUtils.formatError(
-                    ErrorType.VALIDATION_ERROR, ErrorCode.INVALID_OPERATION, Constants.ERROR_CANNOT_UPDATE_PUBLISHED_CYCLE));
+                    ErrorType.VALIDATION_ERROR,
+                    ErrorCode.INVALID_OPERATION,
+                    Constants.ERROR_CANNOT_UPDATE_PUBLISHED_CYCLE
+            ));
+
         validateCycleDates(cycle);
         existing.setName(cycle.getName());
         existing.setType(cycle.getType());
