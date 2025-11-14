@@ -84,9 +84,10 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
   const isProvidersPage = mode === 'provider';
 
   const [showErrorToast, setShowErrorToast] = useState(false);
-  const [errorToastMessage, setErrorToastMessage] = useState('');
+  const [errorToastMessage] = useState('');
 
   const [previousProviders, setPreviousProviders] = useState<any[]>([]);
+  const [searchCompleted, setSearchCompleted] = useState(false);
 
   const [toastData, setToastData] = useState<{
     type: 'success' | 'error' | null;
@@ -120,7 +121,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
         return;
       }
 
-      if (searchTerm.trim() === '' && selected.length === 0) {
+      if (selected.length === 0) {
         setToastData({
           type: 'error',
           heading: 'Error',
@@ -129,11 +130,20 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
         return;
       }
 
-      if (selected.length === 0) {
+      const duplicateProvider = selected.find((emp) =>
+        fromReceiversList.some(
+          (existing) =>
+            existing.reviewerId === emp.id ||
+            existing.employeeId === emp.id ||
+            existing.id === emp.id
+        )
+      );
+
+      if (duplicateProvider) {
         setToastData({
           type: 'error',
-          heading: 'Error',
-          body: t('This employee is already assigned\nas a feedback provider.'),
+          heading: 'Duplicate Provider',
+          body: t('This employee is already assigned as a feedback provider.'),
         });
         return;
       }
@@ -204,11 +214,11 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
       toast.error('Cycle ID or Questionnaire ID missing');
       return;
     }
-    if (searchTerm.trim() === '' && selected.length === 0) {
+    if (selected.length === 0) {
       setToastData({
         type: 'error',
         heading: 'Error',
-        body: 'Please select at least one receiver.',
+        body: t('Please select at least one receiver.'),
       });
       return;
     }
@@ -225,14 +235,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
       });
       return;
     }
-    if (selected.length === 0) {
-      setToastData({
-        type: 'error',
-        heading: 'Error',
-        body: t('This employee is already assigned as a feedback receiver.'),
-      });
-      return;
-    }
+
     const payload = {
       cycleId,
       questionnaireId,
@@ -265,40 +268,47 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
     }
   };
 
-  const fetchUsers = useCallback(async (keyword: string = '') => {
-    if (keyword.trim().length === 0) {
-      return;
-    }
-    setLoading(true);
-
-    try {
-      const response = await searchUsers(keyword);
-      const employeeList = response?.data || [];
-
-      const formatted = employeeList
-        .map((emp: any) => ({
-          id: emp.employeeId,
-          name: emp.fullName,
-          role: emp.department || '—',
-          email: emp.email || '',
-        }))
-        .filter((emp: { name: string }) =>
-          emp.name?.toLowerCase().includes(keyword.toLowerCase())
-        );
-
-      if (formatted.length === 0) {
+  const fetchUsers = useCallback(
+    async (keyword: string = '') => {
+      if (keyword.trim().length === 0) {
+        setSearchCompleted(false);
         setEmployees([]);
-      } else {
-        setEmployees(formatted);
-        setError(null);
+        return;
       }
-    } catch (err) {
-      setError('Error while fetching employees');
-      setEmployees([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+
+      setLoading(true);
+      setSearchCompleted(false);
+
+      try {
+        const response = await searchUsers(keyword);
+        const employeeList = response?.data || [];
+
+        const formatted = employeeList
+          .map((emp: any) => ({
+            id: emp.employeeId,
+            name: emp.fullName,
+            role: emp.department || '—',
+            email: emp.email || '',
+          }))
+          .filter((emp: { name: string }) =>
+            emp.name?.toLowerCase().includes(keyword.toLowerCase())
+          );
+
+        if (keyword === searchTerm.trim()) {
+          setEmployees(formatted);
+          setSearchCompleted(true);
+          setError(null);
+        }
+      } catch (err) {
+        setError('Error while fetching employees');
+        setEmployees([]);
+        setSearchCompleted(true);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchTerm]
+  );
 
   useEffect(() => {
     if (searchTerm.trim().length === 0) {
@@ -315,24 +325,6 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
   const handleSearchClick = () => fetchUsers(searchTerm);
 
   const handleAdd = (emp: FeedbackUser) => {
-    if (isProvidersPage && emp.id === selectedReceiver?.employeeId) {
-      setErrorToastMessage(
-        'You cannot assign yourself as a feedback provider.'
-      );
-      setShowErrorToast(true);
-      return;
-    }
-    const alreadyExists =
-      fromReceiversList.some((r) => r.employeeId === emp.id) ||
-      previousProviders.some((p) => p.id?.toString() === emp.id?.toString());
-
-    if (alreadyExists) {
-      setErrorToastMessage(
-        `This employee is already assigned as a feedback ${isProvidersPage ? 'provider' : 'receiver'}.`
-      );
-      setShowErrorToast(true);
-      return;
-    }
     setSelected((prev) => {
       if (prev.some((e) => e.id === emp.id)) return prev;
       return [...prev, emp];
@@ -521,26 +513,16 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                           }`}
                           onClick={() => {
                             if (isSelf) {
-                              toast.error(
-                                'You cannot assign the receiver as their own provider.'
-                              );
                               return;
                             }
 
                             if (isAlreadyReceiver || isAlreadyProvider) {
-                              toast.error(
-                                `This employee is already assigned as a feedback ${
-                                  isProvidersPage ? 'provider' : 'receiver'
-                                }.`
-                              );
                               return;
                             }
 
                             if (isSelected) {
-                              toast.info('This employee is already selected.');
                               return;
                             }
-
                             handleAdd(emp);
                           }}
                         >
@@ -557,7 +539,10 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                         </div>
                       );
                     })
-                  ) : searchTerm.trim().length > 0 ? (
+                  ) : !loading &&
+                    searchCompleted &&
+                    searchTerm.trim().length > 0 &&
+                    employees.length === 0 ? (
                     <p>No employees found</p>
                   ) : null}
                 </div>
