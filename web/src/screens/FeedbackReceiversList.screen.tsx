@@ -25,8 +25,11 @@ import {
   ProfileCell,
 } from '../styles/AssignFeedbackReceiversProvidersStyle.style';
 import FeedbackProviderAction from '../components/reusableComponents/FeedbackProviderAction';
-import { FormFileIcon } from '../svgs/DocumentTabSvgs.svg';
-import { AssignUserSVG } from '../svgs/PerformanceEvaluation.Svgs.scg';
+
+import {
+  AssignUserSVG,
+  DocumentTextSVG,
+} from '../svgs/PerformanceEvaluation.Svgs.scg';
 import AddFeedbackReceivers from '../components/reusableComponents/AddFeedbackReceivers.component';
 import { getReceivers } from '../service/axiosInstance';
 import FeedbackStatusDropdown from '../styles/FeedbackStatusStyle.style';
@@ -165,14 +168,20 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
                             title: 'Reassign Feedback Providers',
                             svg: <AssignUserSVG />,
                           },
-                          { title: 'View More Details', svg: <FormFileIcon /> },
+                          {
+                            title: 'View More Details',
+                            svg: <DocumentTextSVG />,
+                          },
                         ]
                       : [
                           {
                             title: 'Assign Feedback Providers',
                             svg: <AssignUserSVG />,
                           },
-                          { title: 'View More Details', svg: <FormFileIcon /> },
+                          {
+                            title: 'View More Details',
+                            svg: <DocumentTextSVG />,
+                          },
                         ];
 
                   const getStatusClass = (status: any) => {
