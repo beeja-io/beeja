@@ -582,5 +582,10 @@
   "Bank_Error": "Unable to generate invoice. Payment details are missing. Please contact the Contract Admin team to configure.",
   "Task_Error": "Please add at least one Task and Price before generating the invoice.",
   "Email_Exsist_Error": "A client with this Email ID already exists.",
-  "Logo_Error": "Logo upload failed. Please try again."
+  "Logo_Error": "Logo upload failed. Please try again.",
+  "feedback": {
+    "singleSuccess": "Your feedback for {{name}} has been submitted successfully.",
+    "allSuccess": "All feedback forms for {{name}} have been submitted!",
+    "nextFormSuccess": "Feedback for {{name}} submitted successfully! Moving to next form ({{label}})."
+  }
 }

@@ -355,5 +355,10 @@
   "View_History": "Geschiedenis bekijken",
   "Employment_History": "Werkervaring",
   "Updated_by": "Bijgewerkt door",
-  "Updated_On": "Bijgewerkt op:"
+  "Updated_On": "Bijgewerkt op:",
+  "feedback": {
+    "singleSuccess": "Ihr Feedback für {{name}} wurde erfolgreich übermittelt.",
+    "allSuccess": "Alle Feedbackformulare für {{name}} wurden übermittelt!",
+    "nextFormSuccess": "Feedback für {{name}} erfolgreich übermittelt! Weiter zum nächsten Formular ({{label}})."
+  }
 }
