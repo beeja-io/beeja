@@ -143,7 +143,7 @@ const AssignFeedbackProviders = () => {
                                 {cycle?.startDate
                                   ? new Date(
                                       cycle.startDate
-                                    ).toLocaleDateString('en-US', {
+                                    ).toLocaleDateString('en-GB', {
                                       month: '2-digit',
                                       day: '2-digit',
                                       year: 'numeric',
@@ -155,7 +155,7 @@ const AssignFeedbackProviders = () => {
                               {/* {cycle?.endDate || '-'} */}
                               {cycle?.endDate
                                 ? new Date(cycle.endDate).toLocaleDateString(
-                                    'en-US',
+                                    'en-GB',
                                     {
                                       month: '2-digit',
                                       day: '2-digit',
