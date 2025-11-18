@@ -81,6 +81,10 @@ public class Constants {
     public static final String NO_EVALUATION_CYCLE = "Empty Evaluation Cycles";
     public static final String ERROR_UNEXPECTED_WHILE_FETCHING_EVALUATION_CYCLES = "Unexpected error while fetching evaluation cycles";
     public static final String ERROR_FAILED_TO_RETRIEVE_EVALUATION_CYCLES = "Failed to retrieve evaluation cycles";
+    public static final String INFO_DELETING_EVALUATION_CYCLE_FOR_ORG = "Deleting Evaluation Cycle {} for org {}";
+    public static final String INFO_SUCCESSFULLY_DELETED_CYCLE_AND_DATA = "Successfully Deleted cycle {} and all its related data";
+    public static final String ERROR_DELETING_CYCLE = "Error deleting cycle {}: {}";
+    public static final String ERROR_FAILED_TO_DELETE_CYCLE_AND_DATA = "Failed to delete cycle and related data";
 
     // ========= LOG For Feedback Providers =========/
     public static final String FEEDBACK_REQUEST_NULL = "FeedbackFormRequest is null";
@@ -104,6 +108,11 @@ public class Constants {
     public static final String INFO_NO_EVALUATION_CYCLES_FOUND_FOR_ORGANIZATION = "No evaluation cycles found for your organization.";
     public static final String INFO_FETCHED_EVALUATION_CYCLES_FOR_ORG_ID = "Fetched {} evaluation cycles for OrgId: {}";
     public static final String ERROR_FAILED_TO_FETCH_EVALUATION_CYCLES = "Failed to fetch evaluation cycles.";
+    public static final String INFO_DELETING_FEEDBACK_PROVIDERS = "Deleting Feedback Providers for cycle {} and org {}";
+    public static final String INFO_VALIDATING_QUESTIONNAIRE_FOR_DELETION = "Validating questionnaire {} for deletion";
+    public static final String INFO_DELETING_QUESTIONNAIRE_FOR_ORG = "Deleting Questionnaire {} for org {}";
+    public static final String WARN_SKIPPING_QUESTIONNAIRE_DELETION_ORG_MISMATCH = "Skipping questionnaire {} deletion — org mismatch";
+
 
     // ========= LOG For Feedback Receivers =========//
     public static final String FEEDBACK_RECEIVERS_NULL = "Adding FeedbackReceivers ReceiverRequest is null";
@@ -116,7 +125,7 @@ public class Constants {
     public static final String REMOVE_RECEIVER = "Removed {} old receivers not present in incoming list";
     public static final String NO_RECEIVER_FOUND = "No receivers found for organizationId={}, cycleId={}, questionnaireId={}";
     public static final String NOT_ASSIGNED = "No reviewers assigned for employeeId={}, providerId={}";
-
+    public static final String INFO_DELETING_FEEDBACK_RECEIVERS = "Deleting Feedback Receivers for cycle {} and org {}";
 
     //===============LOG For Feedback Responses ==============/
     public static final String ORG_ID_NOT_FOUND_IN_CONTEXT = "Organization ID not found in context";
@@ -133,6 +142,8 @@ public class Constants {
     public static final String CYCLE_NOT_FOUND = "Cycle not found for ID: {}";
     public static final String MULTIPLE_FEEDBACK_PROVIDERS_FOUND = "Multiple FeedbackProvider entries found for employeeId={}, cycleId={}, orgId={}";
     public static final String REVIEWER_MARKED_COMPLETED_DUPLICATE = "Reviewer {} marked COMPLETED in duplicate provider {}";
+    public static final String INFO_DELETING_FEEDBACK_RESPONSES = "Deleting Feedback Responses for cycle {} and org {}";
+
 
     //============== Fegin client Errors ===============/
     public static final String ACCOUNT_CLIENT_ERROR = "Failed to fetch employee details from Account service: {}";

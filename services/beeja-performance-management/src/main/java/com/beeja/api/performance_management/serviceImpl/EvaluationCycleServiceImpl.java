@@ -10,6 +10,9 @@ import com.beeja.api.performance_management.model.Questionnaire;
 import com.beeja.api.performance_management.model.dto.EvaluationCycleCreateDto;
 import com.beeja.api.performance_management.model.dto.EvaluationCycleDetailsDto;
 import com.beeja.api.performance_management.repository.EvaluationCycleRepository;
+import com.beeja.api.performance_management.repository.FeedbackProviderRepository;
+import com.beeja.api.performance_management.repository.FeedbackReceiverRepository;
+import com.beeja.api.performance_management.repository.FeedbackResponseRepository;
 import com.beeja.api.performance_management.service.EvaluationCycleService;
 import com.beeja.api.performance_management.service.QuestionnaireService;
 import com.beeja.api.performance_management.utils.*;
@@ -32,6 +35,9 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
 
     @Autowired private EvaluationCycleRepository cycleRepository;
     @Autowired private QuestionnaireService questionnaireService;
+    @Autowired private FeedbackProviderRepository feedbackProviderRepository;
+    @Autowired private FeedbackReceiverRepository feedbackReceiverRepository;
+    @Autowired private FeedbackResponseRepository feedbackResponseRepository;
 
     /**
      * Creates a new evaluation cycle.
@@ -242,12 +248,53 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
     @Override
     public void deleteCycle(String id) {
         String orgId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
-        if (!cycleRepository.existsByIdAndOrganizationId(id, orgId))
-            throw new ResourceNotFoundException(BuildErrorMessage.buildErrorMessage(
-                    ErrorType.RESOURCE_NOT_FOUND_ERROR,
-                    ErrorCode.RESOURCE_NOT_FOUND,
-                    Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND + id));
-        cycleRepository.deleteById(id);
+
+        EvaluationCycle cycle = cycleRepository.findByIdAndOrganizationId(id, orgId)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        BuildErrorMessage.buildErrorMessage(
+                                ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                                ErrorCode.RESOURCE_NOT_FOUND,
+                                Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND + id)));
+
+        String questionnaireId = cycle.getQuestionnaireId();
+
+        try {
+            log.info(Constants.INFO_DELETING_FEEDBACK_PROVIDERS, id, orgId);
+            feedbackProviderRepository.deleteByCycleIdAndOrganizationId(id, orgId);
+
+            log.info(Constants.INFO_DELETING_FEEDBACK_RECEIVERS, id, orgId);
+            feedbackReceiverRepository.deleteByCycleIdAndOrganizationId(id, orgId);
+
+            log.info(Constants.INFO_DELETING_FEEDBACK_RESPONSES, id, orgId);
+            feedbackResponseRepository.deleteByCycleIdAndOrganizationId(id, orgId);
+
+            if (questionnaireId != null && !questionnaireId.isBlank()) {
+                log.info(Constants.INFO_VALIDATING_QUESTIONNAIRE_FOR_DELETION, questionnaireId);
+
+                Questionnaire q = questionnaireService.getQuestionnaireById(questionnaireId);
+
+                if (q.getOrganizationId().equals(orgId)) {
+                    log.info(Constants.INFO_DELETING_QUESTIONNAIRE_FOR_ORG, questionnaireId, orgId);
+                    questionnaireService.deleteQuestionnaire(questionnaireId);
+                } else {
+                    log.warn(Constants.WARN_SKIPPING_QUESTIONNAIRE_DELETION_ORG_MISMATCH, questionnaireId);
+                }
+            }
+
+            log.info(Constants.INFO_DELETING_EVALUATION_CYCLE_FOR_ORG, id, orgId);
+            cycleRepository.deleteById(id);
+
+            log.info(Constants.INFO_SUCCESSFULLY_DELETED_CYCLE_AND_DATA, id);
+
+        } catch (Exception e) {
+            log.error(Constants.ERROR_DELETING_CYCLE, id, e.getMessage());
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.INTERNAL_SERVER_ERROR,
+                            ErrorCode.DATABASE_ERROR,
+                            Constants.ERROR_FAILED_TO_DELETE_CYCLE_AND_DATA
+                    ));
+        }
     }
 
     /**
@@ -255,6 +302,7 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
      *
      * @param status desired status (e.g., IN_PROGRESS)
      * @return active evaluation cycle
+     *
      */
     @Override
     public EvaluationCycle getCurrentActiveCycle(CycleStatus status) {
