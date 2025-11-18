@@ -16,5 +16,6 @@ public class ReviewerEmployeeDTO {
     private String employeeName;
     private String department;
     private String role;
+    private String designation;
     private List<FeedbackCycleDTO> feedbackCycles;
 }

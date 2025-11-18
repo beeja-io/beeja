@@ -10,6 +10,9 @@ import java.util.Map;
 
 @FeignClient(name = "employee-service", url = "${client-urls.employeeService}")
 public interface EmployeeFeignClient {
+    
+    @GetMapping("/v1/users/{employeeId}")
+    ResponseEntity<Map<String, Object>> getEmployeeByEmployeeId(@PathVariable("employeeId") String employeeId);
 
     @GetMapping("/v1/users/departments")
     List<EmployeeDepartmentDTO> getDepartmentsByEmployeeIds(@RequestParam("employeeIds") List<String> employeeIds);
