@@ -11,7 +11,11 @@ import {
 } from '../../styles/AssignFeedbackReceiversProvidersStyle.style';
 
 interface FeedbackProviderActionProps {
-  options: { title: string; svg: React.ReactNode }[];
+  options: {
+    disabled: any;
+    title: string;
+    svg: React.ReactNode;
+  }[];
   currentEmployee: any;
   handleAssign: (employee: any) => void;
   onSuccess?: (msg: string) => void;
@@ -82,7 +86,10 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
           {options.map((option, index) => (
             <ActionMenuOptions
               key={index}
-              onClick={() => handleOptionClick(option.title)}
+              className={option.disabled ? 'disabled-action' : ''}
+              onClick={() => {
+                if (!option.disabled) handleOptionClick(option.title);
+              }}
             >
               {option.svg}
               <span>{option.title}</span>

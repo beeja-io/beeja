@@ -414,6 +414,11 @@ export const ActionMenuOptions = styled.div`
     line-height: 1.2;
     white-space: nowrap;
   }
+  &.disabled-action {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+  }
 `;
 
 export const ModalOverlay = styled.div`

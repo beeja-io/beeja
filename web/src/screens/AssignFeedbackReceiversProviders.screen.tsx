@@ -43,6 +43,11 @@ const AssignFeedbackProviders = () => {
   const location = useLocation();
   const { t } = useTranslation();
 
+  const isCycleExpired = (endDate: string) => {
+    if (!endDate) return false;
+    return new Date(endDate) < new Date();
+  };
+
   useEffect(() => {
     const fetchPerformanceCycles = async () => {
       setIsLoading(true);
@@ -186,7 +191,9 @@ const AssignFeedbackProviders = () => {
           <FeedbackReceiversList
             cycleId={selectedCycle.id}
             questionnaireId={selectedCycle.questionnaireId}
+            formName={selectedCycle.name}
             onBack={() => setSelectedCycle(null)}
+            isExpired={isCycleExpired(selectedCycle.endDate)}
           />
         )}
       </ExpenseManagementMainContainer>
