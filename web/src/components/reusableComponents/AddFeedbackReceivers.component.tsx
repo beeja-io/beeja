@@ -360,7 +360,13 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
           const res = await getProviders(selectedReceiver.employeeId);
           const providerList = res.data?.providers || [];
           setList(providerList);
-          setPreviousProviders(providerList);
+          if (providerList.length > 0) {
+            setPreviousProviders(providerList);
+            sessionStorage.setItem(
+              `previousProviders_${selectedReceiver.employeeId}_${cycleId}`,
+              JSON.stringify(providerList)
+            );
+          }
         } else {
           const res = await getReceivers(cycleId, questionnaireId);
           const receiverList = res.data?.receivers || [];
