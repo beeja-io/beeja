@@ -2,7 +2,9 @@ package com.beeja.api.accounts.service;
 
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.BasicUserInfoDTO;
 import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
+import com.beeja.api.accounts.model.dto.EmployeeName;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import com.beeja.api.accounts.requests.AddEmployeeRequest;
 import com.beeja.api.accounts.requests.ChangeEmailAndPasswordRequest;
@@ -15,6 +17,11 @@ import com.beeja.api.accounts.response.EmployeeSearchResponse;
 import java.util.List;
 
 public interface EmployeeService {
+
+  List<BasicUserInfoDTO> getUsersByOrganizationId();
+
+  EmployeeName getEmployeeName(String employeeId);
+
   CreatedUserResponse createEmployee(AddEmployeeRequest user) throws Exception;
 
   List<EmployeeNameDTO> getEmployeeNamesByIds(List<String> employeeIds) throws Exception;

@@ -4,7 +4,9 @@ import com.beeja.api.accounts.annotations.HasPermission;
 import com.beeja.api.accounts.constants.PermissionConstants;
 import com.beeja.api.accounts.exceptions.BadRequestException;
 import com.beeja.api.accounts.model.User;
+import com.beeja.api.accounts.model.dto.BasicUserInfoDTO;
 import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
+import com.beeja.api.accounts.model.dto.EmployeeName;
 import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
 import com.beeja.api.accounts.repository.UserRepository;
 import com.beeja.api.accounts.requests.AddEmployeeRequest;
@@ -43,6 +45,18 @@ public class EmployeeController {
   @Autowired private EmployeeService employeeService;
 
   @Autowired UserRepository userRepository;
+
+  @GetMapping("/organization")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public List<BasicUserInfoDTO> getUsersByLoggedInUserOrganization() {
+    return employeeService.getUsersByOrganizationId();
+  }
+
+  @GetMapping("/name/{employeeId}")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public EmployeeName getEmployeeName(@PathVariable String employeeId){
+    return employeeService.getEmployeeName(employeeId);
+  }
 
   @GetMapping("/me")
   @HasPermission(PermissionConstants.READ_EMPLOYEE)

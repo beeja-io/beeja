@@ -1,9 +1,14 @@
 package com.beeja.api.performance_management.serviceImpl;
 
+import com.beeja.api.performance_management.client.AccountClient;
+import com.beeja.api.performance_management.client.EmployeeFeignClient;
+import com.beeja.api.performance_management.enums.ProviderStatus;
 import com.beeja.api.performance_management.model.EvaluationCycle;
+import com.beeja.api.performance_management.model.FeedbackProvider;
 import com.beeja.api.performance_management.model.FeedbackReceivers;
 import com.beeja.api.performance_management.model.OverallRating;
-import com.beeja.api.performance_management.model.dto.EmployeeCycleInfo;
+import com.beeja.api.performance_management.model.dto.*;
+import com.beeja.api.performance_management.repository.FeedbackProviderRepository;
 import com.beeja.api.performance_management.repository.FeedbackReceiverRepository;
 import com.beeja.api.performance_management.repository.OverallRatingRepository;
 import com.beeja.api.performance_management.service.EvaluationCycleService;
@@ -12,12 +17,13 @@ import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -31,6 +37,128 @@ public class MyTeamOverviewServiceImpl implements MyTeamOverviewService {
 
     @Autowired
     private FeedbackReceiverRepository feedbackReceiverRepository;
+
+    @Autowired
+    private EmployeeFeignClient employeeFeignClient;
+
+    @Autowired
+    private AccountClient accountClient;
+
+    @Autowired
+    private FeedbackProviderRepository repository;
+
+    @Override
+    public PaginatedEmployeePerformanceResponse getEmployeePerformanceData(
+            String department,
+            String designation,
+            String employmentType,
+            String status,
+            int pageNumber,
+            int pageSize) {
+
+        ResponseEntity<List<EmployeeSummaryDTO>> employeeResponse =
+                employeeFeignClient.getEmployeesByLoggedInUserOrganization();
+
+        List<EmployeeSummaryDTO> employees =
+                Optional.ofNullable(employeeResponse.getBody()).orElse(Collections.emptyList());
+
+        List<BasicUserInfoDTO> users =
+                Optional.ofNullable(accountClient.getUsersByLoggedInUserOrganization())
+                        .orElse(Collections.emptyList());
+
+        Map<String, BasicUserInfoDTO> userMap = users.stream()
+                .filter(u -> u.getEmployeeId() != null)
+                .collect(Collectors.toMap(
+                        BasicUserInfoDTO::getEmployeeId,
+                        u -> u,
+                        (a, b) -> a
+                ));
+
+        Stream<EmployeeSummaryDTO> filteredStream = employees.stream()
+                .filter(emp -> department == null || department.isEmpty() ||
+                        (emp.getJobDetails() != null &&
+                                department.equalsIgnoreCase(emp.getJobDetails().getDepartment())))
+                .filter(emp -> designation == null || designation.isEmpty() ||
+                        (emp.getJobDetails() != null &&
+                                designation.equalsIgnoreCase(emp.getJobDetails().getDesignation())))
+                .filter(emp -> employmentType == null || employmentType.isEmpty() ||
+                        (emp.getJobDetails() != null &&
+                                employmentType.equalsIgnoreCase(emp.getJobDetails().getEmployementType())))
+                .filter(emp -> {
+                    if (status == null || status.isEmpty() || "-".equals(status)) return true;
+
+                    BasicUserInfoDTO user = userMap.get(emp.getEmployeeId());
+                    if (user == null) return false;
+
+                    boolean isActive = "active".equalsIgnoreCase(status);
+                    return user.isActive() == isActive;
+                });
+
+        List<EmployeeSummaryDTO> filteredEmployees = filteredStream.collect(Collectors.toList());
+
+        int totalRecords = filteredEmployees.size();
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+        int fromIndex = Math.max(0, (pageNumber - 1) * pageSize);
+        int toIndex = Math.min(totalRecords, fromIndex + pageSize);
+
+        List<EmployeeSummaryDTO> paginatedEmployees = new ArrayList<>();
+        if (fromIndex < totalRecords) {
+            paginatedEmployees = filteredEmployees.subList(fromIndex, toIndex);
+        }
+
+        List<EmployeePerformanceDTO> merged = paginatedEmployees.stream()
+                .map(emp -> {
+                    EmployeePerformanceDTO dto = new EmployeePerformanceDTO();
+                    dto.setEmployeeId(emp.getEmployeeId());
+                    dto.setOrganizationId(emp.getOrganizationId());
+                    dto.setJobDetails(emp.getJobDetails());
+                    dto.setProfilePictureId(emp.getProfilePictureId());
+                    Double rating = Optional.ofNullable(getOverallRatingByEmployeeId(emp.getEmployeeId()))
+                            .map(OverallRating::getRating)
+                            .orElse(null);
+                    dto.setOverallRating(rating);
+                    FeedbackStatusResponse fsr = getFeedbackStatus(emp.getEmployeeId());
+                    dto.setNumberOfReviewersAssigned(fsr.getTotalAssignedReviewers());
+                    dto.setNumberOfReviewerResponses(fsr.getFeedbackGivenTillNow());
+
+                    BasicUserInfoDTO user = userMap.get(emp.getEmployeeId());
+                    if (user != null) {
+                        dto.setFirstName(user.getFirstName());
+                        dto.setLastName(user.getLastName());
+                        dto.setEmail(user.getEmail());
+                        dto.setActive(user.isActive());
+                    }
+
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        PaginatedEmployeePerformanceResponse response = new PaginatedEmployeePerformanceResponse();
+        response.setData(merged);
+        response.setTotalRecords(totalRecords);
+        response.setPageNumber(pageNumber);
+        response.setPageSize(pageSize);
+        response.setTotalPages(totalPages);
+
+        return response;
+    }
+
+    public FeedbackStatusResponse getFeedbackStatus(String employeeId) {
+
+        List<FeedbackProvider> providerList = repository.findByEmployeeId(employeeId);
+
+        int totalAssignedReviewers = providerList.stream()
+                .mapToInt(fp -> fp.getAssignedReviewers() != null ? fp.getAssignedReviewers().size() : 0)
+                .sum();
+
+        int feedbackGivenTillNow = Math.toIntExact(providerList.stream()
+                .flatMap(fp -> fp.getAssignedReviewers().stream())
+                .filter(r -> r.getStatus() == ProviderStatus.COMPLETED)
+                .count());
+
+        return new FeedbackStatusResponse(totalAssignedReviewers, feedbackGivenTillNow);
+    }
 
     @Override
     public OverallRating createOrUpdateOverallRating(String employeeId, Double rating, String comments) {

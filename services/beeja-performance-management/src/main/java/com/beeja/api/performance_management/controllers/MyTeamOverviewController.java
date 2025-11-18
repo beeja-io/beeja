@@ -1,13 +1,11 @@
 package com.beeja.api.performance_management.controllers;
 
+import com.beeja.api.performance_management.client.AccountClient;
 import com.beeja.api.performance_management.model.FeedbackResponse;
 import com.beeja.api.performance_management.model.GroupedFeedbackResponse;
 import com.beeja.api.performance_management.model.OverallRating;
 import com.beeja.api.performance_management.model.QuestionAnswer;
-import com.beeja.api.performance_management.model.dto.EmployeeCycleInfo;
-import com.beeja.api.performance_management.model.dto.OverallRatingRequestDTO;
-import com.beeja.api.performance_management.model.dto.QRDTO;
-import com.beeja.api.performance_management.model.dto.ReviewerAnswerDTO;
+import com.beeja.api.performance_management.model.dto.*;
 import com.beeja.api.performance_management.service.FeedbackResponseService;
 import com.beeja.api.performance_management.service.MyTeamOverviewService;
 import com.beeja.api.performance_management.utils.Constants;
@@ -32,26 +30,61 @@ public class MyTeamOverviewController {
     @Autowired
     private MyTeamOverviewService myTeamOverviewService;
 
+    @Autowired
+    private AccountClient accountClient;
+
+    @GetMapping("/employees")
+    public ResponseEntity<PaginatedEmployeePerformanceResponse> getEmployeePerformanceData(
+            @RequestParam(name = "department", required = false) String department,
+            @RequestParam(name = "designation", required = false) String designation,
+            @RequestParam(name = "employmentType", required = false) String employmentType,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "pageNumber", defaultValue = "1") int pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = "10") int pageSize
+    ) {
+        PaginatedEmployeePerformanceResponse result =
+                myTeamOverviewService.getEmployeePerformanceData(
+                        department, designation, employmentType, status, pageNumber, pageSize);
+
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/employee/{employeeId}/cycle/{cycleId}/groupedResponse")
     public ResponseEntity<?> getGroupedResponsesByEmployeeCycle(
             @PathVariable String employeeId,
             @PathVariable String cycleId) {
         try {
-            List<FeedbackResponse> responses = responseService.getByEmployeeAndCycle(employeeId, cycleId);
-            Map<String, List<ReviewerAnswerDTO>> grouped = new HashMap<>();
+
+            List<FeedbackResponse> responses =
+                    responseService.getByEmployeeAndCycle(employeeId, cycleId);
+
+            Map<String, List<ReviewerAnswerDTO>> grouped = new LinkedHashMap<>();
+            Map<String, String> questionDescriptions = new LinkedHashMap<>();
 
             for (FeedbackResponse feedback : responses) {
+
                 if (feedback.getResponses() == null) continue;
+
+                EmployeeName en = accountClient.getEmployeeName(feedback.getReviewerId());
+                String fullName = en.getFirstName() + " " + en.getLastName();
+
                 for (QuestionAnswer qa : feedback.getResponses()) {
+
+                    questionDescriptions.putIfAbsent(qa.getQuestionId(), qa.getDescription());
+
                     grouped.computeIfAbsent(qa.getQuestionId(), k -> new ArrayList<>())
-                            .add(new ReviewerAnswerDTO(feedback.getReviewerId(), qa.getAnswer()));
+                            .add(new ReviewerAnswerDTO(fullName, qa.getAnswer()));
                 }
             }
 
             List<QRDTO> questions = grouped.entrySet().stream()
                     .map(entry -> {
+                        String questionId = entry.getKey();
+                        String description = questionDescriptions.getOrDefault(questionId, "");
+
                         QRDTO dto = new QRDTO();
-                        dto.setQuestionId(entry.getKey());
+                        dto.setQuestionId(questionId);
+                        dto.setDescription(description);
                         dto.setResponses(entry.getValue());
                         return dto;
                     })

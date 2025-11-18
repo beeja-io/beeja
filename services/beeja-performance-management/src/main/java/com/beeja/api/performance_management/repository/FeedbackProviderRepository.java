@@ -18,4 +18,5 @@ public interface FeedbackProviderRepository extends MongoRepository<FeedbackProv
 
     List<FeedbackProvider> findByOrganizationId(String organizationId);
 
+    List<FeedbackProvider> findByEmployeeId(String employeeId);
 }
