@@ -9,17 +9,18 @@ import {
   ExpenseHeading,
   ExpenseTitle,
   StyledDiv,
-  TableBodyRow,
-  TableHead,
   TableList,
   TableListContainer,
 } from '../styles/ExpenseListStyles.style';
-import { toast } from 'sonner';
+import {
+  TableHead,
+  TableBodyRow,
+} from '../styles/AssignFeedbackReceiversProvidersStyle.style';
 import { useTranslation } from 'react-i18next';
 import { getAllPerformance } from '../service/axiosInstance';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
-import FeedbackReceiversList from './FeedbackReceiversList.screen'; // ✅ import your list screen
+import FeedbackReceiversList from './FeedbackReceiversList.screen';
 
 type PerformanceCycle = {
   questionnaireId: string;
@@ -56,7 +57,7 @@ const AssignFeedbackProviders = () => {
           if (matchedCycle) setSelectedCycle(matchedCycle);
         }
       } catch (error) {
-        toast.error('Failed to fetch performance cycles');
+        throw new Error('Failed to load review cycle details');
       } finally {
         setIsLoading(false);
       }
@@ -102,15 +103,15 @@ const AssignFeedbackProviders = () => {
 
             <TableListContainer>
               {!isLoading && cycles.length === 0 ? (
-                <ZeroEntriesFound heading="No Assign Feedback Providers" />
+                <ZeroEntriesFound heading="No Review Cycle forms available to Assign Feedback Receivers" />
               ) : (
                 <TableList>
                   <TableHead>
-                    <tr>
+                    <tr className="table-header">
                       <th>{t('Name')}</th>
                       <th>{t('Start_Date')}</th>
                       <th>{t('End_Date')}</th>
-                      <th>{t('Status')}</th>
+                      <th className="status-container">{t('Status')}</th>
                     </tr>
                   </TableHead>
                   <tbody>
@@ -142,7 +143,7 @@ const AssignFeedbackProviders = () => {
                                 {cycle?.startDate
                                   ? new Date(
                                       cycle.startDate
-                                    ).toLocaleDateString('en-US', {
+                                    ).toLocaleDateString('en-GB', {
                                       month: '2-digit',
                                       day: '2-digit',
                                       year: 'numeric',
@@ -154,7 +155,7 @@ const AssignFeedbackProviders = () => {
                               {/* {cycle?.endDate || '-'} */}
                               {cycle?.endDate
                                 ? new Date(cycle.endDate).toLocaleDateString(
-                                    'en-US',
+                                    'en-GB',
                                     {
                                       month: '2-digit',
                                       day: '2-digit',
@@ -163,7 +164,10 @@ const AssignFeedbackProviders = () => {
                                   )
                                 : '-'}
                             </td>
-                            <td onClick={() => handleCycleClick(cycle)}>
+                            <td
+                              className="status-row"
+                              onClick={() => handleCycleClick(cycle)}
+                            >
                               {cycle?.status ? (
                                 <StatusDropdown value={cycle.status} disabled />
                               ) : (
