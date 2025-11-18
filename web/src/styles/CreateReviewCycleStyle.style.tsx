@@ -12,7 +12,7 @@ export const FormContainer = styled.div`
     gap: 40px;
     width: 100%;
   }
-  .noBorder {
+  &.noBorder {
     border: none;
   }
 `;
@@ -34,6 +34,17 @@ export const FormSubContainer = styled.div`
     border: none;
   }
 `;
+export const FormContentWrapper = styled.div`
+  width: 100%;
+  padding-top: 30px;
+
+  &.disabled-state {
+    opacity: 0.5;
+    pointer-events: none;
+    filter: brightness(0.8);
+    background-color: ${(props) => props.theme.colors.grayColors.gray5};
+  }
+`;
 
 export const FormInputsContainer = styled.div`
   display: flex;
@@ -52,11 +63,6 @@ export const FormInputsContainer = styled.div`
   &.form-header {
     display: flex;
   }
-  &.stepTwoContainer {
-    margin: 25px 30px;
-    border-radius: 10px;
-    padding-top: 15px;
-  }
 `;
 
 export const ControlsRow = styled.div`
@@ -64,6 +70,18 @@ export const ControlsRow = styled.div`
   justify-content: space-between;
   align-items: center;
   margin: 16px 0;
+  label {
+    margin-bottom: 10px;
+    display: inline-block;
+    font-family: Nunito;
+    font-weight: 500;
+    font-style: Medium;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+  }
 `;
 
 export const SelectWrapper = styled.div`
@@ -99,6 +117,7 @@ export const FormsCount = styled.div`
   line-height: 160%;
   letter-spacing: 0px;
   vertical-align: middle;
+  align-self: flex-start;
 `;
 
 export const Count = styled.span`
@@ -443,6 +462,9 @@ export const DateRangeContainer = styled.div`
   justify-content: center;
   gap: 12px;
   margin: 1rem 0;
+  &.feedback-date-range {
+    margin: 10px 0px 0px 0px;
+  }
 
   .to-label {
     font-size: 14px;
@@ -743,6 +765,14 @@ export const QuestionText = styled.div`
   &.viewquestion {
     display: inline-flex;
     color: ${(props) => props.theme.colors.brandColors.primary};
+    font-family: Nunito;
+    font-weight: 600;
+    font-style: SemiBold;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
   }
 `;
 export const QuestionNumber = styled.span`
@@ -815,6 +845,14 @@ export const QuestionDescription = styled.p`
   margin-left: 1em;
   &.feedback-description {
     margin-left: 0px;
+    font-family: Nunito;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
   }
 `;
 
@@ -840,4 +878,39 @@ export const ErrorText = styled.span`
   font-size: 12px;
   margin-top: 4px;
   display: block;
+`;
+
+export const FormOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background-color: rgba(255, 255, 255, 0.7);
+
+  z-index: 10;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const OverlayContent = styled.div`
+  background: #ffdede;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  p {
+    font-size: 0.9em;
+    font-weight: normal;
+    margin-top: 10px;
+    line-height: 1.4;
+  }
 `;

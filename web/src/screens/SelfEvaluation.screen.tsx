@@ -165,10 +165,15 @@ const SelfEvaluationForm: React.FC = () => {
                       onClick={handleCancel}
                       type="button"
                       className="cancel"
+                      disabled={reflection.trim().length === 0}
                     >
                       {t('Cancel')}
                     </Button>
-                    <Button className="submit" type="submit">
+                    <Button
+                      className="submit"
+                      type="submit"
+                      disabled={reflection.trim().length === 0}
+                    >
                       {t('Submit')}
                     </Button>
                   </ButtonGroup>

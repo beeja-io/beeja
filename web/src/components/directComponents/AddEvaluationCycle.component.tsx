@@ -790,6 +790,7 @@ const AddEvaluationCycle: React.FC = () => {
           formData={formData}
           onEdit={() => setPreviewMode(false)}
           onConfirm={handleSubmit}
+          isLoading={isLoading}
         />
       )}
       {showErrorMessage && (

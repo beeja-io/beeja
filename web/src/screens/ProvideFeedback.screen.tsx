@@ -17,6 +17,7 @@ import {
   ErrorText,
   FooterContainer,
   FormContainer,
+  FormContentWrapper,
   FormInputsContainer,
   FormLabelContainer,
   FormsCount,
@@ -55,6 +56,7 @@ import {
   ReviewTypeLabels,
 } from '../components/reusableComponents/PerformanceEnums.component';
 import { useTranslation } from 'react-i18next';
+import { format, isAfter, isBefore, startOfDay } from 'date-fns';
 
 interface Question {
   question: string;
@@ -123,6 +125,9 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
   const [responseErrorMessage, setResponseErrorMessage] = useState('');
   const [successMessageBody, setSuccessMessageBody] = useState('');
   const [validationErrors, setValidationErrors] = useState<boolean[]>([]);
+  const [showWarning, setShowWarning] = useState(false);
+  const [warningMessageBody, setWarningMessageBody] = useState('');
+
   const { t } = useTranslation();
 
   const fetchFeedbackData = async () => {
@@ -380,10 +385,57 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
     setSelectedFormId(formId);
   };
 
+  useEffect(() => {
+    if (previewMode) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [previewMode]);
+
+  const isFormActive = (formData: any) => {
+    if (!formData?.startDate || !formData?.endDate) return false;
+
+    const today = startOfDay(new Date());
+    const startDate = startOfDay(new Date(formData.startDate));
+    const endDate = startOfDay(new Date(formData.endDate));
+
+    const hasStarted = !isBefore(today, startDate);
+    const notExpired = !isAfter(today, endDate);
+
+    return hasStarted && notExpired;
+  };
+
+  const formActive = isFormActive(formData);
+
+  useEffect(() => {
+    if (!formData?.startDate || !formData?.endDate) return;
+
+    const today = startOfDay(new Date());
+    const startDate = startOfDay(new Date(formData.startDate));
+    const endDate = startOfDay(new Date(formData.endDate));
+
+    if (isBefore(today, startDate)) {
+      const formattedStart = format(startDate, 'dd MMM yyyy');
+      setWarningMessageBody(
+        `This form is not yet active. It will be available from ${formattedStart}.`
+      );
+      setShowWarning(true);
+    } else if (isAfter(today, endDate)) {
+      setWarningMessageBody(
+        'This form has expired. You can no longer submit responses.'
+      );
+      setShowWarning(true);
+    }
+  }, [formData]);
+
   if (error) return <div>{error}</div>;
 
   return (
-    <FormContainer>
+    <FormContainer className="noBorder">
       {isLoading ? (
         <SpinAnimation />
       ) : !selectedEmployee ? (
@@ -426,7 +478,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                 options={
                   forms.length > 0
                     ? forms.map((item) => ({
-                        label: `${item.label}${item.status === 'COMPLETED' ? ' (Completed)' : ''}`,
+                        label: `${item.label}${item.status === 'COMPLETED' ? ' (Submitted)' : ''}`,
                         value: item.id,
                         disabled: item.status === 'COMPLETED',
                       }))
@@ -443,7 +495,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
               No of forms available: <Count>{formsAvailableCount}</Count>
             </FormsCount>
           </ControlsRow>
-          <FormSubContainer>
+          <FormSubContainer className="stepTwoContainer">
             <Header>
               <TitleHeading>
                 <BackButton onClick={goToPreviousPage}>
@@ -455,7 +507,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                 <h2>{formData.name || 'Performance Evaluation Form'}</h2>
                 <div style={{ width: '60px' }}></div>
               </TitleHeading>
-              <DateRangeContainer>
+              <DateRangeContainer className="feedback-date-range">
                 <DateRow>
                   <DateText>
                     <CalenderIconDark />
@@ -472,70 +524,81 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                   : ''}
               </Subtitle>
             </Header>
+            <FormContentWrapper className={!formActive ? 'disabled-state' : ''}>
+              {formData.formDescription && (
+                <DescriptionBox>{formData.formDescription}</DescriptionBox>
+              )}
 
-            {formData.formDescription && (
-              <DescriptionBox>{formData.formDescription}</DescriptionBox>
-            )}
+              <div style={{ marginBottom: '20px' }}>
+                <Label>
+                  Feedback Receiver Name<RequiredMark>*</RequiredMark>
+                </Label>
+                <ReadOnlyInput value={feedbackReceiverName} readOnly />
+              </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <Label>
-                Feedback Receiver Name<RequiredMark>*</RequiredMark>
-              </Label>
-              <ReadOnlyInput value={feedbackReceiverName} readOnly />
-            </div>
+              <Questions>
+                {formData.questions.map((q, index) => (
+                  <QuestionBlock key={index}>
+                    <QuestionText className="viewquestion">
+                      <span>{index + 1}.</span>
+                      <span>
+                        {q.question}
+                        {q.required && <RequiredMark>*</RequiredMark>}
+                      </span>
+                    </QuestionText>
 
-            <Questions>
-              {formData.questions.map((q, index) => (
-                <QuestionBlock key={index}>
-                  <QuestionText className="viewquestion">
-                    <span>{index + 1}.</span>
-                    <span>
-                      {q.question}
-                      {q.required && <RequiredMark>*</RequiredMark>}
-                    </span>
-                  </QuestionText>
+                    {q.description && (
+                      <QuestionDescription className="feedback-description">
+                        {q.description}
+                      </QuestionDescription>
+                    )}
+                    <FormLabelContainer>
+                      <InputContainer>
+                        <StyledTextArea
+                          className="answer-color"
+                          disabled={!formActive}
+                          ref={(el) => (answerRefs.current[index] = el)}
+                          rows={1}
+                          placeholder="Enter your Answer"
+                          value={answers[index]?.answer || ''}
+                          onChange={(e) => {
+                            handleAnswerChange(index, e.target.value);
+                            if (validationErrors[index]) {
+                              const updatedErrors = [...validationErrors];
+                              updatedErrors[index] = false;
+                              setValidationErrors(updatedErrors);
+                            }
+                          }}
+                        />
+                      </InputContainer>
+                    </FormLabelContainer>
+                    {validationErrors[index] && (
+                      <ErrorText>This field is required</ErrorText>
+                    )}
+                  </QuestionBlock>
+                ))}
+              </Questions>
 
-                  {q.description && (
-                    <QuestionDescription className="feedback-description">
-                      {q.description}
-                    </QuestionDescription>
-                  )}
-                  <FormLabelContainer>
-                    <InputContainer>
-                      <StyledTextArea
-                        className="answer-color"
-                        ref={(el) => (answerRefs.current[index] = el)}
-                        rows={1}
-                        placeholder="Type your Answer"
-                        value={answers[index]?.answer || ''}
-                        onChange={(e) => {
-                          handleAnswerChange(index, e.target.value);
-                          if (validationErrors[index]) {
-                            const updatedErrors = [...validationErrors];
-                            updatedErrors[index] = false;
-                            setValidationErrors(updatedErrors);
-                          }
-                        }}
-                      />
-                    </InputContainer>
-                  </FormLabelContainer>
-                  {validationErrors[index] && (
-                    <ErrorText>This field is required</ErrorText>
-                  )}
-                </QuestionBlock>
-              ))}
-            </Questions>
-
-            <FooterContainer>
-              <ButtonGroup>
-                <Button type="button" onClick={() => setPreviewMode(true)}>
-                  Preview
-                </Button>
-                <Button className="submit" type="button" onClick={handleSubmit}>
-                  Submit
-                </Button>
-              </ButtonGroup>
-            </FooterContainer>
+              <FooterContainer>
+                <ButtonGroup>
+                  <Button
+                    type="button"
+                    onClick={() => setPreviewMode(true)}
+                    disabled={!formActive}
+                  >
+                    Preview
+                  </Button>
+                  <Button
+                    className="submit"
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={!formActive}
+                  >
+                    Submit
+                  </Button>
+                </ButtonGroup>
+              </FooterContainer>
+            </FormContentWrapper>
           </FormSubContainer>
         </FormInputsContainer>
       ) : null}
@@ -560,6 +623,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
           showAnswers
           feedbackReceiverName={feedbackReceiverName}
           validationErrors={validationErrors}
+          Submit="Submit"
         />
       )}
 
@@ -577,6 +641,14 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
           messageBody={successMessageBody}
           messageHeading="Submitted Successfully"
           handleClose={() => setShowSuccessMessage(false)}
+        />
+      )}
+      {showWarning && (
+        <ToastMessage
+          messageType="warn"
+          messageHeading="Warning"
+          messageBody={warningMessageBody}
+          handleClose={() => setShowWarning(false)}
         />
       )}
     </FormContainer>

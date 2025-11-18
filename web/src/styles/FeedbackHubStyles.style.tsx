@@ -211,7 +211,7 @@ export const ReadOnlyInput = styled.input`
   }
 `;
 
-export const AnswerField = styled.textarea`
+export const AnswerField = styled.textarea<{ isEmpty: boolean }>`
   width: 100%;
   padding: 12px 14px;
   border: 1px solid #e0e0e0;
@@ -219,11 +219,16 @@ export const AnswerField = styled.textarea`
   background-color: #fff;
   font-size: 15px;
   font-family: 'Nunito', sans-serif;
-  color: #333;
-  resize: vertical;
-  min-height: 90px;
+  color: #687588;
+  resize: none;
   margin-top: 8px;
-  transition: all 0.2s ease-in-out;
+  white-space: pre-wrap;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 40px;
+  height: auto;
+  line-height: 20px;
+  max-height: calc(20px * 5 + 12px + 12px + 2px);
 
   &:focus {
     border-color: #007bff;

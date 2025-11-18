@@ -168,8 +168,16 @@ export const TableBodyRow = styled.tr`
   height: 56px;
   border-bottom: 1px solid ${(props) => props.theme.colors.blackColors.white2};
 
+  &.disabled-row {
+    background-color: ${(props) => props.theme.colors.grayColors.gray5};
+  }
+
+  &.disabled-row:hover {
+    background-color: ${(props) => props.theme.colors.grayColors.gray5};
+  }
+
   &:hover {
-    background-color: ${(props) => props.theme.colors.grayColors.gray10};
+    background-color: ${(props) => props.theme.colors.grayColors.gray8};
     cursor: pointer;
   }
 
@@ -263,6 +271,15 @@ export const ActionMenuOption = styled.div`
     border-radius: 10px;
     padding: 16px;
     background: ${(props) => props.theme.colors.grayColors.gray6};
+  }
+  &.edit-disabled {
+    opacity: 0.5;
+    pointer-events: auto !important;
+    cursor: not-allowed !important;
+
+    * {
+      cursor: not-allowed !important;
+    }
   }
 `;
 export const StyledDiv = styled.div`
