@@ -1,5 +1,6 @@
 package com.beeja.api.employeemanagement.service;
 
+import com.beeja.api.employeemanagement.model.DTO.EmployeeSummaryDTO;
 import com.beeja.api.employeemanagement.model.Employee;
 import com.beeja.api.employeemanagement.model.JobDetails;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
@@ -13,6 +14,9 @@ import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface EmployeeService {
+
+  List<EmployeeSummaryDTO> getEmployeesByOrganizationId(String organizationId);
+
   Employee createEmployee(Map<String, Object> employee) throws Exception;
 
   Map<String, Object> getEmployeeByEmployeeId(String employeeId) throws Exception;

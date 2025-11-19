@@ -2,6 +2,7 @@ package com.beeja.api.employeemanagement.controller;
 
 import com.beeja.api.employeemanagement.annotations.HasPermission;
 import com.beeja.api.employeemanagement.constants.PermissionConstants;
+import com.beeja.api.employeemanagement.model.DTO.EmployeeSummaryDTO;
 import com.beeja.api.employeemanagement.model.Employee;
 import com.beeja.api.employeemanagement.model.JobDetails;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
@@ -31,6 +32,14 @@ public class EmployeeController {
   @Autowired private EmployeeService employeeService;
 
   @Autowired private EmployeeRepository employeeRepository;
+
+  @GetMapping("/organization")
+  @HasPermission(PermissionConstants.READ_EMPLOYEE)
+  public ResponseEntity<List<EmployeeSummaryDTO>> getEmployeesByLoggedInUserOrganization() {
+
+    List<EmployeeSummaryDTO> employees = employeeService.getEmployeesByOrganizationId(UserContext.getLoggedInUserOrganization().getId());
+    return ResponseEntity.ok(employees);
+  }
 
   @GetMapping
   @HasPermission(PermissionConstants.READ_EMPLOYEE)

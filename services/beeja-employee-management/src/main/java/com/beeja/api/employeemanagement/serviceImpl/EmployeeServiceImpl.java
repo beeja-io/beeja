@@ -14,6 +14,7 @@ import static com.beeja.api.employeemanagement.utils.Constants.INVALID_PROFILE_P
 import static com.beeja.api.employeemanagement.utils.Constants.SUCCESSFULLY_UPDATED_PROFILE_PHOTO;
 import static com.google.common.io.Files.getFileExtension;
 
+import com.beeja.api.employeemanagement.model.DTO.EmployeeSummaryDTO;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeNameDTO;
 import com.beeja.api.employeemanagement.model.clients.accounts.RoleDTO;
@@ -87,6 +88,11 @@ public class EmployeeServiceImpl implements EmployeeService {
   public EmployeeServiceImpl(EmployeeRepository employeeRepository, AccountClient accountClient) {
     this.employeeRepository = employeeRepository;
     this.accountClient = accountClient;
+  }
+
+  @Override
+  public List<EmployeeSummaryDTO> getEmployeesByOrganizationId(String organizationId) {
+    return employeeRepository.findEmployeeSummariesByOrganizationId(organizationId);
   }
 
   @Override

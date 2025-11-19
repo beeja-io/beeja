@@ -1,5 +1,6 @@
 package com.beeja.api.employeemanagement.repository;
 
+import com.beeja.api.employeemanagement.model.DTO.EmployeeSummaryDTO;
 import com.beeja.api.employeemanagement.model.Employee;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeDepartmentDTO;
 import com.beeja.api.employeemanagement.response.EmployeeDefaultValues;
@@ -13,6 +14,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EmployeeRepository extends MongoRepository<Employee, String> {
+
+    @Query(value = "{ 'organizationId': ?0 }",
+            fields = "{ 'employeeId': 1, 'organizationId': 1, 'jobDetails': 1, 'profilePictureId': 1 }")
+    List<EmployeeSummaryDTO> findEmployeeSummariesByOrganizationId(String organizationId);
 
   Employee findByEmployeeIdAndOrganizationId(String employeeId, String organizationId);
 
