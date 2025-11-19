@@ -67,7 +67,7 @@ const ViewMoreDetails = () => {
         id: item.reviewerId || item.id,
         name: item.reviewerName || item.name || '-',
         designation: item.role || '',
-        status: item.status || 'IN_PROGRESS',
+        status: item.providerStatus || 'IN_PROGRESS',
         profileImage: item.profileImage || '',
       }));
 

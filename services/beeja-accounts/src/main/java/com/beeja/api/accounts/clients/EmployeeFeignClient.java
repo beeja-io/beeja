@@ -28,5 +28,5 @@ public interface EmployeeFeignClient {
   EmployeeValuesDTO getEmployeeValues(@RequestHeader String authorization);
 
     @GetMapping("/v1/users/departments")
-    List<EmployeeDepartmentDTO> getDepartmentsByEmployeeIds(@RequestParam("employeeIds") List<String> employeeIds);
+    List<EmployeeDepartmentDTO> getDesignationsByEmployeeIds(@RequestParam("employeeIds") List<String> employeeIds);
 }

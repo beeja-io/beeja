@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class EmployeeSearchResponse {
     private String employeeId;
     private String fullName;
+    private String designation;
     private String department;
     private String email;
 }
