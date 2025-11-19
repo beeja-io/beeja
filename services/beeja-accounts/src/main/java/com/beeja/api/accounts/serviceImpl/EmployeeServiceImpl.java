@@ -143,7 +143,8 @@ public class EmployeeServiceImpl implements EmployeeService {
               ErrorCode.INVALID_EMPLOYMENT_TYPE_CODE,
               Constants.INVALID_EMPLOYMENT_TYPE + user.getEmploymentType()));
     }
-
+    // TODO 
+    // evaluate and remove    
     //    OrganizationPattern organizationPattern =
     //        patternsRepository.findByOrganizationIdAndPatternTypeAndActive(
     //            UserContext.getLoggedInUserOrganization().getId(),
