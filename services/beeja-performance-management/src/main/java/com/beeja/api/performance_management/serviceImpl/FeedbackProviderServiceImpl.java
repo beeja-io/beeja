@@ -285,6 +285,12 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
             for (FeedbackProvider provider : matchedProviders) {
                 String empId = provider.getEmployeeId();
 
+                Map<String, Object> empData = employeeFeignClient
+                        .getEmployeeByEmployeeId(empId)
+                        .getBody();
+
+                String designation = extractDesignation(empData);
+
                 AssignedReviewer reviewer = provider.getAssignedReviewers().stream()
                         .filter(r -> reviewerId.equals(r.getReviewerId()))
                         .findFirst()
@@ -297,6 +303,7 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                                 .employeeId(id)
                                 .employeeName(employeeNameMap.getOrDefault(id, "Unknown"))
                                 .department(employeeDepartmentMap.getOrDefault(id, "Unknown"))
+                                .designation(designation)
                                 .role(reviewer != null ? reviewer.getRole() : "Unknown")
                                 .feedbackCycles(new ArrayList<>())
                                 .build()
@@ -321,7 +328,6 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
             throw e;
         }
     }
-
 
     @Override
     public List<FeedbackFormSummaryResponse> getFormsByEmployeeAndReviewer(String employeeId, String reviewerId) {
@@ -372,4 +378,23 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
             throw e;
         }
     }
+
+    private String extractDesignation(Map<String, Object> employeeMap) {
+
+        if (employeeMap == null) return "Unknown";
+
+        Object employeeObj = employeeMap.get("employee");
+        if (!(employeeObj instanceof Map)) return "Unknown";
+
+        Map<String, Object> employee = (Map<String, Object>) employeeObj;
+
+        Object jobDetailsObj = employee.get("jobDetails");
+        if (!(jobDetailsObj instanceof Map)) return "Unknown";
+
+        Map<String, Object> jobDetails = (Map<String, Object>) jobDetailsObj;
+
+        Object designation = jobDetails.get("designation");
+        return designation != null ? designation.toString() : "Unknown";
+    }
+
 }
