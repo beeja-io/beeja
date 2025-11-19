@@ -15,6 +15,7 @@ import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.
 import EvaluationListAction from '../components/reusableComponents/EvaluationListAction';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
+import { isBefore, startOfDay } from 'date-fns';
 
 type PerformanceCycle = {
   id: string;
@@ -62,6 +63,15 @@ const ReviewCyclesList = () => {
     { title: 'Delete', svg: <DeleteIcon /> },
   ];
 
+  const isCycleExpired = (cycle: any) => {
+    if (!cycle?.feedbackDeadline) return false;
+
+    const today = startOfDay(new Date());
+    const endDate = startOfDay(new Date(cycle.feedbackDeadline));
+
+    return isBefore(endDate, today);
+  };
+
   return (
     <>
       <StyledDiv>
@@ -100,69 +110,76 @@ const ReviewCyclesList = () => {
                   cycles
                     ?.slice()
                     .sort((a, b) => b.id.localeCompare(a.id))
-                    .map((cycle) => (
-                      <TableBodyRow key={cycle.id}>
-                        <td>{cycle?.name || '-'}</td>
-                        <td>
-                          {cycle?.startDate
-                            ? new Date(cycle.startDate).toLocaleDateString(
-                                'en-GB',
-                                {
+                    .map((cycle) => {
+                      const expired = isCycleExpired(cycle);
+                      return (
+                        <TableBodyRow
+                          key={cycle.id}
+                          className={expired ? 'disabled-row' : ''}
+                        >
+                          <td>{cycle?.name || '-'}</td>
+                          <td>
+                            {cycle?.startDate
+                              ? new Date(cycle.startDate).toLocaleDateString(
+                                  'en-GB',
+                                  {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                  }
+                                )
+                              : '-'}
+                          </td>
+                          <td>
+                            {cycle?.feedbackDeadline
+                              ? new Date(
+                                  cycle.feedbackDeadline
+                                ).toLocaleDateString('en-GB', {
                                   day: '2-digit',
                                   month: '2-digit',
                                   year: 'numeric',
-                                }
-                              )
-                            : '-'}
-                        </td>
-                        <td>
-                          {cycle?.feedbackDeadline
-                            ? new Date(
-                                cycle.feedbackDeadline
-                              ).toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: '2-digit',
-                                year: 'numeric',
-                              })
-                            : '-'}
-                        </td>
-                        <td>
-                          {cycle?.status ? (
-                            <StatusDropdown value={cycle.status} disabled />
-                          ) : (
-                            '-'
-                          )}
-                        </td>
-                        <td>
-                          <EvaluationListAction
-                            options={Actions}
-                            currentCycle={cycle}
-                            setCycles={setCycles}
-                            isOpen={activeActionId === cycle.id}
-                            onToggle={() =>
-                              setActiveActionId((prev) =>
-                                prev === cycle.id ? null : cycle.id
-                              )
-                            }
-                            fetchCycles={fetchPerformanceCycles}
-                            onSuccess={(msg) => {
-                              setSuccessToastMessage({
-                                heading: 'Form Deleted Successfully',
-                                body: msg,
-                              });
-                              setShowSuccessMessage(true);
-                            }}
-                            onError={(msg) => {
-                              setErrorToastMessage({
-                                heading: 'Error',
-                                body: msg,
-                              });
-                              setShowSuccessMessage(true);
-                            }}
-                          />
-                        </td>
-                      </TableBodyRow>
-                    ))
+                                })
+                              : '-'}
+                          </td>
+                          <td>
+                            {cycle?.status ? (
+                              <StatusDropdown value={cycle.status} disabled />
+                            ) : (
+                              '-'
+                            )}
+                          </td>
+                          <td>
+                            <EvaluationListAction
+                              options={Actions}
+                              currentCycle={cycle}
+                              setCycles={setCycles}
+                              isOpen={activeActionId === cycle.id}
+                              onToggle={() =>
+                                setActiveActionId((prev) =>
+                                  prev === cycle.id ? null : cycle.id
+                                )
+                              }
+                              fetchCycles={fetchPerformanceCycles}
+                              onSuccess={(msg) => {
+                                setSuccessToastMessage({
+                                  heading: 'Form Deleted Successfully',
+                                  body: msg,
+                                });
+                                setShowSuccessMessage(true);
+                              }}
+                              onError={(msg) => {
+                                setErrorToastMessage({
+                                  heading: 'Error',
+                                  body: msg,
+                                });
+                                setShowSuccessMessage(true);
+                              }}
+                              disabled={expired}
+                            />
+                          </td>
+                        </TableBodyRow>
+                      );
+                    })
                 )}
               </tbody>
             </TableList>

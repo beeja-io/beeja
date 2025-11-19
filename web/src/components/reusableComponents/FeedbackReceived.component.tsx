@@ -245,30 +245,32 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
                       />
                     </SelectWrapper>
 
-                    <QuestionProgress>
-                      <NavButton
-                        disabled={currentQuestionIndex === 0}
-                        onClick={() => setCurrentQuestionIndex((i) => i - 1)}
-                      >
-                        <span className="arrow right">
-                          <ArrowDownSVG />
+                    {questionData.length > 0 && (
+                      <QuestionProgress>
+                        <NavButton
+                          disabled={currentQuestionIndex === 0}
+                          onClick={() => setCurrentQuestionIndex((i) => i - 1)}
+                        >
+                          <span className="arrow right">
+                            <ArrowDownSVG />
+                          </span>
+                        </NavButton>
+                        <span>
+                          Question - {currentQuestionIndex + 1}/
+                          {questionData.length}
                         </span>
-                      </NavButton>
-                      <span>
-                        Question - {currentQuestionIndex + 1}/
-                        {questionData.length}
-                      </span>
-                      <NavButton
-                        disabled={
-                          currentQuestionIndex === questionData.length - 1
-                        }
-                        onClick={() => setCurrentQuestionIndex((i) => i + 1)}
-                      >
-                        <span className="arrow left">
-                          <ArrowDownSVG />
-                        </span>
-                      </NavButton>
-                    </QuestionProgress>
+                        <NavButton
+                          disabled={
+                            currentQuestionIndex === questionData.length - 1
+                          }
+                          onClick={() => setCurrentQuestionIndex((i) => i + 1)}
+                        >
+                          <span className="arrow left">
+                            <ArrowDownSVG />
+                          </span>
+                        </NavButton>
+                      </QuestionProgress>
+                    )}
                   </FeedbackHeaderRow>
 
                   {!questionData.length ||

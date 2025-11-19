@@ -20,6 +20,7 @@ interface Props {
   isOpen: boolean;
   onToggle: () => void;
   setCycles: React.Dispatch<React.SetStateAction<any[]>>;
+  disabled?: boolean;
 }
 
 const EvaluationListAction: React.FC<Props> = ({
@@ -31,6 +32,7 @@ const EvaluationListAction: React.FC<Props> = ({
   isOpen,
   onToggle,
   setCycles,
+  disabled,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -97,14 +99,23 @@ const EvaluationListAction: React.FC<Props> = ({
         </ActionMenu>
         {isOpen && (
           <ActionMenuContent>
-            {options.map((op, i) => (
-              <ActionMenuOption
-                key={i}
-                onClick={() => handleOptionClick(op.title)}
-              >
-                {op.svg} {op.title}
-              </ActionMenuOption>
-            ))}
+            {options.map((op, i) => {
+              const isEdit = op.title === 'Edit';
+              const isEditDisabled = isEdit && disabled;
+              return (
+                <ActionMenuOption
+                  key={i}
+                  className={isEditDisabled ? 'edit-disabled' : ''}
+                  onClick={() => {
+                    if (!isEditDisabled) {
+                      handleOptionClick(op.title);
+                    }
+                  }}
+                >
+                  {op.svg} {op.title}
+                </ActionMenuOption>
+              );
+            })}
           </ActionMenuContent>
         )}
       </ActionContainer>

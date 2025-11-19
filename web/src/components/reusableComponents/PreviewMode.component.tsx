@@ -52,6 +52,8 @@ type Props = {
   showAnswers?: boolean;
   feedbackReceiverName?: string;
   validationErrors?: boolean[];
+  Submit?: string;
+  isLoading?: boolean;
 };
 
 const formatDate = (dateStr: string | Date) => {
@@ -71,8 +73,20 @@ const PreviewMode: React.FC<Props> = ({
   showAnswers = false,
   feedbackReceiverName,
   validationErrors,
+  Submit,
+  isLoading,
 }) => {
   const { t } = useTranslation();
+  const answerRefs = React.useRef<(HTMLTextAreaElement | null)[]>([]);
+  React.useEffect(() => {
+    formData.questions.forEach((_, index) => {
+      const ref = answerRefs.current[index];
+      if (ref) {
+        ref.style.height = '0px';
+        ref.style.height = ref.scrollHeight + 'px';
+      }
+    });
+  }, [formData.questions]);
   return (
     <PreviewWrapper>
       <PreviewCard>
@@ -116,18 +130,30 @@ const PreviewMode: React.FC<Props> = ({
                   {q.required && <RequiredMark>*</RequiredMark>}
                 </QuestionMainText>
               </QuestionText>
+
               {q.questionDescription && (
                 <QuestionDescription>
                   {q.questionDescription}
                 </QuestionDescription>
               )}
+
               {showAnswers && (
                 <>
                   {q.answer ? (
-                    <ReadOnlyInput value={q.answer} readOnly />
+                    <AnswerField
+                      ref={(el) => (answerRefs.current[index] = el)}
+                      value={q.answer}
+                      isEmpty={false}
+                      readOnly
+                    />
                   ) : (
-                    <AnswerField placeholder="No answer provided" disabled />
+                    <AnswerField
+                      isEmpty={true}
+                      placeholder="No answer provided"
+                      disabled
+                    />
                   )}
+
                   {validationErrors?.[index] && (
                     <ErrorText>This field is required</ErrorText>
                   )}
@@ -142,8 +168,13 @@ const PreviewMode: React.FC<Props> = ({
             <Button onClick={onEdit} type="button">
               {t('Edit')}
             </Button>
-            <Button className="submit" type="button" onClick={onConfirm}>
-              {t('Save')}
+            <Button
+              className="submit"
+              type="button"
+              onClick={onConfirm}
+              disabled={isLoading}
+            >
+              {Submit || t('Save')}
             </Button>
           </ButtonGroup>
         </FooterContainer>
