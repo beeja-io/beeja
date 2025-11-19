@@ -26,4 +26,7 @@ public interface FeedbackResponseRepository extends MongoRepository<FeedbackResp
 
     /** Retrieves feedback responses by employee ID, cycle ID, and organization ID. */
     List<FeedbackResponse> findByEmployeeIdAndCycleIdAndOrganizationId(String employeeId, String cycleId, String organizationId);
+
+    /** Deletes feedback responses for a given cycle ID and organization ID. **/
+    void deleteByCycleIdAndOrganizationId(String cycleId, String organizationId);
 }
