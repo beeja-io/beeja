@@ -50,12 +50,16 @@ interface FeedbackReceiversListProps {
   refresh?: number;
   onBack?: () => void;
   receiverName?: string;
+  formName?: string;
+  isExpired?: boolean;
 }
 
 const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
   cycleId,
   questionnaireId,
   onBack,
+  formName,
+  isExpired,
 }) => {
   const { t } = useTranslation();
 
@@ -66,6 +70,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedReceiver, setSelectedReceiver] =
     useState<FeedbackReceiver | null>(null);
+  const isCycleExpired = isExpired;
 
   const fetchFeedbackReceivers = async () => {
     if (!cycleId || !questionnaireId) {
@@ -125,8 +130,15 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
         </span>
 
         <Button
-          className="submit shadow"
-          onClick={handleAddFeedbackReceiver}
+          className={`submit shadow ${isExpired ? 'disabled-action' : ''}`}
+          disabled={isExpired}
+          onClick={() => {
+            if (isExpired) {
+              toast.error('Evaluation period is completed');
+              return;
+            }
+            handleAddFeedbackReceiver();
+          }}
           width="216px"
         >
           <AddNewPlusSVG />
@@ -136,7 +148,10 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
 
       <StyledDiv>
         <ExpenseHeadingFeedback>
-          <ExpenseTitle>{t('Feedback_Receivers_List')}</ExpenseTitle>
+          <ExpenseTitle>
+            {t('Feedback_Receivers_List')}
+            {formName ? ` : ${formName}` : ''}
+          </ExpenseTitle>
         </ExpenseHeadingFeedback>
 
         <TableListContainer>
@@ -158,31 +173,60 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
               </TableHead>
               <tbody>
                 {feedbackReceivers.map((receiver) => {
-                  const normalizedStatus =
+                  const rawStatus =
                     receiver.providerStatus?.toUpperCase() || 'NOT_ASSIGNED';
 
-                  const feedbackActions =
-                    normalizedStatus === 'IN_PROGRESS'
-                      ? [
-                          {
-                            title: 'Reassign Feedback Providers',
-                            svg: <AssignUserSVG />,
-                          },
-                          {
-                            title: 'View More Details',
-                            svg: <DocumentTextSVG />,
-                          },
-                        ]
-                      : [
-                          {
-                            title: 'Assign Feedback Providers',
-                            svg: <AssignUserSVG />,
-                          },
-                          {
-                            title: 'View More Details',
-                            svg: <DocumentTextSVG />,
-                          },
-                        ];
+                  const uiStatus =
+                    !isCycleExpired && rawStatus === 'COMPLETED'
+                      ? 'IN_PROGRESS'
+                      : rawStatus;
+
+                  let feedbackActions;
+
+                  if (isCycleExpired) {
+                    feedbackActions = [
+                      {
+                        title:
+                          uiStatus === 'NOT_ASSIGNED'
+                            ? 'Assign Feedback Providers'
+                            : 'Reassign Feedback Providers',
+                        svg: <AssignUserSVG />,
+                        disabled: true,
+                      },
+                      {
+                        title: 'View More Details',
+                        svg: <DocumentTextSVG />,
+                        disabled: false,
+                      },
+                    ];
+                  } else {
+                    feedbackActions =
+                      uiStatus === 'NOT_ASSIGNED'
+                        ? [
+                            {
+                              title: 'Assign Feedback Providers',
+                              svg: <AssignUserSVG />,
+                              disabled: false,
+                            },
+                            {
+                              title: 'View More Details',
+                              svg: <DocumentTextSVG />,
+                              disabled: false,
+                            },
+                          ]
+                        : [
+                            {
+                              title: 'Reassign Feedback Providers',
+                              svg: <AssignUserSVG />,
+                              disabled: false,
+                            },
+                            {
+                              title: 'View More Details',
+                              svg: <DocumentTextSVG />,
+                              disabled: false,
+                            },
+                          ];
+                  }
 
                   const getStatusClass = (status: any) => {
                     switch (status) {
@@ -216,7 +260,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
 
                       <td>{receiver.department}</td>
 
-                      <td className={getStatusClass(normalizedStatus)}>
+                      <td className={getStatusClass(rawStatus)}>
                         {receiver?.providerStatus ? (
                           <FeedbackStatusDropdown
                             value={receiver.providerStatus}

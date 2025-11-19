@@ -179,7 +179,6 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
         questionnaireId,
         assignedReviewers: mergedReviewers,
       };
-
       if (selectedReceiver.providerStatus === 'NOT_ASSIGNED') {
         await assignProvider(selectedReceiver.employeeId, payload);
         setToastData({
@@ -187,7 +186,10 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
           heading: t('Providers Assigned'),
           body: t('The feedback providers have been assigned successfully.'),
         });
-      } else if (selectedReceiver.providerStatus === 'IN_PROGRESS') {
+      } else if (
+        selectedReceiver.providerStatus === 'IN_PROGRESS' ||
+        selectedReceiver.providerStatus === 'COMPLETED'
+      ) {
         await updateFeedbackProviders(selectedReceiver.employeeId, payload);
         setToastData({
           type: 'success',
@@ -358,7 +360,13 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
           const res = await getProviders(selectedReceiver.employeeId);
           const providerList = res.data?.providers || [];
           setList(providerList);
-          setPreviousProviders(providerList);
+          if (providerList.length > 0) {
+            setPreviousProviders(providerList);
+            sessionStorage.setItem(
+              `previousProviders_${selectedReceiver.employeeId}_${cycleId}`,
+              JSON.stringify(providerList)
+            );
+          }
         } else {
           const res = await getReceivers(cycleId, questionnaireId);
           const receiverList = res.data?.receivers || [];
