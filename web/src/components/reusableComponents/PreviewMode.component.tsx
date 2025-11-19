@@ -4,6 +4,7 @@ import {
   DateRow,
   DateText,
   DescriptionBox,
+  ErrorText,
   FooterContainer,
   Header,
   Label,
@@ -11,6 +12,8 @@ import {
   PreviewWrapper,
   QuestionBlock,
   QuestionDescription,
+  QuestionMainText,
+  QuestionNumber,
   Questions,
   QuestionText,
   RequiredMark,
@@ -19,7 +22,12 @@ import {
 } from '../../styles/CreateReviewCycleStyle.style';
 import { Button } from '../../styles/CommonStyles.style';
 import { useTranslation } from 'react-i18next';
+import {
+  AnswerField,
+  ReadOnlyInput,
+} from '../../styles/FeedbackHubStyles.style';
 import { CalenderIconDark } from '../../svgs/ExpenseListSvgs.svg';
+import { ReviewType, ReviewTypeLabels } from './PerformanceEnums.component';
 
 type Question = {
   question: string;
@@ -39,8 +47,13 @@ type FormData = {
 
 type Props = {
   formData: FormData;
-  onEdit: () => void;
-  onConfirm: () => Promise<void> | void;
+  onEdit?: () => void;
+  onConfirm?: () => Promise<void> | void;
+  showAnswers?: boolean;
+  feedbackReceiverName?: string;
+  validationErrors?: boolean[];
+  Submit?: string;
+  isLoading?: boolean;
 };
 
 const formatDate = (dateStr: string | Date) => {
@@ -53,8 +66,27 @@ const formatDate = (dateStr: string | Date) => {
   });
 };
 
-const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
+const PreviewMode: React.FC<Props> = ({
+  formData,
+  onEdit,
+  onConfirm,
+  showAnswers = false,
+  feedbackReceiverName,
+  validationErrors,
+  Submit,
+  isLoading,
+}) => {
   const { t } = useTranslation();
+  const answerRefs = React.useRef<(HTMLTextAreaElement | null)[]>([]);
+  React.useEffect(() => {
+    formData.questions.forEach((_, index) => {
+      const ref = answerRefs.current[index];
+      if (ref) {
+        ref.style.height = '0px';
+        ref.style.height = ref.scrollHeight + 'px';
+      }
+    });
+  }, [formData.questions]);
   return (
     <PreviewWrapper>
       <PreviewCard>
@@ -71,26 +103,61 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
           </DateRow>
           <Subtitle>
             {formData.reviewType
-              ? `${formData.reviewType.charAt(0).toUpperCase()}${formData.reviewType.slice(1).toLowerCase()} Review`
+              ? `${ReviewTypeLabels[formData.reviewType as ReviewType]} Review`
               : ''}
           </Subtitle>
         </Header>
         <Label>Form Description</Label>
-        <DescriptionBox>
+        <DescriptionBox className="preview-mode">
           {formData.formDescription || 'No description provided.'}
         </DescriptionBox>
+        {showAnswers && feedbackReceiverName && (
+          <div style={{ marginBottom: '20px' }}>
+            <Label>
+              Feedback Receiver Name<RequiredMark>*</RequiredMark>
+            </Label>
 
+            <ReadOnlyInput value={feedbackReceiverName} readOnly />
+          </div>
+        )}
         <Questions>
           {formData.questions.map((q, index) => (
-            <QuestionBlock key={index}>
+            <QuestionBlock key={index} className="preview-block">
               <QuestionText>
-                {index + 1}. {q.question}
-                {q.required && <RequiredMark>*</RequiredMark>}
+                <QuestionNumber>{index + 1}.</QuestionNumber>
+                <QuestionMainText>
+                  {q.question}
+                  {q.required && <RequiredMark>*</RequiredMark>}
+                </QuestionMainText>
               </QuestionText>
+
               {q.questionDescription && (
                 <QuestionDescription>
                   {q.questionDescription}
                 </QuestionDescription>
+              )}
+
+              {showAnswers && (
+                <>
+                  {q.answer ? (
+                    <AnswerField
+                      ref={(el) => (answerRefs.current[index] = el)}
+                      value={q.answer}
+                      isEmpty={false}
+                      readOnly
+                    />
+                  ) : (
+                    <AnswerField
+                      isEmpty={true}
+                      placeholder="No answer provided"
+                      disabled
+                    />
+                  )}
+
+                  {validationErrors?.[index] && (
+                    <ErrorText>This field is required</ErrorText>
+                  )}
+                </>
               )}
             </QuestionBlock>
           ))}
@@ -101,8 +168,13 @@ const PreviewMode: React.FC<Props> = ({ formData, onEdit, onConfirm }) => {
             <Button onClick={onEdit} type="button">
               {t('Edit')}
             </Button>
-            <Button className="submit" type="button" onClick={onConfirm}>
-              {t('Save & Continue')}
+            <Button
+              className="submit"
+              type="button"
+              onClick={onConfirm}
+              disabled={isLoading}
+            >
+              {Submit || t('Save')}
             </Button>
           </ButtonGroup>
         </FooterContainer>

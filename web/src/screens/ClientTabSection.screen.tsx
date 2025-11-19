@@ -149,8 +149,16 @@ const ClientTabsSection: React.FC<ClientTabsSectionProps> = ({
             onClick={() => handleTabChange(tab as any)}
           >
             {t(tab)}
-            {tab === 'Projects' && <CountBadge>{projects.length}</CountBadge>}
-            {tab === 'Contracts' && <CountBadge>{contracts.length}</CountBadge>}
+            {tab === 'Projects' && (
+              <CountBadge $active={activeTab === 'Projects'}>
+                {projects.length}
+              </CountBadge>
+            )}
+            {tab === 'Contracts' && (
+              <CountBadge $active={activeTab === 'Contracts'}>
+                {contracts.length}
+              </CountBadge>
+            )}
           </Tab>
         ))}
       </Tabs>

@@ -1,27 +1,32 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ActionIcon } from '../../svgs/DocumentTabSvgs.svg';
 import {
   ActionContainer,
-  ActionMenu,
   ActionMenuContent,
-  ActionMenuOption,
-} from '../../styles/DocumentTabStyles.style';
+} from '../../styles/ExpenseListStyles.style';
+import {
+  ActionMenuIcon,
+  ActionMenuOptions,
+} from '../../styles/AssignFeedbackReceiversProvidersStyle.style';
 
 interface FeedbackProviderActionProps {
   options: { title: string; svg: React.ReactNode }[];
   currentEmployee: any;
   handleAssign: (employee: any) => void;
-  handleMoreInfo: (employee: any) => void;
+  onSuccess?: (msg: string) => void;
+  onError?: (msg: string) => void;
 }
 
 const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
   options,
   currentEmployee,
   handleAssign,
-  handleMoreInfo,
+  onError,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
@@ -36,32 +41,52 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  const handleOptionClick = (optionTitle: string) => {
-    if (optionTitle === 'Assign') {
-      handleAssign(currentEmployee);
+  const handleOptionClick = async (title: string) => {
+    try {
+      if (
+        title === 'Assign Feedback Providers' ||
+        title === 'Reassign Feedback Providers'
+      ) {
+        handleAssign(currentEmployee);
+      }
+
+      if (title === 'View More Details') {
+        navigate('/performance/view-more-details', {
+          state: {
+            employeeId: currentEmployee.employeeId,
+            cycleId: currentEmployee.cycleId,
+            receiverName: currentEmployee.fullName,
+            fromReceiversList: true,
+            fromReceiversListDirect: true,
+          },
+        });
+      }
+
+      setIsOpen(false);
+    } catch (error: any) {
+      onError?.(error?.response?.data?.message || 'Action failed!');
     }
-    if (optionTitle === 'More Info') {
-      handleMoreInfo(currentEmployee);
-    }
-    setIsOpen(false);
   };
 
   return (
     <ActionContainer ref={dropdownRef}>
-      <ActionMenu onClick={toggleDropdown}>
+      <ActionMenuIcon
+        className="action-align-feedback"
+        onClick={toggleDropdown}
+      >
         <ActionIcon />
-      </ActionMenu>
+      </ActionMenuIcon>
 
       {isOpen && (
         <ActionMenuContent>
           {options.map((option, index) => (
-            <ActionMenuOption
+            <ActionMenuOptions
               key={index}
               onClick={() => handleOptionClick(option.title)}
             >
               {option.svg}
-              {option.title}
-            </ActionMenuOption>
+              <span>{option.title}</span>
+            </ActionMenuOptions>
           ))}
         </ActionMenuContent>
       )}

@@ -5,6 +5,7 @@ import com.beeja.api.performance_management.request.FeedbackProviderRequest;
 import com.beeja.api.performance_management.response.FeedbackProviderDetails;
 import com.beeja.api.performance_management.response.ReviewerAssignedEmployeesResponse;
 import com.beeja.api.performance_management.service.FeedbackProvidersService;
+import com.beeja.api.performance_management.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -62,6 +63,25 @@ public class FeedbackProvidersController {
                     feedbackProvidersService.getEmployeesAssignedToReviewer();
 
             if (response == null || response.getAssignedEmployees().isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/forms/{employeeId}")
+    public ResponseEntity<?> getFormsByEmployee(
+            @PathVariable String employeeId) {
+        try {
+            // reviewerId is fetched from current context
+            String reviewerId = UserContext.getLoggedInEmployeeId();
+
+            var response = feedbackProvidersService.getFormsByEmployeeAndReviewer(employeeId, reviewerId);
+
+            if (response == null || response.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
 
