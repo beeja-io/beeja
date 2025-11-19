@@ -19,7 +19,6 @@ import {
 } from '../styles/ExpenseListStyles.style';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import { EditSVG } from '../svgs/ClientManagmentSvgs.svg';
-import { capitalizeFirstLetter } from '../utils/stringUtils';
 import Pagination from '../components/directComponents/Pagination.component';
 import { hasPermission } from '../utils/permissionCheck';
 import { CONTRACT_MODULE } from '../constants/PermissionConstants';
@@ -168,7 +167,7 @@ const ContractList = ({
                             handleContractClick(contract.contractId)
                           }
                         >
-                          {capitalizeFirstLetter(contract.contractTitle) ?? '-'}
+                          {contract.contractTitle ?? '-'}
                         </td>
                         <td
                           onClick={() =>

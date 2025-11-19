@@ -246,7 +246,7 @@ const roleData = [
           { value: 'CCL', label: 'Create' },
           { value: 'GCL', label: 'View' },
           { value: 'UCL', label: 'Edit' },
-          { value: 'RDCMT', label: 'Document(Logo & Files)' },
+          { value: 'RCLDOC', label: 'Document(Logo & Files)' },
         ],
       },
       {
@@ -255,7 +255,7 @@ const roleData = [
           { value: 'CPT', label: 'Create' },
           { value: 'GPT', label: 'View' },
           { value: 'UPT', label: 'Edit' },
-          { value: 'RDCMT', label: 'Document(Logo & Files)' },
+          { value: 'RPRDOC', label: 'Document(Logo & Files)' },
         ],
       },
       {
@@ -264,7 +264,7 @@ const roleData = [
           { value: 'CCON', label: 'Create' },
           { value: 'GCON', label: 'View' },
           { value: 'UCON', label: 'Edit' },
-          { value: 'RDCMT', label: 'Document(Logo & Files)' },
+          { value: 'RCONDC', label: 'Document(Logo & Files)' },
         ],
       },
       // Add more subsections as needed

@@ -12,8 +12,10 @@ import com.beeja.api.performance_management.model.FeedbackProvider;
 import com.beeja.api.performance_management.model.dto.*;
 import com.beeja.api.performance_management.repository.FeedbackProviderRepository;
 import com.beeja.api.performance_management.request.FeedbackProviderRequest;
+import com.beeja.api.performance_management.response.FeedbackFormSummaryResponse;
 import com.beeja.api.performance_management.response.FeedbackProviderDetails;
 import com.beeja.api.performance_management.response.ReviewerAssignedEmployeesResponse;
+import com.beeja.api.performance_management.service.EvaluationCycleService;
 import com.beeja.api.performance_management.service.FeedbackProvidersService;
 import com.beeja.api.performance_management.utils.BuildErrorMessage;
 import com.beeja.api.performance_management.utils.Constants;
@@ -21,7 +23,6 @@ import com.beeja.api.performance_management.utils.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponse;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,6 +39,10 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
 
     @Autowired
     private FeedbackProviderRepository feedbackProviderRepository;
+
+    @Autowired
+    private EvaluationCycleService evaluationCycleService;
+
 
     @Override
     public List<FeedbackProvider> assignFeedbackProvider(String employeeId, FeedbackProviderRequest requestDto) {
@@ -249,7 +254,11 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                     .toList();
 
             if (matchedProviders.isEmpty()) {
-                return null;
+                return ReviewerAssignedEmployeesResponse.builder()
+                        .reviewerId(reviewerId)
+                        .reviewerName("Unknown")
+                        .assignedEmployees(List.of())
+                        .build();
             }
 
             List<String> employeeIds = matchedProviders.stream()
@@ -257,33 +266,8 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
                     .distinct()
                     .toList();
 
-            List<EmployeeIdNameDTO> employeeDetails;
-            try {
-                employeeDetails = accountClient.getEmployeeNamesById(employeeIds);
-            } catch (Exception ex) {
-                log.error(Constants.ACCOUNT_CLIENT_ERROR, reviewerId, ex);
-                throw new FeignClientException(
-                        BuildErrorMessage.buildErrorMessage(
-                                ErrorType.FEIGN_CLIENT_ERROR,
-                                ErrorCode.FEIGN_CLIENT_ERROR,
-                                Constants.ACCOUNT_CLIENT_ERROR
-                        )
-                );
-            }
-
-            List<EmployeeDepartmentDTO> departmentDetails;
-            try {
-                departmentDetails = employeeFeignClient.getDepartmentsByEmployeeIds(employeeIds);
-            } catch (Exception ex) {
-                log.error(Constants.EMPLOYEE_CLIENT_ERROR, reviewerId, ex);
-                throw new FeignClientException(
-                        BuildErrorMessage.buildErrorMessage(
-                                ErrorType.FEIGN_CLIENT_ERROR,
-                                ErrorCode.FEIGN_CLIENT_ERROR,
-                                Constants.EMPLOYEE_CLIENT_ERROR
-                        )
-                );
-            }
+            List<EmployeeIdNameDTO> employeeDetails = accountClient.getEmployeeNamesById(employeeIds);
+            List<EmployeeDepartmentDTO> departmentDetails = employeeFeignClient.getDepartmentsByEmployeeIds(employeeIds);
 
             Map<String, String> employeeNameMap = employeeDetails.stream()
                     .filter(e -> e.getEmployeeId() != null && e.getFullName() != null)
@@ -296,36 +280,121 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
             List<EmployeeIdNameDTO> reviewerDetails = accountClient.getEmployeeNamesById(List.of(reviewerId));
             String reviewerName = reviewerDetails.isEmpty() ? "Unknown" : reviewerDetails.get(0).getFullName();
 
-            List<AssignedEmployeeDTO> assignedEmployees = matchedProviders.stream()
-                    .map(p -> {
-                        AssignedReviewer reviewer = p.getAssignedReviewers().stream()
-                                .filter(r -> reviewerId.equals(r.getReviewerId()))
-                                .findFirst()
-                                .orElse(null);
+            Map<String, ReviewerEmployeeDTO> employeeMap = new LinkedHashMap<>();
 
-                        boolean isSubmitted = reviewer != null &&
-                                ProviderStatus.COMPLETED.equals(reviewer.getStatus());
+            for (FeedbackProvider provider : matchedProviders) {
+                String empId = provider.getEmployeeId();
 
-                        return AssignedEmployeeDTO.builder()
-                                .employeeId(p.getEmployeeId())
-                                .employeeName(employeeNameMap.getOrDefault(p.getEmployeeId(), "Unknown"))
-                                .department(employeeDepartmentMap.getOrDefault(p.getEmployeeId(), "Unknown"))
-                                .cycleId(p.getCycleId())
-                                .role(reviewer != null ? reviewer.getRole() : null)
-                                .isSubmitted(isSubmitted)
-                                .build();
-                    })
-                    .toList();
+                Map<String, Object> empData = employeeFeignClient
+                        .getEmployeeByEmployeeId(empId)
+                        .getBody();
+
+                String designation = extractDesignation(empData);
+
+                AssignedReviewer reviewer = provider.getAssignedReviewers().stream()
+                        .filter(r -> reviewerId.equals(r.getReviewerId()))
+                        .findFirst()
+                        .orElse(null);
+
+                boolean isSubmitted = reviewer != null && ProviderStatus.COMPLETED.equals(reviewer.getStatus());
+
+                ReviewerEmployeeDTO employeeDTO = employeeMap.computeIfAbsent(empId, id ->
+                        ReviewerEmployeeDTO.builder()
+                                .employeeId(id)
+                                .employeeName(employeeNameMap.getOrDefault(id, "Unknown"))
+                                .department(employeeDepartmentMap.getOrDefault(id, "Unknown"))
+                                .designation(designation)
+                                .role(reviewer != null ? reviewer.getRole() : "Unknown")
+                                .feedbackCycles(new ArrayList<>())
+                                .build()
+                );
+
+                employeeDTO.getFeedbackCycles().add(
+                        FeedbackCycleDTO.builder()
+                                .cycleId(provider.getCycleId())
+                                .submitted(isSubmitted)
+                                .build()
+                );
+            }
 
             return ReviewerAssignedEmployeesResponse.builder()
                     .reviewerId(reviewerId)
                     .reviewerName(reviewerName)
-                    .assignedEmployees(assignedEmployees)
+                    .assignedEmployees(new ArrayList<>(employeeMap.values()))
                     .build();
 
         } catch (Exception e) {
-            log.error(Constants.INVALID_ERROR, e);
+            log.error(Constants.ERROR_FETCHING_ASSIGNED_EMPLOYEES, e.getMessage(), e);
             throw e;
         }
     }
+
+    @Override
+    public List<FeedbackFormSummaryResponse> getFormsByEmployeeAndReviewer(String employeeId, String reviewerId) {
+        try {
+            String organizationId = UserContext.getLoggedInUserOrganization()
+                    .get(Constants.ID)
+                    .toString();
+
+            List<FeedbackProvider> providers = feedbackProviderRepository
+                    .findByOrganizationIdAndEmployeeId(organizationId, employeeId)
+                    .stream()
+                    .filter(p -> p.getAssignedReviewers().stream()
+                            .anyMatch(r -> reviewerId.equals(r.getReviewerId())))
+                    .toList();
+
+            if (providers.isEmpty()) {
+                return Collections.emptyList();
+            }
+
+            return providers.stream()
+                    .map(provider -> {
+                        String cycleName = "Unknown Cycle";
+                        try {
+                            var cycle = evaluationCycleService.getCycleById(provider.getCycleId());
+                            if (cycle != null && cycle.getName() != null) {
+                                cycleName = cycle.getName();
+                            }
+                        } catch (Exception e) {
+                            log.warn(Constants.ERROR_FETCHING_CYCLE_NAME, provider.getCycleId(), e.getMessage());
+                        }
+
+                        String status = provider.getAssignedReviewers().stream()
+                                .filter(r -> reviewerId.equals(r.getReviewerId()))
+                                .findFirst()
+                                .map(r -> r.getStatus().toString())
+                                .orElse("NOT_STARTED");
+
+                        return FeedbackFormSummaryResponse.builder()
+                                .cycleId(provider.getCycleId())
+                                .cycleName(cycleName)
+                                .status(status)
+                                .build();
+                    })
+                    .toList();
+
+        } catch (Exception e) {
+            log.error(Constants.ERROR_FETCHING_FORMS, employeeId, reviewerId, e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private String extractDesignation(Map<String, Object> employeeMap) {
+
+        if (employeeMap == null) return "Unknown";
+
+        Object employeeObj = employeeMap.get("employee");
+        if (!(employeeObj instanceof Map)) return "Unknown";
+
+        Map<String, Object> employee = (Map<String, Object>) employeeObj;
+
+        Object jobDetailsObj = employee.get("jobDetails");
+        if (!(jobDetailsObj instanceof Map)) return "Unknown";
+
+        Map<String, Object> jobDetails = (Map<String, Object>) jobDetailsObj;
+
+        Object designation = jobDetails.get("designation");
+        return designation != null ? designation.toString() : "Unknown";
+    }
+
 }

@@ -474,7 +474,7 @@ const CompleteNavBar = () => {
                           link: '/performance/create-evaluation-form',
                         },
                         {
-                          name: 'Assign Feedback Providers',
+                          name: 'Assign Feedback Receivers & Providers',
                           link: '/performance/assign-feedback-providers',
                         },
                         {

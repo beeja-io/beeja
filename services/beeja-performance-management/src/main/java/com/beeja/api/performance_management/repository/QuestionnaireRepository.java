@@ -18,12 +18,4 @@ public interface QuestionnaireRepository extends MongoRepository<Questionnaire, 
      * @return a sorted list of questionnaires belonging to the organization
      */
     List<Questionnaire> findByOrganizationId(String organizationId, Sort sort);
-
-    /**
-     * Retrieves all questionnaires, sorted by the provided criteria.
-     *
-     * @param sort the sort configuration
-     * @return a sorted list of all questionnaires
-     */
-    List<Questionnaire> findAll(Sort sort);
 }

@@ -36,9 +36,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 
 
@@ -63,7 +65,8 @@ public class InvoiceServiceImpl implements InvoiceService {
 
   @Autowired private ObjectMapper objectMapper;
 
-  @Override
+    @Transactional(rollbackFor = Exception.class)
+    @Override
   public Invoice generateInvoiceForContract(String contractId, InvoiceRequest request) {
       String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
     Contract contract =
@@ -122,30 +125,44 @@ public class InvoiceServiceImpl implements InvoiceService {
 
 
     // setting TAX ID of a ORG
-    ResponseEntity<Object> orgResponse = accountClient.getOrganizationById(orgId);
+      ResponseEntity<Object> orgResponse = accountClient.getOrganizationById(orgId);
 
 
-   Map<String, Object> responseMap = objectMapper.convertValue(orgResponse.getBody(), new TypeReference<Map<String, Object>>() {});
-    Map<String, Object> accountsMap = (Map<String, Object>) responseMap.get("accounts");
-    String taxId = accountsMap.get("taxNumber").toString();
-        if (request.getTaxId() != null && !request.getTaxId().isBlank() && !request.getTaxId().equals(taxId)) {
-            invoice.setTaxId(request.getTaxId());
-            log.info(Constants.CUSTOMER_TAX_ID, request.getTaxId());
-        } else {
-            invoice.setTaxId(taxId);
-            log.info(Constants.ORG_TAX_ID, taxId);
-        }
+      Map<String, Object> responseMap = objectMapper.convertValue(orgResponse.getBody(), new TypeReference<Map<String, Object>>() {});
+      String orgTaxId = Optional.ofNullable(responseMap.get("accounts"))
+              .filter(Map.class::isInstance)
+              .map(acc -> ((Map<String, Object>) acc).get("taxNumber"))
+              .map(Object::toString)
+              .orElse("");
 
-    PaymentDetails invoicePaymentDetails = new PaymentDetails();
+      String incomingTaxId = Optional.ofNullable(request.getTaxId()).orElse("");
+      orgTaxId = orgTaxId.trim();
+      incomingTaxId = incomingTaxId.trim();
+
+      String finalTaxId;
+      if (orgTaxId.isEmpty() && incomingTaxId.isEmpty()) {
+          finalTaxId = "";
+          log.info(Constants.TAX_ID_MISSING);
+      }
+      else if (incomingTaxId.equals(orgTaxId)) {
+          finalTaxId = orgTaxId;
+          log.info(Constants.ORG_TAX_ID, orgTaxId);
+      }
+      else {
+          finalTaxId = incomingTaxId;
+          log.info(Constants.CUSTOMER_TAX_ID, incomingTaxId);
+      }
+
+      invoice.setTaxId(finalTaxId);
+
+
+      PaymentDetails invoicePaymentDetails = new PaymentDetails();
     Map<String, Object> orgBankDetails = (Map<String, Object>) UserContext.getLoggedInUserOrganization().get("bankDetails");
     invoicePaymentDetails.setAccountName((String) orgBankDetails.get("accountName"));
     invoicePaymentDetails.setBankName((String) orgBankDetails.get("bankName"));
     invoicePaymentDetails.setAccountNumber((String) orgBankDetails.get("accountNumber"));
     invoicePaymentDetails.setIfscNumber((String) orgBankDetails.get("ifscNumber"));
     invoice.setPaymentDetails(invoicePaymentDetails);
-
-    invoice = invoiceRepository.save(invoice);
-
 
         Client client = clientRepository.findByClientIdAndOrganizationId(invoice.getClientId(), orgId);
     try {
@@ -174,9 +191,10 @@ public class InvoiceServiceImpl implements InvoiceService {
       log.error(Constants.INVOICE_PDF_FAILED, e.getMessage());
       throw new ResourceNotFoundException(
           BuildErrorMessage.buildErrorMessage(
-              ErrorType.API_ERROR, ErrorCode.VALIDATION_ERROR, Constants.INVOICE_PDF_FAILED));
+              ErrorType.API_ERROR, ErrorCode.VALIDATION_ERROR, Constants.INVOICE_UPLOAD_FAILED));
     }
     log.info(Constants.INVOICE_PDF_SUCCESS);
+    invoice = invoiceRepository.save(invoice);
     return invoice;
   }
 

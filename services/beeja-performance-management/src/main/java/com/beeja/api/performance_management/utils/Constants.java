@@ -1,88 +1,117 @@
+
 package com.beeja.api.performance_management.utils;
 
 public class Constants {
-  public static final String NAME = "name";
-  public static final String EMAIL = "email";
-  public static final String AUTHORIZATION = "authorization";
-  public static final String ID = "id";
+    public static final String NAME = "name";
+    public static final String EMAIL = "email";
+    public static final String AUTHORIZATION = "authorization";
+    public static final String ID = "id";
 
-  public static final String USER_FAILED_AUTHENTICATE = "User failed to authenticate";
-  public static final String ACCESS_DENIED = "Access denied";
-  public static final String DOC_URL_RESOURCE_NOT_FOUND =
-      "https://docs.beeja.io/docs/resource-not-found";
-  public static final String BEEJA = "BEEJA";
-  public static final String NO_REQUIRED_PERMISSIONS =
-      "You do not have the required permissions to access this resource";
+    public static final String USER_FAILED_AUTHENTICATE = "User failed to authenticate";
+    public static final String ACCESS_DENIED = "Access denied";
+    public static final String DOC_URL_RESOURCE_NOT_FOUND =
+            "https://docs.beeja.io/docs/resource-not-found";
+    public static final String BEEJA = "BEEJA";
+    public static final String NO_REQUIRED_PERMISSIONS =
+            "You do not have the required permissions to access this resource";
 
-  // ============= LOG ERRORS For Questionnaires =============/
-  public static final String ERROR_UPDATING_QUESTIONNAIRE = "Error occured while updating the questionnaire";
-  public static final String ERROR_SAVING_QUESTIONNAIRE = "Errror occured while saving the questionnaire";
-  public static final String ERROR_INVALID_QUESTIONNAIRE = "Questionnaire not found with id: ";
-  public static final String ERROR_INVALID_DEPARTMENT = "Invalid department:";
-  public static final String ERROR_QUESTIONNAIRE_NOT_FOUND  = "Questionnaire not found with id: ";
-  public static final String ERROR_QUESTION_LIST_EMPTY = "Question list cannot be empty" ;
+    // ============= LOG ERRORS For Questionnaires =============/
+    public static final String ERROR_UPDATING_QUESTIONNAIRE = "Error occured while updating the questionnaire";
+    public static final String ERROR_SAVING_QUESTIONNAIRE = "Errror occured while saving the questionnaire";
+    public static final String ERROR_INVALID_QUESTIONNAIRE = "Questionnaire not found with id: ";
+    public static final String ERROR_INVALID_DEPARTMENT = "Invalid department:";
+    public static final String ERROR_QUESTIONNAIRE_NOT_FOUND  = "Questionnaire not found with id: ";
+    public static final String ERROR_QUESTION_LIST_EMPTY = "Question list cannot be empty" ;
 
-  // ============ LOG INFO For Questionnaires ===============/
-  public static final String INFO_CREATING_QUESTIONNAIRE = "Creating new questionnaire: {}";
-  public static final String INFO_QUESTIONNAIRE_CREATED = "Questionnaire created successfully with ID: {}";
-  public static final String INFO_FETCHING_ALL_QUESTIONNAIRES = "Fetching all questionnaires";;
-  public static final String INFO_FETCHING_QUESTIONNAIRE_BY_ID = "Fetching questionnaire with ID: {}";
-  public static final String INFO_UPDATING_QUESTIONNAIRE_BY_ID = "Updating questionnaire with ID: {}";
-  public static final String INFO_UPDATING_QUESTIONS_FOR_QUESTIONNAIRE = "Updating questions for questionnaire ID: {}";
-  public static final String INFO_QUESTIONNAIRE_UPDATED_SUCCESS = "Questionnaire updated successfully: {}";
-  public static final String INFO_DELETING_QUESTIONNAIRE_BY_ID = "Deleting questionnaire with ID: {}";
-  public static final String INFO_QUESTIONNAIRE_DELETED = "Deleted questionnaire with ID: {}";
+    // ============ LOG INFO For Questionnaires ===============/
+    public static final String INFO_CREATING_QUESTIONNAIRE = "Creating new questionnaire: {}";
+    public static final String INFO_QUESTIONNAIRE_CREATED = "Questionnaire created successfully with ID: {}";
+    public static final String INFO_FETCHING_ALL_QUESTIONNAIRES = "Fetching all questionnaires";;
+    public static final String INFO_FETCHING_QUESTIONNAIRE_BY_ID = "Fetching questionnaire with ID: {}";
+    public static final String INFO_UPDATING_QUESTIONNAIRE_BY_ID = "Updating questionnaire with ID: {}";
+    public static final String INFO_UPDATING_QUESTIONS_FOR_QUESTIONNAIRE = "Updating questions for questionnaire ID: {}";
+    public static final String INFO_QUESTIONNAIRE_UPDATED_SUCCESS = "Questionnaire updated successfully: {}";
+    public static final String INFO_DELETING_QUESTIONNAIRE_BY_ID = "Deleting questionnaire with ID: {}";
+    public static final String INFO_QUESTIONNAIRE_DELETED = "Deleted questionnaire with ID: {}";
 
-  //================ LOG ERRORS for Evaluation Cycle ==============/
-  public static final String ERROR_CANNOT_UPDATE_PUBLISHED_CYCLE = "Cannot update a published evaluation cycle";
-  public static final String ERROR_EVALUATION_CYCLE_NOT_FOUND = "Evaluation cycle not found with id: ";
-  public static final String ERROR_STATUS_CANNOT_BE_NULL = "Status cannot be null";
-  public static final String ERROR_FAILED_UPDATE_CYCLE_STATUS = "Failed to update cycle status for id: {}";
-  public static final String ERROR_UPDATING_EVALUATION_CYCLE_STATUS = "Error occurred while updating evaluation cycle status";
-  public static final String ERROR_NO_ACTIVE_EVALUATION_CYCLE = "No active evaluation cycle found";
-  public static final String ERROR_SAVING_EVALUATION_CYCLE = "Error occurred while saving the evaluation cycle.";
-  public static final String ERROR_UPDATING_EVALUATION_CYCLE = "Error occured while updating the evaluation cycle.";
-  public static final String ERROR_QUESTIONNAIRE_NOT_FOUND_FOR_CYCLE = "Questionnaire not found for cycle: {}";
-  public static final String ERROR_NO_CYCLES_FOUND = "No evaluation cycles found with status: {}";
+    //================ LOG ERRORS for Evaluation Cycle ==============/
+    public static final String ERROR_CANNOT_UPDATE_PUBLISHED_CYCLE = "Cannot update a published evaluation cycle";
+    public static final String ERROR_EVALUATION_CYCLE_NOT_FOUND = "Evaluation cycle not found with id: ";
+    public static final String ERROR_STATUS_CANNOT_BE_NULL = "Status cannot be null";
+    public static final String ERROR_FAILED_UPDATE_CYCLE_STATUS = "Failed to update cycle status for id: {}";
+    public static final String ERROR_UPDATING_EVALUATION_CYCLE_STATUS = "Error occurred while updating evaluation cycle status";
+    public static final String ERROR_NO_ACTIVE_EVALUATION_CYCLE = "No active evaluation cycle found";
+    public static final String ERROR_SAVING_EVALUATION_CYCLE = "Error occurred while saving the evaluation cycle.";
+    public static final String ERROR_UPDATING_EVALUATION_CYCLE = "Error occured while updating the evaluation cycle.";
+    public static final String ERROR_QUESTIONNAIRE_NOT_FOUND_FOR_CYCLE = "Questionnaire not found for cycle: {}";
+    public static final String ERROR_NO_CYCLES_FOUND = "No evaluation cycles found with status: {}";
 
-  // =============== LOG INFO For Evaluation Cycle ===============/
-  public static final String INFO_CREATING_EVALUATION_CYCLE = "Creating new evaluation cycle: {}";
-  public static final String INFO_EVALUATION_CYCLE_CREATED = "Created evaluation cycle successfully: ";
-  public static final String INFO_FETCHING_ALL_CYCLES = "Fetching all cycles";
-  public static final String INFO_FETCHING_EVALUATIONCYCLE_BY_ID = "Fetching evaluation cycle by id: {}";
-  public static final String INFO_FETCHING_EVALUATIONCYCLE_WITH_QUESTIONNAIRE_BY_ID = "Fetching evaluation cycle with questionnaire by id: {}";
-  public static final String INFO_UPDATING_EVALUATION_CYCLE = "Updating evaluation cycle with id: {}";
-  public static final String INFO_EVALUATION_CYCLE_UPDATED_SUCCESSFULLY = "Updated evaluation cycle successfully: {}";
-  public static final String INFO_UPDATING_EVALUATION_CYCLE_STATUS = "Updating status for evaluation cycle: {}";
-  public static final String INFO_UPDATED_CYCLE_STATUS = "Successfully updated evaluation cycle status to {} for id: {}";
-  public static final String INFO_DELETED_EVALUATION_CYCLE = "Deleted evaluation cycle: {}";
-  public static final String INFO_FETCH_CYCLES_BY_STATUS = "Fetching evaluation cycles with status: {}";
-  public static final String INFO_FULL_UPDATE_START = "Starting full update for EvaluationCycle with ID: {}";
-  public static final String INFO_EXISTING_CYCLE_FETCHED = "Fetched existing cycle: {} (status: {})";
-  public static final String INFO_UPDATING_CYCLE_FIELDS = "Updating cycle fields for cycle ID: {}";
-  public static final String INFO_UPDATING_QUESTIONS = "Updating questions for cycle ID: {}";
-  public static final String INFO_SELF_EVAL_DEADLINE_ERROR = "Self-evaluation deadline must be before or equal to feedback deadline";
-  public static final String INFO_FULL_UPDATE_COMPLETED = "Full update completed for EvaluationCycle with ID: {}";
-  public static final String DUPLICATE_QUESTIONNAIRE_WITH_SAME_QUESTIONS = "Duplicate questionnaire with same questions already exists";
-  public static final String MISSING_CYCLE_DATE_FIELDS = "All cycle date fields must be provided";
-  public static final String SELF_EVAL_DEADLINE_BEFORE_START = "Self-evaluation deadline must be on or after the start date";
-  public static final String FEEDBACK_DEADLINE_BEFORE_END_DATE = "Feedback deadline must be on or after the end date";
-  public static final String START_DATE_AFTER_END_DATE = "Start date must be on or before the end date";
-  public static final String INFO_CREATING_CYCLE_WITH_QUESTIONS = "Creating evaluation cycle with questions: {}";
-  public static final String ERROR_CREATING_QUESTIONNAIRE = "Failed to create questionnaire";
+    // =============== LOG INFO For Evaluation Cycle ===============/
+    public static final String INFO_CREATING_EVALUATION_CYCLE = "Creating new evaluation cycle: {}";
+    public static final String INFO_EVALUATION_CYCLE_CREATED = "Created evaluation cycle successfully: ";
+    public static final String INFO_FETCHING_ALL_CYCLES = "Fetching all cycles";
+    public static final String INFO_FETCHING_EVALUATIONCYCLE_BY_ID = "Fetching evaluation cycle by id: {}";
+    public static final String INFO_FETCHING_EVALUATIONCYCLE_WITH_QUESTIONNAIRE_BY_ID = "Fetching evaluation cycle with questionnaire by id: {}";
+    public static final String INFO_UPDATING_EVALUATION_CYCLE = "Updating evaluation cycle with id: {}";
+    public static final String INFO_EVALUATION_CYCLE_UPDATED_SUCCESSFULLY = "Updated evaluation cycle successfully: {}";
+    public static final String INFO_UPDATING_EVALUATION_CYCLE_STATUS = "Updating status for evaluation cycle: {}";
+    public static final String INFO_UPDATED_CYCLE_STATUS = "Successfully updated evaluation cycle status to {} for id: {}";
+    public static final String INFO_DELETED_EVALUATION_CYCLE = "Deleted evaluation cycle: {}";
+    public static final String INFO_FETCH_CYCLES_BY_STATUS = "Fetching evaluation cycles with status: {}";
+    public static final String INFO_FULL_UPDATE_START = "Starting full update for EvaluationCycle with ID: {}";
+    public static final String INFO_EXISTING_CYCLE_FETCHED = "Fetched existing cycle: {} (status: {})";
+    public static final String INFO_UPDATING_CYCLE_FIELDS = "Updating cycle fields for cycle ID: {}";
+    public static final String INFO_UPDATING_QUESTIONS = "Updating questions for cycle ID: {}";
+    public static final String INFO_SELF_EVAL_DEADLINE_ERROR = "Self-evaluation deadline must be before or equal to feedback deadline";
+    public static final String INFO_FULL_UPDATE_COMPLETED = "Full update completed for EvaluationCycle with ID: {}";
+    public static final String DUPLICATE_QUESTIONNAIRE_WITH_SAME_QUESTIONS = "Duplicate questionnaire with same questions already exists";
+    public static final String MISSING_CYCLE_DATE_FIELDS = "All cycle date fields must be provided";
+    public static final String SELF_EVAL_DEADLINE_BEFORE_START = "Self-evaluation deadline must be on or after the start date";
+    public static final String FEEDBACK_DEADLINE_BEFORE_END_DATE = "Feedback deadline must be on or after the end date";
+    public static final String START_DATE_AFTER_END_DATE = "Start date must be on or before the end date";
+    public static final String INFO_CREATING_CYCLE_WITH_QUESTIONS = "Creating evaluation cycle with questions: {}";
+    public static final String ERROR_CREATING_QUESTIONNAIRE = "Failed to create questionnaire";
+    public static final String INFO_QUESTIONNAIRE_FETCHING_QUESTIONNAIRE_BY_ID = "Fetching questionnaire by ID.";
+    public static final String INFO_VALIDATING_ACCESS_FOR_CYCLE_ID = "Validating access for cycle ID: {} (today: {})";
+    public static final String ERROR_FORM_EXPIRED_END_DATE_PASSED = "Form expired — end date passed for cycle {}";
+    public static final String ERROR_EVALUATION_FORM_EXPIRED_END_DATE_PASSED = "This evaluation form has expired — the evaluation end date has passed.";
+    public static final String ERROR_SELF_EVALUATION_DEADLINE_PASSED_FOR_CYCLE = "Self-evaluation deadline passed for cycle {}";
+    public static final String ERROR_FEEDBACK_DEADLINE_PASSED_FOR_CYCLE = "Feedback deadline passed for cycle {}";
+    public static final String INFO_NO_EVALUATION_CYCLE_FOR_ORG = "No Evaluation Cycle found for organizationId={}";
+    public static final String NO_EVALUATION_CYCLE = "Empty Evaluation Cycles";
+    public static final String ERROR_UNEXPECTED_WHILE_FETCHING_EVALUATION_CYCLES = "Unexpected error while fetching evaluation cycles";
+    public static final String ERROR_FAILED_TO_RETRIEVE_EVALUATION_CYCLES = "Failed to retrieve evaluation cycles";
+    public static final String INFO_DELETING_EVALUATION_CYCLE_FOR_ORG = "Deleting Evaluation Cycle {} for org {}";
+    public static final String INFO_SUCCESSFULLY_DELETED_CYCLE_AND_DATA = "Successfully Deleted cycle {} and all its related data";
+    public static final String ERROR_DELETING_CYCLE = "Error deleting cycle {}: {}";
+    public static final String ERROR_FAILED_TO_DELETE_CYCLE_AND_DATA = "Failed to delete cycle and related data";
 
-  // ========= LOG For Feedback Providers =========/
-  public static final String FEEDBACK_REQUEST_NULL = "FeedbackFormRequest is null";
-  public static final String ERROR_ASSIGNING_FEEDBACK_PROVIDER = "Failed to assigning feedback providers for employeeId={}";
-  public static final String INFO_FEEDBACK_FORM_PROCESSED = "Feedback form processed for employeeId = {}";
-  public static final String WARN_BAD_REQUEST_EXCEPTION = "BadRequestException: {}";
-  public static final String INFO_UPDATING_FEEDBACK_PROVIDERS = "Updating feedback providers for employeeId={}, orgId={}";
-  public static final String EMPLOYEE_ID_NOT_EMPTY = "Employee ID must not be null or empty";
-  public static final String ASSIGNED_REVIEWERS_NOT_EMPTY = "Assigned reviewers list must not be empty";
-  public static final String PROVIDERS_NOT_FOUND = "Feedback Providers not found for employeeId=";
-  public static final String CYCLE_ID_MISMATCH = "Cycle ID mismatch for employeeId=";
-  public static final String QUESTIONNAIRE_ID_MISMATCH = "Questionnaire ID mismatch for employeeId=";
-  public static final String INVALID_REVIEWER_DETAIL_RETURNED = "Invalid reviewer detail returned: {}";
+    // ========= LOG For Feedback Providers =========/
+    public static final String FEEDBACK_REQUEST_NULL = "FeedbackFormRequest is null";
+    public static final String ERROR_ASSIGNING_FEEDBACK_PROVIDER = "Failed to assigning feedback providers for employeeId={}";
+    public static final String INFO_FEEDBACK_FORM_PROCESSED = "Feedback form processed for employeeId = {}";
+    public static final String WARN_BAD_REQUEST_EXCEPTION = "BadRequestException: {}";
+    public static final String INFO_UPDATING_FEEDBACK_PROVIDERS = "Updating feedback providers for employeeId={}, orgId={}";
+    public static final String EMPLOYEE_ID_NOT_EMPTY = "Employee ID must not be null or empty";
+    public static final String ASSIGNED_REVIEWERS_NOT_EMPTY = "Assigned reviewers list must not be empty";
+    public static final String PROVIDERS_NOT_FOUND = "Feedback Providers not found for employeeId=";
+    public static final String CYCLE_ID_MISMATCH = "Cycle ID mismatch for employeeId=";
+    public static final String QUESTIONNAIRE_ID_MISMATCH = "Questionnaire ID mismatch for employeeId=";
+    public static final String INVALID_REVIEWER_DETAIL_RETURNED = "Invalid reviewer detail returned: {}";
+    public static final String ERROR_FETCHING_ASSIGNED_EMPLOYEES = "Error while fetching assigned employees for reviewer: {}";
+    public static final String ERROR_FETCHING_CYCLE_NAME = "Unable to fetch cycle name for cycleId {}: {}";
+    public static final String ERROR_FETCHING_FORMS = "Error while fetching forms for employeeId {} reviewerId {}: {}";
+    public static final String INFO_DELETING_CYCLE_ID_FOR_ORG_ID = "Deleting cycle ID: {} for OrgId: {}";
+    public static final String INFO_FETCHING_ACTIVE_EVALUATION_CYCLE_FOR_ORG_ID_AND_STATUS = "Fetching active evaluation cycle for OrgId: {} and status: {}";
+    public static final String INFO_NO_EVALUATION_CYCLES_FOUND_WITH_STATUS = "No evaluation cycles found with status: {}";
+    public static final String INFO_FETCHED_CYCLES_WITH_STATUS = "Fetched {} cycles with status {}";
+    public static final String INFO_NO_EVALUATION_CYCLES_FOUND_FOR_ORGANIZATION = "No evaluation cycles found for your organization.";
+    public static final String INFO_FETCHED_EVALUATION_CYCLES_FOR_ORG_ID = "Fetched {} evaluation cycles for OrgId: {}";
+    public static final String ERROR_FAILED_TO_FETCH_EVALUATION_CYCLES = "Failed to fetch evaluation cycles.";
+    public static final String INFO_DELETING_FEEDBACK_PROVIDERS = "Deleting Feedback Providers for cycle {} and org {}";
+    public static final String INFO_VALIDATING_QUESTIONNAIRE_FOR_DELETION = "Validating questionnaire {} for deletion";
+    public static final String INFO_DELETING_QUESTIONNAIRE_FOR_ORG = "Deleting Questionnaire {} for org {}";
+    public static final String WARN_SKIPPING_QUESTIONNAIRE_DELETION_ORG_MISMATCH = "Skipping questionnaire {} deletion — org mismatch";
 
 
     // ========= LOG For Feedback Receivers =========//
@@ -96,7 +125,7 @@ public class Constants {
     public static final String REMOVE_RECEIVER = "Removed {} old receivers not present in incoming list";
     public static final String NO_RECEIVER_FOUND = "No receivers found for organizationId={}, cycleId={}, questionnaireId={}";
     public static final String NOT_ASSIGNED = "No reviewers assigned for employeeId={}, providerId={}";
-
+    public static final String INFO_DELETING_FEEDBACK_RECEIVERS = "Deleting Feedback Receivers for cycle {} and org {}";
 
     //===============LOG For Feedback Responses ==============/
     public static final String ORG_ID_NOT_FOUND_IN_CONTEXT = "Organization ID not found in context";
@@ -109,6 +138,12 @@ public class Constants {
     public static final String REVIEWER_NOT_FOUND_IN_FEEDBACK_PROVIDER = "Reviewer {} not found in feedback provider for employee {}";
     public static final String ERROR_SAVING_FEEDBACK_RESPONSE = "Error saving feedback response: {}";
     public static final String ERROR_SAVING_FEEDBACK_RESPONSE_SIMPLE = "Error saving feedback response";
+    public static final String NO_FEEDBACK_RESPONSES_FOUND = "No feedback responses found for cycleId: {}";
+    public static final String CYCLE_NOT_FOUND = "Cycle not found for ID: {}";
+    public static final String MULTIPLE_FEEDBACK_PROVIDERS_FOUND = "Multiple FeedbackProvider entries found for employeeId={}, cycleId={}, orgId={}";
+    public static final String REVIEWER_MARKED_COMPLETED_DUPLICATE = "Reviewer {} marked COMPLETED in duplicate provider {}";
+    public static final String INFO_DELETING_FEEDBACK_RESPONSES = "Deleting Feedback Responses for cycle {} and org {}";
+
 
     //============== Fegin client Errors ===============/
     public static final String ACCOUNT_CLIENT_ERROR = "Failed to fetch employee details from Account service: {}";
@@ -133,3 +168,4 @@ public class Constants {
     public static final String NULL_OR_EMPTY_EMPLOYEE_ID_WHILE_FETCHING_SELF_EVAL = "Attempted to fetch self-evaluations with null or empty employee ID";
     public static final String FETCHED_SELF_EVALUATIONS_FOR_EMPLOYEE = "Fetched {} self-evaluation(s) for employee {}";
 }
+

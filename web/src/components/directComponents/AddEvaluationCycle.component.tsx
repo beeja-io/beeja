@@ -562,7 +562,7 @@ const AddEvaluationCycle: React.FC = () => {
                   </span>
                   {isEndDateCalOpen && (
                     <div
-                      className="calendarSpace"
+                      className="calendarField calendarSpace"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Calendar
@@ -611,8 +611,8 @@ const AddEvaluationCycle: React.FC = () => {
                   id="reviewType"
                   style={{ border: 'none' }}
                   value={formData.reviewType || ''}
-                  width="160px"
-                  className="largeContainerFil"
+                  justify="center"
+                  className="largeContainerFil dropdownCenterFit"
                   onChange={(e) => {
                     const event = {
                       target: {
@@ -682,7 +682,7 @@ const AddEvaluationCycle: React.FC = () => {
                 ) : (
                   <StyledTextArea
                     placeholder="Add a description (optional)"
-                    className="description question-input"
+                    className="question-input description"
                     value={q.questionDescription}
                     rows={1}
                     ref={(el) => (answerRefs.current[index] = el)}
@@ -749,8 +749,24 @@ const AddEvaluationCycle: React.FC = () => {
                 <Button
                   type="button"
                   className="cancel"
-                  onClick={() => setShowCancelModal(true)}
-                  disabled={!hasValidQuestion}
+                  onClick={() => {
+                    const hasData =
+                      formData.reviewCycleName?.trim() ||
+                      formData.startDate ||
+                      formData.endDate ||
+                      formData.reviewType ||
+                      formData.formDescription?.trim() ||
+                      formData.questions.some(
+                        (q) =>
+                          q.question?.trim() || q.questionDescription?.trim()
+                      );
+
+                    if (hasData) {
+                      setShowCancelModal(true);
+                    } else {
+                      navigate(-1);
+                    }
+                  }}
                 >
                   {t('Cancel')}
                 </Button>
@@ -774,6 +790,7 @@ const AddEvaluationCycle: React.FC = () => {
           formData={formData}
           onEdit={() => setPreviewMode(false)}
           onConfirm={handleSubmit}
+          isLoading={isLoading}
         />
       )}
       {showErrorMessage && (

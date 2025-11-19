@@ -27,7 +27,7 @@ type DropdownMenuProps = {
   name?: string;
   id?: string;
   className?: string | null;
-  options: { label: string; value: string | null }[];
+  options: { label: string; value: string | null; disabled?: boolean }[];
   value?: string | null;
   onChange?: (value: string | null) => void;
   disabled?: boolean;
@@ -41,6 +41,7 @@ type DropdownMenuProps = {
   sortOptions?: boolean;
   onCustomValue?: (value: string) => void;
   width?: string;
+  justify?: 'center' | 'space-between' | 'flex-start' | 'flex-end';
 };
 
 const DropdownMenu: React.FC<DropdownMenuProps> = ({
@@ -59,6 +60,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   listClassName = '',
   sortOptions = true,
   onCustomValue,
+  justify = 'space-between',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selected, setSelected] = useState<string | null>(value);
@@ -240,6 +242,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         <ToggleButtonStyle
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
+          justify={justify}
         >
           {localOptions.find((o) => o.value === selected)?.label ||
             selected ||
@@ -255,7 +258,8 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
                 <DropdownItemStyle
                   key={item.value ?? index}
                   selected={isSelected}
-                  onClick={() => handleSelect(item)}
+                  disabled={item.disabled}
+                  onClick={() => !item.disabled && handleSelect(item)}
                 >
                   <span>{item.label}</span>
                   <CheckIconStyle selected={isSelected}>
