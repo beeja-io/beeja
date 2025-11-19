@@ -138,6 +138,6 @@ public class EmployeeController {
     @GetMapping("/departments")
     public List<EmployeeDepartmentDTO> getDepartmentsByEmployeeIds(@RequestParam List<String> employeeIds) {
         String orgId = UserContext.getLoggedInUserOrganization().getId();
-        return employeeRepository.findDepartmentsByEmployeeIds(employeeIds, orgId);
+        return employeeRepository.findDesignationsByEmployeeIds(employeeIds, orgId);
     }
 }

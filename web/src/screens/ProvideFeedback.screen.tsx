@@ -144,7 +144,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
             employeeId: employee.employeeId,
             name: employee.employeeName,
             role: employee.role,
-            department: employee.department,
+            department: employee.designation,
             submitted: allSubmitted,
             feedbackCycles: employee.feedbackCycles || [],
           };

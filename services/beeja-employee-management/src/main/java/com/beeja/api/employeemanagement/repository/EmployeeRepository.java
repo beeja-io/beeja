@@ -48,7 +48,12 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
 
  @Aggregation(pipeline = {
           "{ $match: { 'employeeId': { $in: ?0 }, 'organizationId': ?1 } }",
-          "{ $project: { _id: 0, employeeId: 1, department: '$jobDetails.department' } }"
+         "{ $project: { " +
+                 "_id: 0, " +
+                 "employeeId: 1, " +
+                 "designation: { $ifNull: ['$jobDetails.designation', '-'] }, " +
+                 "department: { $ifNull: ['$jobDetails.department', '-'] } " +
+                 "} }"
  })
- List<EmployeeDepartmentDTO> findDepartmentsByEmployeeIds(List<String> employeeIds, String organizationId);
+ List<EmployeeDepartmentDTO> findDesignationsByEmployeeIds(List<String> employeeIds, String organizationId);
 }
