@@ -15,6 +15,8 @@ import SelfEvaluationForm from './SelfEvaluation.screen';
 import ProvideFeedback from './ProvideFeedback.screen';
 import FeedbackReceived from '../components/reusableComponents/FeedbackReceived.component';
 import { useUser } from '../context/UserContext';
+import { hasPermission } from '../utils/permissionCheck';
+import { PERFORMANCE_MODULE } from '../constants/PermissionConstants';
 
 const FeedbackHub = () => {
   const [activeTab, setActiveTab] = useState<
@@ -26,6 +28,16 @@ const FeedbackHub = () => {
 
   const { user } = useUser();
 
+  const availableTabs = [
+    user && hasPermission(user, PERFORMANCE_MODULE.READ_RESPONSE) && 'Feedback Requests',
+    user && hasPermission(user, PERFORMANCE_MODULE.SELF_EVALUATION) && 'Self Evaluation',
+    user && hasPermission(user, PERFORMANCE_MODULE.READ_OWN_RESPONSES) && 'My Feedbacks',
+  ].filter(Boolean) as ('Feedback Requests' | 'Self Evaluation' | 'My Feedbacks')[];
+
+  const visibleActiveTab = availableTabs.includes(activeTab)
+    ? activeTab
+    : availableTabs[0];
+
   return (
     <>
       <ExpenseManagementMainContainer>
@@ -36,20 +48,18 @@ const FeedbackHub = () => {
         <StyledDiv>
           <TabHeading>
             <Tabs>
-              {['Feedback Requests', 'Self Evaluation', 'My Feedbacks'].map(
-                (tab) => (
-                  <Tab
-                    key={tab}
-                    active={activeTab === tab}
-                    onClick={() => setActiveTab(tab as any)}
-                  >
-                    {t(tab)}
-                    {tab === 'Feedback Requests' && pendingCount > 0 && (
-                      <span className="badge">{pendingCount}</span>
-                    )}
-                  </Tab>
-                )
-              )}
+              {availableTabs.map((tab) => (
+                <Tab
+                  key={tab}
+                  active={visibleActiveTab === tab}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {t(tab)}
+                  {tab === 'Feedback Requests' && pendingCount > 0 && (
+                    <span className="badge">{pendingCount}</span>
+                  )}
+                </Tab>
+              ))}
             </Tabs>
           </TabHeading>
           <TabContent>
@@ -60,9 +70,11 @@ const FeedbackHub = () => {
               />
             )}
 
-            {activeTab === 'Self Evaluation' && <SelfEvaluationForm />}
+            {visibleActiveTab === 'Self Evaluation' && <SelfEvaluationForm />}
 
-            {activeTab === 'My Feedbacks' && <FeedbackReceived user={user} />}
+            {visibleActiveTab === 'My Feedbacks' && (
+              <FeedbackReceived user={user} />
+            )}
           </TabContent>
         </StyledDiv>
       </ExpenseManagementMainContainer>

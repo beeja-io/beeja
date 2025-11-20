@@ -582,7 +582,6 @@
   "Bank_Error": "Unable to generate invoice. Payment details are missing. Please contact the Contract Admin team to configure.",
   "Task_Error": "Please add at least one Task and Price before generating the invoice.",
   "My_Team_Overview": "My Team Overview",
-  "Employee_Name":"Employee Name",
   "Job_Tittle":"Job Tittle",
   "Feedback_Received_Status": "Feedback Received Status",
   "Rating": "Rating",
@@ -602,5 +601,6 @@
     "singleSuccess": "Your feedback for {{name}} has been submitted successfully.",
     "allSuccess": "All feedback forms for {{name}} have been submitted!",
     "nextFormSuccess": "Feedback for {{name}} submitted successfully! Moving to next form ({{label}})."
-  }
+  },
+  "No_Permission": "You do not have permission to perform this action"
 }
