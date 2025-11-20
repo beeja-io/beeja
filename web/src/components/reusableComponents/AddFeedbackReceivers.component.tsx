@@ -244,7 +244,8 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
       receiverDetails: selected.map((emp) => ({
         employeeId: emp.id,
         fullName: emp.name,
-        department: emp.role,
+        department: emp.department,
+        designation: emp.role,
         email: emp.email,
       })),
     };
@@ -289,7 +290,8 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
           .map((emp: any) => ({
             id: emp.employeeId,
             name: emp.fullName,
-            role: emp.department || '—',
+            role: emp.designation || '—',
+            department: emp.department || '',
             email: emp.email || '',
           }))
           .filter((emp: { name: string }) =>

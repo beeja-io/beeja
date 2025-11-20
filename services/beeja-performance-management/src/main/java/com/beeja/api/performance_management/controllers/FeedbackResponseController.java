@@ -1,5 +1,7 @@
 package com.beeja.api.performance_management.controllers;
 
+import com.beeja.api.performance_management.Constants.PermissionConstants;
+import com.beeja.api.performance_management.annotations.HasPermission;
 import com.beeja.api.performance_management.model.FeedbackResponse;
 import com.beeja.api.performance_management.model.dto.CycleWithResponsesDTO;
 import com.beeja.api.performance_management.model.dto.EmployeeGroupedResponsesDTO;
@@ -32,6 +34,7 @@ public class FeedbackResponseController {
 
     /** Submits a new feedback response. */
     @PostMapping
+    @HasPermission(PermissionConstants.PROVIDE_FEEDBACK)
     public ResponseEntity<FeedbackResponse> submitFeedback(@Valid @RequestBody SubmitFeedbackRequest req) {
         FeedbackResponse created = responseService.submitFeedback(req);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
@@ -39,6 +42,7 @@ public class FeedbackResponseController {
 
     /** Retrieves feedback responses for an employee in a specific cycle. */
     @GetMapping("/employee/{employeeId}/cycle/{cycleId}")
+    @HasPermission(PermissionConstants.READ_RESPONSES)
     public ResponseEntity<List<FeedbackResponse>> getResponsesByEmployeeCycle(
             @PathVariable String employeeId,
             @PathVariable String cycleId) {
@@ -48,6 +52,7 @@ public class FeedbackResponseController {
 
     /** Retrieves feedback responses by form ID. */
     @GetMapping("/form/{formId}")
+    @HasPermission(PermissionConstants.READ_RESPONSES)
     public ResponseEntity<List<FeedbackResponse>> getResponsesForForm(@PathVariable String formId) {
         List<FeedbackResponse> responses = responseService.getByFormId(formId);
         return ResponseEntity.ok(responses);
@@ -55,6 +60,7 @@ public class FeedbackResponseController {
 
     /** Retrieves all feedback responses for a specific employee. */
     @GetMapping("/employee/{employeeId}")
+    @HasPermission(PermissionConstants.READ_RESPONSES)
     public ResponseEntity<List<FeedbackResponse>> getResponsesByEmployee(@PathVariable String employeeId) {
         List<FeedbackResponse> responses = responseService.getByEmployee(employeeId);
         return ResponseEntity.ok(responses);
@@ -78,6 +84,7 @@ public class FeedbackResponseController {
      * Returns all feedback forms (cycles) where the logged-in employee has received feedback.
      */
     @GetMapping("/my-feedback/forms")
+    @HasPermission(PermissionConstants.READ_OWN_RESPONSES)
     public ResponseEntity<List<MyFeedbackFormResponse>> getMyFeedbackForms() {
         List<MyFeedbackFormResponse> forms = responseService.getMyFeedbackForms();
         return ResponseEntity.ok(forms);
@@ -88,6 +95,7 @@ public class FeedbackResponseController {
      * within a specific form (cycle).
      */
     @GetMapping("/my-feedback/cycle/{cycleId}")
+    @HasPermission(PermissionConstants.READ_OWN_RESPONSES)
     public ResponseEntity<EmployeeGroupedResponsesDTO> getMyResponsesByCycle(
             @PathVariable String cycleId) {
         EmployeeGroupedResponsesDTO dto = responseService.getMyResponsesByCycle(cycleId);

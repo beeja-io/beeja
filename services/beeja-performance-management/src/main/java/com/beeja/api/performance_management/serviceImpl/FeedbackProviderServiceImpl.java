@@ -151,16 +151,26 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
             );
         }
 
+        Map<String, ProviderStatus> oldStatusMap =
+                existingForm.getAssignedReviewers().stream()
+                        .collect(Collectors.toMap(
+                                AssignedReviewer::getReviewerId,
+                                AssignedReviewer::getStatus
+                        ));
+
+
         List<AssignedReviewer> reviewers = request.getAssignedReviewers().stream()
                 .filter(r -> !r.getReviewerId().equals(employeeId))
                 .map(r -> {
                     AssignedReviewer rev = new AssignedReviewer();
                     rev.setReviewerId(r.getReviewerId());
                     rev.setRole(r.getRole());
-                    rev.setStatus(ProviderStatus.IN_PROGRESS);
+                    rev.setStatus(oldStatusMap.getOrDefault(r.getReviewerId(), ProviderStatus.IN_PROGRESS));
+
                     return rev;
                 })
                 .toList();
+
 
         existingForm.setEmployeeId(employeeId);
         existingForm.setOrganizationId(organizationId);
@@ -381,20 +391,20 @@ public class FeedbackProviderServiceImpl implements FeedbackProvidersService {
 
     private String extractDesignation(Map<String, Object> employeeMap) {
 
-        if (employeeMap == null) return "Unknown";
+        if (employeeMap == null) return "-";
 
         Object employeeObj = employeeMap.get("employee");
-        if (!(employeeObj instanceof Map)) return "Unknown";
+        if (!(employeeObj instanceof Map)) return "-";
 
         Map<String, Object> employee = (Map<String, Object>) employeeObj;
 
         Object jobDetailsObj = employee.get("jobDetails");
-        if (!(jobDetailsObj instanceof Map)) return "Unknown";
+        if (!(jobDetailsObj instanceof Map)) return "-";
 
         Map<String, Object> jobDetails = (Map<String, Object>) jobDetailsObj;
 
         Object designation = jobDetails.get("designation");
-        return designation != null ? designation.toString() : "Unknown";
+        return designation != null ? designation.toString() : "-";
     }
 
 }

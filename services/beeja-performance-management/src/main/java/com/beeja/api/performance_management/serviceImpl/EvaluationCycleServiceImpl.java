@@ -3,17 +3,21 @@ package com.beeja.api.performance_management.serviceImpl;
 import com.beeja.api.performance_management.enums.CycleStatus;
 import com.beeja.api.performance_management.enums.ErrorCode;
 import com.beeja.api.performance_management.enums.ErrorType;
+import com.beeja.api.performance_management.enums.ProviderStatus;
 import com.beeja.api.performance_management.exceptions.InvalidOperationException;
 import com.beeja.api.performance_management.exceptions.ResourceNotFoundException;
 import com.beeja.api.performance_management.model.EvaluationCycle;
 import com.beeja.api.performance_management.model.Questionnaire;
 import com.beeja.api.performance_management.model.dto.EvaluationCycleCreateDto;
 import com.beeja.api.performance_management.model.dto.EvaluationCycleDetailsDto;
+import com.beeja.api.performance_management.model.dto.ReceiverDetails;
 import com.beeja.api.performance_management.repository.EvaluationCycleRepository;
 import com.beeja.api.performance_management.repository.FeedbackProviderRepository;
 import com.beeja.api.performance_management.repository.FeedbackReceiverRepository;
 import com.beeja.api.performance_management.repository.FeedbackResponseRepository;
+import com.beeja.api.performance_management.response.ReceiverResponse;
 import com.beeja.api.performance_management.service.EvaluationCycleService;
+import com.beeja.api.performance_management.service.FeedbackReceiversService;
 import com.beeja.api.performance_management.service.QuestionnaireService;
 import com.beeja.api.performance_management.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,7 +43,7 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
     @Autowired private FeedbackProviderRepository feedbackProviderRepository;
     @Autowired private FeedbackReceiverRepository feedbackReceiverRepository;
     @Autowired private FeedbackResponseRepository feedbackResponseRepository;
-
+    @Autowired private FeedbackReceiversService feedbackReceiversService;
     /**
      * Creates a new evaluation cycle.
      *
@@ -100,7 +105,6 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
      */
     @Override
     public List<EvaluationCycle> getAllCycles() {
-
         String orgId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
         List<EvaluationCycle> cycles = cycleRepository.findByOrganizationId(orgId);
 
@@ -110,12 +114,46 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
                     ErrorCode.NO_EVALUATION_CYCLES_FOUND,
                     Constants.NO_EVALUATION_CYCLE
             );
-
             return List.of();
         }
-        return cycles;
-    }
 
+        List<EvaluationCycle> updatedCycles = new ArrayList<>(cycles.size());
+
+        for (EvaluationCycle cycle : cycles) {
+            try {
+                ReceiverResponse receiverResponse = feedbackReceiversService.getFeedbackReceiversList(cycle.getId(), cycle.getQuestionnaireId());
+                List<ReceiverDetails> receivers = receiverResponse != null ? receiverResponse.getReceivers() : null;
+
+                if (receivers == null || receivers.isEmpty()) {
+                    cycle.setStatus(CycleStatus.IN_PROGRESS);
+                } else {
+                    boolean allCompleted = receivers.stream()
+                            .allMatch(r -> r.getProviderStatus() == ProviderStatus.COMPLETED);
+
+                    boolean anyInProgress = receivers.stream()
+                            .anyMatch(r -> r.getProviderStatus() == ProviderStatus.IN_PROGRESS);
+
+                    if (allCompleted) {
+                        cycle.setStatus(CycleStatus.COMPLETED);
+                    } else if (anyInProgress) {
+                        cycle.setStatus(CycleStatus.IN_PROGRESS);
+                    } else {
+                        cycle.setStatus(CycleStatus.IN_PROGRESS);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error while resolving receiver statuses for cycleId={} questionnaireId={}. Marking IN_PROGRESS. Error: {}",
+                        cycle.getId(), cycle.getQuestionnaireId(), e.getMessage(), e);
+                cycle.setStatus(CycleStatus.IN_PROGRESS);
+            }
+
+            updatedCycles.add(cycle);
+        }
+
+        cycleRepository.saveAll(updatedCycles);
+
+        return updatedCycles;
+    }
 
     /**
      * Retrieves an evaluation cycle by ID.
@@ -129,7 +167,7 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         EvaluationCycle cycle = cycleRepository.findByIdAndOrganizationId(id, orgId)
                 .orElseThrow(() -> new ResourceNotFoundException(BuildErrorMessage.buildErrorMessage(
                         ErrorType.RESOURCE_NOT_FOUND_ERROR, ErrorCode.RESOURCE_NOT_FOUND, Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND + id)));
-        validateCycleAccess(cycle);
+
         return cycle;
     }
 

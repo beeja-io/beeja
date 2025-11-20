@@ -10,6 +10,9 @@ import { useNavigate } from 'react-router-dom';
 import { deletePerformanceCycle } from '../../service/axiosInstance';
 import CenterModal from './CenterModal.component';
 import { useTranslation } from 'react-i18next';
+import { useUser } from '../../context/UserContext';
+import { hasPermission } from '../../utils/permissionCheck';
+import { PERFORMANCE_MODULE } from '../../constants/PermissionConstants';
 
 interface Props {
   options: { title: string; svg: React.ReactNode; className: string }[];
@@ -32,10 +35,9 @@ const EvaluationListAction: React.FC<Props> = ({
   isOpen,
   onToggle,
   setCycles,
-  disabled,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const { user } = useUser();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -45,7 +47,9 @@ const EvaluationListAction: React.FC<Props> = ({
     setShowDeleteModal(false);
   };
 
-  const handleOptionClick = async (title: string) => {
+  const handleOptionClick = async (title: string, isDisabled: boolean) => {
+    if (isDisabled) return;
+
     if (title === 'Edit') {
       navigate(`/performance/create-evaluation-form/${currentCycle.id}`);
     }
@@ -91,6 +95,11 @@ const EvaluationListAction: React.FC<Props> = ({
     }
   };
 
+  const canEdit =
+    user && hasPermission(user, PERFORMANCE_MODULE.UPDATE_REVIEW_CYCLE);
+  const canDelete =
+    user && hasPermission(user, PERFORMANCE_MODULE.DELETE_REVIEW_CYCLE);
+
   return (
     <>
       <ActionContainer ref={dropdownRef}>
@@ -100,17 +109,23 @@ const EvaluationListAction: React.FC<Props> = ({
         {isOpen && (
           <ActionMenuContent>
             {options.map((op, i) => {
-              const isEdit = op.title === 'Edit';
-              const isEditDisabled = isEdit && disabled;
+              const isDisabled =
+                (op.title === 'Edit' && !canEdit) ||
+                (op.title === 'Delete' && !canDelete);
+
               return (
                 <ActionMenuOption
                   key={i}
-                  className={isEditDisabled ? 'edit-disabled' : ''}
-                  onClick={() => {
-                    if (!isEditDisabled) {
-                      handleOptionClick(op.title);
-                    }
+                  onClick={() => handleOptionClick(op.title, isDisabled)}
+                  style={{
+                    opacity: isDisabled ? 0.5 : 1,
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
                   }}
+                  title={
+                    isDisabled
+                      ? t('You do not have permission to perform this action')
+                      : ''
+                  }
                 >
                   <div className={op.className}>{op.svg}</div> {op.title}
                 </ActionMenuOption>

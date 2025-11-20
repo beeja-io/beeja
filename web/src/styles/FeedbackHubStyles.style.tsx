@@ -93,7 +93,7 @@ export const ProvideButton = styled.button`
   color: white;
   border: none;
   border-radius: 6px;
-  padding: 8px 14px;
+  padding: 8px 12px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;

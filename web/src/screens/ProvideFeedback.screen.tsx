@@ -51,6 +51,8 @@ import PreviewMode from '../components/reusableComponents/PreviewMode.component'
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
+import { hasPermission } from '../utils/permissionCheck';
+import { PERFORMANCE_MODULE } from '../constants/PermissionConstants';
 import {
   ReviewType,
   ReviewTypeLabels,
@@ -126,6 +128,10 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
   const [responseErrorMessage, setResponseErrorMessage] = useState('');
   const [successMessageBody, setSuccessMessageBody] = useState('');
   const [validationErrors, setValidationErrors] = useState<boolean[]>([]);
+  const isPermissionDenied = !hasPermission(
+    user!,
+    PERFORMANCE_MODULE.PROVIDE_FEEDBACK
+  );
   const [showWarning, setShowWarning] = useState(false);
   const [warningMessageBody, setWarningMessageBody] = useState('');
 
@@ -467,9 +473,16 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                     </UserText>
                   </UserInfo>
                   <ProvideButton
-                    disabled={item.submitted}
-                    onClick={() =>
-                      !item.submitted && handleProvideFeedback(item)
+                    disabled={item.submitted || isPermissionDenied}
+                    onClick={() => {
+                      if (!item.submitted && isPermissionDenied) {
+                        handleProvideFeedback(item);
+                      }
+                    }}
+                    title={
+                      isPermissionDenied
+                        ? 'You don’t have permission to provide feedback'
+                        : ''
                     }
                     className={item.submitted ? 'submitted' : ''}
                   >

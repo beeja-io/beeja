@@ -53,7 +53,7 @@ public interface UserRepository extends MongoRepository<User, String> {
   List<User> findAllByEmployeeIdInAndOrganizations_Id(List<String> ids, String organizationId);
 
     @Aggregation(pipeline = {
-            "{ $match: { 'organizations._id': ?1, $or: [ " +
+            "{ $match: { 'organizations._id': ?1, 'isActive': true, $or: [ " +
                     "{ 'firstName': { $regex: '^?0', $options: 'i' } }, " +
                     "{ 'lastName': { $regex: '^?0', $options: 'i' } }, " +
                     "{ $expr: { $regexMatch: { input: { $concat: [ { $ifNull: ['$firstName',''] }, ' ', { $ifNull: ['$lastName',''] } ] }, regex: '^?0', options: 'i' } } }, " +

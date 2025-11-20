@@ -9,8 +9,12 @@ import { Button } from '../styles/CommonStyles.style';
 import { useTranslation } from 'react-i18next';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
 import ToastMessage from '../components/reusableComponents/ToastMessage.component';
+import { hasPermission } from '../utils/permissionCheck';
+import { PERFORMANCE_MODULE } from '../constants/PermissionConstants';
+import { useUser } from '../context/UserContext';
 
 const CreateReviewCycle = () => {
+  const { user } = useUser();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [successToastMessage, setSuccessToastMessage] = useState({
@@ -57,16 +61,19 @@ const CreateReviewCycle = () => {
             {t('Create_Evaluation_Form')}
           </span>
 
-          {!isCreateModalOpen && !isEditMode && (
-            <Button
-              className="submit shadow"
-              onClick={handleOpenCreateModal}
-              width="216px"
-            >
-              <AddNewPlusSVG />
-              {t('Create_New_Form')}
-            </Button>
-          )}
+          {!isCreateModalOpen &&
+            !isEditMode &&
+            user &&
+            hasPermission(user, PERFORMANCE_MODULE.CREATE_REVIEW_CYCLE) && (
+              <Button
+                className="submit shadow"
+                onClick={handleOpenCreateModal}
+                width="216px"
+              >
+                <AddNewPlusSVG />
+                {t('Create_New_Form')}
+              </Button>
+            )}
         </ExpenseHeadingSection>
 
         <Outlet context={{ handleShowSuccessMessage }} />

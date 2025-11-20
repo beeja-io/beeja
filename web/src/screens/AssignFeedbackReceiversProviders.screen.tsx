@@ -21,6 +21,7 @@ import { getAllPerformance } from '../service/axiosInstance';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import StatusDropdown from '../styles/ProjectStatusStyle.style';
 import FeedbackReceiversList from './FeedbackReceiversList.screen';
+import { endOfDay, isBefore, parseISO } from 'date-fns';
 
 type PerformanceCycle = {
   questionnaireId: string;
@@ -45,7 +46,11 @@ const AssignFeedbackProviders = () => {
 
   const isCycleExpired = (endDate: string) => {
     if (!endDate) return false;
-    return new Date(endDate) < new Date();
+
+    const today = new Date();
+    const end = endOfDay(parseISO(endDate));
+
+    return isBefore(end, today);
   };
 
   useEffect(() => {
