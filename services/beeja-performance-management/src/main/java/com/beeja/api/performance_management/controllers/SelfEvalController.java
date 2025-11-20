@@ -1,5 +1,7 @@
 package com.beeja.api.performance_management.controllers;
 
+import com.beeja.api.performance_management.Constants.PermissionConstants;
+import com.beeja.api.performance_management.annotations.HasPermission;
 import com.beeja.api.performance_management.model.SelfEvaluation;
 import com.beeja.api.performance_management.model.dto.SelfEvaluationRequest;
 import com.beeja.api.performance_management.service.SelfEvaluationService;
@@ -33,6 +35,7 @@ public class SelfEvalController {
      * @return the saved SelfEvaluation
      */
     @PostMapping
+    @HasPermission(PermissionConstants.GIVE_SELF_EVALUATION)
     public ResponseEntity<SelfEvaluation> submitSelfEval(@Valid @RequestBody SelfEvaluationRequest req) {
         SelfEvaluation se = new SelfEvaluation();
         se.setEmployeeId(req.getEmployeeId());
@@ -48,6 +51,7 @@ public class SelfEvalController {
      * @return list of self-evaluations
      */
     @GetMapping("/employee/{employeeId}")
+    @HasPermission(PermissionConstants.READ_SELF_EVALUATION)
     public ResponseEntity<List<SelfEvaluation>> getSelfEvals(@PathVariable String employeeId) {
         return ResponseEntity.ok(selfService.getByEmployee(employeeId));
     }
@@ -58,6 +62,7 @@ public class SelfEvalController {
      * @return list of self-evaluations
      */
     @GetMapping("/employee/me")
+    @HasPermission(PermissionConstants.GIVE_SELF_EVALUATION)
     public ResponseEntity<List<SelfEvaluation>> getSelfEvalsForLoggedInEmployee() {
         String employeeId = UserContext.getLoggedInEmployeeId();
         if (employeeId == null || employeeId.isBlank()) {

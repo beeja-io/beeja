@@ -1,5 +1,7 @@
 package com.beeja.api.performance_management.controllers;
 
+import com.beeja.api.performance_management.Constants.PermissionConstants;
+import com.beeja.api.performance_management.annotations.HasPermission;
 import com.beeja.api.performance_management.model.FinalRating;
 import com.beeja.api.performance_management.model.dto.ComputeRatingRequest;
 import com.beeja.api.performance_management.service.RatingService;
@@ -27,6 +29,7 @@ public class RatingController {
 
     /** Computes the final rating for an employee in a specific cycle. */
     @PostMapping
+    @HasPermission(PermissionConstants.PROVIDE_RATING)
     public ResponseEntity<FinalRating> computeRating(@Valid @RequestBody ComputeRatingRequest req) {
         return ResponseEntity.ok(
                 ratingService.computeRating(req.getEmployeeId(), req.getCycleId(), req.getComputedBy())

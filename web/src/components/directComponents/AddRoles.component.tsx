@@ -21,6 +21,7 @@ import {
   CLIENT_MODULE,
   CONTRACT_MODULE,
   ORGANIZATION_MODULE,
+  PERFORMANCE_MODULE,
   PERMISSION_MODULE,
 } from '../../constants/PermissionConstants';
 import { useTranslation } from 'react-i18next';
@@ -107,6 +108,25 @@ const AddRoleComponent: React.FC<Props> = ({
         actions: [CLIENT_MODULE.GENERATE_INVOICE, CLIENT_MODULE.DELETE_INVOICE],
         required: CONTRACT_MODULE.READ_CONTRACT,
       },
+      {
+        actions: [
+          PERFORMANCE_MODULE.CREATE_REVIEW_CYCLE,
+          PERFORMANCE_MODULE.UPDATE_REVIEW_CYCLE,
+          PERFORMANCE_MODULE.DELETE_REVIEW_CYCLE,
+
+        ],
+        required: PERFORMANCE_MODULE.READ_REVIEW_CYCLE,
+      },
+      {
+        actions: [
+          PERFORMANCE_MODULE.READ_PROVIDER,
+          PERFORMANCE_MODULE.UPDATE_PROVIDER,
+          PERFORMANCE_MODULE.ASSIGN_PROVIDER,
+          PERFORMANCE_MODULE.ASSIGN_RECEIVER,
+          PERFORMANCE_MODULE.UPDATE_RECEIVER,
+        ],
+        required: PERFORMANCE_MODULE.READ_RECEIVER,
+      }
     ];
 
     dependencyMap.forEach(({ actions, required }) => {
