@@ -57,6 +57,7 @@ import {
 } from '../components/reusableComponents/PerformanceEnums.component';
 import { useTranslation } from 'react-i18next';
 import { format, isAfter, isBefore, startOfDay } from 'date-fns';
+import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 
 interface Question {
   question: string;
@@ -93,6 +94,7 @@ interface FeedbackItem {
   role: string;
   submitted: boolean;
   department: string;
+  designation: string;
 }
 
 type ProvideFeedbackProps = {
@@ -110,7 +112,6 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
   );
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState(false);
   const [feedbackReceiverName, setFeedbackReceiverName] = useState('');
   const [feedbackData, setFeedbackData] = useState<FeedbackItem[]>([]);
@@ -133,6 +134,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
   const fetchFeedbackData = async () => {
     try {
       setIsLoading(true);
+      setShowErrorMessage(false);
       const response = await getFeedBackProviderReviewer();
       if (response?.data) {
         const employees = response.data.assignedEmployees || [];
@@ -145,6 +147,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
             name: employee.employeeName,
             role: employee.role,
             department: employee.department,
+            designation: employee.designation,
             submitted: allSubmitted,
             feedbackCycles: employee.feedbackCycles || [],
           };
@@ -158,7 +161,10 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
         setFeedbackData([]);
       }
     } catch (error) {
-      setError(`Error fetching feedback data: ${(error as Error).message}`);
+      setResponseErrorMessage(
+        'Failed to load feedback requests. Please try again later.'
+      );
+      setShowErrorMessage(true);
     } finally {
       setIsLoading(false);
     }
@@ -172,9 +178,10 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
     setFormData(null);
     setForms([]);
     setSelectedFormId(null);
-    setError('');
+    setResponseErrorMessage('');
     setFeedbackReceiverName(employee.name);
     setSelectedEmployee(employee);
+    setShowErrorMessage(false);
     try {
       setIsLoading(true);
 
@@ -198,10 +205,11 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
         setSelectedFormId(activeForm.cycleId);
         await fetchFormDetails(activeForm.cycleId);
       } else {
-        setError('No forms available for this employee.');
+        setResponseErrorMessage('No forms available for this employee.');
       }
     } catch (err) {
-      setError('Failed to load feedback forms');
+      setResponseErrorMessage('Failed to load feedback forms');
+      setShowErrorMessage(true);
     } finally {
       setIsLoading(false);
     }
@@ -210,6 +218,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
   const fetchFormDetails = async (selectedFormId: string) => {
     try {
       setIsLoading(true);
+      setShowErrorMessage(false);
       const response = await getProvideFeedbackById(selectedFormId);
       const { evaluationCycle } = response.data;
 
@@ -233,7 +242,8 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
 
       setAnswers(mappedAnswers);
     } catch (err) {
-      setError('Failed to load form data');
+      setResponseErrorMessage('Failed to load form data');
+      setShowErrorMessage(true);
     } finally {
       setIsLoading(false);
     }
@@ -310,7 +320,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
 
       if (nextForm) {
         setSelectedFormId(nextForm.id);
-        setError('');
+        setResponseErrorMessage('');
         setSuccessMessageBody(
           t('feedback.nextFormSuccess', {
             name: selectedEmployee.name,
@@ -432,32 +442,44 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
     }
   }, [formData]);
 
-  if (error) return <div>{error}</div>;
-
   return (
-    <FormContainer className="noBorder">
+    <FormContainer
+      className={`noBorder ${!selectedEmployee && feedbackData.length === 0 ? 'empty-state' : ''}`}
+    >
       {isLoading ? (
         <SpinAnimation />
       ) : !selectedEmployee ? (
-        <ListContainer>
-          {feedbackData.map((item) => (
-            <ListRow key={item.employeeId}>
-              <UserInfo>
-                <UserText>
-                  <Name>{item.name}</Name>
-                  <Role>{item.department}</Role>
-                </UserText>
-              </UserInfo>
-              <ProvideButton
-                disabled={item.submitted}
-                onClick={() => !item.submitted && handleProvideFeedback(item)}
-                className={item.submitted ? 'submitted' : ''}
-              >
-                {item.submitted ? 'Submitted' : 'Provide Feedback'}
-              </ProvideButton>
-            </ListRow>
-          ))}
-        </ListContainer>
+        <>
+          {feedbackData.length === 0 ? (
+            <ZeroEntriesFound heading="No Feedback Requests Found" />
+          ) : (
+            <ListContainer>
+              {feedbackData.map((item) => (
+                <ListRow key={item.employeeId}>
+                  <UserInfo>
+                    <UserText>
+                      <Name>{item.name}</Name>
+                      <Role>
+                        {item.designation === 'Unknown'
+                          ? '-'
+                          : item.designation}
+                      </Role>
+                    </UserText>
+                  </UserInfo>
+                  <ProvideButton
+                    disabled={item.submitted}
+                    onClick={() =>
+                      !item.submitted && handleProvideFeedback(item)
+                    }
+                    className={item.submitted ? 'submitted' : ''}
+                  >
+                    {item.submitted ? 'Submitted' : 'Provide Feedback'}
+                  </ProvideButton>
+                </ListRow>
+              ))}
+            </ListContainer>
+          )}
+        </>
       ) : formData ? (
         <FormInputsContainer className="stepTwoContainer">
           <ControlsRow>
@@ -573,7 +595,9 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                       </InputContainer>
                     </FormLabelContainer>
                     {validationErrors[index] && (
-                      <ErrorText>This field is required</ErrorText>
+                      <ErrorText>
+                        An answer is required for this question.
+                      </ErrorText>
                     )}
                   </QuestionBlock>
                 ))}

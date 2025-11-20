@@ -213,6 +213,7 @@ export const ReadOnlyInput = styled.input`
 
 export const AnswerField = styled.textarea<{ isEmpty: boolean }>`
   width: 100%;
+  box-sizing: border-box;
   padding: 12px 14px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
@@ -225,10 +226,9 @@ export const AnswerField = styled.textarea<{ isEmpty: boolean }>`
   white-space: pre-wrap;
   overflow-y: auto;
   overflow-x: hidden;
-  min-height: 40px;
-  height: auto;
   line-height: 20px;
-  max-height: calc(20px * 5 + 12px + 12px + 2px);
+  min-height: 66px;
+  max-height: 132px;
 
   &:focus {
     border-color: #007bff;

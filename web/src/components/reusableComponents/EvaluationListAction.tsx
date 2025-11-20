@@ -12,7 +12,7 @@ import CenterModal from './CenterModal.component';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
-  options: { title: string; svg: React.ReactNode }[];
+  options: { title: string; svg: React.ReactNode; className: string }[];
   currentCycle: any;
   fetchCycles: () => void;
   onSuccess?: (message: string) => void;
@@ -112,7 +112,7 @@ const EvaluationListAction: React.FC<Props> = ({
                     }
                   }}
                 >
-                  {op.svg} {op.title}
+                  <div className={op.className}>{op.svg}</div> {op.title}
                 </ActionMenuOption>
               );
             })}
