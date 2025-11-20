@@ -129,7 +129,7 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         EvaluationCycle cycle = cycleRepository.findByIdAndOrganizationId(id, orgId)
                 .orElseThrow(() -> new ResourceNotFoundException(BuildErrorMessage.buildErrorMessage(
                         ErrorType.RESOURCE_NOT_FOUND_ERROR, ErrorCode.RESOURCE_NOT_FOUND, Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND + id)));
-        validateCycleAccess(cycle);
+
         return cycle;
     }
 
