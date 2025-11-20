@@ -83,7 +83,11 @@ const PreviewMode: React.FC<Props> = ({
       const ref = answerRefs.current[index];
       if (ref) {
         ref.style.height = '0px';
-        ref.style.height = ref.scrollHeight + 'px';
+        const minHeight = 66;
+        const maxHeight = 106;
+        const scrollHeight = Math.max(ref.scrollHeight, minHeight);
+        ref.style.height =
+          scrollHeight > maxHeight ? `${maxHeight}px` : `${scrollHeight}px`;
       }
     });
   }, [formData.questions]);
@@ -107,10 +111,14 @@ const PreviewMode: React.FC<Props> = ({
               : ''}
           </Subtitle>
         </Header>
-        <Label>Form Description</Label>
-        <DescriptionBox className="preview-mode">
-          {formData.formDescription || 'No description provided.'}
-        </DescriptionBox>
+        {formData?.formDescription && (
+          <>
+            <Label>Form Description</Label>
+            <DescriptionBox className="preview-mode">
+              {formData.formDescription}
+            </DescriptionBox>
+          </>
+        )}
         {showAnswers && feedbackReceiverName && (
           <div style={{ marginBottom: '20px' }}>
             <Label>
@@ -147,11 +155,7 @@ const PreviewMode: React.FC<Props> = ({
                       readOnly
                     />
                   ) : (
-                    <AnswerField
-                      isEmpty={true}
-                      placeholder="No answer provided"
-                      disabled
-                    />
+                    <AnswerField isEmpty={true} disabled />
                   )}
 
                   {validationErrors?.[index] && (

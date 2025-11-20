@@ -29,10 +29,20 @@ const FeedbackHub = () => {
   const { user } = useUser();
 
   const availableTabs = [
-    user && hasPermission(user, PERFORMANCE_MODULE.READ_RESPONSE) && 'Feedback Requests',
-    user && hasPermission(user, PERFORMANCE_MODULE.SELF_EVALUATION) && 'Self Evaluation',
-    user && hasPermission(user, PERFORMANCE_MODULE.READ_OWN_RESPONSES) && 'My Feedbacks',
-  ].filter(Boolean) as ('Feedback Requests' | 'Self Evaluation' | 'My Feedbacks')[];
+    user &&
+      hasPermission(user, PERFORMANCE_MODULE.READ_RESPONSE) &&
+      'Feedback Requests',
+    user &&
+      hasPermission(user, PERFORMANCE_MODULE.SELF_EVALUATION) &&
+      'Self Evaluation',
+    user &&
+      hasPermission(user, PERFORMANCE_MODULE.READ_OWN_RESPONSES) &&
+      'My Feedbacks',
+  ].filter(Boolean) as (
+    | 'Feedback Requests'
+    | 'Self Evaluation'
+    | 'My Feedbacks'
+  )[];
 
   const visibleActiveTab = availableTabs.includes(activeTab)
     ? activeTab

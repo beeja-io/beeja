@@ -1,4 +1,4 @@
-import ReactDOM from "react-dom";
+import ReactDOM from 'react-dom';
 import {
   AppContainer,
   Overlay,
@@ -16,12 +16,14 @@ import {
   ButtonRow,
   ResetButton,
   StarWrapper,
-} from "../../styles/Rating.style";
+} from '../../styles/Rating.style';
 
 type RatingProps = {
   setShowRatingCard: React.Dispatch<React.SetStateAction<boolean>>;
   ratingData: { rating: string; comments: string };
-  setRatingData: React.Dispatch<React.SetStateAction<{ rating: string; comments: string }>>;
+  setRatingData: React.Dispatch<
+    React.SetStateAction<{ rating: string; comments: string }>
+  >;
   submitEmployeeRating: (rating: number, comments: string) => Promise<void>;
 };
 
@@ -31,8 +33,6 @@ const Rating = ({
   setRatingData,
   submitEmployeeRating,
 }: RatingProps) => {
-
-
   const handleCancel = () => setShowRatingCard(false);
 
   const handleSubmit = () => {
@@ -74,8 +74,8 @@ const Rating = ({
                 const val = parseFloat(e.target.value);
                 if (val >= 0 && val <= 5) {
                   setRatingData((prev) => ({ ...prev, rating: String(val) }));
-                } else if (e.target.value === "") {
-                  setRatingData((prev) => ({ ...prev, rating: "" }));
+                } else if (e.target.value === '') {
+                  setRatingData((prev) => ({ ...prev, rating: '' }));
                 }
               }}
             />
@@ -95,14 +95,16 @@ const Rating = ({
             <CommentsBox
               placeholder="Write Comments if any"
               value={ratingData.comments}
-              onChange={(e) => setRatingData((prev) => ({ ...prev, comments: e.target.value }))}
+              onChange={(e) =>
+                setRatingData((prev) => ({ ...prev, comments: e.target.value }))
+              }
             />
           </FormSection>
 
           <ButtonRow>
             <ResetButton onClick={handleCancel}>Cancel</ResetButton>
             <SubmitButton
-              disabled={ratingData.rating === ""}
+              disabled={ratingData.rating === ''}
               onClick={handleSubmit}
             >
               Submit

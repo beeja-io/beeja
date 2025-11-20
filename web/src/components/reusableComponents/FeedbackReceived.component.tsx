@@ -324,22 +324,31 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
                     <SpinAnimation />
                   ) : (
                     <QuestionBlock>
-                      <QuestionHeader>
-                        <QuestionText>
-                          Please share your reflections on your key
-                          achievements, challenges, areas for improvement, and
-                          the support you need to grow further
-                          <RequiredStar>*</RequiredStar>
-                        </QuestionText>
-                      </QuestionHeader>
-                      <ResponsesContainer>
-                        <ResponseHeader>
-                          <div>Response</div>
-                        </ResponseHeader>
-                        <ResponseInnerBox>
-                          {selfEvaluationData}
-                        </ResponseInnerBox>
-                      </ResponsesContainer>
+                      {selfEvaluationData && selfEvaluationData.length > 0 ? (
+                        <>
+                          <QuestionHeader>
+                            <QuestionText>
+                              Please share your reflections on your key
+                              achievements, challenges, areas for improvement,
+                              and the support you need to grow further
+                              <RequiredStar>*</RequiredStar>
+                            </QuestionText>
+                          </QuestionHeader>
+
+                          <ResponsesContainer>
+                            <ResponseHeader>
+                              <div>Response</div>
+                            </ResponseHeader>
+                            <ResponseInnerBox>
+                              {selfEvaluationData}
+                            </ResponseInnerBox>
+                          </ResponsesContainer>
+                        </>
+                      ) : (
+                        <Placeholder>
+                          Self-evaluation has not been submitted yet.
+                        </Placeholder>
+                      )}
                     </QuestionBlock>
                   )}
                 </>

@@ -109,11 +109,7 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
                 key={index}
                 isDisabled={isDisabled}
                 onClick={() => !isDisabled && handleOptionClick(option.title)}
-                title={
-                    isDisabled
-                      ? t('No_Permission')
-                      : ''
-                  }
+                title={isDisabled ? t('No_Permission') : ''}
               >
                 {option.svg}
                 <span>{option.title}</span>

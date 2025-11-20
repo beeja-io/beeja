@@ -58,9 +58,9 @@ const ReviewCyclesList = () => {
     fetchPerformanceCycles();
   }, []);
 
-  const Actions = [
-    { title: 'Edit', svg: <EditIcon /> },
-    { title: 'Delete', svg: <DeleteIcon /> },
+  const Actions: any[] = [
+    { title: 'Edit', className: 'edit-icon', svg: <EditIcon /> },
+    { title: 'Delete', className: 'delete-icon', svg: <DeleteIcon /> },
   ];
 
   const isCycleExpired = (cycle: any) => {

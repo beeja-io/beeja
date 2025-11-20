@@ -65,7 +65,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
   isExpired,
 }) => {
   const { t } = useTranslation();
-  const {user} = useUser();
+  const { user } = useUser();
 
   const [feedbackReceivers, setFeedbackReceivers] = useState<
     FeedbackReceiver[]
@@ -133,22 +133,22 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
           {t('Assign_Feedback_Receivers_Providers')}
         </span>
 
-
-        {user && hasPermission(user, PERFORMANCE_MODULE.ASSIGN_RECEIVER) && (<Button
-          className={`submit shadow ${isExpired ? 'disabled-action' : ''}`}
-          disabled={isExpired}
-          onClick={() => {
-            if (isExpired) {
-              toast.error('Evaluation period is completed');
-              return;
-            }
-            handleAddFeedbackReceiver();
-          }}
-          width="216px"
-        >
-          <AddNewPlusSVG />
-          {t('Add_Feedback_Receiver')}
-        </Button>
+        {user && hasPermission(user, PERFORMANCE_MODULE.ASSIGN_RECEIVER) && (
+          <Button
+            className={`submit shadow ${isExpired ? 'disabled-action' : ''}`}
+            disabled={isExpired}
+            onClick={() => {
+              if (isExpired) {
+                toast.error('Evaluation period is completed');
+                return;
+              }
+              handleAddFeedbackReceiver();
+            }}
+            width="216px"
+          >
+            <AddNewPlusSVG />
+            {t('Add_Feedback_Receiver')}
+          </Button>
         )}
       </ExpenseHeadingSection>
 

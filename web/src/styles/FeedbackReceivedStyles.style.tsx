@@ -137,8 +137,8 @@ export const NameBox = styled.div`
   vertical-align: middle;
 `;
 
-export const NavButton = styled.button<{ primary?: boolean }>`
-  color: ${(p) => (p.primary ? '#fff' : '#222')};
+export const NavButton = styled.button`
+  color: ${(props) => props.theme.colors.blackColors.black7};
   border-radius: 6px;
   border: 1px solid #f1f2f4;
   padding: 6px;
@@ -150,7 +150,7 @@ export const NavButton = styled.button<{ primary?: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: transparent;
+  background: ${(props) => props.theme.colors.blackColors.white6};
 
   .arrow {
     display: inline-flex;
@@ -181,10 +181,6 @@ export const NavButton = styled.button<{ primary?: boolean }>`
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
-  }
-
-  &:hover:not(:disabled) {
-    background: ${(p) => (p.primary ? '#005792' : '#e5e7eb')};
   }
 
   &:hover:not(:disabled) .arrow.left svg {
@@ -222,12 +218,12 @@ export const ResponseHeader = styled.div`
 `;
 
 export const ResponseInnerBox = styled.div`
-  background: #ffffff;
+  background: ${(props) => props.theme.colors.blackColors.white6};
   border: 1px solid #e5e8ec;
   border-radius: 8px;
   padding: 12px 14px;
   font-size: 14px;
-  color: #687588;
+  color: ${(props) => props.theme.colors.grayColors.gray7};
   line-height: 1.5;
   margin-bottom: 8px;
   white-space: pre-wrap;
