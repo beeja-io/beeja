@@ -20,7 +20,7 @@ export const Container = styled.div`
 export const TabBar = styled.div`
   display: flex;
   gap: 8px;
-  border-bottom: 1px solid ${(p) => p.theme.colors.grayColors.gray10};
+  border-bottom: 2px solid ${(p) => p.theme.colors.grayColors.gray10};
   margin-bottom: 18px;
 `;
  
@@ -33,18 +33,18 @@ export const Tab = styled.button<{ active?: boolean }>`
   font-weight: 600;
   color: ${(p) =>
     p.active
-      ? p.theme.colors.brandColors.primary
+      ? "#005792"
       : p.theme.colors.grayColors.gray7};
   border-bottom: ${(p) =>
     p.active
-      ? `2px solid ${p.theme.colors.brandColors.primary}`
+      ? `2px solid ${"#005792"}`
       : "3px solid transparent"};
 
   cursor: pointer;
   transition: all 0.2s ease-in-out;
  
   &:hover {
-    color: ${(p) => p.theme.colors.brandColors.primary};
+    color: #005792;
   }
 `;
 
@@ -93,11 +93,15 @@ export const NameBox = styled.div`
   border: 1px solid ${(p) => p.theme.colors.grayColors.gray5};
   border-radius: 8px;
   padding: 10px 14px;
-  margin-bottom: 20px;
   width: fit-content;
+  min-width: 350px;
+  height: 55px;
   font-weight: 500;
   color: ${(p) => p.theme.colors.grayColors.gray7};
   font-size: 14px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 `;
 
 export const NavButton = styled.button<{ primary?: boolean }>`
@@ -249,7 +253,7 @@ export const ReceiverRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 10px;
+  margin-bottom: 40px;
 `;
 
 export const ReceiverInfo = styled.div`
@@ -268,7 +272,7 @@ export const ProvideRatingButton = styled.button`
   display: inline-flex;     
   align-items: center;          
   gap: 8px;                        
-  background-color: #0056b3;
+  background-color: #005792;
   color: #fff;
   border: none;
   border-radius: 6px;
@@ -285,6 +289,12 @@ export const ProvideRatingButton = styled.button`
 
   &:hover {
     background-color: #004494;
+  }
+
+  &:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+    opacity: 0.7;
   }
 `;
 
@@ -314,9 +324,6 @@ export const HideNamesToggle = styled.div`
     font-size: 14px;
     color: ${(p) => p.theme.colors.blackColors.black1};
     transition: color 0.2s ease;
-  }
-  &:hover span {
-    color: #2a7ae4;
   }
 `;
 export const EvaluationHeadingSection = styled.section`

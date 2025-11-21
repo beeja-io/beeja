@@ -41,12 +41,13 @@ import Rating from "./Rating.component";
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs'
 import { MyProfileSVG } from "../../svgs/NavBarSvgs.svg";
 import { Slider, StyledSwitch, SwitchLabel } from "../../styles/InputStyles.style";
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { getEmployeeCycleGroupedResponse, getEmployeeFeedbackCycles, getEmployeeOverallRating, getEmployeeSelfEvaluation, postEmployeeOverallRating } from "../../service/axiosInstance";
 import DropdownMenu from "./DropDownMenu.component";
 import SpinAnimation from "../loaders/SprinAnimation.loader";
 import { disableBodyScroll, enableBodyScroll } from "../../constants/Utility";
 import { useTranslation } from "react-i18next";
+import ToastMessage from "./ToastMessage.component";
 import { PERFORMANCE_MODULE } from "../../constants/PermissionConstants";
 import { hasPermission } from "../../utils/permissionCheck";
 import { useUser } from "../../context/UserContext";
@@ -85,6 +86,7 @@ type SelfEvaluationResponse = {
 
 const EvaluationOverview: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useUser();
   const { employeeId } = useParams();
   const { state } = useLocation();
@@ -106,6 +108,12 @@ const EvaluationOverview: React.FC = () => {
   const [isLoadingSelf, setLoadingSelf] = useState(false);
   const [isLoadingRating, setLoadingRating] = useState(false);
   const [rating, setRating] = useState<boolean>(false);
+  const [toast, setToast] = useState<{
+    type: "success" | "error";
+    message: string;
+    head: string;
+  } | null>(null);
+
 
   const handleCycleSelect = async (cycleId: string) => {
     if (!employeeId || !cycleId) return;
@@ -113,7 +121,7 @@ const EvaluationOverview: React.FC = () => {
     if (!isLoading)
       setLoadingAllResponses(true);
     await getEmployeeCycleGroupedResponse(employeeId, cycleId)
-      .then((res) => { setGroupedResponse(res.data), console.log(res.data) })
+      .then((res) => { setGroupedResponse(res.data) })
       .catch((err) => console.error("Error fetching grouped response:", err));
     if (!isLoading)
       setLoadingAllResponses(false);
@@ -138,9 +146,19 @@ const EvaluationOverview: React.FC = () => {
     try {
       const res = await postEmployeeOverallRating(employeeId, { rating, comments });
       setOverallRating(res.data);
+      setToast({
+        type: "success",
+        message: `The Rating for ${state.firstName} ${state.lastName} has been submitted successfully`,
+        head: "Rating submitted successfully",
+      });
       fetchEmployeeRating();
     } catch (err) {
       console.error("Error submitting rating:", err);
+      setToast({
+        type: "error",
+        message: "Error while submitting rating",
+        head: "Failed",
+      });
     }
   };
   const fetchSelfEvaluation = async () => {
@@ -150,7 +168,6 @@ const EvaluationOverview: React.FC = () => {
     await getEmployeeSelfEvaluation(employeeId)
       .then((res) => {
         setSelfEvaluation(res.data);
-        console.log("Self Evaluation:", res.data);
       })
       .catch((err) => console.error("Error fetching self evaluation:", err));
     setLoadingSelf(false);
@@ -162,7 +179,6 @@ const EvaluationOverview: React.FC = () => {
     getEmployeeFeedbackCycles(employeeId)
       .then((res) => {
         setForms(res.data);
-        console.log(res.data);
         if (res.data.length > 0) {
           const firstCycle = res.data[0];
           setSelectedCycleId(firstCycle.cycleId);
@@ -199,7 +215,7 @@ const EvaluationOverview: React.FC = () => {
           }
           <EvaluationHeadingSection>
             <span className="heading">
-              <span>
+              <span onClick={() => navigate(-1)}>
                 <ArrowDownSVG />
               </span>
               {t("My_Team_Overview")}
@@ -273,8 +289,9 @@ const EvaluationOverview: React.FC = () => {
                   </ReceiverInfo>
                 </CycleSelectContainer>}
 
-                {activeTab === "rating" && !rating && (
-                  <ProvideRatingButton onClick={() => setShowRatingCard(true)}>
+                {activeTab === "rating" && (
+                  <ProvideRatingButton disabled={!!rating}
+                    onClick={() => !rating && setShowRatingCard(true)}>
                     <WriteSVG />
                     {t("Provide_Rating")}
                   </ProvideRatingButton>
@@ -285,7 +302,7 @@ const EvaluationOverview: React.FC = () => {
               <Content>
                 {activeTab === "all" && (
                   <>{isLoadingAllResponses ? <SpinAnimation /> : <>
-                    <FeedbackHeaderRow>
+                    {(groupedResponse?.questions?.length ?? 0) > 0 ? <FeedbackHeaderRow>
                       <HideNamesToggle>
                         <SwitchLabel>
                           <StyledSwitch
@@ -326,7 +343,7 @@ const EvaluationOverview: React.FC = () => {
                         </NavButton>
                       </QuestionProgress>
 
-                    </FeedbackHeaderRow>
+                    </FeedbackHeaderRow> : <></>}
 
                     {(() => {
                       if (!groupedResponse || !groupedResponse.questions?.length) {
@@ -421,6 +438,15 @@ const EvaluationOverview: React.FC = () => {
             </Container>
           </OuterContainer>
         </>}
+      {toast && (
+        <ToastMessage
+          messageType={toast.type}
+          messageBody={toast.message}
+          messageHeading={toast.head}
+          handleClose={() => setToast(null)}
+        />
+      )}
+
     </>
   );
 };
