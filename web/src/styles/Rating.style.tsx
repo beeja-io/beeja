@@ -19,7 +19,7 @@ export const Overlay = styled.div`
 `;
 
 export const ModalCard = styled.div`
-  background: #fff;
+  background: ${({ theme }) => theme.colors.blackColors.white6};
   border-radius: 14px;
   width: 480px;
   padding: 36px 40px;
@@ -30,7 +30,7 @@ export const ModalTitle = styled.h2`
   text-align: center;
   font-size: 32px;
   font-weight: 600;
-  color: #111827;
+  color: ${(props) => props.theme.colors.grayColors.gray1};
   margin-bottom: 36px;
 `;
 
@@ -42,27 +42,29 @@ export const FormSection = styled.div`
 
 export const Label = styled.label`
   font-weight: 500;
-  color: #111827;
+  color: ${({ theme }) => theme.colors.blackColors.black4};
   margin-bottom: 8px;
   font-size: 14px;
 `;
 
 export const Required = styled.span`
-  color: red;
+  color: ${({ theme }) => theme.colors.stateColors.error};
 `;
 
 export const RatingInput = styled.input`
   width: 100%;
   height: 40px;
-  border: 1px solid #ccc;
+  border: 1px solid ${({ theme }) => theme.colors.grayColors.gray4};
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 15px;
   outline: none;
   transition: border-color 0.2s;
+  background: ${({ theme }) => theme.colors.blackColors.white6};
+  color: ${({ theme }) => theme.colors.blackColors.black4};
 
   &:focus {
-    border-color: #0056b3;
+    border-color: ${({ theme }) => theme.colors.brandColors.primary};
   }
 
   &::-webkit-inner-spin-button,
@@ -79,16 +81,17 @@ export const RatingInput = styled.input`
 export const CommentsBox = styled.textarea`
   height: 90px;
   resize: none;
-  border: 1px solid #ccc;
+  border: 1px solid ${({ theme }) => theme.colors.grayColors.gray4};
   border-radius: 8px;
   padding: 10px 12px;
   font-size: 14px;
   outline: none;
-  color: #111827;
+  background: ${({ theme }) => theme.colors.blackColors.white6};
+  color: ${({ theme }) => theme.colors.blackColors.black4};
   transition: border-color 0.2s;
 
   &:focus {
-    border-color: #0056b3;
+    border-color: ${({ theme }) => theme.colors.brandColors.primary};
   }
 `;
 
@@ -101,7 +104,7 @@ export const HintStarsRow = styled.div`
 
 export const HintText = styled.span`
   font-size: 13px;
-  color: #818181;
+  color: ${({ theme }) => theme.colors.grayColors.gray11};
   font-weight: 400;
 `;
 
@@ -118,14 +121,14 @@ export const StarWrapper = styled.span<{ fill: number }>`
   display: inline-block;
   font-size: 30px;
   margin-right: -3px;
-  color: #D9D9D9;
+  color: ${({ theme }) => theme.colors.grayColors.gray5};
   width: 32px;
   height: 32px;
 
   /* gray base star */
   &::before {
     content: "★";
-    color: #D9D9D9;
+    color: ${({ theme }) => theme.colors.grayColors.gray5};
     position: absolute;
     top: 0;
     left: 0;
@@ -133,7 +136,7 @@ export const StarWrapper = styled.span<{ fill: number }>`
 
   &::after {
     content: "★";
-    color: #005792;
+    color: ${({ theme }) => theme.colors.brandColors.primary};
     position: absolute;
     top: 0;
     left: 0;
@@ -157,12 +160,13 @@ export const ResetButton = styled.button`
   border-radius: 6px;
   font-size: 15px;
   cursor: pointer;
-  background: #f0f0f0;
-  color: #333;
+  background: ${({ theme }) => theme.colors.blackColors.white6};
+  color: ${(props) => props.theme.colors.grayColors.gray2};
+  border: 1px solid ${(props) => props.theme.colors.grayColors.gray2};
   transition: 0.2s;
 
   &:hover {
-    background: #e0e0e0;
+  color: ${(props) => props.theme.colors.grayColors.gray1};
   }
 `;
 

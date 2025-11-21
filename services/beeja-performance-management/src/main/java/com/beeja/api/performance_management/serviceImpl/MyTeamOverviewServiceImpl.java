@@ -8,10 +8,10 @@ import com.beeja.api.performance_management.model.FeedbackProvider;
 import com.beeja.api.performance_management.model.FeedbackReceivers;
 import com.beeja.api.performance_management.model.OverallRating;
 import com.beeja.api.performance_management.model.dto.*;
+import com.beeja.api.performance_management.repository.EvaluationCycleRepository;
 import com.beeja.api.performance_management.repository.FeedbackProviderRepository;
 import com.beeja.api.performance_management.repository.FeedbackReceiverRepository;
 import com.beeja.api.performance_management.repository.OverallRatingRepository;
-import com.beeja.api.performance_management.service.EvaluationCycleService;
 import com.beeja.api.performance_management.service.MyTeamOverviewService;
 import com.beeja.api.performance_management.utils.Constants;
 import com.beeja.api.performance_management.utils.UserContext;
@@ -33,7 +33,7 @@ public class MyTeamOverviewServiceImpl implements MyTeamOverviewService {
     private OverallRatingRepository overallRatingRepository;
 
     @Autowired
-    private EvaluationCycleService cycleService;
+    private EvaluationCycleRepository evaluationCycleRepository;
 
     @Autowired
     private FeedbackReceiverRepository feedbackReceiverRepository;
@@ -146,7 +146,7 @@ public class MyTeamOverviewServiceImpl implements MyTeamOverviewService {
 
     public FeedbackStatusResponse getFeedbackStatus(String employeeId) {
 
-        List<FeedbackProvider> providerList = repository.findByEmployeeId(employeeId);
+        List<FeedbackProvider> providerList = repository.findProvidersByOrganizationIdAndEmployeeId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString(),employeeId);
 
         int totalAssignedReviewers = providerList.stream()
                 .mapToInt(fp -> fp.getAssignedReviewers() != null ? fp.getAssignedReviewers().size() : 0)
@@ -219,7 +219,7 @@ public class MyTeamOverviewServiceImpl implements MyTeamOverviewService {
 
             return receivers.stream()
                     .map(receiver -> {
-                        EvaluationCycle cycle = cycleService.getCycleById(receiver.getCycleId());
+                        EvaluationCycle cycle = evaluationCycleRepository.getCycleByOrganizationIdAndId(UserContext.getLoggedInUserOrganization().get(Constants.ID).toString(),receiver.getCycleId());
                         String cycleName = (cycle != null) ? cycle.getName() : null;
                         return new EmployeeCycleInfo(employeeId, receiver.getCycleId(), cycleName);
                     })

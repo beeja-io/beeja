@@ -92,4 +92,6 @@ public interface EvaluationCycleRepository extends MongoRepository<EvaluationCyc
      * @return {@code true} if the cycle exists; {@code false} otherwise
      */
     boolean existsByIdAndOrganizationId(String id, String organizationId);
+
+    EvaluationCycle getCycleByOrganizationIdAndId(String organizationId, String id);
 }
