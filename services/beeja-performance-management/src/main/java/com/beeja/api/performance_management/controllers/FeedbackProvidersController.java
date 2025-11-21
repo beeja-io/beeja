@@ -1,5 +1,7 @@
 package com.beeja.api.performance_management.controllers;
 
+import com.beeja.api.performance_management.Constants.PermissionConstants;
+import com.beeja.api.performance_management.annotations.HasPermission;
 import com.beeja.api.performance_management.model.FeedbackProvider;
 import com.beeja.api.performance_management.request.FeedbackProviderRequest;
 import com.beeja.api.performance_management.response.FeedbackProviderDetails;
@@ -22,6 +24,7 @@ public class FeedbackProvidersController {
     FeedbackProvidersService feedbackProvidersService;
 
     @PostMapping("/assign/{employeeId}")
+    @HasPermission(PermissionConstants.ASSIGN_PROVIDERS)
     public ResponseEntity<List<FeedbackProvider>> assignFeedbackProvider(
             @PathVariable String employeeId,
             @RequestBody FeedbackProviderRequest requestDto) {
@@ -31,6 +34,7 @@ public class FeedbackProvidersController {
     }
 
     @PutMapping("/providers/{employeeId}")
+    @HasPermission(PermissionConstants.UPDATE_PROVIDERS)
     public ResponseEntity<List<FeedbackProvider>> updateFeedbackProviders(
             @PathVariable String employeeId,
             @RequestBody FeedbackProviderRequest request) {
@@ -40,6 +44,7 @@ public class FeedbackProvidersController {
     }
 
     @GetMapping("/{employeeId}/{cycleId}")
+    @HasPermission(PermissionConstants.READ_PROVIDERS)
     public ResponseEntity<FeedbackProviderDetails> getFeedbackFormDetails(
             @PathVariable String employeeId,
             @PathVariable String cycleId,
@@ -57,6 +62,7 @@ public class FeedbackProvidersController {
     }
 
     @GetMapping("/reviewer")
+    @HasPermission({PermissionConstants.READ_PROVIDERS, PermissionConstants.READ_RESPONSES})
     public ResponseEntity<ReviewerAssignedEmployeesResponse> getEmployeesAssignedToReviewer() {
         try {
             ReviewerAssignedEmployeesResponse response =
@@ -73,6 +79,7 @@ public class FeedbackProvidersController {
     }
 
     @GetMapping("/forms/{employeeId}")
+    @HasPermission(PermissionConstants.READ_RESPONSES)
     public ResponseEntity<?> getFormsByEmployee(
             @PathVariable String employeeId) {
         try {

@@ -373,14 +373,16 @@ export const ActionMenuIcon = styled.div`
   }
 `;
 
-export const ActionMenuOptions = styled.div`
+export const ActionMenuOptions = styled.div<{ isDisabled?: boolean }>`
   display: flex;
   position: relative;
   // width: 200px;
   text-decoration: none;
   white-space: nowrap;
   color: ${(props) => props.theme.colors.blackColors.black1};
-  cursor: pointer;
+  cursor: ${({ isDisabled }) => (isDisabled ? "not-allowed" : "pointer")};
+  opacity: ${({ isDisabled }) => (isDisabled ? 0.5 : 1)};
+  pointer-events: ${({ isDisabled }) => (isDisabled ? "none" : "auto")};
   font-size: 14px;
   font-style: normal;
   font-weight: 600;

@@ -1,5 +1,7 @@
 package com.beeja.api.performance_management.controllers;
 
+import com.beeja.api.performance_management.Constants.PermissionConstants;
+import com.beeja.api.performance_management.annotations.HasPermission;
 import com.beeja.api.performance_management.client.AccountClient;
 import com.beeja.api.performance_management.model.FeedbackResponse;
 import com.beeja.api.performance_management.model.GroupedFeedbackResponse;
@@ -34,6 +36,7 @@ public class MyTeamOverviewController {
     private AccountClient accountClient;
 
     @GetMapping("/employees")
+    @HasPermission(PermissionConstants.READ_ALL_RESPONSES)
     public ResponseEntity<PaginatedEmployeePerformanceResponse> getEmployeePerformanceData(
             @RequestParam(name = "department", required = false) String department,
             @RequestParam(name = "designation", required = false) String designation,
@@ -50,6 +53,7 @@ public class MyTeamOverviewController {
     }
 
     @GetMapping("/employee/{employeeId}/cycle/{cycleId}/groupedResponse")
+    @HasPermission(PermissionConstants.READ_ALL_RESPONSES)
     public ResponseEntity<?> getGroupedResponsesByEmployeeCycle(
             @PathVariable String employeeId,
             @PathVariable String cycleId) {
@@ -106,6 +110,7 @@ public class MyTeamOverviewController {
     }
 
     @PostMapping("/employee/{employeeId}/overall-rating")
+    @HasPermission(PermissionConstants.PROVIDE_RATING)
     public ResponseEntity<?> createOrUpdateOverallRating(
             @PathVariable String employeeId,
             @RequestBody OverallRatingRequestDTO request) {
@@ -124,6 +129,7 @@ public class MyTeamOverviewController {
     }
 
     @GetMapping("/employee/{employeeId}/overall-rating")
+    @HasPermission(PermissionConstants.READ_ALL_RESPONSES)
     public ResponseEntity<?> getOverallRating(@PathVariable String employeeId) {
         try {
             OverallRating rating = myTeamOverviewService.getOverallRatingByEmployeeId(employeeId);

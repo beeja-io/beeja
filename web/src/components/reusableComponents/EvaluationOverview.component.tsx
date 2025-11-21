@@ -48,6 +48,9 @@ import SpinAnimation from "../loaders/SprinAnimation.loader";
 import { disableBodyScroll, enableBodyScroll } from "../../constants/Utility";
 import { useTranslation } from "react-i18next";
 import ToastMessage from "./ToastMessage.component";
+import { PERFORMANCE_MODULE } from "../../constants/PermissionConstants";
+import { hasPermission } from "../../utils/permissionCheck";
+import { useUser } from "../../context/UserContext";
 
 type FeedbackCycle = {
   employeeId: string;
@@ -84,6 +87,7 @@ type SelfEvaluationResponse = {
 const EvaluationOverview: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useUser();
   const { employeeId } = useParams();
   const { state } = useLocation();
   const [activeTab, setActiveTab] = useState<"all" | "self" | "rating">("all");
@@ -227,15 +231,23 @@ const EvaluationOverview: React.FC = () => {
               <Tab active={activeTab === "all"} onClick={() => { setActiveTab("all") }}>
                 {t("All_Responses")}
               </Tab>
-              <Tab active={activeTab === "self"} onClick={() => { setActiveTab("self"), fetchSelfEvaluation() }}>
-                {t("Self_Evaluation")}
-              </Tab>
-              <Tab
-                active={activeTab === "rating"}
-                onClick={() => { setActiveTab("rating"), fetchEmployeeRating() }}
-              >
-                {t("Overall_Rating")}
-              </Tab>
+              {user && hasPermission(user, PERFORMANCE_MODULE.READ_SELF_EVALUTION) && (
+                <Tab active={activeTab === "self"} onClick={() => { setActiveTab("self"); fetchSelfEvaluation(); }}>
+                  {t("Self_Evaluation")}
+                </Tab>
+              )}
+              {user && hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
+                <Tab
+                  active={activeTab === "rating"}
+                  onClick={() => {
+                    setActiveTab("rating");
+                    fetchEmployeeRating();
+                  }}
+                >
+                  {t("Overall_Rating")}
+                </Tab>
+              )}
+
             </TabBar>
             <Container>
 

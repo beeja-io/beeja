@@ -33,6 +33,9 @@ import {
 import AddFeedbackReceivers from '../components/reusableComponents/AddFeedbackReceivers.component';
 import { getReceivers } from '../service/axiosInstance';
 import FeedbackStatusDropdown from '../styles/FeedbackStatusStyle.style';
+import { hasPermission } from '../utils/permissionCheck';
+import { PERFORMANCE_MODULE } from '../constants/PermissionConstants';
+import { useUser } from '../context/UserContext';
 
 type FeedbackReceiver = {
   id: string | undefined;
@@ -62,6 +65,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
   isExpired,
 }) => {
   const { t } = useTranslation();
+  const {user} = useUser();
 
   const [feedbackReceivers, setFeedbackReceivers] = useState<
     FeedbackReceiver[]
@@ -129,7 +133,8 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
           {t('Assign_Feedback_Receivers_Providers')}
         </span>
 
-        <Button
+
+        {user && hasPermission(user, PERFORMANCE_MODULE.ASSIGN_RECEIVER) && (<Button
           className={`submit shadow ${isExpired ? 'disabled-action' : ''}`}
           disabled={isExpired}
           onClick={() => {
@@ -144,6 +149,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
           <AddNewPlusSVG />
           {t('Add_Feedback_Receiver')}
         </Button>
+        )}
       </ExpenseHeadingSection>
 
       <StyledDiv>
