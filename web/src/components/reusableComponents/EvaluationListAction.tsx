@@ -15,7 +15,7 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { PERFORMANCE_MODULE } from '../../constants/PermissionConstants';
 
 interface Props {
-  options: { title: string; svg: React.ReactNode }[];
+  options: { title: string; svg: React.ReactNode; className: string }[];
   currentCycle: any;
   fetchCycles: () => void;
   onSuccess?: (message: string) => void;
@@ -37,7 +37,7 @@ const EvaluationListAction: React.FC<Props> = ({
   setCycles,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { user } = useUser()
+  const { user } = useUser();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -100,7 +100,6 @@ const EvaluationListAction: React.FC<Props> = ({
   const canDelete =
     user && hasPermission(user, PERFORMANCE_MODULE.DELETE_REVIEW_CYCLE);
 
-
   return (
     <>
       <ActionContainer ref={dropdownRef}>
@@ -128,7 +127,7 @@ const EvaluationListAction: React.FC<Props> = ({
                       : ''
                   }
                 >
-                  {op.svg} {op.title}
+                  <div className={op.className}>{op.svg}</div> {op.title}
                 </ActionMenuOption>
               );
             })}

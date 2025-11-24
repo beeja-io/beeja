@@ -518,8 +518,9 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                       return (
                         <div
                           key={emp.id}
-                          className={`employee-row ${showTick ? 'selected' : ''} ${isDisabled ? 'disabled' : ''
-                            }`}
+                          className={`employee-row ${showTick ? 'selected' : ''} ${
+                            isDisabled ? 'disabled' : ''
+                          }`}
                           onClick={() => {
                             if (isSelf) {
                               return;

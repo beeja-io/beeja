@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   OuterContainer,
   Container,
@@ -35,7 +35,7 @@ import {
   RatingText,
   OverallRatingStar,
   WriteSVG,
-} from "../../styles/EvaluationOverview.style";
+} from '../../styles/EvaluationOverview.style';
 
 import Rating from "./Rating.component";
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs'
@@ -83,25 +83,30 @@ type SelfEvaluationResponse = {
   }[];
 };
 
-
 const EvaluationOverview: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useUser();
   const { employeeId } = useParams();
   const { state } = useLocation();
-  const [activeTab, setActiveTab] = useState<"all" | "self" | "rating">("all");
+  const [activeTab, setActiveTab] = useState<'all' | 'self' | 'rating'>('all');
   const [hideNames, setHideNames] = useState<boolean>(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [showRatingCard, setShowRatingCard] = useState<boolean>(false);
-  const [groupedResponse, setGroupedResponse] = useState<GroupedResponse | null>(null);
+  const [groupedResponse, setGroupedResponse] =
+    useState<GroupedResponse | null>(null);
   const [forms, setForms] = useState<FeedbackCycle[]>([]);
-  const [selectedCycleId, setSelectedCycleId] = useState<string>("");
-  const [overallRating, setOverallRating] = useState<{ rating: number; comments: string } | null>(null);
-  const [selfEvaluation, setSelfEvaluation] = useState<SelfEvaluationResponse[] | null>(null);
+  const [selectedCycleId, setSelectedCycleId] = useState<string>('');
+  const [overallRating, setOverallRating] = useState<{
+    rating: number;
+    comments: string;
+  } | null>(null);
+  const [selfEvaluation, setSelfEvaluation] = useState<
+    SelfEvaluationResponse[] | null
+  >(null);
   const [ratingData, setRatingData] = useState({
-    rating: "",
-    comments: "",
+    rating: '',
+    comments: '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingAllResponses, setLoadingAllResponses] = useState(false);
@@ -118,13 +123,18 @@ const EvaluationOverview: React.FC = () => {
   const handleCycleSelect = async (cycleId: string) => {
     if (!employeeId || !cycleId) return;
     setCurrentQuestionIndex(0);
-    if (!isLoading)
-      setLoadingAllResponses(true);
+    if (!isLoading) setLoadingAllResponses(true);
     await getEmployeeCycleGroupedResponse(employeeId, cycleId)
-      .then((res) => { setGroupedResponse(res.data) })
-      .catch((err) => console.error("Error fetching grouped response:", err));
-    if (!isLoading)
-      setLoadingAllResponses(false);
+      .then((res) => {
+        setGroupedResponse(res.data);
+      })
+      .catch((err) => {
+        throw new Error(
+          `Error fetching grouped response: ${err?.message || err}`
+        );
+      });
+
+    if (!isLoading) setLoadingAllResponses(false);
   };
 
   const fetchEmployeeRating = async () => {
@@ -137,14 +147,17 @@ const EvaluationOverview: React.FC = () => {
         setRating(true);
       }
       setLoadingRating(false);
-    } catch (err) {
-      console.error("Error fetching employee rating:", err);
+    } catch (err: any) {
+      throw new Error(`Error fetching employee rating: ${err?.message || err}`);
     }
   };
   const submitEmployeeRating = async (rating: number, comments: string) => {
     if (!employeeId) return;
     try {
-      const res = await postEmployeeOverallRating(employeeId, { rating, comments });
+      const res = await postEmployeeOverallRating(employeeId, {
+        rating,
+        comments,
+      });
       setOverallRating(res.data);
       setToast({
         type: "success",
@@ -153,7 +166,6 @@ const EvaluationOverview: React.FC = () => {
       });
       fetchEmployeeRating();
     } catch (err) {
-      console.error("Error submitting rating:", err);
       setToast({
         type: "error",
         message: "Error while submitting rating",
@@ -162,16 +174,20 @@ const EvaluationOverview: React.FC = () => {
     }
   };
   const fetchSelfEvaluation = async () => {
-    if (!employeeId)
-      return;
+    if (!employeeId) return;
     setLoadingSelf(true);
     await getEmployeeSelfEvaluation(employeeId)
       .then((res) => {
         setSelfEvaluation(res.data);
       })
-      .catch((err) => console.error("Error fetching self evaluation:", err));
+      .catch((err) => {
+        throw new Error(
+          `Error fetching self evaluation: ${err?.message || err}`
+        );
+      });
+
     setLoadingSelf(false);
-  }
+  };
 
   useEffect(() => {
     if (!employeeId) return;
@@ -186,8 +202,11 @@ const EvaluationOverview: React.FC = () => {
         }
       })
       .catch((err) => {
-        console.error("Error fetching feedback cycles:", err);
+        throw new Error(
+          `Error fetching feedback cycles: ${err?.message || err}`
+        );
       });
+
     setIsLoading(false);
   }, [employeeId]);
 
@@ -203,100 +222,119 @@ const EvaluationOverview: React.FC = () => {
 
   return (
     <>
-      {isLoading ? <SpinAnimation /> :
+      {isLoading ? (
+        <SpinAnimation />
+      ) : (
         <>
-          {showRatingCard &&
+          {showRatingCard && (
             <Rating
               setShowRatingCard={setShowRatingCard}
               ratingData={ratingData}
               setRatingData={setRatingData}
               submitEmployeeRating={submitEmployeeRating}
             />
-          }
+          )}
           <EvaluationHeadingSection>
             <span className="heading">
               <span onClick={() => navigate(-1)}>
                 <ArrowDownSVG />
               </span>
-              {t("My_Team_Overview")}
+              {t('My_Team_Overview')}
             </span>
           </EvaluationHeadingSection>
 
           <OuterContainer>
             <OuterHeader>
-              <h6>{t("Feedback_Received")}</h6>
-              <p>The Following Feedbacks have been Received for {`${state.firstName} ${state.lastName}`} </p>
+              <h6>{t('Feedback_Received')}</h6>
+              <p>
+                The Following Feedbacks have been Received for{' '}
+                {`${state.firstName} ${state.lastName}`}{' '}
+              </p>
             </OuterHeader>
             <TabBar>
-              <Tab active={activeTab === "all"} onClick={() => { setActiveTab("all") }}>
-                {t("All_Responses")}
+              <Tab
+                active={activeTab === 'all'}
+                onClick={() => {
+                  setActiveTab('all');
+                }}
+              >
+                {t('All_Responses')}
               </Tab>
-              {user && hasPermission(user, PERFORMANCE_MODULE.READ_SELF_EVALUTION) && (
-                <Tab active={activeTab === "self"} onClick={() => { setActiveTab("self"); fetchSelfEvaluation(); }}>
-                  {t("Self_Evaluation")}
-                </Tab>
-              )}
-              {user && hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
-                <Tab
-                  active={activeTab === "rating"}
-                  onClick={() => {
-                    setActiveTab("rating");
-                    fetchEmployeeRating();
-                  }}
-                >
-                  {t("Overall_Rating")}
-                </Tab>
-              )}
-
+              {user &&
+                hasPermission(user, PERFORMANCE_MODULE.READ_SELF_EVALUTION) && (
+                  <Tab
+                    active={activeTab === 'self'}
+                    onClick={() => {
+                      setActiveTab('self');
+                      fetchSelfEvaluation();
+                    }}
+                  >
+                    {t('Self_Evaluation')}
+                  </Tab>
+                )}
+              {user &&
+                hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
+                  <Tab
+                    active={activeTab === 'rating'}
+                    onClick={() => {
+                      setActiveTab('rating');
+                      fetchEmployeeRating();
+                    }}
+                  >
+                    {t('Overall_Rating')}
+                  </Tab>
+                )}
             </TabBar>
             <Container>
-
               <ReceiverRow>
                 <ReceiverInfo>
-                  <ReceiverLabel>{t("Feedback_Receiver_Name")}</ReceiverLabel>
+                  <ReceiverLabel>{t('Feedback_Receiver_Name')}</ReceiverLabel>
                   <NameBox>{`${state.firstName} ${state.lastName}`}</NameBox>
                 </ReceiverInfo>
-                {activeTab === "all" && <CycleSelectContainer>
-                  <ReceiverInfo>
-                    <CycleLabel htmlFor="feedbackFormSelect">{t("Select_Feedback_Form")}</CycleLabel>
-                    <DropdownMenu
-                      label={
-                        forms.length === 0
-                          ? "No forms available"
-                          : "Select form"
-                      }
-                      name="feedbackFormSelect"
-                      id="feedbackFormSelect"
-                      value={selectedCycleId || ""}
-                      required
-                      className="largeContainerExp"
-                      disabled={forms.length === 0}
-                      options={
-                        forms.length > 0
-                          ? forms.map((item) => ({
-                            label: item.cycleName,
-                            value: item.cycleId,
-                          }))
-                          : []
-                      }
-                      onChange={(selectedValue) => {
-                        if (selectedValue) {
-                          setSelectedCycleId(selectedValue);
-                          handleCycleSelect(selectedValue);
+                {activeTab === 'all' && (
+                  <CycleSelectContainer>
+                    <ReceiverInfo>
+                      <CycleLabel htmlFor="feedbackFormSelect">
+                        {t('Select_Feedback_Form')}
+                      </CycleLabel>
+                      <DropdownMenu
+                        label={
+                          forms.length === 0
+                            ? 'No forms available'
+                            : 'Select form'
                         }
-                      }}
-                    />
-                  </ReceiverInfo>
-                </CycleSelectContainer>}
+                        name="feedbackFormSelect"
+                        id="feedbackFormSelect"
+                        value={selectedCycleId || ''}
+                        required
+                        className="largeContainerExp"
+                        disabled={forms.length === 0}
+                        options={
+                          forms.length > 0
+                            ? forms.map((item) => ({
+                                label: item.cycleName,
+                                value: item.cycleId,
+                              }))
+                            : []
+                        }
+                        onChange={(selectedValue) => {
+                          if (selectedValue) {
+                            setSelectedCycleId(selectedValue);
+                            handleCycleSelect(selectedValue);
+                          }
+                        }}
+                      />
+                    </ReceiverInfo>
+                  </CycleSelectContainer>
+                )}
 
                 {activeTab === "rating" && (
                   <ProvideRatingButton disabled={!!rating}
                     onClick={() => !rating && setShowRatingCard(true)}>
                     <WriteSVG />
-                    {t("Provide_Rating")}
+                    {t('Provide_Rating')}
                   </ProvideRatingButton>
                 )}
-
               </ReceiverRow>
 
               <Content>
@@ -326,16 +364,52 @@ const EvaluationOverview: React.FC = () => {
                           <span className="arrow right"><ArrowDownSVG /></span>
                         </NavButton>
 
-                        {" Question - "}
-                        {groupedResponse ? currentQuestionIndex + 1 : 0}
-                        {" / "}
-                        {groupedResponse ? groupedResponse.questions.length : 0}
-                        {" "}
+                          <QuestionProgress>
+                            <NavButton
+                              disabled={
+                                !groupedResponse || currentQuestionIndex === 0
+                              }
+                              onClick={() =>
+                                setCurrentQuestionIndex((i) => i - 1)
+                              }
+                            >
+                              <span className="arrow right">
+                                <ArrowDownSVG />
+                              </span>
+                            </NavButton>
+                            {' Question - '}
+                            {groupedResponse ? currentQuestionIndex + 1 : 0}
+                            {' / '}
+                            {groupedResponse
+                              ? groupedResponse.questions.length
+                              : 0}{' '}
+                            <NavButton
+                              disabled={
+                                !groupedResponse ||
+                                currentQuestionIndex ===
+                                  groupedResponse.questions.length - 1
+                              }
+                              onClick={() =>
+                                setCurrentQuestionIndex((i) => i + 1)
+                              }
+                            >
+                              <span className="arrow left">
+                                <ArrowDownSVG />
+                              </span>
+                            </NavButton>
+                          </QuestionProgress>
+                        </FeedbackHeaderRow>
 
-                        <NavButton
-                          disabled={
+                        {(() => {
+                          if (
                             !groupedResponse ||
-                            currentQuestionIndex === groupedResponse.questions.length - 1
+                            !groupedResponse.questions?.length
+                          ) {
+                            return (
+                              <Placeholder>
+                                {t('No_feedback_responses_available.')}
+                              </Placeholder>
+                            );
                           }
                           onClick={() => setCurrentQuestionIndex((i) => i + 1)}
                         >
@@ -345,93 +419,106 @@ const EvaluationOverview: React.FC = () => {
 
                     </FeedbackHeaderRow> : <></>}
 
-                    {(() => {
-                      if (!groupedResponse || !groupedResponse.questions?.length) {
-                        return <Placeholder>{t("No_feedback_responses_available.")}</Placeholder>;
-                      }
-
-                      const q = groupedResponse.questions[currentQuestionIndex];
-                      return (
-                        <>
-                          <QuestionBlock key={q.questionId}>
-                            <QuestionHeader>
-                              <QuestionText>{`${currentQuestionIndex + 1}. ${q.questionId}`}</QuestionText>
-                            </QuestionHeader>
-                            {q.description && <QuestionDesc>{q.description}</QuestionDesc>}
-                            <ResponsesContainer>
-                              {q.responses.map((r, index) => (
-                                <React.Fragment key={index}>
-                                  <ResponseHeader>
-                                    <div>Response {index + 1}</div>
-                                    <div>
-                                      {!hideNames && (
-                                        <AuthorInfo>
-                                          <MyProfileSVG props={{ isActive: false }} />
-                                          {r.reviewerId}
-                                        </AuthorInfo>
-                                      )}
-                                    </div>
-                                  </ResponseHeader>
-                                  <ResponseInnerBox>{r.answer}</ResponseInnerBox>
-                                </React.Fragment>
-                              ))}
-                            </ResponsesContainer>
-                          </QuestionBlock>
-                        </>
-                      );
-                    })()}
-                  </>}
-                  </>
-                )}
-
-                {activeTab === "self" && (
-                  <>{isLoadingSelf ? <SpinAnimation /> : <>
-                    {(() => {
-                      return (
-                        <>
-                          <QuestionBlock >
-                            <ResponsesContainer>
-                              <ResponseHeader>
-                                <div>Response</div>
-                              </ResponseHeader>
-                              <ResponseInnerBox>
-                                {selfEvaluation && selfEvaluation[0]?.responses?.[0]?.answer
-                                  ? selfEvaluation[0].responses[0].answer
-                                  : "No response provided."}
-                              </ResponseInnerBox>
-                            </ResponsesContainer>
-
-                          </QuestionBlock>
-
-                        </>
-                      );
-                    })()}
-                  </>}
-                  </>
-                )}
-                {activeTab === "rating" && (
-                  <>{isLoadingRating ? <SpinAnimation /> : <>
-                    {overallRating ? (
-                      <ResponsesContainer2>
-                        <RatingBox>
-                          <RatingHeader>
-                            <RatingIcon>
-                              <OverallRatingStar />
-                            </RatingIcon>
-                            <RatingValue>
-                              {overallRating.rating} <span>(Overall Rating)</span>
-                            </RatingValue>
-                          </RatingHeader>
-
-                          <RatingText>{overallRating.comments}</RatingText>
-                        </RatingBox>
-                      </ResponsesContainer2>
-                    ) : (
-                      <Placeholder>
-                        Overall Rating has not been submitted yet!
-                      </Placeholder>
+                          const q =
+                            groupedResponse.questions[currentQuestionIndex];
+                          return (
+                            <>
+                              <QuestionBlock key={q.questionId}>
+                                <QuestionHeader>
+                                  <QuestionText>{`${currentQuestionIndex + 1}. ${q.questionId}`}</QuestionText>
+                                </QuestionHeader>
+                                {q.description && (
+                                  <QuestionDesc>{q.description}</QuestionDesc>
+                                )}
+                                <ResponsesContainer>
+                                  {q.responses.map((r, index) => (
+                                    <React.Fragment key={index}>
+                                      <ResponseHeader>
+                                        <div>Response {index + 1}</div>
+                                        <div>
+                                          {!hideNames && (
+                                            <AuthorInfo>
+                                              <MyProfileSVG
+                                                props={{ isActive: false }}
+                                              />
+                                              {r.reviewerId}
+                                            </AuthorInfo>
+                                          )}
+                                        </div>
+                                      </ResponseHeader>
+                                      <ResponseInnerBox>
+                                        {r.answer}
+                                      </ResponseInnerBox>
+                                    </React.Fragment>
+                                  ))}
+                                </ResponsesContainer>
+                              </QuestionBlock>
+                            </>
+                          );
+                        })()}
+                      </>
                     )}
-                  </>}
+                  </>
+                )}
+
+                {activeTab === 'self' && (
+                  <>
+                    {isLoadingSelf ? (
+                      <SpinAnimation />
+                    ) : (
+                      <>
+                        {(() => {
+                          return (
+                            <>
+                              <QuestionBlock>
+                                <ResponsesContainer>
+                                  <ResponseHeader>
+                                    <div>Response</div>
+                                  </ResponseHeader>
+                                  <ResponseInnerBox>
+                                    {selfEvaluation &&
+                                    selfEvaluation[0]?.responses?.[0]?.answer
+                                      ? selfEvaluation[0].responses[0].answer
+                                      : 'No response provided.'}
+                                  </ResponseInnerBox>
+                                </ResponsesContainer>
+                              </QuestionBlock>
+                            </>
+                          );
+                        })()}
+                      </>
+                    )}
+                  </>
+                )}
+                {activeTab === 'rating' && (
+                  <>
+                    {isLoadingRating ? (
+                      <SpinAnimation />
+                    ) : (
+                      <>
+                        {overallRating ? (
+                          <ResponsesContainer2>
+                            <RatingBox>
+                              <RatingHeader>
+                                <RatingIcon>
+                                  <OverallRatingStar />
+                                </RatingIcon>
+                                <RatingValue>
+                                  {overallRating.rating}{' '}
+                                  <span>(Overall Rating)</span>
+                                </RatingValue>
+                              </RatingHeader>
+
+                              <RatingText>{overallRating.comments}</RatingText>
+                            </RatingBox>
+                          </ResponsesContainer2>
+                        ) : (
+                          <Placeholder>
+                            Overall Rating has not been submitted yet!
+                          </Placeholder>
+                        )}
+                      </>
+                    )}
                   </>
                 )}
               </Content>

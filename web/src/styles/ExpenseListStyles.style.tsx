@@ -169,11 +169,20 @@ export const TableBodyRow = styled.tr`
   border-bottom: 1px solid ${(props) => props.theme.colors.blackColors.white2};
 
   &.disabled-row {
-    background-color: ${(props) => props.theme.colors.grayColors.gray5};
+    font-family: Nunito;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 12px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+    color: ${(props) => props.theme.colors.blackColors.black4};
+    background-color: ${(props) => props.theme.colors.blackColors.white2};
   }
 
   &.disabled-row:hover {
-    background-color: ${(props) => props.theme.colors.grayColors.gray5};
+    background-color: ${(props) => props.theme.colors.grayColors.grayscale300};
   }
 
   &:hover {
@@ -262,6 +271,14 @@ export const ActionMenuOption = styled.div`
   gap: 20px;
   background: transparent;
 
+  .edit-icon svg path {
+    fill: ${(props) => props.theme.colors.blackColors.black1} !important;
+  }
+
+  .delete-icon svg path {
+    stroke: ${(props) => props.theme.colors.blackColors.black1} !important;
+  }
+
   &:hover {
     background: ${(props) => props.theme.colors.grayColors.gray6};
     border-radius: 10px;
@@ -273,12 +290,16 @@ export const ActionMenuOption = styled.div`
     background: ${(props) => props.theme.colors.grayColors.gray6};
   }
   &.edit-disabled {
-    opacity: 0.5;
     pointer-events: auto !important;
     cursor: not-allowed !important;
+    background: #f8f8f8 !important;
+    color: #aaaaaa;
 
     * {
       cursor: not-allowed !important;
+    }
+    .edit-icon svg path {
+      fill: #aaaaaa !important;
     }
   }
 `;

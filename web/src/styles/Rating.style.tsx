@@ -1,11 +1,11 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const AppContainer = styled.div`
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
 `;
 
 export const Overlay = styled.div`
@@ -73,7 +73,7 @@ export const RatingInput = styled.input`
     margin: 0;
   }
 
-  &[type="number"] {
+  &[type='number'] {
     -moz-appearance: textfield;
   }
 `;
@@ -177,10 +177,10 @@ export const SubmitButton = styled.button<{ disabled?: boolean }>`
   font-size: 15px;
   cursor: pointer;
   transition: 0.2s;
-  background: ${({ disabled }) => (disabled ? "#a0a0a0" : "#005792")};
+  background: ${({ disabled }) => (disabled ? '#a0a0a0' : '#005792')};
   color: white;
 
   &:hover {
-    background: ${({ disabled }) => (disabled ? "#a0a0a0" : "#004494")};
+    background: ${({ disabled }) => (disabled ? '#a0a0a0' : '#004494')};
   }
 `;

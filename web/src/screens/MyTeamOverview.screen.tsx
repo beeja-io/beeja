@@ -1,7 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import {
-  DynamicSpaceMainContainer,
-} from '../styles/CommonStyles.style';
+import { DynamicSpaceMainContainer } from '../styles/CommonStyles.style';
 
 import { FilterSection } from '../styles/ExpenseListStyles.style';
 import {
@@ -82,7 +80,6 @@ const EmployeeList = () => {
     setDepartmentFilter(event.target.value);
   };
 
-
   const handleJobTitleChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
@@ -98,7 +95,8 @@ const EmployeeList = () => {
   const [employeeImages, setEmployeeImages] = useState<Map<string, string>>(
     new Map()
   );
-  const [employeesWithProfilePictures, setEmployeesWithProfilePictures] = useState<Set<string>>(new Set());
+  const [employeesWithProfilePictures, setEmployeesWithProfilePictures] =
+    useState<Set<string>>(new Set());
 
   const fetchEmployeeImages = async () => {
     const imageUrls = new Map<string, string>();
@@ -137,8 +135,7 @@ const EmployeeList = () => {
     fetchJobTitles();
     fetchEmployeeImages();
     setLoadingData(false);
-  }
-    , []);
+  }, []);
 
   const fetchDepartmentOptions = async () => {
     try {
@@ -183,7 +180,10 @@ const EmployeeList = () => {
       const response = await getAllPerformanceEmployees(queryString);
       setTotalItems(response.data.totalRecords);
       setEmployees(response.data.data);
-      if (!response.data.totalRecords || response.data.totalRecords.length === 0) {
+      if (
+        !response.data.totalRecords ||
+        response.data.totalRecords.length === 0
+      ) {
         setError(t('NO_EMPLYEES_FOUND'));
       } else {
         setError(null);
@@ -206,10 +206,14 @@ const EmployeeList = () => {
     fetchEmployees();
   }, [fetchEmployees]);
 
-  const handleNavigateToDetailedView = (employeeId: string, firstName: string | null, lastName: string | null) => {
+  const handleNavigateToDetailedView = (
+    employeeId: string,
+    firstName: string | null,
+    lastName: string | null
+  ) => {
     localStorage.setItem('employeeListCurrentPage', currentPage.toString());
     navigate(`/performance/my-team-overview/${employeeId}`, {
-      state: { firstName, lastName }
+      state: { firstName, lastName },
     });
   };
   const handlePageChange = (newPage: number) => {
@@ -236,7 +240,6 @@ const EmployeeList = () => {
       <DynamicSpace>
         <EmployeeListContainer>
           <DynamicSpaceMainContainer>
-
             <FilterSection>
               <DropdownMenu
                 className="largeContainerFil"
@@ -313,8 +316,13 @@ const EmployeeList = () => {
                     <th style={{ width: '250px' }}>{t('Employee_Name')}</th>
                     <th style={{ width: '150px' }}>{t('Job_Title')}</th>
                     <th style={{ width: '150px' }}>{t('Department')}</th>
-                    <th style={{ width: '130px' }}>{t('Feedback_Received_Status')}</th>
-                    <th style={{ width: '100px' }}>{t('Rating')}{" (Out of 5)"}</th>
+                    <th style={{ width: '130px' }}>
+                      {t('Feedback_Received_Status')}
+                    </th>
+                    <th style={{ width: '100px' }}>
+                      {t('Rating')}
+                      {' (Out of 5)'}
+                    </th>
                   </tr>
                 </TableHead>
                 <tbody style={{ fontSize: '14px' }}>
@@ -346,7 +354,11 @@ const EmployeeList = () => {
                       <React.Fragment key={index}>
                         <TableBodyRow
                           onClick={() =>
-                            handleNavigateToDetailedView(emp.employeeId, emp.firstName, emp.lastName)
+                            handleNavigateToDetailedView(
+                              emp.employeeId,
+                              emp.firstName,
+                              emp.lastName
+                            )
                           }
                         >
                           <td className="profilePicArea">
@@ -360,14 +372,17 @@ const EmployeeList = () => {
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
                                 }}
-                              >
-                              </Monogram>
+                              ></Monogram>
                             ) : (
                               <Monogram
-                                className={(emp.firstName ?? "T").charAt(0).toUpperCase()}
+                                className={(emp.firstName ?? 'T')
+                                  .charAt(0)
+                                  .toUpperCase()}
                               >
-                                {(emp.firstName ?? "T").charAt(0).toUpperCase() +
-                                  (emp.lastName ?? "A").charAt(0).toUpperCase()}
+                                {(emp.firstName ?? 'T')
+                                  .charAt(0)
+                                  .toUpperCase() +
+                                  (emp.lastName ?? 'A').charAt(0).toUpperCase()}
                               </Monogram>
                             )}
                             <span className="nameAndMail">
@@ -383,17 +398,14 @@ const EmployeeList = () => {
                               <span className="employeeMail">
                                 {emp.email}
                               </span>
+                              <span className="employeeMail">{emp.email}</span>
                             </span>
                           </td>
                           <td>
-                            {emp.jobDetails
-                              ? emp.jobDetails.designation
-                              : '-'}
+                            {emp.jobDetails ? emp.jobDetails.designation : '-'}
                           </td>
                           <td>
-                            {emp.jobDetails
-                              ? emp.jobDetails.department
-                              : '-'}
+                            {emp.jobDetails ? emp.jobDetails.department : '-'}
                           </td>
                           <td>
                             <StatusCell
@@ -424,7 +436,6 @@ const EmployeeList = () => {
             />
             {error && <div className="error-message">{error}</div>}
           </DynamicSpaceMainContainer>
-
         </EmployeeListContainer>
       </DynamicSpace>
     </div>
