@@ -266,7 +266,7 @@ const EvaluationOverview: React.FC = () => {
                   </Tab>
                 )}
               {user &&
-                hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
+                hasPermission(user, PERFORMANCE_MODULE.READ_ALL_RESPONSES) && (
                   <Tab
                     active={activeTab === 'rating'}
                     onClick={() => {
@@ -305,9 +305,9 @@ const EvaluationOverview: React.FC = () => {
                         options={
                           forms.length > 0
                             ? forms.map((item) => ({
-                                label: item.cycleName,
-                                value: item.cycleId,
-                              }))
+                              label: item.cycleName,
+                              value: item.cycleId,
+                            }))
                             : []
                         }
                         onChange={(selectedValue) => {
@@ -321,14 +321,13 @@ const EvaluationOverview: React.FC = () => {
                   </CycleSelectContainer>
                 )}
 
-                {activeTab === 'rating' && !rating && (
+                {activeTab === 'rating' && !rating && user && hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
                   <ProvideRatingButton onClick={() => setShowRatingCard(true)}>
                     <WriteSVG />
                     {t('Provide_Rating')}
                   </ProvideRatingButton>
                 )}
               </ReceiverRow>
-
               <Content>
                 {activeTab === 'all' && (
                   <>
@@ -372,7 +371,7 @@ const EvaluationOverview: React.FC = () => {
                               disabled={
                                 !groupedResponse ||
                                 currentQuestionIndex ===
-                                  groupedResponse.questions.length - 1
+                                groupedResponse.questions.length - 1
                               }
                               onClick={() =>
                                 setCurrentQuestionIndex((i) => i + 1)
@@ -455,7 +454,7 @@ const EvaluationOverview: React.FC = () => {
                                   </ResponseHeader>
                                   <ResponseInnerBox>
                                     {selfEvaluation &&
-                                    selfEvaluation[0]?.responses?.[0]?.answer
+                                      selfEvaluation[0]?.responses?.[0]?.answer
                                       ? selfEvaluation[0].responses[0].answer
                                       : 'No response provided.'}
                                   </ResponseInnerBox>
