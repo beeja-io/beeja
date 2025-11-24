@@ -395,9 +395,6 @@ const EmployeeList = () => {
                                   ' ' +
                                   emp.lastName}
                               </span>
-                              <span className="employeeMail">
-                                {emp.email}
-                              </span>
                               <span className="employeeMail">{emp.email}</span>
                             </span>
                           </td>
