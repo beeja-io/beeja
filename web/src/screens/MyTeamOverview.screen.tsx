@@ -25,8 +25,7 @@ import Pagination from '../components/directComponents/Pagination.component';
 import { toast } from 'sonner';
 import { OrgDefaults } from '../entities/OrgDefaultsEntity';
 import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
-import { Title, TitleSection } from '../styles/MyTeamOverview.style';
-import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
+import { StatusCell, Title, TitleSection } from '../styles/MyTeamOverview.style';
 
 interface EmployeeEntity {
   employeeId: string;
@@ -236,9 +235,6 @@ const EmployeeList = () => {
   return (
     <div>
       <TitleSection>
-        <span className="arrow">
-          <ArrowDownSVG />
-        </span>
         <Title>{t('My_Team_Overview')}</Title>
       </TitleSection>
       <DynamicSpace>
@@ -318,7 +314,7 @@ const EmployeeList = () => {
                 <TableHead>
                   <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
                     <th style={{ width: '250px' }}>{t('Employee_Name')}</th>
-                    <th style={{ width: '150px' }}>{t('Job_Tittle')}</th>
+                    <th style={{ width: '150px' }}>{t('Job_Title')}</th>
                     <th style={{ width: '150px' }}>{t('Department')}</th>
                     <th style={{ width: '130px' }}>
                       {t('Feedback_Received_Status')}
@@ -391,10 +387,16 @@ const EmployeeList = () => {
                             )}
                             <span className="nameAndMail">
                               <span>
-                                {emp.firstName === null && emp.lastName === null
-                                  ? // FIXME
-                                    't.a.cer'
-                                  : emp.firstName + ' ' + emp.lastName}
+                                {emp.firstName === null &&
+                                  emp.lastName === null
+                                  ?
+                                  't.a.cer'
+                                  : emp.firstName +
+                                  ' ' +
+                                  emp.lastName}
+                              </span>
+                              <span className="employeeMail">
+                                {emp.email}
                               </span>
                               <span className="employeeMail">{emp.email}</span>
                             </span>
@@ -406,9 +408,17 @@ const EmployeeList = () => {
                             {emp.jobDetails ? emp.jobDetails.department : '-'}
                           </td>
                           <td>
-                            {`${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
+                            <StatusCell
+                              completed={
+                                emp.numberOfReviewerResponses === emp.numberOfReviewersAssigned && emp.numberOfReviewersAssigned != 0
+                              }
+                            >
+                              {`${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
+                            </StatusCell>
                           </td>
-                          <td>{emp.overallRating ? emp.overallRating : '-'}</td>
+                          <td >
+                            {emp.overallRating ? emp.overallRating : "-"}
+                          </td>
                         </TableBodyRow>
                       </React.Fragment>
                     ))

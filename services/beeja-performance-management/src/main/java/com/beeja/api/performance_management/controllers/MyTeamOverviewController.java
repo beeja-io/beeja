@@ -62,6 +62,10 @@ public class MyTeamOverviewController {
             List<FeedbackResponse> responses =
                     responseService.getByEmployeeAndCycle(employeeId, cycleId);
 
+            if (responses == null || responses.isEmpty()) {
+                return ResponseEntity.ok(new GroupedFeedbackResponse(Collections.emptyList()));
+            }
+
             Map<String, List<ReviewerAnswerDTO>> grouped = new LinkedHashMap<>();
             Map<String, String> questionDescriptions = new LinkedHashMap<>();
 
@@ -79,6 +83,10 @@ public class MyTeamOverviewController {
                     grouped.computeIfAbsent(qa.getQuestionId(), k -> new ArrayList<>())
                             .add(new ReviewerAnswerDTO(fullName, qa.getAnswer()));
                 }
+            }
+
+            if (grouped.isEmpty()) {
+                return ResponseEntity.ok(new GroupedFeedbackResponse(Collections.emptyList()));
             }
 
             List<QRDTO> questions = grouped.entrySet().stream()
