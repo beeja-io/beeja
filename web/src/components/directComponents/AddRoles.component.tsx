@@ -113,7 +113,6 @@ const AddRoleComponent: React.FC<Props> = ({
           PERFORMANCE_MODULE.CREATE_REVIEW_CYCLE,
           PERFORMANCE_MODULE.UPDATE_REVIEW_CYCLE,
           PERFORMANCE_MODULE.DELETE_REVIEW_CYCLE,
-
         ],
         required: PERFORMANCE_MODULE.READ_REVIEW_CYCLE,
       },
@@ -126,7 +125,7 @@ const AddRoleComponent: React.FC<Props> = ({
           PERFORMANCE_MODULE.UPDATE_RECEIVER,
         ],
         required: PERFORMANCE_MODULE.READ_RECEIVER,
-      }
+      },
     ];
 
     dependencyMap.forEach(({ actions, required }) => {

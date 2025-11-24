@@ -847,7 +847,9 @@ export const getEmployeeSelfEvaluation = (
 export const getAllPerformanceEmployees = (
   queryString: string
 ): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/performance/v1/api/overview/employees${queryString}`);
+  return axiosInstance.get(
+    `/performance/v1/api/overview/employees${queryString}`
+  );
 };
 
 export const searchUsers = (keyword: string) => {

@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const OuterContainer = styled.div`
   background-color: ${(p) => p.theme.colors.backgroundColors.primary};
@@ -6,7 +6,6 @@ export const OuterContainer = styled.div`
   padding: 24px;
   box-shadow: 0 1px 3px ${(p) => p.theme.colors.blackColors.black6};
   margin: 20px;
-
 `;
 
 export const Container = styled.div`
@@ -23,7 +22,7 @@ export const TabBar = styled.div`
   border-bottom: 1px solid ${(p) => p.theme.colors.grayColors.gray10};
   margin-bottom: 18px;
 `;
- 
+
 export const Tab = styled.button<{ active?: boolean }>`
   background: none;
   border: none;
@@ -38,11 +37,11 @@ export const Tab = styled.button<{ active?: boolean }>`
   border-bottom: ${(p) =>
     p.active
       ? `2px solid ${p.theme.colors.brandColors.primary}`
-      : "3px solid transparent"};
+      : '3px solid transparent'};
 
   cursor: pointer;
   transition: all 0.2s ease-in-out;
- 
+
   &:hover {
     color: ${(p) => p.theme.colors.brandColors.primary};
   }
@@ -101,10 +100,13 @@ export const NameBox = styled.div`
 `;
 
 export const NavButton = styled.button<{ primary?: boolean }>`
-  color: ${(p) => (p.primary ? p.theme.colors.blackColors.white : p.theme.colors.blackColors.black1)};
+  color: ${(p) =>
+    p.primary
+      ? p.theme.colors.blackColors.white
+      : p.theme.colors.blackColors.black1};
   border: none;
   border-radius: 6px;
-  padding: 6px;                
+  padding: 6px;
   font-size: 16px;
   font-weight: 400;
   cursor: pointer;
@@ -153,14 +155,14 @@ export const NavButton = styled.button<{ primary?: boolean }>`
 `;
 
 export const ResponsesContainer = styled.div`
-  background: ${(p) => p.theme.colors.brandColors.primary + "12"};
+  background: ${(p) => p.theme.colors.brandColors.primary + '12'};
   border: none;
   border-radius: 10px;
   padding: 16px 18px;
   margin-top: 14px;
-  max-height: 360px; 
+  max-height: 360px;
   overflow-y: auto;
- 
+
   scrollbar-width: thin;
   scrollbar-color: ${(props) => props.theme.colors.grayColors.gray8} transparent;
   &::-webkit-scrollbar {
@@ -211,19 +213,17 @@ export const FeedbackHeaderRow = styled.div`
 
 export const QuestionProgress = styled.div`
   display: flex;
-  align-items: center; 
-  justify-content: center; 
-  gap: 12px; 
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
   font-size: 14px;
   font-weight: 500;
-  color: ${(props) => props.theme.colors.blackColors.black6}
-  .progressText {
+  color: ${(props) => props.theme.colors.blackColors.black6} .progressText {
     display: flex;
     align-items: center;
     gap: 6px;
   }
 `;
-
 
 export const OuterHeader = styled.div`
   width: 100%;
@@ -265,9 +265,9 @@ export const ReceiverLabel = styled.h6`
 `;
 
 export const ProvideRatingButton = styled.button`
-  display: inline-flex;     
-  align-items: center;          
-  gap: 8px;                        
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background-color: #0056b3;
   color: #fff;
   border: none;
@@ -279,7 +279,7 @@ export const ProvideRatingButton = styled.button`
   transition: background-color 0.2s ease;
 
   svg {
-    width: 16px;                
+    width: 16px;
     height: 16px;
   }
 
@@ -287,7 +287,6 @@ export const ProvideRatingButton = styled.button`
     background-color: #004494;
   }
 `;
-
 
 export const HideNamesToggle = styled.div`
   display: flex;
@@ -373,7 +372,7 @@ export const CycleLabel = styled.label`
 `;
 
 export const ResponsesContainer2 = styled.div`
-  background: ${(p) => p.theme.colors.brandColors.primary + "12"};
+  background: ${(p) => p.theme.colors.brandColors.primary + '12'};
   border: none;
   border-radius: 10px;
   padding: 16px 18px;
@@ -396,7 +395,7 @@ export const RatingIcon = styled.div`
   display: flex;
   align-items: center;
 `;
- 
+
 export const RatingValue = styled.div`
   font-family: Nunito;
   font-weight: 700;
@@ -406,12 +405,12 @@ export const RatingValue = styled.div`
   line-height: 160%;
   letter-spacing: 0.2px;
   color: #005792;
- 
+
   span {
     margin-left: 4px;
   }
 `;
- 
+
 export const RatingText = styled.p`
   font-family: Nunito;
   font-weight: 500;
@@ -443,9 +442,17 @@ export const OverallRatingStar = () => {
 };
 export const WriteSVG = () => {
   return (
-    <svg width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M6.43073 13.7167L7.89823 13.2934L16.7341 4.35171C16.8038 4.28029 16.8426 4.18432 16.8421 4.08453C16.8416 3.98474 16.8019 3.88913 16.7316 3.81837L16.2024 3.28337C16.1682 3.24824 16.1274 3.22026 16.0822 3.20109C16.0371 3.18191 15.9886 3.17191 15.9396 3.17168C15.8906 3.17145 15.842 3.18098 15.7967 3.19973C15.7514 3.21848 15.7103 3.24606 15.6757 3.28087L6.86323 12.1992L6.43073 13.7167ZM17.2499 2.22337L17.7791 2.7592C18.5091 3.49837 18.5157 4.69087 17.7924 5.42254L8.6874 14.6375L5.55073 15.5409C5.4559 15.5675 5.35676 15.5752 5.25895 15.5636C5.16114 15.5519 5.06659 15.5211 4.9807 15.4729C4.8948 15.4247 4.81924 15.36 4.75834 15.2826C4.69743 15.2052 4.65237 15.1165 4.62573 15.0217C4.58486 14.8842 4.58428 14.7379 4.62406 14.6L5.53656 11.4L14.6174 2.2092C14.7901 2.03534 14.9956 1.89759 15.2221 1.804C15.4486 1.71041 15.6914 1.66285 15.9364 1.66409C16.1815 1.66533 16.4238 1.71535 16.6493 1.81123C16.8748 1.90711 17.079 2.04776 17.2499 2.22337ZM7.65073 3.1842C8.06406 3.1842 8.39906 3.52337 8.39906 3.9417C8.39972 4.0406 8.38088 4.13865 8.34362 4.23025C8.30636 4.32185 8.25141 4.40521 8.18191 4.47557C8.11241 4.54592 8.02972 4.60188 7.93858 4.64025C7.84743 4.67863 7.74962 4.69866 7.65073 4.69921H4.6574C3.83073 4.69921 3.16073 5.37754 3.16073 6.21337V15.3017C3.16073 16.1384 3.83073 16.8167 4.6574 16.8167H13.6374C14.4641 16.8167 15.1349 16.1384 15.1349 15.3017V12.2725C15.1349 11.8542 15.4699 11.515 15.8832 11.515C16.2966 11.515 16.6316 11.8542 16.6316 12.2734V15.3017C16.6316 16.975 15.2907 18.3317 13.6374 18.3317H4.6574C3.00406 18.3317 1.66406 16.975 1.66406 15.3017V6.21337C1.66406 4.54087 3.00406 3.1842 4.6574 3.1842H7.65073Z" fill="white"/>
-</svg>
-
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6.43073 13.7167L7.89823 13.2934L16.7341 4.35171C16.8038 4.28029 16.8426 4.18432 16.8421 4.08453C16.8416 3.98474 16.8019 3.88913 16.7316 3.81837L16.2024 3.28337C16.1682 3.24824 16.1274 3.22026 16.0822 3.20109C16.0371 3.18191 15.9886 3.17191 15.9396 3.17168C15.8906 3.17145 15.842 3.18098 15.7967 3.19973C15.7514 3.21848 15.7103 3.24606 15.6757 3.28087L6.86323 12.1992L6.43073 13.7167ZM17.2499 2.22337L17.7791 2.7592C18.5091 3.49837 18.5157 4.69087 17.7924 5.42254L8.6874 14.6375L5.55073 15.5409C5.4559 15.5675 5.35676 15.5752 5.25895 15.5636C5.16114 15.5519 5.06659 15.5211 4.9807 15.4729C4.8948 15.4247 4.81924 15.36 4.75834 15.2826C4.69743 15.2052 4.65237 15.1165 4.62573 15.0217C4.58486 14.8842 4.58428 14.7379 4.62406 14.6L5.53656 11.4L14.6174 2.2092C14.7901 2.03534 14.9956 1.89759 15.2221 1.804C15.4486 1.71041 15.6914 1.66285 15.9364 1.66409C16.1815 1.66533 16.4238 1.71535 16.6493 1.81123C16.8748 1.90711 17.079 2.04776 17.2499 2.22337ZM7.65073 3.1842C8.06406 3.1842 8.39906 3.52337 8.39906 3.9417C8.39972 4.0406 8.38088 4.13865 8.34362 4.23025C8.30636 4.32185 8.25141 4.40521 8.18191 4.47557C8.11241 4.54592 8.02972 4.60188 7.93858 4.64025C7.84743 4.67863 7.74962 4.69866 7.65073 4.69921H4.6574C3.83073 4.69921 3.16073 5.37754 3.16073 6.21337V15.3017C3.16073 16.1384 3.83073 16.8167 4.6574 16.8167H13.6374C14.4641 16.8167 15.1349 16.1384 15.1349 15.3017V12.2725C15.1349 11.8542 15.4699 11.515 15.8832 11.515C16.2966 11.515 16.6316 11.8542 16.6316 12.2734V15.3017C16.6316 16.975 15.2907 18.3317 13.6374 18.3317H4.6574C3.00406 18.3317 1.66406 16.975 1.66406 15.3017V6.21337C1.66406 4.54087 3.00406 3.1842 4.6574 3.1842H7.65073Z"
+        fill="white"
+      />
+    </svg>
   );
 };

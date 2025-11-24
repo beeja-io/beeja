@@ -1,11 +1,11 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const AppContainer = styled.div`
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: "Inter", sans-serif;
+  font-family: 'Inter', sans-serif;
 `;
 
 export const Overlay = styled.div`
@@ -71,7 +71,7 @@ export const RatingInput = styled.input`
     margin: 0;
   }
 
-  &[type="number"] {
+  &[type='number'] {
     -moz-appearance: textfield;
   }
 `;
@@ -118,21 +118,21 @@ export const StarWrapper = styled.span<{ fill: number }>`
   display: inline-block;
   font-size: 30px;
   margin-right: -3px;
-  color: #D9D9D9;
+  color: #d9d9d9;
   width: 32px;
   height: 32px;
 
   /* gray base star */
   &::before {
-    content: "★";
-    color: #D9D9D9;
+    content: '★';
+    color: #d9d9d9;
     position: absolute;
     top: 0;
     left: 0;
   }
 
   &::after {
-    content: "★";
+    content: '★';
     color: #005792;
     position: absolute;
     top: 0;
@@ -173,10 +173,10 @@ export const SubmitButton = styled.button<{ disabled?: boolean }>`
   font-size: 15px;
   cursor: pointer;
   transition: 0.2s;
-  background: ${({ disabled }) => (disabled ? "#a0a0a0" : "#005792")};
+  background: ${({ disabled }) => (disabled ? '#a0a0a0' : '#005792')};
   color: white;
 
   &:hover {
-    background: ${({ disabled }) => (disabled ? "#a0a0a0" : "#004494")};
+    background: ${({ disabled }) => (disabled ? '#a0a0a0' : '#004494')};
   }
 `;

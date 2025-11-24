@@ -61,7 +61,8 @@ const CreateReviewCycle = () => {
             {t('Create_Evaluation_Form')}
           </span>
 
-          {!isCreateModalOpen && !isEditMode &&
+          {!isCreateModalOpen &&
+            !isEditMode &&
             user &&
             hasPermission(user, PERFORMANCE_MODULE.CREATE_REVIEW_CYCLE) && (
               <Button
