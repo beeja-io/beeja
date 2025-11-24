@@ -45,13 +45,13 @@ const AssignFeedbackProviders = () => {
   const { t } = useTranslation();
 
   const isCycleExpired = (endDate: string) => {
-  if (!endDate) return false;
+    if (!endDate) return false;
 
-  const today = new Date();
-  const end = endOfDay(parseISO(endDate));
+    const today = new Date();
+    const end = endOfDay(parseISO(endDate));
 
-  return isBefore(end, today);
-};
+    return isBefore(end, today);
+  };
 
   useEffect(() => {
     const fetchPerformanceCycles = async () => {

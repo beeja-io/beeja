@@ -15,6 +15,11 @@ export const FormContainer = styled.div`
   &.noBorder {
     border: none;
   }
+  &.empty-state {
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
 `;
 
 export const FormSubContainer = styled.div`
@@ -41,8 +46,6 @@ export const FormContentWrapper = styled.div`
   &.disabled-state {
     opacity: 0.5;
     pointer-events: none;
-    filter: brightness(0.8);
-    background-color: ${(props) => props.theme.colors.grayColors.gray5};
   }
 `;
 
@@ -62,6 +65,11 @@ export const FormInputsContainer = styled.div`
   }
   &.form-header {
     display: flex;
+  }
+  .disabled-mode {
+    opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
   }
 `;
 
@@ -216,6 +224,8 @@ export const StyledTextArea = styled.textarea`
   vertical-align: middle;
   &.answer-color {
     color: ${(props) => props.theme.colors.grayColors.gray7};
+    overflow: auto;
+    max-height: 128px;
   }
   &::placeholder {
     color: #999;
@@ -496,6 +506,11 @@ export const DateField = styled.div`
     fill: ${(props) => props.theme.colors.grayColors.gray9};
   }
 
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;   
+    cursor: not-allowed;
+  }
   &:hover svg path {
     fill: ${(props) => props.theme.colors.blackColors.black1};
   }
@@ -525,7 +540,7 @@ export const TitleInput = styled.input`
   outline: none;
   background: transparent;
   width: 100%;
-
+  margin-top: 20px;
   font-family: Nunito;
   font-weight: 700;
   font-style: Bold;
@@ -662,10 +677,16 @@ export const TitleHeading = styled.div`
   justify-content: space-between;
   margin-top: 10px;
   h2 {
-    font-size: 18px;
-    font-weight: 600;
     color: ${(props) => props.theme.colors.brandColors.primary};
     margin: 0;
+    font-family: Nunito;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 20px;
+    leading-trim: NONE;
+    line-height: 150%;
+    letter-spacing: 0.26px;
+    text-align: center;
   }
 `;
 
@@ -721,7 +742,7 @@ export const Subtitle = styled.h3`
   font-family: Nunito;
   font-weight: 600;
   font-style: SemiBold;
-  font-size: 20px;
+  font-size: 16px;
   leading-trim: NONE;
   line-height: 160%;
   letter-spacing: 0.17px;
@@ -878,6 +899,28 @@ export const ErrorText = styled.span`
   font-size: 12px;
   margin-top: 4px;
   display: block;
+  &.question {
+    color: #e03137;
+    font-family: Nunito;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 150%;
+    letter-spacing: 0px;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    svg {
+      width: 16px;
+      height: 16px;
+      angle: 180 deg;
+      opacity: 1;
+    }
+    svg path {
+      fill: #e03137;
+    }
+  }
 `;
 
 export const FormOverlay = styled.div`
