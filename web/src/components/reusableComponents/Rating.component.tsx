@@ -33,7 +33,13 @@ const Rating = ({
   setRatingData,
   submitEmployeeRating,
 }: RatingProps) => {
-  const handleCancel = () => setShowRatingCard(false);
+
+
+  const handleCancel = () => {
+    setShowRatingCard(false);
+    ratingData.rating = "";
+    ratingData.comments = "";
+  };
 
   const handleSubmit = () => {
     submitEmployeeRating(Number(ratingData.rating), ratingData.comments);
