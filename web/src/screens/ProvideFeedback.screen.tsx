@@ -475,7 +475,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                   <ProvideButton
                     disabled={item.submitted || isPermissionDenied}
                     onClick={() => {
-                      if (!item.submitted && isPermissionDenied) {
+                      if (!item.submitted && !isPermissionDenied) {
                         handleProvideFeedback(item);
                       }
                     }}
