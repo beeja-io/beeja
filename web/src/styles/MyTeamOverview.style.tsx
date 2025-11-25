@@ -33,15 +33,9 @@ export const TitleSection = styled.div`
 `;
 
 export const StatusCell = styled.td<{ completed: boolean }>`
-  background-color: ${(p) =>
-    p.completed
-      ? "#34A8531A"
-      : "#FF99001A"};
+  background-color: ${(p) => (p.completed ? '#34A8531A' : '#FF99001A')};
 
-  color: ${(p) =>
-    p.completed
-      ? "#34A853"   
-      : "#FF9900"};
+  color: ${(p) => (p.completed ? '#34A853' : '#FF9900')};
 
   height: 40px;
   max-width: 200px;

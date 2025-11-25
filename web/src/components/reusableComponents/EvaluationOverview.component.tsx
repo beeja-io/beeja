@@ -123,11 +123,10 @@ const EvaluationOverview: React.FC = () => {
   const [isLoadingRating, setLoadingRating] = useState(false);
   const [rating, setRating] = useState<boolean>(false);
   const [toast, setToast] = useState<{
-  type: "success" | "error";
-  message: string;
-  head: string;
-} | null>(null);
-
+    type: 'success' | 'error';
+    message: string;
+    head: string;
+  } | null>(null);
 
   const handleCycleSelect = async (cycleId: string) => {
     if (!employeeId || !cycleId) return;
@@ -312,9 +311,9 @@ const EvaluationOverview: React.FC = () => {
                         options={
                           forms.length > 0
                             ? forms.map((item) => ({
-                              label: item.cycleName,
-                              value: item.cycleId,
-                            }))
+                                label: item.cycleName,
+                                value: item.cycleId,
+                              }))
                             : []
                         }
                         onChange={(selectedValue) => {
@@ -328,63 +327,79 @@ const EvaluationOverview: React.FC = () => {
                   </CycleSelectContainer>
                 )}
 
-                {activeTab === 'rating' && !rating && user && hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
-                  <ProvideRatingButton onClick={() => setShowRatingCard(true)}>
-                    <WriteSVG />
-                    {t('Provide_Rating')}
-                  </ProvideRatingButton>
-                )}
+                {activeTab === 'rating' &&
+                  !rating &&
+                  user &&
+                  hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
+                    <ProvideRatingButton
+                      onClick={() => setShowRatingCard(true)}
+                    >
+                      <WriteSVG />
+                      {t('Provide_Rating')}
+                    </ProvideRatingButton>
+                  )}
               </ReceiverRow>
               <Content>
-                {activeTab === "all" && (
+                {activeTab === 'all' && (
                   <>
-                    {isLoadingAllResponses ? <SpinAnimation /> :
+                    {isLoadingAllResponses ? (
+                      <SpinAnimation />
+                    ) : (
                       <>
-                        {(groupedResponse?.questions?.length ?? 0) > 0 ? <FeedbackHeaderRow>
-                          <HideNamesToggle>
-                            <SwitchLabel>
-                              <StyledSwitch
-                                type="checkbox"
-                                checked={hideNames}
-                                onChange={(e) => setHideNames(e.target.checked)}
-                              />
-                              <Slider />
-                            </SwitchLabel>
-                            <span>{t("Hide_feedback_provider_names")}</span>
-                          </HideNamesToggle>
+                        {(groupedResponse?.questions?.length ?? 0) > 0 ? (
+                          <FeedbackHeaderRow>
+                            <HideNamesToggle>
+                              <SwitchLabel>
+                                <StyledSwitch
+                                  type="checkbox"
+                                  checked={hideNames}
+                                  onChange={(e) =>
+                                    setHideNames(e.target.checked)
+                                  }
+                                />
+                                <Slider />
+                              </SwitchLabel>
+                              <span>{t('Hide_feedback_provider_names')}</span>
+                            </HideNamesToggle>
 
-                          <QuestionProgress>
-                            <NavButton
-                              disabled={
-                                !groupedResponse ||
-                                currentQuestionIndex === 0
-                              }
-                              onClick={() => setCurrentQuestionIndex((i) => i - 1)}
-                            >
-                              <span className="arrow right"><ArrowDownSVG /></span>
-                            </NavButton>
-                            {' Question - '}
-                            {groupedResponse ? currentQuestionIndex + 1 : 0}
-                            {' / '}
-                            {groupedResponse
-                              ? groupedResponse.questions.length
-                              : 0}{' '}
-                            <NavButton
-                              disabled={
-                                !groupedResponse ||
-                                currentQuestionIndex ===
-                                groupedResponse.questions.length - 1
-                              }
-                              onClick={() =>
-                                setCurrentQuestionIndex((i) => i + 1)
-                              }
-                            >
-                              <span className="arrow left">
-                                <ArrowDownSVG />
-                              </span>
-                            </NavButton>
-                          </QuestionProgress>
-                        </FeedbackHeaderRow> : <></>}
+                            <QuestionProgress>
+                              <NavButton
+                                disabled={
+                                  !groupedResponse || currentQuestionIndex === 0
+                                }
+                                onClick={() =>
+                                  setCurrentQuestionIndex((i) => i - 1)
+                                }
+                              >
+                                <span className="arrow right">
+                                  <ArrowDownSVG />
+                                </span>
+                              </NavButton>
+                              {' Question - '}
+                              {groupedResponse ? currentQuestionIndex + 1 : 0}
+                              {' / '}
+                              {groupedResponse
+                                ? groupedResponse.questions.length
+                                : 0}{' '}
+                              <NavButton
+                                disabled={
+                                  !groupedResponse ||
+                                  currentQuestionIndex ===
+                                    groupedResponse.questions.length - 1
+                                }
+                                onClick={() =>
+                                  setCurrentQuestionIndex((i) => i + 1)
+                                }
+                              >
+                                <span className="arrow left">
+                                  <ArrowDownSVG />
+                                </span>
+                              </NavButton>
+                            </QuestionProgress>
+                          </FeedbackHeaderRow>
+                        ) : (
+                          <></>
+                        )}
 
                         {(() => {
                           if (
@@ -435,7 +450,7 @@ const EvaluationOverview: React.FC = () => {
                           );
                         })()}
                       </>
-                    }
+                    )}
                   </>
                 )}
 
@@ -455,7 +470,7 @@ const EvaluationOverview: React.FC = () => {
                                   </ResponseHeader>
                                   <ResponseInnerBox>
                                     {selfEvaluation &&
-                                      selfEvaluation[0]?.responses?.[0]?.answer
+                                    selfEvaluation[0]?.responses?.[0]?.answer
                                       ? selfEvaluation[0].responses[0].answer
                                       : 'No response provided.'}
                                   </ResponseInnerBox>
@@ -500,8 +515,8 @@ const EvaluationOverview: React.FC = () => {
                   </>
                 )}
               </Content>
-            </Container >
-          </OuterContainer >
+            </Container>
+          </OuterContainer>
         </>
       )}
       {toast && (

@@ -30,14 +30,9 @@ export const Tab = styled.button<{ active?: boolean }>`
   padding: 10px 14px;
   font-size: 14px;
   font-weight: 600;
-  color: ${(p) =>
-    p.active
-      ? "#005792"
-      : p.theme.colors.grayColors.gray7};
+  color: ${(p) => (p.active ? '#005792' : p.theme.colors.grayColors.gray7)};
   border-bottom: ${(p) =>
-    p.active
-      ? `2px solid ${"#005792"}`
-      : "3px solid transparent"};
+    p.active ? `2px solid ${'#005792'}` : '3px solid transparent'};
 
   cursor: pointer;
   transition: all 0.2s ease-in-out;
@@ -269,9 +264,9 @@ export const ReceiverLabel = styled.h6`
 `;
 
 export const ProvideRatingButton = styled.button`
-  display: inline-flex;     
-  align-items: center;          
-  gap: 8px;                        
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   background-color: #005792;
   color: #fff;
   border: none;

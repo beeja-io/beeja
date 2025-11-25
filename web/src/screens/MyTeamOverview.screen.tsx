@@ -25,7 +25,11 @@ import Pagination from '../components/directComponents/Pagination.component';
 import { toast } from 'sonner';
 import { OrgDefaults } from '../entities/OrgDefaultsEntity';
 import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
-import { StatusCell, Title, TitleSection } from '../styles/MyTeamOverview.style';
+import {
+  StatusCell,
+  Title,
+  TitleSection,
+} from '../styles/MyTeamOverview.style';
 
 interface EmployeeEntity {
   employeeId: string;
@@ -387,13 +391,9 @@ const EmployeeList = () => {
                             )}
                             <span className="nameAndMail">
                               <span>
-                                {emp.firstName === null &&
-                                  emp.lastName === null
-                                  ?
-                                  't.a.cer'
-                                  : emp.firstName +
-                                  ' ' +
-                                  emp.lastName}
+                                {emp.firstName === null && emp.lastName === null
+                                  ? 't.a.cer'
+                                  : emp.firstName + ' ' + emp.lastName}
                               </span>
                               <span className="employeeMail">{emp.email}</span>
                             </span>
@@ -407,15 +407,15 @@ const EmployeeList = () => {
                           <td>
                             <StatusCell
                               completed={
-                                emp.numberOfReviewerResponses === emp.numberOfReviewersAssigned && emp.numberOfReviewersAssigned != 0
+                                emp.numberOfReviewerResponses ===
+                                  emp.numberOfReviewersAssigned &&
+                                emp.numberOfReviewersAssigned != 0
                               }
                             >
                               {`${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
                             </StatusCell>
                           </td>
-                          <td >
-                            {emp.overallRating ? emp.overallRating : "-"}
-                          </td>
+                          <td>{emp.overallRating ? emp.overallRating : '-'}</td>
                         </TableBodyRow>
                       </React.Fragment>
                     ))

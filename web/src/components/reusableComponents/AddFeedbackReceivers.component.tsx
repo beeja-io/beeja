@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { matchPath, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -326,8 +326,11 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, fetchUsers]);
 
-  const handleSearchClick = () => fetchUsers(searchTerm);
-
+  // const handleSearchClick = () => fetchUsers(searchTerm);
+  const handleSearchClick = () => {
+    inputRef.current?.focus();
+    fetchUsers(searchTerm);
+  };
   const handleAdd = (emp: FeedbackUser) => {
     setSelected((prev) => {
       if (prev.some((e) => e.id === emp.id)) return prev;
@@ -400,7 +403,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
       document.body.style.overflow = '';
     };
   }, []);
-
+  const inputRef = useRef<HTMLInputElement | null>(null);
   return (
     <ExpenseManagementMainContainer>
       <ExpenseHeadingSection>
@@ -456,6 +459,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
               </SectionTitle>
               <div className="search-container">
                 <input
+                  ref={inputRef}
                   type="text"
                   className="search-input"
                   placeholder="Search by Employee Name"
