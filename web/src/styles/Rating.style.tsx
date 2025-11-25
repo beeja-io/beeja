@@ -127,7 +127,7 @@ export const StarWrapper = styled.span<{ fill: number }>`
 
   /* gray base star */
   &::before {
-    content: "★";
+    content: '★';
     color: ${({ theme }) => theme.colors.grayColors.gray5};
     position: absolute;
     top: 0;
@@ -135,7 +135,7 @@ export const StarWrapper = styled.span<{ fill: number }>`
   }
 
   &::after {
-    content: "★";
+    content: '★';
     color: ${({ theme }) => theme.colors.brandColors.primary};
     position: absolute;
     top: 0;
@@ -166,7 +166,7 @@ export const ResetButton = styled.button`
   transition: 0.2s;
 
   &:hover {
-  color: ${(props) => props.theme.colors.grayColors.gray1};
+    color: ${(props) => props.theme.colors.grayColors.gray1};
   }
 `;
 

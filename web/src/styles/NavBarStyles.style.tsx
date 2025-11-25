@@ -324,6 +324,7 @@ export const SearchInput = styled.input`
 
 export const LeftNavList = styled.ul`
   margin-top: 20px;
+  height: 100%;
 
   li {
     position: relative;
