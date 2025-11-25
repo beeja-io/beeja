@@ -312,9 +312,9 @@ const EvaluationOverview: React.FC = () => {
                         options={
                           forms.length > 0
                             ? forms.map((item) => ({
-                                label: item.cycleName,
-                                value: item.cycleId,
-                              }))
+                              label: item.cycleName,
+                              value: item.cycleId,
+                            }))
                             : []
                         }
                         onChange={(selectedValue) => {
@@ -339,43 +339,31 @@ const EvaluationOverview: React.FC = () => {
 
               <Content>
                 {activeTab === "all" && (
-                  <>{isLoadingAllResponses ? <SpinAnimation /> : <>
-                    {(groupedResponse?.questions?.length ?? 0) > 0 ? <FeedbackHeaderRow>
-                      <HideNamesToggle>
-                        <SwitchLabel>
-                          <StyledSwitch
-                            type="checkbox"
-                            checked={hideNames}
-                            onChange={(e) => setHideNames(e.target.checked)}
-                          />
-                          <Slider />
-                        </SwitchLabel>
-                        <span>{t("Hide_feedback_provider_names")}</span>
-                      </HideNamesToggle>
-
-                      <QuestionProgress>
-                        <NavButton
-                          disabled={
-                            !groupedResponse ||
-                            currentQuestionIndex === 0
-                          }
-                          onClick={() => setCurrentQuestionIndex((i) => i - 1)}
-                        >
-                          <span className="arrow right"><ArrowDownSVG /></span>
-                        </NavButton>
+                  <>
+                    {isLoadingAllResponses ? <SpinAnimation /> :
+                      <>
+                        {(groupedResponse?.questions?.length ?? 0) > 0 ? <FeedbackHeaderRow>
+                          <HideNamesToggle>
+                            <SwitchLabel>
+                              <StyledSwitch
+                                type="checkbox"
+                                checked={hideNames}
+                                onChange={(e) => setHideNames(e.target.checked)}
+                              />
+                              <Slider />
+                            </SwitchLabel>
+                            <span>{t("Hide_feedback_provider_names")}</span>
+                          </HideNamesToggle>
 
                           <QuestionProgress>
                             <NavButton
                               disabled={
-                                !groupedResponse || currentQuestionIndex === 0
+                                !groupedResponse ||
+                                currentQuestionIndex === 0
                               }
-                              onClick={() =>
-                                setCurrentQuestionIndex((i) => i - 1)
-                              }
+                              onClick={() => setCurrentQuestionIndex((i) => i - 1)}
                             >
-                              <span className="arrow right">
-                                <ArrowDownSVG />
-                              </span>
+                              <span className="arrow right"><ArrowDownSVG /></span>
                             </NavButton>
                             {' Question - '}
                             {groupedResponse ? currentQuestionIndex + 1 : 0}
@@ -387,7 +375,7 @@ const EvaluationOverview: React.FC = () => {
                               disabled={
                                 !groupedResponse ||
                                 currentQuestionIndex ===
-                                  groupedResponse.questions.length - 1
+                                groupedResponse.questions.length - 1
                               }
                               onClick={() =>
                                 setCurrentQuestionIndex((i) => i + 1)
@@ -398,7 +386,7 @@ const EvaluationOverview: React.FC = () => {
                               </span>
                             </NavButton>
                           </QuestionProgress>
-                        </FeedbackHeaderRow>
+                        </FeedbackHeaderRow> : <></>}
 
                         {(() => {
                           if (
@@ -411,16 +399,7 @@ const EvaluationOverview: React.FC = () => {
                               </Placeholder>
                             );
                           }
-                          onClick={() => setCurrentQuestionIndex((i) => i + 1)}
-                        >
-                          <span className="arrow left"><ArrowDownSVG /></span>
-                        </NavButton>
-                      </QuestionProgress>
-
-                    </FeedbackHeaderRow> : <></>}
-
-                          const q =
-                            groupedResponse.questions[currentQuestionIndex];
+                          const q = groupedResponse.questions[currentQuestionIndex];
                           return (
                             <>
                               <QuestionBlock key={q.questionId}>
@@ -457,7 +436,7 @@ const EvaluationOverview: React.FC = () => {
                           );
                         })()}
                       </>
-                    )}
+                    }
                   </>
                 )}
 
@@ -477,7 +456,7 @@ const EvaluationOverview: React.FC = () => {
                                   </ResponseHeader>
                                   <ResponseInnerBox>
                                     {selfEvaluation &&
-                                    selfEvaluation[0]?.responses?.[0]?.answer
+                                      selfEvaluation[0]?.responses?.[0]?.answer
                                       ? selfEvaluation[0].responses[0].answer
                                       : 'No response provided.'}
                                   </ResponseInnerBox>
@@ -522,9 +501,10 @@ const EvaluationOverview: React.FC = () => {
                   </>
                 )}
               </Content>
-            </Container>
-          </OuterContainer>
-        </>}
+            </Container >
+          </OuterContainer >
+        </>
+      )}
       {toast && (
         <ToastMessage
           messageType={toast.type}
@@ -533,7 +513,6 @@ const EvaluationOverview: React.FC = () => {
           handleClose={() => setToast(null)}
         />
       )}
-
     </>
   );
 };
