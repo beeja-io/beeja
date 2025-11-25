@@ -37,20 +37,30 @@ import {
   WriteSVG,
 } from '../../styles/EvaluationOverview.style';
 
-import Rating from "./Rating.component";
-import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs'
-import { MyProfileSVG } from "../../svgs/NavBarSvgs.svg";
-import { Slider, StyledSwitch, SwitchLabel } from "../../styles/InputStyles.style";
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { getEmployeeCycleGroupedResponse, getEmployeeFeedbackCycles, getEmployeeOverallRating, getEmployeeSelfEvaluation, postEmployeeOverallRating } from "../../service/axiosInstance";
-import DropdownMenu from "./DropDownMenu.component";
-import SpinAnimation from "../loaders/SprinAnimation.loader";
-import { disableBodyScroll, enableBodyScroll } from "../../constants/Utility";
-import { useTranslation } from "react-i18next";
-import ToastMessage from "./ToastMessage.component";
-import { PERFORMANCE_MODULE } from "../../constants/PermissionConstants";
-import { hasPermission } from "../../utils/permissionCheck";
-import { useUser } from "../../context/UserContext";
+import Rating from './Rating.component';
+import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
+import { MyProfileSVG } from '../../svgs/NavBarSvgs.svg';
+import {
+  Slider,
+  StyledSwitch,
+  SwitchLabel,
+} from '../../styles/InputStyles.style';
+import { useLocation, useParams } from 'react-router-dom';
+import {
+  getEmployeeCycleGroupedResponse,
+  getEmployeeFeedbackCycles,
+  getEmployeeOverallRating,
+  getEmployeeSelfEvaluation,
+  postEmployeeOverallRating,
+} from '../../service/axiosInstance';
+import DropdownMenu from './DropDownMenu.component';
+import SpinAnimation from '../loaders/SprinAnimation.loader';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
+import { useTranslation } from 'react-i18next';
+import { PERFORMANCE_MODULE } from '../../constants/PermissionConstants';
+import { hasPermission } from '../../utils/permissionCheck';
+import { useUser } from '../../context/UserContext';
+import ToastMessage from './ToastMessage.component';
 
 type FeedbackCycle = {
   employeeId: string;
@@ -85,7 +95,6 @@ type SelfEvaluationResponse = {
 
 const EvaluationOverview: React.FC = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { user } = useUser();
   const { employeeId } = useParams();
   const { state } = useLocation();
@@ -114,10 +123,10 @@ const EvaluationOverview: React.FC = () => {
   const [isLoadingRating, setLoadingRating] = useState(false);
   const [rating, setRating] = useState<boolean>(false);
   const [toast, setToast] = useState<{
-    type: "success" | "error";
-    message: string;
-    head: string;
-  } | null>(null);
+  type: "success" | "error";
+  message: string;
+  head: string;
+} | null>(null);
 
 
   const handleCycleSelect = async (cycleId: string) => {
@@ -159,18 +168,9 @@ const EvaluationOverview: React.FC = () => {
         comments,
       });
       setOverallRating(res.data);
-      setToast({
-        type: "success",
-        message: `The Rating for ${state.firstName} ${state.lastName} has been submitted successfully`,
-        head: "Rating submitted successfully",
-      });
       fetchEmployeeRating();
-    } catch (err) {
-      setToast({
-        type: "error",
-        message: "Error while submitting rating",
-        head: "Failed",
-      });
+    } catch (err: any) {
+      throw new Error(`Error submitting rating: ${err?.message || err}`);
     }
   };
   const fetchSelfEvaluation = async () => {
@@ -236,7 +236,7 @@ const EvaluationOverview: React.FC = () => {
           )}
           <EvaluationHeadingSection>
             <span className="heading">
-              <span onClick={() => navigate(-1)}>
+              <span>
                 <ArrowDownSVG />
               </span>
               {t('My_Team_Overview')}
@@ -273,7 +273,7 @@ const EvaluationOverview: React.FC = () => {
                   </Tab>
                 )}
               {user &&
-                hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
+                hasPermission(user, PERFORMANCE_MODULE.READ_ALL_RESPONSES) && (
                   <Tab
                     active={activeTab === 'rating'}
                     onClick={() => {
@@ -328,15 +328,13 @@ const EvaluationOverview: React.FC = () => {
                   </CycleSelectContainer>
                 )}
 
-                {activeTab === "rating" && (
-                  <ProvideRatingButton disabled={!!rating}
-                    onClick={() => !rating && setShowRatingCard(true)}>
+                {activeTab === 'rating' && !rating && user && hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
+                  <ProvideRatingButton onClick={() => setShowRatingCard(true)}>
                     <WriteSVG />
                     {t('Provide_Rating')}
                   </ProvideRatingButton>
                 )}
               </ReceiverRow>
-
               <Content>
                 {activeTab === "all" && (
                   <>
@@ -399,7 +397,8 @@ const EvaluationOverview: React.FC = () => {
                               </Placeholder>
                             );
                           }
-                          const q = groupedResponse.questions[currentQuestionIndex];
+                          const q =
+                            groupedResponse.questions[currentQuestionIndex];
                           return (
                             <>
                               <QuestionBlock key={q.questionId}>

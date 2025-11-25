@@ -126,6 +126,18 @@ const AddRoleComponent: React.FC<Props> = ({
         ],
         required: PERFORMANCE_MODULE.READ_RECEIVER,
       },
+      {
+        actions:[
+          PERFORMANCE_MODULE.PROVIDE_RATING
+        ],
+        required: PERFORMANCE_MODULE.READ_ALL_RESPONSES
+      },
+      {
+        actions:[
+          PERFORMANCE_MODULE.PROVIDE_FEEDBACK
+        ],
+        required: PERFORMANCE_MODULE.READ_RESPONSE
+      }
     ];
 
     dependencyMap.forEach(({ actions, required }) => {

@@ -123,6 +123,18 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
     setIsAssignModalOpen(false);
   };
 
+  const canAssign = user && hasPermission(user, PERFORMANCE_MODULE.ASSIGN_RECEIVER);
+  const canUpdate = user && hasPermission(user, PERFORMANCE_MODULE.UPDATE_RECEIVER);
+  const canShowButton =
+    !isLoading &&
+    (
+      (feedbackReceivers.length === 0 && canAssign) ||
+      (feedbackReceivers.length > 0 && canUpdate)
+    );
+
+
+
+
   return (
     <ExpenseManagementMainContainer>
       <ExpenseHeadingSection>
@@ -133,7 +145,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
           {t('Assign_Feedback_Receivers_Providers')}
         </span>
 
-        {user && hasPermission(user, PERFORMANCE_MODULE.ASSIGN_RECEIVER) && (
+        {canShowButton && (
           <Button
             className={`submit shadow ${isExpired ? 'disabled-action' : ''}`}
             disabled={isExpired}
@@ -141,7 +153,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
               if (isExpired) {
                 toast.error('Evaluation period is completed');
                 return;
-              }
+              }              
               handleAddFeedbackReceiver();
             }}
             width="216px"
@@ -209,29 +221,29 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
                     feedbackActions =
                       uiStatus === 'NOT_ASSIGNED'
                         ? [
-                            {
-                              title: 'Assign Feedback Providers',
-                              svg: <AssignUserSVG />,
-                              disabled: false,
-                            },
-                            {
-                              title: 'View More Details',
-                              svg: <DocumentTextSVG />,
-                              disabled: false,
-                            },
-                          ]
+                          {
+                            title: 'Assign Feedback Providers',
+                            svg: <AssignUserSVG />,
+                            disabled: false,
+                          },
+                          {
+                            title: 'View More Details',
+                            svg: <DocumentTextSVG />,
+                            disabled: false,
+                          },
+                        ]
                         : [
-                            {
-                              title: 'Reassign Feedback Providers',
-                              svg: <AssignUserSVG />,
-                              disabled: false,
-                            },
-                            {
-                              title: 'View More Details',
-                              svg: <DocumentTextSVG />,
-                              disabled: false,
-                            },
-                          ];
+                          {
+                            title: 'Reassign Feedback Providers',
+                            svg: <AssignUserSVG />,
+                            disabled: false,
+                          },
+                          {
+                            title: 'View More Details',
+                            svg: <DocumentTextSVG />,
+                            disabled: false,
+                          },
+                        ];
                   }
 
                   const getStatusClass = (status: any) => {
