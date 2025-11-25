@@ -60,6 +60,7 @@ import { useTranslation } from 'react-i18next';
 import { PERFORMANCE_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
 import { useUser } from '../../context/UserContext';
+import ToastMessage from './ToastMessage.component';
 
 type FeedbackCycle = {
   employeeId: string;
@@ -121,6 +122,12 @@ const EvaluationOverview: React.FC = () => {
   const [isLoadingSelf, setLoadingSelf] = useState(false);
   const [isLoadingRating, setLoadingRating] = useState(false);
   const [rating, setRating] = useState<boolean>(false);
+  const [toast, setToast] = useState<{
+  type: "success" | "error";
+  message: string;
+  head: string;
+} | null>(null);
+
 
   const handleCycleSelect = async (cycleId: string) => {
     if (!employeeId || !cycleId) return;
@@ -329,13 +336,11 @@ const EvaluationOverview: React.FC = () => {
                 )}
               </ReceiverRow>
               <Content>
-                {activeTab === 'all' && (
+                {activeTab === "all" && (
                   <>
-                    {isLoadingAllResponses ? (
-                      <SpinAnimation />
-                    ) : (
+                    {isLoadingAllResponses ? <SpinAnimation /> :
                       <>
-                        <FeedbackHeaderRow>
+                        {(groupedResponse?.questions?.length ?? 0) > 0 ? <FeedbackHeaderRow>
                           <HideNamesToggle>
                             <SwitchLabel>
                               <StyledSwitch
@@ -345,21 +350,18 @@ const EvaluationOverview: React.FC = () => {
                               />
                               <Slider />
                             </SwitchLabel>
-                            <span>{t('Hide_feedback_provider_names')}</span>
+                            <span>{t("Hide_feedback_provider_names")}</span>
                           </HideNamesToggle>
 
                           <QuestionProgress>
                             <NavButton
                               disabled={
-                                !groupedResponse || currentQuestionIndex === 0
+                                !groupedResponse ||
+                                currentQuestionIndex === 0
                               }
-                              onClick={() =>
-                                setCurrentQuestionIndex((i) => i - 1)
-                              }
+                              onClick={() => setCurrentQuestionIndex((i) => i - 1)}
                             >
-                              <span className="arrow right">
-                                <ArrowDownSVG />
-                              </span>
+                              <span className="arrow right"><ArrowDownSVG /></span>
                             </NavButton>
                             {' Question - '}
                             {groupedResponse ? currentQuestionIndex + 1 : 0}
@@ -382,7 +384,7 @@ const EvaluationOverview: React.FC = () => {
                               </span>
                             </NavButton>
                           </QuestionProgress>
-                        </FeedbackHeaderRow>
+                        </FeedbackHeaderRow> : <></>}
 
                         {(() => {
                           if (
@@ -395,7 +397,6 @@ const EvaluationOverview: React.FC = () => {
                               </Placeholder>
                             );
                           }
-
                           const q =
                             groupedResponse.questions[currentQuestionIndex];
                           return (
@@ -434,7 +435,7 @@ const EvaluationOverview: React.FC = () => {
                           );
                         })()}
                       </>
-                    )}
+                    }
                   </>
                 )}
 
@@ -499,9 +500,17 @@ const EvaluationOverview: React.FC = () => {
                   </>
                 )}
               </Content>
-            </Container>
-          </OuterContainer>
+            </Container >
+          </OuterContainer >
         </>
+      )}
+      {toast && (
+        <ToastMessage
+          messageType={toast.type}
+          messageBody={toast.message}
+          messageHeading={toast.head}
+          handleClose={() => setToast(null)}
+        />
       )}
     </>
   );
