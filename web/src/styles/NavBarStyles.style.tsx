@@ -17,8 +17,9 @@ export const NavBarContainer = styled.section`
     left: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: space-between;
     overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-width: thin;
 
     /* Hide the scrollbar */

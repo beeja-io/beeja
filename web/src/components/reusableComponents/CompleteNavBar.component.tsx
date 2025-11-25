@@ -109,270 +109,277 @@ const CompleteNavBar = () => {
                 className={`sidebar ${sidebarOpen ? 'open' : ''}`}
                 onMouseEnter={handleMouseEnter}
               >
-                <NavHeader
-                  className="logo_details"
-                  isOpen={sidebarOpen ? true : false}
-                >
-                  <BeejaIconSvg />
-                  <div className="logo_name" style={{ fontFamily: 'Rubik' }}>
-                    {' '}
-                    &nbsp; {t('BEE')}
-                    <span className="logo_name logo_name_blue">{t('JA')}</span>
-                  </div>
-                  <span className="btn" onClick={toggleSidebar}>
-                    <NavCloseArrow isOpen={sidebarOpen ? false : true} />
-                  </span>
-                </NavHeader>
+                <>
+                  <NavHeader
+                    className="logo_details"
+                    isOpen={sidebarOpen ? true : false}
+                  >
+                    <BeejaIconSvg />
+                    <div className="logo_name" style={{ fontFamily: 'Rubik' }}>
+                      {' '}
+                      &nbsp; {t('BEE')}
+                      <span className="logo_name logo_name_blue">
+                        {t('JA')}
+                      </span>
+                    </div>
+                    <span className="btn" onClick={toggleSidebar}>
+                      <NavCloseArrow isOpen={sidebarOpen ? false : true} />
+                    </span>
+                  </NavHeader>
+                  <LeftNavList className="nav-list">
+                    <StyledNavLink to="/">
+                      <li>
+                        <DashBoardButton>
+                          {sidebarOpen ? 'Dashboard' : ''}
+                          <DashBoardSVG />
+                        </DashBoardButton>
+                      </li>
+                    </StyledNavLink>
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="/profile/me"
+                      tooltipName="My Profile"
+                      linkName="MY_PROFILE"
+                      svgIcon={
+                        <MyProfileSVG
+                          props={{
+                            isActive:
+                              openDropdown === 'profile' ||
+                              currentPath === '/profile/me',
+                          }}
+                        />
+                      }
+                      additionalSvgIcon={<ChevronDownSVG />}
+                      isDropdownOpen={openDropdown === 'profile'}
+                      setDropdownOpen={() => {
+                        setOpenDropdown((prev) =>
+                          prev === 'profile' ? null : 'profile'
+                        );
+                      }}
+                    />
 
-                <LeftNavList className="nav-list">
-                  <StyledNavLink to="/">
-                    <li>
-                      <DashBoardButton>
-                        {sidebarOpen ? 'Dashboard' : ''}
-                        <DashBoardSVG />
-                      </DashBoardButton>
-                    </li>
-                  </StyledNavLink>
-                  <ListItem
-                    isSideBarOpen={sidebarOpen}
-                    linkTo="/profile/me"
-                    tooltipName="My Profile"
-                    linkName="MY_PROFILE"
-                    svgIcon={
-                      <MyProfileSVG
-                        props={{
-                          isActive:
-                            openDropdown === 'profile' ||
-                            currentPath === '/profile/me',
-                        }}
-                      />
-                    }
-                    additionalSvgIcon={<ChevronDownSVG />}
-                    isDropdownOpen={openDropdown === 'profile'}
-                    setDropdownOpen={() => {
-                      setOpenDropdown((prev) =>
-                        prev === 'profile' ? null : 'profile'
-                      );
-                    }}
-                  />
-
-                  <ListItem
-                    isSideBarOpen={sidebarOpen}
-                    linkTo="/employees"
-                    tooltipName="Employees"
-                    linkName="EMPLOYEES"
-                    svgIcon={
-                      <EmployeesSVG
-                        props={{
-                          isActive:
-                            openDropdown === 'employees' ||
-                            currentPath === '/employees',
-                        }}
-                      />
-                    }
-                    additionalSvgIcon={<ChevronDownSVG />}
-                    isDropdownOpen={openDropdown === 'employees'}
-                    setDropdownOpen={() => {
-                      setOpenDropdown((prev) =>
-                        prev === 'employees' ? null : 'employees'
-                      );
-                    }}
-                  />
-                  {(hasPermission(user, EXPENSE_MODULE.READ_EXPENSE) ||
-                    hasPermission(
-                      user,
-                      BULK_PAYSLIP_MODULE.CREATE_BULK_PAYSLIP
-                    ) ||
-                    hasPermission(user, INVENTORY_MODULE.READ_DEVICE)) &&
-                    (hasFeature(
-                      featureToggles.featureToggles,
-                      EFeatureToggles.LOAN_MANAGEMENT
-                    ) ||
-                      hasFeature(
-                        featureToggles.featureToggles,
-                        EFeatureToggles.INVENTORY_MANAGEMENT
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="/employees"
+                      tooltipName="Employees"
+                      linkName="EMPLOYEES"
+                      svgIcon={
+                        <EmployeesSVG
+                          props={{
+                            isActive:
+                              openDropdown === 'employees' ||
+                              currentPath === '/employees',
+                          }}
+                        />
+                      }
+                      additionalSvgIcon={<ChevronDownSVG />}
+                      isDropdownOpen={openDropdown === 'employees'}
+                      setDropdownOpen={() => {
+                        setOpenDropdown((prev) =>
+                          prev === 'employees' ? null : 'employees'
+                        );
+                      }}
+                    />
+                    {(hasPermission(user, EXPENSE_MODULE.READ_EXPENSE) ||
+                      hasPermission(
+                        user,
+                        BULK_PAYSLIP_MODULE.CREATE_BULK_PAYSLIP
                       ) ||
+                      hasPermission(user, INVENTORY_MODULE.READ_DEVICE)) &&
+                      (hasFeature(
+                        featureToggles.featureToggles,
+                        EFeatureToggles.LOAN_MANAGEMENT
+                      ) ||
+                        hasFeature(
+                          featureToggles.featureToggles,
+                          EFeatureToggles.INVENTORY_MANAGEMENT
+                        ) ||
+                        hasFeature(
+                          featureToggles.featureToggles,
+                          EFeatureToggles.EXPENSE_MANAGEMENT
+                        )) && (
+                        <ListItem
+                          isSideBarOpen={sidebarOpen}
+                          linkTo="#"
+                          tooltipName="Accounts"
+                          linkName="ACCOUNTS"
+                          svgIcon={
+                            <TrendingUpSVG
+                              props={{
+                                isActive:
+                                  openDropdown === 'accounts' ||
+                                  currentPath.startsWith('/accounts'),
+                              }}
+                            />
+                          }
+                          additionalSvgIcon={<ChevronDownSVG />}
+                          dropdownItems={[
+                            ...(hasPermission(
+                              user,
+                              BULK_PAYSLIP_MODULE.CREATE_BULK_PAYSLIP
+                            ) &&
+                            hasFeature(
+                              featureToggles.featureToggles,
+                              EFeatureToggles.BULK_PAY_SLIPS
+                            )
+                              ? [
+                                  {
+                                    name: 'BULK_PAYSLIP_UPLOAD',
+                                    link: '/accounts/bulk-payslip',
+                                  },
+                                ]
+                              : []),
+                            ...(hasPermission(
+                              user,
+                              EXPENSE_MODULE.READ_EXPENSE
+                            ) &&
+                            hasFeature(
+                              featureToggles.featureToggles,
+                              EFeatureToggles.EXPENSE_MANAGEMENT
+                            )
+                              ? [
+                                  {
+                                    name: 'EXPENSE_MANAGEMENT',
+                                    link: '/accounts/expenses',
+                                  },
+                                ]
+                              : []),
+                            ...(hasPermission(
+                              user,
+                              INVENTORY_MODULE.READ_DEVICE
+                            ) &&
+                            hasFeature(
+                              featureToggles.featureToggles,
+                              EFeatureToggles.INVENTORY_MANAGEMENT
+                            )
+                              ? [
+                                  {
+                                    name: 'INVENTORY_MANAGEMENT',
+                                    link: '/accounts/inventory',
+                                  },
+                                ]
+                              : []),
+                          ]}
+                          isDropdownOpen={openDropdown === 'accounts'}
+                          setDropdownOpen={() => {
+                            setOpenDropdown((prev) =>
+                              prev === 'accounts' ? null : 'accounts'
+                            );
+                          }}
+                          hasAdditionalSvg
+                        />
+                      )}
+
+                    {hasFeature(
+                      featureToggles.featureToggles,
+                      EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT
+                    ) &&
+                      (hasPermission(user, CLIENT_MODULE.READ_CLIENT) ||
+                        hasPermission(user, PROJECT_MODULE.READ_PROJECT) ||
+                        hasPermission(user, CONTRACT_MODULE.READ_CONTRACT)) && (
+                        <ListItem
+                          isSideBarOpen={sidebarOpen}
+                          linkTo="#"
+                          tooltipName="Projects & Contracts"
+                          linkName="Projects & Contracts"
+                          svgIcon={
+                            <ProjectsSVG
+                              props={{
+                                isActive:
+                                  openDropdown === 'projects & contracts' ||
+                                  currentPath.startsWith('/clients') ||
+                                  currentPath.startsWith('/projects') ||
+                                  currentPath.startsWith('/contracts'),
+                              }}
+                            />
+                          }
+                          additionalSvgIcon={<ChevronDownSVG />}
+                          dropdownItems={[
+                            ...(hasPermission(user, CLIENT_MODULE.READ_CLIENT)
+                              ? [
+                                  {
+                                    name: 'Clients',
+                                    link: '/clients/client-management',
+                                  },
+                                ]
+                              : []),
+                            ...(hasPermission(user, PROJECT_MODULE.READ_PROJECT)
+                              ? [
+                                  {
+                                    name: 'Projects',
+                                    link: '/projects/project-management',
+                                  },
+                                ]
+                              : []),
+                            ...(hasPermission(
+                              user,
+                              CONTRACT_MODULE.READ_CONTRACT
+                            )
+                              ? [
+                                  {
+                                    name: 'Contracts',
+                                    link: '/contracts/contract-management',
+                                  },
+                                ]
+                              : []),
+                          ]}
+                          isDropdownOpen={
+                            openDropdown === 'Projects & Contracts'
+                          }
+                          setDropdownOpen={() => {
+                            setOpenDropdown((prev) =>
+                              prev === 'Projects & Contracts'
+                                ? null
+                                : 'Projects & Contracts'
+                            );
+                          }}
+                          hasAdditionalSvg
+                        />
+                      )}
+                    {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                       hasFeature(
                         featureToggles.featureToggles,
-                        EFeatureToggles.EXPENSE_MANAGEMENT
-                      )) && (
-                      <ListItem
-                        isSideBarOpen={sidebarOpen}
-                        linkTo="#"
-                        tooltipName="Accounts"
-                        linkName="ACCOUNTS"
-                        svgIcon={
-                          <TrendingUpSVG
-                            props={{
-                              isActive:
-                                openDropdown === 'accounts' ||
-                                currentPath.startsWith('/accounts'),
-                            }}
-                          />
-                        }
-                        additionalSvgIcon={<ChevronDownSVG />}
-                        dropdownItems={[
-                          ...(hasPermission(
-                            user,
-                            BULK_PAYSLIP_MODULE.CREATE_BULK_PAYSLIP
-                          ) &&
-                          hasFeature(
-                            featureToggles.featureToggles,
-                            EFeatureToggles.BULK_PAY_SLIPS
-                          )
-                            ? [
-                                {
-                                  name: 'BULK_PAYSLIP_UPLOAD',
-                                  link: '/accounts/bulk-payslip',
-                                },
-                              ]
-                            : []),
-                          ...(hasPermission(
-                            user,
-                            EXPENSE_MODULE.READ_EXPENSE
-                          ) &&
-                          hasFeature(
-                            featureToggles.featureToggles,
-                            EFeatureToggles.EXPENSE_MANAGEMENT
-                          )
-                            ? [
-                                {
-                                  name: 'EXPENSE_MANAGEMENT',
-                                  link: '/accounts/expenses',
-                                },
-                              ]
-                            : []),
-                          ...(hasPermission(
-                            user,
-                            INVENTORY_MODULE.READ_DEVICE
-                          ) &&
-                          hasFeature(
-                            featureToggles.featureToggles,
-                            EFeatureToggles.INVENTORY_MANAGEMENT
-                          )
-                            ? [
-                                {
-                                  name: 'INVENTORY_MANAGEMENT',
-                                  link: '/accounts/inventory',
-                                },
-                              ]
-                            : []),
-                        ]}
-                        isDropdownOpen={openDropdown === 'accounts'}
-                        setDropdownOpen={() => {
-                          setOpenDropdown((prev) =>
-                            prev === 'accounts' ? null : 'accounts'
-                          );
-                        }}
-                        hasAdditionalSvg
-                      />
-                    )}
-
-                  {hasFeature(
-                    featureToggles.featureToggles,
-                    EFeatureToggles.PROJECT_CONTRACT_MANAGEMENT
-                  ) &&
-                    (hasPermission(user, CLIENT_MODULE.READ_CLIENT) ||
-                      hasPermission(user, PROJECT_MODULE.READ_PROJECT) ||
-                      hasPermission(user, CONTRACT_MODULE.READ_CONTRACT)) && (
-                      <ListItem
-                        isSideBarOpen={sidebarOpen}
-                        linkTo="#"
-                        tooltipName="Projects & Contracts"
-                        linkName="Projects & Contracts"
-                        svgIcon={
-                          <ProjectsSVG
-                            props={{
-                              isActive:
-                                openDropdown === 'projects & contracts' ||
-                                currentPath.startsWith('/clients') ||
-                                currentPath.startsWith('/projects') ||
-                                currentPath.startsWith('/contracts'),
-                            }}
-                          />
-                        }
-                        additionalSvgIcon={<ChevronDownSVG />}
-                        dropdownItems={[
-                          ...(hasPermission(user, CLIENT_MODULE.READ_CLIENT)
-                            ? [
-                                {
-                                  name: 'Clients',
-                                  link: '/clients/client-management',
-                                },
-                              ]
-                            : []),
-                          ...(hasPermission(user, PROJECT_MODULE.READ_PROJECT)
-                            ? [
-                                {
-                                  name: 'Projects',
-                                  link: '/projects/project-management',
-                                },
-                              ]
-                            : []),
-                          ...(hasPermission(user, CONTRACT_MODULE.READ_CONTRACT)
-                            ? [
-                                {
-                                  name: 'Contracts',
-                                  link: '/contracts/contract-management',
-                                },
-                              ]
-                            : []),
-                        ]}
-                        isDropdownOpen={openDropdown === 'Projects & Contracts'}
-                        setDropdownOpen={() => {
-                          setOpenDropdown((prev) =>
-                            prev === 'Projects & Contracts'
-                              ? null
-                              : 'Projects & Contracts'
-                          );
-                        }}
-                        hasAdditionalSvg
-                      />
-                    )}
-                  {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
-                    hasFeature(
-                      featureToggles.featureToggles,
-                      EFeatureToggles.LOAN_MANAGEMENT
-                    ) && (
-                      <ListItem
-                        isSideBarOpen={sidebarOpen}
-                        linkTo="#"
-                        tooltipName="Payroll"
-                        linkName="PAYROLL"
-                        svgIcon={
-                          <CardSendSVG
-                            props={{
-                              isActive:
-                                openDropdown === 'payroll' ||
-                                currentPath.startsWith('/payroll'),
-                            }}
-                          />
-                        }
-                        additionalSvgIcon={<ChevronDownSVG />}
-                        dropdownItems={[
-                          ...(hasPermission(user, LOAN_MODULE.READ_LOAN) &&
-                          hasFeature(
-                            featureToggles.featureToggles,
-                            EFeatureToggles.LOAN_MANAGEMENT
-                          )
-                            ? [
-                                {
-                                  name: 'LOANS',
-                                  link: '/payroll/deductions-loans',
-                                },
-                              ]
-                            : []),
-                        ]}
-                        isDropdownOpen={openDropdown === 'payroll'}
-                        setDropdownOpen={() => {
-                          setOpenDropdown((prev) =>
-                            prev === 'payroll' ? null : 'payroll'
-                          );
-                        }}
-                        hasAdditionalSvg
-                      />
-                    )}
-                  {/* {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                        EFeatureToggles.LOAN_MANAGEMENT
+                      ) && (
+                        <ListItem
+                          isSideBarOpen={sidebarOpen}
+                          linkTo="#"
+                          tooltipName="Payroll"
+                          linkName="PAYROLL"
+                          svgIcon={
+                            <CardSendSVG
+                              props={{
+                                isActive:
+                                  openDropdown === 'payroll' ||
+                                  currentPath.startsWith('/payroll'),
+                              }}
+                            />
+                          }
+                          additionalSvgIcon={<ChevronDownSVG />}
+                          dropdownItems={[
+                            ...(hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                            hasFeature(
+                              featureToggles.featureToggles,
+                              EFeatureToggles.LOAN_MANAGEMENT
+                            )
+                              ? [
+                                  {
+                                    name: 'LOANS',
+                                    link: '/payroll/deductions-loans',
+                                  },
+                                ]
+                              : []),
+                          ]}
+                          isDropdownOpen={openDropdown === 'payroll'}
+                          setDropdownOpen={() => {
+                            setOpenDropdown((prev) =>
+                              prev === 'payroll' ? null : 'payroll'
+                            );
+                          }}
+                          hasAdditionalSvg
+                        />
+                      )}
+                    {/* {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     // hasFeature(
                     //   featureToggles.featureToggles,
                     //   EFeatureToggles.LOAN_MANAGEMENT
@@ -416,66 +423,144 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )} */}
-                  {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
-                    hasFeature(
+                    {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
+                      hasFeature(
+                        featureToggles.featureToggles,
+                        EFeatureToggles.TIME_SHEET
+                      ) && (
+                        <ListItem
+                          isSideBarOpen={sidebarOpen}
+                          linkTo="#"
+                          tooltipName="Timeoff"
+                          linkName="Time Off"
+                          svgIcon={
+                            <TimeOffSVG
+                              isActive={
+                                openDropdown === 'timeoff' ||
+                                currentPath.startsWith('/timeoff')
+                              }
+                            />
+                          }
+                          additionalSvgIcon={<ChevronDownSVG />}
+                          dropdownItems={[
+                            {
+                              name: 'Time Sheet',
+                              link: '/timeoff/timesheet',
+                            },
+                          ]}
+                          isDropdownOpen={openDropdown === 'timeoff'}
+                          setDropdownOpen={() => {
+                            setOpenDropdown((prev) =>
+                              prev === 'timeoff' ? null : 'timeoff'
+                            );
+                          }}
+                          hasAdditionalSvg
+                        />
+                      )}
+                    {hasFeature(
                       featureToggles.featureToggles,
-                      EFeatureToggles.TIME_SHEET
+                      EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+                    ) &&
+                      (hasPermission(
+                        user,
+                        PERFORMANCE_MODULE.READ_REVIEW_CYCLE
+                      ) ||
+                        hasPermission(user, PERFORMANCE_MODULE.READ_RECEIVER) ||
+                        hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER) ||
+                        hasPermission(user, PERFORMANCE_MODULE.READ_RESPONSE) ||
+                        hasPermission(
+                          user,
+                          PERFORMANCE_MODULE.READ_ALL_RESPONSES
+                        )) && (
+                        <ListItem
+                          isSideBarOpen={sidebarOpen}
+                          linkTo="#"
+                          tooltipName="Performance"
+                          linkName="Performance"
+                          svgIcon={
+                            <PerformanceIcon
+                              props={{
+                                isActive:
+                                  openDropdown === 'performance' ||
+                                  currentPath.startsWith('/performance'),
+                              }}
+                            />
+                          }
+                          additionalSvgIcon={<ChevronDownSVG />}
+                          dropdownItems={[
+                            ...(hasPermission(
+                              user,
+                              PERFORMANCE_MODULE.READ_REVIEW_CYCLE
+                            )
+                              ? [
+                                  {
+                                    name: 'Create Evaluation Form',
+                                    link: '/performance/create-evaluation-form',
+                                  },
+                                ]
+                              : []),
+                            ...(hasPermission(
+                              user,
+                              PERFORMANCE_MODULE.READ_RECEIVER
+                            ) ||
+                            hasPermission(
+                              user,
+                              PERFORMANCE_MODULE.READ_PROVIDER
+                            )
+                              ? [
+                                  {
+                                    name: 'Assign Feedback Receivers & Providers',
+                                    link: '/performance/assign-feedback-providers',
+                                  },
+                                ]
+                              : []),
+                            ...(hasPermission(
+                              user,
+                              PERFORMANCE_MODULE.READ_RESPONSE
+                            )
+                              ? [
+                                  {
+                                    name: 'Feedback Hub',
+                                    link: '/performance/feedback-hub',
+                                  },
+                                ]
+                              : []),
+                            ...(hasPermission(
+                              user,
+                              PERFORMANCE_MODULE.READ_ALL_RESPONSES
+                            )
+                              ? [
+                                  {
+                                    name: 'My Team Overview',
+                                    link: '/performance/my-team-overview',
+                                  },
+                                ]
+                              : []),
+                          ]}
+                          isDropdownOpen={openDropdown === 'performance'}
+                          setDropdownOpen={() => {
+                            setOpenDropdown((prev) =>
+                              prev === 'performance' ? null : 'performance'
+                            );
+                          }}
+                          hasAdditionalSvg
+                        />
+                      )}
+                    {hasFeature(
+                      featureToggles.featureToggles,
+                      EFeatureToggles.RECRUITMENT_MANAGEMENT
                     ) && (
                       <ListItem
                         isSideBarOpen={sidebarOpen}
                         linkTo="#"
-                        tooltipName="Timeoff"
-                        linkName="Time Off"
+                        tooltipName="Recruitment"
+                        linkName="Recruitment"
                         svgIcon={
-                          <TimeOffSVG
-                            isActive={
-                              openDropdown === 'timeoff' ||
-                              currentPath.startsWith('/timeoff')
-                            }
-                          />
-                        }
-                        additionalSvgIcon={<ChevronDownSVG />}
-                        dropdownItems={[
-                          {
-                            name: 'Time Sheet',
-                            link: '/timeoff/timesheet',
-                          },
-                        ]}
-                        isDropdownOpen={openDropdown === 'timeoff'}
-                        setDropdownOpen={() => {
-                          setOpenDropdown((prev) =>
-                            prev === 'timeoff' ? null : 'timeoff'
-                          );
-                        }}
-                        hasAdditionalSvg
-                      />
-                    )}
-                  {hasFeature(
-                    featureToggles.featureToggles,
-                    EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
-                  ) &&
-                    (hasPermission(
-                      user,
-                      PERFORMANCE_MODULE.READ_REVIEW_CYCLE
-                    ) ||
-                      hasPermission(user, PERFORMANCE_MODULE.READ_RECEIVER) ||
-                      hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER) ||
-                      hasPermission(user, PERFORMANCE_MODULE.READ_RESPONSE) ||
-                      hasPermission(
-                        user,
-                        PERFORMANCE_MODULE.READ_ALL_RESPONSES
-                      )) && (
-                      <ListItem
-                        isSideBarOpen={sidebarOpen}
-                        linkTo="#"
-                        tooltipName="Performance"
-                        linkName="Performance"
-                        svgIcon={
-                          <PerformanceIcon
+                          <UserBoxWithLinkSVG
                             props={{
                               isActive:
-                                openDropdown === 'performance' ||
-                                currentPath.startsWith('/performance'),
+                                openDropdown === 'recruitment' ||
+                                currentPath === '/recruitment',
                             }}
                           />
                         }
@@ -483,162 +568,91 @@ const CompleteNavBar = () => {
                         dropdownItems={[
                           ...(hasPermission(
                             user,
-                            PERFORMANCE_MODULE.READ_REVIEW_CYCLE
-                          )
-                            ? [
-                                {
-                                  name: 'Create Evaluation Form',
-                                  link: '/performance/create-evaluation-form',
-                                },
-                              ]
-                            : []),
-                          ...(hasPermission(
-                            user,
-                            PERFORMANCE_MODULE.READ_RECEIVER
+                            RECRUITMENT_MODULE.GET_APPLICATIONS
                           ) ||
-                          hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER)
+                          hasPermission(
+                            user,
+                            RECRUITMENT_MODULE.GET_ALL_APPLICANTS
+                          ) ||
+                          hasPermission(
+                            user,
+                            RECRUITMENT_MODULE.CREATE_APPLICANT
+                          )
                             ? [
                                 {
-                                  name: 'Assign Feedback Receivers & Providers',
-                                  link: '/performance/assign-feedback-providers',
+                                  name: 'Hiring',
+                                  link: '/recruitment/hiring-management',
                                 },
                               ]
                             : []),
                           ...(hasPermission(
                             user,
-                            PERFORMANCE_MODULE.READ_RESPONSE
+                            RECRUITMENT_MODULE.ACCESS_REFFERRAlS
                           )
                             ? [
                                 {
-                                  name: 'Feedback Hub',
-                                  link: '/performance/feedback-hub',
-                                },
-                              ]
-                            : []),
-                          ...(hasPermission(
-                            user,
-                            PERFORMANCE_MODULE.READ_ALL_RESPONSES
-                          )
-                            ? [
-                                {
-                                  name: 'My Team Overview',
-                                  link: '/performance/my-team-overview',
+                                  name: 'Referrals',
+                                  link: '/recruitment/my-referrals',
                                 },
                               ]
                             : []),
                         ]}
-                        isDropdownOpen={openDropdown === 'performance'}
+                        isDropdownOpen={openDropdown === 'services'}
                         setDropdownOpen={() => {
                           setOpenDropdown((prev) =>
-                            prev === 'performance' ? null : 'performance'
+                            prev === 'services' ? null : 'services'
                           );
                         }}
                         hasAdditionalSvg
                       />
                     )}
-                  {hasFeature(
-                    featureToggles.featureToggles,
-                    EFeatureToggles.RECRUITMENT_MANAGEMENT
-                  ) && (
                     <ListItem
                       isSideBarOpen={sidebarOpen}
                       linkTo="#"
-                      tooltipName="Recruitment"
-                      linkName="Recruitment"
+                      tooltipName="Quick Links"
+                      linkName="QUICK_LINKS"
                       svgIcon={
-                        <UserBoxWithLinkSVG
-                          props={{
-                            isActive:
-                              openDropdown === 'recruitment' ||
-                              currentPath === '/recruitment',
-                          }}
+                        <TrendingUpSVG
+                          props={{ isActive: openDropdown === 'general' }}
                         />
                       }
                       additionalSvgIcon={<ChevronDownSVG />}
                       dropdownItems={[
-                        ...(hasPermission(
-                          user,
-                          RECRUITMENT_MODULE.GET_APPLICATIONS
-                        ) ||
-                        hasPermission(
-                          user,
-                          RECRUITMENT_MODULE.GET_ALL_APPLICANTS
-                        ) ||
-                        hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
-                          ? [
-                              {
-                                name: 'Hiring',
-                                link: '/recruitment/hiring-management',
-                              },
-                            ]
-                          : []),
-                        ...(hasPermission(
-                          user,
-                          RECRUITMENT_MODULE.ACCESS_REFFERRAlS
-                        )
-                          ? [
-                              {
-                                name: 'Referrals',
-                                link: '/recruitment/my-referrals',
-                              },
-                            ]
-                          : []),
+                        {
+                          name: 'Beeja Docs',
+                          link: 'https://docs.beeja.io/',
+                        },
                       ]}
-                      isDropdownOpen={openDropdown === 'services'}
+                      isDropdownOpen={openDropdown === 'general'}
                       setDropdownOpen={() => {
                         setOpenDropdown((prev) =>
-                          prev === 'services' ? null : 'services'
+                          prev === 'general' ? null : 'general'
                         );
                       }}
                       hasAdditionalSvg
                     />
-                  )}
-                  <ListItem
-                    isSideBarOpen={sidebarOpen}
-                    linkTo="#"
-                    tooltipName="Quick Links"
-                    linkName="QUICK_LINKS"
-                    svgIcon={
-                      <TrendingUpSVG
-                        props={{ isActive: openDropdown === 'general' }}
+                    {hasPermission(
+                      user,
+                      FEATURE_TOGGLES_MODULE.UPDATE_FEATURE
+                    ) && (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="/features"
+                        tooltipName="Features"
+                        linkName="FEATURES"
+                        svgIcon={
+                          <FeatureToggleSVG
+                            props={{
+                              isActive:
+                                openDropdown === 'features' ||
+                                currentPath === '/features',
+                            }}
+                          />
+                        }
                       />
-                    }
-                    additionalSvgIcon={<ChevronDownSVG />}
-                    dropdownItems={[
-                      {
-                        name: 'Beeja Docs',
-                        link: 'https://docs.beeja.io/',
-                      },
-                    ]}
-                    isDropdownOpen={openDropdown === 'general'}
-                    setDropdownOpen={() => {
-                      setOpenDropdown((prev) =>
-                        prev === 'general' ? null : 'general'
-                      );
-                    }}
-                    hasAdditionalSvg
-                  />
-                  {hasPermission(
-                    user,
-                    FEATURE_TOGGLES_MODULE.UPDATE_FEATURE
-                  ) && (
-                    <ListItem
-                      isSideBarOpen={sidebarOpen}
-                      linkTo="/features"
-                      tooltipName="Features"
-                      linkName="FEATURES"
-                      svgIcon={
-                        <FeatureToggleSVG
-                          props={{
-                            isActive:
-                              openDropdown === 'features' ||
-                              currentPath === '/features',
-                          }}
-                        />
-                      }
-                    />
-                  )}
-                </LeftNavList>
+                    )}
+                  </LeftNavList>
+                </>
 
                 <LeftNavList className="bottomLinks">
                   {/* <ListItem
