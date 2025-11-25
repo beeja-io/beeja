@@ -45,7 +45,7 @@ import {
   StyledSwitch,
   SwitchLabel,
 } from '../../styles/InputStyles.style';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   getEmployeeCycleGroupedResponse,
   getEmployeeFeedbackCycles,
@@ -96,6 +96,7 @@ type SelfEvaluationResponse = {
 const EvaluationOverview: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useUser();
+  const navigate = useNavigate();
   const { employeeId } = useParams();
   const { state } = useLocation();
   const [activeTab, setActiveTab] = useState<'all' | 'self' | 'rating'>('all');
@@ -235,7 +236,7 @@ const EvaluationOverview: React.FC = () => {
           )}
           <EvaluationHeadingSection>
             <span className="heading">
-              <span>
+              <span onClick={() => navigate(-1)}>
                 <ArrowDownSVG />
               </span>
               {t('My_Team_Overview')}
