@@ -20,7 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.text.Normalizer;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Service implementation for managing Questionnaires.
@@ -40,8 +43,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
      *
      * @param questionnaire Questionnaire object to create
      * @return Created Questionnaire
-     * @throws BadRequestException if questions list is empty
-     * @throws DuplicateDataException if duplicate questionnaire exists
+     * @throws BadRequestException     if questions list is empty or duplicates found inside same form
+     * @throws DuplicateDataException  if duplicate questionnaire exists for same org + cycle
      * @throws InvalidOperationException if save fails
      */
     @Override
@@ -49,21 +52,37 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         log.info(Constants.INFO_CREATING_QUESTIONNAIRE);
 
         String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
-
         questionnaire.setOrganizationId(orgId);
+
+        // basic validations
         validateQuestionnaireRequest(questionnaire);
+        ensureNoDuplicateQuestions(questionnaire.getQuestions());
+
+        // cycleId is required for per-cycle scoping
+        if (questionnaire.getCycleId() == null || questionnaire.getCycleId().trim().isEmpty()) {
+            throw new BadRequestException(
+                    ErrorUtils.formatError(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.FIELD_VALIDATION_MISSING,
+                            "cycleId is required for questionnaire creation"
+                    ));
+        }
+
+        // check duplicate questionnaires only within same org + same cycle
+        checkDuplicateQuestionnaire(null, questionnaire);
 
         Questionnaire newQuestionnaire = new Questionnaire();
         newQuestionnaire.setOrganizationId(orgId);
+        newQuestionnaire.setCycleId(questionnaire.getCycleId());
+        newQuestionnaire.setQuestions(questionnaire.getQuestions());
 
-        if (questionnaire.getQuestions() != null && !questionnaire.getQuestions().isEmpty()) {
-                questionnaire.getQuestions().forEach(q -> {
-                    if (!q.isRequired() && q.getTarget() == TargetType.SELF) {
-                        q.setRequired(true);
-                    }
-                });
-
-            newQuestionnaire.setQuestions(questionnaire.getQuestions());
+        // ensure SELF-target questions are required
+        if (newQuestionnaire.getQuestions() != null) {
+            newQuestionnaire.getQuestions().forEach(q -> {
+                if (!q.isRequired() && q.getTarget() == TargetType.SELF) {
+                    q.setRequired(true);
+                }
+            });
         }
 
         try {
@@ -87,7 +106,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
      * sorted by questionnaire ID in ascending order.
      *
      * @return a list of {@link Questionnaire} objects belonging to the user's organization,
-     *         sorted by their ID in ascending order
+     * sorted by their ID in ascending order
      */
     @Override
     public List<Questionnaire> getAllQuestionnaires() {
@@ -131,11 +150,11 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     /**
      * Updates the questions of an existing questionnaire after validation.
      *
-     * @param id Questionnaire ID
-     * @param questionnaire Updated questionnaire data
+     * @param id           Questionnaire ID
+     * @param questionnaire Updated questionnaire data (usually contains only questions)
      * @return Updated Questionnaire
-     * @throws BadRequestException if questions list is empty
-     * @throws DuplicateDataException if duplicate questionnaire exists
+     * @throws BadRequestException      if questions list is empty or duplicates found inside form
+     * @throws DuplicateDataException   if another questionnaire in same org + cycle has identical questions
      * @throws InvalidOperationException if save fails
      */
     @Override
@@ -144,8 +163,16 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         Questionnaire existing = getQuestionnaireById(id);
 
         validateQuestionnaireRequest(questionnaire);
+        ensureNoDuplicateQuestions(questionnaire.getQuestions());
+
+        // Use existing orgId + cycleId so duplicate check is scoped correctly
+        questionnaire.setOrganizationId(existing.getOrganizationId());
+        questionnaire.setCycleId(existing.getCycleId());
+
+        // Check duplicates in same (orgId, cycleId), ignoring this current questionnaire id
         checkDuplicateQuestionnaire(id, questionnaire);
 
+        // Apply new questions
         existing.setQuestions(questionnaire.getQuestions());
 
         try {
@@ -168,10 +195,17 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
     /**
      * Updates the questions list of a questionnaire.
      *
-     * @param id Questionnaire ID
+     * This endpoint only enforces:
+     *  - questions list not empty
+     *  - no duplicate question texts within the same questionnaire
+     *
+     * It does NOT check "full form duplicate" across other questionnaires.
+     *
+     * @param id              Questionnaire ID
      * @param updatedQuestions List of updated questions
      * @return Updated Questionnaire
-     * @throws InvalidOperationException if questions list is empty
+     * @throws BadRequestException       if questions list is empty or duplicates found
+     * @throws InvalidOperationException if save fails
      */
     @Override
     public Questionnaire updateQuestions(String id, List<Question> updatedQuestions) {
@@ -188,10 +222,28 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
                     ));
         }
 
+        // Ensure no duplicate question texts within this form
+        ensureNoDuplicateQuestions(updatedQuestions);
+
         existing.setQuestions(updatedQuestions);
-        return questionnaireRepository.save(existing);
+        try {
+            existing = questionnaireRepository.save(existing);
+        } catch (Exception e) {
+            log.error(Constants.ERROR_UPDATING_QUESTIONNAIRE, e);
+            throw new InvalidOperationException(
+                    ErrorUtils.formatError(
+                            ErrorType.INTERNAL_SERVER_ERROR,
+                            ErrorCode.DATABASE_ERROR,
+                            Constants.ERROR_UPDATING_QUESTIONNAIRE
+                    )
+            );
+        }
+        return existing;
     }
 
+    /**
+     * Basic validation to ensure questions are present.
+     */
     private void validateQuestionnaireRequest(Questionnaire questionnaire) {
         if (questionnaire.getQuestions() == null || questionnaire.getQuestions().isEmpty()) {
             throw new BadRequestException(
@@ -203,8 +255,24 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         }
     }
 
+    /**
+     * Checks for duplicate questionnaires (same questions list) in the same org + same cycle.
+     */
     private void checkDuplicateQuestionnaire(String currentId, Questionnaire questionnaire) {
-        List<Questionnaire> existingList = questionnaireRepository.findAll();
+        String orgId = questionnaire.getOrganizationId();
+        String cycleId = questionnaire.getCycleId();
+
+        if (orgId == null || cycleId == null) {
+            throw new BadRequestException(
+                    ErrorUtils.formatError(
+                            ErrorType.VALIDATION_ERROR,
+                            ErrorCode.FIELD_VALIDATION_MISSING,
+                            "cycleId is required for duplicate validation"
+                    ));
+        }
+
+        List<Questionnaire> existingList =
+                questionnaireRepository.findByOrganizationIdAndCycleId(orgId, cycleId, Sort.by(Sort.Direction.ASC, "id"));
 
         boolean isDuplicate = existingList.stream()
                 .filter(q -> currentId == null || !q.getId().equals(currentId))
@@ -219,6 +287,52 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
                             Constants.DUPLICATE_QUESTIONNAIRE_WITH_SAME_QUESTIONS
                     ));
         }
+    }
+
+
+    /**
+     * Ensure there are no duplicate question texts within the provided list.
+     * Uses normalization (case-insensitive, ignores punctuation and extra spaces).
+     */
+    private void ensureNoDuplicateQuestions(List<Question> questions) {
+        if (questions == null || questions.isEmpty()) return;
+
+        Set<String> seen = new HashSet<>();
+
+        for (Question q : questions) {
+            if (q == null) continue;
+
+            String raw = q.getQuestion();
+            String normalized = normalizeString(raw);
+
+            if (normalized.isEmpty()) continue;
+
+            if (!seen.add(normalized)) {
+                throw new BadRequestException(
+                        ErrorUtils.formatError(
+                                ErrorType.VALIDATION_ERROR,
+                                ErrorCode.FIELD_VALIDATION_MISSING,
+                                "Duplicate question found in the request: \"" + raw + "\""
+                        )
+                );
+            }
+        }
+    }
+
+    private String normalizeString(String s) {
+        if (s == null) return "";
+
+        // 1. Unicode normalize
+        String out = Normalizer.normalize(s, Normalizer.Form.NFKC);
+
+        // 2. trim + lowercase
+        out = out.trim().toLowerCase();
+
+        // 3. remove punctuation
+        out = out.replaceAll("\\p{Punct}", "");
+
+        // 4. collapse multiple spaces
+        return out.replaceAll("\\s+", " ").trim();
     }
 
     /**

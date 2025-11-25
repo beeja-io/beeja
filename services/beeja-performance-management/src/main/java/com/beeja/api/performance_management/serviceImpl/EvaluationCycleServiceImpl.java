@@ -3,6 +3,7 @@ package com.beeja.api.performance_management.serviceImpl;
 import com.beeja.api.performance_management.enums.CycleStatus;
 import com.beeja.api.performance_management.enums.ErrorCode;
 import com.beeja.api.performance_management.enums.ErrorType;
+import com.beeja.api.performance_management.exceptions.BadRequestException;
 import com.beeja.api.performance_management.exceptions.InvalidOperationException;
 import com.beeja.api.performance_management.exceptions.ResourceNotFoundException;
 import com.beeja.api.performance_management.model.EvaluationCycle;
@@ -103,9 +104,10 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
 
     /**
      * Creates a new evaluation cycle along with an optional set of associated questions.
-     * If the provided {@link EvaluationCycleCreateDto} includes a list of questions,
-     * a new {@link Questionnaire} is created and linked to the evaluation cycle.
-     * The method ensures that all cycle dates are valid before persisting the data.
+     * Flow:
+     *  1) Create and save EvaluationCycle first (so we have cycleId).
+     *  2) If questions are provided, create Questionnaire with organizationId + cycleId.
+     *  3) Attach questionnaireId back to the saved cycle.
      *
      * @param dto The data transfer object containing details of the evaluation cycle and optional questions.
      * @return An {@link EvaluationCycleDetailsDto} containing the persisted evaluation cycle and the linked questionnaire (if created).
@@ -115,30 +117,10 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
     public EvaluationCycleDetailsDto createCycleWithQuestions(EvaluationCycleCreateDto dto) {
         log.info(Constants.INFO_CREATING_CYCLE_WITH_QUESTIONS, dto.getName());
 
-        Questionnaire savedQuestionnaire = null;
-
-        if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
-            Questionnaire questionnaire = new Questionnaire();
-            questionnaire.setQuestions(dto.getQuestions());
-
-            try {
-                savedQuestionnaire = questionnaireService.createQuestionnaire(questionnaire);
-            } catch (Exception e) {
-                log.error(Constants.ERROR_CREATING_QUESTIONNAIRE, e);
-                throw new InvalidOperationException(
-                        ErrorUtils.formatError(
-                                ErrorType.INTERNAL_SERVER_ERROR,
-                                ErrorCode.DATABASE_ERROR,
-                                Constants.ERROR_CREATING_QUESTIONNAIRE
-                        )
-                );
-            }
-        }
-
         String orgId = UserContext.getLoggedInUserOrganization().get("id").toString();
 
+        // 1) Build and save the EvaluationCycle first
         EvaluationCycle cycle = new EvaluationCycle();
-
         cycle.setOrganizationId(orgId);
         cycle.setName(dto.getName());
         cycle.setType(dto.getType());
@@ -148,10 +130,6 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         cycle.setFeedbackDeadline(dto.getFeedbackDeadline());
         cycle.setSelfEvalDeadline(dto.getSelfEvalDeadline());
         cycle.setStatus(dto.getStatus() != null ? dto.getStatus() : CycleStatus.IN_PROGRESS);
-
-        if (savedQuestionnaire != null) {
-            cycle.setQuestionnaireId(savedQuestionnaire.getId());
-        }
 
         validateCycleDates(cycle);
 
@@ -169,10 +147,74 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
             );
         }
 
-        log.info(Constants.INFO_EVALUATION_CYCLE_CREATED, savedCycle.getId());
+        Questionnaire savedQuestionnaire = null;
 
+        // 2) If questions exist, create Questionnaire and tag it with this cycle's id
+        if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
+            Questionnaire questionnaire = new Questionnaire();
+            questionnaire.setOrganizationId(orgId);
+            questionnaire.setCycleId(savedCycle.getId());     // IMPORTANT: link questionnaire to this cycle
+            questionnaire.setQuestions(dto.getQuestions());
+
+            try {
+                // Let BadRequestException (e.g., duplicate questions) bubble up
+                savedQuestionnaire = questionnaireService.createQuestionnaire(questionnaire);
+            } catch (BadRequestException bre) {
+                // Questionnaire validation failed (e.g., duplicate questions)
+                // Roll back the cycle we just created so we don't leave an empty/orphan cycle
+                rollbackCycleSafe(savedCycle);
+                throw bre;
+            } catch (Exception e) {
+                log.error(Constants.ERROR_CREATING_QUESTIONNAIRE, e);
+                // Any other error during questionnaire creation -> also roll back the cycle
+                rollbackCycleSafe(savedCycle);
+                throw new InvalidOperationException(
+                        ErrorUtils.formatError(
+                                ErrorType.INTERNAL_SERVER_ERROR,
+                                ErrorCode.DATABASE_ERROR,
+                                Constants.ERROR_CREATING_QUESTIONNAIRE
+                        )
+                );
+            }
+
+            // 3) Attach questionnaireId to the saved cycle and update it
+            if (savedQuestionnaire != null) {
+                savedCycle.setQuestionnaireId(savedQuestionnaire.getId());
+                try {
+                    savedCycle = cycleRepository.save(savedCycle);
+                } catch (Exception e) {
+                    log.error(Constants.ERROR_UPDATING_EVALUATION_CYCLE, e);
+                    throw new InvalidOperationException(
+                            ErrorUtils.formatError(
+                                    ErrorType.INTERNAL_SERVER_ERROR,
+                                    ErrorCode.DATABASE_ERROR,
+                                    Constants.ERROR_UPDATING_EVALUATION_CYCLE
+                            )
+                    );
+                }
+            }
+        }
+
+        log.info(Constants.INFO_EVALUATION_CYCLE_CREATED, savedCycle.getId());
         return new EvaluationCycleDetailsDto(savedCycle, savedQuestionnaire);
     }
+
+    /**
+     * Safely roll back (delete) a cycle if something fails while creating its questionnaire.
+     */
+    private void rollbackCycleSafe(EvaluationCycle savedCycle) {
+        if (savedCycle == null || savedCycle.getId() == null) {
+            return;
+        }
+        try {
+            cycleRepository.deleteById(savedCycle.getId());
+            log.info("Rolled back evaluation cycle with id: {}", savedCycle.getId());
+        } catch (Exception ex) {
+            // We log this but don't override the original exception
+            log.error("Failed to rollback evaluation cycle with id: {}", savedCycle.getId(), ex);
+        }
+    }
+
 
     /**
      * Retrieves all evaluation cycles.
@@ -250,7 +292,6 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
      * @return Updated EvaluationCycle
      * @throws InvalidOperationException if cycle is in progress or validation fails
      */
-
     @Override
     public EvaluationCycle updateCycle(String id, EvaluationCycle cycle) {
         log.info(Constants.INFO_UPDATING_EVALUATION_CYCLE, id);
@@ -295,8 +336,8 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
 
     /**
      * Updates an existing evaluation cycle with new details and optionally updates or creates its associated questions.
-     * The method first fetches the evaluation cycle by ID and updates its fields with values from the provided DTO.
-     * If the DTO contains questions, it either updates the existing questionnaire or creates a new one if none exists.
+     * If there is no questionnaire yet, a new one is created and linked to this cycle (with orgId + cycleId).
+     *
      * @param id  The identifier of the evaluation cycle to update.
      * @param dto The data transfer object containing updated cycle details and optional questions.
      * @return An {@link EvaluationCycleDetailsDto} containing the updated evaluation cycle and questionnaire (if updated or created).
@@ -329,13 +370,18 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
             String questionnaireId = cycle.getQuestionnaireId();
 
             if (questionnaireId == null || questionnaireId.trim().isEmpty()) {
+                // No questionnaire yet -> create a new one tied to this cycle
                 updatedQuestionnaire = new Questionnaire();
+                updatedQuestionnaire.setOrganizationId(cycle.getOrganizationId());
+                updatedQuestionnaire.setCycleId(cycle.getId());           // IMPORTANT: link to this cycle
                 updatedQuestionnaire.setQuestions(dto.getQuestions());
+
                 updatedQuestionnaire = questionnaireService.createQuestionnaire(updatedQuestionnaire);
 
                 cycle.setQuestionnaireId(updatedQuestionnaire.getId());
                 updatedCycle = updateCycle(id, cycle);
             } else {
+                // Questionnaire already exists -> update its questions only
                 updatedQuestionnaire = questionnaireService.updateQuestions(questionnaireId, dto.getQuestions());
             }
         }
@@ -440,7 +486,7 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
             );
         }
 
-        //startDate <= selfEvalDeadline
+        // startDate <= selfEvalDeadline
         if (selfEvalDeadline.isBefore(startDate)) {
             throw new InvalidOperationException(
                     ErrorUtils.formatError(
