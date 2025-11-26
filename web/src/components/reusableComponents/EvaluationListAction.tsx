@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActionIcon } from '../../svgs/ExpenseListSvgs.svg';
 import {
   ActionContainer,
@@ -10,15 +10,20 @@ import { useNavigate } from 'react-router-dom';
 import { deletePerformanceCycle } from '../../service/axiosInstance';
 import CenterModal from './CenterModal.component';
 import { useTranslation } from 'react-i18next';
+import { useUser } from '../../context/UserContext';
+import { hasPermission } from '../../utils/permissionCheck';
+import { PERFORMANCE_MODULE } from '../../constants/PermissionConstants';
 
 interface Props {
-  options: { title: string; svg: React.ReactNode }[];
+  options: { title: string; svg: React.ReactNode; className: string }[];
   currentCycle: any;
   fetchCycles: () => void;
   onSuccess?: (message: string) => void;
   onError?: (message: string) => void;
   isOpen: boolean;
   onToggle: () => void;
+  setCycles: React.Dispatch<React.SetStateAction<any[]>>;
+  disabled?: boolean;
 }
 
 const EvaluationListAction: React.FC<Props> = ({
@@ -29,9 +34,10 @@ const EvaluationListAction: React.FC<Props> = ({
   onError,
   isOpen,
   onToggle,
+  setCycles,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const { user } = useUser();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -41,7 +47,9 @@ const EvaluationListAction: React.FC<Props> = ({
     setShowDeleteModal(false);
   };
 
-  const handleOptionClick = async (title: string) => {
+  const handleOptionClick = async (title: string, isDisabled: boolean) => {
+    if (isDisabled) return;
+
     if (title === 'Edit') {
       navigate(`/performance/create-evaluation-form/${currentCycle.id}`);
     }
@@ -51,12 +59,32 @@ const EvaluationListAction: React.FC<Props> = ({
     onToggle();
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        onToggle();
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isOpen, onToggle]);
+
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
     try {
       await deletePerformanceCycle(currentCycle.id);
-      onSuccess?.('Review cycle has been deleted successfully!');
+      setCycles((prev: any) =>
+        prev.filter((cycle: any) => cycle.id !== currentCycle.id)
+      );
       fetchCycles();
+      onSuccess?.('Review cycle has been deleted successfully!');
     } catch (error: any) {
       onError?.(
         error.response?.data?.message || 'Failed to delete review cycle'
@@ -67,6 +95,11 @@ const EvaluationListAction: React.FC<Props> = ({
     }
   };
 
+  const canEdit =
+    user && hasPermission(user, PERFORMANCE_MODULE.UPDATE_REVIEW_CYCLE);
+  const canDelete =
+    user && hasPermission(user, PERFORMANCE_MODULE.DELETE_REVIEW_CYCLE);
+
   return (
     <>
       <ActionContainer ref={dropdownRef}>
@@ -75,14 +108,29 @@ const EvaluationListAction: React.FC<Props> = ({
         </ActionMenu>
         {isOpen && (
           <ActionMenuContent>
-            {options.map((op, i) => (
-              <ActionMenuOption
-                key={i}
-                onClick={() => handleOptionClick(op.title)}
-              >
-                {op.svg} {op.title}
-              </ActionMenuOption>
-            ))}
+            {options.map((op, i) => {
+              const isDisabled =
+                (op.title === 'Edit' && !canEdit) ||
+                (op.title === 'Delete' && !canDelete);
+
+              return (
+                <ActionMenuOption
+                  key={i}
+                  onClick={() => handleOptionClick(op.title, isDisabled)}
+                  style={{
+                    opacity: isDisabled ? 0.5 : 1,
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                  }}
+                  title={
+                    isDisabled
+                      ? t('You do not have permission to perform this action')
+                      : ''
+                  }
+                >
+                  <div className={op.className}>{op.svg}</div> {op.title}
+                </ActionMenuOption>
+              );
+            })}
           </ActionMenuContent>
         )}
       </ActionContainer>

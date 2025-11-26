@@ -3,11 +3,10 @@ package com.beeja.api.accounts.repository;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.model.User;
-import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
-import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
+import com.beeja.api.accounts.model.dto.*;
+
 import java.util.List;
 
-import com.beeja.api.accounts.model.dto.EmployeeSearchDTO;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -54,7 +53,7 @@ public interface UserRepository extends MongoRepository<User, String> {
   List<User> findAllByEmployeeIdInAndOrganizations_Id(List<String> ids, String organizationId);
 
     @Aggregation(pipeline = {
-            "{ $match: { 'organizations._id': ?1, $or: [ " +
+            "{ $match: { 'organizations._id': ?1, 'isActive': true, $or: [ " +
                     "{ 'firstName': { $regex: '^?0', $options: 'i' } }, " +
                     "{ 'lastName': { $regex: '^?0', $options: 'i' } }, " +
                     "{ $expr: { $regexMatch: { input: { $concat: [ { $ifNull: ['$firstName',''] }, ' ', { $ifNull: ['$lastName',''] } ] }, regex: '^?0', options: 'i' } } }, " +
@@ -63,4 +62,11 @@ public interface UserRepository extends MongoRepository<User, String> {
             "{ $project: { _id: 1, employeeId: 1, fullName: { $concat: [ { $ifNull: ['$firstName',''] }, ' ', { $ifNull: ['$lastName',''] } ] }, email: 1 } }"
     })
     List<EmployeeSearchDTO> searchUsersByKeyword(String keyword, String organizationId);
+
+  @Query(value = "{ 'organizations.id': ?0 }",
+          fields = "{ 'employeeId': 1, 'firstName': 1, 'lastName': 1, 'isActive': 1, 'email': 1 }")
+  List<BasicUserInfoDTO> findBasicUserInfoByOrganizationId(String organizationId);
+
+  EmployeeName findEmployeeNameByEmployeeIdAndOrganizations_Id(String employeeId,String organizationId);
+
 }

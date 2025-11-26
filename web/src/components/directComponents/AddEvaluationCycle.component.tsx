@@ -21,6 +21,7 @@ import {
   HeaderRow,
   DescriptionButton,
   StyledTextArea,
+  ErrorText,
 } from '../../styles/CreateReviewCycleStyle.style';
 import DropdownMenu from '../reusableComponents/DropDownMenu.component';
 import {
@@ -44,6 +45,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useOutletContext } from 'react-router-dom';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import CenterModal from '../reusableComponents/CenterModal.component';
+import { StyledInfoICon } from '../../svgs/PerformanceEvaluation.Svgs.scg';
 
 interface OutletContextType {
   handleShowSuccessMessage: (heading: string, body: string) => void;
@@ -132,7 +134,6 @@ const AddEvaluationCycle: React.FC = () => {
             required: q.required ?? false,
           })
         ) || [];
-
       setFormData({
         reviewCycleName: data.name,
         reviewType: data.type,
@@ -200,6 +201,9 @@ const AddEvaluationCycle: React.FC = () => {
   const handleCloseErrorMessage = () => setShowErrorMessage(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const [questionErrors, setQuestionErrors] = useState<{
+    [key: number]: string;
+  }>({});
 
   const formatDate = (dateStr: string | Date) => {
     const date = new Date(dateStr);
@@ -285,6 +289,12 @@ const AddEvaluationCycle: React.FC = () => {
     });
   };
 
+  const normalizeQuestion = (text: string) => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/gi, '');
+  };
   const handleQuestionChange = <FieldName extends keyof Question>(
     questionIndex: number,
     fieldName: FieldName,
@@ -303,6 +313,33 @@ const AddEvaluationCycle: React.FC = () => {
         textarea.style.height = '0px';
         textarea.style.height = `${textarea.scrollHeight}px`;
       }
+    }
+
+    if (fieldName === 'question') {
+      setQuestionErrors(() => {
+        const errors: Record<number, string> = {};
+        const normalized = formData.questions.map((q) =>
+          normalizeQuestion(q.question)
+        );
+
+        normalized[questionIndex] = normalizeQuestion(
+          newValue?.toString() || ''
+        );
+
+        const firstOccurrence: Record<string, number> = {};
+
+        normalized.forEach((q, index) => {
+          if (!q) return;
+
+          if (firstOccurrence[q] === undefined) {
+            firstOccurrence[q] = index;
+          } else {
+            errors[index] =
+              'Duplicate question detected. Please provide a unique question.';
+          }
+        });
+        return errors;
+      });
     }
 
     setFormData((previousFormData) => {
@@ -393,10 +430,11 @@ const AddEvaluationCycle: React.FC = () => {
 
     setPreviewMode(true);
   };
+  const hasDuplicateErrors = Object.values(questionErrors).some(Boolean);
 
-  const hasValidQuestion = formData.questions.some(
-    (q) => q.question && q.question.trim() !== ''
-  );
+  const hasValidQuestion =
+    formData.questions.some((q) => q.question && q.question.trim() !== '') &&
+    !hasDuplicateErrors;
 
   const handleSubmit = async () => {
     try {
@@ -474,6 +512,16 @@ const AddEvaluationCycle: React.FC = () => {
     };
   }, [previewMode]);
 
+  const isActivePeriod = (() => {
+    if (!formData.startDate || !formData.endDate) return false;
+
+    const today = new Date();
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
+
+    return today >= start && today <= end;
+  })();
+
   return (
     <FormContainer>
       {isLoading ? (
@@ -481,7 +529,11 @@ const AddEvaluationCycle: React.FC = () => {
       ) : (
         <FormInputsContainer className="stepTwoContainer">
           <FormHeader>
-            <div className="date-wrapper">
+            <div
+              className={`date-wrapper ${
+                isEditMode && isActivePeriod ? 'disabled-mode' : ''
+              }`}
+            >
               <TitleInput
                 type="text"
                 placeholder="Enter Title"
@@ -508,14 +560,21 @@ const AddEvaluationCycle: React.FC = () => {
             </div>
             <DateRangeContainer>
               <div className="date-wrapper" ref={startCalendarRef}>
-                <DateField onClick={() => setIsStartDateCalOpen(true)}>
+                <DateField
+                  className={isEditMode && isActivePeriod ? 'disabled' : ''}
+                  onClick={() => {
+                    if (!(isEditMode && isActivePeriod)) {
+                      setIsStartDateCalOpen(true);
+                    }
+                  }}
+                >
                   <CalenderIconDark />
                   <span>
                     {formData.startDate
                       ? formatDate(formData.startDate)
                       : 'From Date'}
                   </span>
-                  {isStartDateCalOpen && (
+                  {!(isEditMode && isActivePeriod) && isStartDateCalOpen && (
                     <div
                       className="calendarSpace"
                       onClick={(e) => e.stopPropagation()}
@@ -562,7 +621,7 @@ const AddEvaluationCycle: React.FC = () => {
                   </span>
                   {isEndDateCalOpen && (
                     <div
-                      className="calendarSpace"
+                      className="calendarField calendarSpace"
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Calendar
@@ -582,14 +641,25 @@ const AddEvaluationCycle: React.FC = () => {
                         }
                         handleDateInput={(date: Date | null) => {
                           if (!date) return;
+
+                          const selected = new Date(date);
+                          const start = formData.startDate
+                            ? new Date(formData.startDate)
+                            : null;
+
+                          if (start && selected < start) {
+                            return;
+                          }
                           setFormData((prev) => ({
                             ...prev,
                             endDate: date.toLocaleDateString('en-CA'),
                           }));
-                          setFormErrors((prev: any) => ({
+
+                          setFormErrors((prev) => ({
                             ...prev,
                             endDate: '',
                           }));
+
                           setIsEndDateCalOpen(false);
                         }}
                         handleCalenderChange={() => {}}
@@ -637,120 +707,150 @@ const AddEvaluationCycle: React.FC = () => {
               </div>
             </DropdownRow>
           </FormHeader>
+
           <Container>
-            <HeaderRow>
-              <Label>Form Description</Label>
-            </HeaderRow>
-            <FormLabelContainer className="description-container">
-              <InputContainer>
-                <StyledTextArea
-                  className="description"
-                  ref={textareaRef}
-                  rows={1}
-                  placeholder="Description"
-                  value={formData.formDescription}
-                  onChange={handleFormDescriptionChange}
-                />
-              </InputContainer>
-            </FormLabelContainer>
-
-            {formData.questions.map((q, index) => (
-              <QuestionBlock key={index}>
-                <StyledTextArea
-                  className="question-input"
-                  rows={1}
-                  ref={(el) => (questionRefs.current[index] = el)}
-                  placeholder="Write your question here"
-                  value={q.question}
-                  onChange={(e) =>
-                    handleQuestionChange(index, 'question', e.target.value)
-                  }
-                />
-
-                {q.questionDescription === undefined ? (
-                  <DescriptionButton
-                    type="button"
-                    onClick={() => {
-                      handleQuestionChange(index, 'questionDescription', '');
-                      setTimeout(() => {
-                        answerRefs.current[index]?.focus();
-                      }, 0);
-                    }}
-                  >
-                    <span className="plus-box">+</span> Add Description
-                  </DescriptionButton>
-                ) : (
+            <div
+              className={isEditMode && isActivePeriod ? 'disabled-mode' : ''}
+            >
+              <HeaderRow>
+                <Label>Form Description</Label>
+              </HeaderRow>
+              <FormLabelContainer className="description-container">
+                <InputContainer>
                   <StyledTextArea
-                    placeholder="Add a description (optional)"
-                    className="question-input description"
-                    value={q.questionDescription}
+                    className="description"
+                    ref={textareaRef}
                     rows={1}
-                    ref={(el) => (answerRefs.current[index] = el)}
-                    onChange={(e) => {
-                      const value = e.target.value;
-
-                      if (value.trim() === '') {
-                        handleQuestionChange(
-                          index,
-                          'questionDescription',
-                          undefined
-                        );
-                      } else {
-                        handleQuestionChange(
-                          index,
-                          'questionDescription',
-                          value
-                        );
-                      }
-                    }}
+                    placeholder="Description"
+                    value={formData.formDescription}
+                    onChange={handleFormDescriptionChange}
                   />
-                )}
+                </InputContainer>
+              </FormLabelContainer>
 
-                <div className="question-footer">
-                  {activeAddIndex === index && (
-                    <button
-                      type="button"
-                      className="add-btn"
-                      onClick={() => addQuestion(index)}
-                      disabled={!q.question.trim()}
-                    >
-                      + Add New Question
-                    </button>
+              {formData.questions.map((q, index) => (
+                <QuestionBlock key={index}>
+                  <StyledTextArea
+                    className="question-input"
+                    rows={1}
+                    ref={(el) => (questionRefs.current[index] = el)}
+                    placeholder="Write your question here"
+                    value={q.question}
+                    onChange={(e) =>
+                      handleQuestionChange(index, 'question', e.target.value)
+                    }
+                  />
+                  {questionErrors[index] && (
+                    <ErrorText className="question">
+                      <StyledInfoICon /> &nbsp;
+                      {questionErrors[index]}
+                    </ErrorText>
                   )}
 
-                  <div className="actions">
-                    <div className="required-toggle">
-                      <span>Required</span>
-                      <SwitchLabel>
-                        <StyledSwitch
-                          type="checkbox"
-                          checked={q.required}
-                          onChange={(e) =>
-                            handleQuestionChange(
-                              index,
-                              'required',
-                              e.target.checked
-                            )
-                          }
-                        />
-                        <Slider />
-                      </SwitchLabel>
+                  {q.questionDescription === undefined ? (
+                    <DescriptionButton
+                      type="button"
+                      onClick={() => {
+                        handleQuestionChange(index, 'questionDescription', '');
+                        setTimeout(() => {
+                          answerRefs.current[index]?.focus();
+                        }, 0);
+                      }}
+                    >
+                      <span className="plus-box">+</span> Add Description
+                    </DescriptionButton>
+                  ) : (
+                    <StyledTextArea
+                      placeholder="Add a description (optional)"
+                      className="question-input description"
+                      value={q.questionDescription}
+                      rows={1}
+                      ref={(el) => (answerRefs.current[index] = el)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        if (value.trim() === '') {
+                          handleQuestionChange(
+                            index,
+                            'questionDescription',
+                            undefined
+                          );
+                        } else {
+                          handleQuestionChange(
+                            index,
+                            'questionDescription',
+                            value
+                          );
+                        }
+                      }}
+                    />
+                  )}
+
+                  <div className="question-footer">
+                    {activeAddIndex === index && (
+                      <button
+                        type="button"
+                        className="add-btn"
+                        onClick={() => addQuestion(index)}
+                        disabled={!q.question.trim()}
+                      >
+                        + Add New Question
+                      </button>
+                    )}
+
+                    <div className="actions">
+                      <div className="required-toggle">
+                        <span>Required</span>
+                        <SwitchLabel>
+                          <StyledSwitch
+                            type="checkbox"
+                            checked={q.required}
+                            onChange={(e) =>
+                              handleQuestionChange(
+                                index,
+                                'required',
+                                e.target.checked
+                              )
+                            }
+                          />
+                          <Slider />
+                        </SwitchLabel>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => deleteQuestion(index)}
+                      >
+                        <DeleteIcon />
+                      </button>
                     </div>
-                    <button type="button" onClick={() => deleteQuestion(index)}>
-                      <DeleteIcon />
-                    </button>
                   </div>
-                </div>
-              </QuestionBlock>
-            ))}
+                </QuestionBlock>
+              ))}
+            </div>
 
             <FooterContainer className="centerAlign">
               <ButtonGroup>
                 <Button
                   type="button"
                   className="cancel"
-                  onClick={() => setShowCancelModal(true)}
-                  disabled={!hasValidQuestion}
+                  onClick={() => {
+                    const hasData =
+                      formData.reviewCycleName?.trim() ||
+                      formData.startDate ||
+                      formData.endDate ||
+                      formData.reviewType ||
+                      formData.formDescription?.trim() ||
+                      formData.questions.some(
+                        (q) =>
+                          q.question?.trim() || q.questionDescription?.trim()
+                      );
+
+                    if (hasData) {
+                      setShowCancelModal(true);
+                    } else {
+                      navigate(-1);
+                    }
+                  }}
                 >
                   {t('Cancel')}
                 </Button>
@@ -774,6 +874,7 @@ const AddEvaluationCycle: React.FC = () => {
           formData={formData}
           onEdit={() => setPreviewMode(false)}
           onConfirm={handleSubmit}
+          isLoading={isLoading}
         />
       )}
       {showErrorMessage && (

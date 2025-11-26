@@ -52,11 +52,8 @@ export const Section = styled.div`
     font-size: 14px;
     color: #333;
     outline: none;
-    background: ${(props) => props.theme.colors.grayColors.gray5};
-
-    // &:focus {
-    //   border-color: #0052cc;
-    // }
+    background-color: #f8f8f8;
+    // background: ${(props) => props.theme.colors.grayColors.gray5};
   }
 
   .search-icon {
@@ -92,7 +89,8 @@ export const Section = styled.div`
 
   &.selected-section {
     .scrollable-list {
-      background-color: #f1f2f4;
+      background-color: ${(props) =>
+        props.theme.colors.backgroundColors.primary};
       padding: 6px 4px;
     }
 
@@ -101,7 +99,6 @@ export const Section = styled.div`
     }
   }
 
-  /* Default employee row (no border for search list) */
   .employee-row {
     display: flex;
     justify-content: space-between;
@@ -109,6 +106,15 @@ export const Section = styled.div`
     padding: 10px 12px;
     border: none;
     cursor: pointer;
+
+    &.disabled {
+      cursor:
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="red" stroke-width="2"/><line x1="6" y1="18" x2="18" y2="6" stroke="red" stroke-width="2"/></svg>')
+          8 8,
+        not-allowed;
+      background: ${(props) => props.theme.colors.grayColors.gray5};
+      opacity: 0.9;
+    }
 
     .employee-details {
       .employee-name {
@@ -151,6 +157,43 @@ export const TableHead = styled.thead`
     &:nth-child(2) {
       // text-align: center;
     }
+  }
+
+  tr.table-header {
+    padding: 12px 5px;
+  }
+  th.status-container {
+    padding-right: 50px;
+    text-align: center;
+  }
+`;
+
+export const TableBodyRow = styled.tr`
+  height: 56px;
+  border-bottom: 1px solid ${(props) => props.theme.colors.blackColors.white2};
+
+  &:hover {
+    background-color: ${(props) => props.theme.colors.grayColors.gray10};
+    cursor: pointer;
+  }
+
+  .truncate_filename {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+    width: 150px;
+    white-space: nowrap;
+    padding: 20px 0px;
+  }
+  td {
+    padding: 10px 10px;
+    font-size: 12px;
+    vertical-align: middle;
+  }
+  td.status-row {
+    display: flex;
+    justify-content: center;
+    text-align: center;
   }
 `;
 
@@ -274,7 +317,7 @@ export const SectionTitle = styled.h3`
 export const Divider = styled.hr`
   margin: 16px 0;
   border: none;
-  border-top: 1px solid #e5e7eb;
+  // border-top: 1px solid #e5e7eb;
 `;
 
 export const FooterContainer = styled.div`
@@ -330,14 +373,16 @@ export const ActionMenuIcon = styled.div`
   }
 `;
 
-export const ActionMenuOptions = styled.div`
+export const ActionMenuOptions = styled.div<{ isDisabled?: boolean }>`
   display: flex;
   position: relative;
   // width: 200px;
   text-decoration: none;
   white-space: nowrap;
   color: ${(props) => props.theme.colors.blackColors.black1};
-  cursor: pointer;
+  cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
+  opacity: ${({ isDisabled }) => (isDisabled ? 0.5 : 1)};
+  pointer-events: ${({ isDisabled }) => (isDisabled ? 'none' : 'auto')};
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -346,6 +391,11 @@ export const ActionMenuOptions = styled.div`
   align-items: center;
   gap: 20px;
   background: transparent;
+
+  > svg path {
+    fill: none;
+    stroke: ${(props) => props.theme.colors.blackColors.black1};
+  }
 
   &:hover {
     background: ${(props) => props.theme.colors.grayColors.gray6};
@@ -365,6 +415,11 @@ export const ActionMenuOptions = styled.div`
     display: inline-block;
     line-height: 1.2;
     white-space: nowrap;
+  }
+  &.disabled-action {
+    opacity: 0.5;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
   }
 `;
 

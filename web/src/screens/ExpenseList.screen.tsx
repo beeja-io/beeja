@@ -731,7 +731,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
             name="sortBy"
             className="largeContainerFil"
             options={[
-              { label: t('EXPENSE_DATE'), value: '' },
+              { label: t('EXPENSE_DATE'), value: 'expenseDate' },
               { label: t('REQUESTED_DATE'), value: 'requestedDate' },
               { label: t('PAYMENT_DATE'), value: 'paymentSettled' },
               { label: t('CREATED_DATE'), value: 'created_at' },

@@ -17,13 +17,14 @@ import {
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import { getFeedbackProviderDetails } from '../service/axiosInstance';
-import StatusDropdown from '../styles/ProjectStatusStyle.style';
+import FeedbackStatusDropdown from '../styles/FeedbackStatusStyle.style';
 import {
   ExpenseTitleProviders,
   Section,
   TableHead,
   TableCellStatus,
 } from '../styles/AssignFeedbackReceiversProvidersStyle.style';
+import { FeedbackStatus } from '.././utils/feedbackStatus';
 
 type FeedbackProvider = {
   role?: string;
@@ -50,9 +51,7 @@ const ViewMoreDetails = () => {
 
   const fetchFeedbackDetails = useCallback(async () => {
     if (!employeeId || !cycleId) {
-      throw new Error(
-        `Missing employeeId or cycleId — skipping fetch (employeeId=${employeeId}, cycleId=${cycleId})`
-      );
+      throw new Error('Missing employeeId or cycleId');
     }
 
     setIsLoading(true);
@@ -64,18 +63,28 @@ const ViewMoreDetails = () => {
         ? response.data
         : response?.data?.assignedReviewers || [];
 
-      setProviders(
-        data.map((item: any) => ({
-          id: item.reviewerId || item.id,
-          name: item.reviewerName || item.name || '-',
-          designation: item.role || '',
-          status: item.status || 'IN_PROGRESS',
-          profileImage: item.profileImage || '',
-        }))
+      const mappedProviders = data.map((item: any) => ({
+        id: item.reviewerId || item.id,
+        name: item.reviewerName || item.name || '-',
+        designation: item.role || '',
+        status: item.providerStatus || 'IN_PROGRESS',
+        profileImage: item.profileImage || '',
+      }));
+
+      setProviders(mappedProviders);
+
+      sessionStorage.setItem(
+        `previousProviders_${employeeId}_${cycleId}`,
+        JSON.stringify(mappedProviders)
       );
     } catch (err) {
       setError('Unable to fetch feedback details');
       toast.error('Unable to fetch feedback details');
+      throw new Error(
+        `Error fetching feedback details: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -85,7 +94,21 @@ const ViewMoreDetails = () => {
     fetchFeedbackDetails();
   }, [fetchFeedbackDetails]);
 
-  const goToPreviousPage = () => navigate(-1);
+  const goToPreviousPage = () => {
+    const { cycleId, fromReceiversList, fromReceiversListDirect } =
+      location.state || {};
+
+    if ((fromReceiversList || fromReceiversListDirect) && cycleId) {
+      setTimeout(() => {
+        navigate('/performance/assign-feedback-providers', {
+          state: { openReceiversList: true, cycleId },
+          replace: true,
+        });
+      }, 0);
+    } else {
+      navigate(-1);
+    }
+  };
 
   return (
     <ExpenseManagementMainContainer>
@@ -106,7 +129,7 @@ const ViewMoreDetails = () => {
             {t('Feedback Providers')} {receiverName ? `of ${receiverName}` : ''}
             <p className="sub-text">
               The following are the feedback contributors
-              {receiverName ? ` of ${receiverName.toLowerCase()}.` : '.'}
+              {receiverName ? ` of ${receiverName}` : '.'}
             </p>
           </ExpenseTitleProviders>
         </ExpenseHeading>
@@ -146,8 +169,9 @@ const ViewMoreDetails = () => {
                             <TableCellStatus>
                               <div className="status-container">
                                 <span className="status-label"></span>
-                                <StatusDropdown
+                                <FeedbackStatusDropdown
                                   value={provider.status}
+                                  options={FeedbackStatus}
                                   disabled
                                 />
                               </div>

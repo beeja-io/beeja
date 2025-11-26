@@ -10,81 +10,88 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Repository interface for managing {@link EvaluationCycle} documents in MongoDB.
- *
- * <p>
- * Every query explicitly includes <b>organizationId</b> to ensure
- * data isolation between tenants and prevent data leakage.
- * </p>
+ * Repository for managing {@link EvaluationCycle} documents in MongoDB.
+ * Provides query methods to retrieve evaluation cycles based on organization, status, date range, and IDs.
  */
 @Repository
 public interface EvaluationCycleRepository extends MongoRepository<EvaluationCycle, String> {
 
     /**
-     * Retrieves all evaluation cycles for a specific organization.
+     * Finds evaluation cycles by organization ID and status.
      *
-     * @param organizationId the organization ID
-     * @param status the cycle status (e.g., ACTIVE, COMPLETED)
-     * @return a list of EvaluationCycle objects with the specified status
+     * @param organizationId the unique ID of the organization
+     * @param status the status of the evaluation cycle
+     * @return list of matching {@link EvaluationCycle} documents
      */
     List<EvaluationCycle> findByOrganizationIdAndStatus(String organizationId, CycleStatus status);
 
     /**
-     * Finds all evaluation cycles within a start date range for the given organization.
+     * Finds evaluation cycles for an organization that start between the given dates.
      *
-     * @param organizationId the organization ID
-     * @param startDate the lower bound of the start date range
-     * @param feedBackDeadLine the upper bound of the start date range
-     * @return a list of evaluation cycles within the given range
+     * @param organizationId the unique ID of the organization
+     * @param startDate the start date range lower bound
+     * @param feedBackDeadLine the feedback deadline range upper bound
+     * @return list of {@link EvaluationCycle} within the specified date range
      */
     List<EvaluationCycle> findByOrganizationIdAndStartDateBetween(
             String organizationId, LocalDate startDate, LocalDate feedBackDeadLine);
 
     /**
-     * Finds an active evaluation cycle for an organization where:
-     * startDate <= currentDate <= feedbackDeadline
+     * Finds an active evaluation cycle by organization, status, and date range.
+     * Typically used to identify a currently active cycle.
      *
-     * @param organizationId the organization ID
-     * @param status the cycle status (e.g., ACTIVE)
-     * @param startDate current or reference date (used for comparison)
-     * @param feedBackDeadLine current or reference date (used for comparison)
-     * @return an Optional containing the matching EvaluationCycle, if found
+     * @param organizationId the unique ID of the organization
+     * @param status the status of the evaluation cycle
+     * @param startDate the date to compare against the cycle start date
+     * @param feedBackDeadLine the date to compare against the feedback deadline
+     * @return an {@link Optional} containing the active {@link EvaluationCycle} if found
      */
     Optional<EvaluationCycle> findByOrganizationIdAndStatusAndStartDateLessThanEqualAndFeedbackDeadlineGreaterThanEqual(
             String organizationId, CycleStatus status, LocalDate startDate, LocalDate feedBackDeadLine);
 
     /**
-     * Retrieves all evaluation cycles by IDs for a specific organization.
+     * Finds all evaluation cycles by their IDs within a specific organization.
      *
-     * @param ids   the list of cycle IDs
-     * @param orgId
-     * @return a list of matching evaluation cycles
+     * @param ids list of evaluation cycle IDs
+     * @param orgId the unique ID of the organization
+     * @return list of matching {@link EvaluationCycle} documents
      */
     List<EvaluationCycle> findByIdInAndOrganizationId(List<String> ids, String orgId);
 
     /**
-     * Finds a single evaluation cycle by ID and organization ID.
+     * Finds an evaluation cycle by its ID and organization.
      *
-     * @param id the cycle ID
-     * @param organizationId the organization ID
-     * @return an Optional containing the EvaluationCycle, if found
+     * @param id the unique ID of the evaluation cycle
+     * @param organizationId the unique ID of the organization
+     * @return an {@link Optional} containing the matching {@link EvaluationCycle} if found
      */
     Optional<EvaluationCycle> findByIdAndOrganizationId(String id, String organizationId);
 
     /**
      * Retrieves all evaluation cycles for a given organization.
      *
-     * @param organizationId the organization ID
-     * @return list of all cycles for that organization
+     * @param organizationId the unique ID of the organization
+     * @return list of all {@link EvaluationCycle} documents belonging to the organization
      */
     List<EvaluationCycle> findByOrganizationId(String organizationId);
 
     /**
-     * Finds all evaluation cycles for a given organization with specific statuses.
+     * Finds evaluation cycles for an organization with any of the given statuses.
      *
-     * @param organizationId the organization ID
-     * @param statuses list of cycle statuses (e.g., ACTIVE, COMPLETED)
-     * @return list of matching EvaluationCycles
+     * @param organizationId the unique ID of the organization
+     * @param statuses list of possible {@link CycleStatus} values
+     * @return list of {@link EvaluationCycle} matching any of the specified statuses
      */
     List<EvaluationCycle> findByOrganizationIdAndStatusIn(String organizationId, List<CycleStatus> statuses);
+
+    /**
+     * Checks if an evaluation cycle exists by its ID and organization.
+     *
+     * @param id the unique ID of the evaluation cycle
+     * @param organizationId the unique ID of the organization
+     * @return {@code true} if the cycle exists; {@code false} otherwise
+     */
+    boolean existsByIdAndOrganizationId(String id, String organizationId);
+
+    EvaluationCycle getCycleByOrganizationIdAndId(String organizationId, String id);
 }

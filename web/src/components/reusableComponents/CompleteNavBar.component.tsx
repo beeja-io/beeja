@@ -42,6 +42,7 @@ import {
   INVENTORY_MODULE,
   LOAN_MODULE,
   ORGANIZATION_MODULE,
+  PERFORMANCE_MODULE,
   PROJECT_MODULE,
   RECRUITMENT_MODULE,
 } from '../../constants/PermissionConstants';
@@ -452,45 +453,89 @@ const CompleteNavBar = () => {
                   {hasFeature(
                     featureToggles.featureToggles,
                     EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
-                  ) && (
-                    <ListItem
-                      isSideBarOpen={sidebarOpen}
-                      linkTo="#"
-                      tooltipName="Performance"
-                      linkName="Performance"
-                      svgIcon={
-                        <PerformanceIcon
-                          props={{
-                            isActive:
-                              openDropdown === 'performance' ||
-                              currentPath.startsWith('/performance'),
-                          }}
-                        />
-                      }
-                      additionalSvgIcon={<ChevronDownSVG />}
-                      dropdownItems={[
-                        {
-                          name: 'Create Evaluation Form',
-                          link: '/performance/create-evaluation-form',
-                        },
-                        {
-                          name: 'Assign Feedback Receivers & Providers',
-                          link: '/performance/assign-feedback-providers',
-                        },
-                        {
-                          name: 'Feedback Hub',
-                          link: '/performance/feedback-hub',
-                        },
-                      ]}
-                      isDropdownOpen={openDropdown === 'performance'}
-                      setDropdownOpen={() => {
-                        setOpenDropdown((prev) =>
-                          prev === 'performance' ? null : 'performance'
-                        );
-                      }}
-                      hasAdditionalSvg
-                    />
-                  )}
+                  ) &&
+                    (hasPermission(
+                      user,
+                      PERFORMANCE_MODULE.READ_REVIEW_CYCLE
+                    ) ||
+                      hasPermission(user, PERFORMANCE_MODULE.READ_RECEIVER) ||
+                      hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER) ||
+                      hasPermission(user, PERFORMANCE_MODULE.READ_RESPONSE) ||
+                      hasPermission(
+                        user,
+                        PERFORMANCE_MODULE.READ_ALL_RESPONSES
+                      )) && (
+                      <ListItem
+                        isSideBarOpen={sidebarOpen}
+                        linkTo="#"
+                        tooltipName="Performance"
+                        linkName="Performance"
+                        svgIcon={
+                          <PerformanceIcon
+                            props={{
+                              isActive:
+                                openDropdown === 'performance' ||
+                                currentPath.startsWith('/performance'),
+                            }}
+                          />
+                        }
+                        additionalSvgIcon={<ChevronDownSVG />}
+                        dropdownItems={[
+                          ...(hasPermission(
+                            user,
+                            PERFORMANCE_MODULE.READ_REVIEW_CYCLE
+                          )
+                            ? [
+                                {
+                                  name: 'Create Evaluation Form',
+                                  link: '/performance/create-evaluation-form',
+                                },
+                              ]
+                            : []),
+                          ...(hasPermission(
+                            user,
+                            PERFORMANCE_MODULE.READ_RECEIVER
+                          ) ||
+                          hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER)
+                            ? [
+                                {
+                                  name: 'Assign Feedback Receivers & Providers',
+                                  link: '/performance/assign-feedback-providers',
+                                },
+                              ]
+                            : []),
+                          ...(hasPermission(
+                            user,
+                            PERFORMANCE_MODULE.READ_RESPONSE
+                          )
+                            ? [
+                                {
+                                  name: 'Feedback Hub',
+                                  link: '/performance/feedback-hub',
+                                },
+                              ]
+                            : []),
+                          ...(hasPermission(
+                            user,
+                            PERFORMANCE_MODULE.READ_ALL_RESPONSES
+                          )
+                            ? [
+                                {
+                                  name: 'My Team Overview',
+                                  link: '/performance/my-team-overview',
+                                },
+                              ]
+                            : []),
+                        ]}
+                        isDropdownOpen={openDropdown === 'performance'}
+                        setDropdownOpen={() => {
+                          setOpenDropdown((prev) =>
+                            prev === 'performance' ? null : 'performance'
+                          );
+                        }}
+                        hasAdditionalSvg
+                      />
+                    )}
                   {hasFeature(
                     featureToggles.featureToggles,
                     EFeatureToggles.RECRUITMENT_MANAGEMENT

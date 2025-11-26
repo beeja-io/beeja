@@ -44,9 +44,12 @@ import ReviewCyclesList from '../screens/ReviewCyclesList.screen';
 import AssignFeedbackProviders from '../screens/AssignFeedbackReceiversProviders.screen';
 import FeedbackHub from '../screens/FeedbackHub.screen';
 import AddEvaluationCycle from '../components/directComponents/AddEvaluationCycle.component';
+import EvaluationOverview from '../components/reusableComponents/EvaluationOverview.component';
+import MyTeamOverview from '../screens/MyTeamOverview.screen';
 import FeedbackReceiversList from '../screens/FeedbackReceiversList.screen';
 import AddFeedbackReceivers from '../components/reusableComponents/AddFeedbackReceivers.component';
 import ViewMoreDetails from '../screens/ViewMoreDetailsListScreen.screen';
+import ProvideFeedback from '../screens/ProvideFeedback.screen';
 
 const AllRoutes = () => {
   return (
@@ -232,18 +235,6 @@ const AllRoutes = () => {
         }
       />
 
-      {/* <Route
-  path="/performance/assign-feedback-providers/:id/add-feedback-receiver"
-  element={
-    <CustomRoute
-      permission={LOAN_MODULE.READ_LOAN}
-      featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
-    >
-      <AddFeedbackReceivers />
-    </CustomRoute>
-  }
-  
-/> */}
       <Route
         path="/performance/view-more-details"
         element={<ViewMoreDetails />}
@@ -254,15 +245,6 @@ const AllRoutes = () => {
         element={<AddFeedbackReceivers />}
       />
 
-      {/* <Route
-  path="/performance/assign-feedback-providers/:cycleId/add-feedback-receiver"
-  element={<AddFeedbackReceivers />}
-/> */}
-
-      {/* <Route
-  path="/performance/assign-feedback-providers"
-  element={<AddFeedbackReceivers />}
-/> */}
       <Route
         path="/performance/assign-feedback-providers/:cycleId/:questionnaireId"
         element={<FeedbackReceiversList />}
@@ -276,6 +258,39 @@ const AllRoutes = () => {
             featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
           >
             <FeedbackHub />
+          </CustomRoute>
+        }
+      />
+      <Route
+        path="/performance/feedback-hub/provide-feedback/:id"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <ProvideFeedback />
+          </CustomRoute>
+        }
+      />
+      <Route
+        path="/performance/my-team-overview"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <MyTeamOverview />
+          </CustomRoute>
+        }
+      />
+      <Route
+        path="/performance/my-team-overview/:employeeId"
+        element={
+          <CustomRoute
+            permission={LOAN_MODULE.READ_LOAN}
+            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+          >
+            <EvaluationOverview />
           </CustomRoute>
         }
       />

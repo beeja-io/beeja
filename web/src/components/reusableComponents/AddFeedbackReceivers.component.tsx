@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { matchPath, useNavigate, useLocation } from 'react-router-dom';
 import {
@@ -29,6 +29,9 @@ import {
   updateFeedbackProviders,
 } from '../../service/axiosInstance';
 import { toast } from 'sonner';
+import { TickmarkIcon } from '../../svgs/DocumentTabSvgs.svg';
+import ToastMessage from './ToastMessage.component';
+import { ValidationText } from '../../styles/DocumentTabStyles.style';
 
 type FeedbackReceiver = {
   employeeId: string;
@@ -77,8 +80,32 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [, setList] = useState([]);
+  const [fromReceiversList, setList] = useState<any[]>([]);
   const isProvidersPage = mode === 'provider';
+
+  const [showErrorToast, setShowErrorToast] = useState(false);
+  const [errorToastMessage] = useState('');
+
+  const [previousProviders, setPreviousProviders] = useState<any[]>([]);
+  const [searchCompleted, setSearchCompleted] = useState(false);
+
+  const [toastData, setToastData] = useState<{
+    type: 'success' | 'error' | null;
+    heading?: string;
+    body?: string;
+  }>({ type: null });
+
+  useEffect(() => {
+    if (isProvidersPage && selectedReceiver?.employeeId && cycleId) {
+      const stored = sessionStorage.getItem(
+        `previousProviders_${selectedReceiver.employeeId}_${cycleId}`
+      );
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        setPreviousProviders(parsed);
+      }
+    }
+  }, [isProvidersPage, selectedReceiver, cycleId]);
 
   const handleAssignProviders = async () => {
     try {
@@ -95,41 +122,119 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
       }
 
       if (selected.length === 0) {
-        toast.error('Please select at least one provider');
+        setToastData({
+          type: 'error',
+          heading: 'Error',
+          body: t('Please select at least one provider.'),
+        });
         return;
       }
+
+      const duplicateProvider = selected.find((emp) =>
+        fromReceiversList.some(
+          (existing) =>
+            existing.reviewerId === emp.id ||
+            existing.employeeId === emp.id ||
+            existing.id === emp.id
+        )
+      );
+
+      if (duplicateProvider) {
+        setToastData({
+          type: 'error',
+          heading: 'Duplicate Provider',
+          body: t('This employee is already assigned as a feedback provider.'),
+        });
+        return;
+      }
+
+      const storedProvidersKey = `previousProviders_${selectedReceiver.employeeId}_${cycleId}`;
+      const oldProviders =
+        JSON.parse(sessionStorage.getItem(storedProvidersKey) || '[]') || [];
+
+      const oldReviewerList = oldProviders.map((prov: any) => ({
+        reviewerId: prov.id?.toString(),
+        role: prov.role || prov.designation || 'Reviewer',
+        status: prov.status || 'IN_PROGRESS',
+      }));
+
+      const newReviewerList = selected.map((emp) => ({
+        reviewerId: emp.id?.toString(),
+        role: providerRole || emp.role || 'Reviewer',
+        status: 'IN_PROGRESS',
+      }));
+
+      const mergedReviewers = [
+        ...oldReviewerList,
+        ...newReviewerList.filter(
+          (newProv) =>
+            !oldReviewerList.some(
+              (oldProv: any) => oldProv.reviewerId === newProv.reviewerId
+            )
+        ),
+      ];
 
       const payload = {
         cycleId,
         questionnaireId,
-        assignedReviewers: selected.map((emp) => ({
-          reviewerId: emp.id?.toString(),
-          role: providerRole || emp.role || 'Reviewer',
-          status: 'IN_PROGRESS',
-        })),
+        assignedReviewers: mergedReviewers,
       };
-
       if (selectedReceiver.providerStatus === 'NOT_ASSIGNED') {
         await assignProvider(selectedReceiver.employeeId, payload);
-        toast.success('Providers assigned successfully');
-      } else if (selectedReceiver.providerStatus === 'IN_PROGRESS') {
+        setToastData({
+          type: 'success',
+          heading: t('Providers Assigned'),
+          body: t('The feedback providers have been assigned successfully.'),
+        });
+      } else if (
+        selectedReceiver.providerStatus === 'IN_PROGRESS' ||
+        selectedReceiver.providerStatus === 'COMPLETED'
+      ) {
         await updateFeedbackProviders(selectedReceiver.employeeId, payload);
-        toast.success('Providers updated successfully');
-      } else {
-        toast.error('Unsupported provider status');
-        return;
+        setToastData({
+          type: 'success',
+          heading: t('Providers Updated'),
+          body: t('The feedback providers have been updated successfully.'),
+        });
       }
 
-      onSuccess?.();
-      onClose?.();
+      setTimeout(() => {
+        onSuccess?.();
+        onClose?.();
+      }, 2000);
     } catch (err) {
-      toast.error('Failed to assign provider');
+      setToastData({
+        type: 'error',
+        heading: 'Error',
+        body: t('Something went wrong while assigning providers.'),
+      });
     }
   };
 
   const handleCreateReceivers = async () => {
     if (!cycleId || !questionnaireId) {
       toast.error('Cycle ID or Questionnaire ID missing');
+      return;
+    }
+    if (selected.length === 0) {
+      setToastData({
+        type: 'error',
+        heading: 'Error',
+        body: t('Please select at least one receiver.'),
+      });
+      return;
+    }
+
+    const duplicateReceiver = selected.find((emp) =>
+      fromReceiversList.some((existing) => existing.employeeId === emp.id)
+    );
+
+    if (duplicateReceiver) {
+      setToastData({
+        type: 'error',
+        heading: 'Duplicate Receiver',
+        body: t('This employee is already assigned as a feedback receiver.'),
+      });
       return;
     }
 
@@ -139,58 +244,75 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
       receiverDetails: selected.map((emp) => ({
         employeeId: emp.id,
         fullName: emp.name,
-        department: emp.role,
+        department: emp.department,
+        designation: emp.role,
         email: emp.email,
       })),
     };
 
     try {
       await createReceiverList(payload);
-
-      toast.success('Successfully Added', {
-        description: 'The Feedback Receiver has been added successfully.',
+      setToastData({
+        type: 'success',
+        heading: 'Receivers Added',
+        body: t('The feedback receivers have been added successfully.'),
       });
 
-      onSuccess?.();
-      onClose?.();
+      setTimeout(() => {
+        onSuccess?.();
+        onClose?.();
+      }, 2000);
     } catch (error) {
-      toast.error('Failed to create receiver list');
+      setToastData({
+        type: 'error',
+        heading: 'Error',
+        body: t('Something went wrong while adding receivers.'),
+      });
     }
   };
 
-  const fetchUsers = useCallback(async (keyword: string = '') => {
-    if (keyword.trim().length === 0) return;
-    setLoading(true);
-
-    try {
-      const response = await searchUsers(keyword);
-      const employeeList = response?.data || [];
-
-      const formatted = employeeList
-        .map((emp: any) => ({
-          id: emp.employeeId,
-          name: emp.fullName,
-          role: emp.department || '—',
-          email: emp.email || '',
-        }))
-        .filter((emp: { name: string }) =>
-          emp.name?.toLowerCase().includes(keyword.toLowerCase())
-        );
-
-      if (formatted.length === 0) {
-        setError('No employees found');
+  const fetchUsers = useCallback(
+    async (keyword: string = '') => {
+      if (keyword.trim().length === 0) {
+        setSearchCompleted(false);
         setEmployees([]);
-      } else {
-        setEmployees(formatted);
-        setError(null);
+        return;
       }
-    } catch (err) {
-      setError('Error while fetching employees');
-      setEmployees([]);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+
+      setLoading(true);
+      setSearchCompleted(false);
+
+      try {
+        const response = await searchUsers(keyword);
+        const employeeList = response?.data || [];
+
+        const formatted = employeeList
+          .map((emp: any) => ({
+            id: emp.employeeId,
+            name: emp.fullName,
+            role: emp.designation || '—',
+            department: emp.department || '',
+            email: emp.email || '',
+          }))
+          .filter((emp: { name: string }) =>
+            emp.name?.toLowerCase().includes(keyword.toLowerCase())
+          );
+
+        if (keyword === searchTerm.trim()) {
+          setEmployees(formatted);
+          setSearchCompleted(true);
+          setError(null);
+        }
+      } catch (err) {
+        setError('Error while fetching employees');
+        setEmployees([]);
+        setSearchCompleted(true);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [searchTerm]
+  );
 
   useEffect(() => {
     if (searchTerm.trim().length === 0) {
@@ -204,8 +326,11 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, fetchUsers]);
 
-  const handleSearchClick = () => fetchUsers(searchTerm);
-
+  // const handleSearchClick = () => fetchUsers(searchTerm);
+  const handleSearchClick = () => {
+    inputRef.current?.focus();
+    fetchUsers(searchTerm);
+  };
   const handleAdd = (emp: FeedbackUser) => {
     setSelected((prev) => {
       if (prev.some((e) => e.id === emp.id)) return prev;
@@ -234,15 +359,30 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
   useEffect(() => {
     if (!cycleId || !questionnaireId) return;
 
-    if (isProvidersPage && selectedReceiver?.employeeId) {
-      getProviders(selectedReceiver.employeeId).then((res) => {
-        setList(res.data?.providers || []);
-      });
-    } else {
-      getReceivers(cycleId, questionnaireId).then((res) => {
-        setList(res.data?.receivers || []);
-      });
-    }
+    const fetchData = async () => {
+      try {
+        if (isProvidersPage && selectedReceiver?.employeeId) {
+          const res = await getProviders(selectedReceiver.employeeId);
+          const providerList = res.data?.providers || [];
+          setList(providerList);
+          if (providerList.length > 0) {
+            setPreviousProviders(providerList);
+            sessionStorage.setItem(
+              `previousProviders_${selectedReceiver.employeeId}_${cycleId}`,
+              JSON.stringify(providerList)
+            );
+          }
+        } else {
+          const res = await getReceivers(cycleId, questionnaireId);
+          const receiverList = res.data?.receivers || [];
+          setList(receiverList);
+        }
+      } catch (err) {
+        throw new Error('Error loading existing list');
+      }
+    };
+
+    fetchData();
   }, [isProvidersPage, selectedReceiver, cycleId, questionnaireId]);
 
   const isViewMoreDetailsRoute = matchPath(
@@ -256,6 +396,14 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
     );
   };
 
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   return (
     <ExpenseManagementMainContainer>
       <ExpenseHeadingSection>
@@ -302,19 +450,19 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
               </ExpenseTitle>
             </ExpenseHeadingFeedback>
 
-            {/* 🔍 Search Section */}
             <Section>
               <SectionTitle>
                 {isProvidersPage
                   ? t('Select_Feedback_Providers')
                   : t('Select_Feedback_Receivers')}
-                *
+                <ValidationText className="star">*</ValidationText>
               </SectionTitle>
               <div className="search-container">
                 <input
+                  ref={inputRef}
                   type="text"
                   className="search-input"
-                  placeholder="Search by Employee Name, Employee ID"
+                  placeholder="Search by Employee Name"
                   value={searchTerm}
                   onChange={(e) => {
                     const value = e.target.value;
@@ -339,29 +487,78 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                     <p>{error}</p>
                   ) : employees.length > 0 ? (
                     employees.map((emp) => {
+                      const isAlreadyReceiver =
+                        !isProvidersPage &&
+                        fromReceiversList?.some(
+                          (rec) => rec.employeeId === emp.id
+                        );
+
+                      const isAlreadyProvider =
+                        isProvidersPage &&
+                        (fromReceiversList?.some((prov) => {
+                          const providerId =
+                            prov.reviewerId || prov.employeeId || prov.id;
+                          return providerId?.toString() === emp.id?.toString();
+                        }) ||
+                          previousProviders.some(
+                            (prov) => prov.id?.toString() === emp.id?.toString()
+                          ));
+
                       const isSelected = selected.some(
                         (sel) => sel.id === emp.id
                       );
+                      const isSelf =
+                        isProvidersPage &&
+                        emp.id === selectedReceiver?.employeeId;
+
+                      const showTick =
+                        isAlreadyReceiver || isAlreadyProvider || isSelected;
+                      const isDisabled =
+                        isAlreadyReceiver ||
+                        isAlreadyProvider ||
+                        isSelected ||
+                        isSelf;
+
                       return (
                         <div
                           key={emp.id}
-                          className={`employee-row ${isSelected ? 'selected' : ''}`}
-                          onClick={() => !isSelected && handleAdd(emp)}
+                          className={`employee-row ${showTick ? 'selected' : ''} ${
+                            isDisabled ? 'disabled' : ''
+                          }`}
+                          onClick={() => {
+                            if (isSelf) {
+                              return;
+                            }
+
+                            if (isAlreadyReceiver || isAlreadyProvider) {
+                              return;
+                            }
+
+                            if (isSelected) {
+                              return;
+                            }
+                            handleAdd(emp);
+                          }}
                         >
                           <div className="employee-details">
                             <p className="employee-name">{emp.name}</p>
                             <p className="employee-role">{emp.role}</p>
                           </div>
 
-                          {isSelected && (
-                            <span className="selected-label">Selected</span>
+                          {showTick && (
+                            <span className="selected-icon">
+                              <TickmarkIcon />
+                            </span>
                           )}
                         </div>
                       );
                     })
-                  ) : (
+                  ) : !loading &&
+                    searchCompleted &&
+                    searchTerm.trim().length > 0 &&
+                    employees.length === 0 ? (
                     <p>No employees found</p>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </Section>
@@ -416,6 +613,22 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
           </FeedbackCard>
         </PreviewWrapper>
       </StyledDiv>
+      {toastData.type && (
+        <ToastMessage
+          messageType={toastData.type}
+          messageHeading={toastData.heading || ''}
+          messageBody={toastData.body || ''}
+          handleClose={() => setToastData({ type: null })}
+        />
+      )}
+      {showErrorToast && (
+        <ToastMessage
+          messageType="error"
+          messageHeading="Error"
+          messageBody={errorToastMessage}
+          handleClose={() => setShowErrorToast(false)}
+        />
+      )}
     </ExpenseManagementMainContainer>
   );
 };

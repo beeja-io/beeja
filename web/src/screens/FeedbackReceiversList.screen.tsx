@@ -15,7 +15,7 @@ import {
 import { Button } from '../styles/CommonStyles.style';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
-import { useNavigate } from 'react-router-dom';
+
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import { toast } from 'sonner';
 import {
@@ -25,11 +25,17 @@ import {
   ProfileCell,
 } from '../styles/AssignFeedbackReceiversProvidersStyle.style';
 import FeedbackProviderAction from '../components/reusableComponents/FeedbackProviderAction';
-import { FormFileIcon } from '../svgs/DocumentTabSvgs.svg';
-import { AssignUserSVG } from '../svgs/PerformanceEvaluation.Svgs.scg';
+
+import {
+  AssignUserSVG,
+  DocumentTextSVG,
+} from '../svgs/PerformanceEvaluation.Svgs.scg';
 import AddFeedbackReceivers from '../components/reusableComponents/AddFeedbackReceivers.component';
 import { getReceivers } from '../service/axiosInstance';
-import StatusDropdown from '../styles/ProjectStatusStyle.style';
+import FeedbackStatusDropdown from '../styles/FeedbackStatusStyle.style';
+import { hasPermission } from '../utils/permissionCheck';
+import { PERFORMANCE_MODULE } from '../constants/PermissionConstants';
+import { useUser } from '../context/UserContext';
 
 type FeedbackReceiver = {
   id: string | undefined;
@@ -47,15 +53,19 @@ interface FeedbackReceiversListProps {
   refresh?: number;
   onBack?: () => void;
   receiverName?: string;
+  formName?: string;
+  isExpired?: boolean;
 }
 
 const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
   cycleId,
   questionnaireId,
   onBack,
+  formName,
+  isExpired,
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
+  const { user } = useUser();
 
   const [feedbackReceivers, setFeedbackReceivers] = useState<
     FeedbackReceiver[]
@@ -64,6 +74,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedReceiver, setSelectedReceiver] =
     useState<FeedbackReceiver | null>(null);
+  const isCycleExpired = isExpired;
 
   const fetchFeedbackReceivers = async () => {
     if (!cycleId || !questionnaireId) {
@@ -112,29 +123,50 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
     setIsAssignModalOpen(false);
   };
 
+  const canAssign =
+    user && hasPermission(user, PERFORMANCE_MODULE.ASSIGN_RECEIVER);
+  const canUpdate =
+    user && hasPermission(user, PERFORMANCE_MODULE.UPDATE_RECEIVER);
+  const canShowButton =
+    !isLoading &&
+    ((feedbackReceivers.length === 0 && canAssign) ||
+      (feedbackReceivers.length > 0 && canUpdate));
+
   return (
     <ExpenseManagementMainContainer>
       <ExpenseHeadingSection>
         <span className="heading">
-          <span onClick={onBack || (() => navigate(-1))}>
+          <span onClick={onBack}>
             <ArrowDownSVG />
           </span>
           {t('Assign_Feedback_Receivers_Providers')}
         </span>
 
-        <Button
-          className="submit shadow"
-          onClick={handleAddFeedbackReceiver}
-          width="216px"
-        >
-          <AddNewPlusSVG />
-          {t('Add_Feedback_Receiver')}
-        </Button>
+        {canShowButton && (
+          <Button
+            className={`submit shadow ${isExpired ? 'disabled-action' : ''}`}
+            disabled={isExpired}
+            onClick={() => {
+              if (isExpired) {
+                toast.error('Evaluation period is completed');
+                return;
+              }
+              handleAddFeedbackReceiver();
+            }}
+            width="216px"
+          >
+            <AddNewPlusSVG />
+            {t('Add_Feedback_Receiver')}
+          </Button>
+        )}
       </ExpenseHeadingSection>
 
       <StyledDiv>
         <ExpenseHeadingFeedback>
-          <ExpenseTitle>{t('Feedback_Receivers_List')}</ExpenseTitle>
+          <ExpenseTitle>
+            {t('Feedback_Receivers_List')}
+            {formName ? ` : ${formName}` : ''}
+          </ExpenseTitle>
         </ExpenseHeadingFeedback>
 
         <TableListContainer>
@@ -156,25 +188,60 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
               </TableHead>
               <tbody>
                 {feedbackReceivers.map((receiver) => {
-                  const normalizedStatus =
+                  const rawStatus =
                     receiver.providerStatus?.toUpperCase() || 'NOT_ASSIGNED';
 
-                  const feedbackActions =
-                    normalizedStatus === 'IN_PROGRESS'
-                      ? [
-                          {
-                            title: 'Reassign Feedback Providers',
-                            svg: <AssignUserSVG />,
-                          },
-                          { title: 'View More Details', svg: <FormFileIcon /> },
-                        ]
-                      : [
-                          {
-                            title: 'Assign Feedback Providers',
-                            svg: <AssignUserSVG />,
-                          },
-                          { title: 'View More Details', svg: <FormFileIcon /> },
-                        ];
+                  const uiStatus =
+                    !isCycleExpired && rawStatus === 'COMPLETED'
+                      ? 'IN_PROGRESS'
+                      : rawStatus;
+
+                  let feedbackActions;
+
+                  if (isCycleExpired) {
+                    feedbackActions = [
+                      {
+                        title:
+                          uiStatus === 'NOT_ASSIGNED'
+                            ? 'Assign Feedback Providers'
+                            : 'Reassign Feedback Providers',
+                        svg: <AssignUserSVG />,
+                        disabled: true,
+                      },
+                      {
+                        title: 'View More Details',
+                        svg: <DocumentTextSVG />,
+                        disabled: false,
+                      },
+                    ];
+                  } else {
+                    feedbackActions =
+                      uiStatus === 'NOT_ASSIGNED'
+                        ? [
+                            {
+                              title: 'Assign Feedback Providers',
+                              svg: <AssignUserSVG />,
+                              disabled: false,
+                            },
+                            {
+                              title: 'View More Details',
+                              svg: <DocumentTextSVG />,
+                              disabled: false,
+                            },
+                          ]
+                        : [
+                            {
+                              title: 'Reassign Feedback Providers',
+                              svg: <AssignUserSVG />,
+                              disabled: false,
+                            },
+                            {
+                              title: 'View More Details',
+                              svg: <DocumentTextSVG />,
+                              disabled: false,
+                            },
+                          ];
+                  }
 
                   const getStatusClass = (status: any) => {
                     switch (status) {
@@ -208,9 +275,9 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
 
                       <td>{receiver.department}</td>
 
-                      <td className={getStatusClass(normalizedStatus)}>
+                      <td className={getStatusClass(rawStatus)}>
                         {receiver?.providerStatus ? (
-                          <StatusDropdown
+                          <FeedbackStatusDropdown
                             value={receiver.providerStatus}
                             disabled
                           />

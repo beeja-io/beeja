@@ -339,6 +339,14 @@
   "Selected_Feedback_Providers": "Ausgewählte Feedbackgeber",
   "View_More_Details": "Weitere Details anzeigen",
   "List_of_forms": "Liste der Formulare",
+  "Please_select_provider": "Bitte wählen Sie mindestens einen Anbieter aus.",
+  "Already_assigned_provider": "Dieser Mitarbeiter ist bereits\nals Feedbackgeber zugewiesen.",
+  "Please_select_receiver": "Bitte wählen Sie mindestens einen Empfänger aus.",
+  "Already_assigned_receiver": "Dieser Mitarbeiter ist bereits\nals Feedbackempfänger zugewiesen.",
+  "Providers_assigned_heading": "Anbieter zugewiesen",
+  "Providers_updated_heading": "Anbieter aktualisiert",
+  "Providers_assigned_body": "Die Feedbackgeber wurden erfolgreich zugewiesen.",
+  "Providers_updated_body": "Die Feedbackgeber wurden erfolgreich aktualisiert.",
   "Employment_Type": "Type dienstverband",
   "Designation": "Aanduiding",
   "Note": "Opmerking",
@@ -347,5 +355,10 @@
   "View_History": "Geschiedenis bekijken",
   "Employment_History": "Werkervaring",
   "Updated_by": "Bijgewerkt door",
-  "Updated_On": "Bijgewerkt op:"
+  "Updated_On": "Bijgewerkt op:",
+  "feedback": {
+    "singleSuccess": "Ihr Feedback für {{name}} wurde erfolgreich übermittelt.",
+    "allSuccess": "Alle Feedbackformulare für {{name}} wurden übermittelt!",
+    "nextFormSuccess": "Feedback für {{name}} erfolgreich übermittelt! Weiter zum nächsten Formular ({{label}})."
+  }
 }
