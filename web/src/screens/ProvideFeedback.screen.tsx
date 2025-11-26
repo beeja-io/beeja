@@ -134,6 +134,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
   );
   const [showWarning, setShowWarning] = useState(false);
   const [warningMessageBody, setWarningMessageBody] = useState('');
+  const [blockWarnings, setBlockWarnings] = useState(false);
 
   const { t } = useTranslation();
 
@@ -208,7 +209,6 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
           formList.find((form: any) => form.status === 'IN_PROGRESS') ||
           formList[0];
 
-        setSelectedFormId(activeForm.cycleId);
         await fetchFormDetails(activeForm.cycleId);
       } else {
         setResponseErrorMessage('No forms available for this employee.');
@@ -276,6 +276,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
   };
 
   const handleSubmit = async () => {
+    setBlockWarnings(true);
     if (!formData || !selectedEmployee) return;
 
     const errors = formData.questions.map(
@@ -369,6 +370,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
       setResponseErrorMessage('Failed to submit feedback. Please try again.');
       setShowErrorMessage(true);
     } finally {
+      setTimeout(() => setBlockWarnings(false), 300);
       setIsLoading(false);
     }
   };
@@ -388,6 +390,8 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
     setSelectedEmployee(null);
     setFormData(null);
     fetchFeedbackData();
+    setShowWarning(false);
+    setWarningMessageBody('');
   };
 
   const handleSelectForm = (formId: string) => {
@@ -428,6 +432,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
   const formActive = isFormActive(formData);
 
   useEffect(() => {
+    if (blockWarnings) return;
     if (!formData?.startDate || !formData?.endDate) return;
 
     const today = startOfDay(new Date());
@@ -439,14 +444,16 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
       setWarningMessageBody(
         `This form is not yet active. It will be available from ${formattedStart}.`
       );
+      setShowSuccessMessage(false);
       setShowWarning(true);
     } else if (isAfter(today, endDate)) {
       setWarningMessageBody(
         'This form has expired. You can no longer submit responses.'
       );
+      setShowSuccessMessage(false);
       setShowWarning(true);
     }
-  }, [formData]);
+  }, [formData, blockWarnings]);
 
   return (
     <FormContainer

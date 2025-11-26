@@ -74,6 +74,10 @@ export const CompanyProfile = () => {
   );
   const [isBankEditModeOn, setIsBankEditModeOn] = useState(false);
   const handleBankIsEditModeOn = () => {
+    setCompanyProfile(tempOrganization);
+    setUpdatedOrganization({} as IOrganization);
+
+    setEditModeOn(false);
     setIsBankEditModeOn(!isBankEditModeOn);
   };
   const handleCloseBankEditMode = () => {
@@ -107,6 +111,9 @@ export const CompanyProfile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setOrganizationData]);
   const handleIsEditModeOn = () => {
+    setCompanyProfile(tempOrganization);
+    setUpdatedOrganization({} as IOrganization);
+    setIsBankEditModeOn(false);
     setEditModeOn(!isEditModeOn);
   };
 
