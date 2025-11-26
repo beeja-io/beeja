@@ -73,7 +73,7 @@ const FeedbackHub = () => {
             </Tabs>
           </TabHeading>
           <TabContent>
-            {activeTab === 'Feedback Requests' && (
+            {visibleActiveTab === 'Feedback Requests' && (
               <ProvideFeedback
                 user={user}
                 onPendingCountChange={setPendingCount}
