@@ -129,7 +129,7 @@ const AssignFeedbackProviders = () => {
                       <>
                         {[...Array(6).keys()]?.map((rowIndex) => (
                           <TableBodyRow key={rowIndex}>
-                            {[...Array(5).keys()]?.map((cellIndex) => (
+                            {[...Array(4).keys()]?.map((cellIndex) => (
                               <td key={cellIndex}>
                                 <div className="skeleton skeleton-text">
                                   &nbsp;

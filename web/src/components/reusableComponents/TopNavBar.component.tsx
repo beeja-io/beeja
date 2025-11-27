@@ -122,6 +122,14 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
             ))}
           </select>
         </span>
+        <span
+          className="academy"
+          onClick={() =>
+            window.open('https://academy.techatcore.com/programs', '_blank')
+          }
+        >
+          Tech Academy
+        </span>
         <span>
           <NotificationSVG />
         </span>
