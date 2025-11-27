@@ -471,6 +471,15 @@ export const TopNavRightIcons = styled.span`
     display: flex;
     justify-content: center;
     align-items: center;
+    &.academy {
+      color: #005792;
+      font-size: 14px;
+    }
+    &.academy:hover {
+      color: #003f6b;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
 
   .language select {

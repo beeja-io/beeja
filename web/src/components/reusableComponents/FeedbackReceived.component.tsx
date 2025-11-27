@@ -374,7 +374,7 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
                       </RatingBox>
                     </ResponsesContainer>
                   ) : (
-                    <Placeholder>
+                    <Placeholder className="rating">
                       Overall Rating has not been submitted yet!
                     </Placeholder>
                   )}

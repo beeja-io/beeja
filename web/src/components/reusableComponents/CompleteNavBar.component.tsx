@@ -109,53 +109,51 @@ const CompleteNavBar = () => {
                 className={`sidebar ${sidebarOpen ? 'open' : ''}`}
                 onMouseEnter={handleMouseEnter}
               >
-                  <NavHeader
-                    className="logo_details"
-                    isOpen={sidebarOpen ? true : false}
-                  >
-                    <BeejaIconSvg />
-                    <div className="logo_name" style={{ fontFamily: 'Rubik' }}>
-                      {' '}
-                      &nbsp; {t('BEE')}
-                      <span className="logo_name logo_name_blue">
-                        {t('JA')}
-                      </span>
-                    </div>
-                    <span className="btn" onClick={toggleSidebar}>
-                      <NavCloseArrow isOpen={sidebarOpen ? false : true} />
-                    </span>
-                  </NavHeader>
-                  <LeftNavList className="nav-list">
-                    <StyledNavLink to="/">
-                      <li>
-                        <DashBoardButton>
-                          {sidebarOpen ? 'Dashboard' : ''}
-                          <DashBoardSVG />
-                        </DashBoardButton>
-                      </li>
-                    </StyledNavLink>
-                    <ListItem
-                      isSideBarOpen={sidebarOpen}
-                      linkTo="/profile/me"
-                      tooltipName="My Profile"
-                      linkName="MY_PROFILE"
-                      svgIcon={
-                        <MyProfileSVG
-                          props={{
-                            isActive:
-                              openDropdown === 'profile' ||
-                              currentPath === '/profile/me',
-                          }}
-                        />
-                      }
-                      additionalSvgIcon={<ChevronDownSVG />}
-                      isDropdownOpen={openDropdown === 'profile'}
-                      setDropdownOpen={() => {
-                        setOpenDropdown((prev) =>
-                          prev === 'profile' ? null : 'profile'
-                        );
-                      }}
-                    />
+                <NavHeader
+                  className="logo_details"
+                  isOpen={sidebarOpen ? true : false}
+                >
+                  <BeejaIconSvg />
+                  <div className="logo_name" style={{ fontFamily: 'Rubik' }}>
+                    {' '}
+                    &nbsp; {t('BEE')}
+                    <span className="logo_name logo_name_blue">{t('JA')}</span>
+                  </div>
+                  <span className="btn" onClick={toggleSidebar}>
+                    <NavCloseArrow isOpen={sidebarOpen ? false : true} />
+                  </span>
+                </NavHeader>
+                <LeftNavList className="nav-list">
+                  <StyledNavLink to="/">
+                    <li>
+                      <DashBoardButton>
+                        {sidebarOpen ? 'Dashboard' : ''}
+                        <DashBoardSVG />
+                      </DashBoardButton>
+                    </li>
+                  </StyledNavLink>
+                  <ListItem
+                    isSideBarOpen={sidebarOpen}
+                    linkTo="/profile/me"
+                    tooltipName="My Profile"
+                    linkName="MY_PROFILE"
+                    svgIcon={
+                      <MyProfileSVG
+                        props={{
+                          isActive:
+                            openDropdown === 'profile' ||
+                            currentPath === '/profile/me',
+                        }}
+                      />
+                    }
+                    additionalSvgIcon={<ChevronDownSVG />}
+                    isDropdownOpen={openDropdown === 'profile'}
+                    setDropdownOpen={() => {
+                      setOpenDropdown((prev) =>
+                        prev === 'profile' ? null : 'profile'
+                      );
+                    }}
+                  />
 
                   <ListItem
                     isSideBarOpen={sidebarOpen}
@@ -217,46 +215,46 @@ const CompleteNavBar = () => {
                             user,
                             BULK_PAYSLIP_MODULE.CREATE_BULK_PAYSLIP
                           ) &&
-                            hasFeature(
-                              featureToggles.featureToggles,
-                              EFeatureToggles.BULK_PAY_SLIPS
-                            )
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.BULK_PAY_SLIPS
+                          )
                             ? [
-                              {
-                                name: 'BULK_PAYSLIP_UPLOAD',
-                                link: '/accounts/bulk-payslip',
-                              },
-                            ]
+                                {
+                                  name: 'BULK_PAYSLIP_UPLOAD',
+                                  link: '/accounts/bulk-payslip',
+                                },
+                              ]
                             : []),
                           ...(hasPermission(
                             user,
                             EXPENSE_MODULE.READ_EXPENSE
                           ) &&
-                            hasFeature(
-                              featureToggles.featureToggles,
-                              EFeatureToggles.EXPENSE_MANAGEMENT
-                            )
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.EXPENSE_MANAGEMENT
+                          )
                             ? [
-                              {
-                                name: 'EXPENSE_MANAGEMENT',
-                                link: '/accounts/expenses',
-                              },
-                            ]
+                                {
+                                  name: 'EXPENSE_MANAGEMENT',
+                                  link: '/accounts/expenses',
+                                },
+                              ]
                             : []),
                           ...(hasPermission(
                             user,
                             INVENTORY_MODULE.READ_DEVICE
                           ) &&
-                            hasFeature(
-                              featureToggles.featureToggles,
-                              EFeatureToggles.INVENTORY_MANAGEMENT
-                            )
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.INVENTORY_MANAGEMENT
+                          )
                             ? [
-                              {
-                                name: 'INVENTORY_MANAGEMENT',
-                                link: '/accounts/inventory',
-                              },
-                            ]
+                                {
+                                  name: 'INVENTORY_MANAGEMENT',
+                                  link: '/accounts/inventory',
+                                },
+                              ]
                             : []),
                         ]}
                         isDropdownOpen={openDropdown === 'accounts'}
@@ -296,27 +294,27 @@ const CompleteNavBar = () => {
                         dropdownItems={[
                           ...(hasPermission(user, CLIENT_MODULE.READ_CLIENT)
                             ? [
-                              {
-                                name: 'Clients',
-                                link: '/clients/client-management',
-                              },
-                            ]
+                                {
+                                  name: 'Clients',
+                                  link: '/clients/client-management',
+                                },
+                              ]
                             : []),
                           ...(hasPermission(user, PROJECT_MODULE.READ_PROJECT)
                             ? [
-                              {
-                                name: 'Projects',
-                                link: '/projects/project-management',
-                              },
-                            ]
+                                {
+                                  name: 'Projects',
+                                  link: '/projects/project-management',
+                                },
+                              ]
                             : []),
                           ...(hasPermission(user, CONTRACT_MODULE.READ_CONTRACT)
                             ? [
-                              {
-                                name: 'Contracts',
-                                link: '/contracts/contract-management',
-                              },
-                            ]
+                                {
+                                  name: 'Contracts',
+                                  link: '/contracts/contract-management',
+                                },
+                              ]
                             : []),
                         ]}
                         isDropdownOpen={openDropdown === 'Projects & Contracts'}
@@ -352,16 +350,16 @@ const CompleteNavBar = () => {
                         additionalSvgIcon={<ChevronDownSVG />}
                         dropdownItems={[
                           ...(hasPermission(user, LOAN_MODULE.READ_LOAN) &&
-                            hasFeature(
-                              featureToggles.featureToggles,
-                              EFeatureToggles.LOAN_MANAGEMENT
-                            )
+                          hasFeature(
+                            featureToggles.featureToggles,
+                            EFeatureToggles.LOAN_MANAGEMENT
+                          )
                             ? [
-                              {
-                                name: 'LOANS',
-                                link: '/payroll/deductions-loans',
-                              },
-                            ]
+                                {
+                                  name: 'LOANS',
+                                  link: '/payroll/deductions-loans',
+                                },
+                              ]
                             : []),
                         ]}
                         isDropdownOpen={openDropdown === 'payroll'}
@@ -466,10 +464,7 @@ const CompleteNavBar = () => {
                         user,
                         PERFORMANCE_MODULE.READ_ALL_RESPONSES
                       ) ||
-                      hasPermission(
-                        user,
-                        PERFORMANCE_MODULE.SELF_EVALUATION
-                      ) ||
+                      hasPermission(user, PERFORMANCE_MODULE.SELF_EVALUATION) ||
                       hasPermission(
                         user,
                         PERFORMANCE_MODULE.READ_OWN_RESPONSES
@@ -495,46 +490,53 @@ const CompleteNavBar = () => {
                             PERFORMANCE_MODULE.READ_REVIEW_CYCLE
                           )
                             ? [
-                              {
-                                name: 'Create Evaluation Form',
-                                link: '/performance/create-evaluation-form',
-                              },
-                            ]
+                                {
+                                  name: 'Create Evaluation Form',
+                                  link: '/performance/create-evaluation-form',
+                                },
+                              ]
                             : []),
                           ...(hasPermission(
                             user,
                             PERFORMANCE_MODULE.READ_RECEIVER
                           ) ||
-                            hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER)
+                          hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER)
                             ? [
-                              {
-                                name: 'Assign Feedback Receivers & Providers',
-                                link: '/performance/assign-feedback-providers',
-                              },
-                            ]
+                                {
+                                  name: 'Assign Feedback Receivers & Providers',
+                                  link: '/performance/assign-feedback-providers',
+                                },
+                              ]
                             : []),
-                          ...((
-                            hasPermission(user, PERFORMANCE_MODULE.READ_RESPONSE) ||
-                            hasPermission(user, PERFORMANCE_MODULE.SELF_EVALUATION) ||
-                            hasPermission(user, PERFORMANCE_MODULE.READ_OWN_RESPONSES)
+                          ...(hasPermission(
+                            user,
+                            PERFORMANCE_MODULE.READ_RESPONSE
+                          ) ||
+                          hasPermission(
+                            user,
+                            PERFORMANCE_MODULE.SELF_EVALUATION
+                          ) ||
+                          hasPermission(
+                            user,
+                            PERFORMANCE_MODULE.READ_OWN_RESPONSES
                           )
                             ? [
-                              {
-                                name: 'Feedback Hub',
-                                link: '/performance/feedback-hub',
-                              },
-                            ]
+                                {
+                                  name: 'Feedback Hub',
+                                  link: '/performance/feedback-hub',
+                                },
+                              ]
                             : []),
                           ...(hasPermission(
                             user,
                             PERFORMANCE_MODULE.READ_ALL_RESPONSES
                           )
                             ? [
-                              {
-                                name: 'My Team Overview',
-                                link: '/performance/my-team-overview',
-                              },
-                            ]
+                                {
+                                  name: 'My Team Overview',
+                                  link: '/performance/my-team-overview',
+                                },
+                              ]
                             : []),
                         ]}
                         isDropdownOpen={openDropdown === 'performance'}
@@ -550,59 +552,59 @@ const CompleteNavBar = () => {
                     featureToggles.featureToggles,
                     EFeatureToggles.RECRUITMENT_MANAGEMENT
                   ) && (
-                      <ListItem
-                        isSideBarOpen={sidebarOpen}
-                        linkTo="#"
-                        tooltipName="Recruitment"
-                        linkName="Recruitment"
-                        svgIcon={
-                          <UserBoxWithLinkSVG
-                            props={{
-                              isActive:
-                                openDropdown === 'recruitment' ||
-                                currentPath === '/recruitment',
-                            }}
-                          />
-                        }
-                        additionalSvgIcon={<ChevronDownSVG />}
-                        dropdownItems={[
-                          ...(hasPermission(
-                            user,
-                            RECRUITMENT_MODULE.GET_APPLICATIONS
-                          ) ||
-                            hasPermission(
-                              user,
-                              RECRUITMENT_MODULE.GET_ALL_APPLICANTS
-                            ) ||
-                            hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
-                            ? [
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="#"
+                      tooltipName="Recruitment"
+                      linkName="Recruitment"
+                      svgIcon={
+                        <UserBoxWithLinkSVG
+                          props={{
+                            isActive:
+                              openDropdown === 'recruitment' ||
+                              currentPath === '/recruitment',
+                          }}
+                        />
+                      }
+                      additionalSvgIcon={<ChevronDownSVG />}
+                      dropdownItems={[
+                        ...(hasPermission(
+                          user,
+                          RECRUITMENT_MODULE.GET_APPLICATIONS
+                        ) ||
+                        hasPermission(
+                          user,
+                          RECRUITMENT_MODULE.GET_ALL_APPLICANTS
+                        ) ||
+                        hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
+                          ? [
                               {
                                 name: 'Hiring',
                                 link: '/recruitment/hiring-management',
                               },
                             ]
-                            : []),
-                          ...(hasPermission(
-                            user,
-                            RECRUITMENT_MODULE.ACCESS_REFFERRAlS
-                          )
-                            ? [
+                          : []),
+                        ...(hasPermission(
+                          user,
+                          RECRUITMENT_MODULE.ACCESS_REFFERRAlS
+                        )
+                          ? [
                               {
                                 name: 'Referrals',
                                 link: '/recruitment/my-referrals',
                               },
                             ]
-                            : []),
-                        ]}
-                        isDropdownOpen={openDropdown === 'services'}
-                        setDropdownOpen={() => {
-                          setOpenDropdown((prev) =>
-                            prev === 'services' ? null : 'services'
-                          );
-                        }}
-                        hasAdditionalSvg
-                      />
-                    )}
+                          : []),
+                      ]}
+                      isDropdownOpen={openDropdown === 'services'}
+                      setDropdownOpen={() => {
+                        setOpenDropdown((prev) =>
+                          prev === 'services' ? null : 'services'
+                        );
+                      }}
+                      hasAdditionalSvg
+                    />
+                  )}
                   <ListItem
                     isSideBarOpen={sidebarOpen}
                     linkTo="#"
@@ -632,22 +634,22 @@ const CompleteNavBar = () => {
                     user,
                     FEATURE_TOGGLES_MODULE.UPDATE_FEATURE
                   ) && (
-                      <ListItem
-                        isSideBarOpen={sidebarOpen}
-                        linkTo="/features"
-                        tooltipName="Features"
-                        linkName="FEATURES"
-                        svgIcon={
-                          <FeatureToggleSVG
-                            props={{
-                              isActive:
-                                openDropdown === 'features' ||
-                                currentPath === '/features',
-                            }}
-                          />
-                        }
-                      />
-                    )}
+                    <ListItem
+                      isSideBarOpen={sidebarOpen}
+                      linkTo="/features"
+                      tooltipName="Features"
+                      linkName="FEATURES"
+                      svgIcon={
+                        <FeatureToggleSVG
+                          props={{
+                            isActive:
+                              openDropdown === 'features' ||
+                              currentPath === '/features',
+                          }}
+                        />
+                      }
+                    />
+                  )}
                 </LeftNavList>
 
                 <LeftNavList className="bottomLinks">
@@ -783,13 +785,14 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
     <li key={props.linkTo} className={isDropdownOpen ? 'dropdown-open' : ''}>
       <StyledNavLink
         to={props.linkTo}
-        className={`${isDropdownOpen ? 'active' : ''} ${isSelectedAndActive({
-          name: props.linkName,
-          link: props.linkTo,
-        }) || props.dropdownItems?.some((item) => isSelectedAndActive(item))
+        className={`${isDropdownOpen ? 'active' : ''} ${
+          isSelectedAndActive({
+            name: props.linkName,
+            link: props.linkTo,
+          }) || props.dropdownItems?.some((item) => isSelectedAndActive(item))
             ? 'selected'
             : ''
-          }`}
+        }`}
         onClick={handleSelect}
       >
         <a
@@ -820,14 +823,15 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
                     name: props.linkName,
                     link: props.linkTo,
                   }) ||
-                    props.dropdownItems?.some((item) => isSelectedAndActive(item))
+                  props.dropdownItems?.some((item) => isSelectedAndActive(item))
                     ? '#005792'
                     : 'black',
               }}
             >
               <span
-                className={`nav_Link ${isLinkActive() ? 'active_nav_link' : ''
-                  }`}
+                className={`nav_Link ${
+                  isLinkActive() ? 'active_nav_link' : ''
+                }`}
               >
                 {t(props.linkName)}
               </span>
@@ -869,8 +873,9 @@ export const ListItem: React.FC<ListItemProps> = (props) => {
                       marginTop: '4px',
                     }}
                     to={item.link}
-                    className={`dropdown-link ${isSelectedAndActive(item) ? 'selected' : ''
-                      }`}
+                    className={`dropdown-link ${
+                      isSelectedAndActive(item) ? 'selected' : ''
+                    }`}
                     onClick={() => handleDropdownItemClick(item)}
                   >
                     <div className="dropdown-item">

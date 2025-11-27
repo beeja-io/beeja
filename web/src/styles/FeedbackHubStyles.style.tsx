@@ -193,17 +193,19 @@ export const Note = styled.p`
 `;
 
 export const ReadOnlyInput = styled.input`
-  width: 40%;
-  height: 54px;
-  padding: 10px 14px;
-  border: 1px solid #e0e0e0;
+  background: ${(p) => p.theme.colors.grayColors.gray6};
+  border: 1px solid ${(p) => p.theme.colors.grayColors.gray5};
   border-radius: 8px;
-  background-color: #f9f9f9;
-  color: #555;
-  font-size: 15px;
-  font-family: 'Nunito', sans-serif;
-  outline: none;
-  cursor: not-allowed;
+  padding: 10px 14px;
+  width: fit-content;
+  min-width: 350px;
+  height: 55px;
+  font-weight: 500;
+  color: ${(p) => p.theme.colors.grayColors.gray7};
+  font-size: 14px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
   margin-top: 8px;
 
   &:focus {
@@ -217,7 +219,7 @@ export const AnswerField = styled.textarea<{ isEmpty: boolean }>`
   padding: 12px 14px;
   border: 1px solid #e0e0e0;
   border-radius: 8px;
-  background-color: #fff;
+  background-color: ${(props) => props.theme.colors.blackColors.white6};
   font-size: 15px;
   font-family: 'Nunito', sans-serif;
   color: #687588;
@@ -243,7 +245,6 @@ export const AnswerField = styled.textarea<{ isEmpty: boolean }>`
 
 export const RatingBox = styled.div`
   background: ${(props) => props.theme.colors.blackColors.white6};
-  border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 20px 24px;
   box-shadow: 0px 1px 3px rgba(16, 24, 40, 0.05);
