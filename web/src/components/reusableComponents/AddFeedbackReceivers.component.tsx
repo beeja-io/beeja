@@ -88,7 +88,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
 
   const [previousProviders, setPreviousProviders] = useState<any[]>([]);
   const [searchCompleted, setSearchCompleted] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [toastData, setToastData] = useState<{
     type: 'success' | 'error' | null;
     heading?: string;
@@ -108,6 +108,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
   }, [isProvidersPage, selectedReceiver, cycleId]);
 
   const handleAssignProviders = async () => {
+    setIsLoading(true);
     try {
       if (!isProvidersPage) return;
 
@@ -208,6 +209,8 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
         heading: 'Error',
         body: t('Something went wrong while assigning providers.'),
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -251,6 +254,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
     };
 
     try {
+      setIsLoading(true);
       await createReceiverList(payload);
       setToastData({
         type: 'success',
@@ -268,9 +272,10 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
         heading: 'Error',
         body: t('Something went wrong while adding receivers.'),
       });
+    } finally {
+      setIsLoading(false);
     }
   };
-
   const fetchUsers = useCallback(
     async (keyword: string = '') => {
       if (keyword.trim().length === 0) {
@@ -326,7 +331,6 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, fetchUsers]);
 
-  // const handleSearchClick = () => fetchUsers(searchTerm);
   const handleSearchClick = () => {
     inputRef.current?.focus();
     fetchUsers(searchTerm);
@@ -600,6 +604,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                 <Button
                   className="submit"
                   type="button"
+                  disabled={isLoading}
                   onClick={
                     isProvidersPage
                       ? handleAssignProviders
