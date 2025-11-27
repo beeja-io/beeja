@@ -208,7 +208,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
         const activeForm =
           formList.find((form: any) => form.status === 'IN_PROGRESS') ||
           formList[0];
-
+        setSelectedFormId(activeForm.cycleId);
         await fetchFormDetails(activeForm.cycleId);
       } else {
         setResponseErrorMessage('No forms available for this employee.');
@@ -403,6 +403,8 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
     if (formId === selectedFormId) return;
 
     setSelectedFormId(formId);
+    setShowWarning(false);
+    setWarningMessageBody('');
   };
 
   useEffect(() => {
@@ -444,14 +446,18 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
       setWarningMessageBody(
         `This form is not yet active. It will be available from ${formattedStart}.`
       );
-      setShowSuccessMessage(false);
-      setShowWarning(true);
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+        setShowWarning(true);
+      }, 800);
     } else if (isAfter(today, endDate)) {
       setWarningMessageBody(
         'This form has expired. You can no longer submit responses.'
       );
-      setShowSuccessMessage(false);
-      setShowWarning(true);
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+        setShowWarning(true);
+      }, 800);
     }
   }, [formData, blockWarnings]);
 
