@@ -109,7 +109,6 @@ const CompleteNavBar = () => {
                 className={`sidebar ${sidebarOpen ? 'open' : ''}`}
                 onMouseEnter={handleMouseEnter}
               >
-                <>
                   <NavHeader
                     className="logo_details"
                     isOpen={sidebarOpen ? true : false}
