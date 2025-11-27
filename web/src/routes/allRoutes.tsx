@@ -280,7 +280,7 @@ const AllRoutes = () => {
         path="/performance/view-more-details"
         element={
           <CustomRoute
-            permission={PERFORMANCE_MODULE.READ_RESPONSE}
+            permission={PERFORMANCE_MODULE.READ_PROVIDER}
             featureToggle={
               EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
             }
