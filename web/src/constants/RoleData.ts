@@ -295,7 +295,7 @@ const roleData = [
       'Provide Feedback',
       'Self Evaluation',
       'Read Self Evaluation',
-      'Read Own Responses',
+      'Read My Feedback',
       'Provide Rating',
     ],
     subsections: [

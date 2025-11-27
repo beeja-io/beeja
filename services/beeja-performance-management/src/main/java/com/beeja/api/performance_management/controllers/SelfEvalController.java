@@ -62,7 +62,7 @@ public class SelfEvalController {
      * @return list of self-evaluations
      */
     @GetMapping("/employee/me")
-    @HasPermission(PermissionConstants.GIVE_SELF_EVALUATION)
+    @HasPermission({PermissionConstants.GIVE_SELF_EVALUATION, PermissionConstants.READ_OWN_RESPONSES})
     public ResponseEntity<List<SelfEvaluation>> getSelfEvalsForLoggedInEmployee() {
         String employeeId = UserContext.getLoggedInEmployeeId();
         if (employeeId == null || employeeId.isBlank()) {
