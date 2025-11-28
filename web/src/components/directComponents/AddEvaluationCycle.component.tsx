@@ -517,9 +517,8 @@ const AddEvaluationCycle: React.FC = () => {
 
     const today = new Date();
     const start = new Date(formData.startDate);
-    const end = new Date(formData.endDate);
 
-    return today >= start && today <= end;
+    return today >= start;
   })();
 
   return (

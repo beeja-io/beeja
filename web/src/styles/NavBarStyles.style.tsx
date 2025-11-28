@@ -225,7 +225,6 @@ export const DashBoardButton = styled.span`
 `;
 
 export const TopNavBar = styled.div`
-  height: 96px;
   background: ${(props) => props.theme.colors.backgroundColors.primary};
   color: ${(props) => props.theme.colors.blackColors.black1};
   border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
