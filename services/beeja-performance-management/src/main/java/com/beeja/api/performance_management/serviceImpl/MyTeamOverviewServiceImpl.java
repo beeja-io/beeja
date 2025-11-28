@@ -85,29 +85,16 @@ public class MyTeamOverviewServiceImpl implements MyTeamOverviewService {
                         (emp.getJobDetails() != null &&
                                 employmentType.equalsIgnoreCase(emp.getJobDetails().getEmployementType())))
                 .filter(emp -> {
-                    if (status == null || status.isEmpty() || "-".equals(status)) return true;
 
                     BasicUserInfoDTO user = userMap.get(emp.getEmployeeId());
                     if (user == null) return false;
 
-                    boolean isActive = "active".equalsIgnoreCase(status);
-                    return user.isActive() == isActive;
+                    return user.isActive();
                 });
 
         List<EmployeeSummaryDTO> filteredEmployees = filteredStream.collect(Collectors.toList());
 
-        int totalRecords = filteredEmployees.size();
-        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-
-        int fromIndex = Math.max(0, (pageNumber - 1) * pageSize);
-        int toIndex = Math.min(totalRecords, fromIndex + pageSize);
-
-        List<EmployeeSummaryDTO> paginatedEmployees = new ArrayList<>();
-        if (fromIndex < totalRecords) {
-            paginatedEmployees = filteredEmployees.subList(fromIndex, toIndex);
-        }
-
-        List<EmployeePerformanceDTO> merged = paginatedEmployees.stream()
+        List<EmployeePerformanceDTO> merged = filteredEmployees.stream()
                 .map(emp -> {
                     EmployeePerformanceDTO dto = new EmployeePerformanceDTO();
                     dto.setEmployeeId(emp.getEmployeeId());
@@ -134,8 +121,38 @@ public class MyTeamOverviewServiceImpl implements MyTeamOverviewService {
                 })
                 .collect(Collectors.toList());
 
+        if (status != null && !status.isEmpty() && !"-".equals(status)) {
+            merged = merged.stream()
+                    .filter(dto -> {
+                        int assigned = dto.getNumberOfReviewersAssigned();
+                        int given = dto.getNumberOfReviewerResponses();
+
+                        if ("completed".equalsIgnoreCase(status)) {
+                            return assigned == given && assigned != 0;
+                        } else if ("incomplete".equalsIgnoreCase(status)) {
+                            return (assigned != given);
+                        }
+                        else if ("notAssigned".equalsIgnoreCase(status)) {
+                            return assigned == given && assigned == 0;
+                        }
+                        return true;
+                    })
+                    .collect(Collectors.toList());
+        }
+
+        int totalRecords = merged.size();
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+
+        int fromIndex = Math.max(0, (pageNumber - 1) * pageSize);
+        int toIndex = Math.min(totalRecords, fromIndex + pageSize);
+
+        List<EmployeePerformanceDTO> paginatedEmployees = new ArrayList<>();
+        if (fromIndex < totalRecords) {
+            paginatedEmployees = merged.subList(fromIndex, toIndex);
+        }
+
         PaginatedEmployeePerformanceResponse response = new PaginatedEmployeePerformanceResponse();
-        response.setData(merged);
+        response.setData(paginatedEmployees);
         response.setTotalRecords(totalRecords);
         response.setPageNumber(pageNumber);
         response.setPageSize(pageSize);

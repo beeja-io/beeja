@@ -297,7 +297,6 @@ export const HideNamesToggle = styled.div`
   display: flex;
   align-items: center;
   gap: 12px;
-  cursor: pointer;
   user-select: none;
   min-height: 32px;
   // .toggle-switch {
