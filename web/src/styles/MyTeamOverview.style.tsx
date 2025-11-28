@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { TableBodyRow } from "../styles/EmployeeListStyles.style";
+
 
 export const Title = styled.h2`
   font-size: 24px;
@@ -32,10 +34,23 @@ export const TitleSection = styled.div`
   }
 `;
 
-export const StatusCell = styled.td<{ completed: boolean }>`
-  background-color: ${(p) => (p.completed ? '#34A8531A' : '#FF99001A')};
+export const StatusCell = styled.td<{
+  completed: boolean;
+  noProviders?: boolean;
+}>`
+  background-color: ${(p) =>
+    p.noProviders
+      ? p.theme.colors.grayColors.gray8
+      : p.completed
+      ? '#34A8531A'
+      : '#FF99001A'};
 
-  color: ${(p) => (p.completed ? '#34A853' : '#FF9900')};
+  color: ${(p) =>
+    p.noProviders
+      ? '#AAAAAA'
+      : p.completed
+      ? '#34A853'
+      : '#FF9900'};
 
   height: 40px;
   max-width: 200px;
@@ -46,4 +61,22 @@ export const StatusCell = styled.td<{ completed: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+
+export const RatingCenter = styled.td`
+  position: relative;
+
+  span {
+    position: absolute;
+    left: 45px;  
+  }
+`;
+
+export const TableMain = styled(TableBodyRow)<{ disabled?: boolean }>`
+  cursor: ${(p) => (p.disabled ? "not-allowed" : "pointer")};
+
+  &:hover {
+    cursor: ${(p) => (p.disabled ? "not-allowed" : "pointer")};
+  }
 `;
