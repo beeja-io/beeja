@@ -35,6 +35,7 @@ const EvaluationListAction: React.FC<Props> = ({
   isOpen,
   onToggle,
   setCycles,
+  disabled,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
@@ -47,9 +48,7 @@ const EvaluationListAction: React.FC<Props> = ({
     setShowDeleteModal(false);
   };
 
-  const handleOptionClick = async (title: string, isDisabled: boolean) => {
-    if (isDisabled) return;
-
+  const handleOptionClick = async (title: string) => {
     if (title === 'Edit') {
       navigate(`/performance/create-evaluation-form/${currentCycle.id}`);
     }
@@ -110,17 +109,14 @@ const EvaluationListAction: React.FC<Props> = ({
           <ActionMenuContent>
             {options.map((op, i) => {
               const isDisabled =
-                (op.title === 'Edit' && !canEdit) ||
+                (op.title === 'Edit' && (!canEdit || disabled)) ||
                 (op.title === 'Delete' && !canDelete);
 
               return (
                 <ActionMenuOption
                   key={i}
-                  onClick={() => handleOptionClick(op.title, isDisabled)}
-                  style={{
-                    opacity: isDisabled ? 0.5 : 1,
-                    cursor: isDisabled ? 'not-allowed' : 'pointer',
-                  }}
+                  className={isDisabled ? 'edit-disabled' : ''}
+                  onClick={() => !isDisabled && handleOptionClick(op.title)}
                   title={
                     isDisabled
                       ? t('You do not have permission to perform this action')
