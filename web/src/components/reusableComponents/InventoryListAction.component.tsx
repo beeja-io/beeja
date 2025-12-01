@@ -117,8 +117,9 @@ export const InventoryListAction: React.FC<ActionProps> = ({
     if (isEditModalOpen) {
       disableBodyScroll();
     } else {
-        enableBodyScroll();
-  }}, [isEditModalOpen]);
+      enableBodyScroll();
+    }
+  }, [isEditModalOpen]);
 
   return (
     <>
