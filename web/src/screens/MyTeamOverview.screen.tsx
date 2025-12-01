@@ -360,17 +360,15 @@ const EmployeeList = () => {
                     employees?.map((emp, index) => (
                       <React.Fragment key={index}>
                         <TableMain
-                          disabled={
-                            emp.numberOfReviewersAssigned === 0
-                          }
+                          disabled={emp.numberOfReviewersAssigned === 0}
                           onClick={() =>
-                              emp.numberOfReviewersAssigned === 0
+                            emp.numberOfReviewersAssigned === 0
                               ? null
                               : handleNavigateToDetailedView(
-                                emp.employeeId,
-                                emp.firstName,
-                                emp.lastName
-                              )
+                                  emp.employeeId,
+                                  emp.firstName,
+                                  emp.lastName
+                                )
                           }
                         >
                           <td className="profilePicArea">
@@ -407,15 +405,20 @@ const EmployeeList = () => {
                             </span>
                           </td>
                           <td>
-                            {emp.jobDetails?.designation ? emp.jobDetails.designation : '-'}
+                            {emp.jobDetails?.designation
+                              ? emp.jobDetails.designation
+                              : '-'}
                           </td>
                           <td>
-                            {emp.jobDetails?.department ? emp.jobDetails.department : '-'}
+                            {emp.jobDetails?.department
+                              ? emp.jobDetails.department
+                              : '-'}
                           </td>
                           <td>
                             <StatusCell
                               completed={
-                                emp.numberOfReviewerResponses === emp.numberOfReviewersAssigned &&
+                                emp.numberOfReviewerResponses ===
+                                  emp.numberOfReviewersAssigned &&
                                 emp.numberOfReviewersAssigned !== 0
                               }
                               noProviders={
@@ -424,15 +427,17 @@ const EmployeeList = () => {
                               }
                             >
                               {emp.numberOfReviewerResponses === 0 &&
-                                emp.numberOfReviewersAssigned === 0
-                                ? "No Providers Assigned"
+                              emp.numberOfReviewersAssigned === 0
+                                ? 'No Providers Assigned'
                                 : `${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
                             </StatusCell>
                           </td>
 
                           <td>
                             <RatingCenter>
-                              <span>{emp.overallRating ? emp.overallRating : '-'}</span>
+                              <span>
+                                {emp.overallRating ? emp.overallRating : '-'}
+                              </span>
                             </RatingCenter>
                           </td>
                         </TableMain>

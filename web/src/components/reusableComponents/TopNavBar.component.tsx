@@ -112,6 +112,13 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
         </span> */}
       </span>
       <TopNavRightIcons>
+        <span
+          className="academy"
+          onClick={() => window.open('https://docs.beeja.io', '_blank')}
+        >
+          Beeja Docs
+        </span>
+
         <span className="language">
           <LanguageIcon />
           <select value={i18n.language} onChange={handleChangeLanguage}>
