@@ -113,11 +113,12 @@ export const ExpenseAction: React.FC<ActionProps> = ({
   });
 
   useEffect(() => {
-      if (isEditModalOpen) {
-          disableBodyScroll();
-        } else {
-          enableBodyScroll();
-  }}, [isEditModalOpen]);
+    if (isEditModalOpen) {
+      disableBodyScroll();
+    } else {
+      enableBodyScroll();
+    }
+  }, [isEditModalOpen]);
 
   return (
     <>

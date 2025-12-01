@@ -871,15 +871,18 @@ export const getReceivers = async (
   );
 };
 
+export const updateReceivers = async (cycleId: string, payload: any) => {
+  return axiosInstance.put(
+    `/performance/v1/feedbackReceivers/cycles/${cycleId}`,
+    payload
+  );
+};
+
 export const assignProvider = async (employeeId: string, payload: any) => {
   return axiosInstance.post(
     `/performance/v1/feedbackProvider/assign/${employeeId}`,
     payload
   );
-};
-
-export const getProviders = async (employeeId: string) => {
-  return axiosInstance.get(`/performance/v1/feedbackProvider/${employeeId}`);
 };
 
 export const getFeedbackProviderDetails = async (
