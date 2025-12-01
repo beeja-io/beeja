@@ -664,14 +664,9 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                     isProvidersPage
                       ? handleAssignProviders
                       : fromReceiversList.length > 0
-                        ? handleUpdateReceivers // PUT
-                        : handleCreateReceivers // POST
+                        ? handleUpdateReceivers
+                        : handleCreateReceivers
                   }
-                  // onClick={
-                  //   isProvidersPage
-                  //     ? handleAssignProviders
-                  //     : handleCreateReceivers
-                  // }
                 >
                   {mode === 'provider' ? 'Assign' : 'Add'}
                 </Button>
