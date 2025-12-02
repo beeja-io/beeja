@@ -16,6 +16,7 @@ import {
   INVENTORY_MODULE,
   LOAN_MODULE,
   ORGANIZATION_MODULE,
+  PERFORMANCE_MODULE,
   PROJECT_MODULE,
 } from '../constants/PermissionConstants';
 import ServiceUnavailable from '../screens/ServiceUnavailable.screen';
@@ -211,24 +212,64 @@ const AllRoutes = () => {
         path="/performance/create-evaluation-form"
         element={
           <CustomRoute
-            permission={LOAN_MODULE.READ_LOAN}
-            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+            permission={PERFORMANCE_MODULE.READ_REVIEW_CYCLE}
+            featureToggle={
+              EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+            }
           >
             <CreateReviewCycleScreen />
           </CustomRoute>
         }
       >
-        <Route index element={<ReviewCyclesList />} />
-        <Route path="new" element={<AddEvaluationCycle />} />
-        <Route path=":id" element={<AddEvaluationCycle />} />
+        <Route
+          index
+          element={
+            <CustomRoute
+              permission={PERFORMANCE_MODULE.READ_REVIEW_CYCLE}
+              featureToggle={
+                EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+              }
+            >
+              <ReviewCyclesList />
+            </CustomRoute>
+          }
+        />
+        <Route
+          path="new"
+          element={
+            <CustomRoute
+              permission={PERFORMANCE_MODULE.CREATE_REVIEW_CYCLE}
+              featureToggle={
+                EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+              }
+            >
+              <AddEvaluationCycle />
+            </CustomRoute>
+          }
+        />
+        <Route
+          path=":id"
+          element={
+            <CustomRoute
+              permission={PERFORMANCE_MODULE.UPDATE_REVIEW_CYCLE}
+              featureToggle={
+                EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+              }
+            >
+              <AddEvaluationCycle />
+            </CustomRoute>
+          }
+        />
       </Route>
 
       <Route
         path="/performance/assign-feedback-providers"
         element={
           <CustomRoute
-            permission={LOAN_MODULE.READ_LOAN}
-            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+            permission={PERFORMANCE_MODULE.READ_RECEIVER}
+            featureToggle={
+              EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+            }
           >
             <AssignFeedbackProviders />
           </CustomRoute>
@@ -237,25 +278,54 @@ const AllRoutes = () => {
 
       <Route
         path="/performance/view-more-details"
-        element={<ViewMoreDetails />}
+        element={
+          <CustomRoute
+            permission={PERFORMANCE_MODULE.READ_PROVIDER}
+            featureToggle={
+              EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+            }
+          >
+            <ViewMoreDetails />
+          </CustomRoute>
+        }
       />
 
       <Route
         path="/performance/assign-feedback-providers/:cycleId/:questionnaireId/add-feedback-receiver"
-        element={<AddFeedbackReceivers />}
+        element={
+          <CustomRoute
+            permission={PERFORMANCE_MODULE.ASSIGN_RECEIVER}
+            featureToggle={
+              EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+            }
+          >
+            <AddFeedbackReceivers />
+          </CustomRoute>
+        }
       />
 
       <Route
         path="/performance/assign-feedback-providers/:cycleId/:questionnaireId"
-        element={<FeedbackReceiversList />}
+        element={
+          <CustomRoute
+            permission={PERFORMANCE_MODULE.READ_RECEIVER}
+            featureToggle={
+              EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+            }
+          >
+            <FeedbackReceiversList />
+          </CustomRoute>
+        }
       />
 
       <Route
         path="/performance/feedback-hub"
         element={
           <CustomRoute
-            permission={LOAN_MODULE.READ_LOAN}
-            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+            permission={`${PERFORMANCE_MODULE.READ_RESPONSE}||${PERFORMANCE_MODULE.SELF_EVALUATION}||${PERFORMANCE_MODULE.READ_OWN_RESPONSES}`}
+            featureToggle={
+              EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+            }
           >
             <FeedbackHub />
           </CustomRoute>
@@ -265,8 +335,10 @@ const AllRoutes = () => {
         path="/performance/feedback-hub/provide-feedback/:id"
         element={
           <CustomRoute
-            permission={LOAN_MODULE.READ_LOAN}
-            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+            permission={PERFORMANCE_MODULE.PROVIDE_FEEDBACK}
+            featureToggle={
+              EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+            }
           >
             <ProvideFeedback />
           </CustomRoute>
@@ -276,8 +348,10 @@ const AllRoutes = () => {
         path="/performance/my-team-overview"
         element={
           <CustomRoute
-            permission={LOAN_MODULE.READ_LOAN}
-            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+            permission={PERFORMANCE_MODULE.READ_ALL_RESPONSES}
+            featureToggle={
+              EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+            }
           >
             <MyTeamOverview />
           </CustomRoute>
@@ -287,8 +361,10 @@ const AllRoutes = () => {
         path="/performance/my-team-overview/:employeeId"
         element={
           <CustomRoute
-            permission={LOAN_MODULE.READ_LOAN}
-            featureToggle={EFeatureToggles.LOAN_MANAGEMENT}
+            permission={PERFORMANCE_MODULE.READ_ALL_RESPONSES}
+            featureToggle={
+              EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
+            }
           >
             <EvaluationOverview />
           </CustomRoute>
@@ -350,7 +426,12 @@ function CustomRoute({
     featureToggle && featureToggles
       ? hasFeature(featureToggles.featureToggles, featureToggle)
       : false;
-  if (user && hasPermission(user, permission) && isFeatureEnabled) {
+  // if (user && hasPermission(user, permission) && isFeatureEnabled) {
+  if (
+    user &&
+    permission.split('||').some((p) => hasPermission(user, p)) &&
+    isFeatureEnabled
+  ) {
     return children;
   } else {
     return <Navigate to="/notfound" />;

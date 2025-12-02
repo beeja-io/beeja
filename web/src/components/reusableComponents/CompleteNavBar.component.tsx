@@ -123,7 +123,6 @@ const CompleteNavBar = () => {
                     <NavCloseArrow isOpen={sidebarOpen ? false : true} />
                   </span>
                 </NavHeader>
-
                 <LeftNavList className="nav-list">
                   <StyledNavLink to="/">
                     <li>
@@ -464,6 +463,11 @@ const CompleteNavBar = () => {
                       hasPermission(
                         user,
                         PERFORMANCE_MODULE.READ_ALL_RESPONSES
+                      ) ||
+                      hasPermission(user, PERFORMANCE_MODULE.SELF_EVALUATION) ||
+                      hasPermission(
+                        user,
+                        PERFORMANCE_MODULE.READ_OWN_RESPONSES
                       )) && (
                       <ListItem
                         isSideBarOpen={sidebarOpen}
@@ -507,6 +511,14 @@ const CompleteNavBar = () => {
                           ...(hasPermission(
                             user,
                             PERFORMANCE_MODULE.READ_RESPONSE
+                          ) ||
+                          hasPermission(
+                            user,
+                            PERFORMANCE_MODULE.SELF_EVALUATION
+                          ) ||
+                          hasPermission(
+                            user,
+                            PERFORMANCE_MODULE.READ_OWN_RESPONSES
                           )
                             ? [
                                 {

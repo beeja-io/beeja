@@ -12,8 +12,6 @@ import {
 } from '../styles/ExpenseListStyles.style';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import { CalenderIcon, DeleteIcon } from '../svgs/DocumentTabSvgs.svg';
-import { SearchBox, SearchInput } from '../styles/NavBarStyles.style';
-import { SearchSVG } from '../svgs/NavBarSvgs.svg';
 import { InventoryListAction } from '../components/reusableComponents/InventoryListAction.component';
 import { DeviceDetails } from '../entities/InventoryEntity';
 import PreviewInventoryForm from '../components/directComponents/PreviewInventory.component';
@@ -125,15 +123,6 @@ const InventoryList = ({
       <StyledDiv>
         <ExpenseHeading>
           <ExpenseTitle>{t('INVENTORY_LIST')}</ExpenseTitle>
-          <SearchBox className="search">
-            <span className="span">
-              <SearchSVG />
-              <SearchInput
-                ref={searchInputRef}
-                placeholder={t('SEARCH_BY_SERIAL_NUMBER')}
-              />
-            </span>
-          </SearchBox>
         </ExpenseHeading>
         <FilterSection>
           <DropdownMenu

@@ -129,7 +129,7 @@ public class MyTeamOverviewController {
     }
 
     @GetMapping("/employee/{employeeId}/overall-rating")
-    @HasPermission(PermissionConstants.READ_ALL_RESPONSES)
+    @HasPermission({PermissionConstants.READ_ALL_RESPONSES, PermissionConstants.READ_OWN_RESPONSES})
     public ResponseEntity<?> getOverallRating(@PathVariable String employeeId) {
         try {
             OverallRating rating = myTeamOverviewService.getOverallRatingByEmployeeId(employeeId);

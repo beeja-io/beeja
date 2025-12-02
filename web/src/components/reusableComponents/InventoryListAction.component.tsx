@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ActionContainer,
   ActionMenu,
@@ -18,6 +18,7 @@ import { INVENTORY_MODULE } from '../../constants/PermissionConstants';
 import { hasPermission } from '../../utils/permissionCheck';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 interface ActionProps {
   options: {
@@ -111,6 +112,15 @@ export const InventoryListAction: React.FC<ActionProps> = ({
   useKeyPress(27, () => {
     setConfirmDeleteModal(false);
   });
+
+  useEffect(() => {
+    if (isEditModalOpen) {
+      disableBodyScroll();
+    } else {
+      enableBodyScroll();
+    }
+  }, [isEditModalOpen]);
+
   return (
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>

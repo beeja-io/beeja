@@ -26,7 +26,9 @@ import { toast } from 'sonner';
 import { OrgDefaults } from '../entities/OrgDefaultsEntity';
 import DropdownMenu from '../components/reusableComponents/DropDownMenu.component';
 import {
+  RatingCenter,
   StatusCell,
+  TableMain,
   Title,
   TitleSection,
 } from '../styles/MyTeamOverview.style';
@@ -298,9 +300,10 @@ const EmployeeList = () => {
                     className="largeContainerFil"
                     name="employeeStatus"
                     options={[
-                      { label: t('Status'), value: '' },
-                      { label: t('ACTIVE'), value: 'Active' },
-                      { label: t('INACTIVE'), value: 'Inactive' },
+                      { label: t('Feedback Status'), value: '' },
+                      { label: t('COMPLETED'), value: 'completed' },
+                      { label: t('IN_PROGRESS'), value: 'incomplete' },
+                      { label: t('NOT_ASSIGNED'), value: 'notAssigned' },
                     ]}
                     value={EmployeeStatusFilter}
                     onChange={(e) => {
@@ -356,13 +359,16 @@ const EmployeeList = () => {
                   ) : (
                     employees?.map((emp, index) => (
                       <React.Fragment key={index}>
-                        <TableBodyRow
+                        <TableMain
+                          disabled={emp.numberOfReviewersAssigned === 0}
                           onClick={() =>
-                            handleNavigateToDetailedView(
-                              emp.employeeId,
-                              emp.firstName,
-                              emp.lastName
-                            )
+                            emp.numberOfReviewersAssigned === 0
+                              ? null
+                              : handleNavigateToDetailedView(
+                                  emp.employeeId,
+                                  emp.firstName,
+                                  emp.lastName
+                                )
                           }
                         >
                           <td className="profilePicArea">
@@ -399,24 +405,42 @@ const EmployeeList = () => {
                             </span>
                           </td>
                           <td>
-                            {emp.jobDetails ? emp.jobDetails.designation : '-'}
+                            {emp.jobDetails?.designation
+                              ? emp.jobDetails.designation
+                              : '-'}
                           </td>
                           <td>
-                            {emp.jobDetails ? emp.jobDetails.department : '-'}
+                            {emp.jobDetails?.department
+                              ? emp.jobDetails.department
+                              : '-'}
                           </td>
                           <td>
                             <StatusCell
                               completed={
                                 emp.numberOfReviewerResponses ===
                                   emp.numberOfReviewersAssigned &&
-                                emp.numberOfReviewersAssigned != 0
+                                emp.numberOfReviewersAssigned !== 0
+                              }
+                              noProviders={
+                                emp.numberOfReviewerResponses === 0 &&
+                                emp.numberOfReviewersAssigned === 0
                               }
                             >
-                              {`${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
+                              {emp.numberOfReviewerResponses === 0 &&
+                              emp.numberOfReviewersAssigned === 0
+                                ? 'No Providers Assigned'
+                                : `${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
                             </StatusCell>
                           </td>
-                          <td>{emp.overallRating ? emp.overallRating : '-'}</td>
-                        </TableBodyRow>
+
+                          <td>
+                            <RatingCenter>
+                              <span>
+                                {emp.overallRating ? emp.overallRating : '-'}
+                              </span>
+                            </RatingCenter>
+                          </td>
+                        </TableMain>
                       </React.Fragment>
                     ))
                   )}

@@ -104,12 +104,15 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
         <ActionMenuContent>
           {options.map((option, index) => {
             const isDisabled = getIsDisabled(option.title);
+            const isActionDisabled = isDisabled || option.disabled;
             return (
               <ActionMenuOptions
                 key={index}
-                isDisabled={isDisabled}
-                onClick={() => !isDisabled && handleOptionClick(option.title)}
-                title={isDisabled ? t('No_Permission') : ''}
+                className={isActionDisabled ? 'disabled-action' : ''}
+                onClick={() => {
+                  if (!isActionDisabled) handleOptionClick(option.title);
+                }}
+                title={isActionDisabled ? t('No_Permission') : ''}
               >
                 {option.svg}
                 <span>{option.title}</span>
