@@ -2,14 +2,7 @@ package tac.beeja.recruitmentapi.service;
 
 import com.azure.identity.ClientSecretCredential;
 import com.azure.identity.ClientSecretCredentialBuilder;
-import com.microsoft.graph.models.Attendee;
-import com.microsoft.graph.models.AttendeeType;
-import com.microsoft.graph.models.BodyType;
-import com.microsoft.graph.models.DateTimeTimeZone;
-import com.microsoft.graph.models.EmailAddress;
-import com.microsoft.graph.models.Event;
-import com.microsoft.graph.models.ItemBody;
-import com.microsoft.graph.models.OnlineMeetingProviderType;
+import com.microsoft.graph.models.*;
 import com.microsoft.graph.serviceclient.GraphServiceClient;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -54,7 +47,7 @@ public class MicrosoftTeamsClientService {
     /**
      * Creates a Microsoft Teams meeting as a calendar event with Teams link.
      */
-    public Event createTeamsMeeting(
+    public OnlineMeeting createTeamsMeeting(
             String subject,
             String description,
             Date startDateTime,
@@ -68,72 +61,69 @@ public class MicrosoftTeamsClientService {
             GraphServiceClient client = getGraphClient();
             String serviceAccount = teamsProperties.getServiceAccountEmail();
 
-            Event event = new Event();
-            event.setSubject(subject);
-
-            ItemBody body = new ItemBody();
-            body.setContentType(BodyType.Html);
-            body.setContent(description);
-            event.setBody(body);
-
             OffsetDateTime startOdt = startDateTime.toInstant().atZone(ZoneId.of("UTC")).toOffsetDateTime();
             OffsetDateTime endOdt = startOdt.plusMinutes(durationInMinutes);
 
-            DateTimeTimeZone start = new DateTimeTimeZone();
-            start.setDateTime(startOdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            start.setTimeZone("UTC");
+            // Create meeting object
+            OnlineMeeting onlineMeeting = new OnlineMeeting();
+            onlineMeeting.setSubject(subject);
+            onlineMeeting.setStartDateTime(startOdt);
+            onlineMeeting.setEndDateTime(endOdt);
 
-            DateTimeTimeZone end = new DateTimeTimeZone();
-            end.setDateTime(endOdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            end.setTimeZone("UTC");
+            // Optional: set lobby and permissions
+            onlineMeeting.setLobbyBypassSettings(new LobbyBypassSettings() {{
+                setScope(LobbyBypassScope.Organization);
+            }});
 
-            event.setStart(start);
-            event.setEnd(end);
-
-            // Add attendees
-            List<Attendee> attendees = new ArrayList<>();
+            // Prepare participants
+            List<MeetingParticipantInfo> attendees = new ArrayList<>();
 
             if (attendeeEmails != null) {
                 for (String email : attendeeEmails) {
-                    Attendee attendee = new Attendee();
-                    EmailAddress emailAddress = new EmailAddress();
-                    emailAddress.setAddress(email);
-                    attendee.setEmailAddress(emailAddress);
-                    attendee.setType(AttendeeType.Required);
-                    attendees.add(attendee);
+                    IdentitySet identitySet = new IdentitySet();
+                    identitySet.setUser(new Identity() {{
+                        setDisplayName(email);
+                    }});
+
+                    MeetingParticipantInfo participant = new MeetingParticipantInfo();
+                    participant.setRole(OnlineMeetingRole.Presenter);
+                    participant.setIdentity(identitySet);
+
+                    attendees.add(participant);
                 }
             }
 
-            if (applicantEmail != null && !applicantEmail.isEmpty()) {
-                Attendee applicant = new Attendee();
-                EmailAddress applicantAddr = new EmailAddress();
-                applicantAddr.setAddress(applicantEmail);
-                applicantAddr.setName(applicantName);
-                applicant.setEmailAddress(applicantAddr);
-                applicant.setType(AttendeeType.Required);
+            if (applicantEmail != null && !applicantEmail.isBlank()) {
+                IdentitySet applicantIdentity = new IdentitySet();
+                applicantIdentity.setUser(new Identity() {{
+                    setDisplayName(applicantName != null ? applicantName : applicantEmail);
+                }});
+
+                MeetingParticipantInfo applicant = new MeetingParticipantInfo();
+                applicant.setRole(OnlineMeetingRole.Attendee);
+                applicant.setIdentity(applicantIdentity);
+
                 attendees.add(applicant);
             }
 
-            event.setAttendees(attendees);
-
-            event.setIsOnlineMeeting(true);
-            event.setOnlineMeetingProvider(OnlineMeetingProviderType.TeamsForBusiness);
+            MeetingParticipants participants = new MeetingParticipants();
+            participants.setAttendees(attendees);
+            onlineMeeting.setParticipants(participants);
 
             log.info("Creating Teams meeting for account: {}", serviceAccount);
 
-            Event createdEvent = client
+            // ✅ Actual call to Microsoft Graph to create Teams meeting
+            OnlineMeeting createdMeeting = client
                     .users()
                     .byUserId(serviceAccount)
-                    .events()
-                    .post(event);
+                    .onlineMeetings()
+                    .post(onlineMeeting);
 
-            String joinUrl = (createdEvent.getOnlineMeeting() != null)
-                    ? createdEvent.getOnlineMeeting().getJoinUrl()
-                    : "N/A";
+            log.info("Teams meeting created successfully. Subject: {}, Join URL: {}",
+                    subject,
+                    createdMeeting.getJoinWebUrl());
 
-            log.info("Teams meeting created successfully. Subject: {}, Join URL: {}", subject, joinUrl);
-
-            return createdEvent;
+            return createdMeeting;
 
         } catch (Exception e) {
             log.error("Error creating Teams meeting: {}", e.getMessage(), e);

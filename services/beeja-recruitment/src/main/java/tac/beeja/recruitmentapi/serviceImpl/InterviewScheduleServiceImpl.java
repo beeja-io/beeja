@@ -4,6 +4,8 @@ import com.microsoft.graph.models.Event;
 
 import java.util.Calendar;
 import java.util.Date;
+
+import com.microsoft.graph.models.OnlineMeeting;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +63,7 @@ public class InterviewScheduleServiceImpl implements InterviewScheduleService {
       String description = buildInterviewDescription(applicant, request.getInterviewDescription());
 
       // Create Teams meeting via Microsoft Graph API
-      Event teamsEvent =
+      OnlineMeeting teamsEvent =
           teamsClientService.createTeamsMeeting(
               request.getInterviewTitle(),
               description,
@@ -83,14 +85,14 @@ public class InterviewScheduleServiceImpl implements InterviewScheduleService {
       interview.setDurationInMinutes(request.getDurationInMinutes());
       interview.setMeetingId(teamsEvent.getId());
       interview.setMeetingLink(
-          teamsEvent.getOnlineMeeting() != null
-              ? teamsEvent.getOnlineMeeting().getJoinUrl()
+          teamsEvent.getJoinWebUrl() != null
+              ? teamsEvent.getJoinWebUrl()
               : null);
       interview.setJoinWebUrl(
-          teamsEvent.getWebLink() != null ? teamsEvent.getWebLink() : null);
+              teamsEvent.getJoinWebUrl() != null ? teamsEvent.getJoinWebUrl() : null);
       interview.setOnlineMeetingId(
-          teamsEvent.getOnlineMeeting() != null
-              ? teamsEvent.getOnlineMeeting().getJoinUrl()
+              teamsEvent.getJoinWebUrl() != null
+              ? teamsEvent.getJoinWebUrl()
               : null);
       interview.setOrganizerEmail(teamsProperties.getServiceAccountEmail());
       interview.setOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
