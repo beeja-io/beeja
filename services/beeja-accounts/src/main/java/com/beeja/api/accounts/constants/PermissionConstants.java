@@ -40,4 +40,5 @@ public class PermissionConstants {
   public static final String READ_LOAN = "RLON";
 
   public static final String ACCESS_REFFERRAL = "ACREF";
+  public static final String ACCESS_TECH_ACADEMY_LINK = "ATACDL";
 }
