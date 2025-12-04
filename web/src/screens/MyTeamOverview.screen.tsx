@@ -32,6 +32,8 @@ import {
   Title,
   TitleSection,
 } from '../styles/MyTeamOverview.style';
+import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 
 interface EmployeeEntity {
   employeeId: string;
@@ -61,10 +63,15 @@ const EmployeeList = () => {
   const navigate = useNavigate();
   const { user } = useUser();
   const [isLoadingData, setLoadingData] = useState(false);
+  const [isLoadingEmployees, setIsLoadingEmployees] = useState(false);
 
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [toasting, setToast] = useState<{
+    type: 'success' | 'error';
+    message: string;
+    head: string;
+  } | null>(null);
 
   const [departmentFilter, setDepartmentFilter] = useState<string>('');
   const [JobTitleFilter, setJobTitleFilter] = useState<string>('');
@@ -154,7 +161,7 @@ const EmployeeList = () => {
         return;
       }
     } catch {
-      setError(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
+      toast.error(t('ERROR_WHILE_FETCHING_DEPARTMENT_OPTIONS'));
     }
   };
 
@@ -163,12 +170,13 @@ const EmployeeList = () => {
       const response = await getOrganizationValuesByKey('jobTitles');
       setJobTitles(response.data);
     } catch {
-      setError(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
+      toast.error(t('ERROR_WHILE_FETCHING_JOB_TITLES'));
     }
   };
 
   const fetchEmployees = useCallback(async () => {
     setLoadingData(true);
+    setIsLoadingEmployees(false);
     try {
       const queryParams = [];
       if (departmentFilter != null && departmentFilter != '-')
@@ -190,12 +198,16 @@ const EmployeeList = () => {
         !response.data.totalRecords ||
         response.data.totalRecords.length === 0
       ) {
-        setError(t('NO_EMPLYEES_FOUND'));
+        setIsLoadingEmployees(true)
       } else {
-        setError(null);
+        setIsLoadingEmployees(false)
       }
     } catch {
-      setError(t('ERROR_WHILE_FETCHING_EMPLOYEES'));
+      setToast({
+        type: "error",
+        head: "Request Failed",
+        message: "Something went wrong while processing your request.",
+      });
     } finally {
       setLoadingData(false);
     }
@@ -316,149 +328,160 @@ const EmployeeList = () => {
                 )}
             </FilterSection>
             <br />
-            <TableContainer>
-              <Table>
-                <TableHead>
-                  <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
-                    <th style={{ width: '250px' }}>{t('Employee_Name')}</th>
-                    <th style={{ width: '150px' }}>{t('Job_Title')}</th>
-                    <th style={{ width: '150px' }}>{t('Department')}</th>
-                    <th style={{ width: '130px' }}>
-                      {t('Feedback_Received_Status')}
-                    </th>
-                    <th style={{ width: '100px' }}>
-                      {t('Rating')}
-                      {' (Out of 5)'}
-                    </th>
-                  </tr>
-                </TableHead>
-                <tbody style={{ fontSize: '14px' }}>
-                  {isLoadingData ? (
-                    <>
-                      {[...Array(8).keys()].map((index) => (
-                        <TableBodyRow key={index}>
-                          <td className="profilePicArea">
-                            {<Monogram className="skeleton"> </Monogram>}
-                            <span className="skeleton skeleton-text"></span>
-                          </td>
-                          <td>
-                            <div className="skeleton skeleton-text"></div>
-                          </td>
-                          <td>
-                            <div className="skeleton skeleton-text"></div>
-                          </td>
-                          <td>
-                            <div className="skeleton skeleton-text"></div>
-                          </td>
-                          <td>
-                            <div className="skeleton skeleton-text"></div>
-                          </td>
-                        </TableBodyRow>
-                      ))}
-                    </>
-                  ) : (
-                    employees?.map((emp, index) => (
-                      <React.Fragment key={index}>
-                        <TableMain
-                          disabled={emp.numberOfReviewersAssigned === 0}
-                          onClick={() =>
-                            emp.numberOfReviewersAssigned === 0
-                              ? null
-                              : handleNavigateToDetailedView(
-                                  emp.employeeId,
-                                  emp.firstName,
-                                  emp.lastName
-                                )
-                          }
-                        >
-                          <td className="profilePicArea">
-                            {employeesWithProfilePictures.has(
-                              emp.employeeId
-                            ) ? (
-                              <Monogram
-                                className="initials"
-                                style={{
-                                  backgroundImage: `url(${employeeImages.get(emp.employeeId)})`,
-                                  backgroundSize: 'cover',
-                                  backgroundPosition: 'center',
-                                }}
-                              ></Monogram>
-                            ) : (
-                              <Monogram
-                                className={(emp.firstName ?? 'T')
-                                  .charAt(0)
-                                  .toUpperCase()}
-                              >
-                                {(emp.firstName ?? 'T')
-                                  .charAt(0)
-                                  .toUpperCase() +
-                                  (emp.lastName ?? 'A').charAt(0).toUpperCase()}
-                              </Monogram>
-                            )}
-                            <span className="nameAndMail">
-                              <span>
-                                {emp.firstName === null && emp.lastName === null
-                                  ? 't.a.cer'
-                                  : emp.firstName + ' ' + emp.lastName}
-                              </span>
-                              <span className="employeeMail">{emp.email}</span>
-                            </span>
-                          </td>
-                          <td>
-                            {emp.jobDetails?.designation
-                              ? emp.jobDetails.designation
-                              : '-'}
-                          </td>
-                          <td>
-                            {emp.jobDetails?.department
-                              ? emp.jobDetails.department
-                              : '-'}
-                          </td>
-                          <td>
-                            <StatusCell
-                              completed={
-                                emp.numberOfReviewerResponses ===
-                                  emp.numberOfReviewersAssigned &&
-                                emp.numberOfReviewersAssigned !== 0
-                              }
-                              noProviders={
-                                emp.numberOfReviewerResponses === 0 &&
+            {!isLoadingEmployees &&
+              <>
+                <TableContainer>
+                  <Table>
+                    <TableHead>
+                      <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
+                        <th style={{ width: '250px' }}>{t('Employee_Name')}</th>
+                        <th style={{ width: '150px' }}>{t('Job_Title')}</th>
+                        <th style={{ width: '150px' }}>{t('Department')}</th>
+                        <th style={{ width: '130px' }}>
+                          {t('Feedback_Received_Status')}
+                        </th>
+                        <th style={{ width: '100px' }}>
+                          {t('Rating')}
+                          {' (Out of 5)'}
+                        </th>
+                      </tr>
+                    </TableHead>
+                    <tbody style={{ fontSize: '14px' }}>
+                      {isLoadingData ? (
+                        <>
+                          {[...Array(8).keys()].map((index) => (
+                            <TableBodyRow key={index}>
+                              <td className="profilePicArea">
+                                {<Monogram className="skeleton"> </Monogram>}
+                                <span className="skeleton skeleton-text"></span>
+                              </td>
+                              <td>
+                                <div className="skeleton skeleton-text"></div>
+                              </td>
+                              <td>
+                                <div className="skeleton skeleton-text"></div>
+                              </td>
+                              <td>
+                                <div className="skeleton skeleton-text"></div>
+                              </td>
+                              <td>
+                                <div className="skeleton skeleton-text"></div>
+                              </td>
+                            </TableBodyRow>
+                          ))}
+                        </>
+                      ) : (
+                        employees?.map((emp, index) => (
+                          <React.Fragment key={index}>
+                            <TableMain
+                              disabled={emp.numberOfReviewersAssigned === 0}
+                              onClick={() =>
                                 emp.numberOfReviewersAssigned === 0
+                                  ? null
+                                  : handleNavigateToDetailedView(
+                                    emp.employeeId,
+                                    emp.firstName,
+                                    emp.lastName
+                                  )
                               }
                             >
-                              {emp.numberOfReviewerResponses === 0 &&
-                              emp.numberOfReviewersAssigned === 0
-                                ? 'No Providers Assigned'
-                                : `${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
-                            </StatusCell>
-                          </td>
+                              <td className="profilePicArea">
+                                {employeesWithProfilePictures.has(
+                                  emp.employeeId
+                                ) ? (
+                                  <Monogram
+                                    className="initials"
+                                    style={{
+                                      backgroundImage: `url(${employeeImages.get(emp.employeeId)})`,
+                                      backgroundSize: 'cover',
+                                      backgroundPosition: 'center',
+                                    }}
+                                  ></Monogram>
+                                ) : (
+                                  <Monogram
+                                    className={(emp.firstName ?? 'T')
+                                      .charAt(0)
+                                      .toUpperCase()}
+                                  >
+                                    {(emp.firstName ?? 'T')
+                                      .charAt(0)
+                                      .toUpperCase() +
+                                      (emp.lastName ?? 'A').charAt(0).toUpperCase()}
+                                  </Monogram>
+                                )}
+                                <span className="nameAndMail">
+                                  <span>
+                                    {emp.firstName === null && emp.lastName === null
+                                      ? 't.a.cer'
+                                      : emp.firstName + ' ' + emp.lastName}
+                                  </span>
+                                  <span className="employeeMail">{emp.email}</span>
+                                </span>
+                              </td>
+                              <td>
+                                {emp.jobDetails?.designation
+                                  ? emp.jobDetails.designation
+                                  : '-'}
+                              </td>
+                              <td>
+                                {emp.jobDetails?.department
+                                  ? emp.jobDetails.department
+                                  : '-'}
+                              </td>
+                              <td>
+                                <StatusCell
+                                  completed={
+                                    emp.numberOfReviewerResponses ===
+                                    emp.numberOfReviewersAssigned &&
+                                    emp.numberOfReviewersAssigned !== 0
+                                  }
+                                  noProviders={
+                                    emp.numberOfReviewerResponses === 0 &&
+                                    emp.numberOfReviewersAssigned === 0
+                                  }
+                                >
+                                  {emp.numberOfReviewerResponses === 0 &&
+                                    emp.numberOfReviewersAssigned === 0
+                                    ? 'No Providers Assigned'
+                                    : `${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
+                                </StatusCell>
+                              </td>
 
-                          <td>
-                            <RatingCenter>
-                              <span>
-                                {emp.overallRating ? emp.overallRating : '-'}
-                              </span>
-                            </RatingCenter>
-                          </td>
-                        </TableMain>
-                      </React.Fragment>
-                    ))
-                  )}
-                </tbody>
-              </Table>
-            </TableContainer>
-            <Pagination
-              currentPage={currentPage}
-              totalPages={Math.ceil(totalItems / itemsPerPage)}
-              handlePageChange={handlePageChange}
-              itemsPerPage={itemsPerPage}
-              handleItemsPerPage={handlePageSizeChange}
-              totalItems={totalItems}
-            />
-            {error && <div className="error-message">{error}</div>}
+                              <td>
+                                <RatingCenter>
+                                  <span>
+                                    {emp.overallRating ? emp.overallRating : '-'}
+                                  </span>
+                                </RatingCenter>
+                              </td>
+                            </TableMain>
+                          </React.Fragment>
+                        ))
+                      )}
+                    </tbody>
+                  </Table>
+                </TableContainer>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={Math.ceil(totalItems / itemsPerPage)}
+                  handlePageChange={handlePageChange}
+                  itemsPerPage={itemsPerPage}
+                  handleItemsPerPage={handlePageSizeChange}
+                  totalItems={totalItems}
+                />
+              </>}
+            {employees.length <= 0 && isLoadingEmployees && <ZeroEntriesFound heading="No results found" />}
           </DynamicSpaceMainContainer>
         </EmployeeListContainer>
       </DynamicSpace>
+      {toasting && (
+        <ToastMessage
+          messageType={toasting.type}
+          messageBody={toasting.message}
+          messageHeading={toasting.head}
+          handleClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 };
