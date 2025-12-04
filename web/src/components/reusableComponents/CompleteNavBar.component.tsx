@@ -5,7 +5,6 @@ import {
   ChevronDownSVG,
   DashBoardSVG,
   EmployeesSVG,
-  FeatureToggleSVG,
   MoonSVG,
   MyProfileSVG,
   NavCloseArrow,
@@ -38,7 +37,6 @@ import {
   CLIENT_MODULE,
   CONTRACT_MODULE,
   EXPENSE_MODULE,
-  FEATURE_TOGGLES_MODULE,
   INVENTORY_MODULE,
   LOAN_MODULE,
   ORGANIZATION_MODULE,
@@ -603,51 +601,6 @@ const CompleteNavBar = () => {
                         );
                       }}
                       hasAdditionalSvg
-                    />
-                  )}
-                  <ListItem
-                    isSideBarOpen={sidebarOpen}
-                    linkTo="#"
-                    tooltipName="Quick Links"
-                    linkName="QUICK_LINKS"
-                    svgIcon={
-                      <TrendingUpSVG
-                        props={{ isActive: openDropdown === 'general' }}
-                      />
-                    }
-                    additionalSvgIcon={<ChevronDownSVG />}
-                    dropdownItems={[
-                      {
-                        name: 'Beeja Docs',
-                        link: 'https://docs.beeja.io/',
-                      },
-                    ]}
-                    isDropdownOpen={openDropdown === 'general'}
-                    setDropdownOpen={() => {
-                      setOpenDropdown((prev) =>
-                        prev === 'general' ? null : 'general'
-                      );
-                    }}
-                    hasAdditionalSvg
-                  />
-                  {hasPermission(
-                    user,
-                    FEATURE_TOGGLES_MODULE.UPDATE_FEATURE
-                  ) && (
-                    <ListItem
-                      isSideBarOpen={sidebarOpen}
-                      linkTo="/features"
-                      tooltipName="Features"
-                      linkName="FEATURES"
-                      svgIcon={
-                        <FeatureToggleSVG
-                          props={{
-                            isActive:
-                              openDropdown === 'features' ||
-                              currentPath === '/features',
-                          }}
-                        />
-                      }
                     />
                   )}
                 </LeftNavList>
