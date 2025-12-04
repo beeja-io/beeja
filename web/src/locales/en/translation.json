@@ -602,5 +602,9 @@
     "allSuccess": "All feedback forms for {{name}} have been submitted!",
     "nextFormSuccess": "Feedback for {{name}} submitted successfully! Moving to next form ({{label}})."
   },
-  "No_Permission": "You do not have permission to perform this action"
+  "No_Permission": "You do not have permission to perform this action",
+  "COMPLETED": "Completed",
+  "IN_PROGRESS": "In Progress",
+  "NOT_ASSIGNED": "Not Assigned",
+  "TECH_ACADEMY": "Tech academy"
 }

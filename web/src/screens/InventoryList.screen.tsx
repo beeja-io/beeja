@@ -12,8 +12,6 @@ import {
 } from '../styles/ExpenseListStyles.style';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import { CalenderIcon, DeleteIcon } from '../svgs/DocumentTabSvgs.svg';
-import { SearchBox, SearchInput } from '../styles/NavBarStyles.style';
-import { SearchSVG } from '../svgs/NavBarSvgs.svg';
 import { InventoryListAction } from '../components/reusableComponents/InventoryListAction.component';
 import { DeviceDetails } from '../entities/InventoryEntity';
 import PreviewInventoryForm from '../components/directComponents/PreviewInventory.component';
@@ -134,6 +132,7 @@ const InventoryList = ({
       <StyledDiv>
         <ExpenseHeading>
           <ExpenseTitle>{t('INVENTORY_LIST')}</ExpenseTitle>
+           feature/inventory-search-by-device-number-
           </ExpenseHeading>
         <FilterSection>
 
@@ -163,6 +162,8 @@ const InventoryList = ({
               </div>
             </div>
           </SearchBox>
+         </ExpenseHeading>
+        <FilterSection>
           <DropdownMenu
             className="largeContainerFil"
             name="Device"

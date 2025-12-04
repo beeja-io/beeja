@@ -178,7 +178,7 @@ export const TableBodyRow = styled.tr`
     letter-spacing: 0px;
     vertical-align: middle;
     color: ${(props) => props.theme.colors.blackColors.black4};
-    background-color: ${(props) => props.theme.colors.blackColors.white2};
+    opacity: 0.5;
   }
 
   &.disabled-row:hover {
@@ -202,6 +202,18 @@ export const TableBodyRow = styled.tr`
     padding: 0 10px;
     font-size: 12px;
     vertical-align: middle;
+    &.disabled-row {
+      font-family: Nunito;
+      font-weight: 400;
+      font-style: Regular;
+      font-size: 12px;
+      leading-trim: NONE;
+      line-height: 160%;
+      letter-spacing: 0px;
+      vertical-align: middle;
+      color: ${(props) => props.theme.colors.blackColors.black4};
+      opacity: 0.5;
+    }
   }
 `;
 export const TableListContainer = styled.section`

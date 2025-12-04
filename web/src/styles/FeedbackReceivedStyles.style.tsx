@@ -13,7 +13,6 @@ export const Container = styled.div`
   border-radius: 12px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
   padding: 24px 32px;
-  border: 1px solid #e9eaec;
 `;
 
 export const HeaderRow = styled.div`
@@ -48,7 +47,7 @@ export const Subtitle = styled.span`
 export const TabBar = styled.div`
   display: flex;
   gap: 8px;
-  border-bottom: 1px solid #eef1f5;
+  border-bottom: 2px solid ${(p) => p.theme.colors.grayColors.gray10};
   margin-bottom: 18px;
 `;
 
@@ -112,10 +111,12 @@ export const Placeholder = styled.div`
   border: 1px dashed #e6ebf2;
   border-radius: 8px;
   padding: 20px;
+  &.rating {
+    border: none;
+  }
 `;
 
 export const NameBox = styled.div`
-  border: 1px solid #e5e8ec;
   border-radius: 8px;
   padding: 10px 14px;
   margin-bottom: 20px;
@@ -140,7 +141,7 @@ export const NameBox = styled.div`
 export const NavButton = styled.button`
   color: ${(props) => props.theme.colors.blackColors.black7};
   border-radius: 6px;
-  border: 1px solid #f1f2f4;
+  border: none;
   padding: 6px;
   font-size: 16px;
   font-weight: 400;
@@ -192,8 +193,7 @@ export const NavButton = styled.button`
 `;
 
 export const ResponsesContainer = styled.div`
-  background: #0057920f;
-  border: 1px solid #e2e5ea;
+  background: ${(p) => p.theme.colors.brandColors.primary + '12'};
   border-radius: 10px;
   padding: 16px 18px;
   margin-top: 14px;
@@ -219,7 +219,6 @@ export const ResponseHeader = styled.div`
 
 export const ResponseInnerBox = styled.div`
   background: ${(props) => props.theme.colors.blackColors.white6};
-  border: 1px solid #e5e8ec;
   border-radius: 8px;
   padding: 12px 14px;
   font-size: 14px;

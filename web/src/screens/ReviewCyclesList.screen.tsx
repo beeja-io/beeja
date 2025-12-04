@@ -113,12 +113,11 @@ const ReviewCyclesList = () => {
                     .map((cycle) => {
                       const expired = isCycleExpired(cycle);
                       return (
-                        <TableBodyRow
-                          key={cycle.id}
-                          className={expired ? 'disabled-row' : ''}
-                        >
-                          <td>{cycle?.name || '-'}</td>
-                          <td>
+                        <TableBodyRow key={cycle.id}>
+                          <td className={expired ? 'disabled-row' : ''}>
+                            {cycle?.name || '-'}
+                          </td>
+                          <td className={expired ? 'disabled-row' : ''}>
                             {cycle?.startDate
                               ? new Date(cycle.startDate).toLocaleDateString(
                                   'en-GB',
@@ -130,7 +129,7 @@ const ReviewCyclesList = () => {
                                 )
                               : '-'}
                           </td>
-                          <td>
+                          <td className={expired ? 'disabled-row' : ''}>
                             {cycle?.feedbackDeadline
                               ? new Date(
                                   cycle.feedbackDeadline
@@ -141,7 +140,7 @@ const ReviewCyclesList = () => {
                                 })
                               : '-'}
                           </td>
-                          <td>
+                          <td className={expired ? 'disabled-row' : ''}>
                             {cycle?.status ? (
                               <StatusDropdown value={cycle.status} disabled />
                             ) : (

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActionIcon } from '../../svgs/ExpenseListSvgs.svg';
 /* eslint-disable */
 import {
@@ -16,6 +16,7 @@ import AddExpenseForm from '../directComponents/AddExpenseForm.component';
 import CenterModal from './CenterModal.component';
 import { OrganizationValues } from '../../entities/OrgValueEntity';
 import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
+import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 interface ActionProps {
   options: {
@@ -110,6 +111,15 @@ export const ExpenseAction: React.FC<ActionProps> = ({
   useKeyPress(27, () => {
     setConfirmDeleteModal(false);
   });
+
+  useEffect(() => {
+    if (isEditModalOpen) {
+      disableBodyScroll();
+    } else {
+      enableBodyScroll();
+    }
+  }, [isEditModalOpen]);
+
   return (
     <>
       <ActionContainer className="dropdown-container" ref={dropdownRef}>

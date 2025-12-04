@@ -24,7 +24,7 @@ import {
   searchUsers,
   createReceiverList,
   getReceivers,
-  getProviders,
+  updateReceivers,
   assignProvider,
   updateFeedbackProviders,
 } from '../../service/axiosInstance';
@@ -88,7 +88,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
 
   const [previousProviders, setPreviousProviders] = useState<any[]>([]);
   const [searchCompleted, setSearchCompleted] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [toastData, setToastData] = useState<{
     type: 'success' | 'error' | null;
     heading?: string;
@@ -108,6 +108,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
   }, [isProvidersPage, selectedReceiver, cycleId]);
 
   const handleAssignProviders = async () => {
+    setIsLoading(true);
     try {
       if (!isProvidersPage) return;
 
@@ -208,6 +209,8 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
         heading: 'Error',
         body: t('Something went wrong while assigning providers.'),
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -251,6 +254,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
     };
 
     try {
+      setIsLoading(true);
       await createReceiverList(payload);
       setToastData({
         type: 'success',
@@ -268,6 +272,73 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
         heading: 'Error',
         body: t('Something went wrong while adding receivers.'),
       });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleUpdateReceivers = async () => {
+    if (!cycleId || !questionnaireId) {
+      toast.error('Cycle ID or Questionnaire ID missing');
+      return;
+    }
+
+    if (selected.length === 0) {
+      setToastData({
+        type: 'error',
+        heading: 'Error',
+        body: t('Please select at least one receiver.'),
+      });
+      return;
+    }
+
+    const existing = fromReceiversList.map((r) => ({
+      employeeId: r.employeeId,
+      fullName: r.fullName,
+      department: r.department,
+      designation: r.designation,
+      email: r.email,
+    }));
+
+    const newOnes = selected
+      .filter((emp) => !existing.some((e) => e.employeeId === emp.id))
+      .map((emp) => ({
+        employeeId: emp.id,
+        fullName: emp.name,
+        department: emp.department,
+        designation: emp.role,
+        email: emp.email,
+      }));
+
+    const merged = [...existing, ...newOnes];
+
+    const payload = {
+      cycleId,
+      questionnaireId,
+      receiverDetails: merged,
+    };
+
+    try {
+      setIsLoading(true);
+      await updateReceivers(cycleId, payload);
+      setToastData({
+        type: 'success',
+        heading: 'Receivers Updated',
+        body: t('Feedback receivers updated successfully.'),
+      });
+
+      setTimeout(() => {
+        onSuccess?.();
+        onClose?.();
+      }, 2000);
+    } catch (error) {
+      setToastData({
+        type: 'error',
+        heading: 'Error',
+        body: t('Something went wrong while updating receivers.'),
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -326,7 +397,6 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, fetchUsers]);
 
-  // const handleSearchClick = () => fetchUsers(searchTerm);
   const handleSearchClick = () => {
     inputRef.current?.focus();
     fetchUsers(searchTerm);
@@ -361,29 +431,18 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
 
     const fetchData = async () => {
       try {
-        if (isProvidersPage && selectedReceiver?.employeeId) {
-          const res = await getProviders(selectedReceiver.employeeId);
-          const providerList = res.data?.providers || [];
-          setList(providerList);
-          if (providerList.length > 0) {
-            setPreviousProviders(providerList);
-            sessionStorage.setItem(
-              `previousProviders_${selectedReceiver.employeeId}_${cycleId}`,
-              JSON.stringify(providerList)
-            );
-          }
-        } else {
-          const res = await getReceivers(cycleId, questionnaireId);
-          const receiverList = res.data?.receivers || [];
-          setList(receiverList);
-        }
-      } catch (err) {
-        throw new Error('Error loading existing list');
+        const res = await getReceivers(cycleId, questionnaireId);
+        const receiverList = res.data?.receivers || [];
+        setList(receiverList);
+      } catch (err: any) {
+        throw new Error('Failed to load receivers:');
       }
     };
 
-    fetchData();
-  }, [isProvidersPage, selectedReceiver, cycleId, questionnaireId]);
+    if (!isProvidersPage) {
+      fetchData();
+    }
+  }, [isProvidersPage, cycleId, questionnaireId]);
 
   const isViewMoreDetailsRoute = matchPath(
     '/performance/view-more-details/:employeeId/:cycleId',
@@ -600,10 +659,13 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                 <Button
                   className="submit"
                   type="button"
+                  disabled={isLoading}
                   onClick={
                     isProvidersPage
                       ? handleAssignProviders
-                      : handleCreateReceivers
+                      : fromReceiversList.length > 0
+                        ? handleUpdateReceivers
+                        : handleCreateReceivers
                   }
                 >
                   {mode === 'provider' ? 'Assign' : 'Add'}
