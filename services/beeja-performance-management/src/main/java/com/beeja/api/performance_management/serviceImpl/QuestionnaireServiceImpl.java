@@ -21,6 +21,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.text.Normalizer;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Service implementation for managing Questionnaires.
@@ -52,6 +55,8 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
 
         questionnaire.setOrganizationId(orgId);
         validateQuestionnaireRequest(questionnaire);
+
+        checkDuplicateQuestionnaire(null, questionnaire);
 
         Questionnaire newQuestionnaire = new Questionnaire();
         newQuestionnaire.setOrganizationId(orgId);
@@ -187,7 +192,7 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
                             Constants.ERROR_QUESTION_LIST_EMPTY
                     ));
         }
-
+        ensureNoDuplicateQuestions(updatedQuestions);
         existing.setQuestions(updatedQuestions);
         return questionnaireRepository.save(existing);
     }
@@ -201,15 +206,23 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
                             Constants.ERROR_QUESTION_LIST_EMPTY
                     ));
         }
+        ensureNoDuplicateQuestions(questionnaire.getQuestions());
     }
 
     private void checkDuplicateQuestionnaire(String currentId, Questionnaire questionnaire) {
         List<Questionnaire> existingList = questionnaireRepository.findAll();
 
+        List<String> incoming = questionnaire.getQuestions().stream()
+                .map(q -> normalizeText(q.getQuestion()))
+                .toList();
+
         boolean isDuplicate = existingList.stream()
                 .filter(q -> currentId == null || !q.getId().equals(currentId))
                 .anyMatch(q -> q.getQuestions() != null &&
-                        q.getQuestions().equals(questionnaire.getQuestions()));
+                        q.getQuestions().stream()
+                                        .map(eq -> normalizeText(eq.getQuestion()))
+                                        .toList()
+                                        .equals(incoming));
 
         if (isDuplicate) {
             throw new DuplicateDataException(
@@ -241,5 +254,89 @@ public class QuestionnaireServiceImpl implements QuestionnaireService {
         }
         questionnaireRepository.deleteById(id);
         log.info(Constants.INFO_QUESTIONNAIRE_DELETED, id);
+    }
+
+    /**
+     * Your question-level duplicate validation (with normalized text).
+     * Kept as a separate method and reused in create/update/updateQuestions.
+     */
+    @Override
+    public void ensureNoDuplicateQuestions(List<Question> questions) {
+        Set<String> seen = new HashSet<>();
+
+        for (Question q : questions) {
+
+            if (q == null || q.getQuestion() == null)
+                continue;
+
+            String normalized = normalizeText(q.getQuestion());
+
+            if (normalized.isBlank()) {
+                throw new BadRequestException(
+                        ErrorUtils.formatError(
+                                ErrorType.VALIDATION_ERROR,
+                                ErrorCode.FIELD_VALIDATION_MISSING,
+                                Constants.ERROR_INVALID_QUESTION_TEXT + q.getQuestion()
+                        ));
+            }
+
+            if (!seen.add(normalized)) {
+                throw new DuplicateDataException(
+                        ErrorUtils.formatError(
+                                ErrorType.RESOURCE_EXISTS_ERROR,
+                                ErrorCode.RESOURCE_EXISTS_ERROR,
+                                Constants.ERROR_DUPLICATE_QUESTION + q.getQuestion()
+                        ));
+            }
+        }
+    }
+
+    /**
+     * Your normalizeText logic: lowercasing, removing accents/symbols,
+     * collapsing spaces, handling repeated patterns, etc.
+     */
+    private String normalizeText(String text) {
+
+        if (text == null) return "";
+
+        text = text.toLowerCase().trim();
+        text = Normalizer.normalize(text, Normalizer.Form.NFKD);
+        text = text.replaceAll("\\p{M}", "");
+        text = text.replaceAll("[\\p{So}\\p{Cn}\\p{Cf}]", "");
+        text = text.replaceAll("[^a-z0-9 ]", "");
+        text = text.replaceAll("\\s+", " ").trim();
+
+        if (text.isBlank()) return "";
+
+        String[] parts = text.split(" ");
+        boolean allSingleLetters = true;
+
+        for (String p : parts) {
+            if (p.length() != 1) {
+                allSingleLetters = false;
+                break;
+            }
+        }
+
+        if (allSingleLetters) {
+            text = text.replace(" ", "");
+        } else {
+
+            Set<String> uniqueWords = new HashSet<>();
+            StringBuilder builder = new StringBuilder();
+            for (String word : parts) {
+                if (uniqueWords.add(word)) {
+                    if (builder.length() > 0) builder.append(" ");
+                    builder.append(word);
+                }
+            }
+            text = builder.toString();
+            text = text.replace(" ", "");
+        }
+
+        while (text.matches("^(.+?)\\1+$")) {
+            text = text.substring(0, text.length() / 2);
+        }
+        return text;
     }
 }
