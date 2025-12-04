@@ -36,4 +36,6 @@ public interface InventoryService {
       String ram,
       String organizationId,
       String searchTerm);
+
+  Inventory getDeviceByDeviceNumber(String deviceNumber);
 }

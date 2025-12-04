@@ -340,4 +340,20 @@ public class InventoryServiceImpl implements InventoryService {
               Constants.ERROR_UPDATING_DEVICE_DETAILS));
     }
   }
+  @Override
+  public Inventory getDeviceByDeviceNumber(String deviceNumber) {
+
+    Optional<Inventory> inventoryOptional =
+            inventoryRepository.findByDeviceNumber(deviceNumber);
+
+    if (inventoryOptional.isEmpty()) {
+      throw new ResourceNotFoundException(
+              BuildErrorMessage.buildErrorMessage(
+                      ErrorType.RESOURCE_NOT_FOUND_ERROR,
+                      ErrorCode.RESOURCE_NOT_FOUND,
+                      Constants.DEVICE_NOT_FOUND + deviceNumber));
+    }
+
+    return inventoryOptional.get();
+  }
 }
