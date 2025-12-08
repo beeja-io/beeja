@@ -11,8 +11,10 @@ import com.beeja.api.performance_management.model.dto.*;
 import com.beeja.api.performance_management.service.FeedbackResponseService;
 import com.beeja.api.performance_management.service.MyTeamOverviewService;
 import com.beeja.api.performance_management.utils.Constants;
+import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -159,6 +161,27 @@ public class MyTeamOverviewController {
         } catch (Exception e) {
             log.error(Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND, employeeId);
             return ResponseEntity.internalServerError().body(Constants.ERROR_EVALUATION_CYCLE_NOT_FOUND);
+        }
+    }
+
+    @GetMapping("/name/{employeeId}")
+    public ResponseEntity<?> getEmployeeName(@PathVariable String employeeId) {
+
+        try {
+            EmployeeName employeeName = accountClient.getEmployeeName(employeeId);
+            return ResponseEntity.ok(employeeName);
+
+        } catch (FeignException.NotFound e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Employee not found for ID: " + employeeId);
+
+        } catch (FeignException e) {
+            return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                    .body("Failed to call account-service: " + e.getMessage());
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Unexpected error occurred: " + e.getMessage());
         }
     }
 }

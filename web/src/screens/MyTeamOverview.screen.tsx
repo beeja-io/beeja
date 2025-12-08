@@ -213,14 +213,10 @@ const EmployeeList = () => {
   }, [fetchEmployees]);
 
   const handleNavigateToDetailedView = (
-    employeeId: string,
-    firstName: string | null,
-    lastName: string | null
+    employeeId: string
   ) => {
     localStorage.setItem('employeeListCurrentPage', currentPage.toString());
-    navigate(`/performance/my-team-overview/${employeeId}`, {
-      state: { firstName, lastName },
-    });
+    navigate(`/performance/my-team-overview/${employeeId}`);
   };
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -365,9 +361,7 @@ const EmployeeList = () => {
                             emp.numberOfReviewersAssigned === 0
                               ? null
                               : handleNavigateToDetailedView(
-                                  emp.employeeId,
-                                  emp.firstName,
-                                  emp.lastName
+                                  emp.employeeId
                                 )
                           }
                         >
