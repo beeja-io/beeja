@@ -52,5 +52,10 @@ public interface ProjectRepository extends MongoRepository<Project, String> {
 
   long countByOrganizationId(String organizationId);
 
+  boolean existsByProjectIdAndOrganizationId(String projectId, String organizationId);
+
+  List<Project> findByOrganizationIdAndProjectResourcesContaining(String employeeId, String organizationId);
+
+  List<Project> findByOrganizationIdAndProjectManagersContaining(String employeeId, String organizationId);
 
 }
