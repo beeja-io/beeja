@@ -144,6 +144,11 @@ const EvaluationOverview: React.FC = () => {
         setGroupedResponse(res.data);
       })
       .catch((err) => {
+        setToast({
+          type: "error",
+          head: "Request Failed",
+          message: "Something went wrong while processing your request.",
+        });
         throw new Error(
           `Error fetching grouped response: ${err?.message || err}`
         );
@@ -163,6 +168,12 @@ const EvaluationOverview: React.FC = () => {
       }
       setLoadingRating(false);
     } catch (err: any) {
+      setToast({
+        type: "error",
+        head: "Request Failed",
+        message: "Something went wrong while processing your request",
+      });
+
       throw new Error(`Error fetching employee rating: ${err?.message || err}`);
     }
   };
@@ -173,10 +184,19 @@ const EvaluationOverview: React.FC = () => {
         rating,
         comments,
       });
+      setToast({
+        type: "success",
+        message: `The Rating for ${state.firstName} ${state.lastName} has been Submitted Successfully`,
+        head: "Rating Submitted Successfully"
+      })
       setOverallRating(res.data);
       fetchEmployeeRating();
     } catch (err: any) {
-      throw new Error(`Error submitting rating: ${err?.message || err}`);
+      setToast({
+        type: "error",
+        message: `Failed to submit the Rating for ${state.firstName} ${state.lastName}`,
+        head: "Rating Submission Failed"
+      });
     }
   };
   const fetchSelfEvaluation = async () => {
@@ -187,6 +207,11 @@ const EvaluationOverview: React.FC = () => {
         setSelfEvaluation(res.data);
       })
       .catch((err) => {
+        setToast({
+          type: "error",
+          head: "Request Failed",
+          message: "Something went wrong while processing your request.",
+        });
         throw new Error(
           `Error fetching self evaluation: ${err?.message || err}`
         );
@@ -351,11 +376,11 @@ const EvaluationOverview: React.FC = () => {
                 )}
 
                 {activeTab === 'rating' &&
-                  !rating &&
                   user &&
                   hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
                     <ProvideRatingButton
-                      onClick={() => setShowRatingCard(true)}
+                      disabled={!!rating}
+                      onClick={() => !rating && setShowRatingCard(true)}
                     >
                       <WriteSVG />
                       {t('Provide_Rating')}
