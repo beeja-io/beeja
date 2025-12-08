@@ -138,6 +138,11 @@ const EvaluationOverview: React.FC = () => {
         setGroupedResponse(res.data);
       })
       .catch((err) => {
+        setToast({
+          type: "error",
+          head: "Request Failed",
+          message: "Something went wrong while processing your request.",
+        });
         throw new Error(
           `Error fetching grouped response: ${err?.message || err}`
         );
@@ -157,6 +162,12 @@ const EvaluationOverview: React.FC = () => {
       }
       setLoadingRating(false);
     } catch (err: any) {
+      setToast({
+        type: "error",
+        head: "Request Failed",
+        message: "Something went wrong while processing your request",
+      });
+
       throw new Error(`Error fetching employee rating: ${err?.message || err}`);
     }
   };
@@ -167,10 +178,19 @@ const EvaluationOverview: React.FC = () => {
         rating,
         comments,
       });
+      setToast({
+        type: "success",
+        message: `The Rating for ${state.firstName} ${state.lastName} has been Submitted Successfully`,
+        head: "Rating Submitted Successfully"
+      })
       setOverallRating(res.data);
       fetchEmployeeRating();
     } catch (err: any) {
-      throw new Error(`Error submitting rating: ${err?.message || err}`);
+      setToast({
+        type: "error",
+        message: `Failed to submit the Rating for ${state.firstName} ${state.lastName}`,
+        head: "Rating Submission Failed"
+      });
     }
   };
   const fetchSelfEvaluation = async () => {
@@ -181,6 +201,11 @@ const EvaluationOverview: React.FC = () => {
         setSelfEvaluation(res.data);
       })
       .catch((err) => {
+        setToast({
+          type: "error",
+          head: "Request Failed",
+          message: "Something went wrong while processing your request.",
+        });
         throw new Error(
           `Error fetching self evaluation: ${err?.message || err}`
         );
@@ -312,9 +337,9 @@ const EvaluationOverview: React.FC = () => {
                         options={
                           forms.length > 0
                             ? forms.map((item) => ({
-                                label: item.cycleName,
-                                value: item.cycleId,
-                              }))
+                              label: item.cycleName,
+                              value: item.cycleId,
+                            }))
                             : []
                         }
                         onChange={(selectedValue) => {
@@ -329,11 +354,11 @@ const EvaluationOverview: React.FC = () => {
                 )}
 
                 {activeTab === 'rating' &&
-                  !rating &&
                   user &&
                   hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
                     <ProvideRatingButton
-                      onClick={() => setShowRatingCard(true)}
+                      disabled={!!rating}
+                      onClick={() => !rating && setShowRatingCard(true)}
                     >
                       <WriteSVG />
                       {t('Provide_Rating')}
@@ -386,7 +411,7 @@ const EvaluationOverview: React.FC = () => {
                                 disabled={
                                   !groupedResponse ||
                                   currentQuestionIndex ===
-                                    groupedResponse.questions.length - 1
+                                  groupedResponse.questions.length - 1
                                 }
                                 onClick={() =>
                                   setCurrentQuestionIndex((i) => i + 1)
@@ -471,7 +496,7 @@ const EvaluationOverview: React.FC = () => {
                                   </ResponseHeader>
                                   <ResponseInnerBox>
                                     {selfEvaluation &&
-                                    selfEvaluation[0]?.responses?.[0]?.answer
+                                      selfEvaluation[0]?.responses?.[0]?.answer
                                       ? selfEvaluation[0].responses[0].answer
                                       : 'No response provided.'}
                                   </ResponseInnerBox>
