@@ -21,6 +21,8 @@ import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import { Monogram } from '../../styles/EmployeeListStyles.style';
 import { useUser } from '../../context/UserContext';
 import { EmployeeEntity } from '../../entities/EmployeeEntity';
+import { hasPermission } from '../../utils/permissionCheck';
+import { TECTACADEMY } from '../../constants/PermissionConstants';
 type topNavBarProps = {
   employee?: EmployeeEntity | undefined;
 };
@@ -51,7 +53,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
     */
     window.location.href =
       window.location.origin === OriginURL ||
-      window.location.origin === ProdOriginURL
+        window.location.origin === ProdOriginURL
         ? `${window.location.origin}${LogoutUrl}`
         : `${import.meta.env.VITE_API_BASE_URL}${LogoutUrl}`;
   };
@@ -122,14 +124,16 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
             ))}
           </select>
         </span>
-        <span
-          className="academy"
-          onClick={() =>
-            window.open('https://academy.techatcore.com/programs', '_blank')
-          }
-        >
-          Tech Academy
-        </span>
+        {user && hasPermission(user, TECTACADEMY.ACCESS_TECT_ACADEMY_LINK) && (
+          <span
+            className="academy"
+            onClick={() =>
+              window.open('https://academy.techatcore.com/programs', '_blank')
+            }
+          >
+            {t("TECH_ACADEMY")}
+          </span>
+        )}
         <span>
           <NotificationSVG />
         </span>

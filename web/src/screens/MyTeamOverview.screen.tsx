@@ -198,9 +198,9 @@ const EmployeeList = () => {
         !response.data.totalRecords ||
         response.data.totalRecords.length === 0
       ) {
-        setIsLoadingEmployees(true)
+        setIsLoadingEmployees(true);
       } else {
-        setIsLoadingEmployees(false)
+        setIsLoadingEmployees(false);
       }
     } catch {
       setToast({
@@ -225,14 +225,10 @@ const EmployeeList = () => {
   }, [fetchEmployees]);
 
   const handleNavigateToDetailedView = (
-    employeeId: string,
-    firstName: string | null,
-    lastName: string | null
+    employeeId: string
   ) => {
     localStorage.setItem('employeeListCurrentPage', currentPage.toString());
-    navigate(`/performance/my-team-overview/${employeeId}`, {
-      state: { firstName, lastName },
-    });
+    navigate(`/performance/my-team-overview/${employeeId}`);
   };
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
@@ -379,9 +375,7 @@ const EmployeeList = () => {
                                 emp.numberOfReviewersAssigned === 0
                                   ? null
                                   : handleNavigateToDetailedView(
-                                    emp.employeeId,
-                                    emp.firstName,
-                                    emp.lastName
+                                    emp.employeeId
                                   )
                               }
                             >
@@ -446,7 +440,6 @@ const EmployeeList = () => {
                                     : `${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
                                 </StatusCell>
                               </td>
-
                               <td>
                                 <RatingCenter>
                                   <span>
