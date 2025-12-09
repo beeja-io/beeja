@@ -15,6 +15,8 @@ import {
   AddButton,
   ErrorText,
   NoResults,
+  ArrowIconWrapper,
+  EmployeeCountDropdownList,
 } from '../../styles/DropDownMenu.style';
 import { ArrowDownSVG } from '../../svgs/CommonSvgs.svs';
 import { TickMark } from '../../styles/DocumentTabStyles.style';
@@ -247,7 +249,10 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
           {localOptions.find((o) => o.value === selected)?.label ||
             selected ||
             label}
-          <ArrowDownSVG />
+
+          <ArrowIconWrapper isOpen={isOpen}>
+            <ArrowDownSVG />
+          </ArrowIconWrapper>
         </ToggleButtonStyle>
 
         {isOpen && !disabled && (
@@ -381,11 +386,12 @@ export const DropdownOrg: React.FC<DropdownMenuProps> = ({
           disabled={disabled}
         >
           {options.find((o) => o.value === selected)?.label || label}
-          <ArrowDownSVG />
+          <ArrowIconWrapper isOpen={isOpen}>
+            <ArrowDownSVG />
+          </ArrowIconWrapper>
         </ToggleButtonStyle>
-
         {isOpen && !disabled && (
-          <DropdownListStyle className={`${listClassName || ''}`}>
+          <EmployeeCountDropdownList className={`${listClassName || ''}`}>
             {options.map((item, index) => {
               const isSelected = selected === item.value;
               return (
@@ -398,9 +404,8 @@ export const DropdownOrg: React.FC<DropdownMenuProps> = ({
                 </DropdownItemStyle>
               );
             })}
-          </DropdownListStyle>
+          </EmployeeCountDropdownList>
         )}
-
         {!disabled && name ? (
           <input
             type="hidden"
@@ -504,7 +509,9 @@ export const MultiSelectDropdown: React.FC<MultiSelectDropdownProps> = ({
                 ? value.map((opt) => opt.label).join(', ')
                 : placeholder}
             </span>
-            <ArrowDownSVG />
+            <ArrowIconWrapper isOpen={open}>
+              <ArrowDownSVG />
+            </ArrowIconWrapper>
           </ToggleButtonStyle>
         </ClearButton>
 

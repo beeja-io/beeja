@@ -164,12 +164,23 @@ export const ToggleButtonStyle = styled.div<{
   margin-top: 5px;
   transition: all 0.2s ease-in-out;
 `;
-
+export const ArrowIconWrapper = styled.span<{ isOpen: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease-in-out;
+  transform: rotate(${(props) => (props.isOpen ? '180deg' : '0deg')});
+`;
 export const DropdownListStyle = styled.ul`
   position: absolute;
   margin-top: 0.5rem;
   width: 100%;
+
+  /* Make it open BELOW the button instead of ABOVE */
   top: 100%;
+  bottom: auto;
+  margin-bottom: 0;
+
   border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 0.5rem;
   margin-left: -12px;
@@ -178,23 +189,11 @@ export const DropdownListStyle = styled.ul`
   z-index: 1000;
   max-height: 200px;
   overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: #aaa #f1f1f1;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-thumb {
-    background: #aaa;
-    border-radius: 10px;
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: #888;
-  }
+`;
+export const EmployeeCountDropdownList = styled(DropdownListStyle)`
+  bottom: 100%;
+  margin-bottom: 8px;
+  top: auto;
 `;
 export const DropdownItemStyle = styled.li<{
   selected: boolean;

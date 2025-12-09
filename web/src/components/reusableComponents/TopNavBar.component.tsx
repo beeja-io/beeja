@@ -21,6 +21,9 @@ import useKeyPress from '../../service/keyboardShortcuts/onKeyPress';
 import { Monogram } from '../../styles/EmployeeListStyles.style';
 import { useUser } from '../../context/UserContext';
 import { EmployeeEntity } from '../../entities/EmployeeEntity';
+const beejDocs = import.meta.env.VITE_BEEJA_DOCS_URL;
+const beejaTechAcademy = import.meta.env.VITE_TECH_ACADEMY_URL;
+
 type topNavBarProps = {
   employee?: EmployeeEntity | undefined;
 };
@@ -114,11 +117,16 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
       <TopNavRightIcons>
         <span
           className="academy"
-          onClick={() => window.open('https://docs.beeja.io', '_blank')}
+          onClick={() => window.open(beejDocs, '_blank')}
         >
           Beeja Docs
         </span>
-
+        <span
+          className="academy"
+          onClick={() => window.open(beejaTechAcademy, '_blank')}
+        >
+          Tech Academy
+        </span>
         <span className="language">
           <LanguageIcon />
           <select value={i18n.language} onChange={handleChangeLanguage}>
@@ -128,14 +136,6 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
               </option>
             ))}
           </select>
-        </span>
-        <span
-          className="academy"
-          onClick={() =>
-            window.open('https://academy.techatcore.com/programs', '_blank')
-          }
-        >
-          Tech Academy
         </span>
         <span>
           <NotificationSVG />
