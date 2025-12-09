@@ -8,6 +8,7 @@ export const Theme = {
       brandColors: {
         primary: '#005792',
         secondary: '#F2994A',
+        link: '#005792',
       },
       stateColors: {
         info: '#2F80ED',
@@ -58,6 +59,7 @@ export const Theme = {
       brandColors: {
         primary: '#FFFFFF',
         secondary: '#F2994A',
+        link: '#005792',
       },
       stateColors: {
         info: '#2F80ED',

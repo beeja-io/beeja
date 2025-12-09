@@ -164,7 +164,13 @@ export const ToggleButtonStyle = styled.div<{
   margin-top: 5px;
   transition: all 0.2s ease-in-out;
 `;
-
+export const ArrowIconWrapper = styled.span<{ isOpen: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease-in-out;
+  transform: rotate(${(props) => (props.isOpen ? '180deg' : '0deg')});
+`;
 export const DropdownListStyle = styled.ul`
   position: absolute;
   margin-top: 0.5rem;
@@ -195,6 +201,11 @@ export const DropdownListStyle = styled.ul`
   &::-webkit-scrollbar-thumb:hover {
     background: #888;
   }
+`;
+export const EmployeeCountDropdownList = styled(DropdownListStyle)`
+  bottom: 100%;
+  margin-bottom: 8px;
+  top: auto;
 `;
 export const DropdownItemStyle = styled.li<{
   selected: boolean;

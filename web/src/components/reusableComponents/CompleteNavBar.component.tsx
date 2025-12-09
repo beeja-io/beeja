@@ -605,31 +605,6 @@ const CompleteNavBar = () => {
                       hasAdditionalSvg
                     />
                   )}
-                  <ListItem
-                    isSideBarOpen={sidebarOpen}
-                    linkTo="#"
-                    tooltipName="Quick Links"
-                    linkName="QUICK_LINKS"
-                    svgIcon={
-                      <TrendingUpSVG
-                        props={{ isActive: openDropdown === 'general' }}
-                      />
-                    }
-                    additionalSvgIcon={<ChevronDownSVG />}
-                    dropdownItems={[
-                      {
-                        name: 'Beeja Docs',
-                        link: 'https://docs.beeja.io/',
-                      },
-                    ]}
-                    isDropdownOpen={openDropdown === 'general'}
-                    setDropdownOpen={() => {
-                      setOpenDropdown((prev) =>
-                        prev === 'general' ? null : 'general'
-                      );
-                    }}
-                    hasAdditionalSvg
-                  />
                   {hasPermission(
                     user,
                     FEATURE_TOGGLES_MODULE.UPDATE_FEATURE

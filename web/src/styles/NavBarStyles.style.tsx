@@ -440,7 +440,7 @@ export const RightSection = styled.div`
   color: ${(props) => props.theme.colors.blackColors.black1};
   background-color: ${(props) => props.theme.colors.backgroundColors.secondary};
   min-height: 100vh;
-  margin-top: 90px;
+  margin-top: 65px;
   padding-top: 5px;
   left: 78px;
   width: calc(100% - 78px);
@@ -476,12 +476,11 @@ export const TopNavRightIcons = styled.span`
     justify-content: center;
     align-items: center;
     &.academy {
-      color: #005792;
+      color: ${(props) => props.theme.colors.blackColors.black1}
       font-size: 14px;
     }
     &.academy:hover {
-      color: #003f6b;
-      text-decoration: underline;
+      color: ${(props) => props.theme.colors.brandColors.link};
       text-underline-offset: 3px;
     }
   }
