@@ -186,7 +186,7 @@ const EvaluationOverview: React.FC = () => {
       });
       setToast({
         type: "success",
-        message: `The Rating for ${state.firstName} ${state.lastName} has been Submitted Successfully`,
+        message: `The Rating for ${employeeInfo.firstName} ${employeeInfo.lastName} has been Submitted Successfully`,
         head: "Rating Submitted Successfully"
       })
       setOverallRating(res.data);
@@ -194,7 +194,7 @@ const EvaluationOverview: React.FC = () => {
     } catch (err: any) {
       setToast({
         type: "error",
-        message: `Failed to submit the Rating for ${state.firstName} ${state.lastName}`,
+        message: `Failed to submit the Rating for ${employeeInfo.firstName} ${employeeInfo.lastName}`,
         head: "Rating Submission Failed"
       });
     }
