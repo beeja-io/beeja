@@ -14,6 +14,7 @@ import static com.beeja.api.employeemanagement.utils.Constants.INVALID_PROFILE_P
 import static com.beeja.api.employeemanagement.utils.Constants.SUCCESSFULLY_UPDATED_PROFILE_PHOTO;
 import static com.google.common.io.Files.getFileExtension;
 
+import com.beeja.api.employeemanagement.model.DTO.EmployeeName;
 import com.beeja.api.employeemanagement.model.DTO.EmployeeSummaryDTO;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeBasicInfo;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeNameDTO;
@@ -528,8 +529,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         existingEmployee.setJobDetails(existingJobDetails);
       }
       existingJobDetails.setUpdatedAt(new Date());
+      EmployeeName employeeName= accountClient.getEmployeeName(UserContext.getLoggedInEmployeeId());
+      String fullName=employeeName.getFirstName()+" "+employeeName.getLastName();
       existingJobDetails.setUpdatedBy(
-               UserContext.getLoggedInUserName() + " (" +
+               fullName + " (" +
                         UserContext.getLoggedInUserDTO().getRoles()
                                 .stream()
                                 .map(RoleDTO::getName)
@@ -553,11 +556,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         historyJob.setEndDate(new Date());
         historyJob.setDescription(existingJobDetails.getDescription());
-        historyJob.setUpdatedBy(existingJobDetails.getUpdatedBy());
         historyJob.setUpdatedAt(existingJobDetails.getUpdatedAt());
         historyJob.setId(UUID.randomUUID().toString());
         historyJob.setUpdatedBy(
-                UserContext.getLoggedInUserName() + " (" +
+                fullName + " (" +
                         UserContext.getLoggedInUserDTO().getRoles()
                                 .stream()
                                 .map(RoleDTO::getName)
@@ -999,8 +1001,10 @@ public class EmployeeServiceImpl implements EmployeeService {
   public Employee addJobHistory(String employeeId, JobDetails newJob) throws Exception {
     Employee employee = getEmployeeById(employeeId);
 
+    EmployeeName employeeName= accountClient.getEmployeeName(UserContext.getLoggedInEmployeeId());
+    String fullName=employeeName.getFirstName()+" "+employeeName.getLastName();
     newJob.setUpdatedBy(
-            UserContext.getLoggedInUserName() + " (" +
+            fullName + " (" +
                     UserContext.getLoggedInUserDTO().getRoles()
                             .stream()
                             .map(RoleDTO::getName)
@@ -1043,8 +1047,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     updatedJob.setUpdatedAt(new Date());
     validateJobDetails(updatedJob);
     updatedJob.setId(jobId);
+    EmployeeName employeeName= accountClient.getEmployeeName(UserContext.getLoggedInEmployeeId());
+    String fullName=employeeName.getFirstName()+" "+employeeName.getLastName();
     updatedJob.setUpdatedBy(
-            UserContext.getLoggedInUserName() + " (" +
+            fullName + " (" +
                     UserContext.getLoggedInUserDTO().getRoles()
                             .stream()
                             .map(RoleDTO::getName)

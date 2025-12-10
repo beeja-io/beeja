@@ -1,5 +1,6 @@
 package com.beeja.api.employeemanagement.client;
 
+import com.beeja.api.employeemanagement.model.DTO.EmployeeName;
 import com.beeja.api.employeemanagement.model.clients.accounts.EmployeeNameDTO;
 import com.beeja.api.employeemanagement.requests.EmployeeOrgRequest;
 import com.beeja.api.employeemanagement.requests.EmployeeUpdateRequest;
@@ -41,4 +42,7 @@ public interface AccountClient {
   @RequestMapping(value = "/v1/users/emp-ids", method = RequestMethod.POST)
   @ResponseBody
   ResponseEntity<Object> getUsersByEmployeeIds(@RequestBody EmployeeOrgRequest employeeOrgRequest);
+
+  @GetMapping("/v1/users/name/{employeeId}")
+  EmployeeName getEmployeeName(@PathVariable String employeeId);
 }
