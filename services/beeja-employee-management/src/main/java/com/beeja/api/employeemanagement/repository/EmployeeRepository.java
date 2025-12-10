@@ -24,7 +24,7 @@ public interface EmployeeRepository extends MongoRepository<Employee, String> {
   @Query(
       value = "{ 'employeeId': ?0, 'organizationId': ?1 }",
       fields =
-          "{ 'employeeId': 1, 'organizationId': 1, 'address': 1, 'personalInformation': 1, 'contact': 1 }")
+          "{ 'employeeId': 1, 'organizationId': 1, 'address': 1, 'personalInformation': 1, 'contact': 1, 'jobDetails' : 1 }")
   Employee getLimitedDataFindByEmployeeId(String employeeId, String organizationId);
 
   @Aggregation(
