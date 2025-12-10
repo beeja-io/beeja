@@ -130,9 +130,9 @@ const EvaluationOverview: React.FC = () => {
   } | null>(null);
 
   const [employeeInfo, setEmployeeInfo] = useState({
-    employeeId: "",
-    firstName: "",
-    lastName: ""
+    employeeId: '',
+    firstName: '',
+    lastName: '',
   });
 
   const handleCycleSelect = async (cycleId: string) => {
@@ -145,9 +145,9 @@ const EvaluationOverview: React.FC = () => {
       })
       .catch((err) => {
         setToast({
-          type: "error",
-          head: "Request Failed",
-          message: "Something went wrong while processing your request.",
+          type: 'error',
+          head: 'Request Failed',
+          message: 'Something went wrong while processing your request.',
         });
         throw new Error(
           `Error fetching grouped response: ${err?.message || err}`
@@ -169,9 +169,9 @@ const EvaluationOverview: React.FC = () => {
       setLoadingRating(false);
     } catch (err: any) {
       setToast({
-        type: "error",
-        head: "Request Failed",
-        message: "Something went wrong while processing your request",
+        type: 'error',
+        head: 'Request Failed',
+        message: 'Something went wrong while processing your request',
       });
 
       throw new Error(`Error fetching employee rating: ${err?.message || err}`);
@@ -185,17 +185,17 @@ const EvaluationOverview: React.FC = () => {
         comments,
       });
       setToast({
-        type: "success",
+        type: 'success',
         message: `The Rating for ${employeeInfo.firstName} ${employeeInfo.lastName} has been Submitted Successfully`,
-        head: "Rating Submitted Successfully"
-      })
+        head: 'Rating Submitted Successfully',
+      });
       setOverallRating(res.data);
       fetchEmployeeRating();
     } catch (err: any) {
       setToast({
-        type: "error",
+        type: 'error',
         message: `Failed to submit the Rating for ${employeeInfo.firstName} ${employeeInfo.lastName}`,
-        head: "Rating Submission Failed"
+        head: 'Rating Submission Failed',
       });
     }
   };
@@ -208,9 +208,9 @@ const EvaluationOverview: React.FC = () => {
       })
       .catch((err) => {
         setToast({
-          type: "error",
-          head: "Request Failed",
-          message: "Something went wrong while processing your request.",
+          type: 'error',
+          head: 'Request Failed',
+          message: 'Something went wrong while processing your request.',
         });
         throw new Error(
           `Error fetching self evaluation: ${err?.message || err}`
@@ -229,9 +229,7 @@ const EvaluationOverview: React.FC = () => {
         lastName: res.data.lastName,
       });
     } catch (err) {
-      throw new Error(
-        `Failed to fetch employee details: ${err}`
-      );
+      throw new Error(`Failed to fetch employee details: ${err}`);
     }
   };
 
@@ -359,9 +357,9 @@ const EvaluationOverview: React.FC = () => {
                         options={
                           forms.length > 0
                             ? forms.map((item) => ({
-                              label: item.cycleName,
-                              value: item.cycleId,
-                            }))
+                                label: item.cycleName,
+                                value: item.cycleId,
+                              }))
                             : []
                         }
                         onChange={(selectedValue) => {
@@ -433,7 +431,7 @@ const EvaluationOverview: React.FC = () => {
                                 disabled={
                                   !groupedResponse ||
                                   currentQuestionIndex ===
-                                  groupedResponse.questions.length - 1
+                                    groupedResponse.questions.length - 1
                                 }
                                 onClick={() =>
                                   setCurrentQuestionIndex((i) => i + 1)
@@ -518,7 +516,7 @@ const EvaluationOverview: React.FC = () => {
                                   </ResponseHeader>
                                   <ResponseInnerBox>
                                     {selfEvaluation &&
-                                      selfEvaluation[0]?.responses?.[0]?.answer
+                                    selfEvaluation[0]?.responses?.[0]?.answer
                                       ? selfEvaluation[0].responses[0].answer
                                       : 'No response provided.'}
                                   </ResponseInnerBox>

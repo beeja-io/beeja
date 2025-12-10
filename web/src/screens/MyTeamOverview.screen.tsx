@@ -204,9 +204,9 @@ const EmployeeList = () => {
       }
     } catch {
       setToast({
-        type: "error",
-        head: "Request Failed",
-        message: "Something went wrong while processing your request.",
+        type: 'error',
+        head: 'Request Failed',
+        message: 'Something went wrong while processing your request.',
       });
     } finally {
       setLoadingData(false);
@@ -224,9 +224,7 @@ const EmployeeList = () => {
     fetchEmployees();
   }, [fetchEmployees]);
 
-  const handleNavigateToDetailedView = (
-    employeeId: string
-  ) => {
+  const handleNavigateToDetailedView = (employeeId: string) => {
     localStorage.setItem('employeeListCurrentPage', currentPage.toString());
     navigate(`/performance/my-team-overview/${employeeId}`);
   };
@@ -324,7 +322,7 @@ const EmployeeList = () => {
                 )}
             </FilterSection>
             <br />
-            {!isLoadingEmployees &&
+            {!isLoadingEmployees && (
               <>
                 <TableContainer>
                   <Table>
@@ -374,9 +372,7 @@ const EmployeeList = () => {
                               onClick={() =>
                                 emp.numberOfReviewersAssigned === 0
                                   ? null
-                                  : handleNavigateToDetailedView(
-                                    emp.employeeId
-                                  )
+                                  : handleNavigateToDetailedView(emp.employeeId)
                               }
                             >
                               <td className="profilePicArea">
@@ -400,16 +396,21 @@ const EmployeeList = () => {
                                     {(emp.firstName ?? 'T')
                                       .charAt(0)
                                       .toUpperCase() +
-                                      (emp.lastName ?? 'A').charAt(0).toUpperCase()}
+                                      (emp.lastName ?? 'A')
+                                        .charAt(0)
+                                        .toUpperCase()}
                                   </Monogram>
                                 )}
                                 <span className="nameAndMail">
                                   <span>
-                                    {emp.firstName === null && emp.lastName === null
+                                    {emp.firstName === null &&
+                                    emp.lastName === null
                                       ? 't.a.cer'
                                       : emp.firstName + ' ' + emp.lastName}
                                   </span>
-                                  <span className="employeeMail">{emp.email}</span>
+                                  <span className="employeeMail">
+                                    {emp.email}
+                                  </span>
                                 </span>
                               </td>
                               <td>
@@ -426,7 +427,7 @@ const EmployeeList = () => {
                                 <StatusCell
                                   completed={
                                     emp.numberOfReviewerResponses ===
-                                    emp.numberOfReviewersAssigned &&
+                                      emp.numberOfReviewersAssigned &&
                                     emp.numberOfReviewersAssigned !== 0
                                   }
                                   noProviders={
@@ -435,7 +436,7 @@ const EmployeeList = () => {
                                   }
                                 >
                                   {emp.numberOfReviewerResponses === 0 &&
-                                    emp.numberOfReviewersAssigned === 0
+                                  emp.numberOfReviewersAssigned === 0
                                     ? 'No Providers Assigned'
                                     : `${emp.numberOfReviewerResponses}/${emp.numberOfReviewersAssigned}`}
                                 </StatusCell>
@@ -443,7 +444,9 @@ const EmployeeList = () => {
                               <td>
                                 <RatingCenter>
                                   <span>
-                                    {emp.overallRating ? emp.overallRating : '-'}
+                                    {emp.overallRating
+                                      ? emp.overallRating
+                                      : '-'}
                                   </span>
                                 </RatingCenter>
                               </td>
@@ -462,8 +465,11 @@ const EmployeeList = () => {
                   handleItemsPerPage={handlePageSizeChange}
                   totalItems={totalItems}
                 />
-              </>}
-            {employees.length <= 0 && isLoadingEmployees && <ZeroEntriesFound heading="No results found" />}
+              </>
+            )}
+            {employees.length <= 0 && isLoadingEmployees && (
+              <ZeroEntriesFound heading="No results found" />
+            )}
           </DynamicSpaceMainContainer>
         </EmployeeListContainer>
       </DynamicSpace>
