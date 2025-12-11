@@ -1,16 +1,5 @@
 import styled from 'styled-components';
 
-export const ExpenseHeadingSection = styled.div`
-  display: flex;
-  margin-bottom: 16px;
-
-  .heading {
-    font-size: 24px;
-    font-weight: 600;
-    color: #1d1d1f;
-  }
-`;
-
 export const StyledDiv = styled.div`
   margin-bottom: 12px;
 `;
@@ -445,4 +434,52 @@ export const ModalContainer = styled.div`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   padding: 1.5rem;
   position: relative;
+`;
+
+export const ExpenseHeadingSection = styled.section`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+
+  .heading {
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 550;
+
+    span {
+      transform: none;
+      margin-right: 5px;
+      display: inline-block;
+    }
+
+    .back-arrow {
+      transform: rotate(90deg);
+      cursor: pointer;
+    }
+    .form-name {
+      color: #005792;
+      font-weight: 700;
+      font-size: 24px;
+      margin-left: 4px;
+    }
+  }
+
+  .separator-form {
+    transform: none !important;
+    margin: 0 15px;
+    vertical-align: middle;
+    margin-top: 5px;
+  }
+
+  .nav_AddClient {
+    transform: none !important;
+    font-family: Nunito;
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 130%;
+    letter-spacing: 0px;
+    color: #005792;
+    margin-left: 2px;
+  }
 `;

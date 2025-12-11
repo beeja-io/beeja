@@ -9,17 +9,18 @@ import {
   TableBodyRow,
 } from '../styles/ExpenseListStyles.style';
 import {
-  ExpenseHeadingSection,
+  // ExpenseHeadingSection,
   ExpenseManagementMainContainer,
 } from '../styles/ExpenseManagementStyles.style';
 import { Button } from '../styles/CommonStyles.style';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 
-import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
+import { ArrowDownSVG, LeftArrowSVG } from '../svgs/CommonSvgs.svs';
 import { toast } from 'sonner';
 import {
   ExpenseHeadingFeedback,
+  ExpenseHeadingSection,
   ModalOverlay,
   ModalContainer,
   ProfileCell,
@@ -136,10 +137,20 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
     <ExpenseManagementMainContainer>
       <ExpenseHeadingSection>
         <span className="heading">
-          <span onClick={onBack}>
+          <span className="back-arrow" onClick={onBack}>
             <ArrowDownSVG />
           </span>
+
           {t('Assign_Feedback_Receivers_Providers')}
+
+          {formName && (
+            <>
+              <span className="separator-form">
+                <LeftArrowSVG />
+              </span>
+              <span className="form-name">{formName}</span>
+            </>
+          )}
         </span>
 
         {canShowButton && (
@@ -163,10 +174,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
 
       <StyledDiv>
         <ExpenseHeadingFeedback>
-          <ExpenseTitle>
-            {t('Feedback_Receivers_List')}
-            {formName ? ` : ${formName}` : ''}
-          </ExpenseTitle>
+          <ExpenseTitle>{t('Feedback_Receivers_List')}</ExpenseTitle>
         </ExpenseHeadingFeedback>
 
         <TableListContainer>
@@ -288,7 +296,7 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
                       <td>
                         <FeedbackProviderAction
                           options={feedbackActions}
-                          currentEmployee={{ ...receiver, cycleId }}
+                          currentEmployee={{ ...receiver, cycleId, formName }}
                           handleAssign={() => openAssignModal(receiver)}
                         />
                       </td>
