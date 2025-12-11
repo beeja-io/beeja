@@ -116,7 +116,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
         </span> */}
       </span>
       <TopNavRightIcons>
-        {user && hasPermission(user, TECTACADEMY.ACCESS_TECT_ACADEMY_LINK) && (
+        {user && (
           <span
             className="academy"
             onClick={() => window.open(beejaDocsUrl, '_blank')}
@@ -124,7 +124,6 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
             Beeja Docs
           </span>
         )}
-
         {user && hasPermission(user, TECTACADEMY.ACCESS_TECT_ACADEMY_LINK) && (
           <span
             className="academy"
