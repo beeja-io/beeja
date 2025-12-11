@@ -76,7 +76,7 @@ const ReviewCyclesList = () => {
     <>
       <StyledDiv>
         <ExpenseHeading>
-          <ExpenseTitle>{t('List of forms')}</ExpenseTitle>
+          <ExpenseTitle>{t('List_of_forms')}</ExpenseTitle>
         </ExpenseHeading>
 
         <TableListContainer style={{ marginTop: 0 }}>
@@ -86,10 +86,10 @@ const ReviewCyclesList = () => {
             <TableList>
               <TableHead>
                 <tr>
-                  <th>{t('Name')}</th>
-                  <th>{t('Evaluation Start Date')}</th>
-                  <th>{t('Evaluation End date')}</th>
-                  <th>{t('Evaluation Status')}</th>
+                  <th>{t('NAME')}</th>
+                  <th>{t('Evaluation_Start_Date')}</th>
+                  <th>{t('Evaluation_End_Date')}</th>
+                  <th>{t('Evaluation_Status')}</th>
                   <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
