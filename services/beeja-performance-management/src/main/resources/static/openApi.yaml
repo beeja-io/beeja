@@ -7,6 +7,7 @@ info:
     `Product of tech.at.core`
       API documentation for the Beeja Open API application. It allows users to access
       data via a APIs secured by cookie and permissions.
+    
         ## Authentication & Authorization
         Beeja has a username and password authentication system. 
         [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
