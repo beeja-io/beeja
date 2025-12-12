@@ -56,6 +56,10 @@ interface Props {
   selectedFiltersText: () => React.ReactNode;
   deviceTypes: OrganizationValues;
   inventoryProviders: OrganizationValues;
+  searchTerm: string;
+  onSearchTermChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    setSearchDeviceNumberFilter: (value: string) => void;
+
 }
 
 const InventoryList = ({
@@ -79,6 +83,11 @@ const InventoryList = ({
   selectedFiltersText,
   deviceTypes,
   inventoryProviders,
+  searchTerm,
+  onSearchTermChange,
+    setSearchDeviceNumberFilter
+
+
 }: Props) => {
   const { user } = useUser();
   const Actions = [
@@ -123,7 +132,37 @@ const InventoryList = ({
       <StyledDiv>
         <ExpenseHeading>
           <ExpenseTitle>{t('INVENTORY_LIST')}</ExpenseTitle>
-        </ExpenseHeading>
+           feature/inventory-search-by-device-number-
+          </ExpenseHeading>
+        <FilterSection>
+
+          <SearchBox className="search">
+            <div style={{ position: "relative", width: "100%" }}>
+              <SearchInput
+                placeholder="Search by Device Number"
+                value={searchTerm}
+                onChange={onSearchTermChange}
+                ref={searchInputRef}
+                style={{ width: "100%", paddingRight: "45px" }}
+              />
+            <div
+                onClick={() => {
+                  if (searchInputRef.current) searchInputRef.current.focus();
+                  setSearchDeviceNumberFilter(searchTerm);
+                }}
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              >
+                <SearchSVG />
+              </div>
+            </div>
+          </SearchBox>
+         </ExpenseHeading>
         <FilterSection>
           <DropdownMenu
             className="largeContainerFil"

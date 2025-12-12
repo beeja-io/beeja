@@ -5,6 +5,7 @@ import com.beeja.api.performance_management.exceptions.InvalidOperationException
 import com.beeja.api.performance_management.model.Question;
 import com.beeja.api.performance_management.model.Questionnaire;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -70,4 +71,6 @@ public interface QuestionnaireService {
      * @param id the ID of the questionnaire to delete
      */
     void deleteQuestionnaire(String id);
+
+    void ensureNoDuplicateQuestions(List<@NotNull Question> questions);
 }

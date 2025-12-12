@@ -20,4 +20,6 @@ public interface InventoryRepository extends MongoRepository<Inventory, String> 
   List<Inventory> findLastAddedDeviceByPrefix(String prefix);
 
   Long countByOrganizationId(String organizationId);
+
+  Optional<Inventory> findByDeviceNumber(String deviceNumber);
 }
