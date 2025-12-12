@@ -1,0 +1,1528 @@
+openapi: 3.0.1
+
+info:
+  title: Beeja - Performance Management Service
+  version: v1
+  description: |-
+    `Product of tech.at.core`
+      API documentation for the Beeja Open API application. It allows users to access
+      data via a APIs secured by cookie and permissions.
+    
+        ## Authentication & Authorization
+        Beeja has a username and password authentication system. 
+        [Please login to Beeja](http://localhost:8000/login) to access all APIs in Swagger.
+    
+        ## Authorization Levels
+    
+        Most of the API's endpoints require certain functional specific scopes depending on which endpoint
+        is triggered. Supported scopes
+externalDocs:
+  description: Explore Beeja
+  url: https://beeja.io/
+
+servers:
+  - url: http://localhost:8000/performance
+    description: Beeja Performance Management
+
+tags:
+  - name: evaluation-cycle-controller
+    description: To manage performance evaluation cycles.
+
+paths:
+
+  /v1/api/cycles:
+    post:
+      tags:
+        - evaluation-cycle-controller
+      summary: create a new evaluation cycle
+      operationId: createEvaluationCycle
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluationCycle"
+      responses:
+        "201":
+          description: Created
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/EvaluationCycle"
+
+    get:
+      tags:
+        - evaluation-cycle-controller
+      summary: get all evaluation cycles
+      operationId: getAllEvaluationCycles
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EvaluationCycle"
+
+  /v1/api/cycles/create-with-questions:
+    post:
+      tags:
+        - evaluation-cycle-controller
+      summary: create evaluation cycle with questionnaire
+      operationId: createCycleWithQuestions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluationCycleCreateDto"
+      responses:
+        "201":
+          description: Created
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/EvaluationCycleDetailsDto"
+
+  /v1/api/cycles/with-questionnaires:
+    get:
+      tags:
+        - evaluation-cycle-controller
+      summary: get all cycles including questionnaire and questions
+      operationId: getCyclesWithQuestionnaires
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EvaluationCycleDetailsDto"
+
+  /v1/api/cycles/{id}:
+    get:
+      tags:
+        - evaluation-cycle-controller
+      summary: get evaluation cycle by ID
+      operationId: getEvaluationCycleById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/EvaluationCycle"
+
+    put:
+      tags:
+        - evaluation-cycle-controller
+      summary: update evaluation cycle
+      operationId: updateEvaluationCycle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluationCycle"
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/EvaluationCycle"
+
+    delete:
+      tags:
+        - evaluation-cycle-controller
+      summary: delete evaluation cycle
+      operationId: deleteEvaluationCycle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+
+  /v1/api/cycles/{id}/details:
+    get:
+      tags:
+        - evaluation-cycle-controller
+      summary: get evaluation cycle with questionnaire and questions
+      operationId: getEvaluationCycleDetails
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/EvaluationCycleDetailsDto"
+
+  /v1/api/cycles/active:
+    get:
+      tags:
+        - evaluation-cycle-controller
+      summary: get cycles by status or all cycles if no filter
+      operationId: getActiveEvaluationCycle
+      parameters:
+        - name: active
+          in: query
+          required: false
+          schema:
+            type: string
+            example: IN_PROGRESS
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EvaluationCycle"
+
+  /v1/api/cycles/{id}/status:
+    patch:
+      tags:
+        - evaluation-cycle-controller
+      summary: update evaluation cycle status
+      operationId: updateEvaluationCycleStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum:
+                    - IN_PROGRESS
+                    - COMPLETED
+              required:
+                - status
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/EvaluationCycle"
+
+  /v1/api/cycles/{id}/full-update:
+    put:
+      tags:
+        - evaluation-cycle-controller
+      summary: full update of cycle + questionnaire questions
+      operationId: updateFullEvaluationCycle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluationCycleDetailsDto"
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/EvaluationCycleDetailsDto"
+
+  /v1/feedbackProvider/assign/{employeeId}:
+    post:
+      tags:
+        - feedback-provider-controller
+      summary: assign feedback providers to an employee for a cycle
+      operationId: assignFeedbackProvider
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackProviderRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackProvider"
+
+  /v1/feedbackProvider/providers/{employeeId}:
+    put:
+      tags:
+        - feedback-provider-controller
+      summary: update assigned feedback providers for an employee
+      operationId: updateFeedbackProviders
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackProviderRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackProvider"
+
+  /v1/feedbackProvider/{employeeId}/{cycleId}:
+    get:
+      tags:
+        - feedback-provider-controller
+      summary: get details of assigned reviewers for employee & cycle
+      operationId: getFeedbackFormDetails
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: cycleId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: providerStatus
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - NOT_ASSIGNED
+              - IN_PROGRESS
+              - COMPLETED
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/FeedbackProviderDetails"
+        "404":
+          description: Not Found
+
+  /v1/feedbackProvider/reviewer:
+    get:
+      tags:
+        - feedback-provider-controller
+      summary: get all employees assigned to the logged-in reviewer
+      operationId: getEmployeesAssignedToReviewer
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ReviewerAssignedEmployeesResponse"
+        "404":
+          description: No employees assigned
+        "500":
+          description: Internal Server Error
+
+  /v1/feedbackProvider/forms/{employeeId}:
+    get:
+      tags:
+        - feedback-provider-controller
+      summary: get feedback forms assigned to reviewer for a specific employee
+      operationId: getFormsByEmployee
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackFormSummaryResponse"
+        "404":
+          description: No Forms Found
+        "500":
+          description: Internal Server Error
+
+  /v1/feedbackReceivers:
+    post:
+      tags:
+        - feedback-receivers-controller
+      summary: add feedback receivers for a cycle and questionnaire
+      operationId: addFeedbackReceivers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReceiverRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackReceivers"
+
+  /v1/feedbackReceivers/cycles/{cycleId}:
+    put:
+      tags:
+        - feedback-receivers-controller
+      summary: update assigned feedback receivers for a cycle
+      operationId: updateReceivers
+      parameters:
+        - name: cycleId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReceiverRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackReceivers"
+
+  /v1/feedbackReceivers/{cycleId}/{questionnaireId}:
+    get:
+      tags:
+        - feedback-receivers-controller
+      summary: get list of feedback receivers for a cycle and questionnaire
+      operationId: getFeedbackReceivers
+      parameters:
+        - name: cycleId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: questionnaireId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackReceivers"
+
+  /v1/api/responses:
+    post:
+      tags:
+        - feedback-response-controller
+      summary: submit feedback response for an employee
+      operationId: submitFeedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubmitFeedbackRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/FeedbackResponse"
+
+  /v1/api/responses/employee/{employeeId}/cycle/{cycleId}:
+    get:
+      tags:
+        - feedback-response-controller
+      summary: get all feedback responses for an employee in a given cycle
+      operationId: getResponsesByEmployeeCycle
+      parameters:
+        - in: path
+          name: employeeId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: cycleId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackResponse"
+
+  /v1/api/responses/form/{formId}:
+    get:
+      tags:
+        - feedback-response-controller
+      summary: get all feedback responses for a specific form
+      operationId: getResponsesForForm
+      parameters:
+        - in: path
+          name: formId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackResponse"
+
+  /v1/api/responses/employee/{employeeId}:
+    get:
+      tags:
+        - feedback-response-controller
+      summary: get all feedback responses submitted for an employee
+      operationId: getResponsesByEmployee
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackResponse"
+
+  /v1/api/responses/employee/{employeeId}/grouped:
+    get:
+      tags:
+        - feedback-response-controller
+      summary: get grouped feedback responses for an employee with cycle information
+      operationId: getGroupedResponsesByEmployee
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/EmployeeGroupedResponsesDTO"
+
+  /v1/api/responses/cycle/{cycleId}:
+    get:
+      tags:
+        - feedback-response-controller
+      summary: get feedback responses for a cycle with metadata
+      operationId: getResponsesForCycle
+      parameters:
+        - name: cycleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/CycleWithResponsesDTO"
+
+  /v1/api/responses/my-feedback/forms:
+    get:
+      tags:
+        - feedback-response-controller
+      summary: get all feedback form summaries for logged-in employee
+      operationId: getMyFeedbackForms
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MyFeedbackFormResponse"
+
+  /v1/api/responses/my-feedback/cycle/{cycleId}:
+    get:
+      tags:
+        - feedback-response-controller
+      summary: get grouped responses for logged-in employee within a specific cycle
+      operationId: getMyResponsesByCycle
+      parameters:
+        - name: cycleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/EmployeeGroupedResponsesDTO"
+
+  /v1/api/overview/employees:
+    get:
+      tags:
+        - my-team-overview-controller
+      summary: get paginated employee performance overview
+      operationId: getEmployeePerformanceData
+      parameters:
+        - name: department
+          in: query
+          schema:
+            type: string
+        - name: designation
+          in: query
+          schema:
+            type: string
+        - name: employmentType
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: pageNumber
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/PaginatedEmployeePerformanceResponse"
+
+  /v1/api/overview/employee/{employeeId}/cycle/{cycleId}/groupedResponse:
+    get:
+      tags:
+        - my-team-overview-controller
+      summary: get grouped responses for an employee in a cycle
+      operationId: getGroupedResponsesByEmployeeCycle
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: cycleId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/GroupedFeedbackResponse"
+
+  /v1/api/overview/employee/{employeeId}/overall-rating:
+    post:
+      tags:
+        - my-team-overview-controller
+      summary: create or update overall rating for an employee
+      operationId: createOrUpdateOverallRating
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OverallRatingRequestDTO"
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/OverallRating"
+
+    get:
+      tags:
+        - my-team-overview-controller
+      summary: get overall rating for an employee
+      operationId: getOverallRating
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/OverallRating"
+
+    delete:
+      tags:
+        - my-team-overview-controller
+      summary: delete overall rating of an employee
+      operationId: deleteOverallRating
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+
+  /v1/api/overview/employee/feedbackReceiver/{employeeId}/cycles:
+    get:
+      tags:
+        - my-team-overview-controller
+      summary: get all cycles where employee is a feedback receiver
+      operationId: getCycleInfoByEmployeeId
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployeeCycleInfo"
+
+  /v1/api/questionnaires:
+    post:
+      tags:
+        - questionnaire-controller
+      summary: create a new questionnaire
+      operationId: createQuestionnaire
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Questionnaire"
+      responses:
+        "201":
+          description: Created
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Questionnaire"
+
+    get:
+      tags:
+        - questionnaire-controller
+      summary: get all questionnaires
+      operationId: getAllQuestionnaires
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Questionnaire"
+
+  /v1/api/questionnaires/{id}:
+    get:
+      tags:
+        - questionnaire-controller
+      summary: get a questionnaire by id
+      operationId: getQuestionnaireById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Questionnaire"
+
+    put:
+      tags:
+        - questionnaire-controller
+      summary: update a questionnaire by id
+      operationId: updateQuestionnaire
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Questionnaire"
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Questionnaire"
+
+    delete:
+      tags:
+        - questionnaire-controller
+      summary: delete questionnaire by id
+      operationId: deleteQuestionnaire
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: No Content
+
+  /v1/api/responses/self-evaluation:
+    post:
+      tags:
+        - self-evaluation-controller
+      summary: Submit a self evaluation
+      operationId: submitSelfEval
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SelfEvaluationRequest"
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/SelfEvaluation"
+
+  /v1/api/responses/self-evaluation/employee/{employeeId}:
+    get:
+      tags:
+        - self-evaluation-controller
+      summary: Get self evaluations for an employee
+      operationId: getSelfEvals
+      parameters:
+        - name: employeeId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SelfEvaluation"
+
+  /v1/api/responses/self-evaluation/employee/me:
+    get:
+      tags:
+        - self-evaluation-controller
+      summary: Get self evaluations for logged-in employee
+      operationId: getSelfEvalsForLoggedInEmployee
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SelfEvaluation"
+        "401":
+          description: Unauthorized
+
+
+components:
+  schemas:
+
+    EvaluationCycle:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - QUARTERLY
+            - HALFYEARLY
+            - ANNUAL
+        formDescription:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        feedbackDeadline:
+          type: string
+          format: date
+        selfEvalDeadline:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+            - IN_PROGRESS
+            - COMPLETED
+        questionnaireId:
+          type: string
+          nullable: true
+
+    Question:
+      type: object
+      properties:
+        question:
+          type: string
+        questionDescription:
+          type: string
+        target:
+          type: string
+          enum:
+            - SELF
+            - OTHER
+          $ref: "#/components/schemas/TargetType"
+        required:
+          type: boolean
+          default: false
+      required:
+        - question
+          - questionDescription
+          - target
+
+    Questionnaire:
+      type: object
+      properties:
+        id:
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Question"
+          minItems: 1
+        organizationId:
+          type: string
+
+    EvaluationCycleCreateDto:
+      type: object
+      properties:
+        cycle:
+          $ref: "#/components/schemas/EvaluationCycle"
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Question"
+
+    EvaluationCycleDetailsDto:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - QUARTERLY
+            - HALFYEARLY
+            - ANNUAL
+        formDescription:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+        feedbackDeadline:
+          type: string
+          format: date
+        selfEvalDeadline:
+          type: string
+          format: date
+        status:
+          type: string
+          enum:
+            - IN_PROGRESS
+            - COMPLETED
+        questionnaireId:
+          type: string
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Question"
+
+    FeedbackProviderRequest:
+      type: object
+      properties:
+        cycleId:
+          type: string
+        questionnaireId:
+          type: string
+        assignedReviewers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssignedReviewer"
+
+    AssignedReviewer:
+      type: object
+      properties:
+        reviewerId:
+          type: string
+        role:
+          type: string
+        status:
+          type: string
+          enum:
+            - NOT_ASSIGNED
+            - IN_PROGRESS
+            - COMPLETED
+
+    FeedbackProvider:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        employeeId:
+          type: string
+        cycleId:
+          type: string
+        questionnaireId:
+          type: string
+        assignedReviewers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssignedReviewer"
+
+    FeedbackProviderDetails:
+      type: object
+      properties:
+        employeeId:
+          type: string
+        employeeName:
+          type: string
+        assignedReviewers:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReviewerDetailsDTO"
+
+    ReviewerDetailsDTO:
+      type: object
+      properties:
+        reviewerId:
+          type: string
+        reviewerName:
+          type: string
+        role:
+          type: string
+        providerStatus:
+          type: string
+          enum:
+            - NOT_ASSIGNED
+            - IN_PROGRESS
+            - COMPLETED
+
+    ReviewerAssignedEmployeesResponse:
+      type: object
+      properties:
+        reviewerId:
+          type: string
+        reviewerName:
+          type: string
+        assignedEmployees:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReviewerEmployeeDTO"
+
+    ReviewerEmployeeDTO:
+      type: object
+      properties:
+        employeeId:
+          type: string
+        employeeName:
+          type: string
+        department:
+          type: string
+        role:
+          type: string
+        designation:
+          type: string
+        feedbackCycles:
+          type: array
+          items:
+            $ref: "#/components/schemas/FeedbackCycleDTO"
+
+    FeedbackCycleDTO:
+      type: object
+      properties:
+        cycleId:
+          type: string
+        submitted:
+          type: boolean
+
+    FeedbackFormSummaryResponse:
+      type: object
+      properties:
+        cycleId:
+          type: string
+        cycleName:
+          type: string
+        status:
+          type: string
+
+    ReceiverRequest:
+      type: object
+      properties:
+        cycleId:
+          type: string
+        questionnaireId:
+          type: string
+        receiverDetails:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReceiverDetails"
+
+    ReceiverDetails:
+      type: object
+      properties:
+        employeeId:
+          type: string
+        fullName:
+          type: string
+        department:
+          type: string
+        email:
+          type: string
+        providerStatus:
+          type: string
+          enum:
+            - NOT_ASSIGNED
+            - IN_PROGRESS
+            - COMPLETED
+
+    FeedbackReceivers:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        cycleId:
+          type: string
+        questionnaireId:
+          type: string
+        employeeId:
+          type: string
+        fullName:
+          type: string
+        email:
+          type: string
+        department:
+          type: string
+
+    ProviderStatus:
+      type: string
+      enum:
+        - NOT_ASSIGNED
+        - IN_PROGRESS
+        - COMPLETED
+
+    SubmitFeedbackRequest:
+      type: object
+      properties:
+        employeeId:
+          type: string
+        organizationId:
+          type: string
+        formId:
+          type: string
+        cycleId:
+          type: string
+        reviewerId:
+          type: string
+        reviewerRole:
+          type: string
+        responses:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionAnswer"
+      required:
+        - employeeId
+        - cycleId
+        - reviewerId
+        - reviewerRole
+        - responses
+
+    QuestionAnswer:
+      type: object
+      properties:
+        questionId:
+          type: string
+        description:
+          type: string
+        answer:
+          type: string
+
+    FeedbackResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        formId:
+          type: string
+        employeeId:
+          type: string
+        cycleId:
+          type: string
+        reviewerId:
+          type: string
+        reviewerRole:
+          type: string
+        responses:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionAnswer"
+        submittedAt:
+          type: string
+          format: date-time
+        status:
+          $ref: "#/components/schemas/FormStatus"
+
+    FormStatus:
+      type: string
+      enum:
+        - ASSIGNED
+        - IN_PROGRESS
+        - COMPLETED
+        - CLOSED
+
+    EmployeeGroupedResponsesDTO:
+      type: object
+      properties:
+        evaluationCycle:
+          $ref: "#/components/schemas/EvaluationCycle"
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionResponseDTO"
+
+    QuestionResponseDTO:
+      type: object
+      properties:
+        questionId:
+          type: string
+        responses:
+          type: array
+          items:
+            type: string
+
+    CycleWithResponsesDTO:
+      type: object
+      properties:
+        evaluationCycle:
+          $ref: "#/components/schemas/EvaluationCycleDetailsDto"
+
+    MyFeedbackFormResponse:
+      type: object
+      properties:
+        cycleId:
+          type: string
+        cycleName:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+
+    PaginatedEmployeePerformanceResponse:
+      type: object
+      properties:
+        totalRecords:
+          type: integer
+        pageNumber:
+          type: integer
+        pageSize:
+          type: integer
+        totalPages:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/EmployeePerformanceDTO"
+
+    EmployeePerformanceDTO:
+      type: object
+      properties:
+        employeeId:
+          type: string
+        organizationId:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        active:
+          type: boolean
+        jobDetails:
+          $ref: "#/components/schemas/JobDetailsCompressed"
+        profilePictureId:
+          type: string
+        overallRating:
+          type: number
+        numberOfReviewersAssigned:
+          type: integer
+        numberOfReviewerResponses:
+          type: integer
+
+    JobDetailsCompressed:
+      type: object
+      properties:
+        designation:
+          type: string
+        employementType:
+          type: string
+        department:
+          type: string
+
+    GroupedFeedbackResponse:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/QRDTO"
+
+    QRDTO:
+      type: object
+      properties:
+        questionId:
+          type: string
+        description:
+          type: string
+        responses:
+          type: array
+          items:
+            $ref: "#/components/schemas/ReviewerAnswerDTO"
+
+    ReviewerAnswerDTO:
+      type: object
+      properties:
+        reviewerId:
+          type: string
+        answer:
+          type: string
+
+    OverallRatingRequestDTO:
+      type: object
+      properties:
+        rating:
+          type: number
+        comments:
+          type: string
+
+    OverallRating:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        employeeId:
+          type: string
+        rating:
+          type: number
+        comments:
+          type: string
+        givenBy:
+          type: string
+        published:
+          type: boolean
+        publishedAt:
+          type: string
+          format: date-time
+
+    EmployeeCycleInfo:
+      type: object
+      properties:
+        employeeId:
+          type: string
+        cycleId:
+          type: string
+        cycleName:
+          type: string
+
+    TargetType:
+      type: string
+      enum:
+        - SELF
+        - OTHER
+
+    SelfEvaluationRequest:
+      type: object
+      required:
+        - employeeId
+        - submittedBy
+        - responses
+      properties:
+        employeeId:
+          type: string
+        submittedBy:
+          type: string
+        responses:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/QuestionAnswer"
+
+    SelfEvaluation:
+      type: object
+      properties:
+        id:
+          type: string
+        organizationId:
+          type: string
+        employeeId:
+          type: string
+        submittedBy:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+        submitted:
+          type: boolean
+        responses:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuestionAnswer"
