@@ -33,4 +33,5 @@ public interface ContractRepository extends MongoRepository<Contract, String> {
 
   long countByOrganizationId(String organizationId);
 
+  boolean existsByContractIdAndOrganizationId(String contractId, String organizationId);
 }

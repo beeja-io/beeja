@@ -1,0 +1,32 @@
+package com.beeja.api.projectmanagement.model.dto;
+
+import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.Instant;
+
+/**
+ * DTO for creating/updating a timesheet.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class TimesheetRequestDto {
+
+    @NotBlank(message = "projectId is required")
+    private String projectId;
+
+    private String contractId;
+
+    private Instant startDate;
+
+    @Min(value = 1, message = "timeInMinutes must be >= 1")
+    @Max(value = 1440, message = "timeInMinutes must be <= 1440")
+    private int timeInMinutes;
+
+    private String description;
+}
