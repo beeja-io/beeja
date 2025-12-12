@@ -282,10 +282,6 @@ export const ProvideRatingButton = styled.button`
     height: 16px;
   }
 
-  &:hover {
-    background-color: #004494;
-  }
-
   &:disabled {
     background-color: #a0a0a0;
     cursor: not-allowed;

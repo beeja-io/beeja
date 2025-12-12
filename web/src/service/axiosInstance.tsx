@@ -836,6 +836,12 @@ export const postEmployeeOverallRating = (
   );
 };
 
+export const fetchEmployeeName = (
+  employeeId: string
+): Promise<AxiosResponse> => {
+  return axiosInstance.get(`/performance/v1/api/overview/name/${employeeId}`);
+};
+
 export const getEmployeeSelfEvaluation = (
   employeeId: string
 ): Promise<AxiosResponse> => {

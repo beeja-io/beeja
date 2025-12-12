@@ -45,8 +45,9 @@ import {
   StyledSwitch,
   SwitchLabel,
 } from '../../styles/InputStyles.style';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
+  fetchEmployeeName,
   getEmployeeCycleGroupedResponse,
   getEmployeeFeedbackCycles,
   getEmployeeOverallRating,
@@ -98,7 +99,6 @@ const EvaluationOverview: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
   const { employeeId } = useParams();
-  const { state } = useLocation();
   const [activeTab, setActiveTab] = useState<'all' | 'self' | 'rating'>('all');
   const [hideNames, setHideNames] = useState<boolean>(false);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
@@ -129,6 +129,12 @@ const EvaluationOverview: React.FC = () => {
     head: string;
   } | null>(null);
 
+  const [employeeInfo, setEmployeeInfo] = useState({
+    employeeId: '',
+    firstName: '',
+    lastName: '',
+  });
+
   const handleCycleSelect = async (cycleId: string) => {
     if (!employeeId || !cycleId) return;
     setCurrentQuestionIndex(0);
@@ -138,6 +144,11 @@ const EvaluationOverview: React.FC = () => {
         setGroupedResponse(res.data);
       })
       .catch((err) => {
+        setToast({
+          type: 'error',
+          head: 'Request Failed',
+          message: 'Something went wrong while processing your request.',
+        });
         throw new Error(
           `Error fetching grouped response: ${err?.message || err}`
         );
@@ -157,6 +168,12 @@ const EvaluationOverview: React.FC = () => {
       }
       setLoadingRating(false);
     } catch (err: any) {
+      setToast({
+        type: 'error',
+        head: 'Request Failed',
+        message: 'Something went wrong while processing your request',
+      });
+
       throw new Error(`Error fetching employee rating: ${err?.message || err}`);
     }
   };
@@ -167,10 +184,19 @@ const EvaluationOverview: React.FC = () => {
         rating,
         comments,
       });
+      setToast({
+        type: 'success',
+        message: `The Rating for ${employeeInfo.firstName} ${employeeInfo.lastName} has been Submitted Successfully`,
+        head: 'Rating Submitted Successfully',
+      });
       setOverallRating(res.data);
       fetchEmployeeRating();
     } catch (err: any) {
-      throw new Error(`Error submitting rating: ${err?.message || err}`);
+      setToast({
+        type: 'error',
+        message: `Failed to submit the Rating for ${employeeInfo.firstName} ${employeeInfo.lastName}`,
+        head: 'Rating Submission Failed',
+      });
     }
   };
   const fetchSelfEvaluation = async () => {
@@ -181,6 +207,11 @@ const EvaluationOverview: React.FC = () => {
         setSelfEvaluation(res.data);
       })
       .catch((err) => {
+        setToast({
+          type: 'error',
+          head: 'Request Failed',
+          message: 'Something went wrong while processing your request.',
+        });
         throw new Error(
           `Error fetching self evaluation: ${err?.message || err}`
         );
@@ -189,8 +220,22 @@ const EvaluationOverview: React.FC = () => {
     setLoadingSelf(false);
   };
 
+  const fetchEmployeeDetails = async (employeeId: string) => {
+    try {
+      const res = await fetchEmployeeName(employeeId);
+      setEmployeeInfo({
+        employeeId: res.data.employeeId,
+        firstName: res.data.firstName,
+        lastName: res.data.lastName,
+      });
+    } catch (err) {
+      throw new Error(`Failed to fetch employee details: ${err}`);
+    }
+  };
+
   useEffect(() => {
     if (!employeeId) return;
+    fetchEmployeeDetails(employeeId);
     setIsLoading(true);
     getEmployeeFeedbackCycles(employeeId)
       .then((res) => {
@@ -248,7 +293,7 @@ const EvaluationOverview: React.FC = () => {
               <h6>{t('Feedback_Received')}</h6>
               <p>
                 The Following Feedbacks have been Received for{' '}
-                {`${state.firstName} ${state.lastName}`}{' '}
+                {`${employeeInfo.firstName} ${employeeInfo.lastName}`}{' '}
               </p>
             </OuterHeader>
             <TabBar>
@@ -289,7 +334,7 @@ const EvaluationOverview: React.FC = () => {
               <ReceiverRow>
                 <ReceiverInfo>
                   <ReceiverLabel>{t('Feedback_Receiver_Name')}</ReceiverLabel>
-                  <NameBox>{`${state.firstName} ${state.lastName}`}</NameBox>
+                  <NameBox>{`${employeeInfo.firstName} ${employeeInfo.lastName}`}</NameBox>
                 </ReceiverInfo>
                 {activeTab === 'all' && (
                   <CycleSelectContainer>
@@ -329,11 +374,11 @@ const EvaluationOverview: React.FC = () => {
                 )}
 
                 {activeTab === 'rating' &&
-                  !rating &&
                   user &&
                   hasPermission(user, PERFORMANCE_MODULE.PROVIDE_RATING) && (
                     <ProvideRatingButton
-                      onClick={() => setShowRatingCard(true)}
+                      disabled={!!rating}
+                      onClick={() => !rating && setShowRatingCard(true)}
                     >
                       <WriteSVG />
                       {t('Provide_Rating')}
