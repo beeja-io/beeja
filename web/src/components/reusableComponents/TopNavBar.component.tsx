@@ -53,7 +53,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
     */
     window.location.href =
       window.location.origin === OriginURL ||
-        window.location.origin === ProdOriginURL
+      window.location.origin === ProdOriginURL
         ? `${window.location.origin}${LogoutUrl}`
         : `${import.meta.env.VITE_API_BASE_URL}${LogoutUrl}`;
   };
@@ -131,7 +131,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
               window.open('https://academy.techatcore.com/programs', '_blank')
             }
           >
-            {t("TECH_ACADEMY")}
+            {t('TECH_ACADEMY')}
           </span>
         )}
         <span>

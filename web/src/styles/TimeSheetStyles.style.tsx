@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export const TimesheetContainer = styled.div`
   border-radius: 16px;
   border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
-  background-color: ${(props) => props.theme.colors.backgroundColors.secondary};
+  background: ${(props) => props.theme.colors.grayColors.gray6};
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -140,18 +140,42 @@ export const MonthBox = styled.div`
   border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   padding: 10px 16px;
   border-radius: 8px;
-  background: #fff;
-  font-size: 16px;
-  font-weight: 500;
-  color: #333;
+  background: transparent;
+  color: ${(props) => props.theme.colors.blackColors.black7};
+
+  font-family: Nunito;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0.2px;
+  vertical-align: middle;
 
   span {
-    color: #0056b3;
-    font-weight: 600;
+    color: #005792;
+    ffont-family: Nunito;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0.2px;
+    vertical-align: middle;
   }
 `;
 
-export const HoursBox = styled(MonthBox)``;
+export const HoursBox = styled(MonthBox)`
+  font-family: Nunito;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0.2px;
+  vertical-align: middle;
+  color: ${(props) => props.theme.colors.blackColors.black7};
+`;
 
 export const DaysContainer = styled.div`
   display: flex;
@@ -159,30 +183,64 @@ export const DaysContainer = styled.div`
   border-top: 1px solid ${(props) => props.theme.colors.grayColors.grayscale200};
 `;
 
-export const SingleRowContainer = styled.div`
+export const SingleRowContainer = styled.div<{
+  disabled: boolean;
+  isWeekend: boolean;
+  isSelected: boolean;
+  isFuture: boolean;
+}>`
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
   border-bottom: 1px solid #ddd;
+  cursor: ${({ disabled, isFuture }) =>
+    disabled || isFuture ? 'not-allowed' : 'pointer'};
+
+  background: ${({ isSelected, isWeekend }) =>
+    isSelected ? 'rgba(52, 168, 83, 0.12)' : isWeekend ? '#FFF4F4' : '#F8F8F8'};
+  color: ${({ isWeekend }) => (isWeekend ? '#E0313799' : '#111827')}
+  opacity: ${({ disabled }) => (disabled ? 0.5 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
 `;
 
 export const WeekdayRow = styled.div`
   font-size: 14px;
 `;
 export const LoggedHours = styled.div`
-  ffont-size: 14px;
+  font-size: 14px;
   font-weight: bold;
-  color: #555;
+  color: ${(props) => props.theme.colors.grayColors.gray7};
   min-width: 120px;
   text-align: right;
+  white-space: nowrap;
+  span {
+    font-family: Nunito;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 13px;
+    leading-trim: NONE;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: right;
+    vertical-align: middle;
+    color: #111827;
+    margin-left: 4px;
   }
 `;
 
-export const DayText = styled.div`
-  font-size: 14px;
-  color: #333;
+export const DayText = styled.div<{
+  isWeekend: boolean;
+  isFuture: boolean;
+}>`
+  font-family: Nunito;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 100%;
+
+  color: ${({ isFuture, isWeekend }) =>
+    isFuture ? '#999999' : isWeekend ? '#E03137' : '#111827'};
 `;
 
 export const TimesheetRow = styled.div`
@@ -224,10 +282,9 @@ export const RotateArrow = styled.span<{ isExpanded: boolean }>`
 `;
 
 export const DailyLogContainer = styled.div`
-  padding: 10px 15px;
-  background: #fff;
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
   width: 100%;
-  overflow-x: auto;
+  position: relative;
   table {
     width: 100%;
     border-collapse: collapse;
@@ -242,13 +299,12 @@ export const ButtonGroup = styled.div`
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-right: 500px; /* Or adjust/remove as needed */
 `;
 
 export const StyledTable = styled.table`
   width: 100%;
   border-collapse: collapse;
-  background: white;
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
   text-align: left;
   table-layout: fixed;
   th,
@@ -259,17 +315,45 @@ export const StyledTable = styled.table`
     vertical-align: middle;
     white-space: nowrap;
   }
+  td.no-padding {
+    padding: 0;
+  }
   th {
     font-weight: bold;
-    background: #f9f9f9;
+    background: ${(props) => props.theme.colors.grayColors.gray6};
+    color: ${(props) => props.theme.colors.blackColors.black1};
+  }
+  .projectWidth {
+    width: 20%;
+  }
+  .contractWidth {
+    width: 20%;
+  }
+  .logHoursWidth {
+    width: 10%;
+  }
+  .descriptionWidth {
+    width: 40%;
+  }
+  .actionWidth {
+    width: 10%;
   }
   tbody tr {
     width: 100%;
+    background: ${(props) => props.theme.colors.grayColors.gray6};
+    color: ${(props) => props.theme.colors.blackColors.black1};
+  }
+  tbody td:nth-child(1),
+  tbody td:nth-child(2) {
+    white-space: normal;
+    word-break: break-word;
   }
   .Action {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative;
+    z-index: 10;
+    .dropdown-container {
+      margin: 0 auto;
+    }
   }
   .no-entries {
     text-align: center;
@@ -288,21 +372,20 @@ export const WeekContainer = styled.div`
   }
 `;
 export const CloseButton = styled.button`
-  background-color: #a6a6a6;
-  color: white;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 6px;
-  border: none;
+  border: 1px solid ${(props) => props.theme.colors.blackColors.black1};
+  font-family: Nunito;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0%;
+  color: ${(props) => props.theme.colors.blackColors.black1};
+  width: 100px;
+  height: 40px;
+  angle: 0 deg;
+  opacity: 1;
+  border-radius: 10px;
+  border-width: 1px;
+  background: transparent;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s;
-
-  &:hover {
-    background-color: #8c8c8c;
-  }
 `;
 
 export const WeekSubContainer = styled.div<{ isActive: boolean }>`
@@ -310,8 +393,14 @@ export const WeekSubContainer = styled.div<{ isActive: boolean }>`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  background-color: ${({ isActive }) =>
-    isActive ? 'rgba(0, 87, 146, 0.06);' : 'transparent'};
+
+  background-color: ${({ isActive }) => (isActive ? '#F1F2F7' : 'transparent')};
+`;
+
+export const WeekBodyContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f8fc;
 `;
 
 export const TotalWeekHoursContainer = styled.div`
@@ -322,15 +411,46 @@ export const TotalWeekHoursContainer = styled.div`
 
 export const WeekTitle = styled.span`
   padding-left: 10px;
-  font-weight: 600;
-  font-size: 14px;
-  color: #333;
+  font-family: Nunito;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 13px;
+  leading-trim: NONE;
+  line-height: 100%;
+  letter-spacing: 0%;
+  text-align: center;
+  vertical-align: middle;
+  color: ${(props) => props.theme.colors.grayColors.gray7};
+  span {
+    font-family: Nunito;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 13px;
+    leading-trim: NONE;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: center;
+    vertical-align: middle;
+    color: #111827;
+  }
 `;
 
 export const WeeklyLogs = styled.p`
   font-size: 13px;
-  color: #666;
+  color: ${(props) => props.theme.colors.grayColors.gray7};
   margin-top: 4px;
+  span {
+    font-family: Nunito;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 13px;
+    leading-trim: NONE;
+    line-height: 100%;
+    letter-spacing: 0%;
+    text-align: right;
+    vertical-align: middle;
+    color: #111827;
+  }
 `;
 
 export const AddButton = styled.button`
@@ -361,17 +481,21 @@ align - items: center;
 `;
 
 export const SaveButton = styled.button`
-  background-color: #0056b3;
-  color: white;
-  font-weight: 600;
-  padding: 10px 20px;
-  border-radius: 6px;
+  width: 100px;
+  height: 40px;
+  background: #005792;
+  color: #ffffff;
+  font-family: Nunito;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 150%;
+  letter-spacing: 0.3px;
+  text-align: center;
+  border-radius: 10px;
   border: none;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s;
 
   &:hover {
     background-color: #004494;
@@ -394,21 +518,27 @@ border - radius: 4px;
 `;
 
 export const FormContainer = styled.div`
-  background-color: #f8fafd;
+  background: #fafafa;
   padding: 20px;
   border-radius: 8px;
   font-family: 'Poppins', sans-serif;
-  .Form_Row {
+  .FormRow {
     display: flex;
-    align-items: center;
-    background: #ffffff;
+    align-items: flex-start;
+    background: #fafafa;
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 10px;
     gap: 15px;
   }
+  .ButtonRow {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+  }
   select,
-  input {
+  input,
+  textarea {
     flex: 1;
     padding: 10px;
     border: 1px solid #ccc;
@@ -418,26 +548,14 @@ export const FormContainer = styled.div`
     background: #fff;
     outline: none;
   }
+  textarea {
+    overflow-y: auto;
+    resize: none;
+    max-height: 60px;
+  }
   input {
     flex-grow: 2;
     min-width: 200px;
-  }
-  button {
-    background-color: #0056b3;
-    color: white;
-    font-weight: 600;
-    padding: 10px 20px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 15px auto;
-    transition: background 0.3s;
-  }
-  button:hover {
-    background-color: #004494;
   }
   .EditWhitePenSVG {
     cursor: pointer;
@@ -445,6 +563,14 @@ export const FormContainer = styled.div`
     align-items: center;
     justify-content: center;
     padding: 5px;
+  }
+  .hoursSelect {
+    flex: 0 0 auto;
+    width: 150px;
+    min-width: 120px;
+  }
+  textarea {
+    flex-grow: 2;
   }
 `;
 export const SelectInput = styled.select`
@@ -481,8 +607,9 @@ export const PaginationContainer = styled.div`
 `;
 
 export const PaginationButton = styled.button`
-  background: #fff;
-  border: 1px solid #ddd;
+  background: transparent;
+  color: ${(props) => props.theme.colors.blackColors.black7};
+  border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
   border-radius: 6px;
   padding: 8px 16px;
   font-size: 14px;
@@ -493,8 +620,8 @@ export const PaginationButton = styled.button`
   transition: all 0.2s ease-in-out;
 
   &:hover {
-    background: #f9f9f9;
-    border-color: #ccc;
+    background: ${(props) => props.theme.colors.grayColors.grayscale100};
+    border-color: ${(props) => props.theme.colors.grayColors.grayscale300};
   }
   &:disabled {
     opacity: 0.5;
@@ -506,4 +633,12 @@ export const PaginationButton = styled.button`
   .rightArrow {
     transform: rotate(-90deg);
   }
+`;
+
+export const DescriptionText = styled.div`
+  max-width: 500px;
+  white-space: normal;
+  word-wrap: break-word;
+  text-align: left;
+  display: inline-block;
 `;

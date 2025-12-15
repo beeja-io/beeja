@@ -7,6 +7,7 @@ import {
 } from '../../styles/DocumentTabStyles.style';
 import { ActionIcon } from '../../svgs/DocumentTabSvgs.svg';
 import CenterModal from './CenterModal.component';
+import { DeleteIcon, EditIcon } from '../../svgs/ExpenseListSvgs.svg';
 
 interface LogActionProps {
   onEdit: () => void;
@@ -60,9 +61,11 @@ const LogAction: React.FC<LogActionProps> = ({ onEdit, onDelete }) => {
         {isOpen && (
           <ActionMenuContent>
             <ActionMenuOption onClick={() => handleOptionClick('edit')}>
+              <EditIcon />
               Edit
             </ActionMenuOption>
             <ActionMenuOption onClick={() => handleOptionClick('delete')}>
+              <DeleteIcon />
               Delete
             </ActionMenuOption>
           </ActionMenuContent>
