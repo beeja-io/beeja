@@ -68,7 +68,9 @@ public class FeedbackProvidersController {
         ReviewerAssignedEmployeesResponse response =
                 feedbackProvidersService.getEmployeesAssignedToReviewer();
 
-        if (response == null) {
+        if (response == null || response.getAssignedEmployees() == null
+                || response.getAssignedEmployees().isEmpty()) {
+
             return ResponseEntity.ok(
                     ReviewerAssignedEmployeesResponse.builder()
                             .reviewerId(UserContext.getLoggedInEmployeeId())
