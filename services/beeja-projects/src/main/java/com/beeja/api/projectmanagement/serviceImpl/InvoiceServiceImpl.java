@@ -225,10 +225,6 @@ public class InvoiceServiceImpl implements InvoiceService {
                 );
             }
 
-            if (contract.getEndDate() != null && contract.getEndDate().before(new Date())) {
-                log.warn(Constants.CONTRACT_ENDED, contractId, contract.getEndDate());
-                throw new IllegalStateException(Constants.CONTRACT_ENDED);
-            }
             LocalDate now = LocalDate.now();
             String yearMonth = now.format(DateTimeFormatter.ofPattern(Constants.YEAR_MONTH));
             String prefix = Constants.INVOICE_PREFIX + yearMonth + "-";
