@@ -23,6 +23,8 @@ import { useUser } from '../../context/UserContext';
 import { EmployeeEntity } from '../../entities/EmployeeEntity';
 import { hasPermission } from '../../utils/permissionCheck';
 import { TECTACADEMY } from '../../constants/PermissionConstants';
+const beejaDocsUrl = import.meta.env.VITE_BEEJA_DOCS_URL;
+const beejTechAcademyUrl = import.meta.env.VITE_TECH_ACADEMY_URL;
 type topNavBarProps = {
   employee?: EmployeeEntity | undefined;
 };
@@ -114,6 +116,20 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
         </span> */}
       </span>
       <TopNavRightIcons>
+        <span
+          className="academy"
+          onClick={() => window.open(beejaDocsUrl, '_blank')}
+        >
+          Beeja Docs
+        </span>
+        {user && hasPermission(user, TECTACADEMY.ACCESS_TECT_ACADEMY_LINK) && (
+          <span
+            className="academy"
+            onClick={() => window.open(beejTechAcademyUrl, '_blank')}
+          >
+            {t('TECH_ACADEMY')}
+          </span>
+        )}
         <span className="language">
           <LanguageIcon />
           <select value={i18n.language} onChange={handleChangeLanguage}>
@@ -124,16 +140,7 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
             ))}
           </select>
         </span>
-        {user && hasPermission(user, TECTACADEMY.ACCESS_TECT_ACADEMY_LINK) && (
-          <span
-            className="academy"
-            onClick={() =>
-              window.open('https://academy.techatcore.com/programs', '_blank')
-            }
-          >
-            {t('TECH_ACADEMY')}
-          </span>
-        )}
+
         <span>
           <NotificationSVG />
         </span>

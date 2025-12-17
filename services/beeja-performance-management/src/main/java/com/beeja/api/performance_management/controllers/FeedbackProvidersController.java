@@ -64,37 +64,38 @@ public class FeedbackProvidersController {
     @GetMapping("/reviewer")
     @HasPermission({PermissionConstants.READ_PROVIDERS, PermissionConstants.READ_RESPONSES})
     public ResponseEntity<ReviewerAssignedEmployeesResponse> getEmployeesAssignedToReviewer() {
-        try {
-            ReviewerAssignedEmployeesResponse response =
-                    feedbackProvidersService.getEmployeesAssignedToReviewer();
 
-            if (response == null || response.getAssignedEmployees().isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
+        ReviewerAssignedEmployeesResponse response =
+                feedbackProvidersService.getEmployeesAssignedToReviewer();
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+        if (response == null || response.getAssignedEmployees() == null
+                || response.getAssignedEmployees().isEmpty()) {
+
+            return ResponseEntity.ok(
+                    ReviewerAssignedEmployeesResponse.builder()
+                            .reviewerId(UserContext.getLoggedInEmployeeId())
+                            .assignedEmployees(List.of())
+                            .build()
+            );
         }
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/forms/{employeeId}")
     @HasPermission(PermissionConstants.READ_RESPONSES)
     public ResponseEntity<?> getFormsByEmployee(
             @PathVariable String employeeId) {
-        try {
-            // reviewerId is fetched from current context
-            String reviewerId = UserContext.getLoggedInEmployeeId();
 
-            var response = feedbackProvidersService.getFormsByEmployeeAndReviewer(employeeId, reviewerId);
+        String reviewerId = UserContext.getLoggedInEmployeeId();
 
-            if (response == null || response.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
+        var response = feedbackProvidersService
+                .getFormsByEmployeeAndReviewer(employeeId, reviewerId);
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+        if (response == null || response.isEmpty()) {
+            return ResponseEntity.ok(List.of());
         }
+
+        return ResponseEntity.ok(response);
     }
 }
