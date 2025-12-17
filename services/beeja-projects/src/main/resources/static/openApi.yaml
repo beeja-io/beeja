@@ -42,6 +42,8 @@ tags:
     description: Manage organization projects
   - name: HelloWorld
     description: Simple greeting endpoint
+  - name: Timesheets
+    description: Manage employee timesheets
 
 paths:
   /v1/clients:
@@ -647,6 +649,182 @@ paths:
           500:
             $ref: '#/components/responses/InternalServerError'
 
+  /v1/api/timesheets:
+    post:
+      tags: [ Timesheets ]
+      summary: Create a new timesheet
+      operationId: createTimesheet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimesheetRequest'
+      responses:
+        201:
+          description: Timesheet created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    get:
+      tags: [ Timesheets ]
+      summary: Get timesheets (day / week / month)
+      operationId: getTimesheets
+      parameters:
+        - in: query
+          name: day
+          schema:
+            type: string
+            example: "2025-12-01"
+        - in: query
+          name: week
+          schema:
+            type: integer
+            example: 48
+        - in: query
+          name: weekYear
+          schema:
+            type: integer
+            example: 2025
+        - in: query
+          name: month
+          schema:
+            type: string
+            example: "2025-12"
+        - in: query
+          name: employeeId
+          schema:
+            type: string
+            example: "TECHAT001"
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 0
+        - in: query
+          name: size
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: Timesheets fetched successfully
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/TimesheetPageResponse'
+                  - $ref: '#/components/schemas/MonthlyTimesheetGroupedResponse'
+        400:
+          description: Invalid date parameters
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/api/timesheets/{id}:
+    put:
+      tags: [ Timesheets ]
+      summary: Update a timesheet
+      operationId: updateTimesheet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimesheetRequest'
+      responses:
+        200:
+          description: Timesheet updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Timesheet'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+    delete:
+      tags: [ Timesheets ]
+      summary: Delete a timesheet
+      operationId: deleteTimesheet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Timesheet deleted successfully
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/Forbidden'
+        404:
+          $ref: '#/components/responses/NotFound'
+        500:
+          $ref: '#/components/responses/InternalServerError'
+
+  /v1/api/timesheets/projects:
+    get:
+      tags: [ Timesheets ]
+      summary: Get projects for logged-in employee
+      operationId: getMyProjectsForTimesheet
+      responses:
+        200:
+          description: Project dropdown list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProjectDropdown'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
+  /v1/api/timesheets/projects/{projectId}/contracts:
+    get:
+      tags: [ Timesheets ]
+      summary: Get contracts for a project
+      operationId: getContractsForProject
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Contract dropdown list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ContractDropdown'
+        401:
+          $ref: '#/components/responses/Unauthorized'
+
 
 components:
   schemas:
@@ -945,6 +1123,109 @@ components:
         price:
           type: number
           format: double
+
+
+    TimesheetRequest:
+      type: object
+      required:
+        - projectId
+        - startDate
+        - timeInMinutes
+      properties:
+        projectId:
+          type: string
+          example: "PROJ-2023-001"
+        contractId:
+          type: string
+          example: "CONT-001"
+        startDate:
+          type: string
+          format: date-time
+          example: "2025-12-01T00:00:00Z"
+        timeInMinutes:
+          type: integer
+          example: 480
+        description:
+          type: string
+          example: "Worked on invoice module"
+
+    Timesheet:
+      type: object
+      properties:
+        id:
+          type: string
+        employeeId:
+          type: string
+        organizationId:
+          type: string
+        projectId:
+          type: string
+        contractId:
+          type: string
+        startDate:
+          type: string
+          format: date-time
+        timeInMinutes:
+          type: integer
+        description:
+          type: string
+        createdBy:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        modifiedBy:
+          type: string
+        modifiedAt:
+          type: string
+          format: date-time
+
+    TimesheetPageResponse:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/Timesheet'
+        page:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+
+    MonthlyTimesheetGroupedResponse:
+      type: object
+      properties:
+        weekTimesheets:
+          type: object
+          additionalProperties:
+            type: object
+        monthlyTotalHours:
+          type: number
+          example: 168.5
+
+    ProjectDropdown:
+      type: object
+      properties:
+        id:
+          type: string
+        projectId:
+          type: string
+        name:
+          type: string
+
+    ContractDropdown:
+      type: object
+      properties:
+        id:
+          type: string
+        contractId:
+          type: string
+        contractTitle:
+          type: string
 
 
     Error:
