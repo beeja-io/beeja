@@ -23,6 +23,7 @@ import com.beeja.api.performance_management.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -73,12 +74,14 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
      * @return the saved cycle details DTO
      */
     @Override
+    @Transactional
     public EvaluationCycleDetailsDto createCycleWithQuestions(EvaluationCycleCreateDto dto) {
         Questionnaire savedQuestionnaire = null;
         if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
+            questionnaireService.ensureNoDuplicateQuestions(dto.getQuestions());
             Questionnaire q = new Questionnaire();
             q.setQuestions(dto.getQuestions());
-            savedQuestionnaire = questionnaireService.createQuestionnaire(q);
+            savedQuestionnaire = q;
         }
 
         String orgId = UserContext.getLoggedInUserOrganization().get(Constants.ID).toString();
@@ -92,10 +95,28 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         cycle.setFeedbackDeadline(dto.getFeedbackDeadline());
         cycle.setSelfEvalDeadline(dto.getSelfEvalDeadline());
         cycle.setStatus(dto.getStatus() != null ? dto.getStatus() : CycleStatus.IN_PROGRESS);
-        if (savedQuestionnaire != null) cycle.setQuestionnaireId(savedQuestionnaire.getId());
+
         validateCycleDates(cycle);
-        cycle = cycleRepository.save(cycle);
-        return new EvaluationCycleDetailsDto(cycle, savedQuestionnaire);
+        EvaluationCycle savedCycle = cycleRepository.save(cycle);
+        if (savedQuestionnaire != null) {
+
+
+            savedQuestionnaire.setOrganizationId(orgId);
+            savedQuestionnaire.setCycleId(savedCycle.getId());
+
+            try {
+                savedQuestionnaire = questionnaireService.createQuestionnaire(savedQuestionnaire);
+            } catch (Exception e) {
+
+                cycleRepository.deleteById(savedCycle.getId());
+                throw e;
+            }
+
+            savedCycle.setQuestionnaireId(savedQuestionnaire.getId());
+            savedCycle = cycleRepository.save(savedCycle);
+        }
+
+        return new EvaluationCycleDetailsDto(savedCycle, savedQuestionnaire);
     }
 
     /**
@@ -244,8 +265,12 @@ public class EvaluationCycleServiceImpl implements EvaluationCycleService {
         Questionnaire updatedQuestionnaire = null;
 
         if (dto.getQuestions() != null && !dto.getQuestions().isEmpty()) {
+            questionnaireService.ensureNoDuplicateQuestions(dto.getQuestions());
+
             if (updatedCycle.getQuestionnaireId() == null || updatedCycle.getQuestionnaireId().isBlank()) {
                 updatedQuestionnaire = new Questionnaire();
+                updatedQuestionnaire.setOrganizationId(updatedCycle.getOrganizationId());
+                updatedQuestionnaire.setCycleId(updatedCycle.getId());
                 updatedQuestionnaire.setQuestions(dto.getQuestions());
                 updatedQuestionnaire = questionnaireService.createQuestionnaire(updatedQuestionnaire);
                 updatedCycle.setQuestionnaireId(updatedQuestionnaire.getId());
