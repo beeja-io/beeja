@@ -82,7 +82,21 @@ public class Constants {
   public static final String RESOURCES_SIZE = "Successfully fetched {} employee names";
   public static final String NO_RESOURCE_FOUND = "No resource allocations found for contract ID: {}";
 
-  // ========== File Service Errors ==========
+    // ========== Timesheet Errors ==========
+    public static final String SAVING_TIMESHEET_LOG = "Saving timesheet for employee={} org={} startDate={}";
+    public static final String TIMESHEET_SAVED_LOG = "Timesheet saved id={} employee={} org={}";
+    public static final String TIMESHEET_NOT_FOUND = "Timesheet not found";
+    public static final String NOT_ALLOWED_TO_UPDATE_TIMESHEET = "Not allowed to update this timesheet";
+    public static final String TIMESHEET_UPDATED_LOG = "Timesheet updated id={} by {}";
+    public static final String TIMESHEET_NOT_FOUND_BY_ID = "Timesheet not found with ID: {}";
+    public static final String NOT_ALLOWED_TO_DELETE_TIMESHEET = "Not allowed to delete this timesheet";
+    public static final String SAVE_TIMESHEET = "Saving timesheet for employeeId={}, organizationId={}";
+    public static final String SAVE_TIMESHEET_REQUEST_DTO = "SaveTimesheet Request DTO: {}";
+    public static final String WEEK_KEY_FORMAT = "week-%d-%02d";
+
+
+
+    // ========== File Service Errors ==========
   public static final String ERROR_IN_UPLOADING_FILE_TO_FILE_SERVICE =
       "Error in uploading file to file service";
   public static final String ERROR_IN_FETCHING_FILE_FROM_FILE_SERVICE =

@@ -4,6 +4,6 @@
   "expense_permissions" : ["CEX", "REX", "UEX", "DEX"],
   "finance_permissions" : ["CLON", "RLON", "ULON", "DLON", "SCLON", "CBPS", "REMP", "GALON", "CPAY","UPAY","RPAY","RDEV","UDEV","CDEV","DDEV","CHIN","RHIN","UHIN","DHIN"],
   "recruitment_permissions" : ["CAPT", "GAAPT", "GENAPT", "RRSM", "UENTAP", "UAPL", "TINT", "DINT", "ACREF"],
-  "projects_permissions" : ["CCL", "UCL", "GCL", "DCL", "CCON", "UCON", "GCON", "DCON", "CPT", "UPT", "GPT", "DPT","CIN", "UIN", "GIN", "DIN", "USIN", "RDCMT", "CDCMT", "DDCMT", "UDCMT", "RALDCMT", "CALDCMT", "DALDCMT", "UALDCMT"],
+  "projects_permissions" : ["CCL", "UCL", "GCL", "DCL", "CCON", "UCON", "GCON", "DCON", "CPT", "UPT", "GPT", "DPT","CIN", "UIN", "GIN", "DIN", "USIN", "RDCMT", "CDCMT", "DDCMT", "UDCMT", "RALDCMT", "CALDCMT", "DALDCMT", "UALDCMT", "CTS", "UTS", "GTS", "DTS", "GTP", "GTC"],
   "performance_permissions" : ["CRCY", "UPCY", "RRCY", "DRCY", "ASREC", "UREC", "RREC", "DREC", "ASPRO", "UPRO", "RPRO", "DPRO", "RFBREC", "RRESP", "PRFB", "GSFEVL", "RORESP", "PRRTG", "RARESP", "RSFEVL"]
 }
