@@ -108,4 +108,9 @@ public class InventoryController {
     Inventory updatedDeviceDetails = inventoryService.updateDeviceDetails(deviceDetails, deviceId);
     return ResponseEntity.ok().body(updatedDeviceDetails);
   }
+  @GetMapping("/by-device-number/{deviceNumber}")
+  public ResponseEntity<Inventory> getDeviceByDeviceNumber(@PathVariable String deviceNumber) {
+    Inventory inventory = inventoryService.getDeviceByDeviceNumber(deviceNumber);
+    return ResponseEntity.ok(inventory);
+  }
 }

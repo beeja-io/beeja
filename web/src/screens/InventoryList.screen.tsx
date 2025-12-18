@@ -12,6 +12,8 @@ import {
 } from '../styles/ExpenseListStyles.style';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import { CalenderIcon, DeleteIcon } from '../svgs/DocumentTabSvgs.svg';
+import { SearchBox, SearchInput } from '../styles/NavBarStyles.style';
+import { SearchSVG } from '../svgs/NavBarSvgs.svg';
 import { InventoryListAction } from '../components/reusableComponents/InventoryListAction.component';
 import { DeviceDetails } from '../entities/InventoryEntity';
 import PreviewInventoryForm from '../components/directComponents/PreviewInventory.component';
@@ -56,6 +58,9 @@ interface Props {
   selectedFiltersText: () => React.ReactNode;
   deviceTypes: OrganizationValues;
   inventoryProviders: OrganizationValues;
+  searchTerm: string;
+  onSearchTermChange: (event:
+      React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InventoryList = ({
@@ -79,6 +84,8 @@ const InventoryList = ({
   selectedFiltersText,
   deviceTypes,
   inventoryProviders,
+  searchTerm,
+  onSearchTermChange,
 }: Props) => {
   const { user } = useUser();
   const Actions = [
@@ -125,6 +132,35 @@ const InventoryList = ({
           <ExpenseTitle>{t('INVENTORY_LIST')}</ExpenseTitle>
         </ExpenseHeading>
         <FilterSection>
+          <SearchBox className="search">
+                   <div style={{ position: "relative", width: "100%" }}>
+                     <SearchInput
+                       placeholder="Search by Device Number"
+                       value={searchTerm}
+                       onChange={onSearchTermChange}
+                       ref={searchInputRef}
+                       style={{ width: "100%", paddingRight: "45px" }}
+                     />
+
+                     <div
+                       onClick={() => {
+                         if (searchInputRef.current) searchInputRef.current.focus();
+
+                       }}
+                       style={{
+                         position: "absolute",
+                         right: "10px",
+                         top: "50%",
+                         transform: "translateY(-50%)",
+                         cursor: "pointer"
+                       }}
+                     >
+                       <SearchSVG />
+                     </div>
+                   </div>
+                 </SearchBox>
+
+
           <DropdownMenu
             className="largeContainerFil"
             name="Device"
