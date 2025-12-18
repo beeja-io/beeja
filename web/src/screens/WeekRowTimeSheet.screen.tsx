@@ -115,7 +115,7 @@ const WeekRowTimesheet: React.FC<WeekRowTimesheetProps> = ({
 
         <TotalWeekHoursContainer>
           <WeeklyLogs>
-            {t('Weekly Logs')} <span>{weekData.totalWeekHours} hrs</span>
+            {t('Weekly_Logs')} <span>{weekData.totalWeekHours} hrs</span>
           </WeeklyLogs>
           <RotateArrow isExpanded={isActive}>
             <ArrowDownSVG />
@@ -147,7 +147,7 @@ const WeekRowTimesheet: React.FC<WeekRowTimesheetProps> = ({
                     </DayText>
 
                     <LoggedHours>
-                      Logged hours{' '}
+                      {t('Logged_Hours')}
                       <span>{day.totalLoggedForDay.toFixed(2)} hrs</span>
                     </LoggedHours>
                   </SingleRowContainer>

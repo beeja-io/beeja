@@ -10,7 +10,6 @@ import {
   getISOWeek,
   getISOWeekYear,
 } from 'date-fns';
-import { toast } from 'sonner';
 import {
   deleteLog,
   fetchMonthLogs,
@@ -22,6 +21,7 @@ import {
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 import SpinAnimation from '../components/loaders/SprinAnimation.loader';
 import CenterModal from '../components/reusableComponents/CenterModal.component';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 
 import {
   TimesheetContainer,
@@ -91,6 +91,16 @@ const Timesheet: React.FC = () => {
   const [contractLookup, setContractLookup] = useState<Record<string, string>>(
     {}
   );
+
+  const [successToast, setSuccessToast] = useState<{
+    heading: string;
+    body: string;
+  } | null>(null);
+
+  const [errorToast, setErrorToast] = useState<{
+    heading: string;
+    body: string;
+  } | null>(null);
 
   const getEmptyWeeksForMonth = (month: Date) => {
     const weeks: any[] = [];
@@ -236,11 +246,17 @@ const Timesheet: React.FC = () => {
         if (Array.isArray(data)) {
           setProjectOptions(data);
         } else {
-          toast.error(t('Invalid project data received.'));
+          setErrorToast({
+            heading: 'Error',
+            body: t('Invalid_project_data_received'),
+          });
         }
       } catch (error) {
         setProjectOptions([]);
-        toast.error(t('Failed to fetch project list.') + String(error));
+        setErrorToast({
+          heading: 'Error',
+          body: t('Failed_to_fetch_project_list.') + String(error),
+        });
       }
     };
     fetchProjects();
@@ -271,7 +287,10 @@ const Timesheet: React.FC = () => {
       !logEntries[0].projectId ||
       !logEntries[0].contractId
     ) {
-      toast.error('Please fill project, contract, and hours');
+      setErrorToast({
+        heading: 'Error',
+        body: t('Please_fill_project_contract_and_hours'),
+      });
       return;
     }
 
@@ -289,7 +308,10 @@ const Timesheet: React.FC = () => {
     try {
       setLoading(true);
       await PostLogHours(payload);
-      toast.success('Log Added Successfully');
+      setSuccessToast({
+        heading: 'Success',
+        body: t('Log_Added_Successfully'),
+      });
 
       await fetchMonthData();
 
@@ -301,7 +323,10 @@ const Timesheet: React.FC = () => {
       setOriginalLogEntry(null);
       setShowSaveConfirmation(false);
     } catch (error) {
-      toast.error('Failed to save logs');
+      setErrorToast({
+        heading: 'Error',
+        body: t('Failed_to_save_logs'),
+      });
     } finally {
       setLoading(false);
     }
@@ -373,7 +398,10 @@ const Timesheet: React.FC = () => {
     try {
       setLoading(true);
       await updateLog(logEntries[0].id || '', payload);
-      toast.success('Log updated successfully');
+      setSuccessToast({
+        heading: 'Success',
+        body: t('Log_updated_successfully'),
+      });
 
       await fetchMonthData();
 
@@ -386,7 +414,10 @@ const Timesheet: React.FC = () => {
       setOriginalLogEntry(null);
       setShowSaveConfirmation(false);
     } catch (error) {
-      toast.error('Update failed');
+      setErrorToast({
+        heading: 'Error',
+        body: t('Update_failed'),
+      });
     } finally {
       setLoading(false);
     }
@@ -396,10 +427,16 @@ const Timesheet: React.FC = () => {
     try {
       setLoading(true);
       await deleteLog(logId);
-      toast.success('Log deleted successfully');
+      setSuccessToast({
+        heading: 'Success',
+        body: t('Log_deleted_successfully'),
+      });
       await fetchMonthData();
     } catch (error) {
-      toast.error('Delete failed');
+      setErrorToast({
+        heading: 'Error',
+        body: t('Delete_failed'),
+      });
     } finally {
       setLoading(false);
     }
@@ -453,21 +490,21 @@ const Timesheet: React.FC = () => {
         <span onClick={goToPreviousPage}>
           <ArrowDownSVG />
         </span>
-        {t('Time Sheet')}
+        {t('Time_Sheet')}
       </div>
 
       <div className="TimesheetSubContainer">
         <div className="TimeSheet_Heading">
-          <p className="TimeSheetTitle underline">{t('List of Time Sheets')}</p>
+          <p className="TimeSheetTitle underline">{t('List_of_Time_Sheets')}</p>
         </div>
 
         <MonthHoursContainer>
           <MonthBox>
-            {t('Month :')} <span>{monthLabel}</span>
+            {t('Month')} : <span>{monthLabel}</span>
           </MonthBox>
 
           <HoursBox>
-            {t('Total Hours :')} <span>{monthlyTotalHours} hrs</span>
+            {t('Total_Hours')} : <span>{monthlyTotalHours} hrs</span>
           </HoursBox>
         </MonthHoursContainer>
 
@@ -537,11 +574,31 @@ const Timesheet: React.FC = () => {
           handleModalClose={() => setShowSaveConfirmation(false)}
           handleModalSubmit={handleSaveConfirmed}
           modalHeading={
-            confirmType === 'discard' ? 'Discard Changes' : 'Save Changes'
+            confirmType === 'discard' ? t('Discard_Changes') : t('Save_Changes')
           }
           modalLeftButtonText="No"
-          modalRightButtonText={confirmType === 'discard' ? 'Discard' : 'Yes'}
+          modalRightButtonText={
+            confirmType === 'discard' ? t('Discard') : t('Yes')
+          }
           isResponseLoading={loading}
+        />
+      )}
+
+      {successToast && (
+        <ToastMessage
+          messageType="success"
+          messageHeading={successToast.heading}
+          messageBody={successToast.body}
+          handleClose={() => setSuccessToast(null)}
+        />
+      )}
+
+      {errorToast && (
+        <ToastMessage
+          messageType="error"
+          messageHeading={errorToast.heading}
+          messageBody={errorToast.body}
+          handleClose={() => setErrorToast(null)}
         />
       )}
     </TimesheetContainer>

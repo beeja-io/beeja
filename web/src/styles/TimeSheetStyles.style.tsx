@@ -342,6 +342,11 @@ export const StyledTable = styled.table`
     width: 100%;
     background: ${(props) => props.theme.colors.grayColors.gray6};
     color: ${(props) => props.theme.colors.blackColors.black1};
+    .addButton {
+      text-align: right;
+      padding-top: 10px;
+      padding-right: 10px;
+    }
   }
   tbody td:nth-child(1),
   tbody td:nth-child(2) {

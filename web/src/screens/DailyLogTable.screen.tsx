@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import {
   StyledTable,
   AddButton,
@@ -18,7 +18,8 @@ import {
   TimeSheetReferenceData,
 } from '../entities/TimeSheetEntity';
 import LogAction from '../components/reusableComponents/LogAction';
-import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 
 interface DailyLogTableProps {
   dateISO: string;
@@ -60,6 +61,14 @@ const DailyLogTable: React.FC<DailyLogTableProps> = ({
   const [contractOptions, setContractOptions] = useState<
     Record<number, Contract[]>
   >({});
+  const { t } = useTranslation();
+
+  const [errorToast, setErrorToast] = useState<{
+    heading: string;
+    body: string;
+  } | null>(null);
+
+  const textareaRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
 
   const isEditing = isEditingMode;
 
@@ -73,6 +82,15 @@ const DailyLogTable: React.FC<DailyLogTableProps> = ({
       loadContractsForProject(logEntries[0].projectId, 0);
     }
   }, [logEntries, contractOptions, projectOptions]);
+
+  useLayoutEffect(() => {
+    textareaRefs.current.forEach((textarea) => {
+      if (textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = `${textarea.scrollHeight}px`;
+      }
+    });
+  }, [logEntries]);
 
   const loadContractsForProject = async (projectId: string, index: number) => {
     try {
@@ -88,7 +106,10 @@ const DailyLogTable: React.FC<DailyLogTableProps> = ({
         return updated;
       });
     } catch {
-      toast.error('Failed to load contracts');
+      setErrorToast({
+        heading: 'Error',
+        body: t('Failed_to_load_contracts'),
+      });
       setContractOptions((prev) => ({ ...prev, [index]: [] }));
     }
   };
@@ -124,7 +145,7 @@ const DailyLogTable: React.FC<DailyLogTableProps> = ({
                   }
                 }}
               >
-                <option value="">Select Project</option>
+                <option value="">{t('Select_Project')}</option>
                 {projectOptions?.map((project) => (
                   <option key={project.projectId} value={project.projectId}>
                     {project.name}
@@ -166,13 +187,12 @@ const DailyLogTable: React.FC<DailyLogTableProps> = ({
               </select>
 
               <textarea
+                ref={(el) => (textareaRefs.current[index] = el)}
                 placeholder="Description"
                 value={entry.description}
                 title={entry.description}
                 rows={1}
                 onChange={(e) => {
-                  e.target.style.height = 'auto';
-                  e.target.style.height = `${e.target.scrollHeight}px`;
                   handleInputChange(index, 'description', e.target.value);
                 }}
               />
@@ -200,11 +220,11 @@ const DailyLogTable: React.FC<DailyLogTableProps> = ({
       <StyledTable>
         <thead>
           <tr>
-            <th className="projectWidth">Project</th>
-            <th className="contractWidth">Contract</th>
-            <th className="logHoursWidth">Log Hours</th>
-            <th className="descriptionWidth">Description</th>
-            <th className="actionWidth">Action</th>
+            <th className="projectWidth">{t('Project')}</th>
+            <th className="contractWidth">{t('Contract')}</th>
+            <th className="logHoursWidth">{t('Log_Hours')}</th>
+            <th className="descriptionWidth">{t('Description')}</th>
+            <th className="actionWidth">{t('Action')}</th>
           </tr>
         </thead>
         <tbody>
@@ -236,14 +256,7 @@ const DailyLogTable: React.FC<DailyLogTableProps> = ({
           )}
 
           <tr>
-            <td
-              colSpan={5}
-              style={{
-                textAlign: 'right',
-                paddingTop: '10px',
-                paddingRight: '10px',
-              }}
-            >
+            <td colSpan={5} className="addButton">
               <AddButton
                 onClick={() => {
                   if (selectedDate === dateISO && addButtonClicked) {
@@ -279,6 +292,14 @@ const DailyLogTable: React.FC<DailyLogTableProps> = ({
           )}
         </tbody>
       </StyledTable>
+      {errorToast && (
+        <ToastMessage
+          messageType="error"
+          messageHeading={errorToast.heading}
+          messageBody={errorToast.body}
+          handleClose={() => setErrorToast(null)}
+        />
+      )}
     </DailyLogContainer>
   );
 };
