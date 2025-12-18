@@ -736,21 +736,27 @@ export const updateOrganizationValues = (
   );
 };
 export const PostLogHours = (data: any): Promise<AxiosResponse> => {
-  return axiosInstance.post('/projects/api/timesheets', data, {
+  return axiosInstance.post('/projects/v1/api/timesheets', data, {
     headers: { 'Content-Type': 'application/json' },
   });
 };
 
 export const fetchMonthLogs = (date: any): Promise<AxiosResponse> => {
-  return axiosInstance.get(`/projects/api/timesheets?month=${date}`);
+  return axiosInstance.get(`/projects/v1/api/timesheets?month=${date}`);
+};
+
+export const fetchWeekLogs = (week: any, year: any): Promise<AxiosResponse> => {
+  return axiosInstance.get(
+    `/projects/v1/api/timesheets?week=${week}&weekYear=${year}`
+  );
 };
 
 export const deleteLog = (id: string): Promise<AxiosResponse> => {
-  return axiosInstance.delete(`/projects/api/timesheets/${id}`);
+  return axiosInstance.delete(`/projects/v1/api/timesheets/${id}`);
 };
 
 export const updateLog = (id: string, data: any): Promise<AxiosResponse> => {
-  return axiosInstance.put(`/projects/api/timesheets/${id}`, data);
+  return axiosInstance.put(`/projects/v1/api/timesheets/${id}`, data);
 };
 
 export const clientDropDown = () => {
@@ -759,6 +765,15 @@ export const clientDropDown = () => {
 
 export const getProjectDropdown = () => {
   return axiosInstance.get(`/projects/v1/projects/projects-dropdown`);
+};
+export const getProjectDropdownBasedOnUser = () => {
+  return axiosInstance.get(`/projects/v1/api/timesheets/projects`);
+};
+
+export const getContractDropdownBasedOnUserSelection = (projectId: any) => {
+  return axiosInstance.get(
+    `/projects/v1/api/timesheets/projects/${projectId}/contracts`
+  );
 };
 
 export const generateInvoiceIdentifiers = (
