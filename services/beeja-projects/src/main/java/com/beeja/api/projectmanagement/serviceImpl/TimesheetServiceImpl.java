@@ -208,6 +208,7 @@ public class TimesheetServiceImpl implements TimesheetService {
 
         log.info("Fetching timesheets for employeeId={}, orgId={}", employeeIdToUse, organizationId);
         log.debug("Filters received → day={}, week={}, weekYear={}, month={}, page={}, size={}",
+
                 day, week, weekYear, month, page, size);
 
         Pageable pageable = PageRequest.of(
@@ -219,7 +220,7 @@ public class TimesheetServiceImpl implements TimesheetService {
         Criteria criteria = Criteria.where("organizationId").is(organizationId)
                 .and("employeeId").is(employeeIdToUse);
 
-        ZoneId zone = ZoneId.of("Asia/Kolkata");
+        ZoneId zone = ZoneId.systemDefault();
 
         if (day != null) {
             LocalDate localDate = parseDay(day);
@@ -281,7 +282,7 @@ public class TimesheetServiceImpl implements TimesheetService {
             );
         }
 
-        ZoneId zoneId = ZoneId.of("Asia/Kolkata");
+        ZoneId zoneId = ZoneId.systemDefault();
         Instant startInstant = yearMonth.atDay(1).atStartOfDay(zoneId).toInstant();
         Instant endInstant = yearMonth.atEndOfMonth().plusDays(1).atStartOfDay(zoneId).toInstant();
 
@@ -305,7 +306,7 @@ public class TimesheetServiceImpl implements TimesheetService {
             int weekNumber = localDate.get(weekFields.weekOfWeekBasedYear());
             int weekYear = localDate.get(weekFields.weekBasedYear());
 
-            String weekKey = String.format("week-%d-%02d", weekYear, weekNumber);
+            String weekKey = String.format(Constants.WEEK_KEY_FORMAT, weekYear, weekNumber);
 
             LocalDate weekStart = isoWeekStart(weekYear, weekNumber);
             LocalDate weekEnd = weekStart.plusDays(6);

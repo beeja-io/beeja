@@ -1,5 +1,7 @@
 package com.beeja.api.projectmanagement.controllers;
 
+import com.beeja.api.projectmanagement.annotations.HasPermission;
+import com.beeja.api.projectmanagement.constants.PermissionConstants;
 import com.beeja.api.projectmanagement.model.dto.ContractDropdownDto;
 import com.beeja.api.projectmanagement.model.dto.CustomPageResponse;
 import com.beeja.api.projectmanagement.model.Timesheet;
@@ -37,6 +39,7 @@ public class TimesheetController {
      * @return created Timesheet
      */
     @PostMapping
+    @HasPermission(PermissionConstants.CREATE_TIMESHEET)
     public ResponseEntity<Timesheet> saveTimesheet(@Valid @RequestBody TimesheetRequestDto requestDto) {
         Timesheet saved = timesheetService.saveTimesheet(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
@@ -50,6 +53,7 @@ public class TimesheetController {
      * @return updated Timesheet
      */
     @PutMapping("/{id}")
+    @HasPermission(PermissionConstants.UPDATE_TIMESHEET)
     public ResponseEntity<Timesheet> updateLog(@Valid @RequestBody TimesheetRequestDto dto, @PathVariable("id") String id) {
         Timesheet updated = timesheetService.updateLog(dto, id);
         return ResponseEntity.ok(updated);
@@ -67,6 +71,7 @@ public class TimesheetController {
      * @param employeeId optional employee id (defaults to logged-in)
      */
     @GetMapping
+    @HasPermission(PermissionConstants.GET_TIMESHEET)
     public ResponseEntity<?> getTimesheets(
             @RequestParam(required = false) String day,
             @RequestParam(required = false) Integer week,
@@ -108,6 +113,7 @@ public class TimesheetController {
      * @return success message
      */
     @DeleteMapping("/{id}")
+    @HasPermission(PermissionConstants.DELETE_TIMESHEET)
     public ResponseEntity<String> deleteTimesheet(@PathVariable String id) {
         timesheetService.deleteTimesheet(id);
         return ResponseEntity.ok("Timesheet deleted successfully");
@@ -119,6 +125,7 @@ public class TimesheetController {
      * @return {@link ResponseEntity} containing a list of {@link ProjectDropdownDto}
      */
     @GetMapping("/projects")
+    @HasPermission(PermissionConstants.GET_TIMESHEET_PROJECTS)
     public ResponseEntity<List<ProjectDropdownDto>> getMyProjects() {
         List<ProjectDropdownDto> projects = timesheetService.getMyProjects();
         return ResponseEntity.ok(projects);
@@ -131,6 +138,7 @@ public class TimesheetController {
      * @return {@link ResponseEntity} containing a list of {@link ContractDropdownDto}
      */
     @GetMapping("/projects/{projectId}/contracts")
+    @HasPermission(PermissionConstants.GET_TIMESHEET_CONTRACTS)
     public ResponseEntity<List<ContractDropdownDto>> getContracts(@PathVariable String projectId) {
         List<ContractDropdownDto> contracts = timesheetService.getContractsForProject(projectId);
         return ResponseEntity.ok(contracts);

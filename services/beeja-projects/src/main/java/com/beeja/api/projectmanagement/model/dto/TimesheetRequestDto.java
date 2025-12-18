@@ -17,15 +17,15 @@ import java.time.Instant;
 @Builder
 public class TimesheetRequestDto {
 
-    @NotBlank(message = "projectId is required")
+    @NotBlank
     private String projectId;
 
     private String contractId;
 
     private Instant startDate;
 
-    @Min(value = 1, message = "timeInMinutes must be >= 1")
-    @Max(value = 1440, message = "timeInMinutes must be <= 1440")
+    @Min(value = 1)
+    @Max(value = 1440)
     private int timeInMinutes;
 
     private String description;

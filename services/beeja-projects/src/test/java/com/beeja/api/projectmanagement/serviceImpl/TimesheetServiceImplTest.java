@@ -401,7 +401,7 @@ class TimesheetServiceImplTest {
             userContext.when(UserContext::getLoggedInEmployeeId).thenReturn("EMP1");
             userContext.when(UserContext::getLoggedInUserOrganization).thenReturn(orgMap);
 
-            ZoneId zone = ZoneId.of("Asia/Kolkata");
+            ZoneId zone = ZoneId.systemDefault();
             Instant date1 = LocalDate.of(2025, 1, 1).atStartOfDay(zone).toInstant(); // Week 1
             Instant date2 = LocalDate.of(2025, 1, 5).atStartOfDay(zone).toInstant(); // Same week
 

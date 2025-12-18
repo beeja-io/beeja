@@ -38,4 +38,12 @@ public class PermissionConstants {
   public static final String DELETE_ALL_DOCUMENT = "DALDCMT";
   public static final String UPDATE_ALL_DOCUMENT = "UALDCMT";
   // Documents end
+
+  // Timesheet-related permissions
+  public static final String CREATE_TIMESHEET = "CTS";
+  public static final String UPDATE_TIMESHEET = "UTS";
+  public static final String GET_TIMESHEET    = "GTS";
+  public static final String DELETE_TIMESHEET = "DTS";
+  public static final String GET_TIMESHEET_PROJECTS = "GTP";
+  public static final String GET_TIMESHEET_CONTRACTS = "GTC";
 }

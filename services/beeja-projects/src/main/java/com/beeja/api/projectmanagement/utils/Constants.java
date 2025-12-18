@@ -92,6 +92,8 @@ public class Constants {
     public static final String NOT_ALLOWED_TO_DELETE_TIMESHEET = "Not allowed to delete this timesheet";
     public static final String SAVE_TIMESHEET = "Saving timesheet for employeeId={}, organizationId={}";
     public static final String SAVE_TIMESHEET_REQUEST_DTO = "SaveTimesheet Request DTO: {}";
+    public static final String WEEK_KEY_FORMAT = "week-%d-%02d";
+
 
 
     // ========== File Service Errors ==========
