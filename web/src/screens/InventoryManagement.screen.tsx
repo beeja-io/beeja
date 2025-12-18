@@ -55,10 +55,25 @@ const InventoryManagement = () => {
       setShowSuccessMessage(false);
     }, 2000);
   };
+    const [showErrorToast, setShowErrorToast] = useState(false);
+      const [errorMessage, setErrorMessage] = useState("");
 
   const [deviceFilter, setDeviceFilter] = useState<string>('');
   const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
   const [providerFilter, setProviderFilter] = useState<string>('');
+
+  //  search value
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  const [SearchDeviceNumberFilter, setSearchDeviceNumberFilter] = useState<string>('');
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setSearchDeviceNumberFilter(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchTerm]);
+
   const handleDeviceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     // const value = event.target.value;
     setDeviceFilter(event.target.value);
@@ -79,6 +94,14 @@ const InventoryManagement = () => {
   ) => {
     setProviderFilter(event.target.value);
   };
+
+ const handleSearchTermChange = (
+   event: React.ChangeEvent<HTMLInputElement>
+ ) => {
+   const value = event.target.value;
+   setSearchTerm(value);
+   setCurrentPage(1);
+ };
 
   const [inventoryList, setInventoryList] = useState<DeviceDetails[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -124,6 +147,9 @@ const InventoryManagement = () => {
       if (currentPage) {
         queryParams.push(`pageNumber=${currentPage}`);
       }
+      if (SearchDeviceNumberFilter.trim() !== '') {
+              queryParams.push(`searchTerm=${encodeURIComponent(SearchDeviceNumberFilter.trim())}`);
+            }
       if (itemsPerPage) {
         queryParams.push(`pageSize=${itemsPerPage}`);
       }
@@ -140,7 +166,11 @@ const InventoryManagement = () => {
         inventory: res.data.inventory,
         metadata: metadata,
       };
-      if (!deviceFilter && !availabilityFilter && !providerFilter) {
+ if (SearchDeviceNumberFilter !== "" && metadata.totalSize === 0) {
+   setErrorMessage("Device number not found");
+   setShowErrorToast(true);
+ }
+if (!deviceFilter &&!availabilityFilter &&!providerFilter &&!SearchDeviceNumberFilter) {
         setIsShowFilters(false);
       } //update
       const totalPages = Math.ceil(res.data.metadata.totalSize / itemsPerPage);
@@ -158,6 +188,7 @@ const InventoryManagement = () => {
     deviceFilter,
     availabilityFilter,
     providerFilter,
+    SearchDeviceNumberFilter,
   ]);
 
   useEffect(() => {
@@ -197,6 +228,7 @@ const InventoryManagement = () => {
   const [isShowFilters, setIsShowFilters] = useState(false);
   const selectedFiltersText = () => {
     const filters = [
+      { key: 'searchTerm', value: searchTerm },
       { key: 'device', value: deviceFilter },
       { key: 'availability', value: availabilityFilter },
       { key: 'provider', value: providerFilter },
@@ -298,6 +330,9 @@ const InventoryManagement = () => {
             selectedFiltersText={selectedFiltersText}
             deviceTypes={deviceTypes}
             inventoryProviders={inventoryProviders}
+            searchTerm={searchTerm}
+            onSearchTermChange={handleSearchTermChange}
+             setSearchDeviceNumberFilter={setSearchDeviceNumberFilter}
           />
         )}
       </ExpenseManagementMainContainer>
@@ -323,6 +358,14 @@ const InventoryManagement = () => {
           handleClose={handleShowSuccessMessage}
         />
       )}
+  {showErrorToast && (
+          <ToastMessage
+            messageType="error"
+            messageBody={errorMessage}
+            messageHeading="ERROR"
+            handleClose={() => setShowErrorToast(false)}
+          />
+        )}
     </>
   );
 };
