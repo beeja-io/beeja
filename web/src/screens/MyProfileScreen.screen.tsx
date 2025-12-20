@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLocation, useNavigate } from 'react-router-dom';
 import MyProfileQuickDetailsComponent from '../components/reusableComponents/MyProfileQuickDetails.component';
 import MyProfileTabsContainerComponent from '../components/reusableComponents/MyProfileTabsContainer.component';
@@ -14,6 +15,7 @@ import {
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
 
 const MyProfileScreen = () => {
+  const { t } = useTranslation();
   const [employee, setEmployee] = useState<EmployeeEntity>();
 
   const { user } = useUser();
@@ -71,7 +73,7 @@ const MyProfileScreen = () => {
           <span onClick={goToPreviousPage}>
             <ArrowDownSVG />
           </span>
-          {tabName}
+          {t(tabName.toUpperCase())}
         </MyProfileHeadingSection>
         <MyProfileInformationContainer>
           <MyProfileQuickDetailsComponent

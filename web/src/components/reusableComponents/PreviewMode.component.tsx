@@ -113,7 +113,7 @@ const PreviewMode: React.FC<Props> = ({
         </Header>
         {formData?.formDescription && (
           <>
-            <Label>Form Description</Label>
+            <Label>{t('FORM_DESCRIPTION')}</Label>
             <DescriptionBox className="preview-mode">
               {formData.formDescription}
             </DescriptionBox>
@@ -170,7 +170,7 @@ const PreviewMode: React.FC<Props> = ({
         <FooterContainer>
           <ButtonGroup>
             <Button onClick={onEdit} type="button">
-              {t('Edit')}
+              {t('EDIT')}
             </Button>
             <Button
               className="submit"
@@ -178,7 +178,7 @@ const PreviewMode: React.FC<Props> = ({
               onClick={onConfirm}
               disabled={isLoading}
             >
-              {Submit || t('Save')}
+              {Submit || t('SAVE')}
             </Button>
           </ButtonGroup>
         </FooterContainer>

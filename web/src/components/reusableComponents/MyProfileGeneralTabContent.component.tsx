@@ -453,7 +453,7 @@ export const GeneralDetailsTab = ({
     useState(false);
 
   useEffect(() => {
-    if (heading === 'Employment Info') {
+    if (heading === t('Employment_Info')) {
       const fetchData = async () => {
         try {
           setIsDefaultResponseLoading(true);
@@ -473,7 +473,7 @@ export const GeneralDetailsTab = ({
 
       fetchData();
     }
-  }, [heading]);
+  }, [heading, t]);
 
   const [showHistory, setShowHistory] = useState(false);
 
@@ -561,17 +561,11 @@ export const GeneralDetailsTab = ({
               <TabContentTable>
                 {firstColumn
                   .sort((a, b) => {
-                    if (heading === 'Employment Info') {
-                      if (
-                        a.label === 'Joining Date' &&
-                        b.label === 'Employment Type'
-                      )
-                        return -1;
-                      if (
-                        a.label === 'Employment Type' &&
-                        b.label === 'Joining Date'
-                      )
-                        return 1;
+                    if (heading === t('Employment_Info')) {
+                      if (a.label === 'Joining Date') return -1;
+                      if (b.label === 'Joining Date') return 1;
+                      if (a.label === 'Employment Type') return 1;
+                      if (b.label === 'Employment Type') return -1;
                     }
                     return 0;
                   })
@@ -743,7 +737,7 @@ export const GeneralDetailsTab = ({
                           ) : (
                             <TabContentTableTd>
                               {t(value)}{' '}
-                              {heading === 'Employment Info' &&
+                              {heading === t('Employment_Info') &&
                                 label === 'Employment Type' && (
                                   <ViewHistoryLink
                                     onClick={() =>

@@ -435,10 +435,8 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
         ) : (
           <NoDocsContainer>
             <NoDocsIcon />
-            <p className="heading">There is no document here</p>
-            <p className="description">
-              Please add new Document by clicking "Upload Document" above
-            </p>
+            <p className="heading">{t('There is no document here')}</p>
+            <p className="description">{t('ADD_NEW_DOCUMENT_DESCRIPTION')}</p>
           </NoDocsContainer>
         )}
         {totalPages && (
@@ -486,7 +484,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       options={[
                         { label: t('Select a Type'), value: '' },
                         ...(documentType?.values || []).map((opt) => ({
-                          label: opt.value,
+                          label: t(opt.value),
                           value: opt.value,
                         })),
                       ]}
@@ -596,14 +594,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                         }}
                         className="cancel"
                       >
-                        Cancel
+                        {t('Cancel')}
                       </Button>
                       <Button
                         className="submit"
                         style={{ cursor: isResponseLoading ? 'progress' : '' }}
                         disabled={isResponseLoading}
                       >
-                        Submit
+                        {t('Submit')}
                       </Button>
                     </div>
                   </div>

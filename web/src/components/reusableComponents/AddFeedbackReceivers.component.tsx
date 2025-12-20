@@ -668,7 +668,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                         : handleCreateReceivers
                   }
                 >
-                  {mode === 'provider' ? 'Assign' : 'Add'}
+                  {t(mode === 'provider' ? 'Assign' : 'Add')}
                 </Button>
               </ButtonGroup>
             </FooterContainer>

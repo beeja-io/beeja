@@ -668,7 +668,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
             )}
           </div>
           <DropdownMenu
-            label="SETTLEMENT_STATUS"
+            label={t('SETTLEMENT_STATUS')}
             className="largeContainerFil"
             name="settlementStatus"
             options={[
@@ -765,15 +765,16 @@ export const ExpenseList = (props: ExpenseListProps) => {
         {fromDate == null && toDate == null && (
           <span className="noFilters noMargin">
             <InfoCircleSVG />
-            {`Showing current month expenses (sorted based on ${
-              sortBy === 'expenseDate'
-                ? t('EXPENSE_DATE')
-                : sortBy === 'requestedDate'
-                  ? t('REQUESTED_DATE')
-                  : sortBy === 'paymentDate'
-                    ? t('PAYMENT_DATE')
-                    : t('CREATED_DATE')
-            })`}
+            {t('SHOWING_CURRENT_MONTH_EXPENSES_SORTED', {
+              field:
+                sortBy === 'expenseDate'
+                  ? t('EXPENSE_DATE')
+                  : sortBy === 'requestedDate'
+                    ? t('REQUESTED_DATE')
+                    : sortBy === 'paymentDate'
+                      ? t('PAYMENT_DATE')
+                      : t('CREATED_DATE'),
+            })}
           </span>
         )}
         <TableListContainer style={{ marginTop: 0 }}>

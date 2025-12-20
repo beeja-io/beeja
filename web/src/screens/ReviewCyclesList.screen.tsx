@@ -57,12 +57,20 @@ const ReviewCyclesList = () => {
   useEffect(() => {
     fetchPerformanceCycles();
   }, []);
-
-  const Actions: any[] = [
-    { title: 'Edit', className: 'edit-icon', svg: <EditIcon /> },
-    { title: 'Delete', className: 'delete-icon', svg: <DeleteIcon /> },
+  const Actions = [
+    {
+      key: 'EDIT',
+      title: t('EDIT'),
+      className: 'edit-icon',
+      svg: <EditIcon />,
+    },
+    {
+      key: 'DELETE',
+      title: t('DELETE'),
+      className: 'delete-icon',
+      svg: <DeleteIcon />,
+    },
   ];
-
   const isCycleExpired = (cycle: any) => {
     if (!cycle?.feedbackDeadline) return false;
 

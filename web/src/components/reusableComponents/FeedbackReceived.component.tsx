@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Container,
   TabBar,
@@ -74,6 +75,7 @@ type FeedbackReceivedProps = {
 };
 
 const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<'all' | 'self' | 'rating'>('all');
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
 
@@ -176,8 +178,7 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
           <Container>
             <ReceiverRow>
               <ReceiverInfo>
-                <ReceiverLabel>Feedback Receiver Name</ReceiverLabel>
-
+                <ReceiverLabel>{t('Feedback_Receiver_Name')}</ReceiverLabel>
                 <NameBox>
                   {[user?.firstName, user?.lastName]
                     .filter(Boolean)
@@ -195,19 +196,19 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
                 active={activeTab === 'all'}
                 onClick={() => setActiveTab('all')}
               >
-                All Responses
+                {t('All_Responses')}
               </Tab>
               <Tab
                 active={activeTab === 'self'}
                 onClick={() => setActiveTab('self')}
               >
-                Self Evaluation
+                {t('Self_Evaluation')}
               </Tab>
               <Tab
                 active={activeTab === 'rating'}
                 onClick={() => setActiveTab('rating')}
               >
-                Overall Rating
+                {t('Overall_Rating')}
               </Tab>
             </TabBar>
 
@@ -216,12 +217,14 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
                 <>
                   <FeedbackHeaderRow>
                     <SelectWrapper>
-                      <label htmlFor="feedbackFormSelect">Feedback Form</label>
+                      <label htmlFor="feedbackFormSelect">
+                        {t('Feedback_Form')}
+                      </label>
                       <DropdownMenu
                         label={
                           forms.length === 0
-                            ? 'No forms available'
-                            : 'Select form'
+                            ? t('NO_FORMS_AVAILABLE')
+                            : t('Select form')
                         }
                         name="feedbackFormSelect"
                         id="feedbackFormSelect"
@@ -275,7 +278,7 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
 
                   {!questionData.length ||
                   !questionData[currentQuestionIndex] ? (
-                    <Placeholder>No responses available</Placeholder>
+                    <Placeholder>{t('NO_RESPONSES_AVAILABLE')}</Placeholder>
                   ) : (
                     (() => {
                       const q = questionData[currentQuestionIndex];
@@ -328,16 +331,14 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
                         <>
                           <QuestionHeader>
                             <QuestionText>
-                              Please share your reflections on your key
-                              achievements, challenges, areas for improvement,
-                              and the support you need to grow further
+                              {t('SELF_EVALUATION_QUESTION')}
                               <RequiredStar>*</RequiredStar>
                             </QuestionText>
                           </QuestionHeader>
 
                           <ResponsesContainer>
                             <ResponseHeader>
-                              <div>Response</div>
+                              <div>{t('RESPONSE')}</div>
                             </ResponseHeader>
                             <ResponseInnerBox>
                               {selfEvaluationData}
@@ -346,7 +347,7 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
                         </>
                       ) : (
                         <Placeholder>
-                          Self-evaluation has not been submitted yet.
+                          {t('SELF_EVALUATION_NOT_SUBMITTED')}
                         </Placeholder>
                       )}
                     </QuestionBlock>
@@ -375,7 +376,7 @@ const FeedbackReceived: React.FC<FeedbackReceivedProps> = ({ user }) => {
                     </ResponsesContainer>
                   ) : (
                     <Placeholder className="rating">
-                      Overall Rating has not been submitted yet!
+                      {t('OVERALL_RATING_NOT_SUBMITTED')}
                     </Placeholder>
                   )}
                 </>

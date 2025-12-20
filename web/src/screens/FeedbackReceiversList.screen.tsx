@@ -175,13 +175,13 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
               {t('Loading...')}
             </p>
           ) : feedbackReceivers.length === 0 ? (
-            <ZeroEntriesFound heading="Feedback receivers not yet added" />
+            <ZeroEntriesFound heading={t('FEEDBACK_RECEIVERS_NOT_YET_ADDED')} />
           ) : (
             <TableList>
               <TableHead>
                 <tr>
                   <th>{t('Employee_Name')}</th>
-                  <th>{t('Department')}</th>
+                  <th>{t('DEPARTMENT')}</th>
                   <th>{t('Feedback_Status')}</th>
                   <th>{t('Action')}</th>
                 </tr>
@@ -203,13 +203,13 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
                       {
                         title:
                           uiStatus === 'NOT_ASSIGNED'
-                            ? 'Assign Feedback Providers'
-                            : 'Reassign Feedback Providers',
+                            ? t('ASSIGN_FEEDBACK_PROVIDERS')
+                            : t('REASSIGN_FEEDBACK_PROVIDERS'),
                         svg: <AssignUserSVG />,
                         disabled: true,
                       },
                       {
-                        title: 'View More Details',
+                        title: t('View_More_Details'),
                         svg: <DocumentTextSVG />,
                         disabled: false,
                       },
@@ -219,24 +219,24 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
                       uiStatus === 'NOT_ASSIGNED'
                         ? [
                             {
-                              title: 'Assign Feedback Providers',
+                              title: t('ASSIGN_FEEDBACK_PROVIDERS'),
                               svg: <AssignUserSVG />,
                               disabled: false,
                             },
                             {
-                              title: 'View More Details',
+                              title: t('View_More_Details'),
                               svg: <DocumentTextSVG />,
                               disabled: false,
                             },
                           ]
                         : [
                             {
-                              title: 'Reassign Feedback Providers',
+                              title: t('REASSIGN_FEEDBACK_PROVIDERS'),
                               svg: <AssignUserSVG />,
                               disabled: false,
                             },
                             {
-                              title: 'View More Details',
+                              title: t('View_More_Details'),
                               svg: <DocumentTextSVG />,
                               disabled: false,
                             },

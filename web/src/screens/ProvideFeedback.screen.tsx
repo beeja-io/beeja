@@ -470,7 +470,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
       ) : !selectedEmployee ? (
         <>
           {feedbackData.length === 0 ? (
-            <ZeroEntriesFound heading="No Feedback Requests Found" />
+            <ZeroEntriesFound heading={t('No Feedback Requests Found')} />
           ) : (
             <ListContainer>
               {feedbackData.map((item) => (

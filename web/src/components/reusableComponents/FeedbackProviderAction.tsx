@@ -54,12 +54,17 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
     try {
       if (
         title === 'Assign Feedback Providers' ||
-        title === 'Reassign Feedback Providers'
+        title === 'Reassign Feedback Providers' ||
+        title === 'Feedback-Anbieter zuweisen' ||
+        title === 'Feedback-Anbieter neu zuweisen'
       ) {
         handleAssign(currentEmployee);
       }
 
-      if (title === 'View More Details') {
+      if (
+        title === 'View More Details' ||
+        title === 'Weitere Details anzeigen'
+      ) {
         navigate('/performance/view-more-details', {
           state: {
             employeeId: currentEmployee.employeeId,
@@ -82,15 +87,22 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
 
     switch (title) {
       case 'Assign Feedback Providers':
+      case 'Feedback-Anbieter zuweisen':
         return !hasPermission(user, PERFORMANCE_MODULE.ASSIGN_PROVIDER);
+
       case 'Reassign Feedback Providers':
+      case 'Feedback-Anbieter neu zuweisen':
         return !hasPermission(user, PERFORMANCE_MODULE.UPDATE_PROVIDER);
+
       case 'View More Details':
+      case 'Weitere Details anzeigen':
         return !hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER);
+
       default:
         return false;
     }
   };
+
   return (
     <ActionContainer ref={dropdownRef}>
       <ActionMenuIcon

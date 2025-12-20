@@ -128,7 +128,7 @@ const InventoryList = ({
           <DropdownMenu
             className="largeContainerFil"
             name="Device"
-            label="Device"
+            label={t('DEVICE')}
             options={[
               { label: t('DEVICE'), value: null },
               ...(deviceTypes.values?.map((device) => ({
@@ -177,7 +177,7 @@ const InventoryList = ({
                 currentPage;
               }}
               options={[
-                { label: 'Provider', value: '' },
+                { label: t('PROVIDER'), value: '' },
                 ...(inventoryProviders?.values || []).map((provider) => ({
                   label: provider.value,
                   value: provider.value,
@@ -188,7 +188,7 @@ const InventoryList = ({
         </FilterSection>
         <div className="right">
           <DisplayFilters>
-            <label>Filters: </label>
+            <label>{t('FILTERS')}: </label>
             {isShowFilters ? (
               <>
                 <span className="filterText">{selectedFiltersText()}</span>
@@ -196,7 +196,7 @@ const InventoryList = ({
                   onClick={() => clearFilters('clearAll')}
                   className="clearFilters"
                 >
-                  Clear Filters
+                  {t('CLEAR_FILTERS')}
                 </span>
               </>
             ) : (

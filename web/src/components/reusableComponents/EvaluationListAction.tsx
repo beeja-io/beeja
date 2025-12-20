@@ -15,7 +15,12 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { PERFORMANCE_MODULE } from '../../constants/PermissionConstants';
 
 interface Props {
-  options: { title: string; svg: React.ReactNode; className: string }[];
+  options: {
+    key: string;
+    title: string;
+    svg: React.ReactNode;
+    className: string;
+  }[];
   currentCycle: any;
   fetchCycles: () => void;
   onSuccess?: (message: string) => void;
@@ -48,11 +53,11 @@ const EvaluationListAction: React.FC<Props> = ({
     setShowDeleteModal(false);
   };
 
-  const handleOptionClick = async (title: string) => {
-    if (title === 'Edit') {
+  const handleOptionClick = async (key: string) => {
+    if (key === 'EDIT') {
       navigate(`/performance/create-evaluation-form/${currentCycle.id}`);
     }
-    if (title === 'Delete') {
+    if (key === 'DELETE') {
       setShowDeleteModal(true);
     }
     onToggle();
@@ -109,14 +114,14 @@ const EvaluationListAction: React.FC<Props> = ({
           <ActionMenuContent>
             {options.map((op, i) => {
               const isDisabled =
-                (op.title === 'Edit' && (!canEdit || disabled)) ||
-                (op.title === 'Delete' && !canDelete);
+                (op.key === 'EDIT' && (!canEdit || disabled)) ||
+                (op.key === 'DELETE' && !canDelete);
 
               return (
                 <ActionMenuOption
                   key={i}
                   className={isDisabled ? 'edit-disabled' : ''}
-                  onClick={() => !isDisabled && handleOptionClick(op.title)}
+                  onClick={() => !isDisabled && handleOptionClick(op.key)}
                   title={
                     isDisabled
                       ? t('You do not have permission to perform this action')

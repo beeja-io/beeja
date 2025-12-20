@@ -179,7 +179,7 @@ const BulkPayslip = () => {
                 {t('MONTH')} <ValidationText className="star">*</ValidationText>
               </label>
               <DropdownMenu
-                label="Select Month"
+                label={t('SELECT_MONTH')}
                 name="month"
                 id="month"
                 className="largeContainerBulk"
@@ -196,7 +196,7 @@ const BulkPayslip = () => {
                 {t('YEAR')} <ValidationText className="star">*</ValidationText>
               </label>
               <DropdownMenu
-                label="Select Year"
+                label={t('SELECT_YEAR')}
                 name="year"
                 id="year"
                 className="largeContainerBulk"

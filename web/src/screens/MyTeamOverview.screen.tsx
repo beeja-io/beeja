@@ -258,7 +258,7 @@ const EmployeeList = () => {
                 name="EmployeeDepartment"
                 label="Department"
                 options={[
-                  { label: t('Department'), value: '' },
+                  { label: t('DEPARTMENT'), value: '' },
                   ...(departmentOptions?.values?.map((department) => ({
                     label: department.value,
                     value: department.value,
@@ -277,7 +277,7 @@ const EmployeeList = () => {
                 className="largeContainerFil"
                 name="JobTitle"
                 options={[
-                  { label: t('Job Title'), value: '' },
+                  { label: t('JOB_TITLE'), value: '' },
                   ...(jobTitles?.values?.map((jobTitle) => ({
                     label: jobTitle.value,
                     value: jobTitle.value,
@@ -306,7 +306,7 @@ const EmployeeList = () => {
                     className="largeContainerFil"
                     name="employeeStatus"
                     options={[
-                      { label: t('Feedback Status'), value: '' },
+                      { label: t('Feedback_Status'), value: '' },
                       { label: t('COMPLETED'), value: 'completed' },
                       { label: t('IN_PROGRESS'), value: 'incomplete' },
                       { label: t('NOT_ASSIGNED'), value: 'notAssigned' },
@@ -329,13 +329,13 @@ const EmployeeList = () => {
                     <TableHead>
                       <tr style={{ textAlign: 'left', borderRadius: '10px' }}>
                         <th style={{ width: '250px' }}>{t('Employee_Name')}</th>
-                        <th style={{ width: '150px' }}>{t('Job_Title')}</th>
-                        <th style={{ width: '150px' }}>{t('Department')}</th>
+                        <th style={{ width: '150px' }}>{t('JOB_TITLE')}</th>
+                        <th style={{ width: '150px' }}>{t('DEPARTMENT')}</th>
                         <th style={{ width: '130px' }}>
-                          {t('Feedback_Received_Status')}
+                          {t('FEEDBACK_RECEIVED_STATUS')}
                         </th>
                         <th style={{ width: '100px' }}>
-                          {t('Rating')}
+                          {t('RATING')}
                           {' (Out of 5)'}
                         </th>
                       </tr>
