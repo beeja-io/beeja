@@ -2,24 +2,21 @@ import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
-import {
-  ExpenseHeadingSection,
-  ExpenseManagementMainContainer,
-} from '../styles/ExpenseManagementStyles.style';
+import { ExpenseManagementMainContainer } from '../styles/ExpenseManagementStyles.style';
 import {
   ExpenseHeading,
   StyledDiv,
   TableBodyRow,
-  // TableHead,
   TableList,
   TableListContainer,
 } from '../styles/ExpenseListStyles.style';
-import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
+import { ArrowDownSVG, LeftArrowSVG } from '../svgs/CommonSvgs.svs';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import { getFeedbackProviderDetails } from '../service/axiosInstance';
 import FeedbackStatusDropdown from '../styles/FeedbackStatusStyle.style';
 import {
   ExpenseTitleProviders,
+  ExpenseHeadingSection,
   Section,
   TableHead,
   TableCellStatus,
@@ -43,10 +40,12 @@ const ViewMoreDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { employeeId, cycleId, receiverName } = (location.state || {}) as {
+  const { employeeId, cycleId, receiverName, formName } = (location.state ||
+    {}) as {
     employeeId?: string;
     cycleId?: string;
     receiverName?: string;
+    formName?: string;
   };
 
   const fetchFeedbackDetails = useCallback(async () => {
@@ -114,11 +113,22 @@ const ViewMoreDetails = () => {
     <ExpenseManagementMainContainer>
       <ExpenseHeadingSection>
         <span className="heading">
-          <span onClick={goToPreviousPage}>
+          <span className="back-arrow" onClick={goToPreviousPage}>
             <ArrowDownSVG />
           </span>
           {t('Assign_Feedback_Receivers_Providers')}
-          <span className="separator"> {'>'} </span>
+          <span className="separator-form">
+            <LeftArrowSVG />
+          </span>
+
+          {formName && (
+            <>
+              <span className="form-name">{formName}</span>
+              <span className="separator-form">
+                <LeftArrowSVG />
+              </span>
+            </>
+          )}
           <span className="nav_AddClient">{t('View_More_Details')}</span>
         </span>
       </ExpenseHeadingSection>

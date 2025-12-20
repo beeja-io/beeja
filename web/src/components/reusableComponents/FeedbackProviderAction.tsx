@@ -72,6 +72,7 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
             receiverName: currentEmployee.fullName,
             fromReceiversList: true,
             fromReceiversListDirect: true,
+            formName: currentEmployee.formName,
           },
         });
       }
