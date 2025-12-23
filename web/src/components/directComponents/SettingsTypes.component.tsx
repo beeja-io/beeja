@@ -56,8 +56,8 @@ export const SettingsTypes = ({
   } | null>(null);
   const [isCreatedToastMessage, setIsCreatedToastMessage] = useState(false);
   const Actions = [
-    { title: 'Edit', svg: <EditIcon /> },
-    { title: 'Delete', svg: <DeleteIcon /> },
+    { title: 'EDIT', label: t('EDIT'), svg: <EditIcon /> },
+    { title: 'DELETE', label: t('DELETE'), svg: <DeleteIcon /> },
   ];
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const handleOpenModal = () => setIsCreateModalOpen(true);
@@ -85,9 +85,9 @@ export const SettingsTypes = ({
     setActionType(action);
     setNewSettingType(expense.orgValues);
     setIndexvalue(expense.index);
-    if (action === 'Edit') {
+    if (action === 'EDIT') {
       handleOpenModal();
-    } else if (action === 'Delete') {
+    } else if (action === 'DELETE') {
       handleDeleteModal();
     }
   };
@@ -120,8 +120,8 @@ export const SettingsTypes = ({
       setIsCreatedToastMessage(true);
       setToastMessage({
         type: 'error',
-        heading: 'Failed To Fetch Type',
-        body: 'Unsuccessfull Fetch Type',
+        heading: t('FETCH_TYPE_FAILED_TITLE'),
+        body: t('FETCH_TYPE_FAILED_BODY'),
       });
     }
   };
@@ -134,9 +134,9 @@ export const SettingsTypes = ({
       return;
     }
     updatedSettingTypes =
-      actionType === 'Delete'
+      actionType === 'DELETE'
         ? settingTypes?.filter((category) => category.index !== indexvalue)
-        : actionType === 'Edit'
+        : actionType === 'EDIT'
           ? settingTypes?.map((category) =>
               category.index === indexvalue
                 ? { orgValues: newSettingType, index: category.index }
@@ -150,7 +150,7 @@ export const SettingsTypes = ({
               },
             ];
 
-    if (actionType === 'Delete') {
+    if (actionType === 'DELETE') {
       handleDeleteModal();
     }
     const data = {
@@ -169,25 +169,25 @@ export const SettingsTypes = ({
       setToastMessage({
         type: 'success',
         heading:
-          actionType === 'Delete'
-            ? `${type} Deleted`
-            : actionType === 'Edit'
-              ? `${type} Updated`
-              : `${type} Created`,
+          actionType === 'DELETE'
+            ? t('TYPE_DELETED_TITLE', { type: t(type) })
+            : actionType === 'EDIT'
+              ? t('TYPE_UPDATED_TITLE', { type: t(type) })
+              : t('TYPE_CREATED_TITLE', { type: t(type) }),
         body:
-          actionType === 'Delete'
-            ? `${type} has been deleted successfully.`
-            : actionType === 'Edit'
-              ? `${type} has been updated successfully.`
-              : `${type} has been created successfully.`,
+          actionType === 'DELETE'
+            ? t('TYPE_DELETED_SUCCESS', { type: t(type) })
+            : actionType === 'EDIT'
+              ? t('TYPE_UPDATED_SUCCESS', { type: t(type) })
+              : t('TYPE_CREATED_SUCCESS', { type: t(type) }),
       });
       setActionType(null);
     } catch (error) {
       setIsCreatedToastMessage(true);
       setToastMessage({
         type: 'error',
-        heading: 'Failed To Create Type',
-        body: 'Unsuccessfull create Type',
+        heading: t('FETCH_TYPE_FAILED_TITLE'),
+        body: t('FETCH_TYPE_FAILED_BODY'),
       });
     }
   };
@@ -198,25 +198,25 @@ export const SettingsTypes = ({
   return (
     <TabContentMainContainer>
       <TabContentMainContainerHeading>
-        <h4>{type}</h4>
+        <h4>{t(type)}</h4>
         <Button className="submit shadow buttonstyle" onClick={handleOpenModal}>
           <AddNewPlusSVG />
-          {t('ADD')} {type}
+          {t('ADD')} {t(type)}
         </Button>
       </TabContentMainContainerHeading>
       <Hr />
       {/* Table Section */}
 
       {settingTypes?.length === 0 ? (
-        <ZeroEntriesFound heading={`No ${type} found`} />
+        <ZeroEntriesFound heading={t('NO_TYPE_FOUND', { type: t(type) })} />
       ) : (
         <TableContainer>
           <Table>
             <TableHead>
               <tr className="table-row">
-                <th className="th-type">{type}</th>
-                <th className="th-description">Description</th>
-                <th className="th-action">Action</th>
+                <th className="th-type">{t(type)}</th>
+                <th className="th-description">{t('DESCRIPTION')}</th>
+                <th className="th-action">{t('ACTION')}</th>
               </tr>
             </TableHead>
             <tbody>
@@ -258,16 +258,20 @@ export const SettingsTypes = ({
           handleModalClose={handleCloseModal}
           handleModalSubmit={handleSubmitButton}
           modalHeading={
-            actionType === 'Edit' ? `Edit ${type}` : `Create New ${type}`
+            actionType === 'EDIT'
+              ? `${t('EDIT')} ${t(type)}`
+              : `${t('CREATE_NEW')} ${t(type)}`
           }
-          modalLeftButtonText="Cancel"
-          modalRightButtonText={actionType === 'Edit' ? 'Update' : 'Create'}
+          modalLeftButtonText={t('CANCEL')}
+          modalRightButtonText={
+            actionType === 'EDIT' ? t('UPDATE') : t('CREATE')
+          }
           onChange={handleInputChange}
         >
           <div>
             <InputContainer isValueInvalid={isValueInvalid}>
               <label>
-                {type}:<ValidationText className="star">*</ValidationText>
+                {t(type)}:<ValidationText className="star">*</ValidationText>
               </label>
               <input
                 type="text"
@@ -305,8 +309,8 @@ export const SettingsTypes = ({
             handleModalClose={handleDeleteModal}
             handleModalLeftButtonClick={handleDeleteModal}
             handleModalSubmit={handleSubmitButton}
-            modalHeading="Delete"
-            modalContent={`Are you sure want to Delete this ${type}`}
+            modalHeading={t('DELETE')}
+            modalContent={t('DELETE_CONFIRMATION', { type: t(type) })}
           />
         </span>
       )}

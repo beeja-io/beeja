@@ -499,7 +499,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                     }
                     className={item.submitted ? 'submitted' : ''}
                   >
-                    {item.submitted ? 'Submitted' : 'Provide Feedback'}
+                    {item.submitted ? t('SUBMITTED') : t('PROVIDE_FEEDBACK')}
                   </ProvideButton>
                 </ListRow>
               ))}
@@ -511,7 +511,8 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
           <ControlsRow>
             <div>
               <label htmlFor="feedbackFormSelect">
-                Select Feedback Form<RequiredMark>*</RequiredMark>
+                {t('SELECT_FEEDBACK_FORM')}
+                <RequiredMark>*</RequiredMark>
               </label>
               <DropdownMenu
                 label={
@@ -540,7 +541,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
               />
             </div>
             <FormsCount>
-              No of forms available: <Count>{formsAvailableCount}</Count>
+              {t('NO_OF_FORMS_AVAILABLE')}: <Count>{formsAvailableCount}</Count>
             </FormsCount>
           </ControlsRow>
           <FormSubContainer className="stepTwoContainer">
@@ -579,7 +580,8 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
 
               <div style={{ marginBottom: '20px' }}>
                 <Label>
-                  Feedback Receiver Name<RequiredMark>*</RequiredMark>
+                  {t('Feedback_Receiver_Name')}
+                  <RequiredMark>*</RequiredMark>
                 </Label>
                 <ReadOnlyInput value={feedbackReceiverName} readOnly />
               </div>
@@ -607,7 +609,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                           disabled={!formActive}
                           ref={(el) => (answerRefs.current[index] = el)}
                           rows={1}
-                          placeholder="Enter your Answer"
+                          placeholder={t('ENTER_YOUR_ANSWER')}
                           value={answers[index]?.answer || ''}
                           onChange={(e) => {
                             handleAnswerChange(index, e.target.value);
@@ -636,7 +638,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                     onClick={() => setPreviewMode(true)}
                     disabled={!formActive}
                   >
-                    Preview
+                    {t('PREVIEW')}
                   </Button>
                   <Button
                     className="submit"
@@ -644,7 +646,7 @@ const ProvideFeedback: React.FC<ProvideFeedbackProps> = ({
                     onClick={handleSubmit}
                     disabled={!formActive}
                   >
-                    Submit
+                    {t('SUBMIT')}
                   </Button>
                 </ButtonGroup>
               </FooterContainer>

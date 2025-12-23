@@ -562,10 +562,15 @@ export const GeneralDetailsTab = ({
                 {firstColumn
                   .sort((a, b) => {
                     if (heading === t('Employment_Info')) {
-                      if (a.label === 'Joining Date') return -1;
-                      if (b.label === 'Joining Date') return 1;
-                      if (a.label === 'Employment Type') return 1;
-                      if (b.label === 'Employment Type') return -1;
+                      const order = [
+                        'Employee Id',
+                        'Designation',
+                        'Department',
+                        'Joining Date',
+                        'Employment Type',
+                      ];
+
+                      return order.indexOf(a.label) - order.indexOf(b.label);
                     }
                     return 0;
                   })
@@ -663,7 +668,7 @@ export const GeneralDetailsTab = ({
                                     : formData[label]
                                   : ''
                               }
-                              placeholder={`Enter ${t(label)}`}
+                              placeholder={`${t('ENTER')} ${t(label)}`}
                               onFocus={(e) => {
                                 if (e.target.value === '-') {
                                   e.target.value = '';

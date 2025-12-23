@@ -521,7 +521,7 @@ const AddFeedbackReceivers: React.FC<AddFeedbackReceiversProps> = ({
                   ref={inputRef}
                   type="text"
                   className="search-input"
-                  placeholder="Search by Employee Name"
+                  placeholder={t('SEARCH_BY_EMPLOYEE_NAME')}
                   value={searchTerm}
                   onChange={(e) => {
                     const value = e.target.value;

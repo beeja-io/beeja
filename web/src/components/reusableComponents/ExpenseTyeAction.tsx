@@ -11,6 +11,7 @@ import { OrgValues } from '../../entities/OrgDefaultsEntity';
 
 interface ActionOption {
   title: string;
+  label: string;
   svg: React.ReactNode;
 }
 
@@ -72,7 +73,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
               onClick={() => handleActionClick(option.title)}
             >
               {option.svg}
-              {option.title}
+              {option.label}
             </ActionMenuOption>
           ))}
         </ActionMenuContent>

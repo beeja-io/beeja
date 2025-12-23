@@ -223,8 +223,8 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
           <div className="label">
             <span>{t('SET_MONITOR_LOAN_LIMIT')}</span>
             <span className="label-info">
-              <InfoCircleSVG height={14} width={14} /> Set the custom limit for
-              {t('PERSONAL_LOAN')}
+              <InfoCircleSVG height={14} width={14} />{' '}
+              {t('SET_CUSTOM_LIMIT_FOR')} {t('PERSONAL_LOAN')}
             </span>
           </div>
           <TextInput
@@ -255,7 +255,7 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
 
         <LoanFields style={{ color: 'gray' }}>
           <div className="label">
-            <span className="textMedium">Base salary multiplier</span>
+            <span className="textMedium">{t('BASE_SALARY_MULTIPLIER')}</span>
             <span className="label-info">
               <InfoCircleSVG height={37} width={37} /> This base salary
               {t(
@@ -279,8 +279,8 @@ const OrgSettingsLOAN = (props: OrgSettingsLOANType) => {
           <div className="label">
             <span className="label-info">
               {' '}
-              <InfoCircleSVG height={14} width={14} /> Salary Multiplier will be
-              {t('AVAILABLE_SOON!!')}
+              <InfoCircleSVG height={14} width={14} />{' '}
+              {t('SALARY_MULTIPLIER_AVAILABLE_SOON')}
             </span>
           </div>
         </LoanFields>

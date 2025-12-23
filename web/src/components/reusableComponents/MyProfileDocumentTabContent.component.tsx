@@ -439,7 +439,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
             <p className="description">{t('ADD_NEW_DOCUMENT_DESCRIPTION')}</p>
           </NoDocsContainer>
         )}
-        {totalPages && (
+        {totalPages > 0 && (
           <Pagination
             totalPages={totalPages}
             currentPage={currentPage}

@@ -356,10 +356,10 @@ const KycTabContent = ({
                           }
                           placeholder={
                             label === 'Account Number'
-                              ? 'Enter Account Number'
+                              ? t('ENTER_ACCOUNT_NUMBER')
                               : label === 'IFSC Code'
-                                ? 'Enter IFSC Code'
-                                : `Enter ${t(label)}`
+                                ? t('ENTER_IFSC_CODE')
+                                : `${t('ENTER')} ${t(label)}`
                           }
                           onChange={(e) => handleChange(label, e.target.value)}
                           onFocus={(e) => {

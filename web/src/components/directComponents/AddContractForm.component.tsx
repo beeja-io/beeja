@@ -316,7 +316,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
         setManagerOptions(managers);
         setResourceOptions(resources);
       } catch (error) {
-        toast.error('Failed to fetch project employees');
+        toast.error(t('FAILED_TO_FETCH_PROJECT_EMPLOYEES'));
         setManagerOptions([]);
         setResourceOptions([]);
       } finally {
@@ -490,18 +490,22 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     const newErrors: typeof errors = {};
 
     if (!formData.contractTitle)
-      newErrors.contractTitle = 'Please enter contract Name';
-    if (!formData.startDate) newErrors.startDate = 'Please select Start Date';
+      newErrors.contractTitle = t('PLEASE_ENTER_CONTRACT_NAME');
+
+    if (!formData.startDate)
+      newErrors.startDate = t('PLEASE_SELECT_START_DATE');
+
     if (!formData.contractType)
-      newErrors.contractType = 'Please select Contract Type';
+      newErrors.contractType = t('PLEASE_SELECT_CONTRACT_TYPE');
+
     if (!formData.billingType)
-      newErrors.billingType = 'Please select Billing Type';
+      newErrors.billingType = t('PLEASE_SELECT_BILLING_TYPE');
+
     if (formData.billingType !== ContractBillingType.NON_BILLABLE) {
       if (!formData.billingCurrency) {
-        newErrors.billingCurrency = 'Please select a Billing Currency';
+        newErrors.billingCurrency = t('PLEASE_SELECT_BILLING_CURRENCY');
       }
     }
-
     setErrors(newErrors);
 
     return Object.keys(newErrors).length === 0;
@@ -586,7 +590,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
     <FormContainer>
       <>
         <StepsContainer>
-          {['General Information', 'Project & Resource Allocation'].map(
+          {[t('GENERAL_INFORMATION'), t('PROJECT_AND_RESOURCE_ALLOCATION')].map(
             (label, index, arr) => {
               const isActive = step === index + 1;
               const isCompleted = step > index + 1;
@@ -642,7 +646,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     <TextInput
                       name="contractTitle"
                       type="text"
-                      placeholder="Enter Contract Name"
+                      placeholder={t('Enter Contract Name')}
                       value={formData.contractTitle}
                       onChange={(e) => {
                         handleChange(e);
@@ -668,7 +672,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     </label>
 
                     <DropdownMenu
-                      label="Select Contract"
+                      label={t('Select Contract')}
                       name="contractType"
                       id="contractType"
                       className="largeContainerExp largeContainerHei"
@@ -739,7 +743,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   <DateInputWrapper ref={calendarRef}>
                     <TextInput
                       type="text"
-                      placeholder="Select Date"
+                      placeholder={t('Select Date')}
                       name="startDate"
                       value={
                         formData.startDate
@@ -842,7 +846,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     <TextInput
                       type="text"
                       name="contractValue"
-                      placeholder="Enter Budget"
+                      placeholder={t('Enter Budget')}
                       value={formData.contractValue}
                       onChange={(e) => {
                         if (
@@ -1040,7 +1044,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                   <DateInputWrapper ref={calendarEndRef}>
                     <TextInput
                       type="text"
-                      placeholder="Select Date"
+                      placeholder={t('Select Date')}
                       name="endDate"
                       value={
                         formData.endDate
@@ -1103,7 +1107,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     )}
                   </label>
                   <DropdownMenu
-                    label="Select Currency"
+                    label={t('Select Currency')}
                     name="billingCurrency"
                     id="billingCurrency"
                     className="largeContainerExp largeContainerHei"
@@ -1119,7 +1123,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     }}
                     disabled={isDisabled}
                     options={[
-                      { label: 'Select Currency', value: '' },
+                      { label: t('Select Currency'), value: '' },
                       ...Object.values(BillingCurrency).map((currency) => ({
                         label: BillingCurrencyLabels[currency],
                         value: currency,
@@ -1136,7 +1140,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                     <label>{t('Description')}</label>
                     <TextInput
                       name="description"
-                      placeholder="Enter Contract Description"
+                      placeholder={t('Enter Contract Description')}
                       value={formData.description}
                       onChange={handleChange}
                       className="largeInput"
@@ -1361,7 +1365,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           }));
                         }
                       }}
-                      placeholder="Select Resources"
+                      placeholder={t('Select Resources')}
                       searchable={true}
                       className="largeContainerRes largeContainerHei"
                     />
@@ -1370,7 +1374,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                       <AvailabilityInput
                         type="text"
                         inputMode="numeric"
-                        placeholder="Enter Percentage"
+                        placeholder={t('Enter Percentage')}
                         value={currentAvailability}
                         onChange={(e) => {
                           const rawValue = e.target.value;

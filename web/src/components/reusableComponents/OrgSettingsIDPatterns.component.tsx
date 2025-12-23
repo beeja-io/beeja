@@ -66,10 +66,10 @@ export const OrgSettingsIDPatterns: React.FC<OrgSettingsIDPatternsProps> = ({
           <TabContentMainContainerHeading>
             <h4>
               {patternType === 'LOAN_ID_PATTERN'
-                ? 'Loan ID Pattern'
+                ? t('LOAN_ID_PATTERN')
                 : patternType === 'EMPLOYEE_ID_PATTERN'
-                  ? 'Employee ID Pattern'
-                  : 'Device ID Pattern'}
+                  ? t('EMPLOYEE_ID_PATTERN')
+                  : t('DEVICE_ID_PATTERN')}
             </h4>
 
             <Button

@@ -509,14 +509,14 @@ const EditInventoryForm: React.FC<EditInventoryFormProps> = ({
                 <ValidationText className="star">*</ValidationText>
               </label>
               <DropdownMenu
-                label="Select Provider"
+                label={t('SELECT_PROVIDER')}
                 name="provider"
                 id="provider"
                 className=""
                 value={formData.provider ?? ''}
                 required
                 options={[
-                  { label: 'Select Provider', value: '' },
+                  { label: t('SELECT_PROVIDER'), value: '' },
                   ...(inventoryProviders?.values || []).map((provider) => ({
                     label: provider.value,
                     value: provider.value,

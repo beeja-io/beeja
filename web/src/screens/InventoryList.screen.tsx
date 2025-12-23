@@ -200,14 +200,14 @@ const InventoryList = ({
                 </span>
               </>
             ) : (
-              <span className="noFilters">&nbsp;No filters applied</span>
+              <span className="noFilters">&nbsp;{t('NO_FILTERS_APPLIED')}</span>
             )}
           </DisplayFilters>
         </div>
         <TableListContainer style={{ marginTop: 0 }}>
           {!isLoading && inventoryList && inventoryList.length === 0 ? (
             <ZeroEntriesFound
-              heading="THERE_IS_NO_INVENTORY_FOUND"
+              heading={'THERE_IS_NO_INVENTORY_FOUND'}
               message="YOU_DONT_HAVE_ANY_INVENTORY"
             />
           ) : (

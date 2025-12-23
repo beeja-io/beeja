@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActionContainer,
   ActionMenu,
@@ -23,6 +24,7 @@ export const LoanAction: React.FC<ActionProps> = ({
   fetchLoans,
   currentLoan,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -144,7 +146,7 @@ export const LoanAction: React.FC<ActionProps> = ({
                 className={selectedOption === option.title ? 'selected' : ''}
                 onClick={() => handleOptionClick(option.title)}
               >
-                {option.title}
+                {t(option.title)}
               </ActionMenuOption>
             ))}
           </ActionMenuContent>
@@ -166,16 +168,16 @@ export const LoanAction: React.FC<ActionProps> = ({
       {approvedMessage && (
         <ToastMessage
           messageType="success"
-          messageBody="Approved loan successfully"
-          messageHeading="Loan Approval Successful"
+          messageBody={t('APPROVED_LOAN_SUCCESSFULLY')}
+          messageHeading={t('LOAN_APPROVAL_SUCCESSFUL')}
           handleClose={() => handleApproveMessage()}
         />
       )}
       {rejectedMessage && (
         <ToastMessage
           messageType="success"
-          messageBody="Rejected loan successfully"
-          messageHeading="Loan Rejection Successful"
+          messageBody={t('REJECTED_LOAN_SUCCESSFULLY')}
+          messageHeading={t('LOAN_REJECTION_SUCCESSFUL')}
           handleClose={() => handleRejectMessage()}
         />
       )}

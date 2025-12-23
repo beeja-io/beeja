@@ -375,7 +375,7 @@ const DeductionsTab = ({
                         ) : (
                           <InlineInput
                             type="text"
-                            placeholder={'Enter Amount'}
+                            placeholder={t('ENTER_AMOUNT')}
                             value={formData[label] || ''}
                             onFocus={(e) => {
                               if (e.target.value === '-') {
