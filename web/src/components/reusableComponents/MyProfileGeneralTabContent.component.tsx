@@ -806,7 +806,7 @@ export const GeneralDetailsTab = ({
                           ) : (
                             <InlineInput
                               type={label === 'Date of Birth' ? 'date' : 'text'}
-                              placeholder={`Enter ${label}`}
+                              placeholder={`${t('ENTER')} ${t(label)}`}
                               value={
                                 formData[label] !== undefined
                                   ? formData[label]
