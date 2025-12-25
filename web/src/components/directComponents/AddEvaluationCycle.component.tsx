@@ -462,16 +462,16 @@ const AddEvaluationCycle: React.FC = () => {
         await updatePerformanceCycle(id, cycleData);
         setIsLoading(false);
         handleShowSuccessMessage(
-          'Form Updated Successfully',
-          'The Evaluation Form had been updated successfully!'
+          t('SUCCESS_TITLE_FORM_UPDATED'),
+          t('SUCCESS_BODY_FORM_UPDATED')
         );
         navigate('/performance/create-evaluation-form');
       } else {
         await postPerformanceCycle(cycleData);
         setIsLoading(false);
         handleShowSuccessMessage(
-          'Form Created Successfully',
-          'The Evaluation Form has been created successfully.'
+          t('SUCCESS_TITLE_FORM_CREATED'),
+          t('SUCCESS_BODY_FORM_CREATED')
         );
         navigate('/performance/create-evaluation-form');
       }

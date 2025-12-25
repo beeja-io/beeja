@@ -122,11 +122,7 @@ const EvaluationListAction: React.FC<Props> = ({
                   key={i}
                   className={isDisabled ? 'edit-disabled' : ''}
                   onClick={() => !isDisabled && handleOptionClick(op.key)}
-                  title={
-                    isDisabled
-                      ? t('You do not have permission to perform this action')
-                      : ''
-                  }
+                  title={isDisabled ? t('NO_PERMISSION_ACTION') : ''}
                 >
                   <div className={op.className}>{op.svg}</div> {op.title}
                 </ActionMenuOption>
@@ -140,15 +136,15 @@ const EvaluationListAction: React.FC<Props> = ({
           handleModalLeftButtonClick={handleDiscardModalToggle}
           handleModalClose={handleDiscardModalToggle}
           handleModalSubmit={handleConfirmDelete}
-          modalHeading={t('Delete Review Cycle?')}
-          modalContent={t('Are you sure you want to delete this review cycle?')}
+          modalHeading={t('DELETE_REVIEW_CYCLE')}
+          modalContent={t('CONFIRM_DELETE_REVIEW_CYCLE')}
           modalType="discardModal"
           modalLeftButtonClass="mobileBtn"
           modalRightButtonClass="mobileBtn"
           modalRightButtonBorderColor="black"
           modalRightButtonTextColor="black"
           modalLeftButtonText={t('No')}
-          modalRightButtonText={isDeleting ? t('Deleting...') : t('Delete')}
+          modalRightButtonText={isDeleting ? t('DELETING') : t('DELETE')}
         />
       )}
     </>

@@ -81,9 +81,14 @@ const InventoryList = ({
   inventoryProviders,
 }: Props) => {
   const { user } = useUser();
-  const Actions = [
-    { title: 'Edit', svg: <EditIcon /> },
-    { title: 'Delete', svg: <DeleteIcon /> },
+  const { t } = useTranslation();
+  const Actions: {
+    key: 'EDIT' | 'DELETE';
+    title: string;
+    svg: React.ReactNode;
+  }[] = [
+    { key: 'EDIT', title: t('EDIT'), svg: <EditIcon /> },
+    { key: 'DELETE', title: t('DELETE'), svg: <DeleteIcon /> },
   ];
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedInventory, setSelectedInventory] = useState<Inventory | null>(
@@ -117,7 +122,6 @@ const InventoryList = ({
   useEffect(() => {
     keyPressFind(searchInputRef);
   }, []);
-  const { t } = useTranslation();
   return (
     <>
       <StyledDiv>

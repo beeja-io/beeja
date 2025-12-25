@@ -46,6 +46,7 @@ type ExpenseListProps = {
 };
 export const ExpenseList = (props: ExpenseListProps) => {
   const { user } = useUser();
+  const { t } = useTranslation();
   const [showFromCalendar, setShowFromCalendar] = useState(false);
   const [showToCalendar, setShowToCalendar] = useState(false);
 
@@ -426,16 +427,18 @@ export const ExpenseList = (props: ExpenseListProps) => {
     }
   };
 
-  const Actions = [
+  const Actions: Array<{
+    key: 'EDIT' | 'DELETE';
+    title: string;
+    svg: React.ReactNode;
+  }> = [
     ...(user && hasPermission(user, EXPENSE_MODULE.UPDATE_EXPENSE)
-      ? [{ title: 'Edit', svg: <EditIcon /> }]
+      ? [{ key: 'EDIT' as 'EDIT', title: t('EDIT'), svg: <EditIcon /> }]
       : []),
     ...(user && hasPermission(user, EXPENSE_MODULE.DELETE_EXPENSE)
-      ? [{ title: 'Delete', svg: <DeleteIcon /> }]
+      ? [{ key: 'DELETE' as 'DELETE', title: t('DELETE'), svg: <DeleteIcon /> }]
       : []),
   ];
-
-  const { t } = useTranslation();
 
   const [expenseToBePreviewed, setExpenseToBePreviewed] = useState<Expense>();
   const handleExpenseToBePreviewed = (expense: Expense) => {

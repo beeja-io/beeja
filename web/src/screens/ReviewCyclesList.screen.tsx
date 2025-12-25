@@ -169,7 +169,7 @@ const ReviewCyclesList = () => {
                               fetchCycles={fetchPerformanceCycles}
                               onSuccess={(msg) => {
                                 setSuccessToastMessage({
-                                  heading: 'Form Deleted Successfully',
+                                  heading: t('FORM_DELETED_SUCESSFULLY'),
                                   body: msg,
                                 });
                                 setShowSuccessMessage(true);

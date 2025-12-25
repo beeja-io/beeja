@@ -55,9 +55,21 @@ export const SettingsTypes = ({
     body: string;
   } | null>(null);
   const [isCreatedToastMessage, setIsCreatedToastMessage] = useState(false);
-  const Actions = [
-    { title: 'EDIT', label: t('EDIT'), svg: <EditIcon /> },
-    { title: 'DELETE', label: t('DELETE'), svg: <DeleteIcon /> },
+  const Actions: Array<{
+    key: 'EDIT' | 'DELETE';
+    title: string;
+    svg: React.ReactNode;
+  }> = [
+    {
+      key: 'EDIT',
+      title: t('EDIT'),
+      svg: <EditIcon />,
+    },
+    {
+      key: 'DELETE',
+      title: t('DELETE'),
+      svg: <DeleteIcon />,
+    },
   ];
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const handleOpenModal = () => setIsCreateModalOpen(true);
