@@ -158,8 +158,8 @@ export const LoanAction: React.FC<ActionProps> = ({
           <CenterModalReject
             handleModalClose={handleRejectModal}
             handleModalSubmit={handleModalSubmit}
-            modalFieldText="Reason for Rejection"
-            modalPlaceHolder="Type your Comment here"
+            modalFieldText={t('REASON_FOR_REJECTION')}
+            modalPlaceHolder={t('TYPE_YOUR_COMMENT')}
             modalLeftButtonText="Cancel"
             modalRightButtonText="Done"
           />

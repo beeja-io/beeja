@@ -1477,7 +1477,7 @@ const AddContractForm: React.FC<AddContractFormProps> = ({
                           <span className="name">{option.label}</span>
                           <span className="percentageAvailability">
                             <span className="availability">
-                              Allocation: {option.availability}%
+                              {t('ALLOCATION')}: {option.availability}%
                             </span>
                             <button
                               className="remove-btn"
