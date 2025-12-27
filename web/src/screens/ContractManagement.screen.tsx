@@ -88,10 +88,10 @@ const ContractManagement = () => {
   const handleSuccessMessage = (value: string, type: 'add' | 'edit') => {
     if (type === 'add') {
       setToastData({
-        heading: t('Contract Added Successfully.'),
-        body: t(
-          `New Contract has been added\nsuccessfully with "Contract ID: ${value}".`
-        ),
+        heading: t('CONTRACT_ADDED_SUCCESS_HEADING'),
+        body: t('CONTRACT_ADDED_SUCCESS_BODY', {
+          id: value,
+        }),
       });
     } else if (type === 'edit') {
       setToastData({

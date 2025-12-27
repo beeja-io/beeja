@@ -96,11 +96,11 @@ const ProjectManagement = () => {
   const handleSuccessMessage = (projectId: string) => {
     setToastData({
       heading: isEditMode
-        ? 'Project Updated Successfully.'
-        : 'Project Added Successfully.',
+        ? t('PROJECT_UPDATED_SUCCESS_HEADING')
+        : t('PROJECT_ADDED_SUCCESS_HEADING'),
       body: isEditMode
-        ? `Project "${projectId}" has been updated successfully.`
-        : `New Project has been Added\nsuccessfully with project: "${projectId}".`,
+        ? t('PROJECT_UPDATED_SUCCESS_BODY', { id: projectId })
+        : t('PROJECT_ADDED_SUCCESS_BODY', { id: projectId }),
     });
     setShowSuccessMessage(true);
     setIsCreateModalOpen(false);

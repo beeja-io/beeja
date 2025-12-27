@@ -292,8 +292,9 @@ const EvaluationOverview: React.FC = () => {
             <OuterHeader>
               <h6>{t('Feedback_Received')}</h6>
               <p>
-                The Following Feedbacks have been Received for{' '}
-                {`${employeeInfo.firstName} ${employeeInfo.lastName}`}{' '}
+                {t('FEEDBACK_RECEIVED_FOR', {
+                  name: `${employeeInfo.firstName} ${employeeInfo.lastName}`,
+                })}
               </p>
             </OuterHeader>
             <TabBar>
@@ -314,7 +315,7 @@ const EvaluationOverview: React.FC = () => {
                       fetchSelfEvaluation();
                     }}
                   >
-                    {t('Self_Evaluation')}
+                    {t('Self Evaluation')}
                   </Tab>
                 )}
               {user &&
@@ -421,7 +422,7 @@ const EvaluationOverview: React.FC = () => {
                                   <ArrowDownSVG />
                                 </span>
                               </NavButton>
-                              {' Question - '}
+                              {` ${t('Question')} - `}
                               {groupedResponse ? currentQuestionIndex + 1 : 0}
                               {' / '}
                               {groupedResponse
@@ -473,7 +474,9 @@ const EvaluationOverview: React.FC = () => {
                                   {q.responses.map((r, index) => (
                                     <React.Fragment key={index}>
                                       <ResponseHeader>
-                                        <div>Response {index + 1}</div>
+                                        <div>
+                                          {t('RESPONSE')} {index + 1}
+                                        </div>
                                         <div>
                                           {!hideNames && (
                                             <AuthorInfo>
@@ -512,7 +515,7 @@ const EvaluationOverview: React.FC = () => {
                               <QuestionBlock>
                                 <ResponsesContainer>
                                   <ResponseHeader>
-                                    <div>Response</div>
+                                    <div>{t('RESPONSE')}</div>
                                   </ResponseHeader>
                                   <ResponseInnerBox>
                                     {selfEvaluation &&
@@ -544,7 +547,7 @@ const EvaluationOverview: React.FC = () => {
                                 </RatingIcon>
                                 <RatingValue>
                                   {overallRating.rating}{' '}
-                                  <span>(Overall Rating)</span>
+                                  <span>{t('Overall_Rating')}</span>
                                 </RatingValue>
                               </RatingHeader>
 
@@ -553,7 +556,7 @@ const EvaluationOverview: React.FC = () => {
                           </ResponsesContainer2>
                         ) : (
                           <Placeholder>
-                            Overall Rating has not been submitted yet!
+                            {t('OVERALL_RATING_NOT_SUBMITTED')}
                           </Placeholder>
                         )}
                       </>

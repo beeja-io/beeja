@@ -81,9 +81,14 @@ const InventoryList = ({
   inventoryProviders,
 }: Props) => {
   const { user } = useUser();
-  const Actions = [
-    { title: 'Edit', svg: <EditIcon /> },
-    { title: 'Delete', svg: <DeleteIcon /> },
+  const { t } = useTranslation();
+  const Actions: {
+    key: 'EDIT' | 'DELETE';
+    title: string;
+    svg: React.ReactNode;
+  }[] = [
+    { key: 'EDIT', title: t('EDIT'), svg: <EditIcon /> },
+    { key: 'DELETE', title: t('DELETE'), svg: <DeleteIcon /> },
   ];
   const searchInputRef = useRef<HTMLInputElement>(null);
   const [selectedInventory, setSelectedInventory] = useState<Inventory | null>(
@@ -117,7 +122,6 @@ const InventoryList = ({
   useEffect(() => {
     keyPressFind(searchInputRef);
   }, []);
-  const { t } = useTranslation();
   return (
     <>
       <StyledDiv>
@@ -128,7 +132,7 @@ const InventoryList = ({
           <DropdownMenu
             className="largeContainerFil"
             name="Device"
-            label="Device"
+            label={t('DEVICE')}
             options={[
               { label: t('DEVICE'), value: null },
               ...(deviceTypes.values?.map((device) => ({
@@ -177,7 +181,7 @@ const InventoryList = ({
                 currentPage;
               }}
               options={[
-                { label: 'Provider', value: '' },
+                { label: t('PROVIDER'), value: '' },
                 ...(inventoryProviders?.values || []).map((provider) => ({
                   label: provider.value,
                   value: provider.value,
@@ -188,7 +192,7 @@ const InventoryList = ({
         </FilterSection>
         <div className="right">
           <DisplayFilters>
-            <label>Filters: </label>
+            <label>{t('FILTERS')}: </label>
             {isShowFilters ? (
               <>
                 <span className="filterText">{selectedFiltersText()}</span>
@@ -196,18 +200,18 @@ const InventoryList = ({
                   onClick={() => clearFilters('clearAll')}
                   className="clearFilters"
                 >
-                  Clear Filters
+                  {t('CLEAR_FILTERS')}
                 </span>
               </>
             ) : (
-              <span className="noFilters">&nbsp;No filters applied</span>
+              <span className="noFilters">&nbsp;{t('NO_FILTERS_APPLIED')}</span>
             )}
           </DisplayFilters>
         </div>
         <TableListContainer style={{ marginTop: 0 }}>
           {!isLoading && inventoryList && inventoryList.length === 0 ? (
             <ZeroEntriesFound
-              heading="THERE_IS_NO_INVENTORY_FOUND"
+              heading={'THERE_IS_NO_INVENTORY_FOUND'}
               message="YOU_DONT_HAVE_ANY_INVENTORY"
             />
           ) : (

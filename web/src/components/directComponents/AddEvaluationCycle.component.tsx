@@ -462,16 +462,16 @@ const AddEvaluationCycle: React.FC = () => {
         await updatePerformanceCycle(id, cycleData);
         setIsLoading(false);
         handleShowSuccessMessage(
-          'Form Updated Successfully',
-          'The Evaluation Form had been updated successfully!'
+          t('SUCCESS_TITLE_FORM_UPDATED'),
+          t('SUCCESS_BODY_FORM_UPDATED')
         );
         navigate('/performance/create-evaluation-form');
       } else {
         await postPerformanceCycle(cycleData);
         setIsLoading(false);
         handleShowSuccessMessage(
-          'Form Created Successfully',
-          'The Evaluation Form has been created successfully.'
+          t('SUCCESS_TITLE_FORM_CREATED'),
+          t('SUCCESS_BODY_FORM_CREATED')
         );
         navigate('/performance/create-evaluation-form');
       }
@@ -535,7 +535,7 @@ const AddEvaluationCycle: React.FC = () => {
             >
               <TitleInput
                 type="text"
-                placeholder="Enter Title"
+                placeholder={t('ENTER_TITLE')}
                 value={formData.reviewCycleName}
                 onChange={(e: any) => {
                   const value = e.target.value;
@@ -571,7 +571,7 @@ const AddEvaluationCycle: React.FC = () => {
                   <span>
                     {formData.startDate
                       ? formatDate(formData.startDate)
-                      : 'From Date'}
+                      : t('FROM_DATE')}
                   </span>
                   {!(isEditMode && isActivePeriod) && isStartDateCalOpen && (
                     <div
@@ -579,7 +579,7 @@ const AddEvaluationCycle: React.FC = () => {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Calendar
-                        title="From Date"
+                        title={t('FROM_DATE')}
                         minDate={new Date('2000-01-01')}
                         selectedDate={
                           formData.startDate
@@ -616,7 +616,7 @@ const AddEvaluationCycle: React.FC = () => {
                   <span>
                     {formData.endDate
                       ? formatDate(formData.endDate)
-                      : 'To Date'}
+                      : t('TO_DATE')}
                   </span>
                   {isEndDateCalOpen && (
                     <div
@@ -624,7 +624,7 @@ const AddEvaluationCycle: React.FC = () => {
                       onClick={(e) => e.stopPropagation()}
                     >
                       <Calendar
-                        title="To Date"
+                        title={t('TO_DATE')}
                         minDate={
                           formData.startDate
                             ? new Date(formData.startDate)
@@ -675,7 +675,7 @@ const AddEvaluationCycle: React.FC = () => {
             <DropdownRow>
               <div className="dropdown-wrapper">
                 <DropdownMenu
-                  label={t('Select Review Type')}
+                  label={t('SELECT_REVIEW_TYPE')}
                   name="reviewType"
                   id="reviewType"
                   style={{ border: 'none' }}
@@ -693,7 +693,7 @@ const AddEvaluationCycle: React.FC = () => {
                     setFormErrors((prev: any) => ({ ...prev, reviewType: '' }));
                   }}
                   options={[
-                    { label: t('Select Review Type'), value: '' },
+                    { label: t('SELECT_REVIEW_TYPE'), value: '' },
                     ...Object.values(ReviewType).map((type) => ({
                       label: `${ReviewTypeLabels[type]} Review`,
                       value: type,
@@ -712,7 +712,7 @@ const AddEvaluationCycle: React.FC = () => {
               className={isEditMode && isActivePeriod ? 'disabled-mode' : ''}
             >
               <HeaderRow>
-                <Label>Form Description</Label>
+                <Label>{t('FORM_DESCRIPTION')}</Label>
               </HeaderRow>
               <FormLabelContainer className="description-container">
                 <InputContainer>
@@ -720,7 +720,7 @@ const AddEvaluationCycle: React.FC = () => {
                     className="description"
                     ref={textareaRef}
                     rows={1}
-                    placeholder="Description"
+                    placeholder={t('DESCRIPTION_PLACEHOLDER')}
                     value={formData.formDescription}
                     onChange={handleFormDescriptionChange}
                   />
@@ -733,7 +733,7 @@ const AddEvaluationCycle: React.FC = () => {
                     className="question-input"
                     rows={1}
                     ref={(el) => (questionRefs.current[index] = el)}
-                    placeholder="Write your question here"
+                    placeholder={t('WRITE_YOUR_QUESTION_HERE')}
                     value={q.question}
                     onChange={(e) =>
                       handleQuestionChange(index, 'question', e.target.value)
@@ -756,11 +756,11 @@ const AddEvaluationCycle: React.FC = () => {
                         }, 0);
                       }}
                     >
-                      <span className="plus-box">+</span> Add Description
+                      <span className="plus-box">+</span> {t('ADD_DESCRIPTION')}
                     </DescriptionButton>
                   ) : (
                     <StyledTextArea
-                      placeholder="Add a description (optional)"
+                      placeholder={t('ADD_A_DESCRIPTION')}
                       className="question-input description"
                       value={q.questionDescription}
                       rows={1}
@@ -793,13 +793,13 @@ const AddEvaluationCycle: React.FC = () => {
                         onClick={() => addQuestion(index)}
                         disabled={!q.question.trim()}
                       >
-                        + Add New Question
+                        + {t('ADD_NEW_QUESTION')}
                       </button>
                     )}
 
                     <div className="actions">
                       <div className="required-toggle">
-                        <span>Required</span>
+                        <span>{t('REQUIRED')}</span>
                         <SwitchLabel>
                           <StyledSwitch
                             type="checkbox"
@@ -860,7 +860,7 @@ const AddEvaluationCycle: React.FC = () => {
                   onClick={handlePreview}
                   disabled={!hasValidQuestion}
                 >
-                  {isEditMode ? 'Update & Preview' : 'Save & Preview'}
+                  {isEditMode ? t('UPDATE_AND_PREVIEW') : t('SAVE_AND_PREVIEW')}
                 </Button>
               </ButtonGroup>
             </FooterContainer>

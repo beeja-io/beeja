@@ -260,12 +260,12 @@ export const CompanyProfile = () => {
       (updatedOrganization.name == null || updatedOrganization.name == '') &&
       (companyProfile.name == null || companyProfile.name == '')
     ) {
-      setNameError('Name is mandatory');
+      setNameError(t('NAME_MANDATORY'));
       hasErrors = true;
     }
     if (updatedOrganization.address && updatedOrganization.address.pinCode) {
       if (!isValidPINCode(updatedOrganization.address.pinCode.toString())) {
-        setPINError('Enter Valid PIN');
+        setPINError(t('ENTER_VALID_PIN'));
         hasErrors = true;
       } else {
         setPINError('');
@@ -278,7 +278,7 @@ export const CompanyProfile = () => {
       if (
         !isValidPanCardNo(updatedOrganization.accounts.panNumber.toUpperCase())
       ) {
-        setPanError('PAN number must be in format of ABCD19008L');
+        setPanError(t('PAN_FORMAT_ERROR'));
         hasErrors = true;
       } else {
         setPanError('');
@@ -455,7 +455,7 @@ export const CompanyProfile = () => {
     toast.promise(
       updateOrganizationById(user ? user.organizations.id : '', formData),
       {
-        loading: 'Updating Organization...',
+        loading: t('UPDATING_ORGANIZATION'),
         closeButton: true,
         success: () => {
           fetchOrganization();
@@ -465,7 +465,7 @@ export const CompanyProfile = () => {
           setUpdatedOrganization({} as IOrganization);
           fetchOrgFile();
           setFile(undefined);
-          return 'Successfully Updated Organization Profile.';
+          return t('ORGANIZATION_UPDATED_SUCCESSFULLY');
         },
         error: (error) => {
           setIsUpdateResponseLoading(false);
@@ -478,7 +478,7 @@ export const CompanyProfile = () => {
               return 'Request timeout, Please try again';
             }
           }
-          return 'Request Unsuccessful, Please try again';
+          return t('REQUEST_UNSUCCESSFUL_TRY_AGAIN');
         },
       }
     );
@@ -605,7 +605,7 @@ export const CompanyProfile = () => {
                       style={{ display: file || imageUrl ? 'none' : 'inline' }}
                     >
                       <UploadReceiptIcon />
-                      <span>Upload Company </span> LOGO
+                      <span>{t('UPLOAD_COMPANY_LOGO')}</span>
                       <input
                         type="file"
                         name="File"
@@ -657,7 +657,7 @@ export const CompanyProfile = () => {
             <Label>{t('COMPANY_ADDRESS')}</Label>
             <Input
               name="address.addressOne"
-              placeholder={isEditModeOn ? 'Primary Address' : '-'}
+              placeholder={isEditModeOn ? t('PRIMARY_ADDRESS') : '-'}
               type="text"
               value={
                 companyProfile.address &&
@@ -675,9 +675,7 @@ export const CompanyProfile = () => {
             <Input
               name="address.addressTwo"
               type="text"
-              placeholder={
-                isEditModeOn ? 'Address Two (Secondary Address)' : '-'
-              }
+              placeholder={isEditModeOn ? t('SECONDARY_ADDRESS') : '-'}
               value={
                 companyProfile.address &&
                 companyProfile.address.addressTwo != null
@@ -717,7 +715,7 @@ export const CompanyProfile = () => {
                     }
                   }}
                   maxLength={20}
-                  placeholder={isEditModeOn ? 'City' : '-'}
+                  placeholder={isEditModeOn ? t('CITY') : '-'}
                   onChange={handleInputChange}
                   disabled={!isEditModeOn}
                   autoComplete="off"
@@ -748,7 +746,7 @@ export const CompanyProfile = () => {
                 <Input
                   name="address.pinCode"
                   type="number"
-                  placeholder={isEditModeOn ? 'Pin Code' : '-'}
+                  placeholder={isEditModeOn ? t('PIN_CODE') : '-'}
                   value={
                     companyProfile.address &&
                     companyProfile.address.pinCode != null
@@ -810,11 +808,7 @@ export const CompanyProfile = () => {
             <Label>{t('FILLING_ADDRESS')}</Label>
             <textarea
               name="filingAddress"
-              placeholder={
-                isEditModeOn
-                  ? 'Filing Address (Visible in Payslips, Invoices etc)'
-                  : '-'
-              }
+              placeholder={isEditModeOn ? t('FILING_ADDRESS_PLACEHOLDER') : '-'}
               value={
                 companyProfile.filingAddress &&
                 companyProfile.filingAddress != null
@@ -878,7 +872,7 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.pfNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter PF Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_PF_NUMBER') : '-'}
                 value={
                   companyProfile.accounts && companyProfile.accounts.pfNumber
                     ? companyProfile.accounts.pfNumber.toUpperCase()
@@ -914,7 +908,7 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.tanNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter TAN Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_TAN_NUMBER') : '-'}
                 value={
                   companyProfile.accounts && companyProfile.accounts.tanNumber
                     ? companyProfile.accounts.tanNumber.toUpperCase()
@@ -950,9 +944,7 @@ export const CompanyProfile = () => {
             <div>
               <Input
                 name="accounts.panNumber"
-                placeholder={
-                  isEditModeOn ? 'Enter PAN Number  (Ex: ABCDR9115L)' : '-'
-                }
+                placeholder={isEditModeOn ? t('ENTER_PAN_NUMBER') : '-'}
                 type="text"
                 value={
                   companyProfile.accounts && companyProfile.accounts.panNumber
@@ -1019,7 +1011,7 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.esiNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter ESI Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_ESI_NUMBER') : '-'}
                 value={
                   companyProfile.accounts && companyProfile.accounts.esiNumber
                     ? companyProfile.accounts.esiNumber.toUpperCase()
@@ -1049,7 +1041,7 @@ export const CompanyProfile = () => {
             <div>
               <Input
                 name="accounts.linNumber"
-                placeholder={isEditModeOn ? 'Enter LIN Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_LIN_NUMBER') : '-'}
                 type="text"
                 value={
                   companyProfile.accounts && companyProfile.accounts.linNumber
@@ -1094,7 +1086,7 @@ export const CompanyProfile = () => {
               <Input
                 name="accounts.gstNumber"
                 type="text"
-                placeholder={isEditModeOn ? 'Enter GST Number' : '-'}
+                placeholder={isEditModeOn ? t('ENTER_GST_NUMBER') : '-'}
                 value={
                   companyProfile.accounts && companyProfile.accounts.gstNumber
                     ? companyProfile.accounts.gstNumber.toUpperCase()
@@ -1171,7 +1163,7 @@ export const CompanyProfile = () => {
               <Input
                 name="bankName"
                 type="text"
-                placeholder={isBankEditModeOn ? 'Enter bank name' : '-'}
+                placeholder={isBankEditModeOn ? t('ENTER_BANK_NAME') : '-'}
                 value={companyProfile.bankDetails?.bankName || ''}
                 onChange={handleInputChange}
                 disabled={!isBankEditModeOn}
@@ -1259,7 +1251,7 @@ export const CompanyProfile = () => {
                 name="ifscNumber"
                 type="text"
                 placeholder={
-                  isBankEditModeOn ? 'Enter IFSC code (e.g., SBIN0001234)' : '-'
+                  isBankEditModeOn ? t('ENTER_IFSC_CODE_PLACEHOLDER') : '-'
                 }
                 value={companyProfile.bankDetails?.ifscNumber || ''}
                 onChange={handleInputChange}

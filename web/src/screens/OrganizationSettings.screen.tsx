@@ -255,10 +255,8 @@ const OrganizationSettings = () => {
                       {openDropdown === 'loan' && (
                         <ul className="dropdown-menu">
                           <li
-                            className={`dropdown-item-thread ${activeTab === 'Loan types & Limits' ? 'active' : ''}`}
-                            onClick={() =>
-                              handleTabClick('Loan types & Limits')
-                            }
+                            className={`dropdown-item-thread ${activeTab === 'loanSettings' ? 'active' : ''}`}
+                            onClick={() => handleTabClick('loanSettings')}
                           >
                             {t('Loan types & Limits')}
                           </li>
@@ -290,19 +288,19 @@ const OrganizationSettings = () => {
                             className={`dropdown-item-thread ${activeTab === 'ExpenseType' ? 'active' : ''}`}
                             onClick={() => handleTabClick('ExpenseType')}
                           >
-                            Expense Type
+                            {t('EXPENSE_TYPE')}
                           </li>
                           <li
                             className={`dropdown-item-thread ${activeTab === 'ModeOfPayments' ? 'active' : ''}`}
                             onClick={() => handleTabClick('ModeOfPayments')}
                           >
-                            Mode Of Payments
+                            {t('MODE_OF_PAYMENTS')}
                           </li>
                           <li
                             className={`dropdown-item-thread ${activeTab === 'ExpenseCategories' ? 'active' : ''}`}
                             onClick={() => handleTabClick('ExpenseCategories')}
                           >
-                            Expense Categories
+                            {t('EXPENSE_CATEGORIES')}
                           </li>
                         </ul>
                       )}
@@ -328,31 +326,31 @@ const OrganizationSettings = () => {
                             className={`dropdown-item-thread ${activeTab === 'EmployeeIdPattern' ? 'active' : ''}`}
                             onClick={() => handleTabClick('EmployeeIdPattern')}
                           >
-                            Employee ID Pattern
+                            {t('EMPLOYEE_ID_PATTERN')}
                           </li>
                           <li
                             className={`dropdown-item-thread ${activeTab === 'EmploymentType' ? 'active' : ''}`}
                             onClick={() => handleTabClick('EmploymentType')}
                           >
-                            Employment Type
+                            {t('EMPLOYMENT_TYPE')}
                           </li>
                           <li
                             className={`dropdown-item-thread ${activeTab === 'jobtitles' ? 'active' : ''}`}
                             onClick={() => handleTabClick('jobtitles')}
                           >
-                            JobTitles
+                            {t('JOB_TITLES')}
                           </li>
                           <li
                             className={`dropdown-item-thread ${activeTab === 'departments' ? 'active' : ''}`}
                             onClick={() => handleTabClick('departments')}
                           >
-                            Departments
+                            {t('DEPARTMENTS')}
                           </li>
                           <li
                             className={`dropdown-item-thread ${activeTab === 'DocumentType' ? 'active' : ''}`}
                             onClick={() => handleTabClick('DocumentType')}
                           >
-                            Document Types
+                            {t('DOCUMENT_TYPES')}
                           </li>
                         </ul>
                       )}
@@ -435,19 +433,19 @@ const OrganizationSettings = () => {
                       className={`dropdown-item-thread ${activeTab === 'DeviceType' ? 'active' : ''}`}
                       onClick={() => handleTabClick('DeviceType')}
                     >
-                      Device Type
+                      {t('DEVICE_TYPE')}
                     </li>
                     <li
                       className={`dropdown-item-thread ${activeTab === 'DeviceIDPattern' ? 'active' : ''}`}
                       onClick={() => handleTabClick('DeviceIDPattern')}
                     >
-                      Device ID pattern
+                      {t('DEVICE_ID_PATTERN')}
                     </li>
                     <li
                       className={`dropdown-item-thread ${activeTab === 'Providers' ? 'active' : ''}`}
                       onClick={() => handleTabClick('Providers')}
                     >
-                      Providers
+                      {t('Providers')}
                     </li>
                   </ul>
                 )}
@@ -473,13 +471,13 @@ const OrganizationSettings = () => {
             {activeTab === 'themesTypography' && <ThemesAndTypography />}
 
             {activeTab === 'DeviceType' && (
-              <SettingsTypes keyvalue="deviceTypes" type="DeviceType" />
+              <SettingsTypes keyvalue="deviceTypes" type="DEVICE_TYPE" />
             )}
             {activeTab === 'EmploymentType' && (
-              <SettingsTypes keyvalue="employeeTypes" type="EmploymentType" />
+              <SettingsTypes keyvalue="employeeTypes" type="EMPLOYMENT_TYPE" />
             )}
             {activeTab === 'jobtitles' && (
-              <SettingsTypes keyvalue="jobTitles" type="Job Title" />
+              <SettingsTypes keyvalue="jobTitles" type="JOB_TITLE" />
             )}
             {activeTab === 'departments' && (
               <SettingsTypes keyvalue="departments" type="Department" />
@@ -494,12 +492,12 @@ const OrganizationSettings = () => {
               <SettingsTypes keyvalue="expenseTypes" type="Expense Type" />
             )}
             {activeTab === 'ModeOfPayments' && (
-              <SettingsTypes keyvalue="paymentModes" type="Mode Of Payment" />
+              <SettingsTypes keyvalue="paymentModes" type="MODE_OF_PAYMENT" />
             )}
             {activeTab === 'ExpenseCategories' && (
               <SettingsTypes
                 keyvalue="expenseCategories"
-                type="Expense Category"
+                type="EXPENSE_CATEGORY"
               />
             )}
             {activeTab === 'loanSettings' && (
