@@ -193,12 +193,12 @@ const LoanApplicationScreen = (props: LoanApplicationScreenProps) => {
         emiTenure: parseInt(data.emiTenure),
       }),
       {
-        loading: 'Applying new loan...',
+        loading: t('APPLYING_NEW_LOAN'),
         closeButton: true,
         success: () => {
           setIsSubmitting(false);
           props.handleIsApplyLoanScreen();
-          return 'Your loan request has been reached our team.';
+          return t('LOAN_REQUEST_SUCCESS');
         },
         error: (error) => {
           setIsSubmitting(false);

@@ -276,7 +276,7 @@ const DeductionsTab = ({
   return (
     <TabContentMainContainer className="deductionContainer">
       <TabContentMainContainerHeading>
-        <h4>{heading}</h4>
+        <h4>{t(heading)}</h4>
         {user &&
         hasPermission(user, HEALTH_INSURANCE_MODULE.CREATE_HEALTH_INSURANCE) ? (
           <TabContentEditArea>
@@ -375,7 +375,7 @@ const DeductionsTab = ({
                         ) : (
                           <InlineInput
                             type="text"
-                            placeholder={'Enter Amount'}
+                            placeholder={t('ENTER_AMOUNT')}
                             value={formData[label] || ''}
                             onFocus={(e) => {
                               if (e.target.value === '-') {

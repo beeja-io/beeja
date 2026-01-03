@@ -57,12 +57,20 @@ const ReviewCyclesList = () => {
   useEffect(() => {
     fetchPerformanceCycles();
   }, []);
-
-  const Actions: any[] = [
-    { title: 'Edit', className: 'edit-icon', svg: <EditIcon /> },
-    { title: 'Delete', className: 'delete-icon', svg: <DeleteIcon /> },
+  const Actions = [
+    {
+      key: 'EDIT',
+      title: t('EDIT'),
+      className: 'edit-icon',
+      svg: <EditIcon />,
+    },
+    {
+      key: 'DELETE',
+      title: t('DELETE'),
+      className: 'delete-icon',
+      svg: <DeleteIcon />,
+    },
   ];
-
   const isCycleExpired = (cycle: any) => {
     if (!cycle?.feedbackDeadline) return false;
 
@@ -76,7 +84,7 @@ const ReviewCyclesList = () => {
     <>
       <StyledDiv>
         <ExpenseHeading>
-          <ExpenseTitle>{t('List of forms')}</ExpenseTitle>
+          <ExpenseTitle>{t('List_of_forms')}</ExpenseTitle>
         </ExpenseHeading>
 
         <TableListContainer style={{ marginTop: 0 }}>
@@ -86,10 +94,10 @@ const ReviewCyclesList = () => {
             <TableList>
               <TableHead>
                 <tr>
-                  <th>{t('Name')}</th>
-                  <th>{t('Evaluation Start Date')}</th>
-                  <th>{t('Evaluation End date')}</th>
-                  <th>{t('Evaluation Status')}</th>
+                  <th>{t('NAME')}</th>
+                  <th>{t('Evaluation_Start_Date')}</th>
+                  <th>{t('Evaluation_End_Date')}</th>
+                  <th>{t('Evaluation_Status')}</th>
                   <th>{t('ACTION')}</th>
                 </tr>
               </TableHead>
@@ -161,7 +169,7 @@ const ReviewCyclesList = () => {
                               fetchCycles={fetchPerformanceCycles}
                               onSuccess={(msg) => {
                                 setSuccessToastMessage({
-                                  heading: 'Form Deleted Successfully',
+                                  heading: t('FORM_DELETED_SUCESSFULLY'),
                                   body: msg,
                                 });
                                 setShowSuccessMessage(true);

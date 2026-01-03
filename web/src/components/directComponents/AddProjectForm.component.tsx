@@ -200,16 +200,16 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
     e.preventDefault();
 
     const newErrors = {
-      name: !projectFormData.name ? 'Project Name Required' : '',
-      clientName: !projectFormData.clientId ? 'Client Name Required' : '',
-      startDate: !startDate ? 'Start Date Required' : '',
+      name: !projectFormData.name ? t('PROJECT_NAME_REQUIRED') : '',
+      clientName: !projectFormData.clientId ? t('CLIENT_NAME_REQUIRED') : '',
+      startDate: !startDate ? t('START_DATE_REQUIRED') : '',
       projectManagers:
         projectFormData.projectManagers.length === 0
-          ? 'Select at least one Project Manager'
+          ? t('SELECT_AT_LEAST_ONE_PROJECT_MANAGER')
           : '',
       projectResources:
         projectFormData.projectResources.length === 0
-          ? 'Select at least one Resource'
+          ? t('SELECT_AT_LEAST_ONE_RESOURCE')
           : '',
     };
     setErrors(newErrors);
@@ -318,7 +318,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       }
                     }}
                     options={[
-                      { label: 'Select Client', value: '' },
+                      { label: t('Select Client'), value: '' },
                       ...clientOptions.map((opt) => ({
                         label: opt.label,
                         value: opt.value,
@@ -372,7 +372,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                   <DateInputWrapper ref={calendarRef}>
                     <TextInput
                       type="text"
-                      placeholder="Select Date"
+                      placeholder={t('Select Date')}
                       name="startDate"
                       value={startDate ? formatDate(startDate) : ''}
                       onFocus={() => handleCalendarToggle(true)}
@@ -434,7 +434,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                   <DateInputWrapper ref={calendarRef}>
                     <TextInput
                       type="text"
-                      placeholder="Select Date"
+                      placeholder={t('Select Date')}
                       name="startDate"
                       value={startDate ? formatDate(startDate) : ''}
                       onFocus={() => handleCalendarToggle(true)}
@@ -500,7 +500,7 @@ const AddProjectForm: React.FC<AddProjectFormProps> = ({
                       }
                     }}
                     options={[
-                      { label: 'Select Client', value: '' },
+                      { label: t('Select Client'), value: '' },
                       ...clientOptions.map((opt) => ({
                         label: opt.label,
                         value: opt.value,

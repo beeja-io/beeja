@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import { ActionIcon } from '../../svgs/ExpenseListSvgs.svg';
-
 import {
   ActionContainer,
   ActionMenuContent,
@@ -10,7 +9,8 @@ import {
 import { OrgValues } from '../../entities/OrgDefaultsEntity';
 
 interface ActionOption {
-  title: string;
+  key: 'EDIT' | 'DELETE';
+  title: string; // translated text
   svg: React.ReactNode;
 }
 
@@ -19,9 +19,9 @@ interface ExpenseActionProps {
   fetchExpenses: () => void;
   currentExpense: { orgValues: OrgValues; index: number };
   onActionClick: (
-    action: string,
+    action: 'EDIT' | 'DELETE',
     expense: { orgValues: OrgValues; index: number }
-  ) => void; // Callback to handle action
+  ) => void;
 }
 
 export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
@@ -29,18 +29,24 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
   currentExpense,
   onActionClick,
 }) => {
-  const handleActionClick = (action: string) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<
+    'EDIT' | 'DELETE' | null
+  >(null);
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const openDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleActionClick = (action: 'EDIT' | 'DELETE') => {
     setSelectedOption(action);
     onActionClick(action, currentExpense);
     setSelectedOption(null);
     setIsOpen(false);
   };
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const openDropdown = () => {
-    setIsOpen(!isOpen);
-  };
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (!target.closest('.dropdown-container')) {
@@ -50,7 +56,7 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
 
   document.addEventListener('click', handleClickOutside);
 
-  const handleDocumentClick = (e: any) => {
+  const handleDocumentClick = (e: MouseEvent) => {
     if (isOpen && !dropdownRef.current?.contains(e.target as Node)) {
       setIsOpen(false);
     }
@@ -63,13 +69,14 @@ export const ExpenseTypeAction: React.FC<ExpenseActionProps> = ({
       <ActionMenu onClick={openDropdown} className="action-align">
         <ActionIcon />
       </ActionMenu>
+
       {isOpen && (
         <ActionMenuContent>
-          {options.map((option, index) => (
+          {options.map((option) => (
             <ActionMenuOption
-              key={index}
-              className={selectedOption === option.title ? 'selected' : ''}
-              onClick={() => handleActionClick(option.title)}
+              key={option.key}
+              className={selectedOption === option.key ? 'selected' : ''}
+              onClick={() => handleActionClick(option.key)}
             >
               {option.svg}
               {option.title}

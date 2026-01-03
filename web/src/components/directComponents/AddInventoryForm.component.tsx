@@ -96,57 +96,57 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
         formData.device === null ||
         formData.device === ''
       ) {
-        errorMessages.push('Device');
+        errorMessages.push(t('DEVICE'));
       }
       if (
         formData.type === undefined ||
         formData.type === null ||
         formData.type === ''
       ) {
-        errorMessages.push('Type');
+        errorMessages.push(t('TYPE'));
       }
       if (
         formData.specifications === undefined ||
         formData.specifications === null ||
         formData.specifications === ''
       ) {
-        errorMessages.push('Specifications');
+        errorMessages.push(t('SPECIFICATIONS'));
       }
       if (
         formData.availability === undefined ||
         formData.availability === null
       ) {
-        errorMessages.push('Availability');
+        errorMessages.push(t('AVAILABILITY'));
       }
       if (
         formData.dateOfPurchase === undefined ||
         formData.dateOfPurchase === null
       ) {
-        errorMessages.push('Date of Purchase');
+        errorMessages.push(t('DATE_OF_PURCHASE'));
       }
       if (formData.price === undefined || formData.price === null) {
-        errorMessages.push('Price');
+        errorMessages.push(t('PRICE'));
       }
       if (
         formData.provider === undefined ||
         formData.provider === null ||
         formData.provider === ''
       ) {
-        errorMessages.push('Provider');
+        errorMessages.push(t('PROVIDER'));
       }
       if (
         formData.model === undefined ||
         formData.model === null ||
         formData.model === ''
       ) {
-        errorMessages.push('Model');
+        errorMessages.push(t('MODEL'));
       }
       if (isOsRamEnabled(formData.device)) {
         if (!formData.os) {
-          errorMessages.push('OS');
+          errorMessages.push(t('OS'));
         }
         if (!formData.ram) {
-          errorMessages.push('RAM');
+          errorMessages.push(t('RAM'));
         }
       }
 
@@ -155,7 +155,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
         formData.productId === null ||
         formData.productId === ''
       ) {
-        errorMessages.push('Product ID/Serial No.');
+        errorMessages.push(t('PRODUCT_ID_SERIAL_NUMBER'));
       }
 
       if (errorMessages.length > 0) {
@@ -166,9 +166,7 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
       const productIdPattern = /^[A-Za-z0-9-]{8,20}$/;
 
       if (!productIdPattern.test(formData.productId || '')) {
-        setErrorMessage(
-          'PRODUCT_ID must be 8-20 characters long and can only include letters, numbers, and hyphens.'
-        );
+        setErrorMessage(t('PRODUCT_ID_VALIDATION_ERROR'));
         handleShowErrorMessage();
         return;
       }

@@ -128,8 +128,8 @@ const LoanListView = (props: LoanListViewProps) => {
         <TableListContainer style={{ marginTop: 0 }}>
           {Array.isArray(loansList) && loansList.length === 0 ? (
             <ZeroEntriesFound
-              heading="There's no Loan history found"
-              message="You have never involved in any previous loan requests"
+              heading={t('NO_LOAN_HISTORY_FOUND')}
+              message={t('NO_LOAN_HISTORY_MESSAGE')}
             />
           ) : (
             <TableList>
@@ -246,7 +246,7 @@ const LoanListView = (props: LoanListViewProps) => {
 
       {loanToBePreviewed && isLoanPreviewModalOpen && (
         <CenterModalMain
-          heading="Loan Preview"
+          heading={t('LOAN_PREVIEW')}
           modalClose={handleIsLoanPreviewModalOpen}
           actualContentContainer={
             <LoanPreview

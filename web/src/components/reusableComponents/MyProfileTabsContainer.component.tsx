@@ -168,7 +168,7 @@ const MyProfileTabsContainerComponent = ({
 
   const jobDetails = [
     {
-      label: 'Employee Id',
+      label: 'Employee ID',
       value:
         employee && employee.account.employeeId
           ? employee.account.employeeId
@@ -502,7 +502,7 @@ const MyProfileTabsContainerComponent = ({
         {selectedTab === 'general' && (
           <div>
             <GeneralDetailsTab
-              heading="Personal Info"
+              heading={t('Personal_Info')}
               details={personalDetails}
               isEditModeOn={isPersonalDetailsEditModeOn}
               handleIsEditModeOn={handleIsPersonalDetailsEditModeOn}
@@ -510,7 +510,7 @@ const MyProfileTabsContainerComponent = ({
               fetchEmployeeAgain={fetchEmployeeAgain}
             />
             <GeneralDetailsTab
-              heading="Address"
+              heading={t('Address')}
               details={addressDetails}
               isEditModeOn={isAddressDetailsEditModeOn}
               handleIsEditModeOn={handleIsAddressDetailsEditModeOn}
@@ -525,7 +525,7 @@ const MyProfileTabsContainerComponent = ({
                 // FIXME - Update after discussion with Prasad/Jay
                 user.employeeId === employee.account.employeeId) && (
                 <GeneralDetailsTab
-                  heading="Emergency Contact"
+                  heading={t('Emergency_Contact')}
                   details={nomineeDetails}
                   isEditModeOn={isNomineeDetailsEditModeOn}
                   handleIsEditModeOn={handleIsNomineeDetailsEditModeOn}
@@ -537,7 +537,7 @@ const MyProfileTabsContainerComponent = ({
         )}
         {selectedTab === 'job' && (
           <GeneralDetailsTab
-            heading="Employment Info"
+            heading={t('Employment_Info')}
             details={jobDetails}
             employee={employee}
             fetchEmployeeAgain={fetchEmployeeAgain}

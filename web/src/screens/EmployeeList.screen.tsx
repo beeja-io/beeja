@@ -394,7 +394,7 @@ const EmployeeList = () => {
               name="EmployeeDepartment"
               label="Department"
               options={[
-                { label: t('Department'), value: '' },
+                { label: t('DEPARTMENT'), value: '' },
                 ...(departmentOptions?.values?.map((department) => ({
                   label: department.value,
                   value: department.value,
@@ -413,7 +413,7 @@ const EmployeeList = () => {
               className="largeContainerFil"
               name="JobTitle"
               options={[
-                { label: t('Job Title'), value: '' },
+                { label: t('JOB_TITLE'), value: '' },
                 ...(jobTitles?.values?.map((jobTitle) => ({
                   label: jobTitle.value,
                   value: jobTitle.value,
@@ -432,7 +432,7 @@ const EmployeeList = () => {
               className="largeContainerFil"
               name="EmployementType"
               options={[
-                { label: t('Employement Type'), value: '' },
+                { label: t('EMPLOYMENT_TYPE'), value: '' },
                 ...(employeeTypes?.values?.map((employeeType) => ({
                   label: employeeType.value,
                   value: employeeType.value,
@@ -446,7 +446,6 @@ const EmployeeList = () => {
                 setCurrentPage(1);
               }}
             />
-
             {user &&
               (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
                 hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) ||
@@ -823,7 +822,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.firstName && (
             <ValidationText>
-              <AlertISVG /> {errors.firstName}
+              <AlertISVG /> {t(errors.firstName)}
             </ValidationText>
           )}
         </InputLabelContainer>
@@ -847,7 +846,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.lastName && (
             <ValidationText>
-              <AlertISVG /> {errors.lastName}
+              <AlertISVG /> {t(errors.lastName)}
             </ValidationText>
           )}
         </InputLabelContainer>
@@ -872,7 +871,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.employeeId && (
             <ValidationText>
-              <AlertISVG /> {errors.employeeId}
+              <AlertISVG /> {t(errors.employeeId)}
             </ValidationText>
           )}
           {employeeIdMessage && (
@@ -902,12 +901,12 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.email && (
             <ValidationText>
-              <AlertISVG /> {errors.email}
+              <AlertISVG /> {t(errors.email)}
             </ValidationText>
           )}
           {emailMessage && (
             <ValidationText>
-              <AlertISVG /> {emailMessage}
+              <AlertISVG /> {t(emailMessage)}
             </ValidationText>
           )}
         </InputLabelContainer>
@@ -941,7 +940,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.employmentType && (
             <ValidationText>
-              <AlertISVG /> {errors.employmentType}
+              <AlertISVG /> {t(errors.employmentType)}
             </ValidationText>
           )}
         </SelectOption>
@@ -952,7 +951,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
             <ValidationText className="star">*</ValidationText>
           </label>
           <DropdownMenu
-            label={t('SELECT_DEPARTMENT')}
+            label="Select Department"
             className="selectcontainer"
             name="department"
             id="department"
@@ -975,7 +974,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.department && (
             <ValidationText>
-              <AlertISVG /> {errors.department}
+              <AlertISVG /> {t(errors.department)}
             </ValidationText>
           )}
         </SelectOption>

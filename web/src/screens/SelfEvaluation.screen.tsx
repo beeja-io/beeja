@@ -117,10 +117,7 @@ const SelfEvaluationForm: React.FC = () => {
     <>
       <StyledDiv>
         <Title>
-          {t(
-            'Please share your reflections on your key achievements, challenges, areas for improvement, and the support you need to grow further'
-          )}
-
+          {t('SELF_EVALUATION_QUESTION')}
           <RequiredStar>*</RequiredStar>
         </Title>
         {loading ? (
@@ -130,15 +127,14 @@ const SelfEvaluationForm: React.FC = () => {
             {isSubmitted ? (
               <>
                 <SubmittedContainer>
-                  <h3>You’ve already submitted your self-evaluation!</h3>
-                  <p>You can view it in the ‘My Feedback’ section.</p>
+                  <h3>{t('SELF_EVALUATION_ALREADY_SUBMITTED')}</h3>
+                  <p>{t('VIEW_SELF_EVALUATION_IN_MY_FEEDBACK')}</p>
                 </SubmittedContainer>
                 <Note>
                   <span>
                     <StyledInfoICon />
                   </span>
-                  Once you submit your self-evaluation, it cannot be changed, so
-                  please review your response before submitting.
+                  {t('SELF_EVALUATION_SUBMIT_WARNING')}
                 </Note>
               </>
             ) : (
@@ -148,15 +144,14 @@ const SelfEvaluationForm: React.FC = () => {
                   onChange={(e) => setReflection(e.target.value)}
                   onClick={handleTextAreaClick}
                   disabled={!isEditable}
-                  placeholder="Example: Delivered project X ahead of deadline, collaborated with Y team to improve process Z, learned new skill A. Plan to focus on improving B next cycle."
+                  placeholder={t('SELF_EVALUATION_PLACEHOLDER')}
                   required
                 />
                 <Note>
                   <span>
                     <StyledInfoICon />
                   </span>
-                  Once you submit your self-evaluation, it cannot be changed, so
-                  please review your response before submitting.
+                  {t('SELF_EVALUATION_NOTE')}
                 </Note>
 
                 <div>
@@ -174,7 +169,7 @@ const SelfEvaluationForm: React.FC = () => {
                       type="submit"
                       disabled={reflection.trim().length === 0}
                     >
-                      {t('Submit')}
+                      {t('SUBMIT')}
                     </Button>
                   </ButtonGroup>
                 </div>

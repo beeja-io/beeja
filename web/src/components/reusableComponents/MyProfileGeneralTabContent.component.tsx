@@ -453,7 +453,7 @@ export const GeneralDetailsTab = ({
     useState(false);
 
   useEffect(() => {
-    if (heading === 'Employment Info') {
+    if (heading === t('Employment_Info')) {
       const fetchData = async () => {
         try {
           setIsDefaultResponseLoading(true);
@@ -473,7 +473,7 @@ export const GeneralDetailsTab = ({
 
       fetchData();
     }
-  }, [heading]);
+  }, [heading, t]);
 
   const [showHistory, setShowHistory] = useState(false);
 
@@ -561,17 +561,16 @@ export const GeneralDetailsTab = ({
               <TabContentTable>
                 {firstColumn
                   .sort((a, b) => {
-                    if (heading === 'Employment Info') {
-                      if (
-                        a.label === 'Joining Date' &&
-                        b.label === 'Employment Type'
-                      )
-                        return -1;
-                      if (
-                        a.label === 'Employment Type' &&
-                        b.label === 'Joining Date'
-                      )
-                        return 1;
+                    if (heading === t('Employment_Info')) {
+                      const order = [
+                        'Employee Id',
+                        'Designation',
+                        'Department',
+                        'Joining Date',
+                        'Employment Type',
+                      ];
+
+                      return order.indexOf(a.label) - order.indexOf(b.label);
                     }
                     return 0;
                   })
@@ -604,7 +603,7 @@ export const GeneralDetailsTab = ({
                                         ? jobTitles?.values?.map((j) => j.value)
                                         : []
                               )?.map((value) => ({
-                                label: value,
+                                label: t(value),
                                 value: value,
                               }))}
                               onChange={(selectedValue) =>
@@ -669,7 +668,7 @@ export const GeneralDetailsTab = ({
                                     : formData[label]
                                   : ''
                               }
-                              placeholder={`Enter ${t(label)}`}
+                              placeholder={`${t('ENTER')} ${t(label)}`}
                               onFocus={(e) => {
                                 if (e.target.value === '-') {
                                   e.target.value = '';
@@ -743,7 +742,7 @@ export const GeneralDetailsTab = ({
                           ) : (
                             <TabContentTableTd>
                               {t(value)}{' '}
-                              {heading === 'Employment Info' &&
+                              {heading === t('Employment_Info') &&
                                 label === 'Employment Type' && (
                                   <ViewHistoryLink
                                     onClick={() =>
@@ -797,7 +796,7 @@ export const GeneralDetailsTab = ({
                                 ? ['Male', 'Female']
                                 : ['Married', 'Single']
                               ).map((option) => ({
-                                label: option,
+                                label: t(option),
                                 value: option,
                               }))}
                               onChange={(selectedValue) => {
@@ -807,7 +806,7 @@ export const GeneralDetailsTab = ({
                           ) : (
                             <InlineInput
                               type={label === 'Date of Birth' ? 'date' : 'text'}
-                              placeholder={`Enter ${label}`}
+                              placeholder={`${t('ENTER')} ${t(label)}`}
                               value={
                                 formData[label] !== undefined
                                   ? formData[label]

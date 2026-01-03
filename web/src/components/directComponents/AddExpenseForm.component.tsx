@@ -1061,7 +1061,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
             <span ref={calendarRequestedRef} className="calendarField">
               <TextInput
                 type="text"
-                placeholder="Enter Date"
+                placeholder={t('ENTER_DATE')}
                 name="requestedDate"
                 onChange={
                   modeOfModal === 'create' ? handleChange : handleUpdateChange
@@ -1259,7 +1259,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
                   ? expenseToBeUpdated.amount
                   : newExpense?.amount
               }
-              placeholder={'Enter Amount (₹)'}
+              placeholder={t('ENTER_AMOUNT')}
               disabled={modeOfModal === 'preview' && true}
             />
           </InputLabelContainer>
@@ -1678,7 +1678,7 @@ const AddExpenseForm = (props: AddExpenseFormProps) => {
         <ToastMessage
           messageType="error"
           messageBody={responseErrorMessage}
-          messageHeading="EXPENSE_IS_UNSUCCESFUL"
+          messageHeading={t('EXPENSE_IS_UNSUCCESSFUL')}
           handleClose={handleShowErrorMessage}
         />
       )}

@@ -167,7 +167,7 @@ export const OrganizationSettingsDateCurrency = ({
             />
           </Row>
           <Row>
-            <Label>Time Zone</Label>
+            <Label>{t('TIME_ZONE')}</Label>
             <DropdownMenu
               label={t('Select Timezone')}
               value={organization.preferences?.timeZone ?? ''}
