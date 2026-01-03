@@ -603,7 +603,7 @@ export const GeneralDetailsTab = ({
                                         ? jobTitles?.values?.map((j) => j.value)
                                         : []
                               )?.map((value) => ({
-                                label: value,
+                                label: t(value),
                                 value: value,
                               }))}
                               onChange={(selectedValue) =>
@@ -796,7 +796,7 @@ export const GeneralDetailsTab = ({
                                 ? ['Male', 'Female']
                                 : ['Married', 'Single']
                               ).map((option) => ({
-                                label: option,
+                                label: t(option),
                                 value: option,
                               }))}
                               onChange={(selectedValue) => {

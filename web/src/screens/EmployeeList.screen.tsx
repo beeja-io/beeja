@@ -822,7 +822,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.firstName && (
             <ValidationText>
-              <AlertISVG /> {errors.firstName}
+              <AlertISVG /> {t(errors.firstName)}
             </ValidationText>
           )}
         </InputLabelContainer>
@@ -846,7 +846,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.lastName && (
             <ValidationText>
-              <AlertISVG /> {errors.lastName}
+              <AlertISVG /> {t(errors.lastName)}
             </ValidationText>
           )}
         </InputLabelContainer>
@@ -871,7 +871,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.employeeId && (
             <ValidationText>
-              <AlertISVG /> {errors.employeeId}
+              <AlertISVG /> {t(errors.employeeId)}
             </ValidationText>
           )}
           {employeeIdMessage && (
@@ -901,12 +901,12 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.email && (
             <ValidationText>
-              <AlertISVG /> {errors.email}
+              <AlertISVG /> {t(errors.email)}
             </ValidationText>
           )}
           {emailMessage && (
             <ValidationText>
-              <AlertISVG /> {emailMessage}
+              <AlertISVG /> {t(emailMessage)}
             </ValidationText>
           )}
         </InputLabelContainer>
@@ -940,7 +940,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.employmentType && (
             <ValidationText>
-              <AlertISVG /> {errors.employmentType}
+              <AlertISVG /> {t(errors.employmentType)}
             </ValidationText>
           )}
         </SelectOption>
@@ -974,7 +974,7 @@ const CreateAccount: React.FC<CreateAccountProps> = (props) => {
           />
           {errors.department && (
             <ValidationText>
-              <AlertISVG /> {errors.department}
+              <AlertISVG /> {t(errors.department)}
             </ValidationText>
           )}
         </SelectOption>

@@ -491,7 +491,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     />
                     {errors.emptyDocumentType && (
                       <ValidationText>
-                        <AlertISVG /> {errors.emptyDocumentType}
+                        <AlertISVG /> {t(errors.emptyDocumentType)}
                       </ValidationText>
                     )}
                   </InputLabelContainer>
@@ -501,7 +501,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     <TextInput
                       type="text"
                       value={documentName}
-                      placeholder="Ex: Pan Card /Aadhar Card /Voter Id/ Driving License"
+                      placeholder={t('DOCUMENT_NAME_PLACEHOLDER')}
                       onChange={(e) => setDocumentName(e.target.value)}
                       disabled={isResponseLoading}
                     />
@@ -512,7 +512,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     <TextInput
                       type="text"
                       value={description}
-                      placeholder="Ex: Pan Card front Image"
+                      placeholder={t('DOCUMENT_DESCRIPTION_PLACEHOLDER')}
                       onChange={(e) => setDescription(e.target.value)}
                       disabled={isResponseLoading}
                     />
@@ -557,11 +557,11 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     )}
                     {errors.emptyFile && (
                       <ValidationText>
-                        <AlertISVG /> {errors.emptyFile}
+                        <AlertISVG /> {t(errors.emptyFile)}
                       </ValidationText>
                     )}
                     <span className="infoText">
-                      File format : .pdf, .png, .jpeg (Maximum Size: 10MB)
+                      {t('SUPPORTED_FILE_FORMATS_INFO')}
                     </span>
                   </InputLabelContainer>
                 </div>

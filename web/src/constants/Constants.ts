@@ -1,10 +1,10 @@
 // Create Profile Texts
-export const FirstNameRequired = 'First Name is required';
-export const LastNameRequired = 'Last Name is required';
-export const EmailRequired = 'Email is required';
-export const EMPLOYMENT_TYPRE_REQUIRED = 'Employment Type is required';
-export const ProfileCreationError = 'Error Happened, please try again later';
-export const ProfileCreationSuccessMessage = 'Created successfully!!';
+export const FirstNameRequired = 'FIRST_NAME_REQUIRED';
+export const LastNameRequired = 'LAST_NAME_REQUIRED';
+export const EmailRequired = 'EMAIL_REQUIRED';
+export const EMPLOYMENT_TYPRE_REQUIRED = 'EMPLOYMENT_TYPE_REQUIRED';
+export const ProfileCreationError = 'PROFILE_CREATION_ERROR';
+export const ProfileCreationSuccessMessage = 'PROFILE_CREATED_SUCCESS';
 
 // Login Screen
 export const LoginText1 = "Let's empower your employees today.";
@@ -15,10 +15,10 @@ export const ERR_ACCOUNT_NOT_FOUND_TEXT =
   'Login Unsuccessful - Please contact your HR Team';
 
 //Documnent Screen Texts
-export const DocumnentNameRequired = 'Document Type is Required';
-export const FileRequired = 'File is required';
+export const DocumnentNameRequired = 'DOCUMENT_TYPE_REQUIRED';
+export const FileRequired = 'FILE_REQUIRED';
 
-export const UploadFileError = 'Error Happened, please check the details again';
+export const UploadFileError = 'UPLOAD_FILE_ERROR';
 
 export const MonitorLoanTermsAndConditions =
   'https://docs.google.com/document/d/17pH6RqaqkyDXIxOWw6YHSb7c3qqJgbOn14TG_CGb-ys/edit';
