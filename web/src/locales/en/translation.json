@@ -228,6 +228,8 @@
   "SAVE": "Save",
   "ABOUT_ME": "About Me",
   "ARE_YOU_SURE_TO_LOGOUT": "Are you sure want to Log out?",
+  "EXPENSE_DELETED": "Expense deleted",
+  "EXPENSE_DELETED_SUCCESSFULLY": "The expense was deleted successfully",
   "LOGOUT": "Logout",
   "DATE_FORMAT": "Date Format",
   "TIME_ZONE": "Time Zone",

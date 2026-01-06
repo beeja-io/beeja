@@ -8,8 +8,6 @@ import {
   ActionMenu,
 } from '../../styles/ExpenseListStyles.style';
 import { deleteExpense } from '../../service/axiosInstance';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import ToastMessage from './ToastMessage.component';
 import { Expense } from '../../entities/ExpenseEntity';
 import CenterModalMain from './CenterModalMain.component';
 import AddExpenseForm from '../directComponents/AddExpenseForm.component';
@@ -20,6 +18,7 @@ import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 interface ActionProps {
   options: {
+    key: 'EDIT' | 'DELETE';
     title: string;
     svg: React.ReactNode;
   }[];
@@ -29,7 +28,7 @@ interface ActionProps {
   expenseDepartments: OrganizationValues;
   expenseTypes: OrganizationValues;
   expensePaymentModes: OrganizationValues;
-  // onOptionSelect: (selectedOption: string) => void;
+  onDeleteSuccess: () => void; // ✅ ADD THIS
 }
 
 export const ExpenseAction: React.FC<ActionProps> = ({
@@ -40,12 +39,12 @@ export const ExpenseAction: React.FC<ActionProps> = ({
   expenseDepartments,
   expensePaymentModes,
   expenseTypes,
+  onDeleteSuccess, // ✅ ADD THIS
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-  const [isResponseLoading, setIsResponseLoading] = useState(false);
   const openDropdown = () => {
     setIsOpen(!isOpen);
   };
@@ -55,23 +54,16 @@ export const ExpenseAction: React.FC<ActionProps> = ({
     setIsEditModalOpen(!isEditModalOpen);
   };
 
-  const [isDeletedToastMessage, setIsDeleteToastMessage] = useState(false);
-  const handleIsDeleteToastMessage = () => {
-    setIsDeleteToastMessage(!isDeletedToastMessage);
-  };
-
   const handleDeleteModal = () => {
     setConfirmDeleteModal(!confirmDeleteModal);
   };
 
   const deleteSelectedExpense = async (fileId: string) => {
     try {
-      setIsResponseLoading(true);
       await deleteExpense(fileId);
-      handleIsDeleteToastMessage();
       fetchExpenses();
+      onDeleteSuccess();
     } catch (error) {
-      setIsResponseLoading(false);
       console.error('Error deleting expense:', error);
     }
   };
@@ -151,15 +143,6 @@ export const ExpenseAction: React.FC<ActionProps> = ({
             modalContent={`Are you sure want to Delete the Expense of ₹ ${currentExpense.amount}`}
           />
         </span>
-      )}
-      {isResponseLoading && <SpinAnimation />}
-      {isDeletedToastMessage && (
-        <ToastMessage
-          messageType="success"
-          messageHeading="Expense Deleted"
-          messageBody="Expense Deleted Succesfully"
-          handleClose={handleIsDeleteToastMessage}
-        />
       )}
       {isEditModalOpen && (
         <span style={{ cursor: 'default' }}>
