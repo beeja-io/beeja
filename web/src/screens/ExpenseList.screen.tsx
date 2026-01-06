@@ -18,6 +18,7 @@ import {
 } from '../svgs/ExpenseListSvgs.svg';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../utils/dateFormatter';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import { getAllExpenses } from '../service/axiosInstance';
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
@@ -51,6 +52,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
   const [showToCalendar, setShowToCalendar] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalSize, setTotalSize] = useState<number | undefined>(0);
   const [totalPages, setTotalPages] = useState<number | undefined>(
@@ -68,6 +70,9 @@ export const ExpenseList = (props: ExpenseListProps) => {
   };
   const handleTotalPages = (totalPages: number) => {
     setTotalPages(totalPages);
+  };
+  const handleDeleteSuccess = () => {
+    setShowDeleteToast(true);
   };
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const handleShowSuccessMessage = () => {
@@ -887,6 +892,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                               expenseTypes={props.expenseTypes}
                               expenseDepartments={props.expenseDepartments}
                               expensePaymentModes={props.expensePaymentModes}
+                              onDeleteSuccess={handleDeleteSuccess}
                             />
                           </td>
                         )}
@@ -942,6 +948,14 @@ export const ExpenseList = (props: ExpenseListProps) => {
             }
           />
         </span>
+      )}
+      {showDeleteToast && (
+        <ToastMessage
+          messageType="success"
+          messageHeading={t('EXPENSE_DELETED')}
+          messageBody={t('EXPENSE_DELETED_SUCCESSFULLY')}
+          handleClose={() => setShowDeleteToast(false)}
+        />
       )}
     </ExpenseListSection>
   );
