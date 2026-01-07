@@ -173,6 +173,8 @@
   "SORT_BY": "Sortieren nach:",
   "EXPENSE_DATE": "Ausgabedatum",
   "REQUESTED_DATE": "Angefordertes Datum",
+  "INVENTORY_DELETED": "Inventar gelöscht",
+  "INVENTORY_DELETED_SUCCESSFULLY": "Das Inventar wurde erfolgreich gelöscht",
   "PAYMENT_DATE": "Zahlungsdatum",
   "CREATED_DATE": "Erstellungsdatum",
   "NEWEST_TO_OLDEST": "Neueste zuerst",

@@ -94,7 +94,7 @@ const InventoryList = ({
   const [selectedInventory, setSelectedInventory] = useState<Inventory | null>(
     null
   );
-
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [isEditInventoryOpen, setIsEditInventoryOpen] = useState(false);
   const handleEditInventoryOpen = () => {
     setIsEditInventoryOpen(true);
@@ -110,7 +110,14 @@ const InventoryList = ({
     setSelectedInventory(null);
     setIsEditInventoryOpen(false);
   };
+  const handleDeleteSuccess = () => {
+    setShowDeleteToast(true);
+    updateInventoryList();
 
+    setTimeout(() => {
+      setShowDeleteToast(false);
+    }, 2000);
+  };
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const handleShowSuccessMessage = () => {
     setShowSuccessMessage(true);
@@ -286,7 +293,7 @@ const InventoryList = ({
                               options={Actions}
                               currentDevice={inventory}
                               handleSuccessMessage={handleShowSuccessMessage}
-                              handleDeleteInventory={updateInventoryList}
+                              handleDeleteSuccess={handleDeleteSuccess}
                               updateInventoryList={updateInventoryList}
                               deviceTypes={deviceTypes}
                               inventoryProviders={inventoryProviders}
@@ -346,6 +353,14 @@ const InventoryList = ({
           messageBody="THE_INVENTORY_HAS_BEEN_UPDATED"
           messageHeading="SUCCESSFULLY_UPDATED"
           handleClose={handleShowSuccessMessage}
+        />
+      )}
+      {showDeleteToast && (
+        <ToastMessage
+          messageType="success"
+          messageHeading={t('INVENTORY_DELETED')}
+          messageBody={t('INVENTORY_DELETED_SUCCESSFULLY')}
+          handleClose={() => setShowDeleteToast(false)}
         />
       )}
     </>
