@@ -46,7 +46,6 @@ type ExpenseListProps = {
 };
 export const ExpenseList = (props: ExpenseListProps) => {
   const { user } = useUser();
-  const { t } = useTranslation();
   const [showFromCalendar, setShowFromCalendar] = useState(false);
   const [showToCalendar, setShowToCalendar] = useState(false);
 
@@ -427,18 +426,16 @@ export const ExpenseList = (props: ExpenseListProps) => {
     }
   };
 
-  const Actions: Array<{
-    key: 'EDIT' | 'DELETE';
-    title: string;
-    svg: React.ReactNode;
-  }> = [
+  const Actions = [
     ...(user && hasPermission(user, EXPENSE_MODULE.UPDATE_EXPENSE)
-      ? [{ key: 'EDIT' as 'EDIT', title: t('EDIT'), svg: <EditIcon /> }]
+      ? [{ key: 'EDIT' as const, title: 'Edit', svg: <EditIcon /> }]
       : []),
     ...(user && hasPermission(user, EXPENSE_MODULE.DELETE_EXPENSE)
-      ? [{ key: 'DELETE' as 'DELETE', title: t('DELETE'), svg: <DeleteIcon /> }]
+      ? [{ key: 'DELETE' as const, title: 'Delete', svg: <DeleteIcon /> }]
       : []),
   ];
+
+  const { t } = useTranslation();
 
   const [expenseToBePreviewed, setExpenseToBePreviewed] = useState<Expense>();
   const handleExpenseToBePreviewed = (expense: Expense) => {
@@ -671,7 +668,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
             )}
           </div>
           <DropdownMenu
-            label={t('SETTLEMENT_STATUS')}
+            label="SETTLEMENT_STATUS"
             className="largeContainerFil"
             name="settlementStatus"
             options={[
@@ -768,16 +765,15 @@ export const ExpenseList = (props: ExpenseListProps) => {
         {fromDate == null && toDate == null && (
           <span className="noFilters noMargin">
             <InfoCircleSVG />
-            {t('SHOWING_CURRENT_MONTH_EXPENSES_SORTED', {
-              field:
-                sortBy === 'expenseDate'
-                  ? t('EXPENSE_DATE')
-                  : sortBy === 'requestedDate'
-                    ? t('REQUESTED_DATE')
-                    : sortBy === 'paymentDate'
-                      ? t('PAYMENT_DATE')
-                      : t('CREATED_DATE'),
-            })}
+            {`Showing current month expenses (sorted based on ${
+              sortBy === 'expenseDate'
+                ? t('EXPENSE_DATE')
+                : sortBy === 'requestedDate'
+                  ? t('REQUESTED_DATE')
+                  : sortBy === 'paymentDate'
+                    ? t('PAYMENT_DATE')
+                    : t('CREATED_DATE')
+            })`}
           </span>
         )}
         <TableListContainer style={{ marginTop: 0 }}>
