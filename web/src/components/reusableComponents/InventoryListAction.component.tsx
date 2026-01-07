@@ -11,7 +11,6 @@ import { deleteInventory } from '../../service/axiosInstance';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import CenterModal from './CenterModal.component';
 import CenterModalMain from './CenterModalMain.component';
-import ToastMessage from './ToastMessage.component';
 import EditInventoryForm from '../directComponents/EditInventory.component';
 import { useUser } from '../../context/UserContext';
 import { INVENTORY_MODULE } from '../../constants/PermissionConstants';
@@ -27,7 +26,7 @@ interface ActionProps {
   }[];
   currentDevice: DeviceDetails;
   handleSuccessMessage: () => void;
-  handleDeleteInventory: () => void;
+  handleDeleteSuccess: () => void;
   updateInventoryList: () => void;
   deviceTypes: OrganizationValues;
   inventoryProviders: OrganizationValues;
@@ -37,7 +36,7 @@ export const InventoryListAction: React.FC<ActionProps> = ({
   options,
   currentDevice,
   handleSuccessMessage,
-  handleDeleteInventory,
+  handleDeleteSuccess,
   updateInventoryList,
   deviceTypes,
   inventoryProviders,
@@ -52,10 +51,6 @@ export const InventoryListAction: React.FC<ActionProps> = ({
 
   const handleOpenEditModal = () => {
     setIsEditModalOpen(!isEditModalOpen);
-  };
-  const [isDeletedToastMessage, setIsDeleteToastMessage] = useState(false);
-  const handleIsDeleteToastMessage = () => {
-    setIsDeleteToastMessage(!isDeletedToastMessage);
   };
 
   const handleDeleteModal = () => {
@@ -80,15 +75,15 @@ export const InventoryListAction: React.FC<ActionProps> = ({
     try {
       setIsResponseLoading(true);
       await deleteInventory(currentDevice.id);
-      handleDeleteInventory();
-      setIsDeleteToastMessage(true);
+
+      handleDeleteSuccess(); // ✅ notify parent ONLY
+
       setIsResponseLoading(false);
       setConfirmDeleteModal(false);
     } catch (error) {
       setIsResponseLoading(false);
     }
   };
-
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (!target.closest('.dropdown-container')) {
@@ -183,14 +178,6 @@ export const InventoryListAction: React.FC<ActionProps> = ({
         </span>
       )}
       {isResponseLoading && <SpinAnimation />}
-      {isDeletedToastMessage && (
-        <ToastMessage
-          messageType="success"
-          messageHeading="Inventory Deleted"
-          messageBody="Inventory Deleted Successfully"
-          handleClose={handleIsDeleteToastMessage}
-        />
-      )}
       {isEditModalOpen && (
         <span style={{ cursor: 'default' }}>
           <CenterModalMain

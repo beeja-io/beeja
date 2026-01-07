@@ -360,6 +360,8 @@
   "NAME_OF_THE_APPLICANT": "Name of Applicant",
   "POSITION": "Position",
   "REFERRED_BY": "Referred By",
+  "INVENTORY_DELETED": "Inventory Deleted",
+  "INVENTORY_DELETED_SUCCESSFULLY": "Inventory was deleted successfully",
   "RESUME/CV": "Resume/CV",
   "LIST_OF_APPLICANTS": "List of Applicants",
   "UPDATING": "Updating",
