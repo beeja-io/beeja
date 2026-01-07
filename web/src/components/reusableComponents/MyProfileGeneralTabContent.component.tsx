@@ -78,7 +78,7 @@ export const GeneralDetailsTab = ({
   const cancelEdit = () => {
     const defaultFormData: { [key: string]: string } = {};
     details.forEach(({ label, value }) => {
-      defaultFormData[label] = value;
+      defaultFormData[label] = value === '-' ? '' : value;
     });
     setFormData(defaultFormData);
     handleIsEditModeOn();
@@ -110,6 +110,22 @@ export const GeneralDetailsTab = ({
   }, [isEditModeOn, isFormSubmitted, details]);
   const [formData, setFormData] = useState<{ [key: string]: string }>({});
 
+  useEffect(() => {
+    if (isEditModeOn) {
+      const initialFormData: { [key: string]: string } = {};
+      details.forEach(({ label, value }) => {
+        initialFormData[label] = value === '-' ? '' : value;
+      });
+
+      setFormData(initialFormData);
+      setOriginalFormData(initialFormData);
+
+      if (initialFormData['Joining Date']) {
+        setJoiningDate(initialFormData['Joining Date']);
+      }
+    }
+  }, [isEditModeOn, details]);
+
   const handleChange = (label: string, newValue: string) => {
     setFormData((prevData) => ({ ...prevData, [label]: newValue }));
     if (originalFormData[label] !== newValue) {
@@ -123,7 +139,7 @@ export const GeneralDetailsTab = ({
   const resetFormData = () => {
     const defaultFormData: { [key: string]: string } = {};
     details.forEach(({ label, value }) => {
-      defaultFormData[label] = value;
+      defaultFormData[label] = value === '-' ? '' : value;
     });
     setFormData(defaultFormData);
     setOriginalFormData(defaultFormData);
@@ -663,11 +679,12 @@ export const GeneralDetailsTab = ({
                               max={new Date().toISOString().split('T')[0]}
                               value={
                                 formData[label] !== undefined
-                                  ? label === 'Date of Birth' ||
+                                  ? formData[label] === '-' ? ''
+                                    : label === 'Date of Birth' ||
                                     label === 'Joining Date'
                                     ? formatDateYYYYMMDD(formData[label])
                                     : formData[label]
-                                  : ''
+                                  : value === '-' ? '' : value
                               }
                               placeholder={`Enter ${t(label)}`}
                               onFocus={(e) => {
@@ -810,8 +827,8 @@ export const GeneralDetailsTab = ({
                               placeholder={`Enter ${label}`}
                               value={
                                 formData[label] !== undefined
-                                  ? formData[label]
-                                  : value
+                                  ? formData[label] === '-' ? '' : formData[label]
+                                  : value === '-' ? '' : value
                               }
                               onFocus={(e) => {
                                 if (e.target.value === '-') {
@@ -839,7 +856,7 @@ export const GeneralDetailsTab = ({
                           )}
                         </TabContentTableTd>
                       ) : (
-                        <TabContentTableTd>{t(value)}</TabContentTableTd>
+                        <TabContentTableTd> {value === '-' || value === '' ? '' : t(value)}</TabContentTableTd>
                       )}
                     </tr>
                   ))}
