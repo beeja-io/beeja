@@ -1,4 +1,4 @@
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -40,6 +40,7 @@ type AddNewApplicantProps = {
 const AddNewApplicant = (props: AddNewApplicantProps) => {
   const navigate = useNavigate();
   const { user } = useUser();
+  const { t } = useTranslation();
   const goToPreviousPage = () => {
     navigate(-1);
   };
@@ -203,7 +204,9 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
               <span onClick={goToPreviousPage}>
                 <ArrowDownSVG />
               </span>
-              {props.isReferScreen ? 'Refer An Employee' : 'Add New Applicant'}
+              {props.isReferScreen
+                ? t('REFER_AN_EMPLOYEE')
+                : t('ADD_NEW_APPLICANT')}
             </span>
           </ExpenseHeadingSection>
           <BulkPayslipContainer className="addNewApplicant">
@@ -289,7 +292,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                         }
                       }
                     }}
-                    placeholder={'Enter Phone Number'}
+                    placeholder={t('ENTER_PHONE_NUMBER')}
                   />
                 </InputLabelContainer>
                 <InputLabelContainer>
@@ -306,7 +309,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$"
                     autoComplete="off"
                     required
-                    placeholder={'Enter Email'}
+                    placeholder={t('Enter Email')}
                   />
                 </InputLabelContainer>
               </div>
@@ -321,7 +324,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     className="largeContainerBulk"
                     name="positionAppliedFor"
                     id="positionAppliedFor"
-                    label="Select Position"
+                    label={t('SELECT_POSITION')}
                     onChange={(val) =>
                       handleChange({
                         target: {
@@ -346,7 +349,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                   <label>{t('EXPERIENCE')}</label>
                   <DropdownMenu
                     className="largeContainerBulk"
-                    label="Select Experience"
+                    label={t('SELECT_EXPERIENCE')}
                     name="experience"
                     id="experience"
                     sortOptions={false}
@@ -359,7 +362,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                       } as React.ChangeEvent<HTMLSelectElement>)
                     }
                     options={[
-                      { label: 'Select Experience', value: '' },
+                      { label: t('SELECT_EXPERIENCE'), value: '' },
                       ...noOfYearsExperience.map((number) => ({
                         label: number,
                         value: number,
@@ -435,7 +438,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     type="submit"
                     disabled={isLoading}
                   >
-                    {isLoading ? '' : 'Submit'}
+                    {isLoading ? '' : t('SUBMIT')}
                   </Button>
                 )}
             </form>

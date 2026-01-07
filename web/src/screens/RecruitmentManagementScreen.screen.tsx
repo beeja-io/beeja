@@ -85,7 +85,7 @@ const RecruitmentManagementScreen = (
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {props.isReferral ? 'Referrals' : 'Hiring'}
+            {props.isReferral ? t('REFERRALS') : t('HIRING')}
           </span>
           {user &&
             (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT) ||
