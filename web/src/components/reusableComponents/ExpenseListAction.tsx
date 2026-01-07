@@ -7,9 +7,8 @@ import {
   ActionMenuOption,
   ActionMenu,
 } from '../../styles/ExpenseListStyles.style';
+import { useTranslation } from 'react-i18next';
 import { deleteExpense } from '../../service/axiosInstance';
-import SpinAnimation from '../loaders/SprinAnimation.loader';
-import ToastMessage from './ToastMessage.component';
 import { Expense } from '../../entities/ExpenseEntity';
 import CenterModalMain from './CenterModalMain.component';
 import AddExpenseForm from '../directComponents/AddExpenseForm.component';
@@ -20,6 +19,7 @@ import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 interface ActionProps {
   options: {
+    key: 'EDIT' | 'DELETE';
     title: string;
     svg: React.ReactNode;
   }[];
@@ -29,7 +29,7 @@ interface ActionProps {
   expenseDepartments: OrganizationValues;
   expenseTypes: OrganizationValues;
   expensePaymentModes: OrganizationValues;
-  // onOptionSelect: (selectedOption: string) => void;
+  onDeleteSuccess: () => void; // ✅ ADD THIS
 }
 
 export const ExpenseAction: React.FC<ActionProps> = ({
@@ -40,12 +40,15 @@ export const ExpenseAction: React.FC<ActionProps> = ({
   expenseDepartments,
   expensePaymentModes,
   expenseTypes,
+  onDeleteSuccess, // ✅ ADD THIS
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const { t } = useTranslation();
+  const [selectedOption, setSelectedOption] = useState<
+    'EDIT' | 'DELETE' | null
+  >(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
-  const [isResponseLoading, setIsResponseLoading] = useState(false);
   const openDropdown = () => {
     setIsOpen(!isOpen);
   };
@@ -55,23 +58,16 @@ export const ExpenseAction: React.FC<ActionProps> = ({
     setIsEditModalOpen(!isEditModalOpen);
   };
 
-  const [isDeletedToastMessage, setIsDeleteToastMessage] = useState(false);
-  const handleIsDeleteToastMessage = () => {
-    setIsDeleteToastMessage(!isDeletedToastMessage);
-  };
-
   const handleDeleteModal = () => {
     setConfirmDeleteModal(!confirmDeleteModal);
   };
 
   const deleteSelectedExpense = async (fileId: string) => {
     try {
-      setIsResponseLoading(true);
       await deleteExpense(fileId);
-      handleIsDeleteToastMessage();
       fetchExpenses();
+      onDeleteSuccess();
     } catch (error) {
-      setIsResponseLoading(false);
       console.error('Error deleting expense:', error);
     }
   };
@@ -79,17 +75,19 @@ export const ExpenseAction: React.FC<ActionProps> = ({
   const handleShowSuccessMessage = () => {
     setShowSuccessMessage(!showSuccessMessage);
   };
-  const handleOptionClick = (option: string) => {
-    setSelectedOption(option);
-    if (option == 'Delete') {
+  const handleOptionClick = (action: 'EDIT' | 'DELETE') => {
+    setSelectedOption(action);
+
+    if (action === 'DELETE') {
       handleDeleteModal();
     }
-    if (option == 'Edit') {
+
+    if (action === 'EDIT') {
       handleIsEditModalOpen();
     }
+
     setIsOpen(false);
     setSelectedOption(null);
-    // onOptionSelect(option);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -128,11 +126,11 @@ export const ExpenseAction: React.FC<ActionProps> = ({
         </ActionMenu>
         {isOpen && (
           <ActionMenuContent>
-            {options.map((option, index) => (
+            {options.map((option) => (
               <ActionMenuOption
-                key={index}
-                className={selectedOption === option.title ? 'selected' : ''}
-                onClick={() => handleOptionClick(option.title)}
+                key={option.key}
+                className={selectedOption === option.key ? 'selected' : ''}
+                onClick={() => handleOptionClick(option.key)}
               >
                 {option.svg}
                 {option.title}
@@ -147,19 +145,12 @@ export const ExpenseAction: React.FC<ActionProps> = ({
             handleModalLeftButtonClick={handleDeleteModal}
             handleModalClose={handleDeleteModal}
             handleModalSubmit={() => deleteSelectedExpense(currentExpense.id)}
-            modalHeading="Delete"
-            modalContent={`Are you sure want to Delete the Expense of ₹ ${currentExpense.amount}`}
+            modalHeading={t('DELETE')}
+            modalContent={t('CONFIRM_DELETE_EXPENSE', {
+              amount: currentExpense.amount,
+            })}
           />
         </span>
-      )}
-      {isResponseLoading && <SpinAnimation />}
-      {isDeletedToastMessage && (
-        <ToastMessage
-          messageType="success"
-          messageHeading="Expense Deleted"
-          messageBody="Expense Deleted Succesfully"
-          handleClose={handleIsDeleteToastMessage}
-        />
       )}
       {isEditModalOpen && (
         <span style={{ cursor: 'default' }}>

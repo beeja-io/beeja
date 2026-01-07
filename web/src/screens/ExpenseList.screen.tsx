@@ -18,6 +18,7 @@ import {
 } from '../svgs/ExpenseListSvgs.svg';
 import { useTranslation } from 'react-i18next';
 import { formatDate } from '../utils/dateFormatter';
+import ToastMessage from '../components/reusableComponents/ToastMessage.component';
 import ZeroEntriesFound from '../components/reusableComponents/ZeroEntriesFound.compoment';
 import { getAllExpenses } from '../service/axiosInstance';
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
@@ -46,10 +47,12 @@ type ExpenseListProps = {
 };
 export const ExpenseList = (props: ExpenseListProps) => {
   const { user } = useUser();
+  const { t } = useTranslation();
   const [showFromCalendar, setShowFromCalendar] = useState(false);
   const [showToCalendar, setShowToCalendar] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [totalSize, setTotalSize] = useState<number | undefined>(0);
   const [totalPages, setTotalPages] = useState<number | undefined>(
@@ -67,6 +70,9 @@ export const ExpenseList = (props: ExpenseListProps) => {
   };
   const handleTotalPages = (totalPages: number) => {
     setTotalPages(totalPages);
+  };
+  const handleDeleteSuccess = () => {
+    setShowDeleteToast(true);
   };
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const handleShowSuccessMessage = () => {
@@ -426,16 +432,18 @@ export const ExpenseList = (props: ExpenseListProps) => {
     }
   };
 
-  const Actions = [
+  const Actions: Array<{
+    key: 'EDIT' | 'DELETE';
+    title: string;
+    svg: React.ReactNode;
+  }> = [
     ...(user && hasPermission(user, EXPENSE_MODULE.UPDATE_EXPENSE)
-      ? [{ title: 'Edit', svg: <EditIcon /> }]
+      ? [{ key: 'EDIT' as 'EDIT', title: t('EDIT'), svg: <EditIcon /> }]
       : []),
     ...(user && hasPermission(user, EXPENSE_MODULE.DELETE_EXPENSE)
-      ? [{ title: 'Delete', svg: <DeleteIcon /> }]
+      ? [{ key: 'DELETE' as 'DELETE', title: t('DELETE'), svg: <DeleteIcon /> }]
       : []),
   ];
-
-  const { t } = useTranslation();
 
   const [expenseToBePreviewed, setExpenseToBePreviewed] = useState<Expense>();
   const handleExpenseToBePreviewed = (expense: Expense) => {
@@ -668,7 +676,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
             )}
           </div>
           <DropdownMenu
-            label="SETTLEMENT_STATUS"
+            label={t('SETTLEMENT_STATUS')}
             className="largeContainerFil"
             name="settlementStatus"
             options={[
@@ -765,15 +773,16 @@ export const ExpenseList = (props: ExpenseListProps) => {
         {fromDate == null && toDate == null && (
           <span className="noFilters noMargin">
             <InfoCircleSVG />
-            {`Showing current month expenses (sorted based on ${
-              sortBy === 'expenseDate'
-                ? t('EXPENSE_DATE')
-                : sortBy === 'requestedDate'
-                  ? t('REQUESTED_DATE')
-                  : sortBy === 'paymentDate'
-                    ? t('PAYMENT_DATE')
-                    : t('CREATED_DATE')
-            })`}
+            {t('SHOWING_CURRENT_MONTH_EXPENSES_SORTED', {
+              field:
+                sortBy === 'expenseDate'
+                  ? t('EXPENSE_DATE')
+                  : sortBy === 'requestedDate'
+                    ? t('REQUESTED_DATE')
+                    : sortBy === 'paymentDate'
+                      ? t('PAYMENT_DATE')
+                      : t('CREATED_DATE'),
+            })}
           </span>
         )}
         <TableListContainer style={{ marginTop: 0 }}>
@@ -883,6 +892,7 @@ export const ExpenseList = (props: ExpenseListProps) => {
                               expenseTypes={props.expenseTypes}
                               expenseDepartments={props.expenseDepartments}
                               expensePaymentModes={props.expensePaymentModes}
+                              onDeleteSuccess={handleDeleteSuccess}
                             />
                           </td>
                         )}
@@ -938,6 +948,14 @@ export const ExpenseList = (props: ExpenseListProps) => {
             }
           />
         </span>
+      )}
+      {showDeleteToast && (
+        <ToastMessage
+          messageType="success"
+          messageHeading={t('EXPENSE_DELETED')}
+          messageBody={t('EXPENSE_DELETED_SUCCESSFULLY')}
+          handleClose={() => setShowDeleteToast(false)}
+        />
       )}
     </ExpenseListSection>
   );
