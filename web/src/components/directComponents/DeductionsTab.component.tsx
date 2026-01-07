@@ -31,6 +31,7 @@ import { HEALTH_INSURANCE_MODULE } from '../../constants/PermissionConstants';
 import { HealthInsurance } from '../../entities/HealthInsuranceEntity';
 import { hasPermission } from '../../utils/permissionCheck';
 import DropdownMenu from '../reusableComponents/DropDownMenu.component';
+import ToastMessage from '../reusableComponents/ToastMessage.component';
 
 type DeductionTabProps = {
   heading: string;
@@ -83,28 +84,28 @@ const DeductionsTab = ({
         value:
           healthInsurance && healthInsurance.grossPremium
             ? healthInsurance.grossPremium.toString()
-            : '-',
+            : '',
       },
       {
         label: 'Instalment Type',
         value:
           healthInsurance && healthInsurance.instalmentType
             ? healthInsurance.instalmentType
-            : '-',
+            : '',
       },
       {
         label: 'Instalment Amount',
         value:
           healthInsurance && healthInsurance.instalmentAmount
             ? healthInsurance.instalmentAmount.toString()
-            : '-',
+            : '',
       },
       {
         label: 'No. of Instalments',
         value:
           healthInsurance && healthInsurance.instalmentFrequency
             ? healthInsurance.instalmentFrequency.toString()
-            : '-',
+            : '',
       },
     ],
     [healthInsurance]
@@ -112,6 +113,14 @@ const DeductionsTab = ({
 
   const [formData, setFormData] = useState<{ [key: string]: string }>({});
   const [isResponseLoading, setISResponseLoading] = useState(false);
+
+  const [isHealthToast, setIsHealthToast] = useState(false);
+  const [healthToastMessage, setHealthToastMessage] = useState('');
+
+  const handleHealthToast = () => {
+    setIsHealthToast(!isHealthToast);
+  };
+
 
   const resetFormData = () => {
     const defaultFormData: { [key: string]: string } = {};
@@ -129,7 +138,7 @@ const DeductionsTab = ({
 
     if (
       (label === 'Gross Premium' || label === 'Instalment Type') &&
-      updatedFormData['Instalment Type'] != '-'
+      updatedFormData['Instalment Type']
     ) {
       const grossAmount = parseInt(updatedFormData['Gross Premium']);
       const instalmentType = updatedFormData['Instalment Type'];
@@ -178,43 +187,60 @@ const DeductionsTab = ({
     Object.entries(formData).forEach(([label, value]) => {
       transformedData[handleFinalDataToBeSentToBackend(label)] = value;
     });
+ const isClear =
+   !transformedData['grossPremium'] &&
+   !transformedData['instalmentType'];
+
     if (
-      transformedData['grossPremium'] === null ||
-      transformedData['grossPremium'] === undefined ||
-      transformedData['grossPremium'] === '-' ||
-      transformedData['grossPremium'] === ''
-    ) {
-      toast.error('Error, Enter Gross Premium');
-      setISResponseLoading(false);
-      return;
+      transformedData['instalmentType']) {
+      transformedData['instalmentType'] =
+      transformedData['instalmentType'].toUpperCase();
     }
-    if (
-      transformedData['instalmentType'] === 'Select' ||
-      transformedData['instalmentType'] === undefined ||
-      transformedData['instalmentType'] === '-' ||
-      transformedData['instalmentType'] === ''
+
+    const payload = isClear
+      ? {
+          employeeId: employee.employee.employeeId,
+          grossPremium: null,
+          instalmentType: null,
+          instalmentAmount: null,
+        }
+      : {
+          employeeId: employee.employee.employeeId,
+          grossPremium: Number(transformedData['grossPremium']),
+          instalmentType: transformedData['instalmentType'],
+          instalmentAmount: Number(transformedData['instalmentAmount']),
+        };
+    if (!isClear) {
+        if (
+        !transformedData['grossPremium'] ||
+      !transformedData['instalmentType'] ||
+      transformedData['instalmentType'] === 'Select'
     ) {
       toast.error('Error, Select Instalment Type');
       setISResponseLoading(false);
       return;
+     }
     }
-    transformedData['instalmentType'] =
-      transformedData['instalmentType'].toUpperCase();
-    const hasGrossAmountMinus = healthInsuranceDetails.some(
-      (healthInsuranceDetails) =>
-        healthInsuranceDetails.label === 'Instalment Amount' &&
-        healthInsuranceDetails.value === '-'
-    );
-    if (hasGrossAmountMinus) {
-      toast.promise(postHealthInsuranceDetails(transformedData), {
-        loading: 'Adding health Insurance...',
-        closeButton: true,
+   if (healthInsurance) {
+     toast.promise(
+       updateHealthInsuranceDetails(
+         employee.employee.employeeId,
+         payload
+       ),
+       {
+        loading: 'Updating health insurance...',
         success: () => {
-          setISResponseLoading(false);
+             toast.dismiss();
           fetchHealthInsurance();
           handleIsEditModeOn();
           setISResponseLoading(false);
-          return 'The Health Insurance details has been Submitted successfully';
+           setHealthToastMessage(
+             isClear
+               ? 'Health insurance details cleared successfully'
+               : 'Health insurance details updated successfully'
+           );
+           handleHealthToast();
+            return null;
         },
         error: (error) => {
           setISResponseLoading(false);
@@ -232,10 +258,7 @@ const DeductionsTab = ({
       });
     } else {
       toast.promise(
-        updateHealthInsuranceDetails(
-          employee.employee.employeeId,
-          transformedData
-        ),
+       postHealthInsuranceDetails(payload),
         {
           loading: `Updating health insurance of ${employee.employee.employeeId}...`,
           closeButton: true,
@@ -243,12 +266,7 @@ const DeductionsTab = ({
             fetchHealthInsurance();
             handleIsEditModeOn();
             setISResponseLoading(false);
-            setFormData((prev) => ({
-              ...prev,
-              'Instalment Type': transformedData['instalmentType'],
-              'Gross Premium': transformedData['grossPremium'],
-            }));
-            return 'The Health Insurance details has been Updated successfully';
+           return null;
           },
           error: (error) => {
             setISResponseLoading(false);
@@ -378,7 +396,7 @@ const DeductionsTab = ({
                             placeholder={'Enter Amount'}
                             value={formData[label] || ''}
                             onFocus={(e) => {
-                              if (e.target.value === '-') {
+                              if (e.target.value === '') {
                                 e.target.value = '';
                               }
                             }}
@@ -407,7 +425,7 @@ const DeductionsTab = ({
                       </TabContentTableTd>
                     ) : (
                       <TabContentTableTd>
-                        {t(capitalizeFirstLetter(value))}
+                        {value || ''}
                       </TabContentTableTd>
                     )}
                   </tr>
@@ -417,6 +435,15 @@ const DeductionsTab = ({
         </div>
       </TabContentInnerContainer>
       {isResponseLoading && <SpinAnimation />}
+      {isHealthToast && (
+        <ToastMessage
+          messageType="success"
+          messageHeading="Successfully Updated"
+           messageBody={healthToastMessage}
+          handleClose={handleHealthToast}
+        />
+      )}
+
     </TabContentMainContainer>
   );
 };
