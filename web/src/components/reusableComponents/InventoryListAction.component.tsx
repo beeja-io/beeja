@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ActionContainer,
   ActionMenu,
@@ -11,7 +12,6 @@ import { deleteInventory } from '../../service/axiosInstance';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import CenterModal from './CenterModal.component';
 import CenterModalMain from './CenterModalMain.component';
-import ToastMessage from './ToastMessage.component';
 import EditInventoryForm from '../directComponents/EditInventory.component';
 import { useUser } from '../../context/UserContext';
 import { INVENTORY_MODULE } from '../../constants/PermissionConstants';
@@ -22,12 +22,13 @@ import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 interface ActionProps {
   options: {
+    key: 'EDIT' | 'DELETE';
     title: string;
     svg: React.ReactNode;
   }[];
   currentDevice: DeviceDetails;
   handleSuccessMessage: () => void;
-  handleDeleteInventory: () => void;
+  handleDeleteSuccess: () => void;
   updateInventoryList: () => void;
   deviceTypes: OrganizationValues;
   inventoryProviders: OrganizationValues;
@@ -37,14 +38,17 @@ export const InventoryListAction: React.FC<ActionProps> = ({
   options,
   currentDevice,
   handleSuccessMessage,
-  handleDeleteInventory,
+  handleDeleteSuccess,
   updateInventoryList,
   deviceTypes,
   inventoryProviders,
 }) => {
   const { user } = useUser();
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOption, setSelectedOption] = useState<
+    'EDIT' | 'DELETE' | null
+  >(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
@@ -52,10 +56,6 @@ export const InventoryListAction: React.FC<ActionProps> = ({
 
   const handleOpenEditModal = () => {
     setIsEditModalOpen(!isEditModalOpen);
-  };
-  const [isDeletedToastMessage, setIsDeleteToastMessage] = useState(false);
-  const handleIsDeleteToastMessage = () => {
-    setIsDeleteToastMessage(!isDeletedToastMessage);
   };
 
   const handleDeleteModal = () => {
@@ -65,30 +65,31 @@ export const InventoryListAction: React.FC<ActionProps> = ({
   const openDropdown = () => {
     setIsOpen(!isOpen);
   };
+  const handleOptionClick = (key: 'EDIT' | 'DELETE') => {
+    setSelectedOption(key);
 
-  const handleOptionClick = (option: string) => {
-    setSelectedOption(option);
-    if (option === 'Edit') {
+    if (key === 'EDIT') {
       setIsEditModalOpen(true);
-    } else if (option === 'Delete') {
+    }
+    if (key === 'DELETE') {
       setConfirmDeleteModal(true);
     }
+
     setIsOpen(false);
-    setSelectedOption(null);
   };
   const deleteSelectedDevice = async () => {
     try {
       setIsResponseLoading(true);
       await deleteInventory(currentDevice.id);
-      handleDeleteInventory();
-      setIsDeleteToastMessage(true);
+
+      handleDeleteSuccess(); // ✅ notify parent ONLY
+
       setIsResponseLoading(false);
       setConfirmDeleteModal(false);
     } catch (error) {
       setIsResponseLoading(false);
     }
   };
-
   const handleClickOutside = (event: MouseEvent) => {
     const target = event.target as HTMLElement;
     if (!target.closest('.dropdown-container')) {
@@ -143,13 +144,14 @@ export const InventoryListAction: React.FC<ActionProps> = ({
         </ActionMenu>
         {isOpen && (
           <ActionMenuContent>
-            {options.map((option, index) => {
+            {options.map((option) => {
               const hasDeletePermission =
-                option.title === 'Delete' &&
+                option.key === 'DELETE' &&
                 user &&
                 hasPermission(user, INVENTORY_MODULE.DELETE_DEVICE);
+
               const hasEditPermission =
-                option.title === 'Edit' &&
+                option.key === 'EDIT' &&
                 user &&
                 hasPermission(user, INVENTORY_MODULE.UPDATE_DEVICE);
 
@@ -159,9 +161,9 @@ export const InventoryListAction: React.FC<ActionProps> = ({
 
               return (
                 <ActionMenuOption
-                  key={index}
-                  className={selectedOption === option.title ? 'selected' : ''}
-                  onClick={() => handleOptionClick(option.title)}
+                  key={option.key}
+                  className={selectedOption === option.key ? 'selected' : ''}
+                  onClick={() => handleOptionClick(option.key)}
                 >
                   {option.svg}
                   {option.title}
@@ -177,20 +179,14 @@ export const InventoryListAction: React.FC<ActionProps> = ({
             handleModalLeftButtonClick={handleDeleteModal}
             handleModalClose={handleDeleteModal}
             handleModalSubmit={deleteSelectedDevice}
-            modalHeading="Delete"
-            modalContent={`Are you sure want to Delete the Inventory of ${currentDevice.deviceNumber}`}
+            modalHeading={t('DELETE')}
+            modalContent={t('CONFIRM_DELETE_INVENTORY', {
+              deviceNumber: currentDevice.deviceNumber,
+            })}
           />
         </span>
       )}
       {isResponseLoading && <SpinAnimation />}
-      {isDeletedToastMessage && (
-        <ToastMessage
-          messageType="success"
-          messageHeading="Inventory Deleted"
-          messageBody="Inventory Deleted Successfully"
-          handleClose={handleIsDeleteToastMessage}
-        />
-      )}
       {isEditModalOpen && (
         <span style={{ cursor: 'default' }}>
           <CenterModalMain
