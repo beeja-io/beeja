@@ -14,11 +14,14 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { PERFORMANCE_MODULE } from '../../constants/PermissionConstants';
 import { t } from 'i18next';
 
+type ActionKey = 'ASSIGN' | 'REASSIGN' | 'VIEW';
+
 interface FeedbackProviderActionProps {
   options: {
-    disabled: any;
+    key: ActionKey;
     title: string;
     svg: React.ReactNode;
+    disabled: boolean;
   }[];
   currentEmployee: any;
   handleAssign: (employee: any) => void;
@@ -50,21 +53,13 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  const handleOptionClick = async (title: string) => {
+  const handleOptionClick = async (key: ActionKey) => {
     try {
-      if (
-        title === 'Assign Feedback Providers' ||
-        title === 'Reassign Feedback Providers' ||
-        title === 'Feedback-Anbieter zuweisen' ||
-        title === 'Feedback-Anbieter neu zuweisen'
-      ) {
+      if (key === 'ASSIGN' || key === 'REASSIGN') {
         handleAssign(currentEmployee);
       }
 
-      if (
-        title === 'View More Details' ||
-        title === 'Weitere Details anzeigen'
-      ) {
+      if (key === 'VIEW') {
         navigate('/performance/view-more-details', {
           state: {
             employeeId: currentEmployee.employeeId,
@@ -83,20 +78,17 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
     }
   };
 
-  const getIsDisabled = (title: string): boolean => {
+  const getIsDisabled = (key: ActionKey): boolean => {
     if (!user) return true;
 
-    switch (title) {
-      case 'Assign Feedback Providers':
-      case 'Feedback-Anbieter zuweisen':
+    switch (key) {
+      case 'ASSIGN':
         return !hasPermission(user, PERFORMANCE_MODULE.ASSIGN_PROVIDER);
 
-      case 'Reassign Feedback Providers':
-      case 'Feedback-Anbieter neu zuweisen':
+      case 'REASSIGN':
         return !hasPermission(user, PERFORMANCE_MODULE.UPDATE_PROVIDER);
 
-      case 'View More Details':
-      case 'Weitere Details anzeigen':
+      case 'VIEW':
         return !hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER);
 
       default:
@@ -116,14 +108,17 @@ const FeedbackProviderAction: React.FC<FeedbackProviderActionProps> = ({
       {isOpen && (
         <ActionMenuContent>
           {options.map((option, index) => {
-            const isDisabled = getIsDisabled(option.title);
+            const isDisabled = getIsDisabled(option.key);
             const isActionDisabled = isDisabled || option.disabled;
+
             return (
               <ActionMenuOptions
                 key={index}
                 className={isActionDisabled ? 'disabled-action' : ''}
                 onClick={() => {
-                  if (!isActionDisabled) handleOptionClick(option.title);
+                  if (!isActionDisabled) {
+                    handleOptionClick(option.key);
+                  }
                 }}
                 title={isActionDisabled ? t('No_Permission') : ''}
               >

@@ -204,34 +204,25 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
                       ? 'IN_PROGRESS'
                       : rawStatus;
 
-                  let feedbackActions;
+                  let feedbackActions: {
+                    key: 'ASSIGN' | 'REASSIGN' | 'VIEW';
+                    title: string;
+                    svg: React.ReactNode;
+                    disabled: boolean;
+                  }[];
 
                   if (isCycleExpired) {
-                    feedbackActions = [
-                      {
-                        title:
-                          uiStatus === 'NOT_ASSIGNED'
-                            ? t('ASSIGN_FEEDBACK_PROVIDERS')
-                            : t('REASSIGN_FEEDBACK_PROVIDERS'),
-                        svg: <AssignUserSVG />,
-                        disabled: true,
-                      },
-                      {
-                        title: t('View_More_Details'),
-                        svg: <DocumentTextSVG />,
-                        disabled: false,
-                      },
-                    ];
-                  } else {
                     feedbackActions =
                       uiStatus === 'NOT_ASSIGNED'
                         ? [
                             {
+                              key: 'ASSIGN',
                               title: t('ASSIGN_FEEDBACK_PROVIDERS'),
                               svg: <AssignUserSVG />,
-                              disabled: false,
+                              disabled: true, // ✅ expired → disabled
                             },
                             {
+                              key: 'VIEW',
                               title: t('View_More_Details'),
                               svg: <DocumentTextSVG />,
                               disabled: false,
@@ -239,18 +230,50 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
                           ]
                         : [
                             {
+                              key: 'REASSIGN',
+                              title: t('REASSIGN_FEEDBACK_PROVIDERS'),
+                              svg: <AssignUserSVG />,
+                              disabled: true, // ✅ expired → disabled
+                            },
+                            {
+                              key: 'VIEW',
+                              title: t('View_More_Details'),
+                              svg: <DocumentTextSVG />,
+                              disabled: false,
+                            },
+                          ];
+                  } else {
+                    feedbackActions =
+                      uiStatus === 'NOT_ASSIGNED'
+                        ? [
+                            {
+                              key: 'ASSIGN',
+                              title: t('ASSIGN_FEEDBACK_PROVIDERS'),
+                              svg: <AssignUserSVG />,
+                              disabled: false,
+                            },
+                            {
+                              key: 'VIEW',
+                              title: t('View_More_Details'),
+                              svg: <DocumentTextSVG />,
+                              disabled: false,
+                            },
+                          ]
+                        : [
+                            {
+                              key: 'REASSIGN',
                               title: t('REASSIGN_FEEDBACK_PROVIDERS'),
                               svg: <AssignUserSVG />,
                               disabled: false,
                             },
                             {
+                              key: 'VIEW',
                               title: t('View_More_Details'),
                               svg: <DocumentTextSVG />,
                               disabled: false,
                             },
                           ];
                   }
-
                   const getStatusClass = (status: any) => {
                     switch (status) {
                       case 'IN_PROGRESS':
