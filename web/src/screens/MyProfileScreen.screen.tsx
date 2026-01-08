@@ -52,7 +52,9 @@ const MyProfileScreen = () => {
 
   const goToPreviousPage = () => {
     if (from === 'employeeList') {
-      navigate('/employees', { state: { page } });
+      navigate(`/employees${location.search}`, {
+        state: { page },
+      });
     } else {
       navigate(-1);
     }
