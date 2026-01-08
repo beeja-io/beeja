@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { DynamicSpaceMainContainer } from '../styles/CommonStyles.style';
+import { useSearchParams } from 'react-router-dom';
 
 import { FilterSection } from '../styles/ExpenseListStyles.style';
 import {
@@ -9,7 +10,7 @@ import {
 } from '../styles/EmployeeListStyles.style';
 import { useTranslation } from 'react-i18next';
 import { Table, TableContainer, TableHead } from '../styles/TableStyles.style';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React from 'react';
 import { useUser } from '../context/UserContext';
 import {
@@ -62,10 +63,13 @@ const EmployeeList = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [isLoadingData, setLoadingData] = useState(false);
   const [isLoadingEmployees, setIsLoadingEmployees] = useState(false);
 
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(() => {
+    return Number(searchParams.get('pageSize')) || 10;
+  });
   const [totalItems, setTotalItems] = useState(0);
   const [toasting, setToast] = useState<{
     type: 'success' | 'error';
@@ -73,38 +77,46 @@ const EmployeeList = () => {
     head: string;
   } | null>(null);
 
-  const [departmentFilter, setDepartmentFilter] = useState<string>('');
-  const [JobTitleFilter, setJobTitleFilter] = useState<string>('');
-  const [EmployeeStatusFilter, setEmployeeStatusFilter] = useState<string>('');
+  const [departmentFilter, setDepartmentFilter] = useState(() => {
+    return searchParams.get('department') || '';
+  });
+  const [JobTitleFilter, setJobTitleFilter] = useState(() => {
+    return searchParams.get('jobTitle') || '';
+  });
+  const [EmployeeStatusFilter, setEmployeeStatusFilter] = useState(() => {
+    return searchParams.get('status') || '';
+  });
   const [employees, setEmployees] = useState<EmployeeEntity[]>([]);
 
   const [departmentOptions, setDepartmentOptions] = useState<OrgDefaults>();
   const [jobTitles, setJobTitles] = useState<OrgDefaults>();
-  const location = useLocation();
-  const initialPage =
-    Number(localStorage.getItem('employeeListCurrentPage')) ||
-    location.state?.page ||
-    1;
-  const [currentPage, setCurrentPage] = useState(initialPage);
 
-  const handleDepartmentChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+  const [currentPage, setCurrentPage] = useState(() => {
+    return Number(searchParams.get('page')) || 1;
+  });
+  useEffect(() => {
+    setDepartmentFilter(searchParams.get('department') || '');
+    setJobTitleFilter(searchParams.get('jobTitle') || '');
+    setEmployeeStatusFilter(searchParams.get('status') || '');
+    setCurrentPage(Number(searchParams.get('page')) || 1);
+    setItemsPerPage(Number(searchParams.get('pageSize')) || 10);
+  }, [searchParams]);
+
+  const updateQueryParams = (
+    updates: Record<string, string | number | null>
   ) => {
-    setDepartmentFilter(event.target.value);
-  };
+    const params = new URLSearchParams(searchParams);
 
-  const handleJobTitleChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setJobTitleFilter(event.target.value);
-  };
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === '' || value === null) {
+        params.delete(key);
+      } else {
+        params.set(key, String(value));
+      }
+    });
 
-  const handleEmployeeStatusChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setEmployeeStatusFilter(event.target.value);
+    setSearchParams(params);
   };
-
   const [employeeImages, setEmployeeImages] = useState<Map<string, string>>(
     new Map()
   );
@@ -225,24 +237,24 @@ const EmployeeList = () => {
   }, [fetchEmployees]);
 
   const handleNavigateToDetailedView = (employeeId: string) => {
-    localStorage.setItem('employeeListCurrentPage', currentPage.toString());
-    navigate(`/performance/my-team-overview/${employeeId}`);
+    navigate(
+      `/performance/my-team-overview/${employeeId}?${searchParams.toString()}`
+    );
   };
   const handlePageChange = (newPage: number) => {
     setCurrentPage(newPage);
-    localStorage.setItem('employeeListCurrentPage', newPage.toString());
+    updateQueryParams({ page: newPage });
   };
 
   const handlePageSizeChange = (newPageSize: number) => {
     setItemsPerPage(newPageSize);
     setCurrentPage(1);
-  };
 
-  useEffect(() => {
-    return () => {
-      localStorage.removeItem('employeeListCurrentPage');
-    };
-  }, []);
+    updateQueryParams({
+      page: 1,
+      pageSize: newPageSize,
+    });
+  };
 
   return (
     <div>
@@ -266,10 +278,15 @@ const EmployeeList = () => {
                 ]}
                 value={departmentFilter}
                 onChange={(e) => {
-                  handleDepartmentChange({
-                    target: { value: e },
-                  } as React.ChangeEvent<HTMLSelectElement>);
+                  const value = e ?? '';
+
+                  setDepartmentFilter(value);
                   setCurrentPage(1);
+
+                  updateQueryParams({
+                    department: value,
+                    page: 1,
+                  });
                 }}
               />
               <DropdownMenu
@@ -285,13 +302,17 @@ const EmployeeList = () => {
                 ]}
                 value={JobTitleFilter}
                 onChange={(e) => {
-                  handleJobTitleChange({
-                    target: { value: e },
-                  } as React.ChangeEvent<HTMLSelectElement>);
+                  const value = e ?? '';
+
+                  setJobTitleFilter(value);
                   setCurrentPage(1);
+
+                  updateQueryParams({
+                    jobTitle: value,
+                    page: 1,
+                  });
                 }}
               />
-
               {user &&
                 (hasPermission(user, EMPLOYEE_MODULE.CREATE_EMPLOYEE) ||
                   hasPermission(user, EMPLOYEE_MODULE.CHANGE_STATUS) ||
@@ -313,10 +334,15 @@ const EmployeeList = () => {
                     ]}
                     value={EmployeeStatusFilter}
                     onChange={(e) => {
-                      handleEmployeeStatusChange({
-                        target: { value: e },
-                      } as React.ChangeEvent<HTMLSelectElement>);
+                      const value = e ?? '';
+
+                      setEmployeeStatusFilter(value);
                       setCurrentPage(1);
+
+                      updateQueryParams({
+                        status: value,
+                        page: 1,
+                      });
                     }}
                   />
                 )}
