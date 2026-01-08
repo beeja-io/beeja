@@ -530,6 +530,8 @@
   "FAILED_TO_SAVE_APPLICANT": "Failed to save applicant",
   "SETTLED": "Settled",
   "PENDING": "Pending",
+  "PLEASE_ENTER_VALID_PHONE_NUMBER": "Please enter a valid phone number",
+  "PLEASE_ENTER_VALID_EMAIL_ADDRESS": "Please enter a valid email address",
   "SHOWING_CURRENT_MONTH_EXPENSES_SORTED": "Showing current month expenses (sorted based on {{field}})",
   "LIST_OF_REFERRALS": "List of Referrals",
   "BANK_INFO": "Bank Info",

@@ -312,6 +312,8 @@
   "Select Country": "Land auswählen",
   "SELECT_POSITION": "Position auswählen",
   "SELECT_EXPERIENCE": "Erfahrung auswählen",
+  "PLEASE_ENTER_VALID_PHONE_NUMBER": "Bitte geben Sie eine gültige Telefonnummer ein",
+  "PLEASE_ENTER_VALID_EMAIL_ADDRESS": "Please enter a valid email address",
   "PLEASE_FILL_MANDATORY_FIELDS": "Bitte füllen Sie die Pflichtfelder (*) aus",
   "APPLICANT_SAVED_SUCCESSFULLY": "Antragsteller erfolgreich gespeichert",
   "FAILED_TO_SAVE_APPLICANT": "Antragsteller konnte nicht gespeichert werden",

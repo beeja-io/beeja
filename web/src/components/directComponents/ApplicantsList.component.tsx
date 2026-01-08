@@ -38,7 +38,13 @@ const ApplicantsList = (props: ApplicantsListProps) => {
           permission === RECRUITMENT_MODULE.UPDATE_ENTIRE_APPLICANT
       )
     )
-      ? [{ title: 'Edit', svg: <EditIcon /> }]
+      ? [
+          {
+            key: 'EDIT',
+            title: t('EDIT'),
+            svg: <EditIcon />,
+          },
+        ]
       : []),
     // TODO: Update after implementing proper BE
     // ...(user?.roles.some((role) =>

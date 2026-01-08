@@ -44,7 +44,6 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
   const goToPreviousPage = () => {
     navigate(-1);
   };
-
   const [seledtedResume, setSelectedResume] = useState<File>();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -98,7 +97,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       seledtedResume == undefined ||
       seledtedResume == null
     ) {
-      toast.error('Please fill mandatory (*) fields');
+      toast.error(t('PLEASE_FILL_MANDATORY_FIELDS'));
       return;
     }
 
@@ -106,14 +105,14 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       newApplicant.phoneNumber !== '' &&
       !newApplicant.phoneNumber.match(/^[0-9]{10}$/)
     ) {
-      toast.error('Please enter a valid phone number');
+      toast.error(t('PLEASE_ENTER_VALID_PHONE_NUMBER'));
       return;
     }
     if (
       newApplicant.email !== '' &&
       !newApplicant.email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$/)
     ) {
-      toast.error('Please enter a valid email address');
+      toast.error(t('PLEASE_ENTER_VALID_EMAIL_ADDRESS'));
       return;
     }
     try {
