@@ -179,11 +179,10 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
       ];
     }
     setLocalOptions(updatedOptions);
-    setSelected(trimmedValue);
     if (typeof onCustomValue === 'function') {
       onCustomValue(trimmedValue);
     }
-
+    onChange?.(trimmedValue);
     setIsOtherSelected(false);
     setIsOpen(false);
     setCustomValue('');
