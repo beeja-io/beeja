@@ -415,6 +415,7 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )} */}
+
                   {hasPermission(user, LOAN_MODULE.READ_LOAN) &&
                     hasFeature(
                       featureToggles.featureToggles,
@@ -423,8 +424,8 @@ const CompleteNavBar = () => {
                       <ListItem
                         isSideBarOpen={sidebarOpen}
                         linkTo="#"
-                        tooltipName="Timeoff"
-                        linkName="Time Off"
+                        tooltipName="TIME_OFF"
+                        linkName="TIME_OFF"
                         svgIcon={
                           <TimeOffSVG
                             isActive={
@@ -436,7 +437,7 @@ const CompleteNavBar = () => {
                         additionalSvgIcon={<ChevronDownSVG />}
                         dropdownItems={[
                           {
-                            name: 'Time Sheet',
+                            name: 'TIME_SHEET',
                             link: '/timeoff/timesheet',
                           },
                         ]}
@@ -449,6 +450,7 @@ const CompleteNavBar = () => {
                         hasAdditionalSvg
                       />
                     )}
+
                   {hasFeature(
                     featureToggles.featureToggles,
                     EFeatureToggles.PERFORMANCE_AND_EVALUATION_MANAGEMENT
@@ -472,8 +474,8 @@ const CompleteNavBar = () => {
                       <ListItem
                         isSideBarOpen={sidebarOpen}
                         linkTo="#"
-                        tooltipName="Performance"
-                        linkName="Performance"
+                        tooltipName="PERFORMANCE"
+                        linkName="PERFORMANCE"
                         svgIcon={
                           <PerformanceIcon
                             props={{
@@ -491,7 +493,7 @@ const CompleteNavBar = () => {
                           )
                             ? [
                                 {
-                                  name: 'Create Evaluation Form',
+                                  name: 'Create_Evaluation_Form',
                                   link: '/performance/create-evaluation-form',
                                 },
                               ]
@@ -503,7 +505,7 @@ const CompleteNavBar = () => {
                           hasPermission(user, PERFORMANCE_MODULE.READ_PROVIDER)
                             ? [
                                 {
-                                  name: 'Assign Feedback Receivers & Providers',
+                                  name: 'Assign_Feedback_Receivers_Providers',
                                   link: '/performance/assign-feedback-providers',
                                 },
                               ]
@@ -522,7 +524,7 @@ const CompleteNavBar = () => {
                           )
                             ? [
                                 {
-                                  name: 'Feedback Hub',
+                                  name: 'Feedback_Hub',
                                   link: '/performance/feedback-hub',
                                 },
                               ]
@@ -533,7 +535,7 @@ const CompleteNavBar = () => {
                           )
                             ? [
                                 {
-                                  name: 'My Team Overview',
+                                  name: 'My_Team_Overview',
                                   link: '/performance/my-team-overview',
                                 },
                               ]
@@ -555,8 +557,8 @@ const CompleteNavBar = () => {
                     <ListItem
                       isSideBarOpen={sidebarOpen}
                       linkTo="#"
-                      tooltipName="Recruitment"
-                      linkName="Recruitment"
+                      tooltipName="RECRUITMENT"
+                      linkName="RECRUITMENT"
                       svgIcon={
                         <UserBoxWithLinkSVG
                           props={{
@@ -579,7 +581,7 @@ const CompleteNavBar = () => {
                         hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT)
                           ? [
                               {
-                                name: 'Hiring',
+                                name: 'HIRING',
                                 link: '/recruitment/hiring-management',
                               },
                             ]
@@ -590,7 +592,7 @@ const CompleteNavBar = () => {
                         )
                           ? [
                               {
-                                name: 'Referrals',
+                                name: 'REFERRALS',
                                 link: '/recruitment/my-referrals',
                               },
                             ]

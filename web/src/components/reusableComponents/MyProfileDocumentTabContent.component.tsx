@@ -435,13 +435,11 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
         ) : (
           <NoDocsContainer>
             <NoDocsIcon />
-            <p className="heading">There is no document here</p>
-            <p className="description">
-              Please add new Document by clicking "Upload Document" above
-            </p>
+            <p className="heading">{t('There is no document here')}</p>
+            <p className="description">{t('ADD_NEW_DOCUMENT_DESCRIPTION')}</p>
           </NoDocsContainer>
         )}
-        {totalPages && (
+        {totalPages > 0 && (
           <Pagination
             totalPages={totalPages}
             currentPage={currentPage}
@@ -486,14 +484,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                       options={[
                         { label: t('Select a Type'), value: '' },
                         ...(documentType?.values || []).map((opt) => ({
-                          label: opt.value,
+                          label: t(opt.value),
                           value: opt.value,
                         })),
                       ]}
                     />
                     {errors.emptyDocumentType && (
                       <ValidationText>
-                        <AlertISVG /> {errors.emptyDocumentType}
+                        <AlertISVG /> {t(errors.emptyDocumentType)}
                       </ValidationText>
                     )}
                   </InputLabelContainer>
@@ -503,7 +501,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     <TextInput
                       type="text"
                       value={documentName}
-                      placeholder="Ex: Pan Card /Aadhar Card /Voter Id/ Driving License"
+                      placeholder={t('DOCUMENT_NAME_PLACEHOLDER')}
                       onChange={(e) => setDocumentName(e.target.value)}
                       disabled={isResponseLoading}
                     />
@@ -514,7 +512,7 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     <TextInput
                       type="text"
                       value={description}
-                      placeholder="Ex: Pan Card front Image"
+                      placeholder={t('DOCUMENT_DESCRIPTION_PLACEHOLDER')}
                       onChange={(e) => setDescription(e.target.value)}
                       disabled={isResponseLoading}
                     />
@@ -559,11 +557,11 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                     )}
                     {errors.emptyFile && (
                       <ValidationText>
-                        <AlertISVG /> {errors.emptyFile}
+                        <AlertISVG /> {t(errors.emptyFile)}
                       </ValidationText>
                     )}
                     <span className="infoText">
-                      File format : .pdf, .png, .jpeg (Maximum Size: 10MB)
+                      {t('SUPPORTED_FILE_FORMATS_INFO')}
                     </span>
                   </InputLabelContainer>
                 </div>
@@ -596,14 +594,14 @@ export const DocumentTabContent = (props: DocumentTabContentProps) => {
                         }}
                         className="cancel"
                       >
-                        Cancel
+                        {t('Cancel')}
                       </Button>
                       <Button
                         className="submit"
                         style={{ cursor: isResponseLoading ? 'progress' : '' }}
                         disabled={isResponseLoading}
                       >
-                        Submit
+                        {t('Submit')}
                       </Button>
                     </div>
                   </div>

@@ -7,6 +7,7 @@ import {
   ActionMenuOption,
   ActionMenu,
 } from '../../styles/ExpenseListStyles.style';
+import { useTranslation } from 'react-i18next';
 import { deleteExpense } from '../../service/axiosInstance';
 import SpinAnimation from '../loaders/SprinAnimation.loader';
 import ToastMessage from './ToastMessage.component';
@@ -20,7 +21,8 @@ import { disableBodyScroll, enableBodyScroll } from '../../constants/Utility';
 
 interface ActionProps {
   options: {
-    title: string;
+    key: 'EDIT' | 'DELETE';
+    title: string; // translated text
     svg: React.ReactNode;
   }[];
   fetchExpenses: () => void;
@@ -42,7 +44,10 @@ export const ExpenseAction: React.FC<ActionProps> = ({
   expenseTypes,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const { t } = useTranslation();
+  const [selectedOption, setSelectedOption] = useState<
+    'EDIT' | 'DELETE' | null
+  >(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(false);
   const [isResponseLoading, setIsResponseLoading] = useState(false);
@@ -79,17 +84,19 @@ export const ExpenseAction: React.FC<ActionProps> = ({
   const handleShowSuccessMessage = () => {
     setShowSuccessMessage(!showSuccessMessage);
   };
-  const handleOptionClick = (option: string) => {
-    setSelectedOption(option);
-    if (option == 'Delete') {
+  const handleOptionClick = (action: 'EDIT' | 'DELETE') => {
+    setSelectedOption(action);
+
+    if (action === 'DELETE') {
       handleDeleteModal();
     }
-    if (option == 'Edit') {
+
+    if (action === 'EDIT') {
       handleIsEditModalOpen();
     }
+
     setIsOpen(false);
     setSelectedOption(null);
-    // onOptionSelect(option);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
@@ -128,11 +135,11 @@ export const ExpenseAction: React.FC<ActionProps> = ({
         </ActionMenu>
         {isOpen && (
           <ActionMenuContent>
-            {options.map((option, index) => (
+            {options.map((option) => (
               <ActionMenuOption
-                key={index}
-                className={selectedOption === option.title ? 'selected' : ''}
-                onClick={() => handleOptionClick(option.title)}
+                key={option.key}
+                className={selectedOption === option.key ? 'selected' : ''}
+                onClick={() => handleOptionClick(option.key)}
               >
                 {option.svg}
                 {option.title}
@@ -147,8 +154,10 @@ export const ExpenseAction: React.FC<ActionProps> = ({
             handleModalLeftButtonClick={handleDeleteModal}
             handleModalClose={handleDeleteModal}
             handleModalSubmit={() => deleteSelectedExpense(currentExpense.id)}
-            modalHeading="Delete"
-            modalContent={`Are you sure want to Delete the Expense of ₹ ${currentExpense.amount}`}
+            modalHeading={t('DELETE')}
+            modalContent={t('CONFIRM_DELETE_EXPENSE', {
+              amount: currentExpense.amount,
+            })}
           />
         </span>
       )}

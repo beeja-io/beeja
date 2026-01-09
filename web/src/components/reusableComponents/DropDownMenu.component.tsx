@@ -248,7 +248,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         >
           {localOptions.find((o) => o.value === selected)?.label ||
             selected ||
-            label}
+            t(label)}
           <ArrowIconWrapper isOpen={isOpen}>
             <ArrowDownSVG />
           </ArrowIconWrapper>
@@ -384,7 +384,7 @@ export const DropdownOrg: React.FC<DropdownMenuProps> = ({
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
         >
-          {options.find((o) => o.value === selected)?.label || label}
+          {options.find((o) => o.value === selected)?.label || t(label)}
           <ArrowIconWrapper isOpen={isOpen}>
             <ArrowDownSVG />
           </ArrowIconWrapper>

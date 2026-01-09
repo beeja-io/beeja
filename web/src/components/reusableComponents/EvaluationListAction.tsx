@@ -15,7 +15,12 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { PERFORMANCE_MODULE } from '../../constants/PermissionConstants';
 
 interface Props {
-  options: { title: string; svg: React.ReactNode; className: string }[];
+  options: {
+    key: string;
+    title: string;
+    svg: React.ReactNode;
+    className: string;
+  }[];
   currentCycle: any;
   fetchCycles: () => void;
   onSuccess?: (message: string) => void;
@@ -48,11 +53,11 @@ const EvaluationListAction: React.FC<Props> = ({
     setShowDeleteModal(false);
   };
 
-  const handleOptionClick = async (title: string) => {
-    if (title === 'Edit') {
+  const handleOptionClick = async (key: string) => {
+    if (key === 'EDIT') {
       navigate(`/performance/create-evaluation-form/${currentCycle.id}`);
     }
-    if (title === 'Delete') {
+    if (key === 'DELETE') {
       setShowDeleteModal(true);
     }
     onToggle();
@@ -109,19 +114,15 @@ const EvaluationListAction: React.FC<Props> = ({
           <ActionMenuContent>
             {options.map((op, i) => {
               const isDisabled =
-                (op.title === 'Edit' && (!canEdit || disabled)) ||
-                (op.title === 'Delete' && !canDelete);
+                (op.key === 'EDIT' && (!canEdit || disabled)) ||
+                (op.key === 'DELETE' && !canDelete);
 
               return (
                 <ActionMenuOption
                   key={i}
                   className={isDisabled ? 'edit-disabled' : ''}
-                  onClick={() => !isDisabled && handleOptionClick(op.title)}
-                  title={
-                    isDisabled
-                      ? t('You do not have permission to perform this action')
-                      : ''
-                  }
+                  onClick={() => !isDisabled && handleOptionClick(op.key)}
+                  title={isDisabled ? t('NO_PERMISSION_ACTION') : ''}
                 >
                   <div className={op.className}>{op.svg}</div> {op.title}
                 </ActionMenuOption>
@@ -135,15 +136,15 @@ const EvaluationListAction: React.FC<Props> = ({
           handleModalLeftButtonClick={handleDiscardModalToggle}
           handleModalClose={handleDiscardModalToggle}
           handleModalSubmit={handleConfirmDelete}
-          modalHeading={t('Delete Review Cycle?')}
-          modalContent={t('Are you sure you want to delete this review cycle?')}
+          modalHeading={t('DELETE_REVIEW_CYCLE')}
+          modalContent={t('CONFIRM_DELETE_REVIEW_CYCLE')}
           modalType="discardModal"
           modalLeftButtonClass="mobileBtn"
           modalRightButtonClass="mobileBtn"
           modalRightButtonBorderColor="black"
           modalRightButtonTextColor="black"
           modalLeftButtonText={t('No')}
-          modalRightButtonText={isDeleting ? t('Deleting...') : t('Delete')}
+          modalRightButtonText={isDeleting ? t('DELETING') : t('DELETE')}
         />
       )}
     </>

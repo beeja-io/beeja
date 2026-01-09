@@ -77,8 +77,8 @@ const ViewMoreDetails = () => {
         JSON.stringify(mappedProviders)
       );
     } catch (err) {
-      setError('Unable to fetch feedback details');
-      toast.error('Unable to fetch feedback details');
+      setError(t('UNABLE_TO_FETCH_FEEDBACK_DETAILS'));
+      toast.error(t('UNABLE_TO_FETCH_FEEDBACK_DETAILS'));
       throw new Error(
         `Error fetching feedback details: ${
           err instanceof Error ? err.message : String(err)
@@ -136,10 +136,11 @@ const ViewMoreDetails = () => {
       <StyledDiv>
         <ExpenseHeading>
           <ExpenseTitleProviders>
-            {t('Feedback Providers')} {receiverName ? `of ${receiverName}` : ''}
+            {t('FEEDBACK_PROVIDERS')} {receiverName ? `of ${receiverName}` : ''}
             <p className="sub-text">
-              The following are the feedback contributors
-              {receiverName ? ` of ${receiverName}` : '.'}
+              {t('FEEDBACK_PROVIDERS_SUBTITLE', {
+                name: receiverName || '',
+              })}
             </p>
           </ExpenseTitleProviders>
         </ExpenseHeading>
@@ -148,7 +149,7 @@ const ViewMoreDetails = () => {
             {error ? (
               <ZeroEntriesFound heading={error} />
             ) : !isLoading && providers.length === 0 ? (
-              <ZeroEntriesFound heading="No Feedback Providers Found" />
+              <ZeroEntriesFound heading={t('NO_FEEDBACK_PROVIDERS_FOUND')} />
             ) : (
               <TableList>
                 <TableHead>

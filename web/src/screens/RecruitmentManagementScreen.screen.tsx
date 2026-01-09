@@ -8,6 +8,7 @@ import {
   ExpenseHeadingSection,
 } from '../styles/ExpenseManagementStyles.style';
 import { ArrowDownSVG } from '../svgs/CommonSvgs.svs';
+import { useTranslation } from 'react-i18next';
 import { AddNewPlusSVG } from '../svgs/EmployeeListSvgs.svg';
 import { useCallback, useEffect, useState } from 'react';
 import { IApplicant } from '../entities/ApplicantEntity';
@@ -23,6 +24,7 @@ const RecruitmentManagementScreen = (
 ) => {
   const navigate = useNavigate();
   const { user } = useUser();
+  const { t } = useTranslation();
   const goToPreviousPage = () => {
     navigate(-1);
   };
@@ -83,7 +85,7 @@ const RecruitmentManagementScreen = (
             <span onClick={goToPreviousPage}>
               <ArrowDownSVG />
             </span>
-            {props.isReferral ? 'Referrals' : 'Hiring'}
+            {props.isReferral ? t('REFERRALS') : t('HIRING')}
           </span>
           {user &&
             (hasPermission(user, RECRUITMENT_MODULE.CREATE_APPLICANT) ||
@@ -100,7 +102,7 @@ const RecruitmentManagementScreen = (
                 }
               >
                 <AddNewPlusSVG /> &nbsp;
-                {props.isReferral ? 'Add New Referral' : 'Add Applicant'}
+                {props.isReferral ? t('ADD_NEW_REFERRAL') : t('ADD_APPLICANT')}
               </Button>
             )}
         </ExpenseHeadingSection>

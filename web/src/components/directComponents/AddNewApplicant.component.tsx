@@ -1,4 +1,4 @@
-import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
@@ -40,10 +40,10 @@ type AddNewApplicantProps = {
 const AddNewApplicant = (props: AddNewApplicantProps) => {
   const navigate = useNavigate();
   const { user } = useUser();
+  const { t } = useTranslation();
   const goToPreviousPage = () => {
     navigate(-1);
   };
-
   const [seledtedResume, setSelectedResume] = useState<File>();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -97,7 +97,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       seledtedResume == undefined ||
       seledtedResume == null
     ) {
-      toast.error('Please fill mandatory (*) fields');
+      toast.error(t('PLEASE_FILL_MANDATORY_FIELDS'));
       return;
     }
 
@@ -105,14 +105,14 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
       newApplicant.phoneNumber !== '' &&
       !newApplicant.phoneNumber.match(/^[0-9]{10}$/)
     ) {
-      toast.error('Please enter a valid phone number');
+      toast.error(t('PLEASE_ENTER_VALID_PHONE_NUMBER'));
       return;
     }
     if (
       newApplicant.email !== '' &&
       !newApplicant.email.match(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$/)
     ) {
-      toast.error('Please enter a valid email address');
+      toast.error(t('PLEASE_ENTER_VALID_EMAIL_ADDRESS'));
       return;
     }
     try {
@@ -135,7 +135,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
         response = await postApplicant(newApplicantData);
       }
       if (response.status === 200) {
-        toast.success('Applicant saved successfully');
+        toast.success(t('APPLICANT_SAVED_SUCCESSFULLY'));
         navigate(-1);
       } else {
         toast.error('Failed to save applicant');
@@ -203,7 +203,9 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
               <span onClick={goToPreviousPage}>
                 <ArrowDownSVG />
               </span>
-              {props.isReferScreen ? 'Refer An Employee' : 'Add New Applicant'}
+              {props.isReferScreen
+                ? t('REFER_AN_EMPLOYEE')
+                : t('ADD_NEW_APPLICANT')}
             </span>
           </ExpenseHeadingSection>
           <BulkPayslipContainer className="addNewApplicant">
@@ -289,7 +291,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                         }
                       }
                     }}
-                    placeholder={'Enter Phone Number'}
+                    placeholder={t('ENTER_PHONE_NUMBER')}
                   />
                 </InputLabelContainer>
                 <InputLabelContainer>
@@ -306,7 +308,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,63}$"
                     autoComplete="off"
                     required
-                    placeholder={'Enter Email'}
+                    placeholder={t('Enter Email')}
                   />
                 </InputLabelContainer>
               </div>
@@ -321,7 +323,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     className="largeContainerBulk"
                     name="positionAppliedFor"
                     id="positionAppliedFor"
-                    label="Select Position"
+                    label={t('SELECT_POSITION')}
                     onChange={(val) =>
                       handleChange({
                         target: {
@@ -346,7 +348,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                   <label>{t('EXPERIENCE')}</label>
                   <DropdownMenu
                     className="largeContainerBulk"
-                    label="Select Experience"
+                    label={t('SELECT_EXPERIENCE')}
                     name="experience"
                     id="experience"
                     sortOptions={false}
@@ -359,7 +361,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                       } as React.ChangeEvent<HTMLSelectElement>)
                     }
                     options={[
-                      { label: 'Select Experience', value: '' },
+                      { label: t('SELECT_EXPERIENCE'), value: '' },
                       ...noOfYearsExperience.map((number) => ({
                         label: number,
                         value: number,
@@ -435,7 +437,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
                     type="submit"
                     disabled={isLoading}
                   >
-                    {isLoading ? '' : 'Submit'}
+                    {isLoading ? '' : t('SUBMIT')}
                   </Button>
                 )}
             </form>

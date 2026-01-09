@@ -183,13 +183,13 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
               {t('Loading...')}
             </p>
           ) : feedbackReceivers.length === 0 ? (
-            <ZeroEntriesFound heading="Feedback receivers not yet added" />
+            <ZeroEntriesFound heading={t('FEEDBACK_RECEIVERS_NOT_YET_ADDED')} />
           ) : (
             <TableList>
               <TableHead>
                 <tr>
                   <th>{t('Employee_Name')}</th>
-                  <th>{t('Department')}</th>
+                  <th>{t('DEPARTMENT')}</th>
                   <th>{t('Feedback_Status')}</th>
                   <th>{t('Action')}</th>
                 </tr>
@@ -204,53 +204,76 @@ const FeedbackReceiversList: React.FC<FeedbackReceiversListProps> = ({
                       ? 'IN_PROGRESS'
                       : rawStatus;
 
-                  let feedbackActions;
+                  let feedbackActions: {
+                    key: 'ASSIGN' | 'REASSIGN' | 'VIEW';
+                    title: string;
+                    svg: React.ReactNode;
+                    disabled: boolean;
+                  }[];
 
                   if (isCycleExpired) {
-                    feedbackActions = [
-                      {
-                        title:
-                          uiStatus === 'NOT_ASSIGNED'
-                            ? 'Assign Feedback Providers'
-                            : 'Reassign Feedback Providers',
-                        svg: <AssignUserSVG />,
-                        disabled: true,
-                      },
-                      {
-                        title: 'View More Details',
-                        svg: <DocumentTextSVG />,
-                        disabled: false,
-                      },
-                    ];
-                  } else {
                     feedbackActions =
                       uiStatus === 'NOT_ASSIGNED'
                         ? [
                             {
-                              title: 'Assign Feedback Providers',
+                              key: 'ASSIGN',
+                              title: t('ASSIGN_FEEDBACK_PROVIDERS'),
                               svg: <AssignUserSVG />,
-                              disabled: false,
+                              disabled: true, // ✅ expired → disabled
                             },
                             {
-                              title: 'View More Details',
+                              key: 'VIEW',
+                              title: t('View_More_Details'),
                               svg: <DocumentTextSVG />,
                               disabled: false,
                             },
                           ]
                         : [
                             {
-                              title: 'Reassign Feedback Providers',
+                              key: 'REASSIGN',
+                              title: t('REASSIGN_FEEDBACK_PROVIDERS'),
+                              svg: <AssignUserSVG />,
+                              disabled: true, // ✅ expired → disabled
+                            },
+                            {
+                              key: 'VIEW',
+                              title: t('View_More_Details'),
+                              svg: <DocumentTextSVG />,
+                              disabled: false,
+                            },
+                          ];
+                  } else {
+                    feedbackActions =
+                      uiStatus === 'NOT_ASSIGNED'
+                        ? [
+                            {
+                              key: 'ASSIGN',
+                              title: t('ASSIGN_FEEDBACK_PROVIDERS'),
                               svg: <AssignUserSVG />,
                               disabled: false,
                             },
                             {
-                              title: 'View More Details',
+                              key: 'VIEW',
+                              title: t('View_More_Details'),
+                              svg: <DocumentTextSVG />,
+                              disabled: false,
+                            },
+                          ]
+                        : [
+                            {
+                              key: 'REASSIGN',
+                              title: t('REASSIGN_FEEDBACK_PROVIDERS'),
+                              svg: <AssignUserSVG />,
+                              disabled: false,
+                            },
+                            {
+                              key: 'VIEW',
+                              title: t('View_More_Details'),
                               svg: <DocumentTextSVG />,
                               disabled: false,
                             },
                           ];
                   }
-
                   const getStatusClass = (status: any) => {
                     switch (status) {
                       case 'IN_PROGRESS':

@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 interface ApplicantListActionsProps {
   applicant: IApplicant;
   options: {
+    key: string;
     title: string;
     svg: React.ReactNode;
   }[];
@@ -38,12 +39,12 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
     setConfirmDeleteModal(!confirmDeleteModal);
   };
 
-  const handleOptionClick = (option: string) => {
-    setSelectedOption(option);
-    if (option == 'Delete') {
+  const handleOptionClick = (key: string) => {
+    setSelectedOption(key);
+    if (key == 'DELETE') {
       handleDeleteModal();
     }
-    if (option == 'Edit') {
+    if (key == 'EDIT') {
       navigate(`/recruitment/hiring-management/${props.applicant.id}`);
     }
     setIsOpen(false);
@@ -78,8 +79,8 @@ const ApplicantListActions = (props: ApplicantListActionsProps) => {
             {props.options.map((option, index) => (
               <ActionMenuOption
                 key={index}
-                className={selectedOption === option.title ? 'selected' : ''}
-                onClick={() => handleOptionClick(option.title)}
+                className={selectedOption === option.key ? 'selected' : ''}
+                onClick={() => handleOptionClick(option.key)}
               >
                 {option.svg}
                 {option.title}
