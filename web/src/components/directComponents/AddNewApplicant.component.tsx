@@ -135,7 +135,7 @@ const AddNewApplicant = (props: AddNewApplicantProps) => {
         response = await postApplicant(newApplicantData);
       }
       if (response.status === 200) {
-        toast.success('Applicant saved successfully');
+        toast.success(t('APPLICANT_SAVED_SUCCESSFULLY'));
         navigate(-1);
       } else {
         toast.error('Failed to save applicant');
