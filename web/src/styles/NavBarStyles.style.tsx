@@ -475,6 +475,7 @@ export const TopNavRightIcons = styled.span`
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 10px;
     &.academy {
       color: ${(props) => props.theme.colors.blackColors.black1}
       font-size: 14px;
@@ -484,13 +485,20 @@ export const TopNavRightIcons = styled.span`
       text-underline-offset: 3px;
     }
   }
-
+  span.academy svg path {
+  fill: ${(props) => props.theme.colors.blackColors.black1};
+  }
   .language select {
     border: none;
     outline: none;
     color: ${(props) => props.theme.colors.blackColors.black1};
     background-color: ${(props) => props.theme.colors.blackColors.white6};
   }
+  span.academy.holiday {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 `;
 export const ThemeContainer = styled.div`
   width: 216px;

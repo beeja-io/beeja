@@ -4,6 +4,7 @@ import {
   NotificationSVG,
   LogoutSVG,
   LanguageIcon,
+  CalendarSVG,
 } from '../../svgs/NavBarSvgs.svg';
 import {
   LogoutUrl,
@@ -25,12 +26,14 @@ import { hasPermission } from '../../utils/permissionCheck';
 import { TECTACADEMY } from '../../constants/PermissionConstants';
 const beejaDocsUrl = import.meta.env.VITE_BEEJA_DOCS_URL;
 const beejTechAcademyUrl = import.meta.env.VITE_TECH_ACADEMY_URL;
+const holidaysListUrl = import.meta.env.VITE_HOLIDAYS_LIST_URL;
 type topNavBarProps = {
   employee?: EmployeeEntity | undefined;
 };
 const TopNavBarComponent = ({ employee }: topNavBarProps) => {
   const { t } = useTranslation();
   const { i18n } = useTranslation();
+  const currentYear = new Date().getFullYear();
 
   const languages = [
     { code: 'en', label: 'English' },
@@ -120,15 +123,26 @@ const TopNavBarComponent = ({ employee }: topNavBarProps) => {
           className="academy"
           onClick={() => window.open(beejaDocsUrl, '_blank')}
         >
-          Beeja Docs
+          BEEJA Docs
         </span>
         {user && hasPermission(user, TECTACADEMY.ACCESS_TECT_ACADEMY_LINK) && (
-          <span
-            className="academy"
-            onClick={() => window.open(beejTechAcademyUrl, '_blank')}
-          >
-            {t('TECH_ACADEMY')}
-          </span>
+          <>
+            <span
+              className="academy holiday"
+              onClick={() => window.open(holidaysListUrl, '_blank')}
+            >
+              <CalendarSVG isActive={true} />
+              <span className="holiday-label">
+                T.A.C Holiday List for {currentYear}
+              </span>
+            </span>
+            <span
+              className="academy"
+              onClick={() => window.open(beejTechAcademyUrl, '_blank')}
+            >
+              {t('TECH_ACADEMY')}
+            </span>
+          </>
         )}
         <span className="language">
           <LanguageIcon />
