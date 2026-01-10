@@ -61,10 +61,8 @@ public class InterviewScheduleServiceImpl implements InterviewScheduleService {
       }
 
       String description = buildInterviewDescription(applicant, request.getInterviewDescription());
-
-      // Create Teams meeting via Microsoft Graph API
-      OnlineMeeting teamsEvent =
-          teamsClientService.createTeamsMeeting(
+      Event calendarEvent =
+          teamsClientService.createCalendarEventWithTeamsMeeting(
               request.getInterviewTitle(),
               description,
               request.getStartDateTime(),
@@ -83,16 +81,20 @@ public class InterviewScheduleServiceImpl implements InterviewScheduleService {
       interview.setInterviewDescription(request.getInterviewDescription());
       interview.setStartDateTime(request.getStartDateTime());
       interview.setDurationInMinutes(request.getDurationInMinutes());
-      interview.setMeetingId(teamsEvent.getId());
-      interview.setMeetingLink(
-          teamsEvent.getJoinWebUrl() != null
-              ? teamsEvent.getJoinWebUrl()
-              : null);
-      interview.setJoinWebUrl(
-              teamsEvent.getJoinWebUrl() != null ? teamsEvent.getJoinWebUrl() : null);
+
+      interview.setCalendarEventId(calendarEvent.getId());
+      interview.setMeetingId(calendarEvent.getId());
+
+      String joinUrl = null;
+      if (calendarEvent.getOnlineMeeting() != null && calendarEvent.getOnlineMeeting().getJoinUrl() != null) {
+        joinUrl = calendarEvent.getOnlineMeeting().getJoinUrl();
+      }
+      
+      interview.setMeetingLink(joinUrl);
+      interview.setJoinWebUrl(joinUrl);
       interview.setOnlineMeetingId(
-              teamsEvent.getJoinWebUrl() != null
-              ? teamsEvent.getJoinWebUrl()
+              calendarEvent.getOnlineMeeting() != null && calendarEvent.getOnlineMeeting().getJoinUrl() != null
+              ? calendarEvent.getOnlineMeeting().getJoinUrl()
               : null);
       interview.setOrganizerEmail(teamsProperties.getServiceAccountEmail());
       interview.setOrganizationId(UserContext.getLoggedInUserOrganization().get("id").toString());
@@ -111,7 +113,6 @@ public class InterviewScheduleServiceImpl implements InterviewScheduleService {
           savedInterview.getId(),
           savedInterview.getMeetingId());
 
-      // Build response
       return buildInterviewScheduleResponse(savedInterview, "success", "Interview scheduled successfully");
 
     } catch (ResourceNotFoundException | BadRequestException e) {
@@ -154,12 +155,11 @@ public class InterviewScheduleServiceImpl implements InterviewScheduleService {
               .orElseThrow(
                   () -> new ResourceNotFoundException("Interview not found with ID: " + interviewId));
 
-      // Delete from Microsoft Teams
-      if (interview.getMeetingId() != null) {
-        teamsClientService.deleteEvent(interview.getMeetingId());
+      String eventIdToDelete = interview.getCalendarEventId() != null ? interview.getCalendarEventId() : interview.getMeetingId();
+      if (eventIdToDelete != null) {
+        teamsClientService.deleteEvent(eventIdToDelete);
       }
 
-      // Delete from database
       interviewRepository.deleteById(interviewId);
 
       log.info("Interview cancelled successfully: {}", interviewId);

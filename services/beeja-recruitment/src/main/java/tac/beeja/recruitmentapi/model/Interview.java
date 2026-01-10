@@ -34,6 +34,7 @@ public class Interview {
 
   // Microsoft Teams meeting details
   private String meetingId;
+  private String calendarEventId;
   private String meetingLink;
   private String joinWebUrl;
   private String onlineMeetingId;

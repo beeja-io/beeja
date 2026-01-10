@@ -45,9 +45,10 @@ public class MicrosoftTeamsClientService {
   }
 
     /**
-     * Creates a Microsoft Teams meeting as a calendar event with Teams link.
+     * Creates a calendar event with Microsoft Teams meeting link and sends email invitations to attendees.
+     * This method creates both the calendar event and the Teams meeting, ensuring attendees receive invitations.
      */
-    public OnlineMeeting createTeamsMeeting(
+    public Event createCalendarEventWithTeamsMeeting(
             String subject,
             String description,
             Date startDateTime,
@@ -64,70 +65,61 @@ public class MicrosoftTeamsClientService {
             OffsetDateTime startOdt = startDateTime.toInstant().atZone(ZoneId.of("UTC")).toOffsetDateTime();
             OffsetDateTime endOdt = startOdt.plusMinutes(durationInMinutes);
 
-            // Create meeting object
-            OnlineMeeting onlineMeeting = new OnlineMeeting();
-            onlineMeeting.setSubject(subject);
-            onlineMeeting.setStartDateTime(startOdt);
-            onlineMeeting.setEndDateTime(endOdt);
+            Event event = new Event();
+            event.setSubject(subject);
 
-            // Optional: set lobby and permissions
-            onlineMeeting.setLobbyBypassSettings(new LobbyBypassSettings() {{
-                setScope(LobbyBypassScope.Organization);
-            }});
+            ItemBody body = new ItemBody();
+            body.setContentType(BodyType.Html);
+            body.setContent(description);
+            event.setBody(body);
 
-            // Prepare participants
-            List<MeetingParticipantInfo> attendees = new ArrayList<>();
+            DateTimeTimeZone start = new DateTimeTimeZone();
+            start.setDateTime(startOdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            start.setTimeZone("UTC");
+            event.setStart(start);
 
-            if (attendeeEmails != null) {
-                for (String email : attendeeEmails) {
-                    IdentitySet identitySet = new IdentitySet();
-                    identitySet.setUser(new Identity() {{
-                        setDisplayName(email);
-                    }});
+            DateTimeTimeZone end = new DateTimeTimeZone();
+            end.setDateTime(endOdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            end.setTimeZone("UTC");
+            event.setEnd(end);
 
-                    MeetingParticipantInfo participant = new MeetingParticipantInfo();
-                    participant.setRole(OnlineMeetingRole.Presenter);
-                    participant.setIdentity(identitySet);
+            List<Attendee> attendees = new ArrayList<>();
 
-                    attendees.add(participant);
-                }
+            for (String email : attendeeEmails) {
+                Attendee attendee = new Attendee();
+                EmailAddress emailAddress = new EmailAddress();
+                emailAddress.setAddress(email);
+                attendee.setEmailAddress(emailAddress);
+                attendee.setType(AttendeeType.Required);
+                attendees.add(attendee);
             }
 
-            if (applicantEmail != null && !applicantEmail.isBlank()) {
-                IdentitySet applicantIdentity = new IdentitySet();
-                applicantIdentity.setUser(new Identity() {{
-                    setDisplayName(applicantName != null ? applicantName : applicantEmail);
-                }});
-
-                MeetingParticipantInfo applicant = new MeetingParticipantInfo();
-                applicant.setRole(OnlineMeetingRole.Attendee);
-                applicant.setIdentity(applicantIdentity);
-
-                attendees.add(applicant);
+            if (applicantEmail != null && !applicantEmail.isEmpty()) {
+                Attendee applicantAttendee = new Attendee();
+                EmailAddress applicantEmailAddress = new EmailAddress();
+                applicantEmailAddress.setAddress(applicantEmail);
+                applicantEmailAddress.setName(applicantName);
+                applicantAttendee.setEmailAddress(applicantEmailAddress);
+                applicantAttendee.setType(AttendeeType.Required);
+                attendees.add(applicantAttendee);
             }
+            
+            event.setAttendees(attendees);
 
-            MeetingParticipants participants = new MeetingParticipants();
-            participants.setAttendees(attendees);
-            onlineMeeting.setParticipants(participants);
+            event.setIsOnlineMeeting(true);
+            event.setOnlineMeetingProvider(OnlineMeetingProviderType.TeamsForBusiness);
 
-            log.info("Creating Teams meeting for account: {}", serviceAccount);
-
-            // ✅ Actual call to Microsoft Graph to create Teams meeting
-            OnlineMeeting createdMeeting = client
+            Event createdEvent = client
                     .users()
                     .byUserId(serviceAccount)
-                    .onlineMeetings()
-                    .post(onlineMeeting);
+                    .events()
+                    .post(event);
 
-            log.info("Teams meeting created successfully. Subject: {}, Join URL: {}",
-                    subject,
-                    createdMeeting.getJoinWebUrl());
-
-            return createdMeeting;
+            return createdEvent;
 
         } catch (Exception e) {
-            log.error("Error creating Teams meeting: {}", e.getMessage(), e);
-            throw new Exception("Failed to create Microsoft Teams meeting: " + e.getMessage(), e);
+            log.error("Error creating calendar event with Teams meeting: {}", e.getMessage(), e);
+            throw new Exception("Failed to create calendar event with Teams meeting: " + e.getMessage(), e);
         }
     }
 
