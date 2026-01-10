@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tac.beeja.recruitmentapi.exceptions.BadRequestException;
 import tac.beeja.recruitmentapi.request.ScheduleInterviewRequest;
+import tac.beeja.recruitmentapi.request.UpdateInterviewRequest;
 import tac.beeja.recruitmentapi.response.InterviewScheduleResponse;
 import tac.beeja.recruitmentapi.service.InterviewScheduleService;
 
@@ -45,6 +47,23 @@ public class InterviewScheduleController {
   public ResponseEntity<InterviewScheduleResponse> getInterviewById(
       @PathVariable String interviewId) throws Exception {
     InterviewScheduleResponse response = interviewScheduleService.getInterviewById(interviewId);
+    return ResponseEntity.ok(response);
+  }
+
+  @PutMapping("/{interviewId}")
+  public ResponseEntity<InterviewScheduleResponse> updateInterview(
+      @PathVariable String interviewId,
+      @Valid @RequestBody UpdateInterviewRequest request,
+      BindingResult bindingResult) throws Exception {
+    if (bindingResult.hasErrors()) {
+      String errorMessage = bindingResult.getFieldErrors().stream()
+          .map(error -> error.getField() + ": " + error.getDefaultMessage())
+          .findFirst()
+          .orElse("Validation failed");
+      throw new BadRequestException(errorMessage);
+    }
+
+    InterviewScheduleResponse response = interviewScheduleService.updateInterview(interviewId, request);
     return ResponseEntity.ok(response);
   }
 

@@ -145,6 +145,111 @@ public class InterviewScheduleServiceImpl implements InterviewScheduleService {
   }
 
   @Override
+  public InterviewScheduleResponse updateInterview(String interviewId, tac.beeja.recruitmentapi.request.UpdateInterviewRequest request) 
+      throws Exception {
+
+    try {
+      Interview interview =
+          interviewRepository
+              .findByIdAndOrganizationId(interviewId, UserContext.getLoggedInUserOrganization().get("id").toString())
+              .orElseThrow(
+                  () -> new ResourceNotFoundException("Interview not found with ID: " + interviewId));
+
+      Applicant applicant =
+          applicantRepository
+              .findByApplicantIdAndOrganizationId(
+                  interview.getApplicantId(),
+                  UserContext.getLoggedInUserOrganization().get("id").toString())
+              .orElseThrow(
+                  () ->
+                      new ResourceNotFoundException(
+                          "Applicant not found with ID: " + interview.getApplicantId()));
+
+      if (request.getStartDateTime() != null && request.getStartDateTime().before(new Date())) {
+        throw new BadRequestException("Interview start time must be in the future");
+      }
+
+      if (request.getDurationInMinutes() != null && request.getDurationInMinutes() <= 0) {
+        throw new BadRequestException("Duration must be greater than 0");
+      }
+
+      boolean hasChanges = false;
+
+      if (request.getInterviewTitle() != null) {
+        interview.setInterviewTitle(request.getInterviewTitle());
+        hasChanges = true;
+      }
+
+      if (request.getInterviewDescription() != null) {
+        interview.setInterviewDescription(request.getInterviewDescription());
+        hasChanges = true;
+      }
+
+      if (request.getStartDateTime() != null) {
+        interview.setStartDateTime(request.getStartDateTime());
+        hasChanges = true;
+      }
+
+      if (request.getDurationInMinutes() != null) {
+        interview.setDurationInMinutes(request.getDurationInMinutes());
+        hasChanges = true;
+      }
+
+      if (request.getInterviewerEmails() != null && !request.getInterviewerEmails().isEmpty()) {
+        interview.setInterviewerEmails(request.getInterviewerEmails());
+        hasChanges = true;
+      }
+
+      if (!hasChanges) {
+        throw new BadRequestException("No fields provided to update");
+      }
+
+      String description = buildInterviewDescription(applicant, interview.getInterviewDescription());
+
+      String eventIdToUpdate = interview.getCalendarEventId() != null 
+          ? interview.getCalendarEventId() 
+          : interview.getMeetingId();
+          
+      if (eventIdToUpdate != null) {
+        Event updatedEvent = teamsClientService.updateCalendarEvent(
+            eventIdToUpdate,
+            interview.getInterviewTitle(),
+            description,
+            interview.getStartDateTime(),
+            interview.getDurationInMinutes(),
+            interview.getInterviewerEmails(),
+            applicant.getEmail(),
+            applicant.getFirstName() + " " + applicant.getLastName());
+
+        if (updatedEvent.getOnlineMeeting() != null && updatedEvent.getOnlineMeeting().getJoinUrl() != null) {
+          String joinUrl = updatedEvent.getOnlineMeeting().getJoinUrl();
+          interview.setMeetingLink(joinUrl);
+          interview.setJoinWebUrl(joinUrl);
+          interview.setOnlineMeetingId(joinUrl);
+        }
+      }
+
+      try {
+        interview.setModifiedBy(UserContext.getLoggedInUserEmail());
+      } catch (Exception e) {
+        log.warn("Could not set modified by: {}", e.getMessage());
+        interview.setModifiedBy("system");
+      }
+
+      Interview updatedInterview = interviewRepository.save(interview);
+
+      return buildInterviewScheduleResponse(updatedInterview, "success", "Interview updated successfully");
+
+    } catch (ResourceNotFoundException | BadRequestException e) {
+      log.error("Validation error while updating interview: {}", e.getMessage());
+      throw e;
+    } catch (Exception e) {
+      log.error("Error updating interview: {}", e.getMessage(), e);
+      throw new Exception("Failed to update interview: " + e.getMessage(), e);
+    }
+  }
+
+  @Override
   public void cancelInterview(String interviewId) throws Exception {
     log.info("Cancelling interview with ID: {}", interviewId);
 

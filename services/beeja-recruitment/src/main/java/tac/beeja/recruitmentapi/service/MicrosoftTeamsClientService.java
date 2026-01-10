@@ -140,6 +140,98 @@ public class MicrosoftTeamsClientService {
     }
 
     /**
+     * Updates a calendar event with Microsoft Teams meeting link.
+     * This will send update notifications to all attendees.
+     */
+    public Event updateCalendarEvent(
+            String eventId,
+            String subject,
+            String description,
+            Date startDateTime,
+            Integer durationInMinutes,
+            List<String> attendeeEmails,
+            String applicantEmail,
+            String applicantName
+    ) throws Exception {
+
+        try {
+            GraphServiceClient client = getGraphClient();
+            String serviceAccount = teamsProperties.getServiceAccountEmail();
+
+            OffsetDateTime startOdt = startDateTime.toInstant().atZone(ZoneId.of("UTC")).toOffsetDateTime();
+            OffsetDateTime endOdt = startOdt.plusMinutes(durationInMinutes);
+
+            Event event = new Event();
+            
+            if (subject != null) {
+                event.setSubject(subject);
+            }
+
+            if (description != null) {
+                ItemBody body = new ItemBody();
+                body.setContentType(BodyType.Html);
+                body.setContent(description);
+                event.setBody(body);
+            }
+
+            if (startDateTime != null && durationInMinutes != null) {
+                DateTimeTimeZone start = new DateTimeTimeZone();
+                start.setDateTime(startOdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                start.setTimeZone("UTC");
+                event.setStart(start);
+
+                DateTimeTimeZone end = new DateTimeTimeZone();
+                end.setDateTime(endOdt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                end.setTimeZone("UTC");
+                event.setEnd(end);
+            }
+
+            if (attendeeEmails != null && !attendeeEmails.isEmpty()) {
+                List<Attendee> attendees = new ArrayList<>();
+
+                for (String email : attendeeEmails) {
+                    Attendee attendee = new Attendee();
+                    EmailAddress emailAddress = new EmailAddress();
+                    emailAddress.setAddress(email);
+                    attendee.setEmailAddress(emailAddress);
+                    attendee.setType(AttendeeType.Required);
+                    attendees.add(attendee);
+                }
+
+                if (applicantEmail != null && !applicantEmail.isEmpty()) {
+                    Attendee applicantAttendee = new Attendee();
+                    EmailAddress applicantEmailAddress = new EmailAddress();
+                    applicantEmailAddress.setAddress(applicantEmail);
+                    applicantEmailAddress.setName(applicantName);
+                    applicantAttendee.setEmailAddress(applicantEmailAddress);
+                    applicantAttendee.setType(AttendeeType.Required);
+                    attendees.add(applicantAttendee);
+                }
+
+                event.setAttendees(attendees);
+            }
+
+            log.info("Updating calendar event: {}", eventId);
+
+            // Update the calendar event (this will send update notifications to attendees)
+            Event updatedEvent = client
+                    .users()
+                    .byUserId(serviceAccount)
+                    .events()
+                    .byEventId(eventId)
+                    .patch(event);
+
+            log.info("Calendar event updated successfully: {}", eventId);
+
+            return updatedEvent;
+
+        } catch (Exception e) {
+            log.error("Error updating calendar event {}: {}", eventId, e.getMessage(), e);
+            throw new Exception("Failed to update calendar event: " + e.getMessage(), e);
+        }
+    }
+
+    /**
      * Deletes a Teams meeting event by ID.
      */
     public void deleteEvent(String eventId) throws Exception {
