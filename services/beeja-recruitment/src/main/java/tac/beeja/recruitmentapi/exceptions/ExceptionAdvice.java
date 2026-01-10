@@ -131,4 +131,35 @@ public class ExceptionAdvice {
             LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
     return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
   }
+
+  @ExceptionHandler(MicrosoftTeamsException.class)
+  public ResponseEntity<?> handleMicrosoftTeamsException(
+      MicrosoftTeamsException ex, WebRequest request) {
+    String[] errorMessage = convertStringToArray(ex.getMessage());
+    ErrorResponse errorResponse =
+        new ErrorResponse(
+            ErrorType.valueOf(errorMessage[0]),
+            ErrorCode.valueOf(errorMessage[1]),
+            errorMessage[2],
+            Constants.DOC_URL_RESOURCE_NOT_FOUND,
+            request.getDescription(false),
+            BEEJA + "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+    return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(errorResponse);
+  }
+
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<?> handleIllegalArgumentException(
+      IllegalArgumentException ex, WebRequest request) {
+    ErrorResponse errorResponse =
+        new ErrorResponse(
+            ErrorType.VALIDATION_ERROR,
+            ErrorCode.BAD_REQUEST,
+            ex.getMessage(),
+            Constants.DOC_URL_RESOURCE_NOT_FOUND,
+            request.getDescription(false),
+            BEEJA + "-" + UUID.randomUUID().toString().substring(0, 7).toUpperCase(),
+            LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+  }
 }
