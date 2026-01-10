@@ -74,10 +74,15 @@ const AddInventoryForm = (props: AddInventoryFormProps) => {
     if (name === 'purchaseDate') {
       setDateOfPurchase(value ? new Date(value) : null);
     } else {
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
+      setFormData((prevState) => {
+        let updatedData = { ...prevState, [name]: value };
+
+        if (name === 'device' && !isOsRamEnabled(value)) {
+          updatedData = { ...updatedData, os: '', ram: '' };
+        }
+
+        return updatedData;
+      });
     }
   };
 

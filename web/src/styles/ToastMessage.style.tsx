@@ -43,6 +43,10 @@ export const ToastMainContainer = styled.div`
       background: #ff0606;
       color: red;
     }
+    &.warn {
+      background-color: #fbbc05;
+      color: #fbbc05;
+    }
   }
 
   span.toastMessageContent {

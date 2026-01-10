@@ -1,10 +1,13 @@
 package com.beeja.api.performance_management.controllers;
 
+import com.beeja.api.performance_management.Constants.PermissionConstants;
+import com.beeja.api.performance_management.annotations.HasPermission;
 import com.beeja.api.performance_management.model.FeedbackProvider;
 import com.beeja.api.performance_management.request.FeedbackProviderRequest;
 import com.beeja.api.performance_management.response.FeedbackProviderDetails;
 import com.beeja.api.performance_management.response.ReviewerAssignedEmployeesResponse;
 import com.beeja.api.performance_management.service.FeedbackProvidersService;
+import com.beeja.api.performance_management.utils.UserContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -21,6 +24,7 @@ public class FeedbackProvidersController {
     FeedbackProvidersService feedbackProvidersService;
 
     @PostMapping("/assign/{employeeId}")
+    @HasPermission(PermissionConstants.ASSIGN_PROVIDERS)
     public ResponseEntity<List<FeedbackProvider>> assignFeedbackProvider(
             @PathVariable String employeeId,
             @RequestBody FeedbackProviderRequest requestDto) {
@@ -30,6 +34,7 @@ public class FeedbackProvidersController {
     }
 
     @PutMapping("/providers/{employeeId}")
+    @HasPermission(PermissionConstants.UPDATE_PROVIDERS)
     public ResponseEntity<List<FeedbackProvider>> updateFeedbackProviders(
             @PathVariable String employeeId,
             @RequestBody FeedbackProviderRequest request) {
@@ -39,6 +44,7 @@ public class FeedbackProvidersController {
     }
 
     @GetMapping("/{employeeId}/{cycleId}")
+    @HasPermission(PermissionConstants.READ_PROVIDERS)
     public ResponseEntity<FeedbackProviderDetails> getFeedbackFormDetails(
             @PathVariable String employeeId,
             @PathVariable String cycleId,
@@ -56,12 +62,33 @@ public class FeedbackProvidersController {
     }
 
     @GetMapping("/reviewer")
+    @HasPermission({PermissionConstants.READ_PROVIDERS, PermissionConstants.READ_RESPONSES})
     public ResponseEntity<ReviewerAssignedEmployeesResponse> getEmployeesAssignedToReviewer() {
         try {
             ReviewerAssignedEmployeesResponse response =
                     feedbackProvidersService.getEmployeesAssignedToReviewer();
 
             if (response == null || response.getAssignedEmployees().isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/forms/{employeeId}")
+    @HasPermission(PermissionConstants.READ_RESPONSES)
+    public ResponseEntity<?> getFormsByEmployee(
+            @PathVariable String employeeId) {
+        try {
+            // reviewerId is fetched from current context
+            String reviewerId = UserContext.getLoggedInEmployeeId();
+
+            var response = feedbackProvidersService.getFormsByEmployeeAndReviewer(employeeId, reviewerId);
+
+            if (response == null || response.isEmpty()) {
                 return ResponseEntity.notFound().build();
             }
 

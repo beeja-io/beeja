@@ -8,7 +8,7 @@ export const NavBarContainer = styled.section`
     max-height: 100vh;
     height: 100vh;
     width: 78px;
-    padding: 6px 14px;
+    padding: 6px 0 6px 14px;
     z-index: 2;
     background-color: ${(props) => props.theme.colors.backgroundColors.primary};
     transition: all 0.5s ease;
@@ -17,8 +17,7 @@ export const NavBarContainer = styled.section`
     left: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
-    overflow-y: auto;
+    overflow-x: hidden;
     scrollbar-width: thin;
 
     /* Hide the scrollbar */
@@ -159,6 +158,10 @@ export const NavBarContainer = styled.section`
     color: ${(props) =>
       props.theme.colors.blackColors.black}; // Change this to the desired color
   }
+  .dropdown-item {
+    white-space: pre-line;
+  }
+
   @media screen and (max-width: 800px) {
     // &.sidebar {
     //   display: none;
@@ -220,7 +223,6 @@ export const DashBoardButton = styled.span`
 `;
 
 export const TopNavBar = styled.div`
-  height: 96px;
   background: ${(props) => props.theme.colors.backgroundColors.primary};
   color: ${(props) => props.theme.colors.blackColors.black1};
   border: 1px solid ${(props) => props.theme.colors.grayColors.grayscale300};
@@ -320,18 +322,25 @@ export const SearchInput = styled.input`
 
 export const LeftNavList = styled.ul`
   margin-top: 20px;
-  height: 100%;
+  padding: 0;
+  list-style: none;
 
   li {
     position: relative;
     margin: 8px 0;
     list-style: none;
   }
+  &.nav-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    padding-right: 12px;
+  }
 
   &.bottomLinks {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    flex: 0 0 auto;
   }
 
   .dropdown-item {
@@ -466,6 +475,15 @@ export const TopNavRightIcons = styled.span`
     display: flex;
     justify-content: center;
     align-items: center;
+    &.academy {
+      color: #005792;
+      font-size: 14px;
+    }
+    &.academy:hover {
+      color: #003f6b;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
   }
 
   .language select {

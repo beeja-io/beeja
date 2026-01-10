@@ -297,6 +297,39 @@ const AddClientForm = (props: AddClientFormProps) => {
     }
     return true;
   };
+  useEffect(() => {
+    const addressTypes: ('primaryAddress' | 'billingAddress')[] = [
+      'primaryAddress',
+      'billingAddress',
+    ];
+
+    const newErrors = { ...errors };
+
+    addressTypes.forEach((addressType) => {
+      const country = formData[addressType]?.country ?? '';
+      const code = formData[addressType]?.postalCode ?? '';
+
+      const fieldKey =
+        addressType === 'primaryAddress'
+          ? 'primaryAddressPostalCode'
+          : 'billingAddressPostalCode';
+      if (code && !validatePostalCode(country, code)) {
+        newErrors[fieldKey] =
+          country === 'India'
+            ? t('validation.postalCode.india')
+            : t('validation.postalCode.default', { country });
+      } else {
+        delete newErrors[fieldKey];
+      }
+    });
+
+    setErrors(newErrors);
+  }, [
+    formData.primaryAddress.country,
+    formData.billingAddress.country,
+    formData.primaryAddress.postalCode,
+    formData.billingAddress.postalCode,
+  ]);
 
   useEffect(() => {
     const fetchLogoImage = async () => {
@@ -703,16 +736,28 @@ const AddClientForm = (props: AddClientFormProps) => {
       await updateClientList();
       handleClose();
     } catch (error: any) {
-      const backendMessage =
-        error?.response?.data?.message || error?.message || '';
+      const errorData = error?.response?.data;
+      const backendCode = errorData?.code;
+      const backendMessage = (
+        errorData?.message ||
+        error?.message ||
+        ''
+      ).toLowerCase();
 
-      if (backendMessage.includes('Client Found with provided email')) {
-        setErrorMessage('Email Already Exists');
-        setShowErrorMessage(true);
+      if (
+        backendCode === 'INTERNAL_SERVER_ERROR' &&
+        backendMessage.includes('logo')
+      ) {
+        setErrorMessage('Logo_Error');
+      } else if (
+        backendCode === 'RESOURCE_ALREADY_EXISTS' &&
+        backendMessage.includes('email')
+      ) {
+        setErrorMessage('Email_Exsist_Error');
       } else {
-        setErrorMessage('Failed to submit data.');
-        setShowErrorMessage(true);
+        setErrorMessage(errorData.message || 'Failed to submit data.');
       }
+      setShowErrorMessage(true);
     } finally {
       setIsResponseLoading(false);
     }
@@ -1674,7 +1719,7 @@ const AddClientForm = (props: AddClientFormProps) => {
                   </InfoBlock>
                   <InfoBlock className="address">
                     <SubHeadingDiv className="spacing tax-container">
-                      {t('GST_Number')}
+                      {t('TAX Number')}
                     </SubHeadingDiv>
                     <InfoText className="tax-details">
                       {formData.taxDetails.taxNumber}
@@ -1802,7 +1847,7 @@ const AddClientForm = (props: AddClientFormProps) => {
       {showErrorMessage && (
         <ToastMessage
           messageType="error"
-          messageBody="Email Already Exists"
+          messageBody={errorMessage}
           messageHeading="Error Occured"
           handleClose={handleShowErrorMessage}
         />

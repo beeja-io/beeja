@@ -74,6 +74,10 @@ export const CompanyProfile = () => {
   );
   const [isBankEditModeOn, setIsBankEditModeOn] = useState(false);
   const handleBankIsEditModeOn = () => {
+    setCompanyProfile(tempOrganization);
+    setUpdatedOrganization({} as IOrganization);
+
+    setEditModeOn(false);
     setIsBankEditModeOn(!isBankEditModeOn);
   };
   const handleCloseBankEditMode = () => {
@@ -107,6 +111,9 @@ export const CompanyProfile = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, setOrganizationData]);
   const handleIsEditModeOn = () => {
+    setCompanyProfile(tempOrganization);
+    setUpdatedOrganization({} as IOrganization);
+    setIsBankEditModeOn(false);
     setEditModeOn(!isEditModeOn);
   };
 
@@ -719,7 +726,7 @@ export const CompanyProfile = () => {
               <div>
                 <DropdownMenu
                   label={t('Select_State')}
-                  selected={companyProfile.address?.state ?? ''}
+                  value={companyProfile.address?.state ?? ''}
                   className={'largeContainerFil drop'}
                   options={[
                     { label: t('SELECT_STATE'), value: '' },
@@ -780,7 +787,7 @@ export const CompanyProfile = () => {
             <Label>{t('COUNTRY')}</Label>
             <DropdownMenu
               label={t('SELECT_COUNTRY')}
-              selected={companyProfile.address?.country ?? ''}
+              value={companyProfile.address?.country ?? ''}
               className={'drop'}
               onChange={(value: string | null) => {
                 handleInputChange({

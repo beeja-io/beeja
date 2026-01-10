@@ -27,7 +27,7 @@ public class FileController {
   @Autowired FileService fileService;
 
   @GetMapping("download/{fileId}")
-  @HasPermission(PermissionConstants.READ_DOCUMENT)
+  @HasPermission({PermissionConstants.READ_DOCUMENT, PermissionConstants.GET_CONTRACT})
   public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String fileId)
       throws Exception {
     ByteArrayResource byteArrayResource = fileService.downloadFile(fileId);

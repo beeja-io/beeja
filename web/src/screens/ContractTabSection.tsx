@@ -224,7 +224,7 @@ const ContactTabSection: React.FC<ContactTabSectionProps> = ({
             (tabKey) =>
               tabKey !== 'Invoices' ||
               (user &&
-                hasPermission(user, CLIENT_MODULE.GENERATE_INVOICE) &&
+                hasPermission(user, CLIENT_MODULE.READ_INVOICE) &&
                 hasFeature(
                   featureToggles?.featureToggles ?? [],
                   EFeatureToggles.INVOICE_GENERATION

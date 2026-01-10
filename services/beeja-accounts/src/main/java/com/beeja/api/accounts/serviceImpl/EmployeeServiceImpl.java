@@ -15,10 +15,7 @@ import com.beeja.api.accounts.model.Organization.OrgDefaults;
 import com.beeja.api.accounts.model.Organization.Organization;
 import com.beeja.api.accounts.model.Organization.Role;
 import com.beeja.api.accounts.model.User;
-import com.beeja.api.accounts.model.dto.EmployeeDepartmentDTO;
-import com.beeja.api.accounts.model.dto.EmployeeIdNameDTO;
-import com.beeja.api.accounts.model.dto.EmployeeNameDTO;
-import com.beeja.api.accounts.model.dto.EmployeeSearchDTO;
+import com.beeja.api.accounts.model.dto.*;
 import com.beeja.api.accounts.repository.OrgDefaultsRepository;
 import com.beeja.api.accounts.repository.OrganizationPatternsRepository;
 import com.beeja.api.accounts.repository.RolesRepository;
@@ -146,7 +143,8 @@ public class EmployeeServiceImpl implements EmployeeService {
               ErrorCode.INVALID_EMPLOYMENT_TYPE_CODE,
               Constants.INVALID_EMPLOYMENT_TYPE + user.getEmploymentType()));
     }
-
+    // TODO 
+    // evaluate and remove    
     //    OrganizationPattern organizationPattern =
     //        patternsRepository.findByOrganizationIdAndPatternTypeAndActive(
     //            UserContext.getLoggedInUserOrganization().getId(),
@@ -277,6 +275,16 @@ public class EmployeeServiceImpl implements EmployeeService {
               ErrorCode.UNABLE_TO_FETCH_DETAILS,
               Constants.ERROR_RETRIEVING_USER));
     }
+  }
+  @Override
+  public List<BasicUserInfoDTO> getUsersByOrganizationId() {
+
+    return userRepository.findBasicUserInfoByOrganizationId(UserContext.getLoggedInUserOrganization().getId());
+  }
+
+  @Override
+  public EmployeeName getEmployeeName(String employeeId){
+    return userRepository.findEmployeeNameByEmployeeIdAndOrganizations_Id(employeeId,UserContext.getLoggedInUserOrganization().getId());
   }
 
   @Override
@@ -634,15 +642,22 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .map(EmployeeSearchDTO::getEmployeeId)
                 .collect(Collectors.toList());
 
-        List<EmployeeDepartmentDTO> departments = employeeFeignClient.getDepartmentsByEmployeeIds(employeeIds);
+        List<EmployeeDepartmentDTO> designation = employeeFeignClient.getDesignationsByEmployeeIds(employeeIds);
 
-        Map<String, String> deptMap = departments.stream()
-                .collect(Collectors.toMap(EmployeeDepartmentDTO::getEmployeeId, EmployeeDepartmentDTO::getDepartment));
+        Map<String, String> designMap = designation.stream()
+                .collect(Collectors.toMap(EmployeeDepartmentDTO::getEmployeeId, EmployeeDepartmentDTO::getDesignation));
+
+        Map<String, String> deptMap = designation.stream()
+                .collect(Collectors.toMap(
+                        EmployeeDepartmentDTO::getEmployeeId,
+                        EmployeeDepartmentDTO::getDepartment
+                ));
         return users.stream()
                 .map(u -> new EmployeeSearchResponse(
                         u.getEmployeeId(),
                         u.getFullName(),
-                        deptMap.getOrDefault(u.getEmployeeId(), null),
+                        designMap.getOrDefault(u.getEmployeeId(), "-"),
+                        deptMap.getOrDefault(u.getEmployeeId(), "-"),
                         u.getEmail()
                 ))
                 .collect(Collectors.toList());

@@ -332,8 +332,7 @@ export const RightSectionDiv = styled.div`
   font-size: 16px;
   line-height: 160%;
   letter-spacing: 0.2px;
-  width: auto;
-  height: 424px;
+  width: 390px;
   gap: 16px;
   padding: 16px;
   border: 1px solid ${(props) => props.theme.colors.grayColors.gray10};

@@ -12,6 +12,41 @@ export const FormContainer = styled.div`
     gap: 40px;
     width: 100%;
   }
+  &.noBorder {
+    border: none;
+  }
+  &.empty-state {
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+`;
+
+export const FormSubContainer = styled.div`
+  background: ${(props) => props.theme.colors.blackColors.white6};
+  border: 1px solid ${(props) => props.theme.colors.blackColors.white2};
+  border-radius: 10px;
+  font-family: Nunito;
+  padding: 15px;
+
+  .formButtons {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    width: 100%;
+  }
+  .noBorder {
+    border: none;
+  }
+`;
+export const FormContentWrapper = styled.div`
+  width: 100%;
+  padding-top: 30px;
+
+  &.disabled-state {
+    opacity: 0.5;
+    pointer-events: none;
+  }
 `;
 
 export const FormInputsContainer = styled.div`
@@ -31,11 +66,78 @@ export const FormInputsContainer = styled.div`
   &.form-header {
     display: flex;
   }
-  &.stepTwoContainer {
-    margin: 25px 30px;
-    border-radius: 10px;
-    padding-top: 15px;
+  .disabled-mode {
+    opacity: 0.6;
+    pointer-events: none;
+    user-select: none;
   }
+`;
+
+export const ControlsRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+  label {
+    margin-bottom: 10px;
+    display: inline-block;
+    font-family: Nunito;
+    font-weight: 500;
+    font-style: Medium;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+  }
+`;
+
+export const SelectWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-family: Nunito;
+    font-weight: 500;
+    font-style: Medium;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+    color: ${(props) => props.theme.colors.blackColors.black7};
+  }
+`;
+
+export const FormsCount = styled.div`
+  font-size: 13px;
+  color: ${(props) => props.theme.colors.blackColors.black1};
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-family: Nunito;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  align-self: flex-start;
+`;
+
+export const Count = styled.span`
+  color: ${(props) => props.theme.colors.brandColors.primary};
+  font-family: Nunito;
+  font-weight: 700;
+  font-style: Bold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
 `;
 
 export const FormLabelContainer = styled.div`
@@ -43,7 +145,7 @@ export const FormLabelContainer = styled.div`
   padding: 20px 0px 10px 10px;
   border: 1px solid #e9eaec;
   border-radius: 10px;
-  background: #fff;
+  background: ${(props) => props.theme.colors.backgroundColors.primary};
   margin: 15px 0;
   gap: 10px;
 
@@ -120,7 +222,11 @@ export const StyledTextArea = styled.textarea`
   line-height: 160%;
   letter-spacing: 0px;
   vertical-align: middle;
-
+  &.answer-color {
+    color: ${(props) => props.theme.colors.grayColors.gray7};
+    overflow: auto;
+    max-height: 128px;
+  }
   &::placeholder {
     color: #999;
     position: absolute;
@@ -128,6 +234,7 @@ export const StyledTextArea = styled.textarea`
   }
   &.description {
     color: ${(props) => props.theme.colors.grayColors.gray7};
+    border: none;
   }
 `;
 
@@ -170,8 +277,12 @@ export const DescriptionButton = styled.button`
 export const QuestionBlock = styled.div`
   border-radius: 12px;
   padding: 1.2rem 0px;
-  background-color: transparent;
-
+  background-color: #00579205;
+  margin-bottom: 15px;
+  &.preview-block {
+    background-color: transparent;
+    padding: 0px;
+  }
   label {
     font-weight: 600;
     font-size: 13px;
@@ -212,7 +323,9 @@ export const QuestionBlock = styled.div`
       border-bottom: 1px solid #005792;
     }
   }
-
+  .question-input.description {
+    border-bottom: none;
+  }
   .answer-input {
     height: 55px;
     margin-bottom: 1rem;
@@ -238,7 +351,7 @@ export const QuestionBlock = styled.div`
     padding: 0 25px;
     background: transparent;
 
-    height: 65px;
+    height: 55px;
     border-radius: 10px;
 
     .add-btn {
@@ -359,6 +472,9 @@ export const DateRangeContainer = styled.div`
   justify-content: center;
   gap: 12px;
   margin: 1rem 0;
+  &.feedback-date-range {
+    margin: 10px 0px 0px 0px;
+  }
 
   .to-label {
     font-size: 14px;
@@ -390,6 +506,11 @@ export const DateField = styled.div`
     fill: ${(props) => props.theme.colors.grayColors.gray9};
   }
 
+  &.disabled {
+    opacity: 0.5;
+    pointer-events: none;   
+    cursor: not-allowed;
+  }
   &:hover svg path {
     fill: ${(props) => props.theme.colors.blackColors.black1};
   }
@@ -403,11 +524,15 @@ export const DateField = styled.div`
     top: 120%;
     left: 0;
     z-index: 10;
-    background: #fff;
+    background: ${(props) => props.theme.colors.backgroundColors.primary};
     border: 1px solid #eee;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
+
+    h2, h3, .calendar-header, .calendar-title, .calendar-month {
+      color: ${(props) => props.theme.colors.blackColors.black1};
+      font-size:14px;
+    }
 `;
 
 export const TitleInput = styled.input`
@@ -415,8 +540,7 @@ export const TitleInput = styled.input`
   outline: none;
   background: transparent;
   width: 100%;
-  max-width: 600px;
-
+  margin-top: 20px;
   font-family: Nunito;
   font-weight: 700;
   font-style: Bold;
@@ -426,6 +550,10 @@ export const TitleInput = styled.input`
   letter-spacing: 0.3px;
   text-align: center;
   color: ${(props) => props.theme.colors.brandColors.primary};
+  &::placeholder {
+    color: ${(props) => props.theme.colors.blackColors.black7};
+    opacity: 1;
+  }
 `;
 
 export const DropdownRow = styled.div`
@@ -507,7 +635,7 @@ export const PreviewCard = styled.div`
   border-radius: 12px;
   background: ${(props) => props.theme.colors.backgroundColors.primary};
   border: 1px solid var(--Outline-stroke, #e9eaec);
-  margin: 40px 4% 0 4%;
+  margin: 40px 9% 0 9%;
   padding: 25px 5% 10px 5%;
   width: 100%;
 
@@ -518,6 +646,7 @@ export const PreviewCard = styled.div`
 export const Header = styled.div`
   text-align: center;
   margin-bottom: 20px;
+  margin-top: 20px;
 `;
 
 export const Title = styled.h2`
@@ -534,24 +663,78 @@ export const Title = styled.h2`
   letter-spacing: 0.3px;
   text-align: center;
   color: ${(props) => props.theme.colors.brandColors.primary};
+  span {
+    transform: rotate(90deg);
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+`;
+
+export const TitleHeading = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  h2 {
+    color: ${(props) => props.theme.colors.brandColors.primary};
+    margin: 0;
+    font-family: Nunito;
+    font-weight: 700;
+    font-style: Bold;
+    font-size: 20px;
+    leading-trim: NONE;
+    line-height: 150%;
+    letter-spacing: 0.26px;
+    text-align: center;
+  }
+`;
+
+export const BackButton = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #687588;
+  font-family: Nunito;
+  font-weight: 500;
+  font-style: Medium;
+  font-size: 14px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  cursor: pointer;
+  span {
+    transform: rotate(90deg);
+    display: inline-block;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+  svg {
+    width: 18px;
+    height: 18px;
+  }
 `;
 
 export const DateRow = styled.div`
   font-size: 14px;
   color: #6b7280;
   margin: 6px 0;
+  svg path {
+    fill: ${(props) => props.theme.colors.grayColors.gray9};
+  }
 `;
 
 export const DateText = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  > svg path {
+
+  svg path {
     fill: ${(props) => props.theme.colors.grayColors.gray9};
   }
-
-  &:hover svg path {
-    fill: ${(props) => props.theme.colors.blackColors.black1};
+  span {
+    margin: 0 8px;
   }
 `;
 
@@ -559,7 +742,7 @@ export const Subtitle = styled.h3`
   font-family: Nunito;
   font-weight: 600;
   font-style: SemiBold;
-  font-size: 20px;
+  font-size: 16px;
   leading-trim: NONE;
   line-height: 160%;
   letter-spacing: 0.17px;
@@ -572,24 +755,74 @@ export const DescriptionBox = styled.div`
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   padding: 12px;
-  margin: 10px 0px 20px 0px;
-  font-size: 14px;
-  color: #717171;
+  margin: 10px 0px 25px 0px;
+  font-weight: 400;
+  font-style: Regular;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+  color: ${(props) => props.theme.colors.blackColors.black7};
+  &.preview-mode {
+    background: transparent;
+  }
 `;
 
 export const Questions = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
 `;
 
-export const QuestionText = styled.p`
-  font-weight: 500;
+export const QuestionText = styled.div`
+  display: grid;
+  font-weight: 600;
   font-size: 15px;
   margin-bottom: 8px;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  column-gap: 0.25em;
+  &.viewquestion {
+    display: inline-flex;
+    color: ${(props) => props.theme.colors.brandColors.primary};
+    font-family: Nunito;
+    font-weight: 600;
+    font-style: SemiBold;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+  }
+`;
+export const QuestionNumber = styled.span`
+  grid-column: 1;
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+
   color: ${(props) => props.theme.colors.brandColors.primary};
 `;
 
+export const QuestionMainText = styled.span`
+  grid-column: 2;
+  font-family: Nunito;
+  font-weight: 600;
+  font-style: SemiBold;
+  font-size: 16px;
+  leading-trim: NONE;
+  line-height: 160%;
+  letter-spacing: 0px;
+  vertical-align: middle;
+
+  color: ${(props) => props.theme.colors.brandColors.primary};
+`;
 export const SearchBox = styled.div`
   display: flex;
   width: 315px;
@@ -630,6 +863,18 @@ export const QuestionDescription = styled.p`
   line-height: 160%;
   letter-spacing: 0px;
   vertical-align: middle;
+  margin-left: 1em;
+  &.feedback-description {
+    margin-left: 0px;
+    font-family: Nunito;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 160%;
+    letter-spacing: 0px;
+    vertical-align: middle;
+  }
 `;
 
 export const RequiredMark = styled.span`
@@ -646,5 +891,69 @@ export const ActionMenu = styled.div`
   padding: 8px;
   svg {
     display: block;
+  }
+`;
+
+export const ErrorText = styled.span`
+  color: #d32f2f;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+  &.question {
+    color: #e03137;
+    font-family: Nunito;
+    font-weight: 400;
+    font-style: Regular;
+    font-size: 14px;
+    leading-trim: NONE;
+    line-height: 150%;
+    letter-spacing: 0px;
+    display: flex;
+    align-items: center;
+    margin: 0px;
+    svg {
+      width: 16px;
+      height: 16px;
+      angle: 180 deg;
+      opacity: 1;
+    }
+    svg path {
+      fill: #e03137;
+    }
+  }
+`;
+
+export const FormOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background-color: rgba(255, 255, 255, 0.7);
+
+  z-index: 10;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const OverlayContent = styled.div`
+  background: #ffdede;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+  p {
+    font-size: 0.9em;
+    font-weight: normal;
+    margin-top: 10px;
+    line-height: 1.4;
   }
 `;

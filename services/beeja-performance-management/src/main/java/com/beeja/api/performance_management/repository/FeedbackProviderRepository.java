@@ -2,7 +2,6 @@ package com.beeja.api.performance_management.repository;
 
 import com.beeja.api.performance_management.model.FeedbackProvider;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -18,4 +17,9 @@ public interface FeedbackProviderRepository extends MongoRepository<FeedbackProv
 
     List<FeedbackProvider> findByOrganizationId(String organizationId);
 
+    List<FeedbackProvider> findProvidersByOrganizationIdAndEmployeeId(String organizationId, String employeeId);
+  
+    List<FeedbackProvider> findByOrganizationIdAndEmployeeId(String organizationId, String employeeId);
+
+    void deleteByCycleIdAndOrganizationId(String cycleId, String organizationId);
 }

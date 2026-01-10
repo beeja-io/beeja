@@ -18,7 +18,10 @@ import roleData from '../../constants/RoleData';
 import { toast } from 'sonner';
 import { InfoCircleSVG } from '../../svgs/NavBarSvgs.svg';
 import {
+  CLIENT_MODULE,
+  CONTRACT_MODULE,
   ORGANIZATION_MODULE,
+  PERFORMANCE_MODULE,
   PERMISSION_MODULE,
 } from '../../constants/PermissionConstants';
 import { useTranslation } from 'react-i18next';
@@ -45,32 +48,37 @@ const AddRoleComponent: React.FC<Props> = ({
   const [description, setDescription] = useState('');
   const [permissions, setPermissions] = useState<string[]>(initialPermissions);
   const [isLoading, setIsLoading] = useState(false);
-  const permissionDependencies: Record<string, string[]> = {
-    CIN: ['GCON'],
-    GIN: ['GCON'],
-    DIN: ['GCON'],
-  };
   const { t } = useTranslation();
-
-  const isPartOfAnotherFullAccess = (
-    dep: string,
-    permissionsList: string[]
-  ) => {
-    const fullContractPermissions = ['CCON', 'UCON', 'DCON', 'GCON'];
-    if (
-      dep === 'GCON' &&
-      fullContractPermissions.every((p) => permissionsList.includes(p))
-    ) {
-      return true;
-    }
-    return false;
-  };
+  const READ_DOCUMENT = 'RDCMT';
+  const READ_CLIENT_DOCUMENT = 'RCLDOC';
+  const READ_PROJECT_DOCUMENT = 'RPRDOC';
+  const READ_CONTRACT_DOCUMENT = 'RCONDC';
+  const MODULE_DOC_PERMISSIONS = [
+    READ_CLIENT_DOCUMENT,
+    READ_PROJECT_DOCUMENT,
+    READ_CONTRACT_DOCUMENT,
+  ];
 
   useEffect(() => {
     if (editingRole) {
       setRoleName(editingRole.name);
       setDescription(editingRole.description || '');
-      setPermissions(editingRole.permissions);
+
+      let loadedPermissions = editingRole.permissions;
+      const hasGranularDocPermission = MODULE_DOC_PERMISSIONS.some((p) =>
+        loadedPermissions.includes(p)
+      );
+      if (loadedPermissions.includes(READ_DOCUMENT)) {
+        if (!hasGranularDocPermission) {
+          MODULE_DOC_PERMISSIONS.forEach((p) => {
+            if (!loadedPermissions.includes(p)) loadedPermissions.push(p);
+          });
+        }
+        loadedPermissions = loadedPermissions.filter(
+          (p) => p !== READ_DOCUMENT
+        );
+      }
+      setPermissions(loadedPermissions);
     } else {
       setRoleName('');
       setDescription('');
@@ -87,108 +95,102 @@ const AddRoleComponent: React.FC<Props> = ({
     }
   }, [editingRole]);
   useEffect(() => {
-    if (
-      (permissions.includes(PERMISSION_MODULE.CREATE_ROLES_OF_ORGANIZATIONS) ||
-        permissions.includes(PERMISSION_MODULE.UPDATE_ROLES_OF_ORGANIZATIONS) ||
-        permissions.includes(
-          PERMISSION_MODULE.DELETE_ROLES_OF_ORGANIZATIONS
-        )) &&
-      !permissions.includes(ORGANIZATION_MODULE.READ_ORGANIZATIONS)
-    ) {
-      setPermissions([...permissions, ORGANIZATION_MODULE.READ_ORGANIZATIONS]);
-    }
+    const dependencyMap = [
+      {
+        actions: [
+          PERMISSION_MODULE.CREATE_ROLES_OF_ORGANIZATIONS,
+          PERMISSION_MODULE.UPDATE_ROLES_OF_ORGANIZATIONS,
+          PERMISSION_MODULE.DELETE_ROLES_OF_ORGANIZATIONS,
+        ],
+        required: ORGANIZATION_MODULE.READ_ORGANIZATIONS,
+      },
+      {
+        actions: [CLIENT_MODULE.GENERATE_INVOICE, CLIENT_MODULE.DELETE_INVOICE],
+        required: CONTRACT_MODULE.READ_CONTRACT,
+      },
+      {
+        actions: [
+          PERFORMANCE_MODULE.CREATE_REVIEW_CYCLE,
+          PERFORMANCE_MODULE.UPDATE_REVIEW_CYCLE,
+          PERFORMANCE_MODULE.DELETE_REVIEW_CYCLE,
+        ],
+        required: PERFORMANCE_MODULE.READ_REVIEW_CYCLE,
+      },
+      {
+        actions: [
+          PERFORMANCE_MODULE.READ_PROVIDER,
+          PERFORMANCE_MODULE.UPDATE_PROVIDER,
+          PERFORMANCE_MODULE.ASSIGN_PROVIDER,
+          PERFORMANCE_MODULE.ASSIGN_RECEIVER,
+          PERFORMANCE_MODULE.UPDATE_RECEIVER,
+        ],
+        required: PERFORMANCE_MODULE.READ_RECEIVER,
+      },
+      {
+        actions: [PERFORMANCE_MODULE.PROVIDE_RATING],
+        required: PERFORMANCE_MODULE.READ_ALL_RESPONSES,
+      },
+      {
+        actions: [PERFORMANCE_MODULE.PROVIDE_FEEDBACK],
+        required: PERFORMANCE_MODULE.READ_RESPONSE,
+      },
+    ];
+
+    dependencyMap.forEach(({ actions, required }) => {
+      if (
+        actions.some((a) => permissions.includes(a)) &&
+        !permissions.includes(required)
+      ) {
+        setPermissions((prev) => [...prev, required]);
+      }
+    });
   }, [permissions]);
 
   const handleCheckboxChange = (permission: string) => {
-    let updatedPermissions = [...permissions];
-
-    if (updatedPermissions.includes(permission)) {
-      updatedPermissions = updatedPermissions.filter((p) => p !== permission);
-      if (permissionDependencies[permission]) {
-        permissionDependencies[permission].forEach((dep) => {
-          const stillRequired = Object.entries(permissionDependencies).some(
-            ([key, deps]) =>
-              key !== permission &&
-              updatedPermissions.includes(key) &&
-              deps.includes(dep)
-          );
-          if (
-            !stillRequired &&
-            !isPartOfAnotherFullAccess(dep, updatedPermissions)
-          ) {
-            updatedPermissions = updatedPermissions.filter((p) => p !== dep);
-          }
-        });
-      }
+    if (permissions.includes(permission)) {
+      setPermissions(permissions.filter((p) => p !== permission));
     } else {
-      updatedPermissions.push(permission);
-      if (permissionDependencies[permission]) {
-        updatedPermissions = Array.from(
-          new Set([
-            ...updatedPermissions,
-            ...permissionDependencies[permission],
-          ])
-        );
-      }
+      setPermissions([...permissions, permission]);
     }
-
-    setPermissions(updatedPermissions);
   };
 
   const handleFullAccessToggle = (
     isChecked: boolean,
     subsectionPermissions: Permission[]
   ) => {
-    let updatedPermissions = [...permissions];
-
-    const permissionValues = subsectionPermissions
-      .map((perm) => perm.value)
-      .filter((val) => val !== '');
-
     if (isChecked) {
-      updatedPermissions = Array.from(
-        new Set([...updatedPermissions, ...permissionValues])
+      const newPermissions = permissions.concat(
+        subsectionPermissions
+          .map((perm) => perm.value)
+          .filter((value) => value !== '')
       );
-      permissionValues.forEach((perm) => {
-        if (permissionDependencies[perm]) {
-          updatedPermissions = Array.from(
-            new Set([...updatedPermissions, ...permissionDependencies[perm]])
-          );
-        }
-      });
+      setPermissions(newPermissions);
     } else {
-      updatedPermissions = updatedPermissions.filter(
-        (perm) => !permissionValues.includes(perm)
+      const newPermissions = permissions.filter(
+        (perm) =>
+          !subsectionPermissions.map((perm) => perm.value).includes(perm)
       );
-      permissionValues.forEach((perm) => {
-        if (permissionDependencies[perm]) {
-          permissionDependencies[perm].forEach((dep) => {
-            const stillRequired = Object.entries(permissionDependencies).some(
-              ([key, deps]) =>
-                key !== perm &&
-                updatedPermissions.includes(key) &&
-                deps.includes(dep)
-            );
-            if (
-              !stillRequired &&
-              !isPartOfAnotherFullAccess(dep, updatedPermissions)
-            ) {
-              updatedPermissions = updatedPermissions.filter((p) => p !== dep);
-            }
-          });
-        }
-      });
+      setPermissions(newPermissions);
     }
-
-    setPermissions(updatedPermissions);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    let permissionsToSend = [...permissions];
+    const requiresGenericReadDocument = MODULE_DOC_PERMISSIONS.some((p) =>
+      permissions.includes(p)
+    );
+    if (
+      requiresGenericReadDocument &&
+      !permissionsToSend.includes(READ_DOCUMENT)
+    ) {
+      permissionsToSend.push(READ_DOCUMENT);
+    }
+
     const newRole = {
       name: editingRole && editingRole.name === roleName ? undefined : roleName,
       description,
-      permissions,
+      permissions: permissionsToSend,
     };
     toast.promise(
       async () => {

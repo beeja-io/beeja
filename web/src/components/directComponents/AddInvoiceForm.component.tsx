@@ -370,15 +370,23 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
 
   const handleSaveButtonClick = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    if (data.length === 0) {
-      toast.error(
-        t(
-          'Please add at least one Task and Price before generating the invoice.'
-        )
-      );
+    const { accountName, bankName, accountNumber, ifscNumber } =
+      formData.bankDetails || {};
+
+    const isBankDetailsMissing =
+      !accountName?.trim() ||
+      !bankName?.trim() ||
+      !accountNumber?.trim() ||
+      !ifscNumber?.trim();
+
+    if (isBankDetailsMissing) {
+      toast.error(t('Bank_Error'));
       return;
     }
-
+    if (data.length === 0) {
+      toast.error(t('Task_Error'));
+      return;
+    }
     if (
       !formData.contractId ||
       !formData.clientId ||
@@ -808,7 +816,8 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
                 {!isCityEditModeOn ? (
                   <>
                     <span className="remarks applyMargin">
-                      {cityValue}, {formatCurrentDate(currentDate)}
+                      {cityValue ? `${cityValue}, ` : ''}
+                      {formatCurrentDate(currentDate)}
                     </span>
                     <span
                       onClick={handleIsCityEditModeOn}
@@ -1016,19 +1025,23 @@ export const AddInvoiceForm = (props: AddInvoiceFormProps) => {
               <Tablelist>
                 <TableBodyRows>
                   <td>{t('Name :')}</td>
-                  <td>{organizationDetails?.bankDetails?.accountName}</td>
+                  <td>
+                    {organizationDetails?.bankDetails?.accountName || '-'}
+                  </td>
                 </TableBodyRows>
                 <TableBodyRows>
                   <td> {t('Bank Name :')}</td>
-                  <td>{organizationDetails?.bankDetails?.bankName}</td>
+                  <td>{organizationDetails?.bankDetails?.bankName || '-'}</td>
                 </TableBodyRows>
                 <TableBodyRows>
                   <td>{t('Account Number :')}</td>
-                  <td>{organizationDetails?.bankDetails?.accountNumber}</td>
+                  <td>
+                    {organizationDetails?.bankDetails?.accountNumber || '-'}
+                  </td>
                 </TableBodyRows>
                 <TableBodyRows>
                   <td>{t('IFSC :')}</td>
-                  <td>{organizationDetails?.bankDetails?.ifscNumber}</td>
+                  <td>{organizationDetails?.bankDetails?.ifscNumber || '-'}</td>
                 </TableBodyRows>
               </Tablelist>
             </div>
